@@ -11,6 +11,7 @@
 #include "Windows/PropVariantConversions.h"
 
 using namespace std;
+using namespace util;
 using namespace NWindows;
 
 static const wchar_t* kCantDeleteOutputFile = L"ERROR: Can not delete output file ";
@@ -23,7 +24,6 @@ static const char* kUnsupportedMethod = "Unsupported Method";
 static const char* kCRCFailed = "CRC Failed";
 static const char* kDataError = "Data Error";
 static const char* kUnknownError = "Unknown Error";
-static const wstring kEmptyFileAlias = L"[Content]";
 
 static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
     NCOM::CPropVariant prop;

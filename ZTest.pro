@@ -18,7 +18,8 @@ SOURCES += src/main.cpp \
            lib/7zSDK/win/CPP/Common/MyVector.cpp \
     src/CArchiveExtractCallback.cpp \
     src/CArchiveOpenCallback.cpp \
-    src/util.cpp
+    src/util.cpp \
+    src/CArchiveUpdateCallback.cpp
 
 
 
@@ -35,4 +36,5 @@ DESTDIR = $$PWD/bin/
 HEADERS += \
     include/CArchiveOpenCallback.h \
     include/CArchiveExtractCallback.h \
-    include/util.h
+    include/util.h \
+    include/CArchiveUpdateCallback.h
