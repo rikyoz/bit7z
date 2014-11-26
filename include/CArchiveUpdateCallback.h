@@ -63,7 +63,7 @@ class CArchiveUpdateCallback:
         UStringVector FailedFiles;
         CRecordVector<HRESULT> FailedCodes;
 
-        CArchiveUpdateCallback(): PasswordIsDefined( false ), AskPassword( false ), DirItems( 0 ) {};
+        CArchiveUpdateCallback(): PasswordIsDefined( false ), AskPassword( false ), DirItems( 0 ) {}
 
         ~CArchiveUpdateCallback() { Finilize(); }
         HRESULT Finilize();
