@@ -20,6 +20,7 @@ SOURCES += src/main.cpp \
 		   src/CArchiveOpenCallback.cpp \
 		   src/util.cpp \
 		   src/CArchiveUpdateCallback.cpp
+    src/bitexception.cpp
 
 
 
@@ -38,3 +39,4 @@ HEADERS += \
     include/CArchiveExtractCallback.h \
     include/util.h \
     include/CArchiveUpdateCallback.h
+    include/bitexception.hpp
