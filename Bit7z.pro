@@ -16,10 +16,10 @@ SOURCES += src/main.cpp \
            lib/7zSDK/win/CPP/Common/StringConvert.cpp \
            lib/7zSDK/win/CPP/Common/IntToString.cpp \
            lib/7zSDK/win/CPP/Common/MyVector.cpp \
-    src/CArchiveExtractCallback.cpp \
-    src/CArchiveOpenCallback.cpp \
-    src/util.cpp \
-    src/CArchiveUpdateCallback.cpp
+		   src/CArchiveExtractCallback.cpp \
+		   src/CArchiveOpenCallback.cpp \
+		   src/util.cpp \
+		   src/CArchiveUpdateCallback.cpp
 
 
 
