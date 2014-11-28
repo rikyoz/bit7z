@@ -23,6 +23,8 @@ SOURCES += src/main.cpp \
     src/bitexception.cpp
 
 
+           src/bit7zlibrary.cpp \
+           src/bitguids.cpp
 
 INCLUDEPATH += lib/7zSDK/win/CPP/ \
                include/
@@ -40,3 +42,5 @@ HEADERS += \
     include/util.h \
     include/CArchiveUpdateCallback.h
     include/bitexception.hpp
+           include/bit7zlibrary.hpp \
+           include/bitguids.hpp \
