@@ -21,14 +21,14 @@ namespace Bit7z {
 
         public:
             Bit7zLibrary();
-            Bit7zLibrary( const std::wstring& dllPath );
+            Bit7zLibrary( const std::wstring& dll_path );
 
         private:
-            CMyComPtr<IInArchive>   inputArchiveObject( BitFormat ) const;
-            CMyComPtr<IOutArchive> outputArchiveObject( BitFormat ) const;
+            CMyComPtr<IInArchive>   inputArchiveObject( BitFormat format ) const;
+            CMyComPtr<IOutArchive> outputArchiveObject( BitFormat format ) const;
             void createArchiveObject( BitFormat format,
-                                      const GUID* interfaceID,
-                                      void** outObject ) const;
+                                      const GUID* interface_ID,
+                                      void** out_object ) const;
 
             NWindows::NDLL::CLibrary mLibrary;
             CreateObjectFunc mCreateObjectFunc;

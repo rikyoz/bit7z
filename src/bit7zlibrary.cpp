@@ -9,8 +9,8 @@ using namespace Bit7z;
 
 Bit7zLibrary::Bit7zLibrary() : Bit7zLibrary( DEFAULT_DLL ) {}
 
-Bit7zLibrary::Bit7zLibrary( const std::wstring& dllPath ) {
-    if ( !mLibrary.Load( dllPath.c_str() ) )
+Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) {
+    if ( !mLibrary.Load( dll_path.c_str() ) )
         throw BitException( "Cannot load 7-zip library" );
 
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( mLibrary.GetProc( "CreateObject" ) );
@@ -32,8 +32,8 @@ CMyComPtr<IOutArchive> Bit7zLibrary::outputArchiveObject( BitFormat format ) con
 }
 
 void Bit7zLibrary::createArchiveObject( BitFormat format,
-                                        const GUID* interfaceID,
-                                        void** outObject ) const {
+                                        const GUID* interface_ID,
+                                        void** out_object ) const {
     const GUID* clsID;
 
     switch ( format ) {
@@ -71,6 +71,6 @@ void Bit7zLibrary::createArchiveObject( BitFormat format,
             throw BitException( "Format not supported!" );
     }
 
-    if ( mCreateObjectFunc( clsID, interfaceID, outObject ) != S_OK )
+    if ( mCreateObjectFunc( clsID, interface_ID, out_object ) != S_OK )
         throw BitException( "Cannot get class object" );
 }

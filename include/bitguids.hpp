@@ -22,6 +22,7 @@ namespace Bit7z {
     extern "C" const GUID IID_IStreamGetSize;
     extern "C" const GUID IID_IArchiveUpdateCallback2;
     extern "C" const GUID IID_ICryptoGetTextPassword;
+    extern "C" const GUID IID_ICryptoGetTextPassword2;
 }
 
 #endif // BITGUIDS_HPP
