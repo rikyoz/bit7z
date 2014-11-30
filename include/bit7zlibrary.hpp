@@ -30,8 +30,8 @@ namespace Bit7z {
                                       const GUID* interfaceID,
                                       void** outObject ) const;
 
-            NWindows::NDLL::CLibrary _lib;
-            CreateObjectFunc _createObjectFunc;
+            NWindows::NDLL::CLibrary mLibrary;
+            CreateObjectFunc mCreateObjectFunc;
     };
 
 }

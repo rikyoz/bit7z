@@ -11,11 +11,12 @@ namespace Bit7z {
         public:
             BitExtractor( const Bit7zLibrary&, BitFormat format );
 
-            void extract( const std::wstring&, const std::wstring& = L"", const std::wstring& = L"" );
+            void extract( const std::wstring& in_file, const std::wstring& out_dir = L"",
+                          const std::wstring& password = L"" );
 
         private:
-            const Bit7zLibrary& lib;
-            const BitFormat format;
+            const Bit7zLibrary& mLibrary;
+            const BitFormat mFormat;
     };
 }
 

@@ -9,15 +9,14 @@
 
 using namespace Bit7z;
 
-BitExtractor::BitExtractor( const Bit7zLibrary& lib, BitFormat format ) : lib( lib ),
-    format( format ) {}
+BitExtractor::BitExtractor( const Bit7zLibrary& lib, BitFormat format ) : mLibrary( lib ),
+    mFormat( format ) {}
 
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir,
                             const std::wstring& password ) {
-    CMyComPtr<IInArchive> archive = lib.inputArchiveObject( format );
+    CMyComPtr<IInArchive> archive = mLibrary.inputArchiveObject( mFormat );
     CInFileStream* fileStream = new CInFileStream;
     //CMyComPtr<IInStream> file = fileSpec;
-
     if ( !fileStream->Open( in_file.c_str() ) )
         throw BitException( "Cannot open archive file" );
 
