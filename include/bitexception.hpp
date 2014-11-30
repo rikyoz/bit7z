@@ -9,14 +9,13 @@
 namespace Bit7z {
     class BitException : public std::runtime_error {
         public:
-            BitException( const std::string& );
-            BitException(UString & );
+            BitException( const std::string& message );
+            BitException( UString& message );
 
             const char *what() const;
 
         private:
-            std::string unicodeMessage;
-            bool isUnicode;
+            std::string mUnicodeMessage;
     };
 }
 
