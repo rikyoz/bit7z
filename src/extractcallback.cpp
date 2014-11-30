@@ -1,20 +1,19 @@
-#include <iostream>
-
-#include "CArchiveExtractCallback.h"
+#include "../include/extractcallback.hpp"
 
 #include "Common/StringConvert.h"
-
 #include "Windows/FileDir.h"
 #include "Windows/FileFind.h"
 #include "Windows/FileName.h"
 #include "Windows/PropVariant.h"
 #include "Windows/PropVariantConversions.h"
 
-using namespace std;
-using namespace util;
-using namespace NWindows;
+#include "../include/bitexception.hpp"
 
-static const wchar_t* kCantDeleteOutputFile = L"ERROR: Can not delete output file ";
+using namespace std;
+using namespace NWindows;
+using namespace Bit7z;
+
+static const UString kCantDeleteOutputFile = L"ERROR: Cannot delete output file ";
 
 static const char* kTestingString    =  "Testing     ";
 static const char* kExtractingString =  "Extracting  ";
@@ -24,6 +23,7 @@ static const char* kUnsupportedMethod = "Unsupported Method";
 static const char* kCRCFailed = "CRC Failed";
 static const char* kDataError = "Data Error";
 static const char* kUnknownError = "Unknown Error";
+const wstring kEmptyFileAlias = L"[Content]";
 
 static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
     NCOM::CPropVariant prop;
@@ -43,23 +43,28 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-void CArchiveExtractCallback::Init( IInArchive* archiveHandler, const UString& directoryPath ) {
-    NumErrors = 0;
-    _archiveHandler = archiveHandler;
-    _directoryPath = directoryPath;
+ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const UString& directoryPath )
+    : hasPassword( false ), numErrors( 0 ), _archiveHandler( archiveHandler ),
+      _directoryPath( directoryPath ) {
     NFile::NName::NormalizeDirPathPrefix( _directoryPath );
 }
 
-STDMETHODIMP CArchiveExtractCallback::SetTotal( UInt64 /* size */ ) {
+void ExtractCallback::setPassword(const UString &password) {
+    this->password = password;
+    this->hasPassword = password.Length() > 0;
+}
+
+HRESULT ExtractCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
 }
 
-STDMETHODIMP CArchiveExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+HRESULT ExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
     return S_OK;
 }
 
-STDMETHODIMP CArchiveExtractCallback::GetStream( UInt32 index,
-        ISequentialOutStream** outStream, Int32 askExtractMode ) {
+HRESULT ExtractCallback::GetStream( UInt32 index,
+                                    ISequentialOutStream** outStream,
+                                    Int32 askExtractMode ) {
     *outStream = 0;
     _outFileStream.Release();
     {
@@ -147,7 +152,8 @@ STDMETHODIMP CArchiveExtractCallback::GetStream( UInt32 index,
 
         if ( fi.Find( fullProcessedPath ) ) {
             if ( !NFile::NDirectory::DeleteFileAlways( fullProcessedPath ) ) {
-                cout << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
+                //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
+                throw BitException( kCantDeleteOutputFile + fullProcessedPath );
                 return E_ABORT;
             }
         }
@@ -156,7 +162,8 @@ STDMETHODIMP CArchiveExtractCallback::GetStream( UInt32 index,
         CMyComPtr<ISequentialOutStream> outStreamLoc( _outFileStreamSpec );
 
         if ( !_outFileStreamSpec->Open( fullProcessedPath, CREATE_ALWAYS ) ) {
-            cout <<  ( UString )L"can not open output file " + fullProcessedPath << endl;
+            //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;
+            throw BitException( ( UString )L"cannot open output file " + fullProcessedPath );
             return E_ABORT;
         }
 
@@ -167,57 +174,58 @@ STDMETHODIMP CArchiveExtractCallback::GetStream( UInt32 index,
     return S_OK;
 }
 
-STDMETHODIMP CArchiveExtractCallback::PrepareOperation( Int32 askExtractMode ) {
+HRESULT ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     _extractMode = false;
+
+    // in future we might use this switch to handle an event like onOperationStart(Operation o)
+    // with enum Operation{Extract, Test, Skip}
 
     switch ( askExtractMode ) {
         case NArchive::NExtract::NAskMode::kExtract:
             _extractMode = true;
-            break;
-    };
-
-    switch ( askExtractMode ) {
-        case NArchive::NExtract::NAskMode::kExtract:
-            cout <<  kExtractingString;
+            //cout <<  kExtractingString;
             break;
 
-        case NArchive::NExtract::NAskMode::kTest:
+        /*case NArchive::NExtract::NAskMode::kTest:
             cout <<  kTestingString;
             break;
 
         case NArchive::NExtract::NAskMode::kSkip:
             cout <<  kSkippingString;
-            break;
+            break;*/
     };
 
-    wcout << GetOemString(_filePath) << endl;;
+    //wcout << GetOemString( _filePath ) << endl;;
     return S_OK;
 }
 
-STDMETHODIMP CArchiveExtractCallback::SetOperationResult( Int32 operationResult ) {
+HRESULT ExtractCallback::SetOperationResult( Int32 operationResult ) {
+    string errorMessage;
+
     switch ( operationResult ) {
         case NArchive::NExtract::NOperationResult::kOK:
             break;
 
         default: {
-            NumErrors++;
-            cout <<  "     ";
+            numErrors++;
+
+            //cout <<  "     ";
 
             switch ( operationResult ) {
                 case NArchive::NExtract::NOperationResult::kUnSupportedMethod:
-                    cout <<  kUnsupportedMethod;
+                    errorMessage = kUnsupportedMethod;
                     break;
 
                 case NArchive::NExtract::NOperationResult::kCRCError:
-                    cout <<  kCRCFailed;
+                    errorMessage = kCRCFailed;
                     break;
 
                 case NArchive::NExtract::NOperationResult::kDataError:
-                    cout <<  kDataError;
+                    errorMessage = kDataError;
                     break;
 
                 default:
-                    cout <<  kUnknownError;
+                    errorMessage = kUnknownError;
             }
         }
     }
@@ -234,19 +242,22 @@ STDMETHODIMP CArchiveExtractCallback::SetOperationResult( Int32 operationResult 
     if ( _extractMode && _processedFileInfo.AttribDefined )
         NFile::NDirectory::MySetFileAttributes( _diskFilePath, _processedFileInfo.Attrib );
 
-    cout << endl;
+    if ( numErrors > 0 )
+        throw BitException( errorMessage );
+
+    //cout << endl;
     return S_OK;
 }
 
 
-STDMETHODIMP CArchiveExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( !PasswordIsDefined ) {
+HRESULT ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+    if ( !hasPassword ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        cerr << "Password is not defined" << endl;
-        return E_ABORT;
+        //in future, no exception but an event (i.e. onPasswordRequest) call
+        throw BitException( "Password is not defined" );
     }
 
-    return StringToBstr( Password, password );
+    return StringToBstr( this->password, password );
 }

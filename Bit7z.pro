@@ -16,33 +16,33 @@ SOURCES += src/main.cpp \
            lib/7zSDK/win/CPP/Common/StringConvert.cpp \
            lib/7zSDK/win/CPP/Common/IntToString.cpp \
            lib/7zSDK/win/CPP/Common/MyVector.cpp \
-		   src/CArchiveExtractCallback.cpp \
-		   src/CArchiveOpenCallback.cpp \
-		   src/util.cpp \
 		   src/CArchiveUpdateCallback.cpp
-    src/bitexception.cpp
 
 
+           src/bitextractor.cpp \
            src/bit7zlibrary.cpp \
            src/bitexception.cpp \
-           src/bitguids.cpp
+           src/bitguids.cpp \
+    src/extractcallback.cpp \
+    src/opencallback.cpp \
 
 INCLUDEPATH += lib/7zSDK/win/CPP/ \
                include/
 #include(lib/7z.pri)
 
-CONFIG += c++11
+CONFIG  += c++11
+
+LIBS += -loleaut32 -lole32 -luuid -luser32
 
 DEFINES += _UNICODE
 
-DESTDIR = $$PWD/bin/
+DESTDIR  = $$PWD/bin/
 
 HEADERS += \
-    include/CArchiveOpenCallback.h \
-    include/CArchiveExtractCallback.h \
-    include/util.h \
     include/CArchiveUpdateCallback.h
-    include/bitexception.hpp
            include/bit7zlibrary.hpp \
            include/bitexception.hpp \
            include/bitguids.hpp \
+           include/bitextractor.hpp \
+    include/extractcallback.hpp \
+    include/opencallback.hpp \
