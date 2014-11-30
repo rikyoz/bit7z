@@ -61,18 +61,6 @@ void BitCompressor::compress( const vector<wstring>& in_files, const wstring& ou
     CArchiveUpdateCallback* updateCallbackSpec = new CArchiveUpdateCallback;
     CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
     updateCallbackSpec->Init( &dirItems );
-    if ( mCryptHeaders ) {
-        const wchar_t* names[] = {L"he"};
-        const int kNumProps = sizeof( names ) / sizeof( names[0] );
-        NWindows::NCOM::CPropVariant values[kNumProps] = {
-            true     // crypted headers ON
-        };
-        CMyComPtr<ISetProperties> setProperties;
-        if ( outArchive->QueryInterface( IID_ISetProperties, ( void** )&setProperties ) != S_OK )
-            throw BitException( "ISetProperties unsupported" );
-        if ( setProperties->SetProperties( names, values, kNumProps ) != S_OK )
-            throw BitException( "Cannot set properties of the archive" );
-    }
     updateCallbackSpec->PasswordIsDefined = mPassword.size() > 0;
     updateCallbackSpec->Password = mPassword.c_str();
     HRESULT result = outArchive->UpdateItems( outFileStreamSpec, dirItems.Size(), updateCallback );
