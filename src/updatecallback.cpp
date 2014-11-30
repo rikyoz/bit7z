@@ -1,14 +1,19 @@
+#include "../include/updatecallback.hpp"
+
 #include <iostream>
 
-#include "CArchiveUpdateCallback.h"
-
 #include "Common/IntToString.h"
-
 #include "Windows/PropVariant.h"
 #include "Windows/PropVariantConversions.h"
 
 using namespace std;
-using namespace util;
+using namespace Bit7z;
+
+/*const GUID IID_IInStream      = { 0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x03, 0x00, 0x03, 0x00, 0x00 } };
+const GUID IID_IOutStream     = { 0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x03, 0x00, 0x04, 0x00, 0x00 } };
+const GUID IID_IStreamGetSize = { 0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x03, 0x00, 0x06, 0x00, 0x00 } };*/
+
+const std::wstring kEmptyFileAlias = L"[Content]";
 
 STDMETHODIMP CArchiveUpdateCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
@@ -17,7 +22,6 @@ STDMETHODIMP CArchiveUpdateCallback::SetTotal( UInt64 /* size */ ) {
 STDMETHODIMP CArchiveUpdateCallback::SetCompleted( const UInt64* /* completeValue */ ) {
     return S_OK;
 }
-
 
 STDMETHODIMP CArchiveUpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
     return E_NOTIMPL;

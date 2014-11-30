@@ -16,15 +16,14 @@ SOURCES += src/main.cpp \
            lib/7zSDK/win/CPP/Common/StringConvert.cpp \
            lib/7zSDK/win/CPP/Common/IntToString.cpp \
            lib/7zSDK/win/CPP/Common/MyVector.cpp \
-		   src/CArchiveUpdateCallback.cpp
-
-
            src/bitextractor.cpp \
+           src/bitcompressor.cpp \
            src/bit7zlibrary.cpp \
            src/bitexception.cpp \
            src/bitguids.cpp \
     src/extractcallback.cpp \
     src/opencallback.cpp \
+    src/updatecallback.cpp
 
 INCLUDEPATH += lib/7zSDK/win/CPP/ \
                include/
@@ -39,10 +38,11 @@ DEFINES += _UNICODE
 DESTDIR  = $$PWD/bin/
 
 HEADERS += \
-    include/CArchiveUpdateCallback.h
+           include/bitcompressor.hpp \
            include/bit7zlibrary.hpp \
            include/bitexception.hpp \
            include/bitguids.hpp \
            include/bitextractor.hpp \
     include/extractcallback.hpp \
     include/opencallback.hpp \
+    include/updatecallback.hpp
