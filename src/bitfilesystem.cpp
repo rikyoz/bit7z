@@ -77,35 +77,23 @@ void FSIndexer::listFilesInDirectory( vector<FSItem>& result, const wstring& dir
 
 void FSIndexer::listFilesInDirectory( vector<FSItem>& result, const wstring& directory, const wstring& filter, bool recursive,
                                       const wstring& prefix ) {
-    wstring filtered_path = directory;
-    if ( hasEnding( directory, L"\\" ) || hasEnding( directory, L"/" ) )
-        filtered_path += filter;
-    else
-        filtered_path += L"\\" + filter;
+    wstring filtered_path = directory + L"\\" + filter;
     FSItemInfo data;
-    HANDLE hFind = INVALID_HANDLE_VALUE;
-    //DWORD dwError=0;
-    hFind = FindFirstFile( filtered_path.c_str(), &data );
+    HANDLE hFind = FindFirstFile( filtered_path.c_str(), &data );
 
     if ( INVALID_HANDLE_VALUE == hFind )
-        throw BitException( UString( filtered_path.c_str() ) + L" is an invalid path!" );
+        throw BitException( L"Invalid path '" + filtered_path + L"'" );
 
-    // List all the files in the directory with some info about them.
     do {
         FSItem currentItem = FSItem( directory, prefix, data );
         if ( currentItem.isDir() ) {
             if ( recursive && !hasEnding( currentItem.relativePath(), L"." ) && !hasEnding( currentItem.relativePath(), L"..") ) {
-                wstring pfix = ( prefix.empty() ? currentItem.name() : prefix + L"\\" + currentItem.name() );
-                listFilesInDirectory( result, directory + L"\\" + currentItem.name(), filter, true, pfix );
+                listFilesInDirectory( result, directory + L"\\" + currentItem.name(), filter, true, prefix + L"\\" + currentItem.name() );
             }
         } else {
             result.push_back( currentItem );
         }
     } while ( FindNextFile( hFind, &data ) != 0 );
-
-    //dwError = GetLastError();
-    //if ( dwError != ERROR_NO_MORE_FILES )
-    //error!!
 
     FindClose( hFind );
 }

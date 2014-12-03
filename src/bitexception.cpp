@@ -3,7 +3,10 @@
 using namespace Bit7z;
 
 BitException::BitException( const std::string&  message ) : std::runtime_error( message ),
-    mUnicodeMessage("") {}
+    mUnicodeMessage( "" ) {}
+
+BitException::BitException( const std::wstring& message ) : std::runtime_error( std::string(
+                message.begin(), message.end() ) ) {}
 
 BitException::BitException( UString& message ) : std::runtime_error( "error" ) {
     const std::wstring msg( message.GetBuffer( 0 ) );

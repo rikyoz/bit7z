@@ -10,6 +10,7 @@ namespace Bit7z {
     class BitException : public std::runtime_error {
         public:
             BitException( const std::string& message );
+            BitException( const std::wstring& message );
             BitException( UString& message );
 
             const char *what() const;
