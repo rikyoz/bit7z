@@ -20,6 +20,7 @@ namespace Bit7z {
 
             void compress( const vector<wstring>& in_files, const wstring& out_archive );
             void compressFile( const wstring& in_file, const wstring& out_archive );
+            void compressFiles( const vector<wstring>& in_files, const wstring& out_archive );
             void compressFiles( const wstring& in_dir, const wstring& filter,
                                 const wstring& out_archive, bool search_subdirs = true );
             void compressDirectory( const wstring& in_dir, const wstring& out_archive,

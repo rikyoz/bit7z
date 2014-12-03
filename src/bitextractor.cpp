@@ -16,7 +16,6 @@ void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out
                             const std::wstring& password ) {
     CMyComPtr<IInArchive> archive = mLibrary.inputArchiveObject( mFormat );
     CInFileStream* fileStream = new CInFileStream;
-    //CMyComPtr<IInStream> file = fileSpec;
     if ( !fileStream->Open( in_file.c_str() ) )
         throw BitException( "Cannot open archive file" );
 
@@ -28,7 +27,6 @@ void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out
     if ( archive->Open( fileStream, 0, openCallback ) != S_OK )
         throw BitException( "Cannot open archive" );
 
-    // Extract command
     ExtractCallback* extractCallbackSpec = new ExtractCallback( archive, out_dir.c_str() );
     if ( password.size() > 0 )
         extractCallbackSpec->setPassword( password.c_str() );

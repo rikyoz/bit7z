@@ -9,26 +9,22 @@
 using namespace std;
 using namespace Bit7z;
 
-/*const GUID IID_IInStream      = { 0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x03, 0x00, 0x03, 0x00, 0x00 } };
-const GUID IID_IOutStream     = { 0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x03, 0x00, 0x04, 0x00, 0x00 } };
-const GUID IID_IStreamGetSize = { 0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x03, 0x00, 0x06, 0x00, 0x00 } };*/
-
 const std::wstring kEmptyFileAlias = L"[Content]";
 
-STDMETHODIMP CArchiveUpdateCallback::SetTotal( UInt64 /* size */ ) {
+HRESULT UpdateCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+HRESULT UpdateCallback::SetCompleted( const UInt64* /* completeValue */ ) {
     return S_OK;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
+HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
     return E_NOTIMPL;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::GetUpdateItemInfo( UInt32 /* index */,
-        Int32* newData, Int32* newProperties, UInt32* indexInArchive ) {
+HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
+                                                Int32* newProperties, UInt32* indexInArchive ) {
     if ( newData != NULL )
         *newData = BoolToInt( true );
 
@@ -41,7 +37,7 @@ STDMETHODIMP CArchiveUpdateCallback::GetUpdateItemInfo( UInt32 /* index */,
     return S_OK;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     NWindows::NCOM::CPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
@@ -51,22 +47,36 @@ STDMETHODIMP CArchiveUpdateCallback::GetProperty( UInt32 index, PROPID propID, P
     }
 
     {
-        const CDirItem& dirItem = ( *DirItems )[index];
+        const CDirItem& dirItem = ( *mDirItems )[index];
 
         switch ( propID ) {
-            case kpidPath:  prop = dirItem.Name; break;
+            case kpidPath:
+                prop = dirItem.Name;
+                break;
 
-            case kpidIsDir:  prop = dirItem.isDir(); break;
+            case kpidIsDir:
+                prop = dirItem.isDir();
+                break;
 
-            case kpidSize:  prop = dirItem.Size; break;
+            case kpidSize:
+                prop = dirItem.Size;
+                break;
 
-            case kpidAttrib:  prop = dirItem.Attrib; break;
+            case kpidAttrib:
+                prop = dirItem.Attrib;
+                break;
 
-            case kpidCTime:  prop = dirItem.CTime; break;
+            case kpidCTime:
+                prop = dirItem.CTime;
+                break;
 
-            case kpidATime:  prop = dirItem.ATime; break;
+            case kpidATime:
+                prop = dirItem.ATime;
+                break;
 
-            case kpidMTime:  prop = dirItem.MTime; break;
+            case kpidMTime:
+                prop = dirItem.MTime;
+                break;
         }
     }
 
@@ -74,10 +84,10 @@ STDMETHODIMP CArchiveUpdateCallback::GetProperty( UInt32 index, PROPID propID, P
     return S_OK;
 }
 
-HRESULT CArchiveUpdateCallback::Finilize() {
-    if ( m_NeedBeClosed ) {
+HRESULT UpdateCallback::Finilize() {
+    if ( mNeedBeClosed ) {
         cout << endl;
-        m_NeedBeClosed = false;
+        mNeedBeClosed = false;
     }
 
     return S_OK;
@@ -92,9 +102,9 @@ static void GetStream2( const wchar_t* name ) {
     wcout << name;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
-    const CDirItem& dirItem = ( *DirItems )[index];
+    const CDirItem& dirItem = ( *mDirItems )[index];
     GetStream2( dirItem.Name );
 
     if ( dirItem.isDir() )
@@ -103,12 +113,12 @@ STDMETHODIMP CArchiveUpdateCallback::GetStream( UInt32 index, ISequentialInStrea
     {
         CInFileStream* inStreamSpec = new CInFileStream;
         CMyComPtr<ISequentialInStream> inStreamLoc( inStreamSpec );
-        UString path = DirPrefix + dirItem.FullPath;
+        UString path = mDirPrefix + dirItem.FullPath;
 
         if ( !inStreamSpec->Open( path ) ) {
             DWORD sysError = ::GetLastError();
-            FailedCodes.Add( sysError );
-            FailedFiles.Add( path );
+            mFailedCodes.Add( sysError );
+            mFailedFiles.Add( path );
             // if (systemError == ERROR_SHARING_VIOLATION)
             {
                 cerr << endl << "WARNING: can't open file";
@@ -123,23 +133,23 @@ STDMETHODIMP CArchiveUpdateCallback::GetStream( UInt32 index, ISequentialInStrea
     return S_OK;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
-    m_NeedBeClosed = true;
+HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
+    mNeedBeClosed = true;
     return S_OK;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::GetVolumeSize( UInt32 index, UInt64* size ) {
-    if ( VolumesSizes.Size() == 0 )
+HRESULT UpdateCallback::GetVolumeSize( UInt32 index, UInt64* size ) {
+    if ( mVolumesSizes.Size() == 0 )
         return S_FALSE;
 
-    if ( index >= ( UInt32 )VolumesSizes.Size() )
-        index = VolumesSizes.Size() - 1;
+    if ( index >= ( UInt32 )mVolumesSizes.Size() )
+        index = mVolumesSizes.Size() - 1;
 
-    *size = VolumesSizes[index];
+    *size = mVolumesSizes[index];
     return S_OK;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
+HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
     wchar_t temp[16];
     ConvertUInt32ToString( index + 1, temp );
     UString res = temp;
@@ -147,10 +157,10 @@ STDMETHODIMP CArchiveUpdateCallback::GetVolumeStream( UInt32 index, ISequentialO
     while ( res.Length() < 2 )
         res = UString( L'0' ) + res;
 
-    UString fileName = VolName;
+    UString fileName = mVolName;
     fileName += L'.';
     fileName += res;
-    fileName += VolExt;
+    fileName += mVolExt;
     COutFileStream* streamSpec = new COutFileStream;
     CMyComPtr<ISequentialOutStream> streamLoc( streamSpec );
 
@@ -161,9 +171,9 @@ STDMETHODIMP CArchiveUpdateCallback::GetVolumeStream( UInt32 index, ISequentialO
     return S_OK;
 }
 
-STDMETHODIMP CArchiveUpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( !PasswordIsDefined ) {
-        if ( AskPassword ) {
+HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
+    if ( !mIsPasswordDefined ) {
+        if ( mAskPassword ) {
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
             // PasswordIsDefined = true;
@@ -172,6 +182,6 @@ STDMETHODIMP CArchiveUpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDe
         }
     }
 
-    *passwordIsDefined = BoolToInt( PasswordIsDefined );
-    return StringToBstr( Password, password );
+    *passwordIsDefined = BoolToInt( mIsPasswordDefined );
+    return StringToBstr( mPassword, password );
 }

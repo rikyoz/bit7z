@@ -23,7 +23,8 @@ SOURCES += src/main.cpp \
            src/bitguids.cpp \
     src/extractcallback.cpp \
     src/opencallback.cpp \
-    src/updatecallback.cpp
+    src/updatecallback.cpp \
+    src/bitfilesystem.cpp
 
 INCLUDEPATH += lib/7zSDK/win/CPP/ \
                include/
@@ -45,4 +46,5 @@ HEADERS += \
            include/bitextractor.hpp \
     include/extractcallback.hpp \
     include/opencallback.hpp \
-    include/updatecallback.hpp
+    include/updatecallback.hpp \
+    include/bitfilesystem.hpp

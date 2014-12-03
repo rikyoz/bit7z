@@ -20,56 +20,54 @@ struct CDirItem {
 };
 
 namespace Bit7z {
-    class CArchiveUpdateCallback:
-        public IArchiveUpdateCallback2,
-        public ICryptoGetTextPassword2,
-        public CMyUnknownImp {
+    class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp {
         public:
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
 
             // IProgress
-            STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+            virtual HRESULT SetTotal( UInt64 size );
+            virtual HRESULT SetCompleted( const UInt64* completeValue );
 
             // IUpdateCallback2
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index,
-                                            Int32* newData, Int32* newProperties, UInt32* indexInArchive );
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
-            STDMETHOD( SetOperationResult )( Int32 operationResult );
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
+            virtual HRESULT EnumProperties( IEnumSTATPROPSTG** enumerator );
+            virtual HRESULT GetUpdateItemInfo( UInt32 index, Int32* newData, Int32* newProperties,
+                                               UInt32* indexInArchive );
+            virtual HRESULT GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value );
+            virtual HRESULT GetStream( UInt32 index, ISequentialInStream** inStream );
+            virtual HRESULT SetOperationResult( Int32 operationResult );
+            virtual HRESULT GetVolumeSize( UInt32 index, UInt64* size );
+            virtual HRESULT GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream );
 
-            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
+            //ICryptoGetTextPassword2
+            virtual HRESULT CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password );
 
         public:
-            CRecordVector<UInt64> VolumesSizes;
-            UString VolName;
-            UString VolExt;
+            CRecordVector<UInt64> mVolumesSizes;
+            UString mVolName;
+            UString mVolExt;
 
-            UString DirPrefix;
-            const CObjectVector<CDirItem>* DirItems;
+            UString mDirPrefix;
+            const CObjectVector<CDirItem>* mDirItems;
 
-            bool PasswordIsDefined;
-            UString Password;
-            bool AskPassword;
+            bool mIsPasswordDefined;
+            UString mPassword;
+            bool mAskPassword;
 
-            bool m_NeedBeClosed;
+            bool mNeedBeClosed;
 
-            UStringVector FailedFiles;
-            CRecordVector<HRESULT> FailedCodes;
+            UStringVector mFailedFiles;
+            CRecordVector<HRESULT> mFailedCodes;
 
-            CArchiveUpdateCallback(): PasswordIsDefined( false ), AskPassword( false ), DirItems( 0 ) {}
+            UpdateCallback(): mIsPasswordDefined( false ), mAskPassword( false ), mDirItems( 0 ) {}
 
-            ~CArchiveUpdateCallback() { Finilize(); }
+            ~UpdateCallback() { Finilize(); }
             HRESULT Finilize();
 
             void Init( const CObjectVector<CDirItem>* dirItems ) {
-                DirItems = dirItems;
-                m_NeedBeClosed = false;
-                FailedFiles.Clear();
-                FailedCodes.Clear();
+                mDirItems = dirItems;
+                mNeedBeClosed = false;
+                mFailedFiles.Clear();
+                mFailedCodes.Clear();
             }
     };
 }
