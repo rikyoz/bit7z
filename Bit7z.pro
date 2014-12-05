@@ -4,6 +4,7 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += src/main.cpp \
+           lib/7zSDK/win/CPP/Windows/Error.cpp \
            lib/7zSDK/win/CPP/Windows/DLL.cpp \
            lib/7zSDK/win/CPP/Windows/FileIO.cpp \
            lib/7zSDK/win/CPP/Windows/FileDir.cpp \
@@ -24,7 +25,9 @@ SOURCES += src/main.cpp \
     src/extractcallback.cpp \
     src/opencallback.cpp \
     src/updatecallback.cpp \
-    src/bitfilesystem.cpp
+    src/fsitem.cpp \
+    src/fsindexer.cpp \
+    src/fsutil.cpp
 
 INCLUDEPATH += lib/7zSDK/win/CPP/ \
                include/
@@ -47,4 +50,6 @@ HEADERS += \
     include/extractcallback.hpp \
     include/opencallback.hpp \
     include/updatecallback.hpp \
-    include/bitfilesystem.hpp
+    include/fsitem.hpp \
+    include/fsindexer.hpp \
+    include/fsutil.hpp

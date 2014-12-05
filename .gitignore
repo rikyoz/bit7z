@@ -3,3 +3,4 @@ build/
 *.regx
 test/
 *.autosave
+*.3-pre1
