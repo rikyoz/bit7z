@@ -7,17 +7,21 @@
 #include "Common/MyCom.h"
 #include "Windows/COM.h"
 
-struct CDirItem {
+#include "../include/fsindexer.hpp"
+
+using namespace Bit7z::FileSystem;
+
+/*struct CDirItem {
     UInt64 Size;
     FILETIME CTime;
     FILETIME ATime;
     FILETIME MTime;
-    UString Name;
-    UString FullPath;
+    wstring Name;
+    wstring FullPath;
     UInt32 Attrib;
 
     bool isDir() const { return ( Attrib & FILE_ATTRIBUTE_DIRECTORY ) != 0 ; }
-};
+};*/
 
 namespace Bit7z {
     class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp {
@@ -43,32 +47,25 @@ namespace Bit7z {
 
         public:
             CRecordVector<UInt64> mVolumesSizes;
-            UString mVolName;
-            UString mVolExt;
+            wstring mVolName;
+            wstring mVolExt;
 
-            UString mDirPrefix;
-            const CObjectVector<CDirItem>* mDirItems;
+            wstring mDirPrefix;
+            const vector<FSItem>& mDirItems;
 
             bool mIsPasswordDefined;
-            UString mPassword;
+            wstring mPassword;
             bool mAskPassword;
 
             bool mNeedBeClosed;
 
-            UStringVector mFailedFiles;
+            vector<wstring> mFailedFiles;
             CRecordVector<HRESULT> mFailedCodes;
 
-            UpdateCallback(): mIsPasswordDefined( false ), mAskPassword( false ), mDirItems( 0 ) {}
+            UpdateCallback( const vector<FSItem>& dirItems );
+            virtual ~UpdateCallback();
 
-            ~UpdateCallback() { Finilize(); }
             HRESULT Finilize();
-
-            void Init( const CObjectVector<CDirItem>* dirItems ) {
-                mDirItems = dirItems;
-                mNeedBeClosed = false;
-                mFailedFiles.Clear();
-                mFailedCodes.Clear();
-            }
     };
 }
 

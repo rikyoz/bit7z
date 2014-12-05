@@ -8,10 +8,8 @@
 
 #include "../include/updatecallback.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/bitfilesystem.hpp"
 
 using namespace Bit7z;
-using namespace Bit7z::FileSystem;
 using namespace NWindows;
 
 BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitFormat format ) : mLibrary( lib ),
@@ -22,13 +20,31 @@ void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
     mCryptHeaders = crypt_headers;
 }
 
+void BitCompressor::compress( const vector<wstring>& in_files, const wstring& out_archive ) {
+    vector<FSItem> dirItems;
+    for ( wstring filePath : in_files ) {
+        FSItem item( filePath );
+        if ( ! item.exists() ) throw BitException( L"Item '" + item.name() + L"' does not exists" );
+        if ( item.isDir() ) {
+            FSIndexer indexer( filePath );
+            indexer.listFilesInDirectory( dirItems );
+        } else {
+            dirItems.push_back( item );
+        }
+    }
+    /*cout << "results: " << dirItems.size() << endl;
+    for ( FSItem item : dirItems )
+        wcout << item.fullPath().c_str() << endl;*/
+    compressFS( dirItems, out_archive );
+}
+
 void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) {
     compressFiles( {in_file}, out_archive );
 }
 
 void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) {
 
-    CObjectVector<CDirItem> dirItems;
+    /*CObjectVector<CDirItem> dirItems;
     int i;
 
     for ( i = 0; i < in_files.size(); i++ ) {
@@ -46,8 +62,26 @@ void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstrin
         di.Name = in_files[i].substr( in_files[i].find_last_of( L"/\\" ) + 1 ).c_str();
         di.FullPath = name;
         dirItems.Add( di );
-    }
+    }*/
 
+    vector<FSItem> dirItems;
+    for ( wstring filePath : in_files ) {
+        FSItem item( filePath );
+        if ( item.exists() && !item.isDir() )
+            dirItems.push_back( item );
+    }
+    compressFS( dirItems, out_archive );
+}
+
+void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive,
+                                       bool search_subdirs ) {
+    vector<FSItem> dirItems;
+    FSIndexer indexer( in_dir );
+    indexer.listFilesInDirectory( dirItems, search_subdirs );
+    compressFS( dirItems, out_archive );
+}
+
+void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) {
     CMyComPtr<IOutArchive> outArchive = mLibrary.outputArchiveObject( mFormat );
     if ( mCryptHeaders ) {
         const wchar_t* names[] = {L"he"};
@@ -64,20 +98,20 @@ void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstrin
     COutFileStream* outFileStreamSpec = new COutFileStream;
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) )
         throw BitException( "Can't create archive file" );
-    UpdateCallback* updateCallbackSpec = new UpdateCallback;
-    CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
-    updateCallbackSpec->Init( &dirItems );
+    UpdateCallback* updateCallbackSpec = new UpdateCallback( in_items );
     updateCallbackSpec->mIsPasswordDefined = mPassword.size() > 0;
     updateCallbackSpec->mPassword = mPassword.c_str();
-    HRESULT result = outArchive->UpdateItems( outFileStreamSpec, dirItems.Size(), updateCallback );
+    CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
+    HRESULT result = outArchive->UpdateItems( outFileStreamSpec, ( UInt32 )in_items.size(),
+                                              updateCallback );
     updateCallbackSpec->Finilize();
 
     if ( result != S_OK ) throw BitException( "Update Error" );
 
-    UString errorString = L"";
-    for ( i = 0; i < updateCallbackSpec->mFailedFiles.Size(); i++ )
-        errorString += ( UString )L"Error for file: " + updateCallbackSpec->mFailedFiles[i] + L"\r\n";
+    wstring errorString = L"Error for files: ";
+    for ( int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ )
+        errorString += updateCallbackSpec->mFailedFiles[i] + L" ";
 
-    if ( updateCallbackSpec->mFailedFiles.Size() != 0 )
+    if ( updateCallbackSpec->mFailedFiles.size() != 0 )
         throw BitException( errorString );
 }

@@ -1,6 +1,7 @@
 #include "../include/updatecallback.hpp"
 
 #include <iostream>
+#include <string>
 
 #include "Common/IntToString.h"
 #include "Windows/PropVariant.h"
@@ -10,6 +11,14 @@ using namespace std;
 using namespace Bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
+
+UpdateCallback::UpdateCallback( const vector<FSItem>& dirItems ): mIsPasswordDefined( false ),
+    mAskPassword( false ), mDirItems( dirItems )  {
+    mNeedBeClosed = false;
+    mFailedFiles.clear();
+    mFailedCodes.Clear();
+}
+UpdateCallback::~UpdateCallback() { Finilize(); }
 
 HRESULT UpdateCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
@@ -24,7 +33,7 @@ HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
 }
 
 HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
-                                                Int32* newProperties, UInt32* indexInArchive ) {
+                                           Int32* newProperties, UInt32* indexInArchive ) {
     if ( newData != NULL )
         *newData = BoolToInt( true );
 
@@ -46,38 +55,16 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
         return S_OK;
     }
 
-    {
-        const CDirItem& dirItem = ( *mDirItems )[index];
+    const FSItem dirItem = mDirItems[index];
 
-        switch ( propID ) {
-            case kpidPath:
-                prop = dirItem.Name;
-                break;
-
-            case kpidIsDir:
-                prop = dirItem.isDir();
-                break;
-
-            case kpidSize:
-                prop = dirItem.Size;
-                break;
-
-            case kpidAttrib:
-                prop = dirItem.Attrib;
-                break;
-
-            case kpidCTime:
-                prop = dirItem.CTime;
-                break;
-
-            case kpidATime:
-                prop = dirItem.ATime;
-                break;
-
-            case kpidMTime:
-                prop = dirItem.MTime;
-                break;
-        }
+    switch ( propID ) {
+        case kpidPath  : prop = dirItem.relativePath().c_str(); break;
+        case kpidIsDir : prop = dirItem.isDir(); break;
+        case kpidSize  : prop = dirItem.size(); break;
+        case kpidAttrib: prop = dirItem.attributes(); break;
+        case kpidCTime : prop = dirItem.creationTime(); break;
+        case kpidATime : prop = dirItem.lastAccessTime(); break;
+        case kpidMTime : prop = dirItem.lastWriteTime(); break;
     }
 
     prop.Detach( value );
@@ -86,50 +73,52 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
 
 HRESULT UpdateCallback::Finilize() {
     if ( mNeedBeClosed ) {
-        cout << endl;
+        //cout << endl;
         mNeedBeClosed = false;
     }
 
     return S_OK;
 }
 
-static void GetStream2( const wchar_t* name ) {
-    cout << "Compressing  ";
+static void GetStream2( const wstring& name ) {
+    cout << "Compressing  '";
 
-    if ( name[0] == 0 )
-        name = kEmptyFileAlias.c_str();
+    if ( name.empty() )
+        wcout << kEmptyFileAlias;
+    else
+        wcout << name;
 
-    wcout << name;
+    cout << "'" << endl;
 }
 
 HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
-    const CDirItem& dirItem = ( *mDirItems )[index];
-    GetStream2( dirItem.Name );
+    const FSItem dirItem = mDirItems[index];
+    //GetStream2( dirItem.name() );
 
     if ( dirItem.isDir() )
         return S_OK;
 
-    {
-        CInFileStream* inStreamSpec = new CInFileStream;
-        CMyComPtr<ISequentialInStream> inStreamLoc( inStreamSpec );
-        UString path = mDirPrefix + dirItem.FullPath;
+    CInFileStream* inStreamSpec = new CInFileStream;
+    CMyComPtr<ISequentialInStream> inStreamLoc( inStreamSpec );
+    wstring path = dirItem.fullPath();
+    //wcout << "path: " << path << endl;
+    //wcout << "rpath: " << dirItem.relativePath() << endl;
 
-        if ( !inStreamSpec->Open( path ) ) {
-            DWORD sysError = ::GetLastError();
-            mFailedCodes.Add( sysError );
-            mFailedFiles.Add( path );
-            // if (systemError == ERROR_SHARING_VIOLATION)
-            {
-                cerr << endl << "WARNING: can't open file";
-                // PrintString(NError::MyFormatMessageW(systemError));
-                return S_FALSE;
-            }
-            // return sysError;
+    if ( !inStreamSpec->Open( path.c_str() ) ) {
+        DWORD sysError = ::GetLastError();
+        mFailedCodes.Add( sysError );
+        mFailedFiles.push_back( path );
+        // if (systemError == ERROR_SHARING_VIOLATION)
+        {
+            cerr << endl << "WARNING: can't open file (error " << sysError << ")" << endl;
+            // PrintString(NError::MyFormatMessageW(systemError));
+            return S_FALSE;
         }
-
-        *inStream = inStreamLoc.Detach();
+        // return sysError;
     }
+
+    *inStream = inStreamLoc.Detach();
     return S_OK;
 }
 
@@ -152,19 +141,19 @@ HRESULT UpdateCallback::GetVolumeSize( UInt32 index, UInt64* size ) {
 HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
     wchar_t temp[16];
     ConvertUInt32ToString( index + 1, temp );
-    UString res = temp;
+    wstring res = temp;
 
-    while ( res.Length() < 2 )
-        res = UString( L'0' ) + res;
+    while ( res.length() < 2 )
+        res = L'0' + res;
 
-    UString fileName = mVolName;
+    wstring fileName = mVolName;
     fileName += L'.';
     fileName += res;
     fileName += mVolExt;
     COutFileStream* streamSpec = new COutFileStream;
     CMyComPtr<ISequentialOutStream> streamLoc( streamSpec );
 
-    if ( !streamSpec->Create( fileName, false ) )
+    if ( !streamSpec->Create( fileName.c_str(), false ) )
         return ::GetLastError();
 
     *volumeStream = streamLoc.Detach();
@@ -183,5 +172,5 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
     }
 
     *passwordIsDefined = BoolToInt( mIsPasswordDefined );
-    return StringToBstr( mPassword, password );
+    return StringToBstr( mPassword.c_str(), password );
 }

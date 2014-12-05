@@ -7,7 +7,10 @@
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitguids.hpp"
 
+#include "../include/fsitem.hpp"
+
 using namespace std;
+using namespace Bit7z::FileSystem;
 
 namespace Bit7z {
     class BitCompressor {
@@ -32,6 +35,8 @@ namespace Bit7z {
             wstring mPassword;
             bool mCryptHeaders;
             bool mSolidMode;
+
+            void compressFS( const vector<FSItem>& in_items, const wstring& out_archive );
     };
 }
 
