@@ -1,10 +1,14 @@
 #ifndef OPENCALLBACK_HPP
 #define OPENCALLBACK_HPP
 
+#include <string>
+
 #include "7zip/Archive/IArchive.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 #include "Windows/COM.h"
+
+using namespace std;
 
 namespace Bit7z {
     class OpenCallback: public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp {
@@ -18,11 +22,11 @@ namespace Bit7z {
 
             virtual HRESULT CryptoGetTextPassword( BSTR* password );
 
-            void setPassword( const UString& );
+            void setPassword( const wstring& password );
 
         private:
-            bool passwordIsDefined;
-            UString password;
+            //bool mPasswordIsDefined;
+            wstring mPassword;
     };
 }
 

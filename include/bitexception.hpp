@@ -11,7 +11,7 @@ namespace Bit7z {
         public:
             BitException( const std::string& message );
             BitException( const std::wstring& message );
-            BitException( UString& message );
+            //BitException( UString& message );
 
             const char *what() const;
 

@@ -43,27 +43,6 @@ void BitCompressor::compressFile( const wstring& in_file, const wstring& out_arc
 }
 
 void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) {
-
-    /*CObjectVector<CDirItem> dirItems;
-    int i;
-
-    for ( i = 0; i < in_files.size(); i++ ) {
-        CDirItem di;
-        UString name = in_files[i].c_str();
-        NFile::NFind::CFileInfoW fi;
-
-        if ( !fi.Find( name ) ) throw BitException( UString( L"Can't find file " ) + name );
-
-        di.Attrib = fi.Attrib;
-        di.Size = fi.Size;
-        di.CTime = fi.CTime;
-        di.ATime = fi.ATime;
-        di.MTime = fi.MTime;
-        di.Name = in_files[i].substr( in_files[i].find_last_of( L"/\\" ) + 1 ).c_str();
-        di.FullPath = name;
-        dirItems.Add( di );
-    }*/
-
     vector<FSItem> dirItems;
     for ( wstring filePath : in_files ) {
         FSItem item( filePath );

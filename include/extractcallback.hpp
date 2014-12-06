@@ -1,7 +1,7 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#include <iostream>
+#include <string>
 
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
@@ -11,11 +11,13 @@
 
 #include "../include/bitguids.hpp"
 
+using namespace std;
+
 namespace Bit7z {
     class ExtractCallback: public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp {
         public:
-            ExtractCallback( IInArchive* archiveHandler, const UString& directoryPath );
-            void setPassword( const UString& password );
+            ExtractCallback(IInArchive* archiveHandler, const wstring& directoryPath );
+            void setPassword( const wstring& password );
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
@@ -35,11 +37,11 @@ namespace Bit7z {
             virtual HRESULT CryptoGetTextPassword( BSTR* aPassword );
 
         private:
-            CMyComPtr<IInArchive> _archiveHandler;
-            UString _directoryPath;  // Output directory
-            UString _filePath;       // name inside arcvhive
-            UString _diskFilePath;   // full path to file on disk
-            bool _extractMode;
+            CMyComPtr<IInArchive> mArchiveHandler;
+            wstring mDirectoryPath;  // Output directory
+            wstring mFilePath;       // name inside arcvhive
+            wstring mDiskFilePath;   // full path to file on disk
+            bool mExtractMode;
             struct CProcessedFileInfo {
                 FILETIME MTime;
                 UInt32 Attrib;
@@ -48,12 +50,12 @@ namespace Bit7z {
                 bool MTimeDefined;
             } _processedFileInfo;
 
-            COutFileStream* _outFileStreamSpec;
-            CMyComPtr<ISequentialOutStream> _outFileStream;
+            COutFileStream* mOutFileStreamSpec;
+            CMyComPtr<ISequentialOutStream> mOutFileStream;
 
-            UInt64 numErrors;
-            bool hasPassword;
-            UString password;
+            UInt64 mNumErrors;
+            //bool mHasPassword;
+            wstring mPassword;
     };
 }
 

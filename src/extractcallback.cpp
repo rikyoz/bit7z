@@ -8,12 +8,13 @@
 #include "Windows/PropVariantConversions.h"
 
 #include "../include/bitexception.hpp"
+#include "../include/fsutil.hpp"
 
 using namespace std;
 using namespace NWindows;
 using namespace Bit7z;
 
-static const UString kCantDeleteOutputFile = L"ERROR: Cannot delete output file ";
+static const wstring kCantDeleteOutputFile = L"ERROR: Cannot delete output file ";
 
 static const char* kTestingString    =  "Testing     ";
 static const char* kExtractingString =  "Extracting  ";
@@ -43,15 +44,16 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const UString& directoryPath )
-    : hasPassword( false ), numErrors( 0 ), _archiveHandler( archiveHandler ),
-      _directoryPath( directoryPath ) {
-    NFile::NName::NormalizeDirPathPrefix( _directoryPath );
+ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath )
+    : mPassword( L"" ), mNumErrors( 0 ), mArchiveHandler( archiveHandler ),
+      mDirectoryPath( directoryPath ) {
+    //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
+    FileSystem::Util::normalize_path( mDirectoryPath );
 }
 
-void ExtractCallback::setPassword(const UString &password) {
-    this->password = password;
-    this->hasPassword = password.Length() > 0;
+void ExtractCallback::setPassword( const wstring& password ) {
+    mPassword = password;
+    //this->mHasPassword = password.Length() > 0;
 }
 
 HRESULT ExtractCallback::SetTotal( UInt64 /* size */ ) {
@@ -66,108 +68,104 @@ HRESULT ExtractCallback::GetStream( UInt32 index,
                                     ISequentialOutStream** outStream,
                                     Int32 askExtractMode ) {
     *outStream = 0;
-    _outFileStream.Release();
-    {
-        // Get Name
-        NCOM::CPropVariant prop;
-        RINOK( _archiveHandler->GetProperty( index, kpidPath, &prop ) );
-        UString fullPath;
+    mOutFileStream.Release();
+    // Get Name
+    NCOM::CPropVariant prop;
+    RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
+    wstring fullPath;
 
-        if ( prop.vt == VT_EMPTY )
-            fullPath = kEmptyFileAlias.c_str();
-        else {
-            if ( prop.vt != VT_BSTR )
-                return E_FAIL;
+    if ( prop.vt == VT_EMPTY )
+        fullPath = kEmptyFileAlias;
+    else {
+        if ( prop.vt != VT_BSTR )
+            return E_FAIL;
 
-            fullPath = prop.bstrVal;
-        }
-
-        _filePath = fullPath;
+        fullPath = prop.bstrVal;
     }
+
+    mFilePath = fullPath;
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract )
         return S_OK;
 
-    {
-        // Get Attrib
-        NCOM::CPropVariant prop;
-        RINOK( _archiveHandler->GetProperty( index, kpidAttrib, &prop ) );
 
-        if ( prop.vt == VT_EMPTY ) {
-            _processedFileInfo.Attrib = 0;
-            _processedFileInfo.AttribDefined = false;
-        } else {
-            if ( prop.vt != VT_UI4 )
-                return E_FAIL;
+    // Get Attrib
+    NCOM::CPropVariant prop2;
+    RINOK( mArchiveHandler->GetProperty( index, kpidAttrib, &prop2 ) );
 
-            _processedFileInfo.Attrib = prop.ulVal;
-            _processedFileInfo.AttribDefined = true;
-        }
+    if ( prop2.vt == VT_EMPTY ) {
+        _processedFileInfo.Attrib = 0;
+        _processedFileInfo.AttribDefined = false;
+    } else {
+        if ( prop2.vt != VT_UI4 )
+            return E_FAIL;
+
+        _processedFileInfo.Attrib = prop2.ulVal;
+        _processedFileInfo.AttribDefined = true;
     }
-    RINOK( IsArchiveItemFolder( _archiveHandler, index, _processedFileInfo.isDir ) );
-    {
-        // Get Modified Time
-        NCOM::CPropVariant prop;
-        RINOK( _archiveHandler->GetProperty( index, kpidMTime, &prop ) );
-        _processedFileInfo.MTimeDefined = false;
 
-        switch ( prop.vt ) {
-            case VT_EMPTY:
-                // _processedFileInfo.MTime = _utcMTimeDefault;
-                break;
+    RINOK( IsArchiveItemFolder( mArchiveHandler, index, _processedFileInfo.isDir ) );
+    // Get Modified Time
+    NCOM::CPropVariant prop3;
+    RINOK( mArchiveHandler->GetProperty( index, kpidMTime, &prop3 ) );
+    _processedFileInfo.MTimeDefined = false;
 
-            case VT_FILETIME:
-                _processedFileInfo.MTime = prop.filetime;
-                _processedFileInfo.MTimeDefined = true;
-                break;
+    switch ( prop3.vt ) {
+        case VT_EMPTY:
+            // _processedFileInfo.MTime = _utcMTimeDefault;
+            break;
 
-            default:
-                return E_FAIL;
-        }
+        case VT_FILETIME:
+            _processedFileInfo.MTime = prop3.filetime;
+            _processedFileInfo.MTimeDefined = true;
+            break;
+
+        default:
+            return E_FAIL;
     }
-    {
-        // Get Size
-        NCOM::CPropVariant prop;
-        RINOK( _archiveHandler->GetProperty( index, kpidSize, &prop ) );
-        bool newFileSizeDefined = ( prop.vt != VT_EMPTY );
-        UInt64 newFileSize;
 
-        if ( newFileSizeDefined )
-            newFileSize = ConvertPropVariantToUInt64( prop );
-    }
-    {
-        // Create folders for file
-        int slashPos = _filePath.ReverseFind( WCHAR_PATH_SEPARATOR );
+    // Get Size
+    NCOM::CPropVariant prop4;
+    RINOK( mArchiveHandler->GetProperty( index, kpidSize, &prop4 ) );
+    bool newFileSizeDefined = ( prop4.vt != VT_EMPTY );
+    UInt64 newFileSize;
 
-        if ( slashPos >= 0 )
-            NFile::NDirectory::CreateComplexDirectory( _directoryPath + _filePath.Left( slashPos ) );
-    }
-    UString fullProcessedPath = _directoryPath + _filePath;
-    _diskFilePath = fullProcessedPath;
+    if ( newFileSizeDefined )
+        newFileSize = ConvertPropVariantToUInt64( prop4 );
+
+
+    // Create folders for file
+    size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
+
+    if ( slashPos >= 0 && slashPos != wstring::npos )
+        NFile::NDirectory::CreateComplexDirectory( ( mDirectoryPath + mFilePath.substr( 0,
+                                                     slashPos ) ).c_str() );
+    wstring fullProcessedPath = mDirectoryPath + mFilePath;
+    mDiskFilePath = fullProcessedPath;
 
     if ( _processedFileInfo.isDir )
-        NFile::NDirectory::CreateComplexDirectory( fullProcessedPath );
+        NFile::NDirectory::CreateComplexDirectory( fullProcessedPath.c_str() );
     else {
         NFile::NFind::CFileInfoW fi;
 
-        if ( fi.Find( fullProcessedPath ) ) {
-            if ( !NFile::NDirectory::DeleteFileAlways( fullProcessedPath ) ) {
+        if ( fi.Find( fullProcessedPath.c_str() ) ) {
+            if ( !NFile::NDirectory::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
                 //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
                 throw BitException( kCantDeleteOutputFile + fullProcessedPath );
-                return E_ABORT;
+                //return E_ABORT;
             }
         }
 
-        _outFileStreamSpec = new COutFileStream;
-        CMyComPtr<ISequentialOutStream> outStreamLoc( _outFileStreamSpec );
+        mOutFileStreamSpec = new COutFileStream;
+        CMyComPtr<ISequentialOutStream> outStreamLoc( mOutFileStreamSpec );
 
-        if ( !_outFileStreamSpec->Open( fullProcessedPath, CREATE_ALWAYS ) ) {
+        if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
             //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;
-            throw BitException( ( UString )L"cannot open output file " + fullProcessedPath );
-            return E_ABORT;
+            throw BitException( L"cannot open output file " + fullProcessedPath );
+            //return E_ABORT;
         }
 
-        _outFileStream = outStreamLoc;
+        mOutFileStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }
 
@@ -175,27 +173,27 @@ HRESULT ExtractCallback::GetStream( UInt32 index,
 }
 
 HRESULT ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
-    _extractMode = false;
+    mExtractMode = false;
 
     // in future we might use this switch to handle an event like onOperationStart(Operation o)
     // with enum Operation{Extract, Test, Skip}
 
     switch ( askExtractMode ) {
         case NArchive::NExtract::NAskMode::kExtract:
-            _extractMode = true;
+            mExtractMode = true;
             //cout <<  kExtractingString;
             break;
 
-        /*case NArchive::NExtract::NAskMode::kTest:
-            cout <<  kTestingString;
-            break;
+            /*case NArchive::NExtract::NAskMode::kTest:
+                cout <<  kTestingString;
+                break;
 
-        case NArchive::NExtract::NAskMode::kSkip:
-            cout <<  kSkippingString;
-            break;*/
+            case NArchive::NExtract::NAskMode::kSkip:
+                cout <<  kSkippingString;
+                break;*/
     };
 
-    //wcout << GetOemString( _filePath ) << endl;;
+    //wcout << mFilePath << endl;;
     return S_OK;
 }
 
@@ -207,7 +205,7 @@ HRESULT ExtractCallback::SetOperationResult( Int32 operationResult ) {
             break;
 
         default: {
-            numErrors++;
+            mNumErrors++;
 
             //cout <<  "     ";
 
@@ -230,19 +228,19 @@ HRESULT ExtractCallback::SetOperationResult( Int32 operationResult ) {
         }
     }
 
-    if ( _outFileStream != NULL ) {
+    if ( mOutFileStream != NULL ) {
         if ( _processedFileInfo.MTimeDefined )
-            _outFileStreamSpec->SetMTime( &_processedFileInfo.MTime );
+            mOutFileStreamSpec->SetMTime( &_processedFileInfo.MTime );
 
-        RINOK( _outFileStreamSpec->Close() );
+        RINOK( mOutFileStreamSpec->Close() );
     }
 
-    _outFileStream.Release();
+    mOutFileStream.Release();
 
-    if ( _extractMode && _processedFileInfo.AttribDefined )
-        NFile::NDirectory::MySetFileAttributes( _diskFilePath, _processedFileInfo.Attrib );
+    if ( mExtractMode && _processedFileInfo.AttribDefined )
+        NFile::NDirectory::MySetFileAttributes( mDiskFilePath.c_str(), _processedFileInfo.Attrib );
 
-    if ( numErrors > 0 )
+    if ( mNumErrors > 0 )
         throw BitException( errorMessage );
 
     //cout << endl;
@@ -251,7 +249,7 @@ HRESULT ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 
 HRESULT ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( !hasPassword ) {
+    if ( mPassword.length() == 0 ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
@@ -259,5 +257,5 @@ HRESULT ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         throw BitException( "Password is not defined" );
     }
 
-    return StringToBstr( this->password, password );
+    return StringToBstr( mPassword.c_str(), password );
 }

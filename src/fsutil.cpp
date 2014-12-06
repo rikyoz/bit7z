@@ -12,8 +12,14 @@ bool Util::path_exists( const wstring& path ) {
     return ( GetFileAttributes( path.c_str() ) != INVALID_FILE_ATTRIBUTES );
 }
 
-bool Util::has_ending(wstring const& str, const wstring& ending ) {
+bool Util::has_ending( wstring const& str, const wstring& ending ) {
     return ( str.length() >= ending.length() )
            && ( 0 == str.compare( str.length() - ending.length(), ending.length(),
                                   ending ) );
+}
+
+void Util::normalize_path( wstring& path ) {
+    if ( path.empty() ) return;
+    if ( path.find_last_of(L"\\/") != path.length() - 1 )
+        path.append(L"\\");
 }
