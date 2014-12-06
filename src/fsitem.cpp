@@ -8,7 +8,7 @@ using namespace Bit7z::FileSystem;
 
 FSItem::FSItem( const wstring& path,
                 const wstring& relative_dir ) : mDirectory( path ), mRelativeDirectory( relative_dir ), mFileData() {
-    bool isdir = Util::is_directory( mDirectory );
+    bool isdir = FSUtil::is_directory( mDirectory );
     if ( isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( lastSlashIndex == mDirectory.length() - 1 )

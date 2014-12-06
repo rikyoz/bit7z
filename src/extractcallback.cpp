@@ -48,7 +48,7 @@ ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& dir
     : mPassword( L"" ), mNumErrors( 0 ), mArchiveHandler( archiveHandler ),
       mDirectoryPath( directoryPath ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
-    FileSystem::Util::normalize_path( mDirectoryPath );
+    FileSystem::FSUtil::normalize_path( mDirectoryPath );
 }
 
 void ExtractCallback::setPassword( const wstring& password ) {
