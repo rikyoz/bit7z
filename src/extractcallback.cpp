@@ -16,15 +16,15 @@ using namespace Bit7z;
 
 static const wstring kCantDeleteOutputFile = L"ERROR: Cannot delete output file ";
 
-static const char* kTestingString    =  "Testing     ";
-static const char* kExtractingString =  "Extracting  ";
-static const char* kSkippingString   =  "Skipping    ";
+static const wstring kTestingString    =  L"Testing     ";
+static const wstring kExtractingString =  L"Extracting  ";
+static const wstring kSkippingString   =  L"Skipping    ";
 
-static const char* kUnsupportedMethod = "Unsupported Method";
-static const char* kCRCFailed = "CRC Failed";
-static const char* kDataError = "Data Error";
-static const char* kUnknownError = "Unknown Error";
-const wstring kEmptyFileAlias = L"[Content]";
+static const wstring kUnsupportedMethod = L"Unsupported Method";
+static const wstring kCRCFailed         = L"CRC Failed";
+static const wstring kDataError         = L"Data Error";
+static const wstring kUnknownError      = L"Unknown Error";
+static const wstring kEmptyFileAlias    = L"[Content]";
 
 static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
     NCOM::CPropVariant prop;
@@ -198,7 +198,7 @@ HRESULT ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
 }
 
 HRESULT ExtractCallback::SetOperationResult( Int32 operationResult ) {
-    string errorMessage;
+    wstring errorMessage;
 
     switch ( operationResult ) {
         case NArchive::NExtract::NOperationResult::kOK:
