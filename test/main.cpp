@@ -10,7 +10,7 @@
 using namespace std;
 
 static const wstring directory       =
-    L"C:\\Users\\Oz\\Documents\\Programmazione\\Qt Projects\\Bit7z\\test\\";
+    L"C:\\Users\\Oz\\Documents\\Programmazione\\Qt Projects\\Bit7z\\test\\files\\";
 static const wstring compressed      = directory + L"NuovoREGX.regx";
 static const wstring compressed_p    = directory + L"NuovoREGXP.regx";
 static const wstring compressed_out  = directory + L"test.7z";
