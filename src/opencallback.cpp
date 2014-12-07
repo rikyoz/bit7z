@@ -7,15 +7,15 @@ using namespace Bit7z;
 
 OpenCallback::OpenCallback() : mPassword(L"")/*mPasswordIsDefined( false )*/ {}
 
-HRESULT OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
+STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
 }
 
-HRESULT OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64* /* bytes */ ) {
+STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
 }
 
-HRESULT OpenCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     if ( mPassword.length() == 0 ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);

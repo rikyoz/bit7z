@@ -1,8 +1,8 @@
 #ifndef UPDATECALLBACK_HPP
 #define UPDATECALLBACK_HPP
 
-#include "7zip/Common/FileStreams.h"
 #include "7zip/Archive/IArchive.h"
+#include "7zip/Common/FileStreams.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 #include "Windows/COM.h"
@@ -29,21 +29,21 @@ namespace Bit7z {
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
 
             // IProgress
-            virtual HRESULT SetTotal( UInt64 size );
-            virtual HRESULT SetCompleted( const UInt64* completeValue );
+            STDMETHOD( SetTotal )( UInt64 size );
+            STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
             // IUpdateCallback2
-            virtual HRESULT EnumProperties( IEnumSTATPROPSTG** enumerator );
-            virtual HRESULT GetUpdateItemInfo( UInt32 index, Int32* newData, Int32* newProperties,
+            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
+            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties,
                                                UInt32* indexInArchive );
-            virtual HRESULT GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value );
-            virtual HRESULT GetStream( UInt32 index, ISequentialInStream** inStream );
-            virtual HRESULT SetOperationResult( Int32 operationResult );
-            virtual HRESULT GetVolumeSize( UInt32 index, UInt64* size );
-            virtual HRESULT GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream );
+            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
+            STDMETHOD( SetOperationResult )( Int32 operationResult );
+            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
+            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
 
             //ICryptoGetTextPassword2
-            virtual HRESULT CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password );
+            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
         public:
             CRecordVector<UInt64> mVolumesSizes;

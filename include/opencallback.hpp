@@ -17,10 +17,10 @@ namespace Bit7z {
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
-            virtual HRESULT SetTotal( const UInt64* files, const UInt64* bytes );
-            virtual HRESULT SetCompleted( const UInt64* files, const UInt64* bytes );
+            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes );
+            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes );
 
-            virtual HRESULT CryptoGetTextPassword( BSTR* password );
+            STDMETHOD( CryptoGetTextPassword )( BSTR* password );
 
             void setPassword( const wstring& password );
 

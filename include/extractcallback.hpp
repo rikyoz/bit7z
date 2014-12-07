@@ -21,20 +21,17 @@ namespace Bit7z {
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
-            //NOTE: STDMETHOD macro is not used (as in original CArchiveExtractCallback) in order
-            //      to avoid warnings about throwing exceptions from __stdcall methods!
-
             // IProgress
-            virtual HRESULT SetTotal( UInt64 size );
-            virtual HRESULT SetCompleted( const UInt64* completeValue );
+            STDMETHOD( SetTotal )( UInt64 size );
+            STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
             // IArchiveExtractCallback
-            virtual HRESULT GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
-            virtual HRESULT PrepareOperation( Int32 askExtractMode );
-            virtual HRESULT SetOperationResult( Int32 resultEOperationResult );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
+            STDMETHOD( PrepareOperation )( Int32 askExtractMode );
+            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
             // ICryptoGetTextPassword
-            virtual HRESULT CryptoGetTextPassword( BSTR* aPassword );
+            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
 
         private:
             CMyComPtr<IInArchive> mArchiveHandler;

@@ -1,11 +1,11 @@
 #include "../include/extractcallback.hpp"
 
-#include "Common/StringConvert.h"
+//#include "Common/StringConvert.h"
 #include "Windows/FileDir.h"
 #include "Windows/FileFind.h"
 #include "Windows/FileName.h"
 #include "Windows/PropVariant.h"
-#include "Windows/PropVariantConversions.h"
+//#include "Windows/PropVariantConversions.h"
 
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
@@ -56,17 +56,17 @@ void ExtractCallback::setPassword( const wstring& password ) {
     //this->mHasPassword = password.Length() > 0;
 }
 
-HRESULT ExtractCallback::SetTotal( UInt64 /* size */ ) {
+STDMETHODIMP ExtractCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
 }
 
-HRESULT ExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
     return S_OK;
 }
 
-HRESULT ExtractCallback::GetStream( UInt32 index,
-                                    ISequentialOutStream** outStream,
-                                    Int32 askExtractMode ) {
+STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
+                                         ISequentialOutStream** outStream,
+                                         Int32 askExtractMode ) {
     *outStream = 0;
     mOutFileStream.Release();
     // Get Name
@@ -130,8 +130,18 @@ HRESULT ExtractCallback::GetStream( UInt32 index,
     bool newFileSizeDefined = ( prop4.vt != VT_EMPTY );
     UInt64 newFileSize;
 
-    if ( newFileSizeDefined )
-        newFileSize = ConvertPropVariantToUInt64( prop4 );
+    if ( newFileSizeDefined ) {
+        //taken from ConvertPropVariantToUInt64
+        switch ( prop4.vt ) {
+            case VT_UI1: newFileSize = prop4.bVal; break;
+            case VT_UI2: newFileSize = prop4.uiVal; break;
+            case VT_UI4: newFileSize = prop4.ulVal; break;
+            case VT_UI8: newFileSize = ( UInt64 )prop4.uhVal.QuadPart; break;
+            default: throw 151199;
+        }
+
+        //newFileSize = ConvertPropVariantToUInt64( prop4 );
+    }
 
 
     // Create folders for file
@@ -172,7 +182,7 @@ HRESULT ExtractCallback::GetStream( UInt32 index,
     return S_OK;
 }
 
-HRESULT ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
+STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     mExtractMode = false;
 
     // in future we might use this switch to handle an event like onOperationStart(Operation o)
@@ -197,7 +207,7 @@ HRESULT ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     return S_OK;
 }
 
-HRESULT ExtractCallback::SetOperationResult( Int32 operationResult ) {
+STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     wstring errorMessage;
 
     switch ( operationResult ) {
@@ -248,7 +258,7 @@ HRESULT ExtractCallback::SetOperationResult( Int32 operationResult ) {
 }
 
 
-HRESULT ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     if ( mPassword.length() == 0 ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);

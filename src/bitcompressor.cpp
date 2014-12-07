@@ -1,7 +1,7 @@
 #include "../include/bitcompressor.hpp"
 
 #include "7zip/Archive/IArchive.h"
-#include "Common/StringConvert.h"
+//#include "Common/StringConvert.h"
 #include "Windows/COM.h"
 #include "Windows/FileFind.h"
 #include "Windows/PropVariant.h"
@@ -88,7 +88,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     if ( result != S_OK ) throw BitException( "Update Error" );
 
     wstring errorString = L"Error for files: ";
-    for ( int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ )
+    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ )
         errorString += updateCallbackSpec->mFailedFiles[i] + L" ";
 
     if ( updateCallbackSpec->mFailedFiles.size() != 0 )

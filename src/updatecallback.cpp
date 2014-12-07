@@ -5,7 +5,7 @@
 
 #include "Common/IntToString.h"
 #include "Windows/PropVariant.h"
-#include "Windows/PropVariantConversions.h"
+//#include "Windows/PropVariantConversions.h"
 
 using namespace std;
 using namespace Bit7z;
