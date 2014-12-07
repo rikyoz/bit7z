@@ -28,7 +28,8 @@ SOURCES += lib/7zSDK/win/CPP/Windows/Error.cpp \
            src/updatecallback.cpp \
            src/fsitem.cpp \
            src/fsindexer.cpp \
-           src/fsutil.cpp
+           src/fsutil.cpp \
+    src/callback.cpp
 
 INCLUDEPATH += lib/7zSDK/win/CPP/ \
                include/
@@ -52,7 +53,8 @@ HEADERS += include/bitcompressor.hpp \
            include/fsitem.hpp \
            include/fsindexer.hpp \
            include/fsutil.hpp \
-           include/bit7z.hpp
+           include/bit7z.hpp \
+    include/callback.hpp
 
 win32 {
   contains(QMAKE_HOST.arch, x86_64) {

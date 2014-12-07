@@ -33,5 +33,5 @@ void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out
 
     CMyComPtr<IArchiveExtractCallback> extractCallback( extractCallbackSpec );
     if ( archive->Extract( NULL, ( UInt32 )( Int32 )( -1 ), false, extractCallback ) != S_OK )
-        throw BitException( "Extract Error" );
+        throw BitException( extractCallbackSpec->getErrorMessage() );
 }

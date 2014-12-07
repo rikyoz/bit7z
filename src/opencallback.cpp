@@ -20,7 +20,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        cerr << "Password is not defined" << endl;
+        mErrorMessage = L"Password is not defined";
         return E_ABORT;
     }
 
@@ -29,6 +29,5 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
 
 void OpenCallback::setPassword( const wstring& password ) {
     this->mPassword = password;
-    //this->mPasswordIsDefined = password.length() > 0;
 }
 

@@ -111,7 +111,7 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
         mFailedFiles.push_back( path );
         // if (systemError == ERROR_SHARING_VIOLATION)
         {
-            cerr << endl << "WARNING: can't open file (error " << sysError << ")" << endl;
+            mErrorMessage = L"WARNING: Can't open file";
             // PrintString(NError::MyFormatMessageW(systemError));
             return S_FALSE;
         }
@@ -166,7 +166,7 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
             // PasswordIsDefined = true;
-            cerr << "Password is not defined";
+            mErrorMessage = L"Password is not defined";
             return E_ABORT;
         }
     }

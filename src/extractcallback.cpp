@@ -14,7 +14,7 @@ using namespace std;
 using namespace NWindows;
 using namespace Bit7z;
 
-static const wstring kCantDeleteOutputFile = L"ERROR: Cannot delete output file ";
+static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
 
 static const wstring kTestingString    =  L"Testing     ";
 static const wstring kExtractingString =  L"Extracting  ";
@@ -137,14 +137,16 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
             case VT_UI2: newFileSize = prop4.uiVal; break;
             case VT_UI4: newFileSize = prop4.ulVal; break;
             case VT_UI8: newFileSize = ( UInt64 )prop4.uhVal.QuadPart; break;
-            default: throw 151199;
+            default:
+                mErrorMessage = L"151199";
+                return E_FAIL;
         }
 
         //newFileSize = ConvertPropVariantToUInt64( prop4 );
     }
 
 
-    // Create folders for file
+// Create folders for file
     size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
 
     if ( slashPos >= 0 && slashPos != wstring::npos )
@@ -161,8 +163,9 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
             if ( !NFile::NDirectory::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
                 //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
-                throw BitException( kCantDeleteOutputFile + fullProcessedPath );
-                //return E_ABORT;
+                //throw BitException( kCantDeleteOutputFile + fullProcessedPath );
+                mErrorMessage = kCantDeleteOutputFile + fullProcessedPath;
+                return E_ABORT;
             }
         }
 
@@ -171,8 +174,9 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
 
         if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
             //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;
-            throw BitException( L"cannot open output file " + fullProcessedPath );
-            //return E_ABORT;
+            //throw BitException( L"cannot open output file " + fullProcessedPath );
+            mErrorMessage = L"Cannot open output file " + fullProcessedPath;
+            return E_ABORT;
         }
 
         mOutFileStream = outStreamLoc;
@@ -208,8 +212,6 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
 }
 
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
-    wstring errorMessage;
-
     switch ( operationResult ) {
         case NArchive::NExtract::NOperationResult::kOK:
             break;
@@ -221,19 +223,19 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
             switch ( operationResult ) {
                 case NArchive::NExtract::NOperationResult::kUnSupportedMethod:
-                    errorMessage = kUnsupportedMethod;
+                    mErrorMessage = kUnsupportedMethod;
                     break;
 
                 case NArchive::NExtract::NOperationResult::kCRCError:
-                    errorMessage = kCRCFailed;
+                    mErrorMessage = kCRCFailed;
                     break;
 
                 case NArchive::NExtract::NOperationResult::kDataError:
-                    errorMessage = kDataError;
+                    mErrorMessage = kDataError;
                     break;
 
                 default:
-                    errorMessage = kUnknownError;
+                    mErrorMessage = kUnknownError;
             }
         }
     }
@@ -250,8 +252,8 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     if ( mExtractMode && _processedFileInfo.AttribDefined )
         NFile::NDirectory::MySetFileAttributes( mDiskFilePath.c_str(), _processedFileInfo.Attrib );
 
-    if ( mNumErrors > 0 )
-        throw BitException( errorMessage );
+    if ( mNumErrors > 0 ) return E_FAIL;
+        //throw BitException( mErrorString );
 
     //cout << endl;
     return S_OK;
@@ -264,7 +266,9 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
         //in future, no exception but an event (i.e. onPasswordRequest) call
-        throw BitException( "Password is not defined" );
+        mErrorMessage = L"Password is not defined";
+        return E_FAIL;
+        //throw BitException( "Password is not defined" );
     }
 
     return StringToBstr( mPassword.c_str(), password );

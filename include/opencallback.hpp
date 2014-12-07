@@ -8,10 +8,13 @@
 #include "Common/MyCom.h"
 #include "Windows/COM.h"
 
+#include "../include/callback.hpp"
+
 using namespace std;
 
 namespace Bit7z {
-    class OpenCallback: public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp {
+    class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp,
+                         public Callback {
         public:
             OpenCallback();
 

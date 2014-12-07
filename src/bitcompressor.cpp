@@ -85,7 +85,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
                                               updateCallback );
     updateCallbackSpec->Finilize();
 
-    if ( result != S_OK ) throw BitException( "Update Error" );
+    if ( result != S_OK ) throw BitException( updateCallbackSpec->getErrorMessage() );
 
     wstring errorString = L"Error for files: ";
     for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ )
