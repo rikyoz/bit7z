@@ -28,7 +28,6 @@ namespace Bit7z {
             void setPassword( const wstring& password );
 
         private:
-            //bool mPasswordIsDefined;
             wstring mPassword;
     };
 }

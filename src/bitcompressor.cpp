@@ -1,7 +1,6 @@
 #include "../include/bitcompressor.hpp"
 
 #include "7zip/Archive/IArchive.h"
-//#include "Common/StringConvert.h"
 #include "Windows/COM.h"
 #include "Windows/FileFind.h"
 #include "Windows/PropVariant.h"
@@ -32,9 +31,6 @@ void BitCompressor::compress( const vector<wstring>& in_files, const wstring& ou
             dirItems.push_back( item );
         }
     }
-    /*cout << "results: " << dirItems.size() << endl;
-    for ( FSItem item : dirItems )
-        wcout << item.fullPath().c_str() << endl;*/
     compressFS( dirItems, out_archive );
 }
 

@@ -53,7 +53,6 @@ ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& dir
 
 void ExtractCallback::setPassword( const wstring& password ) {
     mPassword = password;
-    //this->mHasPassword = password.Length() > 0;
 }
 
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 /* size */ ) {
@@ -268,7 +267,6 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         //in future, no exception but an event (i.e. onPasswordRequest) call
         mErrorMessage = L"Password is not defined";
         return E_FAIL;
-        //throw BitException( "Password is not defined" );
     }
 
     return StringToBstr( mPassword.c_str(), password );

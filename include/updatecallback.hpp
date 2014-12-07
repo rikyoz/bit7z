@@ -12,18 +12,6 @@
 
 using namespace Bit7z::FileSystem;
 
-/*struct CDirItem {
-    UInt64 Size;
-    FILETIME CTime;
-    FILETIME ATime;
-    FILETIME MTime;
-    wstring Name;
-    wstring FullPath;
-    UInt32 Attrib;
-
-    bool isDir() const { return ( Attrib & FILE_ATTRIBUTE_DIRECTORY ) != 0 ; }
-};*/
-
 namespace Bit7z {
     class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp,
                            public Callback {

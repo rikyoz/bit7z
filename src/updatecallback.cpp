@@ -5,7 +5,6 @@
 
 #include "Common/IntToString.h"
 #include "Windows/PropVariant.h"
-//#include "Windows/PropVariantConversions.h"
 
 using namespace std;
 using namespace Bit7z;
@@ -73,7 +72,6 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
 
 HRESULT UpdateCallback::Finilize() {
     if ( mNeedBeClosed ) {
-        //cout << endl;
         mNeedBeClosed = false;
     }
 
@@ -102,8 +100,6 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
     CInFileStream* inStreamSpec = new CInFileStream;
     CMyComPtr<ISequentialInStream> inStreamLoc( inStreamSpec );
     wstring path = dirItem.fullPath();
-    //wcout << "path: " << path << endl;
-    //wcout << "rpath: " << dirItem.relativePath() << endl;
 
     if ( !inStreamSpec->Open( path.c_str() ) ) {
         DWORD sysError = ::GetLastError();
