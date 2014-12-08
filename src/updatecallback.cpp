@@ -11,8 +11,8 @@ using namespace Bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 
-UpdateCallback::UpdateCallback( const vector<FSItem>& dirItems ): mIsPasswordDefined( false ),
-    mAskPassword( false ), mDirItems( dirItems )  {
+UpdateCallback::UpdateCallback( const vector<FSItem>& dirItems ): mAskPassword( false ),
+    mDirItems( dirItems )  {
     mNeedBeClosed = false;
     mFailedFiles.clear();
     mFailedCodes.Clear();
@@ -71,9 +71,8 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
 }
 
 HRESULT UpdateCallback::Finilize() {
-    if ( mNeedBeClosed ) {
+    if ( mNeedBeClosed )
         mNeedBeClosed = false;
-    }
 
     return S_OK;
 }
@@ -156,8 +155,8 @@ HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** vo
     return S_OK;
 }
 
-HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( !mIsPasswordDefined ) {
+HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* /*passwordIsDefined*/, BSTR* password ) {
+    if ( mPassword.length() == 0 ) {
         if ( mAskPassword ) {
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
@@ -167,6 +166,6 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
         }
     }
 
-    *passwordIsDefined = BoolToInt( mIsPasswordDefined );
+    //*passwordIsDefined = BoolToInt( mIsPasswordDefined );
     return StringToBstr( mPassword.c_str(), password );
 }

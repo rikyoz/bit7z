@@ -5,7 +5,7 @@
 using namespace std;
 using namespace Bit7z;
 
-OpenCallback::OpenCallback() : mPassword(L"")/*mPasswordIsDefined( false )*/ {}
+OpenCallback::OpenCallback() /*mPasswordIsDefined( false )*/ {}
 
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
@@ -27,7 +27,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     return StringToBstr( mPassword.c_str(), password );
 }
 
-void OpenCallback::setPassword( const wstring& password ) {
-    this->mPassword = password;
-}
+//void OpenCallback::setPassword( const wstring& password ) {
+//    this->mPassword = password;
+//}
 

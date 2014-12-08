@@ -74,8 +74,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) )
         throw BitException( "Can't create archive file" );
     UpdateCallback* updateCallbackSpec = new UpdateCallback( in_items );
-    updateCallbackSpec->mIsPasswordDefined = mPassword.size() > 0;
-    updateCallbackSpec->mPassword = mPassword.c_str();
+    updateCallbackSpec->setPassword( mPassword );
     CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
     HRESULT result = outArchive->UpdateItems( outFileStreamSpec, ( UInt32 )in_items.size(),
                                               updateCallback );

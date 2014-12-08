@@ -43,8 +43,8 @@ namespace Bit7z {
             wstring mDirPrefix;
             const vector<FSItem>& mDirItems;
 
-            bool mIsPasswordDefined;
-            wstring mPassword;
+            /*bool mIsPasswordDefined;
+            wstring mPassword;*/
             bool mAskPassword;
 
             bool mNeedBeClosed;
