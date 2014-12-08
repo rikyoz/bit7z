@@ -47,7 +47,7 @@ namespace Bit7z {
                 bool isDir;
                 bool AttribDefined;
                 bool MTimeDefined;
-            } _processedFileInfo;
+            } mProcessedFileInfo;
 
             COutFileStream* mOutFileStreamSpec;
             CMyComPtr<ISequentialOutStream> mOutFileStream;

@@ -1,11 +1,9 @@
 #include "../include/extractcallback.hpp"
 
-//#include "Common/StringConvert.h"
 #include "Windows/FileDir.h"
 #include "Windows/FileFind.h"
 #include "Windows/FileName.h"
 #include "Windows/PropVariant.h"
-//#include "Windows/PropVariantConversions.h"
 
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
@@ -93,30 +91,30 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
     RINOK( mArchiveHandler->GetProperty( index, kpidAttrib, &prop2 ) );
 
     if ( prop2.vt == VT_EMPTY ) {
-        _processedFileInfo.Attrib = 0;
-        _processedFileInfo.AttribDefined = false;
+        mProcessedFileInfo.Attrib = 0;
+        mProcessedFileInfo.AttribDefined = false;
     } else {
         if ( prop2.vt != VT_UI4 )
             return E_FAIL;
 
-        _processedFileInfo.Attrib = prop2.ulVal;
-        _processedFileInfo.AttribDefined = true;
+        mProcessedFileInfo.Attrib = prop2.ulVal;
+        mProcessedFileInfo.AttribDefined = true;
     }
 
-    RINOK( IsArchiveItemFolder( mArchiveHandler, index, _processedFileInfo.isDir ) );
+    RINOK( IsArchiveItemFolder( mArchiveHandler, index, mProcessedFileInfo.isDir ) );
     // Get Modified Time
     NCOM::CPropVariant prop3;
     RINOK( mArchiveHandler->GetProperty( index, kpidMTime, &prop3 ) );
-    _processedFileInfo.MTimeDefined = false;
+    mProcessedFileInfo.MTimeDefined = false;
 
     switch ( prop3.vt ) {
         case VT_EMPTY:
-            // _processedFileInfo.MTime = _utcMTimeDefault;
+            // mProcessedFileInfo.MTime = _utcMTimeDefault;
             break;
 
         case VT_FILETIME:
-            _processedFileInfo.MTime = prop3.filetime;
-            _processedFileInfo.MTimeDefined = true;
+            mProcessedFileInfo.MTime = prop3.filetime;
+            mProcessedFileInfo.MTimeDefined = true;
             break;
 
         default:
@@ -145,7 +143,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
     }
 
 
-// Create folders for file
+    // Create folders for file
     size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
 
     if ( slashPos >= 0 && slashPos != wstring::npos )
@@ -154,7 +152,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
     wstring fullProcessedPath = mDirectoryPath + mFilePath;
     mDiskFilePath = fullProcessedPath;
 
-    if ( _processedFileInfo.isDir )
+    if ( mProcessedFileInfo.isDir )
         NFile::NDirectory::CreateComplexDirectory( fullProcessedPath.c_str() );
     else {
         NFile::NFind::CFileInfoW fi;
@@ -218,8 +216,6 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
         default: {
             mNumErrors++;
 
-            //cout <<  "     ";
-
             switch ( operationResult ) {
                 case NArchive::NExtract::NOperationResult::kUnSupportedMethod:
                     mErrorMessage = kUnsupportedMethod;
@@ -240,21 +236,19 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     }
 
     if ( mOutFileStream != NULL ) {
-        if ( _processedFileInfo.MTimeDefined )
-            mOutFileStreamSpec->SetMTime( &_processedFileInfo.MTime );
+        if ( mProcessedFileInfo.MTimeDefined )
+            mOutFileStreamSpec->SetMTime( &mProcessedFileInfo.MTime );
 
         RINOK( mOutFileStreamSpec->Close() );
     }
 
     mOutFileStream.Release();
 
-    if ( mExtractMode && _processedFileInfo.AttribDefined )
-        NFile::NDirectory::MySetFileAttributes( mDiskFilePath.c_str(), _processedFileInfo.Attrib );
+    if ( mExtractMode && mProcessedFileInfo.AttribDefined )
+        NFile::NDirectory::MySetFileAttributes( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
 
     if ( mNumErrors > 0 ) return E_FAIL;
-        //throw BitException( mErrorString );
 
-    //cout << endl;
     return S_OK;
 }
 
