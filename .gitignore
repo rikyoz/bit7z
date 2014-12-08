@@ -1,4 +1,6 @@
 lib/
 build/
+test/files/
 *.regx
-test/
+*.autosave
+*.3-pre1

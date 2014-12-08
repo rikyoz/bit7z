@@ -1,0 +1,35 @@
+#ifndef OPENCALLBACK_HPP
+#define OPENCALLBACK_HPP
+
+#include <string>
+
+#include "7zip/Archive/IArchive.h"
+#include "7zip/IPassword.h"
+#include "Common/MyCom.h"
+#include "Windows/COM.h"
+
+#include "../include/callback.hpp"
+
+using namespace std;
+
+namespace Bit7z {
+    class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp,
+                         public Callback {
+        public:
+            OpenCallback();
+
+            MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
+
+            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes );
+            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes );
+
+            STDMETHOD( CryptoGetTextPassword )( BSTR* password );
+
+            void setPassword( const wstring& password );
+
+        private:
+            wstring mPassword;
+    };
+}
+
+#endif // OPENCALLBACK_HPP
