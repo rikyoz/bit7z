@@ -14,16 +14,19 @@ using namespace Bit7z;
 static const wstring format_name[] = { L"ZIP", L"BZIP2", L"7Z", L"RAR", L"CAB", L"LZMA", L"LZMA86", L"ISO", L"TAR", L"GZIP", L"XZ"};
 static const wstring extensions[] = { L".zip", L".bz2", L".7z", L".rar", L".cab", L".lzma", L".lzma86", L".iso", L".tar", L".gz", L".xz"};
 
-static const wstring directory       =
+static const wstring base_directory  =
     L"C:\\Users\\Oz\\Documents\\Programmazione\\Qt Projects\\Bit7z\\test\\files\\";
-static const wstring compressed      = directory + L"NuovoREGX.regx";
-static const wstring compressed_p    = directory + L"NuovoREGXP.regx";
-static const wstring compressed_out  = directory + L"test";
-static const wstring compressed_out2 = directory + L"test2";
-static const wstring compressed_out3 = directory + L"test3";
-static const wstring compressed_out4 = directory + L"test4";
-static const wstring uncompressed1   = directory + L"italy.svg";
-static const wstring uncompressed2   = directory + L"subdir\\8.pdf";
+static const wstring in_directory     = base_directory + L"input\\";
+static const wstring out_directory    = base_directory + L"output\\";
+static const wstring gen_directory    = base_directory + L"generated\\";
+static const wstring uncompressed_in1 = in_directory + L"italy.svg";
+static const wstring uncompressed_in2 = in_directory + L"temp.xml";
+static const wstring uncompressed_in3 = in_directory + L"subdir\\8.pdf";
+static const wstring compressed_out   = gen_directory + L"test";
+static const wstring compressed_out2  = gen_directory + L"test2";
+static const wstring compressed_out3  = gen_directory + L"test3";
+static const wstring compressed_out4  = gen_directory + L"test4";
+
 
 void cleanup() {
     cout << "Cleaning old test files... ";
@@ -36,11 +39,22 @@ void cleanup() {
     cout << "done" << endl << endl;
 }
 
+void extraction_test1( Bit7zLibrary const& lib, BitFormat format ) {
+    cout << "Generic test...\t\t";
+    try {
+        BitExtractor extractor( lib, format );
+        extractor.extract( compressed_out + extensions[format], out_directory );
+        cout << "[ OK ]" << endl;
+    } catch ( const BitException& e ) {
+        cout << e.what() << endl;
+    }
+}
+
 void compression_test1( Bit7zLibrary const& lib, BitFormat format ) {
     cout << "Generic test...\t\t";
     try {
         BitCompressor compressor( lib, format );
-        compressor.compress( {directory + L"subdir", uncompressed1, directory + L"p", uncompressed2},
+        compressor.compress( {in_directory + L"subdir\\", uncompressed_in1, in_directory + L"p", uncompressed_in3},
                              compressed_out + extensions[format] );
         cout << "[ OK ]" << endl;
     } catch ( const BitException& e ) {
@@ -52,7 +66,7 @@ void compression_test2( Bit7zLibrary const& lib, BitFormat format ) {
     cout << "Single-File test...\t";
     try {
         BitCompressor compressor( lib, format );
-        compressor.compressFile( uncompressed2, compressed_out2 + extensions[format] );
+        compressor.compressFile( uncompressed_in3, compressed_out2 + extensions[format] );
         cout << "[ OK ]" << endl;
     } catch ( const BitException& e ) {
         cout << e.what() << endl;
@@ -63,7 +77,7 @@ void compression_test3( Bit7zLibrary const& lib, BitFormat format ) {
     cout << "Multiple-Files test...\t";
     try {
         BitCompressor compressor( lib, format );
-        compressor.compressFiles( {uncompressed1, uncompressed2}, compressed_out3 + extensions[format] );
+        compressor.compressFiles( {uncompressed_in1, uncompressed_in2, uncompressed_in3}, compressed_out3 + extensions[format] );
         cout << "[ OK ]" << endl;
     } catch ( const BitException& e ) {
         cout << e.what() << endl;
@@ -74,7 +88,7 @@ void compression_test4( Bit7zLibrary const& lib, BitFormat format ) {
     cout << "Directory test...\t";
     try {
         BitCompressor compressor( lib, format );
-        compressor.compressDirectory( directory + L"p\\", compressed_out4 + extensions[format] );
+        compressor.compressDirectory( in_directory + L"p\\", compressed_out4 + extensions[format] );
         cout << "[ OK ]" << endl;
     } catch ( const BitException& e ) {
         cout << e.what() << endl;
@@ -85,9 +99,10 @@ int main() {
     try {
         cleanup();
         Bit7zLibrary lib( L"7z.dll" );
-        BitExtractor extractor( lib, BitFormat::SevenZip );
-        extractor.extract( compressed, directory );
-        extractor.extract( compressed_p, directory + L"p\\", L"qwertyuiop" );
+        cout << "## EXTRACTION TESTS ##" << endl;
+        /*BitExtractor extractor( lib, BitFormat::SevenZip );
+        extractor.extract( compressed, in_directory );
+        extractor.extract( compressed_p, in_directory + L"p\\", L"qwertyuiop" );*/
         cout << "## COMPRESSION TESTS ##" << endl;
         BitFormat frmt;
         for ( unsigned int i = BitFormat::Zip; i <= BitFormat::Xz; ++i ) {
