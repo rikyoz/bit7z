@@ -67,6 +67,9 @@ void Bit7zLibrary::createArchiveObject( BitFormat format,
         case BitFormat::GZip:
             clsID = &CLSID_CFormatGZip;
             break;
+        case BitFormat::Xz:
+            clsID = &CLSID_CFormatXz;
+            break;
         default:
             throw BitException( "Format not supported!" );
     }

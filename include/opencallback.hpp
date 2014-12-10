@@ -25,10 +25,10 @@ namespace Bit7z {
 
             STDMETHOD( CryptoGetTextPassword )( BSTR* password );
 
-            void setPassword( const wstring& password );
+            //void setPassword( const wstring& password );
 
         private:
-            wstring mPassword;
+            //wstring mPassword;
     };
 }
 

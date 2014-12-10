@@ -43,15 +43,15 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
 }
 
 ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath )
-    : mPassword( L"" ), mNumErrors( 0 ), mArchiveHandler( archiveHandler ),
+    : mNumErrors( 0 ), mArchiveHandler( archiveHandler ),
       mDirectoryPath( directoryPath ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
     FileSystem::FSUtil::normalize_path( mDirectoryPath );
 }
 
-void ExtractCallback::setPassword( const wstring& password ) {
-    mPassword = password;
-}
+//void ExtractCallback::setPassword( const wstring& password ) {
+//    mPassword = password;
+//}
 
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;

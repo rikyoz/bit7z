@@ -13,7 +13,7 @@ typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID,
 
 namespace Bit7z {
 
-    enum BitFormat { Zip, BZip2, SevenZip, Rar, Cab, Lzma, Lzma86, Iso, Tar, GZip };
+    enum BitFormat { Zip, BZip2, SevenZip, Rar, Cab, Lzma, Lzma86, Iso, Tar, GZip, Xz };
 
     class Bit7zLibrary {
             friend class BitExtractor;

@@ -14,6 +14,7 @@ namespace Bit7z {
     extern const GUID CLSID_CFormatIso;
     extern const GUID CLSID_CFormatTar;
     extern const GUID CLSID_CFormatGZip;
+    extern const GUID CLSID_CFormatXz;
 
     extern "C" const GUID IID_IInArchive;
     extern "C" const GUID IID_IOutArchive;
