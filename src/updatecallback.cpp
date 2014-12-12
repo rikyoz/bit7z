@@ -17,6 +17,7 @@ UpdateCallback::UpdateCallback( const vector<FSItem>& dirItems ): mAskPassword( 
     mFailedFiles.clear();
     mFailedCodes.Clear();
 }
+
 UpdateCallback::~UpdateCallback() { Finilize(); }
 
 HRESULT UpdateCallback::SetTotal( UInt64 /* size */ ) {
@@ -155,7 +156,7 @@ HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** vo
     return S_OK;
 }
 
-HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* /*passwordIsDefined*/, BSTR* password ) {
+HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
     if ( mPassword.length() == 0 ) {
         if ( mAskPassword ) {
             // You can ask real password here from user
@@ -166,6 +167,6 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* /*passwordIsDefined*/, BS
         }
     }
 
-    //*passwordIsDefined = BoolToInt( mIsPasswordDefined );
+    *passwordIsDefined = BoolToInt( mPassword.length() != 0 );
     return StringToBstr( mPassword.c_str(), password );
 }

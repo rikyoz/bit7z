@@ -43,15 +43,11 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
 }
 
 ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath )
-    : mNumErrors( 0 ), mArchiveHandler( archiveHandler ),
-      mDirectoryPath( directoryPath ) {
+    : mArchiveHandler( archiveHandler ), mDirectoryPath( directoryPath ), mExtractMode( true ),
+      mProcessedFileInfo(), mOutFileStreamSpec( NULL ), mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
     FileSystem::FSUtil::normalize_path( mDirectoryPath );
 }
-
-//void ExtractCallback::setPassword( const wstring& password ) {
-//    mPassword = password;
-//}
 
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
@@ -146,7 +142,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
     // Create folders for file
     size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
 
-    if ( slashPos >= 0 && slashPos != wstring::npos )
+    if ( slashPos != wstring::npos )
         NFile::NDirectory::CreateComplexDirectory( ( mDirectoryPath + mFilePath.substr( 0,
                                                      slashPos ) ).c_str() );
     wstring fullProcessedPath = mDirectoryPath + mFilePath;
@@ -192,7 +188,7 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     switch ( askExtractMode ) {
         case NArchive::NExtract::NAskMode::kExtract:
             mExtractMode = true;
-            //cout <<  kExtractingString;
+            //wcout <<  kExtractingString;
             break;
 
             /*case NArchive::NExtract::NAskMode::kTest:
@@ -254,7 +250,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( mPassword.length() == 0 ) {
+    if ( !isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;

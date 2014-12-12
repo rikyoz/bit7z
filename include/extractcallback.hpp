@@ -16,10 +16,9 @@ using namespace std;
 
 namespace Bit7z {
     class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp,
-                            public Callback {
+        public Callback {
         public:
             ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath );
-            //void setPassword( const wstring& password );
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
@@ -53,7 +52,6 @@ namespace Bit7z {
             CMyComPtr<ISequentialOutStream> mOutFileStream;
 
             UInt64 mNumErrors;
-            //wstring mPassword;
     };
 }
 

@@ -20,6 +20,6 @@ bool FSUtil::has_ending( wstring const& str, const wstring& ending ) {
 
 void FSUtil::normalize_path( wstring& path ) {
     if ( path.empty() ) return;
-    if ( path.find_last_of(L"\\/") != path.length() - 1 )
-        path.append(L"\\");
+    if ( path.find_last_of( L"\\/" ) != path.length() - 1 )
+        path.append( L"\\" );
 }

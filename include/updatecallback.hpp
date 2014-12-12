@@ -14,7 +14,7 @@ using namespace Bit7z::FileSystem;
 
 namespace Bit7z {
     class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp,
-                           public Callback {
+        public Callback {
         public:
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
 
@@ -25,7 +25,7 @@ namespace Bit7z {
             // IUpdateCallback2
             STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
             STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties,
-                                               UInt32* indexInArchive );
+                                            UInt32* indexInArchive );
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
             STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
@@ -43,8 +43,6 @@ namespace Bit7z {
             wstring mDirPrefix;
             const vector<FSItem>& mDirItems;
 
-            /*bool mIsPasswordDefined;
-            wstring mPassword;*/
             bool mAskPassword;
 
             bool mNeedBeClosed;

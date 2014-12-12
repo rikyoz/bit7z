@@ -35,13 +35,12 @@ void FSIndexer::listFilesInDirectory( vector<FSItem>& result, bool recursive,
     do {
         //NOTE: This should definitely be optimized!!
         wstring ndir;
-        if ( prefix.empty() ) {
+        if ( prefix.empty() )
             ndir = mDirectory;
-        } else if ( prefix[0] == '\\' || prefix[0] == '/' ) {
+        else if ( prefix[0] == '\\' || prefix[0] == '/' )
             ndir = mDirectory + prefix;
-        } else {
+        else
             ndir = mDirectory + L"\\" + prefix;
-        }
         FSItem currentItem = FSItem( ndir, mDirName + prefix, data );
         if ( currentItem.isDir() ) {
             if ( recursive && currentItem.name() != L"." && currentItem.name() != L".." ) {

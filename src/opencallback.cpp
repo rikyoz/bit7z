@@ -5,7 +5,7 @@
 using namespace std;
 using namespace Bit7z;
 
-OpenCallback::OpenCallback() /*mPasswordIsDefined( false )*/ {}
+OpenCallback::OpenCallback() {}
 
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
@@ -16,7 +16,7 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 }
 
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( mPassword.length() == 0 ) {
+    if ( !isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
@@ -26,8 +26,3 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
 
     return StringToBstr( mPassword.c_str(), password );
 }
-
-//void OpenCallback::setPassword( const wstring& password ) {
-//    this->mPassword = password;
-//}
-

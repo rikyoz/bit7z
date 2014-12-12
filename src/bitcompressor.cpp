@@ -11,7 +11,7 @@
 using namespace Bit7z;
 using namespace NWindows;
 
-BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitFormat format ) : mLibrary( lib ),
+BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitOutFormat format ) : mLibrary( lib ),
     mFormat( format ), mPassword( L"" ), mCryptHeaders( false ), mSolidMode( false ) {}
 
 void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
@@ -27,9 +27,8 @@ void BitCompressor::compress( const vector<wstring>& in_files, const wstring& ou
         if ( item.isDir() ) {
             FSIndexer indexer( filePath );
             indexer.listFilesInDirectory( dirItems );
-        } else {
+        } else
             dirItems.push_back( item );
-        }
     }
     compressFS( dirItems, out_archive );
 }
@@ -58,6 +57,7 @@ void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out
 
 void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) {
     CMyComPtr<IOutArchive> outArchive = mLibrary.outputArchiveObject( mFormat );
+
     if ( mCryptHeaders ) {
         const wchar_t* names[] = {L"he"};
         const int kNumProps = sizeof( names ) / sizeof( names[0] );
@@ -70,11 +70,14 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
         if ( setProperties->SetProperties( names, values, kNumProps ) != S_OK )
             throw BitException( "Cannot set properties of the archive" );
     }
+
     COutFileStream* outFileStreamSpec = new COutFileStream;
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) )
         throw BitException( "Can't create archive file" );
+
     UpdateCallback* updateCallbackSpec = new UpdateCallback( in_items );
     updateCallbackSpec->setPassword( mPassword );
+
     CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
     HRESULT result = outArchive->UpdateItems( outFileStreamSpec, ( UInt32 )in_items.size(),
                                               updateCallback );

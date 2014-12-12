@@ -9,7 +9,8 @@ namespace Bit7z {
     class Callback {
         public:
             void setPassword( wstring const& password );
-            wstring getErrorMessage();
+            bool isPasswordDefined() const;
+            wstring getErrorMessage() const;
 
         protected:
             Callback();

@@ -4,15 +4,13 @@
 #include <iostream>
 #include <exception>
 
-#include "Common/MyString.h"
-
 namespace Bit7z {
     class BitException : public std::runtime_error {
         public:
             BitException( const std::string& message );
             BitException( const std::wstring& message );
 
-            const char *what() const;
+            const char* what() const;
 
         private:
             std::string mUnicodeMessage;

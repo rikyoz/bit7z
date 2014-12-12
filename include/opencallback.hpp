@@ -14,7 +14,7 @@ using namespace std;
 
 namespace Bit7z {
     class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp,
-                         public Callback {
+        public Callback {
         public:
             OpenCallback();
 
@@ -24,11 +24,6 @@ namespace Bit7z {
             STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes );
 
             STDMETHOD( CryptoGetTextPassword )( BSTR* password );
-
-            //void setPassword( const wstring& password );
-
-        private:
-            //wstring mPassword;
     };
 }
 

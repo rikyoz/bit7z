@@ -19,61 +19,21 @@ Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) {
         throw BitException( "Cannot get CreateObject" );
 }
 
-CMyComPtr<IInArchive> Bit7zLibrary::inputArchiveObject( BitFormat format ) const {
+CMyComPtr<IInArchive> Bit7zLibrary::inputArchiveObject( BitInFormat format ) const {
     CMyComPtr<IInArchive> archiveObj;
-    createArchiveObject( format, &IID_IInArchive, ( void** )&archiveObj );
+    createArchiveObject( &format.guid(), &IID_IInArchive, ( void** )&archiveObj );
     return archiveObj;
 }
 
-CMyComPtr<IOutArchive> Bit7zLibrary::outputArchiveObject( BitFormat format ) const {
+CMyComPtr<IOutArchive> Bit7zLibrary::outputArchiveObject( BitOutFormat format ) const {
     CMyComPtr<IOutArchive> archiveObj;
-    createArchiveObject( format, &IID_IOutArchive, ( void** )&archiveObj );
+    createArchiveObject( &format.guid(), &IID_IOutArchive, ( void** )&archiveObj );
     return archiveObj;
 }
 
-void Bit7zLibrary::createArchiveObject( BitFormat format,
+void Bit7zLibrary::createArchiveObject( const GUID* format_ID,
                                         const GUID* interface_ID,
                                         void** out_object ) const {
-    const GUID* clsID;
-
-    switch ( format ) {
-        case BitFormat::Zip:
-            clsID = &CLSID_CFormatZip;
-            break;
-        case BitFormat::BZip2:
-            clsID = &CLSID_CFormatBZip2;
-            break;
-        case BitFormat::SevenZip:
-            clsID = &CLSID_CFormat7z;
-            break;
-        case BitFormat::Rar:
-            clsID = &CLSID_CFormatRar;
-            break;
-        case BitFormat::Cab:
-            clsID = &CLSID_CFormatCab;
-            break;
-        case BitFormat::Lzma:
-            clsID = &CLSID_CFormatLzma;
-            break;
-        case BitFormat::Lzma86:
-            clsID = &CLSID_CFormatLzma86;
-            break;
-        case BitFormat::Iso:
-            clsID = &CLSID_CFormatIso;
-            break;
-        case BitFormat::Tar:
-            clsID = &CLSID_CFormatTar;
-            break;
-        case BitFormat::GZip:
-            clsID = &CLSID_CFormatGZip;
-            break;
-        case BitFormat::Xz:
-            clsID = &CLSID_CFormatXz;
-            break;
-        default:
-            throw BitException( "Format not supported!" );
-    }
-
-    if ( mCreateObjectFunc( clsID, interface_ID, out_object ) != S_OK )
+    if ( mCreateObjectFunc( format_ID, interface_ID, out_object ) != S_OK )
         throw BitException( "Cannot get class object" );
 }

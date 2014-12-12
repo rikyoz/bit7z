@@ -7,16 +7,17 @@
 #include "../include/bitguids.hpp"
 
 namespace Bit7z {
+
     class BitExtractor {
         public:
-            BitExtractor( const Bit7zLibrary&, BitFormat format );
+            BitExtractor( const Bit7zLibrary&, BitInFormat format );
 
             void extract( const std::wstring& in_file, const std::wstring& out_dir = L"",
                           const std::wstring& password = L"" );
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitFormat mFormat;
+            const BitInFormat& mFormat;
     };
 }
 

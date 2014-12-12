@@ -2,10 +2,14 @@
 
 using namespace Bit7z;
 
-Callback::Callback() : mErrorMessage( L"" ), mPassword( L"" ) {}
+Callback::Callback() : mPassword( L"" ), mErrorMessage( L"" ) {}
 
 void Callback::setPassword( const wstring& password ) {
     mPassword = password;
 }
 
-wstring Callback::getErrorMessage() { return mErrorMessage; }
+bool Callback::isPasswordDefined() const {
+    return mPassword.length() != 0;
+}
+
+wstring Callback::getErrorMessage() const { return mErrorMessage; }
