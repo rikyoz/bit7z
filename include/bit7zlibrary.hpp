@@ -7,13 +7,13 @@
 #include "Common/MyCom.h"
 #include "Windows/DLL.h"
 
+#include "../include/bitformat.hpp"
+
 typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID,
                                              const GUID* interfaceID,
                                              void** outObject );
 
 namespace Bit7z {
-
-    enum BitFormat { Zip, BZip2, SevenZip, Rar, Cab, Lzma, Lzma86, Iso, Tar, GZip, Xz };
 
     class Bit7zLibrary {
             friend class BitExtractor;
@@ -24,9 +24,9 @@ namespace Bit7z {
             Bit7zLibrary( const std::wstring& dll_path );
 
         private:
-            CMyComPtr<IInArchive>   inputArchiveObject( BitFormat format ) const;
-            CMyComPtr<IOutArchive> outputArchiveObject( BitFormat format ) const;
-            void createArchiveObject( BitFormat format,
+            CMyComPtr<IInArchive>   inputArchiveObject( BitInFormat format ) const;
+            CMyComPtr<IOutArchive> outputArchiveObject( BitOutFormat format ) const;
+            void createArchiveObject( const GUID* format_ID,
                                       const GUID* interface_ID,
                                       void** out_object ) const;
 

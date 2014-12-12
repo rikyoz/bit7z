@@ -4,3 +4,4 @@ test/files/
 *.regx
 *.autosave
 *.3-pre1
+*.cppcheck

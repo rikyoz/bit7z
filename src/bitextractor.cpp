@@ -9,29 +9,28 @@
 
 using namespace Bit7z;
 
-BitExtractor::BitExtractor( const Bit7zLibrary& lib, BitFormat format ) : mLibrary( lib ),
-    mFormat( format ) {}
+BitExtractor::BitExtractor( const Bit7zLibrary& lib,
+                            Bit7z::BitInFormat format ) : mLibrary( lib ), mFormat( format ) {}
 
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir,
                             const std::wstring& password ) {
-    CMyComPtr<IInArchive> archive = mLibrary.inputArchiveObject( mFormat );
+    CMyComPtr<IInArchive> inArchive = mLibrary.inputArchiveObject( mFormat );
+
     CInFileStream* fileStream = new CInFileStream;
     if ( !fileStream->Open( in_file.c_str() ) )
         throw BitException( "Cannot open archive file" );
 
     OpenCallback* openCallbackSpec = new OpenCallback();
-    if ( password.size() > 0 )
-        openCallbackSpec->setPassword( password.c_str() );
+    openCallbackSpec->setPassword( password );
 
     CMyComPtr<IArchiveOpenCallback> openCallback( openCallbackSpec );
-    if ( archive->Open( fileStream, 0, openCallback ) != S_OK )
+    if ( inArchive->Open( fileStream, 0, openCallback ) != S_OK )
         throw BitException( "Cannot open archive" );
 
-    ExtractCallback* extractCallbackSpec = new ExtractCallback( archive, out_dir.c_str() );
-    if ( password.size() > 0 )
-        extractCallbackSpec->setPassword( password.c_str() );
+    ExtractCallback* extractCallbackSpec = new ExtractCallback( inArchive, out_dir );
+    extractCallbackSpec->setPassword( password );
 
     CMyComPtr<IArchiveExtractCallback> extractCallback( extractCallbackSpec );
-    if ( archive->Extract( NULL, ( UInt32 )( Int32 )( -1 ), false, extractCallback ) != S_OK )
+    if ( inArchive->Extract( NULL, ( UInt32 )( Int32 )( -1 ), false, extractCallback ) != S_OK )
         throw BitException( extractCallbackSpec->getErrorMessage() );
 }

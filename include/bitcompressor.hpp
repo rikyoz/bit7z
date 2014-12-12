@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "../include/bit7zlibrary.hpp"
+#include "../include/bitformat.hpp"
 #include "../include/bitguids.hpp"
 
 #include "../include/fsitem.hpp"
@@ -15,7 +16,7 @@ using namespace Bit7z::FileSystem;
 namespace Bit7z {
     class BitCompressor {
         public:
-            BitCompressor( const Bit7zLibrary& lib, BitFormat format );
+            BitCompressor( const Bit7zLibrary& lib, BitOutFormat format );
 
             void setPassword( const wstring& password, bool crypt_headers = false );
             void setCompressionLevel();
@@ -31,7 +32,7 @@ namespace Bit7z {
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitFormat mFormat;
+            const BitOutFormat mFormat;
             wstring mPassword;
             bool mCryptHeaders;
             bool mSolidMode;
