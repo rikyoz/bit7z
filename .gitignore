@@ -5,3 +5,5 @@ test/files/
 *.autosave
 *.3-pre1
 *.cppcheck
+*.pdb
+*.lib
