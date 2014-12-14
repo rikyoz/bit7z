@@ -21,13 +21,13 @@ Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) {
 
 CMyComPtr<IInArchive> Bit7zLibrary::inputArchiveObject( BitInFormat format ) const {
     CMyComPtr<IInArchive> archiveObj;
-    createArchiveObject( &format.guid(), &IID_IInArchive, ( void** )&archiveObj );
+    createArchiveObject( &format.guid(), &IID_IInArchive, reinterpret_cast< void** >( &archiveObj ) );
     return archiveObj;
 }
 
 CMyComPtr<IOutArchive> Bit7zLibrary::outputArchiveObject( BitOutFormat format ) const {
     CMyComPtr<IOutArchive> archiveObj;
-    createArchiveObject( &format.guid(), &IID_IOutArchive, ( void** )&archiveObj );
+    createArchiveObject( &format.guid(), &IID_IOutArchive, reinterpret_cast< void** >( &archiveObj ) );
     return archiveObj;
 }
 

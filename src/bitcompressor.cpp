@@ -65,7 +65,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
             true     // crypted headers ON
         };
         CMyComPtr<ISetProperties> setProperties;
-        if ( outArchive->QueryInterface( IID_ISetProperties, ( void** )&setProperties ) != S_OK )
+        if ( outArchive->QueryInterface( IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) ) != S_OK )
             throw BitException( "ISetProperties unsupported" );
         if ( setProperties->SetProperties( names, values, kNumProps ) != S_OK )
             throw BitException( "Cannot set properties of the archive" );
@@ -79,7 +79,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     updateCallbackSpec->setPassword( mPassword );
 
     CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
-    HRESULT result = outArchive->UpdateItems( outFileStreamSpec, ( UInt32 )in_items.size(),
+    HRESULT result = outArchive->UpdateItems( outFileStreamSpec, static_cast< UInt32 >( in_items.size() ),
                                               updateCallback );
     updateCallbackSpec->Finilize();
 
