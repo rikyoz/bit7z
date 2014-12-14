@@ -83,9 +83,12 @@ int main() {
         cleanup();
         Bit7zLibrary lib( L"7z.dll" );
         cout << "## COMPRESSION TESTS ##" << endl;
-        for ( unsigned int i = BitOutFormat::Zip; i <= BitOutFormat::GZip; ++i ) {
+        for ( unsigned int i = BitOutFormat::Zip; i < BitOutFormat::GZip; ++i ) {
             BitOutFormat frmt = i;
             BitCompressor compressor( lib, frmt );
+            //compressor.setPassword( L"qwertyuiop", true );
+            //compressor.setCompressionLevel( BitCompressionLevel::Ultra );
+            //compressor.useSolidMode( true );
             //testing compress capabilities only for supported formats!
             wcout << L"[Testing Format " << format_name[i] << L"]" << endl;
             if ( frmt != BitOutFormat::BZip2 && frmt != BitOutFormat::GZip && frmt != BitOutFormat::Xz )

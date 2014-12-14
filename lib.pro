@@ -54,7 +54,8 @@ HEADERS += include/bitcompressor.hpp \
            include/fsutil.hpp \
            include/bit7z.hpp \
            include/callback.hpp \
-           include/bitformat.hpp
+           include/bitformat.hpp \
+           include/bitcompressionlevel.hpp
 
 win32 {
   contains(QMAKE_HOST.arch, x86_64) {
