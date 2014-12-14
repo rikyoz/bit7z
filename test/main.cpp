@@ -30,7 +30,7 @@ static const wstring compressed_out4  = gen_directory + L"test4";
 
 void cleanup() {
     cout << "Cleaning old test files... ";
-    for ( unsigned int i = BitOutFormat::Zip; i < BitOutFormat::GZip; ++i ) {
+    for ( unsigned int i = BitOutFormat::Zip; i <= BitOutFormat::GZip; ++i ) {
         DeleteFile( ( compressed_out + extensions[i] ).c_str()  );
         DeleteFile( ( compressed_out2 + extensions[i] ).c_str() );
         DeleteFile( ( compressed_out3 + extensions[i] ).c_str() );
@@ -104,7 +104,7 @@ int main() {
         cleanup();
         Bit7zLibrary lib( L"7z.dll" );
         cout << "## COMPRESSION TESTS ##" << endl;
-        for ( unsigned int i = BitOutFormat::Zip; i < BitOutFormat::GZip; ++i ) {
+        for ( unsigned int i = BitOutFormat::Zip; i <= BitOutFormat::GZip; ++i ) {
             BitOutFormat frmt = i;
             //testing compress capabilities only for supported formats!
             wcout << L"[Testing Format " << format_name[i] << L"]" << endl;
