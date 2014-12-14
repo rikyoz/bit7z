@@ -88,7 +88,7 @@ int main() {
             BitCompressor compressor( lib, frmt );
             //compressor.setPassword( L"qwertyuiop", true );
             //compressor.setCompressionLevel( BitCompressionLevel::Ultra );
-            //compressor.useSolidMode( true );
+            //compressor.setSolidMode( true );
             //testing compress capabilities only for supported formats!
             wcout << L"[Testing Format " << format_name[i] << L"]" << endl;
             if ( frmt != BitOutFormat::BZip2 && frmt != BitOutFormat::GZip && frmt != BitOutFormat::Xz )

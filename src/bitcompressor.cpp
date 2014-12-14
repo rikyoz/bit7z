@@ -24,7 +24,7 @@ void Bit7z::BitCompressor::setCompressionLevel( BitCompressionLevel compression_
     mCompressionLevel = compression_level;
 }
 
-void Bit7z::BitCompressor::useSolidMode( bool solid_mode ) {
+void Bit7z::BitCompressor::setSolidMode( bool solid_mode ) {
     mSolidMode = solid_mode;
 }
 
@@ -78,9 +78,9 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
         names.push_back( L"x" );
         values.push_back( static_cast< UInt32 >( mCompressionLevel ) );
     }
-    if ( mSolidMode && mFormat == BitOutFormat::SevenZip ) {
+    if ( mFormat == BitOutFormat::SevenZip ) {
         names.push_back( L"s" );
-        values.push_back( true );
+        values.push_back( mSolidMode );
     }
 
     if ( names.size() > 0 ) {

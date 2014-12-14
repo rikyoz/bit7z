@@ -20,7 +20,7 @@ namespace Bit7z {
 
             void setPassword( const wstring& password, bool crypt_headers = false );
             void setCompressionLevel( BitCompressionLevel compression_level );
-            void useSolidMode( bool solid_mode );
+            void setSolidMode( bool solid_mode );
 
             void compress( const vector<wstring>& in_files, const wstring& out_archive ) const;
             void compressFile( const wstring& in_file, const wstring& out_archive ) const;
