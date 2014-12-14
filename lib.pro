@@ -41,8 +41,6 @@ LIBS += -loleaut32 -lole32 -luuid -luser32
 
 DEFINES += _UNICODE
 
-DESTDIR  = $$PWD/bin/
-
 HEADERS += include/bitcompressor.hpp \
            include/bit7zlibrary.hpp \
            include/bitexception.hpp \
@@ -61,7 +59,9 @@ HEADERS += include/bitcompressor.hpp \
 win32 {
   contains(QMAKE_HOST.arch, x86_64) {
     QMAKE_LFLAGS         += /MACHINE:X64
+    DESTDIR  = $$PWD/bin/x64/
   } else {
     QMAKE_LFLAGS         += /MACHINE:X86
+    DESTDIR  = $$PWD/bin/x86/
   }
 }

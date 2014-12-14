@@ -7,13 +7,23 @@ TARGET   = Bit7zTest
 
 SOURCES += main.cpp
 
-LIBS += -L$$PWD/../bin -lbit7z -loleaut32 -lole32 -luuid
+contains(QMAKE_HOST.arch, x86_64) {
+    DESTDIR  = $$PWD/bin/x64/
+} else {
+    DESTDIR  = $$PWD/bin/x86/
+}
+
+contains(QMAKE_HOST.arch, x86_64) {
+    LIBS += -L$$PWD/../bin/x64/
+} else {
+    LIBS += -L$$PWD/../bin/x86/
+}
+
+LIBS += -lbit7z -loleaut32 -lole32 -luuid
 
 DEFINES += _UNICODE
 
 INCLUDEPATH += ../lib/7zSDK/win/CPP/ \
                ../include/
-
-DESTDIR  = $$PWD/../bin/
 
 CONFIG  += embed_manifest_exe

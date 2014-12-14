@@ -7,15 +7,13 @@
 #include "../include/bitexception.hpp"
 #include "../include/fsindexer.hpp"
 
-#define BASE_DIR L"C:\\Users\\Oz\\Documents\\Programmazione\\Qt Projects\\Bit7z\\"
-
 using namespace std;
 using namespace Bit7z;
 
 static const wstring format_name[] = { L"ZIP", L"BZIP2", L"7Z", L"XZ", L"WIM", L"TAR", L"GZIP"};
 static const wstring extensions[]  = { L".zip", L".bz2", L".7z", L".xz", L".wim", L".tar", L".gz" };
 
-static const wstring test_directory   = BASE_DIR L"test\\files\\";
+static const wstring test_directory   = L"..\\..\\files\\";
 static const wstring in_directory     = test_directory + L"input\\";
 static const wstring out_directory    = test_directory + L"output\\";
 static const wstring gen_directory    = test_directory + L"generated\\";

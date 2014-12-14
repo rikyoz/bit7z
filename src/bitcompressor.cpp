@@ -91,6 +91,4 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
 
     if ( updateCallbackSpec->mFailedFiles.size() != 0 )
         throw BitException( errorString );
-
-    //outFileStreamSpec->Close();
 }
