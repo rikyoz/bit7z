@@ -2,6 +2,8 @@
 
 #include "../include/bitexception.hpp"
 
+#include <Windows.h>
+
 using namespace Bit7z::FileSystem;
 
 bool FSUtil::is_directory( const wstring& path ) {
