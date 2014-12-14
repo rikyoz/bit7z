@@ -22,13 +22,13 @@ namespace Bit7z {
             void setCompressionLevel();
             void enableSolidMode();
 
-            void compress( const vector<wstring>& in_files, const wstring& out_archive );
-            void compressFile( const wstring& in_file, const wstring& out_archive );
-            void compressFiles( const vector<wstring>& in_files, const wstring& out_archive );
+            void compress( const vector<wstring>& in_files, const wstring& out_archive ) const;
+            void compressFile( const wstring& in_file, const wstring& out_archive ) const;
+            void compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) const;
             void compressFiles( const wstring& in_dir, const wstring& filter,
-                                const wstring& out_archive, bool search_subdirs = true );
+                                const wstring& out_archive, bool search_subdirs = true ) const;
             void compressDirectory( const wstring& in_dir, const wstring& out_archive,
-                                    bool search_subdirs = true );
+                                    bool search_subdirs = true ) const;
 
         private:
             const Bit7zLibrary& mLibrary;
@@ -37,7 +37,7 @@ namespace Bit7z {
             bool mCryptHeaders;
             bool mSolidMode;
 
-            void compressFS( const vector<FSItem>& in_items, const wstring& out_archive );
+            void compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const;
     };
 }
 

@@ -19,7 +19,7 @@ void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
     mCryptHeaders = crypt_headers;
 }
 
-void BitCompressor::compress( const vector<wstring>& in_files, const wstring& out_archive ) {
+void BitCompressor::compress( const vector<wstring>& in_files, const wstring& out_archive ) const {
     vector<FSItem> dirItems;
     for ( wstring filePath : in_files ) {
         FSItem item( filePath );
@@ -33,11 +33,11 @@ void BitCompressor::compress( const vector<wstring>& in_files, const wstring& ou
     compressFS( dirItems, out_archive );
 }
 
-void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) {
+void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
     compressFiles( {in_file}, out_archive );
 }
 
-void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) {
+void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) const {
     vector<FSItem> dirItems;
     for ( wstring filePath : in_files ) {
         FSItem item( filePath );
@@ -48,14 +48,14 @@ void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstrin
 }
 
 void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive,
-                                       bool search_subdirs ) {
+                                       bool search_subdirs ) const {
     vector<FSItem> dirItems;
     FSIndexer indexer( in_dir );
     indexer.listFilesInDirectory( dirItems, search_subdirs );
     compressFS( dirItems, out_archive );
 }
 
-void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) {
+void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const {
     CMyComPtr<IOutArchive> outArchive = mLibrary.outputArchiveObject( mFormat );
 
     if ( mCryptHeaders ) {
@@ -91,4 +91,6 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
 
     if ( updateCallbackSpec->mFailedFiles.size() != 0 )
         throw BitException( errorString );
+
+    //outFileStreamSpec->Close();
 }
