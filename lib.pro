@@ -1,5 +1,3 @@
-#TEMPLATE = app
-#CONFIG += console
 TEMPLATE = lib
 TARGET = bit7z
 VERSION  = 1.0
@@ -7,17 +5,17 @@ CONFIG += staticlib
 CONFIG -= app_bundle
 CONFIG -= qt
 
-SOURCES += lib/7zSDK/win/CPP/Windows/Error.cpp \
-           lib/7zSDK/win/CPP/Windows/DLL.cpp \
-           lib/7zSDK/win/CPP/Windows/FileIO.cpp \
-           lib/7zSDK/win/CPP/Windows/FileDir.cpp \
-           lib/7zSDK/win/CPP/Windows/FileName.cpp \
-           lib/7zSDK/win/CPP/Windows/FileFind.cpp \
-           lib/7zSDK/win/CPP/Windows/COM.cpp \
-           lib/7zSDK/win/CPP/Windows/PropVariant.cpp \
-           lib/7zSDK/win/CPP/7zip/Common/FileStreams.cpp \
-           lib/7zSDK/win/CPP/Common/IntToString.cpp \
-           lib/7zSDK/win/CPP/Common/MyVector.cpp \
+SOURCES += lib/7zSDK/CPP/Windows/Error.cpp \
+           lib/7zSDK/CPP/Windows/DLL.cpp \
+           lib/7zSDK/CPP/Windows/FileIO.cpp \
+           lib/7zSDK/CPP/Windows/FileDir.cpp \
+           lib/7zSDK/CPP/Windows/FileName.cpp \
+           lib/7zSDK/CPP/Windows/FileFind.cpp \
+           lib/7zSDK/CPP/Windows/COM.cpp \
+           lib/7zSDK/CPP/Windows/PropVariant.cpp \
+           lib/7zSDK/CPP/7zip/Common/FileStreams.cpp \
+           lib/7zSDK/CPP/Common/IntToString.cpp \
+           lib/7zSDK/CPP/Common/MyVector.cpp \
            src/bitextractor.cpp \
            src/bitcompressor.cpp \
            src/bit7zlibrary.cpp \
@@ -32,10 +30,12 @@ SOURCES += lib/7zSDK/win/CPP/Windows/Error.cpp \
            src/callback.cpp \
            src/bitformat.cpp
 
-INCLUDEPATH += lib/7zSDK/win/CPP/ \
-               include/
+INCLUDEPATH += lib/7zSDK/CPP/
 
-CONFIG  += c++11 embed_manifest_dll
+CONFIG  += embed_manifest_dll
+
+QMAKE_CFLAGS_WARN_ON -= -W3
+QMAKE_CFLAGS_WARN_ON += -W4
 
 LIBS += -loleaut32 -lole32 -luuid -luser32
 
@@ -57,12 +57,16 @@ HEADERS += include/bitcompressor.hpp \
            include/bitformat.hpp \
            include/bitcompressionlevel.hpp
 
-win32 {
-  contains(QMAKE_HOST.arch, x86_64) {
+contains(QMAKE_HOST.arch, x86_64) {
     QMAKE_LFLAGS         += /MACHINE:X64
-    DESTDIR  = $$PWD/bin/x64/
-  } else {
+    PLATFORM = x64
+} else {
     QMAKE_LFLAGS         += /MACHINE:X86
-    DESTDIR  = $$PWD/bin/x86/
-  }
+    PLATFORM = x86
 }
+
+CONFIG(debug, debug|release) { BUILD = debug } else { BUILD = release }
+
+DESTDIR  = $$PWD/bin/$${PLATFORM}/
+OBJECTS_DIR = $$PWD/build/$${PLATFORM}/$${BUILD}/.obj
+RCC_DIR  = $$PWD/build/$${PLATFORM}/$${BUILD}/.rcc
