@@ -7,6 +7,8 @@ using namespace Bit7z;
 
 OpenCallback::OpenCallback() {}
 
+OpenCallback::~OpenCallback() {}
+
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
 }

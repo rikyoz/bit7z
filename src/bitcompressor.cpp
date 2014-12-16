@@ -88,7 +88,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
         if ( outArchive->QueryInterface( IID_ISetProperties,
                                          reinterpret_cast< void** >( &setProperties ) ) != S_OK )
             throw BitException( "ISetProperties unsupported" );
-        if ( setProperties->SetProperties( &names[0], &values[0], names.size() ) != S_OK )
+        if ( setProperties->SetProperties( &names[0], &values[0], static_cast<UInt32>( names.size() ) ) != S_OK )
             throw BitException( "Cannot set properties of the archive" );
     }
 

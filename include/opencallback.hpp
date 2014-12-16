@@ -17,6 +17,7 @@ namespace Bit7z {
         public Callback {
         public:
             OpenCallback();
+            virtual ~OpenCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 

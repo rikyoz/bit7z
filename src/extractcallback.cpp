@@ -49,6 +49,8 @@ ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& dir
     FileSystem::FSUtil::normalize_path( mDirectoryPath );
 }
 
+ExtractCallback::~ExtractCallback() {}
+
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
 }

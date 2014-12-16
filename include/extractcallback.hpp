@@ -19,6 +19,7 @@ namespace Bit7z {
         public Callback {
         public:
             ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath );
+            virtual ~ExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
