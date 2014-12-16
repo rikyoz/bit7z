@@ -17,8 +17,6 @@ Please note that the presence or not of some of these features depends on the pa
 
 ## Getting Started (Library Usage) ##
 
-Example of usage:
-
 ### Extracting files from an archive ###
 ```cpp
 try {
@@ -59,14 +57,16 @@ try {
 + **Build Automation:** QMake (used only to maintain the project , Bit7z does not depend on Qt libraries!)
 + **Third-party libraries:** 7z SDK (at least version 9.20)
 
-*Note*: the 7z SDK must be placed in the path "&lt;project root&gt;/lib/7zSDK/"
+*Note:* the 7z SDK must be placed in the path "&lt;project root&gt;/lib/7zSDK/".
+
 The 7zSDK folder should look like this:
-![](doc/images/libpath.png?raw=true)
+
+![](http://i.imgur.com/pgS7UHl.png)
 
 ### Build Steps ###
 In order to build this library you can use Qt Creator or the *build.cmd* in the project root folder.
 
-*Note*: before using the build.cmd script, you should have the paths of Qt 5 (to use qmake) and MSVC in the PATH environment variable.
+*Note:* before using the build.cmd script, you should have the paths of Qt 5 (to use qmake) and MSVC in the PATH environment variable.
 
 Example (x64):
 
