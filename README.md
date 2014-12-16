@@ -6,12 +6,14 @@ Bit7z is a C++ static library aiming to offer a clean, simple and object-oriente
 Current version: **v1.0 beta 1**
 
 ## Features ##
-+ Compressing files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
-+ Extracting the following archive formats: 7z, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, GZIP, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, TAR, UDF, VHD, WIM, XAR, XZ, Z and ZIP.
-+ Create encrypted archives (only for 7z and ZIP formats)
-+ Support to archive header encryption (only for 7z format)
-+ Support to compression levels (from none to ultra, according to the output archive format)
-+ Support to solid archives (only for 7z)
+Bit7z supports the following features:
+
++ Compression of files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
++ Extraction of the following archive formats: 7z, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, GZIP, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, TAR, UDF, VHD, WIM, XAR, XZ, Z and ZIP.
++ Creation of encrypted archives (only for 7z and ZIP formats)
++ Archive header encryption (only for 7z format)
++ Choice of the compression level (from none to ultra, depending on the output archive format)
++ Solid archives (only for 7z)
 
 Please note that the presence or not of some of these features depends on the particular .dll used along with Bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.
 
