@@ -3,11 +3,11 @@ Bit7z
 
 Bit7z is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.
 
-Current version: **v1.0 beta**
+Current version: **v1.0 beta 1**
 
 ## Features ##
 + Compressing files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
-+ Reading and extracting the following archive formats: 7z, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, GZIP, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, TAR, UDF, VHD, WIM, XAR, XZ, Z and ZIP.
++ Extracting the following archive formats: 7z, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, GZIP, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, TAR, UDF, VHD, WIM, XAR, XZ, Z and ZIP.
 + Create encrypted archives (only for 7z and ZIP formats)
 + Support to archive header encryption (only for 7z format)
 + Support to compression levels (from none to ultra, according to the output archive format)
@@ -19,10 +19,19 @@ Please note that the presence or not of some of these features depends on the pa
 
 ### Extracting files from an archive ###
 ```cpp
+#include "include/bitextractor.hpp"
+#include "include/bitexception.hpp"
+...
+using namespace Bit7z;
+...
 try {
 	BitLibrary lib(L"7za.dll");
 	BitExtractor extractor(lib, BitInFormat::SevenZip);
+	
+	//extracts a simple archive
 	extractor.extract(L"path/to/archive.7z", L"output/dir/");
+
+	//extracts an encrypted archive
 	extractor.extract(L"path/to/another/archive.7z", L"output/dir/", L"password");
 } catch ( const BitException& e ) {
 	//do something with e.what()...
@@ -31,15 +40,23 @@ try {
 
 ### Compressing files into an archive ###
 ```cpp
+#include "include/bitcompressor.hpp"
+#include "include/bitexception.hpp"
+...
+using namespace Bit7z;
+...
 try {
 	vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
 	BitLibrary lib(L"7z.dll");
 	BitCompressor compressor(lib, BitOutFormat::Zip);
 
-	//creating a simple zip archive
+	//creates a simple zip archive
 	compressor.compressFiles(files, L"output_archive.zip");
 
-	//creating an encrypted zip archive
+	//compresses a directory
+	compressor.compressDirectory(L"dir/path/", L"dir_archive.zip");
+
+	//creates an encrypted zip archive
 	compressor.setPassword(L"password");
 	compressor.compressFiles(files, L"protected_archive.zip");
 } catch ( const BitException& e ) {
@@ -54,7 +71,7 @@ try {
 ## Building Requirements ##
 + **OS:** Windows
 + **Compiler:** MSVC 2012/2013
-+ **Build Automation:** QMake (used only to maintain the project , Bit7z does not depend on Qt libraries!)
++ **Build Automation:** QMake (used only to maintain the project, Bit7z does not depend on Qt libraries!)
 + **Third-party libraries:** 7z SDK (at least version 9.20)
 
 *Note:* the 7z SDK must be placed in the path "&lt;project root&gt;/lib/7zSDK/".
@@ -63,7 +80,6 @@ The 7zSDK folder should look like this:
 
 ![](http://i.imgur.com/pgS7UHl.png)
 
-### Build Steps ###
 In order to build this library you can use Qt Creator or the *build.cmd* in the project root folder.
 
 *Note:* before using the build.cmd script, you should have the paths of Qt 5 (to use qmake) and MSVC in the PATH environment variable.
