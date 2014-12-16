@@ -1,9 +1,9 @@
 TEMPLATE = lib
-TARGET = bit7z
+TARGET   = bit7z
 VERSION  = 1.0
-CONFIG += staticlib
-CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG  += staticlib
+CONFIG  -= app_bundle
+CONFIG  -= qt
 
 SOURCES += lib/7zSDK/CPP/Windows/Error.cpp \
            lib/7zSDK/CPP/Windows/DLL.cpp \
@@ -65,7 +65,11 @@ contains(QMAKE_HOST.arch, x86_64) {
     PLATFORM = x86
 }
 
-CONFIG(debug, debug|release) { BUILD = debug } else { BUILD = release }
+CONFIG(debug, debug|release) {
+    BUILD = debug
+} else {
+    BUILD = release
+}
 
 DESTDIR  = $$PWD/bin/$${PLATFORM}/
 OBJECTS_DIR = $$PWD/build/$${PLATFORM}/$${BUILD}/.obj

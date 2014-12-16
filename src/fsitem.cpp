@@ -39,7 +39,7 @@ bool FSItem::isDir() const {
     return ( mFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) != 0;
 }
 
-UInt64 FSItem::size() const {
+uint64_t FSItem::size() const {
     ULARGE_INTEGER size;
     size.LowPart = mFileData.nFileSizeLow;
     size.HighPart = mFileData.nFileSizeHigh;
@@ -72,6 +72,6 @@ wstring FSItem::fullPath() const {
     return mDirectory + L"\\" + mFileData.cFileName;
 }
 
-UInt32 FSItem::attributes() const {
+uint32_t FSItem::attributes() const {
     return mFileData.dwFileAttributes;
 }

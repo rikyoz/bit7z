@@ -14,7 +14,10 @@ BitExtractor::BitExtractor( const Bit7zLibrary& lib,
 
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir,
                             const std::wstring& password ) const {
-    CMyComPtr<IInArchive> inArchive = mLibrary.inputArchiveObject( mFormat );
+    CMyComPtr<IInArchive> inArchive;
+    mLibrary.createArchiveObject( &mFormat.guid(),
+                                  &IID_IInArchive,
+                                  reinterpret_cast< void** >( &inArchive ) );
 
     CInFileStream* fileStream = new CInFileStream;
     if ( !fileStream->Open( in_file.c_str() ) )

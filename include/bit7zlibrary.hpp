@@ -3,9 +3,7 @@
 
 #include <iostream>
 
-#include "7zip/Archive/IArchive.h"
-#include "Common/MyCom.h"
-#include "Windows/DLL.h"
+#include <Windows.h>
 
 #include "../include/bitformat.hpp"
 
@@ -24,13 +22,11 @@ namespace Bit7z {
             Bit7zLibrary( const std::wstring& dll_path );
 
         private:
-            CMyComPtr<IInArchive>   inputArchiveObject( BitInFormat format ) const;
-            CMyComPtr<IOutArchive> outputArchiveObject( BitOutFormat format ) const;
             void createArchiveObject( const GUID* format_ID,
                                       const GUID* interface_ID,
                                       void** out_object ) const;
 
-            NWindows::NDLL::CLibrary mLibrary;
+            HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
     };
 

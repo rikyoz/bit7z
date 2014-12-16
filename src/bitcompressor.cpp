@@ -1,6 +1,7 @@
 #include "../include/bitcompressor.hpp"
 
 #include "7zip/Archive/IArchive.h"
+#include "7zip/Common/FileStreams.h"
 #include "Windows/COM.h"
 #include "Windows/FileFind.h"
 #include "Windows/PropVariant.h"
@@ -17,7 +18,8 @@ BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitOutFormat format ) : m
 
 void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
     mPassword = password;
-    mCryptHeaders = crypt_headers;
+    mCryptHeaders = ( password.length() > 0 ) && crypt_headers;//true only if a password is set and
+                                                               //crypt_headers is true
 }
 
 void Bit7z::BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
@@ -66,7 +68,10 @@ void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out
 }
 
 void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const {
-    CMyComPtr<IOutArchive> outArchive = mLibrary.outputArchiveObject( mFormat );
+    CMyComPtr<IOutArchive> outArchive;
+    mLibrary.createArchiveObject( &mFormat.guid(),
+                                  &IID_IOutArchive,
+                                  reinterpret_cast< void** >( &outArchive ) );
 
     vector< const wchar_t* > names;
     vector< NCOM::CPropVariant > values;

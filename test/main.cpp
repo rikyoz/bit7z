@@ -5,7 +5,6 @@
 #include "../include/bitextractor.hpp"
 #include "../include/bitcompressor.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/fsindexer.hpp"
 
 using namespace std;
 using namespace Bit7z;

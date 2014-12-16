@@ -2,10 +2,8 @@
 #define UPDATECALLBACK_HPP
 
 #include "7zip/Archive/IArchive.h"
-#include "7zip/Common/FileStreams.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
-#include "Windows/COM.h"
 
 #include "../include/fsindexer.hpp"
 #include "../include/callback.hpp"
@@ -36,7 +34,7 @@ namespace Bit7z {
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
         public:
-            CRecordVector<UInt64> mVolumesSizes;
+            vector<UInt64> mVolumesSizes;
             wstring mVolName;
             wstring mVolExt;
 
@@ -48,7 +46,7 @@ namespace Bit7z {
             bool mNeedBeClosed;
 
             vector<wstring> mFailedFiles;
-            CRecordVector<HRESULT> mFailedCodes;
+            vector<HRESULT> mFailedCodes;
 
             UpdateCallback( const vector<FSItem>& dirItems );
             virtual ~UpdateCallback();

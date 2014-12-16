@@ -7,7 +7,6 @@
 #include "7zip/Common/FileStreams.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
-#include "Windows/COM.h"
 
 #include "../include/bitguids.hpp"
 #include "../include/callback.hpp"

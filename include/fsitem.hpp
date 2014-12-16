@@ -2,9 +2,9 @@
 #define FSITEM_HPP
 
 #include <iostream>
+#include <cinttypes>
 
-#include "7zip/Archive/IArchive.h"
-#include "Windows/COM.h"
+#include <Windows.h>
 
 using namespace std;
 
@@ -19,14 +19,14 @@ namespace Bit7z {
 
                 bool exists() const;
                 bool isDir() const;
-                UInt64 size() const;
+                uint64_t size() const;
                 FILETIME creationTime() const;
                 FILETIME lastAccessTime() const;
                 FILETIME lastWriteTime() const;
                 wstring name() const;
                 wstring relativePath() const;
                 wstring fullPath() const;
-                UInt32 attributes() const;
+                uint32_t attributes() const;
 
             private:
                 wstring mDirectory;

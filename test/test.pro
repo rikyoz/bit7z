@@ -1,15 +1,13 @@
 TEMPLATE = app
+TARGET = Bit7zTest
 CONFIG  += console
 CONFIG  -= app_bundle
 CONFIG  -= qt
 QT      -= core
-TARGET   = Bit7zTest
 
 SOURCES += main.cpp
 
 DEFINES += _UNICODE
-
-INCLUDEPATH += ../lib/7zSDK/CPP/
 
 CONFIG  += embed_manifest_exe
 

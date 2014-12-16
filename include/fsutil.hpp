@@ -3,8 +3,6 @@
 
 #include <iostream>
 
-//#include "Common/MyString.h"
-
 using namespace std;
 
 namespace Bit7z {

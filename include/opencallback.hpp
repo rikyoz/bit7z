@@ -6,7 +6,6 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
-#include "Windows/COM.h"
 
 #include "../include/callback.hpp"
 
