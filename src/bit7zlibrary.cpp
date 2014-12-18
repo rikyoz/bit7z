@@ -5,7 +5,7 @@
 
 #define DEFAULT_DLL L"7z.dll"
 
-using namespace Bit7z;
+using namespace bit7z;
 
 Bit7zLibrary::Bit7zLibrary() : Bit7zLibrary( DEFAULT_DLL ) {}
 

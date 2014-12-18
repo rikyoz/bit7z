@@ -8,8 +8,9 @@
 
 using namespace std;
 
-namespace Bit7z {
-    namespace FileSystem {
+namespace bit7z {
+    namespace filesystem {
+
         typedef WIN32_FIND_DATA FSItemInfo;
 
         class FSItem {
@@ -33,6 +34,7 @@ namespace Bit7z {
                 wstring mRelativeDirectory;
                 FSItemInfo mFileData;
         };
+
     }
 }
 

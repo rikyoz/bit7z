@@ -11,7 +11,8 @@
 
 using namespace std;
 
-namespace Bit7z {
+namespace bit7z {
+
     class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp,
         public Callback {
         public:
@@ -25,6 +26,7 @@ namespace Bit7z {
 
             STDMETHOD( CryptoGetTextPassword )( BSTR* password );
     };
+
 }
 
 #endif // OPENCALLBACK_HPP

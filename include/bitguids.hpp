@@ -3,7 +3,8 @@
 
 #include <guiddef.h>
 
-namespace Bit7z {
+namespace bit7z {
+
     extern const GUID CLSID_CFormatZip;
     extern const GUID CLSID_CFormatBZip2;
     extern const GUID CLSID_CFormatRar;
@@ -59,6 +60,7 @@ namespace Bit7z {
     extern "C" const GUID IID_ICryptoGetTextPassword;
     extern "C" const GUID IID_ICryptoGetTextPassword2;
     extern "C" const GUID IID_ISetProperties;
+
 }
 
 #endif // BITGUIDS_HPP

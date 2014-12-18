@@ -4,7 +4,7 @@
 
 #include <Windows.h>
 
-using namespace Bit7z::FileSystem;
+using namespace bit7z::filesystem;
 
 bool FSUtil::is_directory( const wstring& path ) {
     return ( GetFileAttributes( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY ) != 0;

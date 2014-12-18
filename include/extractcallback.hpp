@@ -13,7 +13,8 @@
 
 using namespace std;
 
-namespace Bit7z {
+namespace bit7z {
+
     class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp,
         public Callback {
         public:
@@ -53,6 +54,7 @@ namespace Bit7z {
 
             UInt64 mNumErrors;
     };
+
 }
 
 #endif // EXTRACTCALLBACK_HPP

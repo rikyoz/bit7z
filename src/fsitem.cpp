@@ -4,7 +4,7 @@
 
 #include <string>
 
-using namespace Bit7z::FileSystem;
+using namespace bit7z::filesystem;
 
 FSItem::FSItem( const wstring& path,
                 const wstring& relative_dir ) : mDirectory( path ), mRelativeDirectory( relative_dir ),

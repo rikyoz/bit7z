@@ -6,7 +6,7 @@
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitguids.hpp"
 
-namespace Bit7z {
+namespace bit7z {
 
     class BitExtractor {
         public:
@@ -19,6 +19,7 @@ namespace Bit7z {
             const Bit7zLibrary& mLibrary;
             const BitInFormat& mFormat;
     };
+
 }
 
 #endif // BITEXTRACTOR_HPP

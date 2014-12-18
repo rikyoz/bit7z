@@ -1,12 +1,12 @@
-Bit7z
+bit7z
 =====
 
-Bit7z is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.
+**bit7z** is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.
 
 ![](http://img.shields.io/badge/version-v1.0--beta1-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](http://img.shields.io/badge/platform-windows-brightgreen.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
 
 ## Features ##
-Bit7z supports the following features:
+bit7z supports the following features:
 
 + Compression of files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
 + Extraction of the following archive formats: 7z, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, GZIP, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, TAR, UDF, VHD, WIM, XAR, XZ, Z and ZIP.
@@ -15,7 +15,7 @@ Bit7z supports the following features:
 + Choice of the compression level (from none to ultra, depending on the output archive format)
 + Solid archives (only for 7z)
 
-Please note that the presence or not of some of these features depends on the particular .dll used along with Bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.
+Please note that the presence or not of some of these features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.
 
 ## Getting Started (Library Usage) ##
 
@@ -24,7 +24,7 @@ Please note that the presence or not of some of these features depends on the pa
 #include "include/bitextractor.hpp"
 #include "include/bitexception.hpp"
 ...
-using namespace Bit7z;
+using namespace bit7z;
 ...
 try {
 	BitLibrary lib(L"7za.dll");
@@ -45,7 +45,7 @@ try {
 #include "include/bitcompressor.hpp"
 #include "include/bitexception.hpp"
 ...
-using namespace Bit7z;
+using namespace bit7z;
 ...
 try {
 	vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
@@ -73,7 +73,7 @@ try {
 ## Building Requirements ##
 + **OS:** Windows
 + **Compiler:** MSVC 2012/2013
-+ **Build Automation:** QMake (used only to maintain the project, Bit7z does not depend on Qt libraries!)
++ **Build Automation:** QMake (used only to maintain the project, bit7z does not depend on Qt libraries!)
 + **Third-party libraries:** 7z SDK (at least version 9.20)
 
 *Note:* the 7z SDK must be placed in the path "&lt;project root&gt;/lib/7zSDK/".

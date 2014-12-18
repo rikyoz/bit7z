@@ -8,9 +8,10 @@
 #include "../include/fsindexer.hpp"
 #include "../include/callback.hpp"
 
-using namespace Bit7z::FileSystem;
+using namespace bit7z::filesystem;
 
-namespace Bit7z {
+namespace bit7z {
+
     class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp,
         public Callback {
         public:
@@ -53,6 +54,7 @@ namespace Bit7z {
 
             HRESULT Finilize();
     };
+
 }
 
 #endif // UPDATECALLBACK_HPP

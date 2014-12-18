@@ -11,9 +11,10 @@
 #include "../include/fsitem.hpp"
 
 using namespace std;
-using namespace Bit7z::FileSystem;
+using namespace bit7z::filesystem;
 
-namespace Bit7z {
+namespace bit7z {
+
     class BitCompressor {
         public:
             BitCompressor( const Bit7zLibrary& lib, BitOutFormat format );
@@ -40,6 +41,7 @@ namespace Bit7z {
 
             void compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const;
     };
+
 }
 
 #endif // BITCOMPRESSOR_HPP

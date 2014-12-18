@@ -3,6 +3,7 @@
 
 #include "bitcompressor.hpp"
 #include "bitextractor.hpp"
+#include "bitexception.hpp"
 
 #endif // BIT7Z
 

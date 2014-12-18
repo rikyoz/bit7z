@@ -7,10 +7,10 @@
 #include "../include/extractcallback.hpp"
 #include "../include/opencallback.hpp"
 
-using namespace Bit7z;
+using namespace bit7z;
 
 BitExtractor::BitExtractor( const Bit7zLibrary& lib,
-                            Bit7z::BitInFormat format ) : mLibrary( lib ), mFormat( format ) {}
+                            bit7z::BitInFormat format ) : mLibrary( lib ), mFormat( format ) {}
 
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir,
                             const std::wstring& password ) const {

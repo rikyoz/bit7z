@@ -1,6 +1,6 @@
 #include "../include/callback.hpp"
 
-using namespace Bit7z;
+using namespace bit7z;
 
 Callback::Callback() : mPassword( L"" ), mErrorMessage( L"" ) {}
 

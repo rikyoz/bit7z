@@ -11,7 +11,7 @@ typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID,
                                              const GUID* interfaceID,
                                              void** outObject );
 
-namespace Bit7z {
+namespace bit7z {
 
     class Bit7zLibrary {
             friend class BitExtractor;

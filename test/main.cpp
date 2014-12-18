@@ -7,7 +7,7 @@
 #include "../include/bitexception.hpp"
 
 using namespace std;
-using namespace Bit7z;
+using namespace bit7z;
 
 static const wstring format_name[] = { L"ZIP", L"BZIP2", L"7Z", L"XZ", L"WIM", L"TAR", L"GZIP"};
 static const wstring extensions[]  = { L".zip", L".bz2", L".7z", L".xz", L".wim", L".tar", L".gz" };

@@ -9,7 +9,7 @@
 #include "../include/updatecallback.hpp"
 #include "../include/bitexception.hpp"
 
-using namespace Bit7z;
+using namespace bit7z;
 using namespace NWindows;
 
 BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitOutFormat format ) : mLibrary( lib ),
@@ -22,11 +22,11 @@ void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
                                                                //crypt_headers is true
 }
 
-void Bit7z::BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
+void bit7z::BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
     mCompressionLevel = compression_level;
 }
 
-void Bit7z::BitCompressor::setSolidMode( bool solid_mode ) {
+void bit7z::BitCompressor::setSolidMode( bool solid_mode ) {
     mSolidMode = solid_mode;
 }
 

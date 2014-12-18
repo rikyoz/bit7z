@@ -7,7 +7,8 @@
 
 using namespace std;
 
-namespace Bit7z {
+namespace bit7z {
+
     class BitOutFormat {
         public:
             enum { Zip, BZip2, SevenZip, Xz, Wim, Tar, GZip };
@@ -36,6 +37,7 @@ namespace Bit7z {
             BitInFormat( int value );
             const GUID guid() const;
     };
+
 }
 
 #endif // BITFORMAT

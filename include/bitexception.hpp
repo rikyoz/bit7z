@@ -4,7 +4,8 @@
 #include <iostream>
 #include <exception>
 
-namespace Bit7z {
+namespace bit7z {
+
     class BitException : public std::runtime_error {
         public:
             BitException( const std::string& message );
@@ -15,6 +16,7 @@ namespace Bit7z {
         private:
             std::string mUnicodeMessage;
     };
+
 }
 
 #endif // BITEXCEPTION_HPP

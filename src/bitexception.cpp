@@ -1,6 +1,6 @@
 #include "../include/bitexception.hpp"
 
-using namespace Bit7z;
+using namespace bit7z;
 
 BitException::BitException( const std::string&  message ) : std::runtime_error( message ),
     mUnicodeMessage( "" ) {}

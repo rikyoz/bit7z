@@ -8,7 +8,7 @@
 #include "Windows/PropVariant.h"
 
 using namespace std;
-using namespace Bit7z;
+using namespace bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 

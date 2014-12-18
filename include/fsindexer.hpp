@@ -8,8 +8,9 @@
 
 using namespace std;
 
-namespace Bit7z {
-    namespace FileSystem {
+namespace bit7z {
+    namespace filesystem {
+
         class FSIndexer {
             public:
                 FSIndexer( const wstring& directory, const wstring& filter = L"*" );
@@ -21,6 +22,7 @@ namespace Bit7z {
                 wstring mFilter;
                 void listFilesInDirectory( vector<FSItem>& result, bool recursive, const wstring& prefix );
         };
+
     }
 }
 #endif // FSINDEXER_HPP

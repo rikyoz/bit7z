@@ -5,8 +5,8 @@
 
 using namespace std;
 
-namespace Bit7z {
-    namespace FileSystem {
+namespace bit7z {
+    namespace filesystem {
         namespace FSUtil {
             bool is_directory( const wstring& path );
             bool path_exists( const wstring& path );
