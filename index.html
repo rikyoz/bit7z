@@ -24,12 +24,12 @@
       <div id="banner">
         <span id="logo"></span>
 
-        <a href="https://github.com/rikyoz/Bit7z" class="button fork"><strong>View On GitHub</strong></a>
+        <a href="https://github.com/rikyoz/bit7z" class="button fork"><strong>View On GitHub</strong></a>
         <div class="downloads">
           <span>Downloads:</span>
           <ul>
-            <li><a href="https://github.com/rikyoz/Bit7z/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/rikyoz/Bit7z/tarball/master" class="button">TAR</a></li>
+            <li><a href="https://github.com/rikyoz/bit7z/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/rikyoz/bit7z/tarball/master" class="button">TAR</a></li>
           </ul>
         </div>
       </div><!-- end banner -->
@@ -39,14 +39,14 @@
         <ul></ul>
       </nav>
       <section>
-        <p>Bit7z is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7-zip SDK. It allows to compress to and extract from many archive file formats from C++ code.</p>
+        <p><strong>bit7z</strong> is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.</p>
 
 <p><img src="http://img.shields.io/badge/version-v1.0--beta1-blue.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/platform-windows-brightgreen.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat" alt=""></p>
 
 <h2>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
 
-<p>Bit7z supports the following features:</p>
+<p>bit7z supports the following features:</p>
 
 <ul>
 <li>Compression of files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM</li>
@@ -57,7 +57,7 @@
 <li>Solid archives (only for 7z)</li>
 </ul>
 
-<p>Please note that the presence or not of some of these features depends on the particular .dll used along with Bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.</p>
+<p>Please note that the presence or not of some of these features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.</p>
 
 <h2>
 <a id="getting-started-library-usage" class="anchor" href="#getting-started-library-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started (Library Usage)</h2>
@@ -68,7 +68,7 @@
 <div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitextractor.hpp<span class="pl-pds">"</span></span>
 #<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
 ...
-<span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">Bit7z</span><span class="pl-k">;</span>
+<span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
 ...
 <span class="pl-k">try</span> {
     BitLibrary <span class="pl-vo">lib</span>(L<span class="pl-s1"><span class="pl-pds">"</span>7za.dll<span class="pl-pds">"</span></span>);
@@ -89,7 +89,7 @@
 <div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitcompressor.hpp<span class="pl-pds">"</span></span>
 #<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
 ...
-<span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">Bit7z</span><span class="pl-k">;</span>
+<span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
 ...
 <span class="pl-k">try</span> {
     vector&lt;std::wstring&gt; files = {L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file1.jpg<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file2.pdf<span class="pl-pds">"</span></span>};
@@ -128,7 +128,7 @@
 <li>
 <strong>Compiler:</strong> MSVC 2012/2013</li>
 <li>
-<strong>Build Automation:</strong> QMake (used only to maintain the project, Bit7z does not depend on Qt libraries!)</li>
+<strong>Build Automation:</strong> QMake (used only to maintain the project, bit7z does not depend on Qt libraries!)</li>
 <li>
 <strong>Third-party libraries:</strong> 7z SDK (at least version 9.20)</li>
 </ul>
