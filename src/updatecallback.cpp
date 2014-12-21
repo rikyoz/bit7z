@@ -42,7 +42,7 @@ HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
         *newProperties = 1; //= true;
 
     if ( indexInArchive != NULL )
-        *indexInArchive = ( UInt32 ) - 1;
+        *indexInArchive = static_cast< UInt32 >( -1 );
 
     return S_OK;
 }

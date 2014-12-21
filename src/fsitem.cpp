@@ -1,5 +1,6 @@
 #include "../include/fsitem.hpp"
 
+#include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
 #include <string>
@@ -15,12 +16,14 @@ FSItem::FSItem( const wstring& path,
         if ( lastSlashIndex == mDirectory.length() - 1 )
             mDirectory.pop_back();
     }
-    FindFirstFile( mDirectory.c_str(), &mFileData );
+    HANDLE find_handle = FindFirstFile( mDirectory.c_str(), &mFileData );
+    if ( find_handle == INVALID_HANDLE_VALUE ) throw BitException("Invalid file system item!");
     if ( !isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( wstring::npos != lastSlashIndex )
             mDirectory.resize( lastSlashIndex );
     }
+    FindClose( find_handle );
 
 }
 

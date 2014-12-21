@@ -7,9 +7,7 @@
 
 #include "../include/bitformat.hpp"
 
-typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID,
-                                             const GUID* interfaceID,
-                                             void** outObject );
+#define DEFAULT_DLL L"7z.dll"
 
 namespace bit7z {
 
@@ -18,16 +16,22 @@ namespace bit7z {
             friend class BitCompressor;
 
         public:
-            Bit7zLibrary();
-            Bit7zLibrary( const std::wstring& dll_path );
+            Bit7zLibrary( const std::wstring& dll_path = DEFAULT_DLL );
+            virtual ~Bit7zLibrary();
 
         private:
+            typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID,
+                                                         const GUID* interfaceID,
+                                                         void** outObject );
+
             void createArchiveObject( const GUID* format_ID,
                                       const GUID* interface_ID,
                                       void** out_object ) const;
 
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
+
+
     };
 
 }

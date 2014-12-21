@@ -3,7 +3,6 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
 #include "Windows/COM.h"
-#include "Windows/FileFind.h"
 #include "Windows/PropVariant.h"
 
 #include "../include/updatecallback.hpp"
@@ -22,11 +21,11 @@ void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
                                                                //crypt_headers is true
 }
 
-void bit7z::BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
+void BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
     mCompressionLevel = compression_level;
 }
 
-void bit7z::BitCompressor::setSolidMode( bool solid_mode ) {
+void BitCompressor::setSolidMode( bool solid_mode ) {
     mSolidMode = solid_mode;
 }
 
@@ -98,8 +97,10 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     }
 
     COutFileStream* outFileStreamSpec = new COutFileStream;
-    if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) )
+    if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
+        delete outFileStreamSpec;
         throw BitException( "Can't create archive file" );
+    }
 
     UpdateCallback* updateCallbackSpec = new UpdateCallback( in_items );
     updateCallbackSpec->setPassword( mPassword );
