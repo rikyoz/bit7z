@@ -37,8 +37,6 @@ CONFIG  += embed_manifest_dll
 QMAKE_CFLAGS_WARN_ON -= -W3
 QMAKE_CFLAGS_WARN_ON += -W4
 
-LIBS += -loleaut32 -lole32 -luuid -luser32
-
 DEFINES += _UNICODE
 
 HEADERS += include/bitcompressor.hpp \
