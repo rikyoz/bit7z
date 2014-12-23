@@ -46,7 +46,7 @@ ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& dir
     : mArchiveHandler( archiveHandler ), mDirectoryPath( directoryPath ), mExtractMode( true ),
       mProcessedFileInfo(), mOutFileStreamSpec( NULL ), mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
-    filesystem::FSUtil::normalize_path( mDirectoryPath );
+    filesystem::fsutil::normalize_path( mDirectoryPath );
 }
 
 ExtractCallback::~ExtractCallback() {}

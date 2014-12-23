@@ -7,7 +7,7 @@ using namespace std;
 
 namespace bit7z {
     namespace filesystem {
-        namespace FSUtil {
+        namespace fsutil {
             bool is_directory( const wstring& path );
             bool path_exists( const wstring& path );
             bool has_ending( const wstring& str, const wstring& ending );

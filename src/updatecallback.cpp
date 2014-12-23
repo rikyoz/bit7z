@@ -42,7 +42,7 @@ HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
         *newProperties = 1; //= true;
 
     if ( indexInArchive != NULL )
-        *indexInArchive = ( UInt32 ) - 1;
+        *indexInArchive = static_cast< UInt32 >( -1 );
 
     return S_OK;
 }
@@ -144,10 +144,7 @@ HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** vo
     while ( res.length() < 2 )
         res = L'0' + res;
 
-    wstring fileName = mVolName;
-    fileName += L'.';
-    fileName += res;
-    fileName += mVolExt;
+    wstring fileName = mVolName + L'.' + res + mVolExt;
     COutFileStream* streamSpec = new COutFileStream;
     CMyComPtr<ISequentialOutStream> streamLoc( streamSpec );
 

@@ -9,3 +9,6 @@ test/files/
 *.lib
 pack/
 test/
+roadmap.txt
+doc/
+Doxyfile
