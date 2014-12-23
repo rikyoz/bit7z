@@ -10,3 +10,5 @@ test/files/
 pack/
 test/
 roadmap.txt
+doc/
+Doxyfile
