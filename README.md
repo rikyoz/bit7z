@@ -20,7 +20,8 @@ Please note that the presence or not of some of these features depends on the pa
 ## Getting Started (Library Usage) ##
 
 ### Extracting files from an archive ###
-```cpp
+
+~~~~~~~~~~~~~{.cpp}
 #include "include/bitextractor.hpp"
 #include "include/bitexception.hpp"
 ...
@@ -38,10 +39,11 @@ try {
 } catch ( const BitException& e ) {
 	//do something with e.what()...
 }
-```
+~~~~~~~~~~~~~
 
 ### Compressing files into an archive ###
-```cpp
+
+~~~~~~~~~~~~~{.cpp}
 #include "include/bitcompressor.hpp"
 #include "include/bitexception.hpp"
 ...
@@ -64,7 +66,7 @@ try {
 } catch ( const BitException& e ) {
 	//do something with e.what()... 
 }
-```
+~~~~~~~~~~~~~
 
 ## Usage Requirements ##
 + **OS:** Windows
@@ -90,19 +92,19 @@ In order to build this library you can use Qt Creator or the *build.cmd* in the 
 
 Example (x64):
 
-```bat
+~~~~~~~~~~~~~{.bat}
 set PATH=%PATH%;C:\path\to\x64\qt5\bin
 vcvarsall amd64
 build x64
-```
+~~~~~~~~~~~~~
 
 Example (x86):
 
-```bat
+~~~~~~~~~~~~~{.bat}
 set PATH=%PATH%;C:\path\to\x86\qt5\bin
 vcvarsall x86
 build x86
-```
+~~~~~~~~~~~~~
 
 ## License (GPL v2) ##
     This program is free software; you can redistribute it and/or modify
