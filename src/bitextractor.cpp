@@ -7,14 +7,17 @@
 #include "../include/extractcallback.hpp"
 #include "../include/opencallback.hpp"
 
-using namespace Bit7z;
+using namespace bit7z;
 
 BitExtractor::BitExtractor( const Bit7zLibrary& lib,
-                            Bit7z::BitInFormat format ) : mLibrary( lib ), mFormat( format ) {}
+                            bit7z::BitInFormat format ) : mLibrary( lib ), mFormat( format ) {}
 
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir,
                             const std::wstring& password ) const {
-    CMyComPtr<IInArchive> inArchive = mLibrary.inputArchiveObject( mFormat );
+    CMyComPtr<IInArchive> inArchive;
+    mLibrary.createArchiveObject( &mFormat.guid(),
+                                  &IID_IInArchive,
+                                  reinterpret_cast< void** >( &inArchive ) );
 
     CInFileStream* fileStream = new CInFileStream;
     if ( !fileStream->Open( in_file.c_str() ) )

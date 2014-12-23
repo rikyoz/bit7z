@@ -1,26 +1,29 @@
 #include "../include/fsitem.hpp"
 
+#include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
 #include <string>
 
-using namespace Bit7z::FileSystem;
+using namespace bit7z::filesystem;
 
 FSItem::FSItem( const wstring& path,
                 const wstring& relative_dir ) : mDirectory( path ), mRelativeDirectory( relative_dir ),
     mFileData() {
-    bool isdir = FSUtil::is_directory( mDirectory );
+    bool isdir = fsutil::is_directory( mDirectory );
     if ( isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( lastSlashIndex == mDirectory.length() - 1 )
             mDirectory.pop_back();
     }
-    FindFirstFile( mDirectory.c_str(), &mFileData );
+    HANDLE find_handle = FindFirstFile( mDirectory.c_str(), &mFileData );
+    if ( find_handle == INVALID_HANDLE_VALUE ) throw BitException("Invalid file system item!");
     if ( !isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( wstring::npos != lastSlashIndex )
             mDirectory.resize( lastSlashIndex );
     }
+    FindClose( find_handle );
 
 }
 
@@ -39,7 +42,7 @@ bool FSItem::isDir() const {
     return ( mFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) != 0;
 }
 
-UInt64 FSItem::size() const {
+uint64_t FSItem::size() const {
     ULARGE_INTEGER size;
     size.LowPart = mFileData.nFileSizeLow;
     size.HighPart = mFileData.nFileSizeHigh;
@@ -72,6 +75,6 @@ wstring FSItem::fullPath() const {
     return mDirectory + L"\\" + mFileData.cFileName;
 }
 
-UInt32 FSItem::attributes() const {
+uint32_t FSItem::attributes() const {
     return mFileData.dwFileAttributes;
 }

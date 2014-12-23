@@ -1,9 +1,9 @@
 TEMPLATE = lib
-TARGET = bit7z
+TARGET   = bit7z
 VERSION  = 1.0
-CONFIG += staticlib
-CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG  += staticlib
+CONFIG  -= app_bundle
+CONFIG  -= qt
 
 SOURCES += lib/7zSDK/CPP/Windows/Error.cpp \
            lib/7zSDK/CPP/Windows/DLL.cpp \
@@ -37,8 +37,6 @@ CONFIG  += embed_manifest_dll
 QMAKE_CFLAGS_WARN_ON -= -W3
 QMAKE_CFLAGS_WARN_ON += -W4
 
-LIBS += -loleaut32 -lole32 -luuid -luser32
-
 DEFINES += _UNICODE
 
 HEADERS += include/bitcompressor.hpp \
@@ -65,7 +63,11 @@ contains(QMAKE_HOST.arch, x86_64) {
     PLATFORM = x86
 }
 
-CONFIG(debug, debug|release) { BUILD = debug } else { BUILD = release }
+CONFIG(debug, debug|release) {
+    BUILD = debug
+} else {
+    BUILD = release
+}
 
 DESTDIR  = $$PWD/bin/$${PLATFORM}/
 OBJECTS_DIR = $$PWD/build/$${PLATFORM}/$${BUILD}/.obj

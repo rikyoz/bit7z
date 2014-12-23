@@ -3,32 +3,22 @@
 #include "../include/bitexception.hpp"
 #include "../include/bitguids.hpp"
 
-#define DEFAULT_DLL L"7z.dll"
+using namespace bit7z;
 
-using namespace Bit7z;
-
-Bit7zLibrary::Bit7zLibrary() : Bit7zLibrary( DEFAULT_DLL ) {}
-
-Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) {
-    if ( !mLibrary.Load( dll_path.c_str() ) )
+Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) : mLibrary( LoadLibrary(
+                dll_path.c_str() ) ) {
+    if ( !mLibrary )
         throw BitException( "Cannot load 7-zip library" );
 
-    mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( mLibrary.GetProc( "CreateObject" ) );
+    mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary,
+                                                              "CreateObject" ) );
 
-    if ( mCreateObjectFunc == NULL )
+    if ( !mCreateObjectFunc )
         throw BitException( "Cannot get CreateObject" );
 }
 
-CMyComPtr<IInArchive> Bit7zLibrary::inputArchiveObject( BitInFormat format ) const {
-    CMyComPtr<IInArchive> archiveObj;
-    createArchiveObject( &format.guid(), &IID_IInArchive, reinterpret_cast< void** >( &archiveObj ) );
-    return archiveObj;
-}
-
-CMyComPtr<IOutArchive> Bit7zLibrary::outputArchiveObject( BitOutFormat format ) const {
-    CMyComPtr<IOutArchive> archiveObj;
-    createArchiveObject( &format.guid(), &IID_IOutArchive, reinterpret_cast< void** >( &archiveObj ) );
-    return archiveObj;
+Bit7zLibrary::~Bit7zLibrary() {
+    FreeLibrary( mLibrary );
 }
 
 void Bit7zLibrary::createArchiveObject( const GUID* format_ID,

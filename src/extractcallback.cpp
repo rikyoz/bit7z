@@ -10,7 +10,7 @@
 
 using namespace std;
 using namespace NWindows;
-using namespace Bit7z;
+using namespace bit7z;
 
 static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
 
@@ -46,7 +46,7 @@ ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& dir
     : mArchiveHandler( archiveHandler ), mDirectoryPath( directoryPath ), mExtractMode( true ),
       mProcessedFileInfo(), mOutFileStreamSpec( NULL ), mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
-    FileSystem::FSUtil::normalize_path( mDirectoryPath );
+    filesystem::fsutil::normalize_path( mDirectoryPath );
 }
 
 ExtractCallback::~ExtractCallback() {}

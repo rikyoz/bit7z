@@ -7,14 +7,14 @@
 #include "7zip/Common/FileStreams.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
-#include "Windows/COM.h"
 
 #include "../include/bitguids.hpp"
 #include "../include/callback.hpp"
 
 using namespace std;
 
-namespace Bit7z {
+namespace bit7z {
+
     class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp,
         public Callback {
         public:
@@ -54,6 +54,7 @@ namespace Bit7z {
 
             UInt64 mNumErrors;
     };
+
 }
 
 #endif // EXTRACTCALLBACK_HPP

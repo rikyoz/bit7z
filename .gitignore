@@ -7,3 +7,8 @@ test/files/
 *.cppcheck
 *.pdb
 *.lib
+pack/
+test/
+roadmap.txt
+doc/
+Doxyfile

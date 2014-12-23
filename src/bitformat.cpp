@@ -1,6 +1,6 @@
 #include "../include/BitFormat.hpp"
 
-using namespace Bit7z;
+using namespace bit7z;
 
 BitOutFormat::BitOutFormat( int value ) : mValue( value ) {}
 
@@ -12,11 +12,11 @@ bool BitOutFormat::operator!=( const BitOutFormat& other ) const {
     return mValue != other.mValue;
 }
 
-bool Bit7z::BitOutFormat::operator==( const int& other ) const {
+bool bit7z::BitOutFormat::operator==( const int& other ) const {
     return mValue == other;
 }
 
-bool Bit7z::BitOutFormat::operator!=( int const& other ) const {
+bool bit7z::BitOutFormat::operator!=( int const& other ) const {
     return mValue != other;
 }
 

@@ -3,7 +3,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace Bit7z;
+using namespace bit7z;
 
 OpenCallback::OpenCallback() {}
 

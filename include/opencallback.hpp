@@ -6,13 +6,13 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
-#include "Windows/COM.h"
 
 #include "../include/callback.hpp"
 
 using namespace std;
 
-namespace Bit7z {
+namespace bit7z {
+
     class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp,
         public Callback {
         public:
@@ -26,6 +26,7 @@ namespace Bit7z {
 
             STDMETHOD( CryptoGetTextPassword )( BSTR* password );
     };
+
 }
 
 #endif // OPENCALLBACK_HPP

@@ -5,7 +5,8 @@
 
 using namespace std;
 
-namespace Bit7z {
+namespace bit7z {
+
     class Callback {
         public:
             void setPassword( wstring const& password );
@@ -18,6 +19,7 @@ namespace Bit7z {
             wstring mPassword;
             wstring mErrorMessage;
     };
+
 }
 
 #endif // CALLBACK_HPP

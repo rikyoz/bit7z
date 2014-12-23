@@ -3,13 +3,11 @@
 
 #include <iostream>
 
-//#include "Common/MyString.h"
-
 using namespace std;
 
-namespace Bit7z {
-    namespace FileSystem {
-        namespace FSUtil {
+namespace bit7z {
+    namespace filesystem {
+        namespace fsutil {
             bool is_directory( const wstring& path );
             bool path_exists( const wstring& path );
             bool has_ending( const wstring& str, const wstring& ending );

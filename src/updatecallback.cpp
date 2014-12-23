@@ -3,11 +3,12 @@
 #include <iostream>
 #include <string>
 
+#include "7zip/Common/FileStreams.h"
 #include "Common/IntToString.h"
 #include "Windows/PropVariant.h"
 
 using namespace std;
-using namespace Bit7z;
+using namespace bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 
@@ -15,7 +16,7 @@ UpdateCallback::UpdateCallback( const vector<FSItem>& dirItems ): mAskPassword( 
     mDirItems( dirItems )  {
     mNeedBeClosed = false;
     mFailedFiles.clear();
-    mFailedCodes.Clear();
+    mFailedCodes.clear();
 }
 
 UpdateCallback::~UpdateCallback() { Finilize(); }
@@ -35,13 +36,13 @@ HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
 HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
                                            Int32* newProperties, UInt32* indexInArchive ) {
     if ( newData != NULL )
-        *newData = BoolToInt( true );
+        *newData = 1; //= true;
 
     if ( newProperties != NULL )
-        *newProperties = BoolToInt( true );
+        *newProperties = 1; //= true;
 
     if ( indexInArchive != NULL )
-        *indexInArchive = ( UInt32 ) - 1;
+        *indexInArchive = static_cast< UInt32 >( -1 );
 
     return S_OK;
 }
@@ -103,7 +104,7 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
 
     if ( !inStreamSpec->Open( path.c_str() ) ) {
         DWORD sysError = ::GetLastError();
-        mFailedCodes.Add( sysError );
+        mFailedCodes.push_back( sysError );
         mFailedFiles.push_back( path );
         // if (systemError == ERROR_SHARING_VIOLATION)
         {
@@ -124,11 +125,12 @@ HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
 }
 
 HRESULT UpdateCallback::GetVolumeSize( UInt32 index, UInt64* size ) {
-    if ( mVolumesSizes.Size() == 0 )
+    if ( mVolumesSizes.size() == 0 )
         return S_FALSE;
 
-    if ( index >= ( UInt32 )mVolumesSizes.Size() )
-        index = mVolumesSizes.Size() - 1;
+    UInt32 volumes_size = static_cast<UInt32>( mVolumesSizes.size() );
+    if ( index >= volumes_size )
+        index = volumes_size - 1;
 
     *size = mVolumesSizes[index];
     return S_OK;
@@ -142,10 +144,7 @@ HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** vo
     while ( res.length() < 2 )
         res = L'0' + res;
 
-    wstring fileName = mVolName;
-    fileName += L'.';
-    fileName += res;
-    fileName += mVolExt;
+    wstring fileName = mVolName + L'.' + res + mVolExt;
     COutFileStream* streamSpec = new COutFileStream;
     CMyComPtr<ISequentialOutStream> streamLoc( streamSpec );
 
@@ -167,6 +166,6 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
         }
     }
 
-    *passwordIsDefined = BoolToInt( mPassword.length() != 0 );
+    *passwordIsDefined = ( mPassword.length() != 0 ? 1 : 0 );
     return StringToBstr( mPassword.c_str(), password );
 }

@@ -7,7 +7,11 @@
 
 using namespace std;
 
-namespace Bit7z {
+namespace bit7z {
+
+    /**
+     * @brief The BitOutFormat class specifies the formats available for creating new archives
+     */
     class BitOutFormat {
         public:
             enum { Zip, BZip2, SevenZip, Xz, Wim, Tar, GZip };
@@ -25,6 +29,11 @@ namespace Bit7z {
             int mValue;
     };
 
+    /**
+     * @brief The BitInFormat class specifies the extractable archive formats
+     *
+     * @note The set of formats in BitInFormat is a superset of the set of formats in BitOutFormat
+     */
     class BitInFormat : public BitOutFormat {
         public:
             enum { Rar = BitOutFormat::GZip + 1, Arj, Z, Lzh, Cab, Nsis, Lzma, Lzma86, Ppmd,
@@ -36,6 +45,7 @@ namespace Bit7z {
             BitInFormat( int value );
             const GUID guid() const;
     };
+
 }
 
 #endif // BITFORMAT
