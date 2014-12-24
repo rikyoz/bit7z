@@ -37,7 +37,7 @@ namespace bit7z {
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitInFormat& mFormat;
+            const BitInFormat mFormat;
     };
 
 }
