@@ -12,6 +12,14 @@ using namespace std;
 using namespace NWindows;
 using namespace bit7z;
 
+/* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
+ * Main changes made:
+ *  + Use of wstring instead of UString
+ *  + Error messages are not showed. Instead, they are memorized into a wstring and used by BitExtractor to throw
+ *    exceptions (see also Callback interface). Note that this class doesn't throw exceptions, as other classes in bit7,
+ *    because it must implement interfaces with nothrow methods.
+ *  + The work performed originally by the Init method is now performed by the class constructor */
+
 static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
 
 static const wstring kTestingString    =  L"Testing     ";

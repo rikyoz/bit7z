@@ -12,8 +12,7 @@ using namespace bit7z::filesystem;
 
 namespace bit7z {
 
-    class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp,
-        public Callback {
+    class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
 
@@ -23,8 +22,7 @@ namespace bit7z {
 
             // IArchiveUpdateCallback2
             STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties,
-                                            UInt32* indexInArchive );
+            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties, UInt32* indexInArchive );
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
             STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );

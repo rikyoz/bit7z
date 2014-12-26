@@ -5,8 +5,12 @@
 using namespace std;
 using namespace bit7z;
 
-OpenCallback::OpenCallback() {}
+/* Most of this code is taken from the COpenCallback class in Client7z.cpp of the 7z SDK
+ * Main changes made:
+ *  + Use of wstring instead of UString (see Callback base interface)
+ *  + Error messages are not showed (see comments in ExtractCallback) */
 
+OpenCallback::OpenCallback() {}
 OpenCallback::~OpenCallback() {}
 
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {

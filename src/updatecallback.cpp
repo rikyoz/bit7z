@@ -10,6 +10,14 @@
 using namespace std;
 using namespace bit7z;
 
+/* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
+ * Main changes made:
+ *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
+ *  + Use of std::wstring instead of UString (see Callback base interface)
+ *  + Error messages are not showed (see comments in ExtractCallback)
+ *  + The work performed originally by the Init method is now performed by the class constructor
+ *  + FSItem class is used instead of CDirItem struct */
+
 const std::wstring kEmptyFileAlias = L"[Content]";
 
 UpdateCallback::UpdateCallback( const vector<FSItem>& dirItems ): mAskPassword( false ),
@@ -79,21 +87,9 @@ HRESULT UpdateCallback::Finilize() {
     return S_OK;
 }
 
-static void GetStream2( const wstring& name ) {
-    cout << "Compressing  '";
-
-    if ( name.empty() )
-        wcout << kEmptyFileAlias;
-    else
-        wcout << name;
-
-    cout << "'" << endl;
-}
-
 HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
     const FSItem dirItem = mDirItems[index];
-    //GetStream2( dirItem.name() );
 
     if ( dirItem.isDir() )
         return S_OK;
