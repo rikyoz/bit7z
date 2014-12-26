@@ -15,6 +15,10 @@ BitInFormat BitExtractor::extractionFormat() {
     return mFormat;
 }
 
+/* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK
+ * Main changes made:
+ *  + Generalized the code to work with any type of format (the original works only with 7z format)
+ *  + Use of exceptions instead of error codes */
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir, const std::wstring& pass ) const {
     CMyComPtr<IInArchive> inArchive;
     mLibrary.createArchiveObject( mFormat.guid(),

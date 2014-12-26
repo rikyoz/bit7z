@@ -82,6 +82,10 @@ void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out
     compressFiles( in_dir, out_archive, L"*", recursive );
 }
 
+/* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK
+ * Main changes made:
+ *  + Generalized the code to work with any type of format (original works only with 7z format)
+ *  + Use of exceptions instead of error codes */
 void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const {
     CMyComPtr<IOutArchive> outArchive;
     mLibrary.createArchiveObject( mFormat.guid(), &IID_IOutArchive, reinterpret_cast< void** >( &outArchive ) );

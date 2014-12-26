@@ -7,7 +7,7 @@
 using namespace bit7z::filesystem;
 
 bool fsutil::is_directory( const wstring& path ) {
-    return ( GetFileAttributes( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY ) != 0;
+    return 0 != ( GetFileAttributes( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY );
 }
 
 bool fsutil::path_exists( const wstring& path ) {
@@ -15,9 +15,8 @@ bool fsutil::path_exists( const wstring& path ) {
 }
 
 bool fsutil::has_ending( wstring const& str, const wstring& ending ) {
-    return ( str.length() >= ending.length() )
-           && ( 0 == str.compare( str.length() - ending.length(), ending.length(),
-                                  ending ) );
+    return ( str.length() >= ending.length() ) &&
+           ( 0 == str.compare( str.length() - ending.length(), ending.length(), ending ) );
 }
 
 void fsutil::normalize_path( wstring& path ) {

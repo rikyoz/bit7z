@@ -15,7 +15,7 @@ namespace bit7z {
 
         class FSItem {
             public:
-                FSItem( const wstring& path , const wstring& relative_dir = L"" );
+                FSItem( const wstring& path, const wstring& relative_dir = L"" );
                 FSItem( const wstring& dir, const wstring& relative_dir, FSItemInfo data );
 
                 bool exists() const;
