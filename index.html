@@ -4,44 +4,33 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>Bit7z by rikyoz</title>
+
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/main.js"></script>
-    <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
   </head>
   <body>
-
+    <div class="wrapper">
       <header>
         <h1>Bit7z</h1>
         <p>A clean, simple and object-oriented interface to the 7zip SDK</p>
+
+        <p class="view"><a href="https://github.com/rikyoz/bit7z">View the Project on GitHub <small>rikyoz/bit7z</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/rikyoz/bit7z/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/rikyoz/bit7z/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/rikyoz/bit7z">View On <strong>GitHub</strong></a></li>
+        </ul>
       </header>
-
-      <div id="banner">
-        <span id="logo"></span>
-
-        <a href="https://github.com/rikyoz/bit7z" class="button fork"><strong>View On GitHub</strong></a>
-        <div class="downloads">
-          <span>Downloads:</span>
-          <ul>
-            <li><a href="https://github.com/rikyoz/bit7z/zipball/master" class="button">ZIP</a></li>
-            <li><a href="https://github.com/rikyoz/bit7z/tarball/master" class="button">TAR</a></li>
-          </ul>
-        </div>
-      </div><!-- end banner -->
-
-    <div class="wrapper">
-      <nav>
-        <ul></ul>
-      </nav>
       <section>
         <p><strong>bit7z</strong> is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.</p>
 
-<p><img src="http://img.shields.io/badge/version-v1.0--beta1-blue.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/platform-windows-brightgreen.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat" alt=""></p>
+<p><img src="http://img.shields.io/badge/version-v1.0.0--rc-blue.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/platform-windows-green.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat" alt=""></p>
 
 <h2>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
@@ -68,9 +57,9 @@
 <div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitextractor.hpp<span class="pl-pds">"</span></span>
 #<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
 ...
-<span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
-...
 <span class="pl-k">try</span> {
+    <span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
+
     BitLibrary <span class="pl-vo">lib</span>(L<span class="pl-s1"><span class="pl-pds">"</span>7za.dll<span class="pl-pds">"</span></span>);
     BitExtractor <span class="pl-vo">extractor</span>(lib, BitInFormat::SevenZip);
 
@@ -89,9 +78,9 @@
 <div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitcompressor.hpp<span class="pl-pds">"</span></span>
 #<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
 ...
-<span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
-...
 <span class="pl-k">try</span> {
+    <span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
+
     vector&lt;std::wstring&gt; files = {L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file1.jpg<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file2.pdf<span class="pl-pds">"</span></span>};
     BitLibrary <span class="pl-vo">lib</span>(L<span class="pl-s1"><span class="pl-pds">"</span>7z.dll<span class="pl-pds">"</span></span>);
     BitCompressor <span class="pl-vo">compressor</span>(lib, BitOutFormat::Zip);
@@ -114,10 +103,12 @@
 
 <ul>
 <li>
-<strong>OS:</strong> Windows</li>
+<strong>Target OS:</strong> Windows (supported both x86 and x64 architectures)</li>
 <li>
 <strong>Compiler:</strong> MSVC (tested with version 2013)</li>
 </ul>
+
+<p>Note: in order to use this library you should link your program with both <strong>bit7z</strong> and <em>oleaut32</em> (e.g. <code>-lbit7z -loleaut32</code>)</p>
 
 <h2>
 <a id="building-requirements" class="anchor" href="#building-requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building Requirements</h2>
@@ -176,11 +167,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 <p>Copyright (C) 2014 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)</p>
       </section>
       <footer>
-        <p>Project maintained by <a href="https://github.com/rikyoz">rikyoz</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+        <p>This project is maintained by <a href="https://github.com/rikyoz">rikyoz</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    <script src="javascripts/scale.fix.js"></script>
     
   </body>
 </html>
