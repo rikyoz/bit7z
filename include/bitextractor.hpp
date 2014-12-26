@@ -26,6 +26,11 @@ namespace bit7z {
             BitExtractor( const Bit7zLibrary&, BitInFormat format );
 
             /**
+             * @return the archive format used by the extractor
+             */
+            BitInFormat extractionFormat();
+
+            /**
              * @brief Extracts the given archive into the choosen directory
 
              * @param in_file   the input archive file

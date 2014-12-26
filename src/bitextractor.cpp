@@ -11,6 +11,10 @@ using namespace bit7z;
 
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, BitInFormat format ) : mLibrary( lib ), mFormat( format ) {}
 
+BitInFormat BitExtractor::extractionFormat() {
+    return mFormat;
+}
+
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir, const std::wstring& pass ) const {
     CMyComPtr<IInArchive> inArchive;
     mLibrary.createArchiveObject( mFormat.guid(),
