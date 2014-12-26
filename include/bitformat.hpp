@@ -32,10 +32,9 @@ namespace bit7z {
      */
     class BitInFormat : public BitOutFormat {
         public:
-            enum Format { Rar = BitOutFormat::GZip + 1, Arj, Z, Lzh, Cab, Nsis, Lzma, Lzma86, Ppmd,
-                          TE, UEFIc, UEFIs, SquashFS, CramFS, APM, Mslz, Flv, Swf, Swfc, Ntfs, Fat,
-                          Mbr, Vhd, Pe, Elf, Macho, Udf, Xar, Mub, Hfs, Dmg, Compound, Iso,
-                          Chm, Split, Rpm, Deb, Cpio
+            enum Format { Rar = BitOutFormat::GZip + 1, Arj, Z, Lzh, Cab, Nsis, Lzma, Lzma86, Ppmd, TE, UEFIc, UEFIs,
+                          SquashFS, CramFS, APM, Mslz, Flv, Swf, Swfc, Ntfs, Fat, Mbr, Vhd, Pe, Elf, Macho, Udf, Xar,
+                          Mub, Hfs, Dmg, Compound, Iso, Chm, Split, Rpm, Deb, Cpio
                         };
 
             BitInFormat( unsigned int value );

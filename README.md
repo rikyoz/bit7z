@@ -3,7 +3,7 @@ bit7z
 
 **bit7z** is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.
 
-![](http://img.shields.io/badge/version-v1.0.0--beta.2-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](http://img.shields.io/badge/platform-windows-green.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
+![](http://img.shields.io/badge/version-v1.0.0--rc-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](http://img.shields.io/badge/platform-windows-green.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
 
 ## Features ##
 bit7z supports the following features:
@@ -69,7 +69,7 @@ try {
 ~~~~~~~~~~~~~
 
 ## Usage Requirements ##
-+ **OS:** Windows
++ **Target OS:** Windows (supported both x86 and x64 architectures)
 + **Compiler:** MSVC (tested with version 2013)
 
 Note: in order to use this library you should link your program with both **bit7z** and *oleaut32* (e.g. `-lbit7z -loleaut32`)
