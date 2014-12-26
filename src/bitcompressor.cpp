@@ -108,7 +108,11 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
             throw BitException( "Cannot set properties of the archive" );
     }
 
-    COutFileStream* outFileStreamSpec = new COutFileStream;
+    COutFileStream* outFileStreamSpec = new COutFileStream();
+    /* note: if you remove the following line (and you use outFileStreamSpec with UpdateItems
+     * method), you will not have any problem... until you try to compress files with
+     * GZip format! In that case it will make crash your program!! */
+    CMyComPtr<IOutStream> outFileStream = outFileStreamSpec;
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
         delete outFileStreamSpec;
         throw BitException( "Can't create archive file" );

@@ -19,8 +19,9 @@ void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out
                                   &IID_IInArchive,
                                   reinterpret_cast< void** >( &inArchive ) );
 
-    CInFileStream* fileStream = new CInFileStream;
-    if ( !fileStream->Open( in_file.c_str() ) )
+    CInFileStream* fileStreamSpec = new CInFileStream;
+    CMyComPtr<IInStream> fileStream = fileStreamSpec;
+    if ( !fileStreamSpec->Open( in_file.c_str() ) )
         throw BitException( "Cannot open archive file" );
 
     OpenCallback* openCallbackSpec = new OpenCallback();
