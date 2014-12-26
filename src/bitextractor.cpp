@@ -24,14 +24,14 @@ void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out
     CInFileStream* fileStreamSpec = new CInFileStream;
     CMyComPtr<IInStream> fileStream = fileStreamSpec;
     if ( !fileStreamSpec->Open( in_file.c_str() ) )
-        throw BitException( "Cannot open archive file" );
+        throw BitException( L"Cannot open archive file '" + in_file + L"'" );
 
     OpenCallback* openCallbackSpec = new OpenCallback();
     openCallbackSpec->setPassword( pass );
 
     CMyComPtr<IArchiveOpenCallback> openCallback( openCallbackSpec );
     if ( inArchive->Open( fileStream, 0, openCallback ) != S_OK )
-        throw BitException( "Cannot open archive" );
+        throw BitException( L"Cannot open archive '" + in_file + L"'" );
 
     ExtractCallback* extractCallbackSpec = new ExtractCallback( inArchive, out_dir );
     extractCallbackSpec->setPassword( pass );

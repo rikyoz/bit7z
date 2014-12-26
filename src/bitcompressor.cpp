@@ -116,7 +116,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     CMyComPtr<IOutStream> outFileStream = outFileStreamSpec;
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
         delete outFileStreamSpec;
-        throw BitException( "Can't create archive file" );
+        throw BitException( L"Can't create archive file '" + out_archive + L"'" );
     }
 
     UpdateCallback* updateCallbackSpec = new UpdateCallback( in_items );
