@@ -17,7 +17,7 @@ FSItem::FSItem( const wstring& path,
             mDirectory.pop_back();
     }
     HANDLE find_handle = FindFirstFile( mDirectory.c_str(), &mFileData );
-    if ( find_handle == INVALID_HANDLE_VALUE ) throw BitException("Invalid file system item!");
+    if ( find_handle == INVALID_HANDLE_VALUE ) throw BitException( L"Invalid path '" + mDirectory + L"'!" );
     if ( !isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( wstring::npos != lastSlashIndex )

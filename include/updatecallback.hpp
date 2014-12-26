@@ -12,8 +12,7 @@ using namespace bit7z::filesystem;
 
 namespace bit7z {
 
-    class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp,
-        public Callback {
+    class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
 

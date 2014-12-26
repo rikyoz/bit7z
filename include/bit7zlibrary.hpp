@@ -30,13 +30,9 @@ namespace bit7z {
             virtual ~Bit7zLibrary();
 
         private:
-            typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID,
-                                                         const GUID* interfaceID,
-                                                         void** outObject );
+            typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** outObject );
 
-            void createArchiveObject( const GUID* format_ID,
-                                      const GUID* interface_ID,
-                                      void** out_object ) const;
+            void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;

@@ -15,8 +15,7 @@ using namespace std;
 
 namespace bit7z {
 
-    class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp,
-        public Callback {
+    class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
             ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath );
             virtual ~ExtractCallback();

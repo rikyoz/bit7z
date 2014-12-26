@@ -13,8 +13,7 @@ using namespace std;
 
 namespace bit7z {
 
-    class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp,
-        public Callback {
+    class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
             OpenCallback();
             virtual ~OpenCallback();

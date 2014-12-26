@@ -11,9 +11,12 @@
 using namespace bit7z;
 using namespace NWindows;
 
-BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitOutFormat format ) : mLibrary( lib ),
-    mFormat( format ), mCompressionLevel( BitCompressionLevel::Normal ), mPassword( L"" ),
-    mCryptHeaders( false ), mSolidMode( false ) {}
+BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitOutFormat format ) : mLibrary( lib ), mFormat( format ),
+    mCompressionLevel( BitCompressionLevel::Normal ), mPassword( L"" ), mCryptHeaders( false ), mSolidMode( false ) {}
+
+BitOutFormat BitCompressor::compressionFormat() {
+    return mFormat;
+}
 
 void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
     mPassword = password;
@@ -49,8 +52,7 @@ void BitCompressor::compressFile( const wstring& in_file, const wstring& out_arc
     compressFiles( vfiles, out_archive );
 }
 
-void BitCompressor::compressFiles( const vector<wstring>& in_files,
-                                   const wstring& out_archive ) const {
+void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) const {
     vector<FSItem> dirItems;
     for ( wstring filePath : in_files ) {
         FSItem item( filePath );
@@ -60,32 +62,25 @@ void BitCompressor::compressFiles( const vector<wstring>& in_files,
     compressFS( dirItems, out_archive );
 }
 
-void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
-                                   const wstring& filter, bool search_subdirs ) const {
+void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter,
+                                   bool recursive ) const {
     vector<FSItem> dirItems;
     FSIndexer indexer( in_dir, filter );
-    indexer.listFilesInDirectory( dirItems, search_subdirs );
+    indexer.listFilesInDirectory( dirItems, recursive );
     compressFS( dirItems, out_archive );
 }
 
-void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive,
-                                       bool search_subdirs ) const {
-    /*vector<FSItem> dirItems;
-    FSIndexer indexer( in_dir );
-    indexer.listFilesInDirectory( dirItems, search_subdirs );
-    compressFS( dirItems, out_archive );*/
-    compressFiles( in_dir, out_archive, L"*", search_subdirs );
+void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive ) const {
+    compressFiles( in_dir, out_archive, L"*", recursive );
 }
 
 void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const {
     CMyComPtr<IOutArchive> outArchive;
-    mLibrary.createArchiveObject( &mFormat.guid(),
-                                  &IID_IOutArchive,
-                                  reinterpret_cast< void** >( &outArchive ) );
+    mLibrary.createArchiveObject( mFormat.guid(), &IID_IOutArchive, reinterpret_cast< void** >( &outArchive ) );
 
     vector< const wchar_t* > names;
     vector< NCOM::CPropVariant > values;
-    if ( mCryptHeaders && mFormat == BitOutFormat::SevenZip || mFormat == BitOutFormat::Xz ) {
+    if ( mCryptHeaders && ( mFormat == BitOutFormat::SevenZip || mFormat == BitOutFormat::Xz ) ) {
         names.push_back( L"he" );
         values.push_back( true );
     }
@@ -93,18 +88,16 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
         names.push_back( L"x" );
         values.push_back( static_cast< UInt32 >( mCompressionLevel ) );
     }
-    if ( mFormat == BitOutFormat::SevenZip ) {
+    if ( mSolidMode && mFormat == BitOutFormat::SevenZip ) {
         names.push_back( L"s" );
         values.push_back( mSolidMode );
     }
 
     if ( names.size() > 0 ) {
         CMyComPtr<ISetProperties> setProperties;
-        if ( outArchive->QueryInterface( IID_ISetProperties,
-                                         reinterpret_cast< void** >( &setProperties ) ) != S_OK )
+        if ( outArchive->QueryInterface( IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) ) != S_OK )
             throw BitException( "ISetProperties unsupported" );
-        if ( setProperties->SetProperties( &names[0], &values[0],
-                                           static_cast<UInt32>( names.size() ) ) != S_OK )
+        if ( setProperties->SetProperties( &names[0], &values[0], static_cast<UInt32>( names.size() ) ) != S_OK )
             throw BitException( "Cannot set properties of the archive" );
     }
 
@@ -122,9 +115,7 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     updateCallbackSpec->setPassword( mPassword );
 
     CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
-    HRESULT result = outArchive->UpdateItems( outFileStreamSpec,
-                                              static_cast< UInt32 >( in_items.size() ),
-                                              updateCallback );
+    HRESULT result = outArchive->UpdateItems( outFileStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
     updateCallbackSpec->Finilize();
 
     if ( result != S_OK ) throw BitException( updateCallbackSpec->getErrorMessage() );

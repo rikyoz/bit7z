@@ -79,21 +79,9 @@ HRESULT UpdateCallback::Finilize() {
     return S_OK;
 }
 
-static void GetStream2( const wstring& name ) {
-    cout << "Compressing  '";
-
-    if ( name.empty() )
-        wcout << kEmptyFileAlias;
-    else
-        wcout << name;
-
-    cout << "'" << endl;
-}
-
 HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
     const FSItem dirItem = mDirItems[index];
-    //GetStream2( dirItem.name() );
 
     if ( dirItem.isDir() )
         return S_OK;
