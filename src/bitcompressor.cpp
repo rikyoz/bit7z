@@ -33,6 +33,9 @@ void BitCompressor::setSolidMode( bool solid_mode ) {
 }
 
 void BitCompressor::compress( const vector<wstring>& in_paths, const wstring& out_archive ) const {
+    if ( in_paths.size() > 1 && ( mFormat == BitOutFormat::BZip2 || mFormat == BitOutFormat::GZip
+                                  || mFormat == BitOutFormat::Xz ) )
+        throw BitException( "Unsupported operation!" );
     vector<FSItem> dirItems;
     for ( wstring filePath : in_paths ) {
         FSItem item( filePath );
@@ -53,6 +56,9 @@ void BitCompressor::compressFile( const wstring& in_file, const wstring& out_arc
 }
 
 void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) const {
+    if ( in_files.size() > 1 && ( mFormat == BitOutFormat::BZip2 || mFormat == BitOutFormat::GZip
+                                  || mFormat == BitOutFormat::Xz ) )
+        throw BitException( "Unsupported operation!" );
     vector<FSItem> dirItems;
     for ( wstring filePath : in_files ) {
         FSItem item( filePath );
@@ -64,6 +70,8 @@ void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstrin
 
 void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter,
                                    bool recursive ) const {
+    if ( mFormat == BitOutFormat::BZip2 || mFormat == BitOutFormat::GZip || mFormat == BitOutFormat::Xz )
+        throw BitException( "Unsupported operation!" );
     vector<FSItem> dirItems;
     FSIndexer indexer( in_dir, filter );
     indexer.listFilesInDirectory( dirItems, recursive );

@@ -55,13 +55,14 @@ HEADERS += include/bitcompressor.hpp \
            include/bitformat.hpp \
            include/bitcompressionlevel.hpp
 
-contains(QMAKE_HOST.arch, x86_64) {
-    QMAKE_LFLAGS         += /MACHINE:X64
-    PLATFORM = x64
-} else {
+contains(QT_ARCH, i386) {
     QMAKE_LFLAGS         += /MACHINE:X86
     PLATFORM = x86
+} else {
+    QMAKE_LFLAGS         += /MACHINE:X64
+    PLATFORM = x64
 }
+
 
 CONFIG(debug, debug|release) {
     BUILD = debug

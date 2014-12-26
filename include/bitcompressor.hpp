@@ -36,6 +36,11 @@ namespace bit7z {
             BitCompressor( const Bit7zLibrary& lib, BitOutFormat format );
 
             /**
+             * @return the archive format used by the compressor
+             */
+            BitOutFormat compressionFormat();
+
+            /**
              * @brief Sets up a password for the output archive
              *
              * When setting a password, the produced archive will be encrypted using the default
