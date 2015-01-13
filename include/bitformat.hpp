@@ -3,8 +3,6 @@
 
 #include "../include/bitguids.hpp"
 
-using namespace std;
-
 namespace bit7z {
 
     /**

@@ -3,6 +3,7 @@
 #include "../include/fsutil.hpp"
 #include "../include/bitexception.hpp"
 
+using namespace std;
 using namespace bit7z::filesystem;
 
 FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirectory( directory ),

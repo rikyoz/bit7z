@@ -1,5 +1,6 @@
 #include "../include/bitformat.hpp"
 
+using namespace std;
 using namespace bit7z;
 
 BitOutFormat::BitOutFormat( unsigned int value ) : mValue( value ) {}

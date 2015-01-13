@@ -8,9 +8,9 @@
 #include "../include/fsindexer.hpp"
 #include "../include/callback.hpp"
 
-using namespace bit7z::filesystem;
-
 namespace bit7z {
+
+    using namespace filesystem;
 
     class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
@@ -33,21 +33,21 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
         public:
-            vector<UInt64> mVolumesSizes;
-            wstring mVolName;
-            wstring mVolExt;
+            std::vector<UInt64> mVolumesSizes;
+            std::wstring mVolName;
+            std::wstring mVolExt;
 
-            wstring mDirPrefix;
-            const vector<FSItem>& mDirItems;
+            std::wstring mDirPrefix;
+            const std::vector<FSItem>& mDirItems;
 
             bool mAskPassword;
 
             bool mNeedBeClosed;
 
-            vector<wstring> mFailedFiles;
-            vector<HRESULT> mFailedCodes;
+            std::vector<std::wstring> mFailedFiles;
+            std::vector<HRESULT> mFailedCodes;
 
-            UpdateCallback( const vector<FSItem>& dirItems );
+            UpdateCallback( const std::vector<FSItem>& dirItems );
             virtual ~UpdateCallback();
 
             HRESULT Finilize();
