@@ -3,7 +3,7 @@ bit7z
 
 **bit7z** is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.
 
-![](http://img.shields.io/badge/version-v1.0.0--rc-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](https://img.shields.io/badge/platform-windows-8BCF40.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
+![](http://img.shields.io/badge/version-v1.0.0-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](https://img.shields.io/badge/platform-windows-8BCF40.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
 
 ## Features
 bit7z supports the following features:
@@ -16,6 +16,14 @@ bit7z supports the following features:
 + Solid archives (only for 7z)
 
 Please note that the presence or not of some of these features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.
+
+## Downloads
+
+[Latest stable release](https://github.com/rikyoz/bit7z/releases/latest)
+
+The release packages contain a precompiled version of the library and they are available for both x86 and x64 architectures.
+
+Of course you can also clone/download repository this repository and build the library by yourself (please, see the [How to Build](#how-to-build) section).
 
 ## Getting Started (Library Usage)
 
@@ -88,9 +96,12 @@ The 7zSDK folder should look like this:
 
 ![](http://i.imgur.com/pgS7UHl.png)
 
-## How to Build
+### How to Build
 
-In order to build this library you can use Qt Creator or the *build.cmd* in the project root folder.
+In order to build this library, you can choose one of the following methods:
++ build the project `bit7z.pro` using Qt Creator
++ run the `build.cmd` script in the project root folder
++ run `qmake bit7z.pro` file and then use `nmake.exe`
 
 *Note:* before using the build.cmd script, you should have the paths of Qt 5 (to use qmake) and MSVC in the PATH environment variable.
 
