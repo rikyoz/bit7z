@@ -28,9 +28,12 @@
         </ul>
       </header>
       <section>
-        <p><strong>bit7z</strong> is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.</p>
+        <h1>
+<a id="bit7z" class="anchor" href="#bit7z" aria-hidden="true"><span class="octicon octicon-link"></span></a>bit7z</h1>
 
-<p><img src="http://img.shields.io/badge/version-v1.0.0--rc-blue.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/platform-windows-green.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat" alt=""></p>
+<p><strong>bit7z</strong> is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.</p>
+
+<p><img src="http://img.shields.io/badge/version-v1.0.0-blue.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat" alt=""> <img src="https://img.shields.io/badge/platform-windows-8BCF40.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat" alt=""></p>
 
 <h2>
 <a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
@@ -47,6 +50,15 @@
 </ul>
 
 <p>Please note that the presence or not of some of these features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.</p>
+
+<h2>
+<a id="downloads" class="anchor" href="#downloads" aria-hidden="true"><span class="octicon octicon-link"></span></a>Downloads</h2>
+
+<p><a href="https://github.com/rikyoz/bit7z/releases/latest">Latest stable release</a></p>
+
+<p>The release packages contain a precompiled version of the library and they are available for both x86 and x64 architectures.</p>
+
+<p>Of course you can also clone/download repository this repository and build the library by yourself (please, see the <a href="#how-to-build">How to Build</a> section).</p>
 
 <h2>
 <a id="getting-started-library-usage" class="anchor" href="#getting-started-library-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started (Library Usage)</h2>
@@ -81,7 +93,7 @@
 <span class="pl-k">try</span> {
     <span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
 
-    vector&lt;std::wstring&gt; files = {L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file1.jpg<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file2.pdf<span class="pl-pds">"</span></span>};
+    std::vector&lt;std::wstring&gt; files = {L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file1.jpg<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file2.pdf<span class="pl-pds">"</span></span>};
     BitLibrary <span class="pl-vo">lib</span>(L<span class="pl-s1"><span class="pl-pds">"</span>7z.dll<span class="pl-pds">"</span></span>);
     BitCompressor <span class="pl-vo">compressor</span>(lib, BitOutFormat::Zip);
 
@@ -108,6 +120,8 @@
 <strong>Compiler:</strong> MSVC (tested with version 2013)</li>
 </ul>
 
+<p>The 7zip dlls are not shipped with bit7z but they are available at <a href="http://www.7-zip.org/">7-zip.org</a></p>
+
 <p>Note: in order to use this library you should link your program with both <strong>bit7z</strong> and <em>oleaut32</em> (e.g. <code>-lbit7z -loleaut32</code>)</p>
 
 <h2>
@@ -119,18 +133,28 @@
 <li>
 <strong>Compiler:</strong> MSVC 2012/2013</li>
 <li>
-<strong>Build Automation:</strong> QMake (used only to maintain the project, bit7z does not depend on Qt libraries!)</li>
+<strong>Build Automation:</strong> qmake (used only to maintain the project, bit7z does not depend on Qt libraries!)</li>
 <li>
 <strong>Third-party libraries:</strong> 7z SDK (at least version 9.20)</li>
 </ul>
 
-<p><em>Note:</em> the 7z SDK must be placed in the path "&lt;project root&gt;/lib/7zSDK/".</p>
+<p><em>Note:</em> the 7z SDK must be placed in the path "%PROJECT_ROOT%/lib/7zSDK/".</p>
 
 <p>The 7zSDK folder should look like this:</p>
 
 <p><img src="http://i.imgur.com/pgS7UHl.png" alt=""></p>
 
-<p>In order to build this library you can use Qt Creator or the <em>build.cmd</em> in the project root folder.</p>
+<h3>
+<a id="how-to-build" class="anchor" href="#how-to-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to Build</h3>
+
+<p>In order to build this library, you can choose one of the following methods:</p>
+
+<ul>
+<li>build the project <code>bit7z.pro</code> using Qt Creator</li>
+<li>run the <code>build.cmd</code> script in the project root folder</li>
+<li>run <code>qmake bit7z.pro</code> file and then use <code>nmake.exe</code>
+</li>
+</ul>
 
 <p><em>Note:</em> before using the build.cmd script, you should have the paths of Qt 5 (to use qmake) and MSVC in the PATH environment variable.</p>
 
@@ -164,7 +188,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 </code></pre>
 
-<p>Copyright (C) 2014 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)</p>
+<p>Copyright © 2014-2015 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/rikyoz">rikyoz</a></p>
