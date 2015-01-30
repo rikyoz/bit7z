@@ -21,8 +21,7 @@ BitOutFormat BitCompressor::compressionFormat() {
 
 void BitCompressor::setPassword( const wstring& password, bool crypt_headers ) {
     mPassword = password;
-    mCryptHeaders = ( password.length() > 0 ) && crypt_headers;//true only if a password is set and
-    //crypt_headers is true
+    mCryptHeaders = ( password.length() > 0 ) && crypt_headers;//true only if a password is set and crypt_headers is true
 }
 
 void BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
@@ -115,9 +114,8 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     }
 
     COutFileStream* outFileStreamSpec = new COutFileStream();
-    /* note: if you remove the following line (and you use outFileStreamSpec with UpdateItems
-     * method), you will not have any problem... until you try to compress files with
-     * GZip format! In that case it will make crash your program!! */
+    /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
+     * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
     CMyComPtr<IOutStream> outFileStream = outFileStreamSpec;
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
         delete outFileStreamSpec;
