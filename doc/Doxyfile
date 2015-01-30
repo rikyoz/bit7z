@@ -41,6 +41,7 @@ EXCLUDE                = lib
 USE_MDFILE_AS_MAINPAGE = README.md
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
+HTML_EXTRA_STYLESHEET  = html/css/extra.css
 GENERATE_LATEX         = NO
 GENERATE_XML           = NO
 #XML_OUTPUT             = doxyxml

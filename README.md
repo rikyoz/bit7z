@@ -82,7 +82,7 @@ Note: in order to use this library you should link your program with both **bit7
 + **Build Automation:** qmake (used only to maintain the project, bit7z does not depend on Qt libraries!)
 + **Third-party libraries:** 7z SDK (at least version 9.20)
 
-*Note:* the 7z SDK must be placed in the path "&lt;project root&gt;/lib/7zSDK/".
+*Note:* the 7z SDK must be placed in the path "%PROJECT_ROOT%/lib/7zSDK/".
 
 The 7zSDK folder should look like this:
 
