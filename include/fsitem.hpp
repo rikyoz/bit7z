@@ -6,8 +6,6 @@
 
 #include <Windows.h>
 
-using namespace std;
-
 namespace bit7z {
     namespace filesystem {
 
@@ -15,8 +13,8 @@ namespace bit7z {
 
         class FSItem {
             public:
-                FSItem( const wstring& path, const wstring& relative_dir = L"" );
-                FSItem( const wstring& dir, const wstring& relative_dir, FSItemInfo data );
+                FSItem( const std::wstring& path, const std::wstring& relative_dir = L"" );
+                FSItem( const std::wstring& dir, const std::wstring& relative_dir, FSItemInfo data );
 
                 bool exists() const;
                 bool isDir() const;
@@ -24,14 +22,14 @@ namespace bit7z {
                 FILETIME creationTime() const;
                 FILETIME lastAccessTime() const;
                 FILETIME lastWriteTime() const;
-                wstring name() const;
-                wstring relativePath() const;
-                wstring fullPath() const;
+                std::wstring name() const;
+                std::wstring relativePath() const;
+                std::wstring fullPath() const;
                 uint32_t attributes() const;
 
             private:
-                wstring mDirectory;
-                wstring mRelativeDirectory;
+                std::wstring mDirectory;
+                std::wstring mRelativeDirectory;
                 FSItemInfo mFileData;
         };
 

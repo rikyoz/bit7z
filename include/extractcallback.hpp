@@ -11,13 +11,11 @@
 #include "../include/bitguids.hpp"
 #include "../include/callback.hpp"
 
-using namespace std;
-
 namespace bit7z {
 
     class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath );
+            ExtractCallback( IInArchive* archiveHandler, const std::wstring& directoryPath );
             virtual ~ExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
@@ -36,9 +34,9 @@ namespace bit7z {
 
         private:
             CMyComPtr<IInArchive> mArchiveHandler;
-            wstring mDirectoryPath;  // Output directory
-            wstring mFilePath;       // name inside arcvhive
-            wstring mDiskFilePath;   // full path to file on disk
+            std::wstring mDirectoryPath;  // Output directory
+            std::wstring mFilePath;       // name inside arcvhive
+            std::wstring mDiskFilePath;   // full path to file on disk
             bool mExtractMode;
             struct CProcessedFileInfo {
                 FILETIME MTime;

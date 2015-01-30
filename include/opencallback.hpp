@@ -9,8 +9,6 @@
 
 #include "../include/callback.hpp"
 
-using namespace std;
-
 namespace bit7z {
 
     class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {

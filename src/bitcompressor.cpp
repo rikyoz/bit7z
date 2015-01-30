@@ -8,6 +8,7 @@
 #include "../include/updatecallback.hpp"
 #include "../include/bitexception.hpp"
 
+using namespace std;
 using namespace bit7z;
 using namespace NWindows;
 

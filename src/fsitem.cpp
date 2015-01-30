@@ -5,11 +5,11 @@
 
 #include <string>
 
+using namespace std;
 using namespace bit7z::filesystem;
 
-FSItem::FSItem( const wstring& path,
-                const wstring& relative_dir ) : mDirectory( path ), mRelativeDirectory( relative_dir ),
-    mFileData() {
+FSItem::FSItem( const wstring& path, const wstring& relative_dir ) : mDirectory( path ),
+    mRelativeDirectory( relative_dir ), mFileData() {
     bool isdir = fsutil::is_directory( mDirectory );
     if ( isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
@@ -27,8 +27,8 @@ FSItem::FSItem( const wstring& path,
 
 }
 
-FSItem::FSItem( const wstring& dir, const wstring& relative_dir,
-                FSItemInfo data ) : mDirectory( dir ), mRelativeDirectory( relative_dir ), mFileData( data ) {
+FSItem::FSItem( const wstring& dir, const wstring& relative_dir, FSItemInfo data ) : mDirectory( dir ),
+    mRelativeDirectory( relative_dir ), mFileData( data ) {
     const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
     if ( lastSlashIndex == mDirectory.length() - 1 )
         mDirectory.pop_back();

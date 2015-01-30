@@ -3,21 +3,19 @@
 
 #include <string>
 
-using namespace std;
-
 namespace bit7z {
 
     class Callback {
         public:
-            void setPassword( wstring const& password );
+            void setPassword( std::wstring const& password );
             bool isPasswordDefined() const;
-            wstring getErrorMessage() const;
+            std::wstring getErrorMessage() const;
 
         protected:
             Callback();
 
-            wstring mPassword;
-            wstring mErrorMessage;
+            std::wstring mPassword;
+            std::wstring mErrorMessage;
     };
 
 }

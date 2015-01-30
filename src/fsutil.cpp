@@ -4,6 +4,7 @@
 
 #include <Windows.h>
 
+using namespace std;
 using namespace bit7z::filesystem;
 
 bool fsutil::is_directory( const wstring& path ) {
