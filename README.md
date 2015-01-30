@@ -23,7 +23,7 @@ Please note that the presence or not of some of these features depends on the pa
 
 The release packages contain a precompiled version of the library and they are available for both x86 and x64 architectures.
 
-Of course you can also clone/download repository this repository and build the library by yourself (please, see the [How to Build]() section).
+Of course you can also clone/download repository this repository and build the library by yourself (please, see the [How to Build](### How to Build) section).
 
 ## Getting Started (Library Usage)
 
