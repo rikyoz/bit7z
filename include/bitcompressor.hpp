@@ -65,17 +65,16 @@ namespace bit7z {
             void setPassword( const std::wstring& password, bool crypt_headers = false );
 
             /**
-             * @brief Sets up the compression level used when creating archives
+             * @brief Sets the compression level to use when creating an archive
              *
              * @param compression_level the compression level desired.
              */
             void setCompressionLevel( BitCompressionLevel compression_level );
 
             /**
-             * @brief Sets up if it must be used solid compression
+             * @brief Sets whether to use solid compression or not
              *
-             * @note When setting the solid compression mode to true, it will have effect only when
-             * compression is done with the format 7z.
+             * @note Setting the solid compression mode to true has effect only when using the 7z format.
              *
              * @param solid_mode    if true, it will be used the "solid compression" method.
              */
