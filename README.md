@@ -3,9 +3,9 @@ bit7z
 
 **bit7z** is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.
 
-![](http://img.shields.io/badge/version-v1.0.0--rc-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](http://img.shields.io/badge/platform-windows-green.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
+![](http://img.shields.io/badge/version-v1.0.0--rc-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](https://img.shields.io/badge/platform-windows-8BCF40.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
 
-## Features ##
+## Features
 bit7z supports the following features:
 
 + Compression of files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
@@ -17,9 +17,9 @@ bit7z supports the following features:
 
 Please note that the presence or not of some of these features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.
 
-## Getting Started (Library Usage) ##
+## Getting Started (Library Usage)
 
-### Extracting files from an archive ###
+### Extracting files from an archive
 
 ~~~~~~~~~~~~~{.cpp}
 #include "include/bitextractor.hpp"
@@ -41,7 +41,7 @@ try {
 }
 ~~~~~~~~~~~~~
 
-### Compressing files into an archive ###
+### Compressing files into an archive
 
 ~~~~~~~~~~~~~{.cpp}
 #include "include/bitcompressor.hpp"
@@ -50,7 +50,7 @@ try {
 try {
 	using namespace bit7z;
 
-	vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
+	std::vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
 	BitLibrary lib(L"7z.dll");
 	BitCompressor compressor(lib, BitOutFormat::Zip);
 
@@ -68,16 +68,18 @@ try {
 }
 ~~~~~~~~~~~~~
 
-## Usage Requirements ##
+## Usage Requirements
 + **Target OS:** Windows (supported both x86 and x64 architectures)
 + **Compiler:** MSVC (tested with version 2013)
 
+The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
+
 Note: in order to use this library you should link your program with both **bit7z** and *oleaut32* (e.g. `-lbit7z -loleaut32`)
 
-## Building Requirements ##
+## Building Requirements
 + **OS:** Windows
 + **Compiler:** MSVC 2012/2013
-+ **Build Automation:** QMake (used only to maintain the project, bit7z does not depend on Qt libraries!)
++ **Build Automation:** qmake (used only to maintain the project, bit7z does not depend on Qt libraries!)
 + **Third-party libraries:** 7z SDK (at least version 9.20)
 
 *Note:* the 7z SDK must be placed in the path "&lt;project root&gt;/lib/7zSDK/".
@@ -85,6 +87,8 @@ Note: in order to use this library you should link your program with both **bit7
 The 7zSDK folder should look like this:
 
 ![](http://i.imgur.com/pgS7UHl.png)
+
+## How to Build
 
 In order to build this library you can use Qt Creator or the *build.cmd* in the project root folder.
 
@@ -106,7 +110,7 @@ vcvarsall x86
 build x86
 ~~~~~~~~~~~~~
 
-## License (GPL v2) ##
+## License (GPL v2)
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -121,4 +125,4 @@ build x86
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-Copyright (C) 2014 Riccardo Ostani ([@rikyoz](https://github.com/rikyoz))
+Copyright &copy; 2014-2015 Riccardo Ostani ([@rikyoz](https://github.com/rikyoz))
