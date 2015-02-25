@@ -19,6 +19,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            lib/7zSDK/CPP/Common/IntToString.cpp \
            src/bitextractor.cpp \
            src/bitcompressor.cpp \
+           src/bitmemcompressor.cpp \
            src/bit7zlibrary.cpp \
            src/bitexception.cpp \
            src/bitguids.cpp \
@@ -43,6 +44,7 @@ QMAKE_CFLAGS_WARN_ON += -W4
 DEFINES += _UNICODE
 
 HEADERS += include/bitcompressor.hpp \
+           include/bitmemcompressor.hpp \
            include/bit7zlibrary.hpp \
            include/bitexception.hpp \
            include/bitguids.hpp \
