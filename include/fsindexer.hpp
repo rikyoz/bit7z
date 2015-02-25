@@ -17,6 +17,9 @@ namespace bit7z {
                 FSIndexer( const wstring& directory, const wstring& filter = L"*" );
                 void listFilesInDirectory( vector<FSItem>& result, bool recursive = true );
 
+                static void listFiles( const vector<wstring>& in_paths, vector<FSItem>& out_files );
+                static void removeListedDirectories(const vector<wstring>& in_paths, vector<FSItem>& out_files );
+
             private:
                 wstring mDirectory;
                 wstring mDirName;

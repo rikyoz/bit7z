@@ -6,8 +6,7 @@
 using namespace std;
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirectory( directory ),
-    mFilter( filter ) {
+FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirectory( directory ), mFilter( filter ) {
     const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
     if ( lastSlashIndex == mDirectory.length() - 1 )
         mDirectory.pop_back();
@@ -21,8 +20,27 @@ void FSIndexer::listFilesInDirectory( vector<FSItem>& result, bool recursive ) {
     FSIndexer::listFilesInDirectory( result, recursive, L"" );
 }
 
-void FSIndexer::listFilesInDirectory( vector<FSItem>& result, bool recursive,
-                                      const wstring& prefix ) {
+void FSIndexer::listFiles( const vector<wstring>& in_paths, vector<FSItem>& out_files ) {
+    for ( wstring filePath : in_paths ) {
+        FSItem item( filePath );
+        if ( ! item.exists() ) throw BitException( L"Item '" + item.name() + L"' does not exists" );
+        if ( item.isDir() ) {
+            FSIndexer indexer( filePath );
+            indexer.listFilesInDirectory( out_files );
+        } else
+            out_files.push_back( item );
+    }
+}
+
+void FSIndexer::removeListedDirectories( const vector<wstring>& in_paths, vector<FSItem>& out_files ) {
+    for ( wstring filePath : in_paths ) {
+        FSItem item( filePath );
+        if ( item.exists() && !item.isDir() )
+            out_files.push_back( item );
+    }
+}
+
+void FSIndexer::listFilesInDirectory( vector<FSItem>& result, bool recursive, const wstring& prefix ) {
     wstring filtered_path = mDirectory + L"\\";
     if ( !prefix.empty() )
         filtered_path += prefix + L"\\";

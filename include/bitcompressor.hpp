@@ -6,6 +6,7 @@
 
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitformat.hpp"
+#include "../include/bittypes.hpp"
 #include "../include/bitcompressionlevel.hpp"
 
 #include "../include/fsitem.hpp"
@@ -83,6 +84,8 @@ namespace bit7z {
              */
             void setSolidMode( bool solid_mode );
 
+            /* Compression from file system to file system */
+
             /**
              * @brief Compresses the given files or directories
              *
@@ -134,6 +137,10 @@ namespace bit7z {
              */
             void compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive = true ) const;
 
+            /* Compression from file system to memory buffer */
+
+            void compressFile( const wstring& in_file, vector<byte_t>& out_buffer ) const;
+
         private:
             const Bit7zLibrary& mLibrary;
             const BitOutFormat& mFormat;
@@ -142,7 +149,8 @@ namespace bit7z {
             bool mCryptHeaders;
             bool mSolidMode;
 
-            void compressFS( const std::vector<FSItem>& in_items, const std::wstring& out_archive ) const;
+            void compressToFileSystem( const vector<FSItem>& in_items, const wstring& out_archive ) const;
+            void compressToMemory( const vector<FSItem>& in_items, vector<byte_t>& out_buffer ) const;
     };
 
 }

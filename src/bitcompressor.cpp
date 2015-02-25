@@ -5,7 +5,9 @@
 #include "Windows/COM.h"
 #include "Windows/PropVariant.h"
 
+#include "../include/coutmemstream.hpp"
 #include "../include/updatecallback.hpp"
+#include "../include/memupdatecallback.hpp"
 #include "../include/bitexception.hpp"
 
 using namespace std;
@@ -33,21 +35,14 @@ void BitCompressor::setSolidMode( bool solid_mode ) {
     mSolidMode = solid_mode;
 }
 
+/* from filesystem to filesystem */
+
 void BitCompressor::compress( const vector<wstring>& in_paths, const wstring& out_archive ) const {
-    if ( in_paths.size() > 1 && ( mFormat == BitOutFormat::BZip2 || mFormat == BitOutFormat::GZip
-                                  || mFormat == BitOutFormat::Xz ) )
+    if ( in_paths.size() > 1 && !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) )
         throw BitException( "Unsupported operation!" );
     vector<FSItem> dirItems;
-    for ( wstring filePath : in_paths ) {
-        FSItem item( filePath );
-        if ( ! item.exists() ) throw BitException( L"Item '" + item.name() + L"' does not exists" );
-        if ( item.isDir() ) {
-            FSIndexer indexer( filePath );
-            indexer.listFilesInDirectory( dirItems );
-        } else
-            dirItems.push_back( item );
-    }
-    compressFS( dirItems, out_archive );
+    FSIndexer::listFiles( in_paths, dirItems );
+    compressToFileSystem( dirItems, out_archive );
 }
 
 void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
@@ -57,51 +52,60 @@ void BitCompressor::compressFile( const wstring& in_file, const wstring& out_arc
 }
 
 void BitCompressor::compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) const {
-    if ( in_files.size() > 1 && ( mFormat == BitOutFormat::BZip2 || mFormat == BitOutFormat::GZip
-                                  || mFormat == BitOutFormat::Xz ) )
+    if ( in_files.size() > 1 && !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) )
         throw BitException( "Unsupported operation!" );
     vector<FSItem> dirItems;
-    for ( wstring filePath : in_files ) {
-        FSItem item( filePath );
-        if ( item.exists() && !item.isDir() )
-            dirItems.push_back( item );
-    }
-    compressFS( dirItems, out_archive );
-}
-
-void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter,
-                                   bool recursive ) const {
-    if ( mFormat == BitOutFormat::BZip2 || mFormat == BitOutFormat::GZip || mFormat == BitOutFormat::Xz )
-        throw BitException( "Unsupported operation!" );
-    vector<FSItem> dirItems;
-    FSIndexer indexer( in_dir, filter );
-    indexer.listFilesInDirectory( dirItems, recursive );
-    compressFS( dirItems, out_archive );
+    FSIndexer::removeListedDirectories( in_files, dirItems );
+    compressToFileSystem( dirItems, out_archive );
 }
 
 void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive ) const {
     compressFiles( in_dir, out_archive, L"*", recursive );
 }
 
+void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter,
+                                   bool recursive ) const {
+    if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) )
+        throw BitException( "Unsupported operation!" );
+    vector<FSItem> dirItems;
+    FSIndexer indexer( in_dir, filter );
+    indexer.listFilesInDirectory( dirItems, recursive );
+    compressToFileSystem( dirItems, out_archive );
+}
+
+
+/* from filesystem to memory buffer */
+
+void BitCompressor::compressFile( const wstring& in_file, vector<byte_t>& out_buffer ) const {
+    FSItem item( in_file );
+    if ( item.isDir() )
+        throw BitException( "Cannot compress a directory into a memory buffer!" );
+    if ( !item.exists() )
+        throw BitException( "The file does not exist!" );
+    vector<FSItem> dirItems;
+    dirItems.push_back( item );
+    compressToMemory( dirItems, out_buffer );
+}
+
 /* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK
  * Main changes made:
  *  + Generalized the code to work with any type of format (original works only with 7z format)
  *  + Use of exceptions instead of error codes */
-void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const {
+void BitCompressor::compressToFileSystem( const vector<FSItem>& in_items, const wstring& out_archive ) const {
     CMyComPtr<IOutArchive> outArchive;
     mLibrary.createArchiveObject( &( mFormat.guid() ), &IID_IOutArchive, reinterpret_cast< void** >( &outArchive ) );
 
     vector< const wchar_t* > names;
     vector< NCOM::CPropVariant > values;
-    if ( mCryptHeaders && ( mFormat == BitOutFormat::SevenZip || mFormat == BitOutFormat::Xz ) ) {
+    if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HEADER_ENCRYPTION ) ) {
         names.push_back( L"he" );
         values.push_back( true );
     }
-    if ( mFormat != BitOutFormat::Tar && mFormat != BitOutFormat::Wim ) {
+    if ( mFormat.hasFeature( FormatFeatures::COMPRESSION_LEVEL ) ) {
         names.push_back( L"x" );
         values.push_back( static_cast< UInt32 >( mCompressionLevel ) );
     }
-    if ( mSolidMode && mFormat == BitOutFormat::SevenZip ) {
+    if ( mSolidMode && mFormat.hasFeature( FormatFeatures::SOLID_ARCHIVE ) ) {
         names.push_back( L"s" );
         values.push_back( mSolidMode );
     }
@@ -131,6 +135,64 @@ void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& o
     updateCallbackSpec->Finilize();
 
     if ( result != S_OK ) throw BitException( updateCallbackSpec->getErrorMessage() );
+
+    wstring errorString = L"Error for files: ";
+    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ )
+        errorString += updateCallbackSpec->mFailedFiles[i] + L" ";
+
+    if ( updateCallbackSpec->mFailedFiles.size() != 0 )
+        throw BitException( errorString );
+}
+
+//FS -> Memory
+void BitCompressor::compressToMemory( const vector<FSItem>& in_items, vector<byte_t>& out_buffer ) const {
+    if ( in_items.size() == 0 )
+        throw BitException( "The list of files/directories cannot be empty!" );
+    if ( !mFormat.hasFeature( FormatFeatures::INMEM_COMPRESSION ) )
+        throw BitException( "Unsupported format for in-memory compression!" );
+
+    CMyComPtr<IOutArchive> outArchive;
+    mLibrary.createArchiveObject( &mFormat.guid(), &IID_IOutArchive, reinterpret_cast< void** >( &outArchive ) );
+
+    vector< const wchar_t* > names;
+    vector< NCOM::CPropVariant > values;
+    if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HEADER_ENCRYPTION ) ) {
+        names.push_back( L"he" );
+        values.push_back( true );
+    }
+    if ( mFormat.hasFeature( FormatFeatures::COMPRESSION_LEVEL ) ) {
+        names.push_back( L"x" );
+        values.push_back( static_cast< UInt32 >( mCompressionLevel ) );
+    }
+    if ( mSolidMode && mFormat.hasFeature( FormatFeatures::SOLID_ARCHIVE ) ) {
+        names.push_back( L"s" );
+        values.push_back( mSolidMode );
+    }
+
+    if ( names.size() > 0 ) {
+        CMyComPtr<ISetProperties> setProperties;
+        if ( outArchive->QueryInterface( IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) ) != S_OK )
+            throw BitException( "ISetProperties unsupported" );
+        if ( setProperties->SetProperties( &names[0], &values[0], static_cast<UInt32>( names.size() ) ) != S_OK )
+            throw BitException( "Cannot set properties of the archive" );
+    }
+
+    COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
+    CMyComPtr<ISequentialOutStream> outMemStream( outMemStreamSpec );
+
+    UpdateCallback* updateCallbackSpec = new UpdateCallback( in_items );
+    updateCallbackSpec->setPassword( mPassword );
+
+    CMyComPtr<IArchiveUpdateCallback2> updateCallback( updateCallbackSpec );
+    HRESULT result = outArchive->UpdateItems( outMemStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
+    updateCallbackSpec->Finilize();
+
+    if ( result == E_NOTIMPL )
+        throw BitException( "Unsupported operation!" );
+    else if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() )
+        throw BitException( "Failed operation (unkwown error)!" );
+    else if ( result != S_OK )
+        throw BitException( updateCallbackSpec->getErrorMessage() );
 
     wstring errorString = L"Error for files: ";
     for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ )

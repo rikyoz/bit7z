@@ -20,8 +20,14 @@ bool fsutil::has_ending( wstring const& str, const wstring& ending ) {
            ( 0 == str.compare( str.length() - ending.length(), ending.length(), ending ) );
 }
 
-void fsutil::normalize_path( wstring& path ) {
+void fsutil::normalize_path( wstring& path ) { //this assumes that the passed path is not a file path!
     if ( path.empty() ) return;
     if ( path.find_last_of( L"\\/" ) != path.length() - 1 )
         path.append( L"\\" );
+}
+
+void fsutil::filename( const wstring& path, wstring& filename ) {
+    size_t start = path.find_last_of(L"/\\") + 1;
+    size_t end   = path.find_last_of(L".");
+    filename = path.substr( start, end - start );
 }

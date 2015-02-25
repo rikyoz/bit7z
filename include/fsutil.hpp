@@ -14,6 +14,7 @@ namespace bit7z {
             bool has_ending( const wstring& str, const wstring& ending );
 
             void normalize_path( wstring& path );
+            void filename( const wstring& path, wstring& filename );
         }
     }
 }
