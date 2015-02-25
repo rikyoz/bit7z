@@ -5,17 +5,19 @@
 
 namespace bit7z {
 
+    using std::wstring;
+
     class Callback {
         public:
-            void setPassword( std::wstring const& password );
+            void setPassword( wstring const& password );
             bool isPasswordDefined() const;
-            std::wstring getErrorMessage() const;
+            wstring getErrorMessage() const;
 
         protected:
             Callback();
 
-            std::wstring mPassword;
-            std::wstring mErrorMessage;
+            wstring mPassword;
+            wstring mErrorMessage;
     };
 
 }

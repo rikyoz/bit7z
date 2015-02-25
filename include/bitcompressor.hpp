@@ -6,6 +6,7 @@
 
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitformat.hpp"
+#include "../include/bittypes.hpp"
 #include "../include/bitcompressionlevel.hpp"
 
 #include "../include/fsitem.hpp"
@@ -13,6 +14,9 @@
 namespace bit7z {
 
     using namespace filesystem;
+
+    using std::wstring;
+    using std::vector;
 
     /**
      * @brief The BitCompressor class allows to compress files and directories.
@@ -32,12 +36,12 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the output archive format.
              */
-            BitCompressor( const Bit7zLibrary& lib, BitOutFormat format );
+            BitCompressor( const Bit7zLibrary& lib, const BitOutFormat& format );
 
             /**
              * @return the archive format used by the compressor
              */
-            BitOutFormat compressionFormat();
+            const BitOutFormat& compressionFormat();
 
             /**
              * @brief Sets up a password for the output archive
@@ -62,7 +66,7 @@ namespace bit7z {
              * @param crypt_headers     if true, the headers of the output archive will be encrypted
              *                          (valid only with 7z format).
              */
-            void setPassword( const std::wstring& password, bool crypt_headers = false );
+            void setPassword( const wstring& password, bool crypt_headers = false );
 
             /**
              * @brief Sets the compression level to use when creating an archive
@@ -80,6 +84,8 @@ namespace bit7z {
              */
             void setSolidMode( bool solid_mode );
 
+            /* Compression from file system to file system */
+
             /**
              * @brief Compresses the given files or directories
              *
@@ -89,7 +95,7 @@ namespace bit7z {
              * @param in_paths      a vector of paths.
              * @param out_archive   the path (relative or absolute) to the output archive file.
              */
-            void compress( const std::vector<std::wstring>& in_paths, const std::wstring& out_archive ) const;
+            void compress( const vector<wstring>& in_paths, const wstring& out_archive ) const;
 
             /**
              * @brief Compresses a single file
@@ -97,7 +103,7 @@ namespace bit7z {
              * @param in_file       the path (relative or absolute) to the input file.
              * @param out_archive   the path (relative or absolute) to the output archive file.
              */
-            void compressFile( const std::wstring& in_file, const std::wstring& out_archive ) const;
+            void compressFile( const wstring& in_file, const wstring& out_archive ) const;
 
             /**
              * @brief Compresses a group of files
@@ -107,7 +113,7 @@ namespace bit7z {
              * @param in_files      the path (relative or absolute) to the input files.
              * @param out_archive   the path (relative or absolute) to the output archive file.
              */
-            void compressFiles( const std::vector<std::wstring>& in_files, const std::wstring& out_archive ) const;
+            void compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) const;
 
             /**
              * @brief Compresses the files contained in a directory
@@ -117,8 +123,8 @@ namespace bit7z {
              * @param filter        the filter to use when searching files inside in_dir.
              * @param recursive     if true, it searches files inside the sub-folders of in_dir.
              */
-            void compressFiles( const std::wstring& in_dir, const std::wstring& out_archive,
-                                const std::wstring& filter = L"*", bool recursive = true ) const;
+            void compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter = L"*",
+                                bool recursive = true ) const;
 
             /**
              * @brief Compresses an entire directory
@@ -129,18 +135,22 @@ namespace bit7z {
              * @param out_archive   the path (relative or absolute) to the output archive file.
              * @param recursive     if true, it searches files inside the sub-folders of in_dir.
              */
-            void compressDirectory( const std::wstring& in_dir, const std::wstring& out_archive,
-                                    bool recursive = true ) const;
+            void compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive = true ) const;
+
+            /* Compression from file system to memory buffer */
+
+            void compressFile( const wstring& in_file, vector<byte_t>& out_buffer ) const;
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitOutFormat mFormat;
+            const BitOutFormat& mFormat;
             BitCompressionLevel mCompressionLevel;
-            std::wstring mPassword;
+            wstring mPassword;
             bool mCryptHeaders;
             bool mSolidMode;
 
-            void compressFS( const std::vector<FSItem>& in_items, const std::wstring& out_archive ) const;
+            void compressToFileSystem( const vector<FSItem>& in_items, const wstring& out_archive ) const;
+            void compressToMemory( const vector<FSItem>& in_items, vector<byte_t>& out_buffer ) const;
     };
 
 }

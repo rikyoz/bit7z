@@ -1,24 +1,28 @@
-#ifndef EXTRACTCALLBACK_HPP
-#define EXTRACTCALLBACK_HPP
+#ifndef MEMEXTRACTCALLBACK_HPP
+#define MEMEXTRACTCALLBACK_HPP
 
 #include <string>
+#include <vector>
 
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
+#include "7zip/Common/StreamObjects.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
 #include "../include/bitguids.hpp"
+#include "../include/bitformat.hpp"
+#include "../include/bittypes.hpp"
 #include "../include/callback.hpp"
 
 namespace bit7z {
 
-    using std::wstring;
+    using std::vector;
 
-    class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+    class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath );
-            virtual ~ExtractCallback();
+            MemExtractCallback( IInArchive* archiveHandler, BitInFormat BitFormat, vector<byte_t>& buffer );
+            virtual ~MemExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
@@ -36,9 +40,8 @@ namespace bit7z {
 
         private:
             CMyComPtr<IInArchive> mArchiveHandler;
-            wstring mDirectoryPath;  // Output directory
-            wstring mFilePath;       // name inside arcvhive
-            wstring mDiskFilePath;   // full path to file on disk
+            BitInFormat mFormat;
+            vector<byte_t>& mBuffer;
             bool mExtractMode;
             struct CProcessedFileInfo {
                 FILETIME MTime;
@@ -48,12 +51,12 @@ namespace bit7z {
                 bool MTimeDefined;
             } mProcessedFileInfo;
 
-            COutFileStream* mOutFileStreamSpec;
-            CMyComPtr<ISequentialOutStream> mOutFileStream;
+            CBufPtrSeqOutStream* mOutBuffStreamSpec;
+            CMyComPtr<ISequentialOutStream> mOutBuffStream;
 
             UInt64 mNumErrors;
     };
 
 }
 
-#endif // EXTRACTCALLBACK_HPP
+#endif // MEMEXTRACTCALLBACK_HPP

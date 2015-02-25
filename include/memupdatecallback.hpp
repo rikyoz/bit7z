@@ -1,5 +1,5 @@
-#ifndef UPDATECALLBACK_HPP
-#define UPDATECALLBACK_HPP
+#ifndef MEMUPDATECALLBACK_HPP
+#define MEMUPDATECALLBACK_HPP
 
 #include "7zip/Archive/IArchive.h"
 #include "7zip/IPassword.h"
@@ -7,6 +7,7 @@
 
 #include "../include/fsindexer.hpp"
 #include "../include/callback.hpp"
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
 
@@ -14,15 +15,8 @@ namespace bit7z {
     using std::vector;
     using std::wstring;
 
-    class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
+    class MemUpdateCallback : public IArchiveUpdateCallback, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
-            vector<wstring> mFailedFiles;
-
-            UpdateCallback( const vector<FSItem>& dirItems );
-            virtual ~UpdateCallback();
-
-            HRESULT Finilize();
-
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
 
             // IProgress
@@ -35,27 +29,33 @@ namespace bit7z {
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
             STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
 
             //ICryptoGetTextPassword2
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
-        private:
+        public:
             vector<UInt64> mVolumesSizes;
             wstring mVolName;
             wstring mVolExt;
 
             wstring mDirPrefix;
-            const vector<FSItem>& mDirItems;
 
             bool mAskPassword;
 
             bool mNeedBeClosed;
 
+            vector<wstring> mFailedFiles;
             vector<HRESULT> mFailedCodes;
+
+            const vector<byte_t>& mBuffer;
+            const wstring& mBufferName;
+
+            MemUpdateCallback( const vector<byte_t>& out_buffer, const wstring& buffer_name );
+            virtual ~MemUpdateCallback();
+
+            HRESULT Finilize();
     };
 
 }
 
-#endif // UPDATECALLBACK_HPP
+#endif // MEMUPDATECALLBACK_HPP
