@@ -33,6 +33,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitformat.cpp \
            src/memextractcallback.cpp \
            src/memupdatecallback.cpp \
+           src/bitmemextractor.cpp \
     src/coutmemstream.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
@@ -63,6 +64,7 @@ HEADERS += include/bitcompressor.hpp \
            include/memextractcallback.hpp \
            include/bittypes.hpp \
            include/memupdatecallback.hpp \
+           include/bitmemextractor.hpp \
     include/coutmemstream.hpp
 
 contains(QT_ARCH, i386) {

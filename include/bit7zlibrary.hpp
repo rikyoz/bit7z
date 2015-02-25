@@ -17,6 +17,7 @@ namespace bit7z {
     class Bit7zLibrary {
             friend class BitExtractor;
             friend class BitCompressor;
+            friend class BitMemExtractor;
             friend class BitMemCompressor;
 
         public:
