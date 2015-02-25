@@ -21,7 +21,7 @@ namespace bit7z {
 
     class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            MemExtractCallback( IInArchive* archiveHandler, BitInFormat BitFormat, vector<byte_t>& buffer/*byte_t* buffer, const size_t size*/ );
+            MemExtractCallback( IInArchive* archiveHandler, BitInFormat BitFormat, vector<byte_t>& buffer );
             virtual ~MemExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )

@@ -49,10 +49,8 @@ namespace bit7z {
 
             const vector<byte_t>& mBuffer;
             const wstring& mBufferName;
-//            const byte_t* mBuffer;
-//            const size_t  mBufferSize;
 
-            MemUpdateCallback( const vector<byte_t>& out_buffer, const wstring& buffer_name/*, const size_t size */);
+            MemUpdateCallback( const vector<byte_t>& out_buffer, const wstring& buffer_name );
             virtual ~MemUpdateCallback();
 
             HRESULT Finilize();

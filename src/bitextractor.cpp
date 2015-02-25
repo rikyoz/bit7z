@@ -53,14 +53,7 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
         throw BitException( extractCallbackSpec->getErrorMessage() );
 }
 
-void BitExtractor::extract( const wstring& in_file,
-                            vector<byte_t>& out_buffer,/*byte_t** out_buffer, size_t* buffer_size,*/ int index ) {
-//    if ( out_buffer == NULL )
-//        throw BitException( "The pointer to the output buffer cannot be NULL!" );
-
-//    *out_buffer = NULL;
-//    *buffer_size = 0;
-
+void BitExtractor::extract( const wstring& in_file, vector<byte_t>& out_buffer, int index ) {
     CMyComPtr<IInArchive> inArchive;
     mLibrary.createArchiveObject( &mFormat.guid(), &IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
@@ -80,11 +73,8 @@ void BitExtractor::extract( const wstring& in_file,
     inArchive->GetProperty( index, kpidSize, &prop );
 
     out_buffer.resize( prop.uintVal + 1 );
-//    *out_buffer = new byte_t[ prop.uintVal + 1 ];
-//    *buffer_size = prop.uintVal + 1;
 
-    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, mFormat,
-                                                                      out_buffer/**out_buffer, prop.uintVal + 1*/ );
+    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, mFormat, out_buffer );
     extractCallbackSpec->setPassword( mPassword );
 
     UInt32 indices[] = { index };

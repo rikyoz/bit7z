@@ -17,9 +17,6 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, BitInFormat format ) 
     mPassword( L"" ) {}
 
 void BitMemExtractor::extract(const vector<byte_t>& in_buffer, const wstring& out_dir ) const {
-//    if ( in_buffer == NULL || buffer_size == 0 )
-//        throw BitException( "The pointer to the input buffer cannot be empty!" );
-
     CMyComPtr<IInArchive> inArchive;
     mLibrary.createArchiveObject( &mFormat.guid(), &IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
@@ -42,16 +39,7 @@ void BitMemExtractor::extract(const vector<byte_t>& in_buffer, const wstring& ou
         throw BitException( extractCallbackSpec->getErrorMessage() );
 }
 
-void BitMemExtractor::extract( const vector<byte_t>& in_buffer, vector<byte_t>& out_buffer/*const byte_t* in_buffer, const size_t in_buffer_size, byte_t** out_buffer,
-                               size_t* out_buffer_size*/, int index ) const {
-//    if ( in_buffer == NULL || in_buffer_size == 0 )
-//        throw BitException( "The pointer to the input buffer cannot be empty!" );
-//    if ( out_buffer == NULL )
-//        throw BitException( "The pointer to the output buffer cannot be empty!" );
-
-//    *out_buffer = NULL;
-//    *out_buffer_size = 0;
-
+void BitMemExtractor::extract( const vector<byte_t>& in_buffer, vector<byte_t>& out_buffer, int index ) const {
     CMyComPtr<IInArchive> inArchive;
     mLibrary.createArchiveObject( &mFormat.guid(), &IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
@@ -70,8 +58,6 @@ void BitMemExtractor::extract( const vector<byte_t>& in_buffer, vector<byte_t>& 
     inArchive->GetProperty( index, kpidSize, &prop );
 
     out_buffer.resize( prop.uintVal + 1 );
-//    *out_buffer = new byte_t[ prop.uintVal + 1];
-//    *out_buffer_size = prop.uintVal + 1;
 
     MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, mFormat, out_buffer/**out_buffer, prop.uintVal + 1 */);
     extractCallbackSpec->setPassword( mPassword );

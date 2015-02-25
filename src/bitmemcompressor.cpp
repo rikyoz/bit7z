@@ -104,7 +104,6 @@ void BitMemCompressor::compress( const vector<byte_t>& in_buffer, vector<byte_t>
     }
 
     COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
-    //CDynBufSeqOutStream* outBuffStreamSpec = new CDynBufSeqOutStream;
     CMyComPtr<ISequentialOutStream> outMemStream( outMemStreamSpec );
 
     MemUpdateCallback* updateCallbackSpec = new MemUpdateCallback( in_buffer, in_buffer_name );
@@ -127,7 +126,4 @@ void BitMemCompressor::compress( const vector<byte_t>& in_buffer, vector<byte_t>
 
     if ( updateCallbackSpec->mFailedFiles.size() != 0 )
         throw BitException( errorString );
-
-//    *out_buffer = outBuffStreamSpec->GetBufPtrForWriting( 0 );
-//    *out_buffer_size = outBuffStreamSpec->GetSize();
 }

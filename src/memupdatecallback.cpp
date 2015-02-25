@@ -21,9 +21,8 @@ using namespace bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 
-MemUpdateCallback::MemUpdateCallback( const vector<byte_t>& out_buffer ,
-                                      const wstring& buffer_name ): mAskPassword( false ),
-    mBuffer( out_buffer ), mBufferName( buffer_name ), mNeedBeClosed( false ) { /*, mBufferSize( size )*/
+MemUpdateCallback::MemUpdateCallback( const vector<byte_t>& out_buffer, const wstring& buffer_name ) :
+    mAskPassword( false ), mBuffer( out_buffer ), mBufferName( buffer_name ), mNeedBeClosed( false ) {
     mFailedFiles.clear();
     mFailedCodes.clear();
 }

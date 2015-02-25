@@ -51,10 +51,8 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler , BitInFormat format, vector<byte_t>& buffer/*byte_t* buffer,
-                                        const size_t size*/ )
-    : mArchiveHandler( archiveHandler ), mFormat( format ), mBuffer( buffer )/*mBuffer( buffer ), mBufferSize( size )*/, mExtractMode( true ),
-      mProcessedFileInfo(),
+MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler , BitInFormat format, vector<byte_t>& buffer )
+    : mArchiveHandler( archiveHandler ), mFormat( format ), mBuffer( buffer ), mExtractMode( true ), mProcessedFileInfo(),
       mOutBuffStreamSpec( NULL ), mNumErrors( 0 ) {}
 
 MemExtractCallback::~MemExtractCallback() {}

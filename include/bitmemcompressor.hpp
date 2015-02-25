@@ -26,13 +26,9 @@ namespace bit7z {
 
             void setSolidMode( bool solid_mode );
 
-            void compress(const vector<byte_t>& in_buffer/*const byte_t* in_buffer, const size_t in_buffer_size*/,
-                           const wstring& out_archive, wstring in_buffer_name = L"" ) const;
+            void compress( const vector<byte_t>& in_buffer, const wstring& out_archive, wstring in_buffer_name = L"" ) const;
 
-            void compress( const vector<byte_t>& in_buffer,
-                           vector<byte_t>& out_buffer,
-                           wstring in_buffer_name = L""/*const byte_t* in_buffer, const size_t in_buffer_size, byte_t** out_buffer,
-                           size_t* out_buffer_size*/ ) const;
+            void compress( const vector<byte_t>& in_buffer, vector<byte_t>& out_buffer, wstring in_buffer_name = L"" ) const;
 
         private:
             const Bit7zLibrary& mLibrary;
