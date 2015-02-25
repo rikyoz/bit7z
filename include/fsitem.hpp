@@ -11,10 +11,12 @@ namespace bit7z {
 
         typedef WIN32_FIND_DATA FSItemInfo;
 
+        using std::wstring;
+
         class FSItem {
             public:
-                FSItem( const std::wstring& path, const std::wstring& relative_dir = L"" );
-                FSItem( const std::wstring& dir, const std::wstring& relative_dir, FSItemInfo data );
+                FSItem( const wstring& path, const wstring& relative_dir = L"" );
+                FSItem( const wstring& dir, const wstring& relative_dir, FSItemInfo data );
 
                 bool exists() const;
                 bool isDir() const;
@@ -22,14 +24,14 @@ namespace bit7z {
                 FILETIME creationTime() const;
                 FILETIME lastAccessTime() const;
                 FILETIME lastWriteTime() const;
-                std::wstring name() const;
-                std::wstring relativePath() const;
-                std::wstring fullPath() const;
+                wstring name() const;
+                wstring relativePath() const;
+                wstring fullPath() const;
                 uint32_t attributes() const;
 
             private:
-                std::wstring mDirectory;
-                std::wstring mRelativeDirectory;
+                wstring mDirectory;
+                wstring mRelativeDirectory;
                 FSItemInfo mFileData;
         };
 

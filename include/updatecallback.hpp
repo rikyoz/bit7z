@@ -11,9 +11,18 @@
 namespace bit7z {
 
     using namespace filesystem;
+    using std::vector;
+    using std::wstring;
 
     class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
+            vector<wstring> mFailedFiles;
+
+            UpdateCallback( const vector<FSItem>& dirItems );
+            virtual ~UpdateCallback();
+
+            HRESULT Finilize();
+
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
 
             // IProgress
@@ -32,25 +41,19 @@ namespace bit7z {
             //ICryptoGetTextPassword2
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
-        public:
-            std::vector<UInt64> mVolumesSizes;
-            std::wstring mVolName;
-            std::wstring mVolExt;
+        private:
+            vector<UInt64> mVolumesSizes;
+            wstring mVolName;
+            wstring mVolExt;
 
-            std::wstring mDirPrefix;
-            const std::vector<FSItem>& mDirItems;
+            wstring mDirPrefix;
+            const vector<FSItem>& mDirItems;
 
             bool mAskPassword;
 
             bool mNeedBeClosed;
 
-            std::vector<std::wstring> mFailedFiles;
-            std::vector<HRESULT> mFailedCodes;
-
-            UpdateCallback( const std::vector<FSItem>& dirItems );
-            virtual ~UpdateCallback();
-
-            HRESULT Finilize();
+            vector<HRESULT> mFailedCodes;
     };
 
 }

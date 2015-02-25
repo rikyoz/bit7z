@@ -8,6 +8,9 @@
 
 namespace bit7z {
 
+    using std::wstring;
+    using std::vector;
+
     /**
      * @brief The BitExtractor class allows to extract the content of various file archives
      */
