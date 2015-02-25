@@ -34,18 +34,34 @@ namespace bit7z {
             BitInFormat extractionFormat();
 
             /**
+             * @brief Sets up a password to be used to open the archives
+             *
+             * When setting a password, the opened archive will be decrypted using the default
+             * cryptographic method of the input format.
+             *
+             * @note Calling setPassword when the input archive is not encrypted does not have effect on
+             * the extraction process.
+             *
+             * @note After a password has been set, it will be used for every extraction operation.
+             * To cancel the password, it must be performed a new call to setPassword with argument
+             * an empty password.
+             *
+             * @param password          the password to be used.
+             */
+            void setPassword( const wstring& password );
+
+            /**
              * @brief Extracts the given archive into the choosen directory
 
              * @param in_file   the input archive file
              * @param out_dir   the output directory where extracted files will be put
-             * @param password  the (eventual) password needed to open/extract the archive
              */
-            void extract( const std::wstring& in_file, const std::wstring& out_dir = L"",
-                          const std::wstring& password = L"" ) const;
+            void extract( const wstring& in_file, const wstring& out_dir = L"" ) const;
 
         private:
             const Bit7zLibrary& mLibrary;
             const  BitInFormat& mFormat;
+            wstring  mPassword;
     };
 
 }
