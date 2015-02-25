@@ -6,6 +6,7 @@
 
 #include "../include/bitexception.hpp"
 #include "../include/extractcallback.hpp"
+#include "../include/memextractcallback.hpp"
 #include "../include/opencallback.hpp"
 
 using namespace bit7z;
@@ -50,4 +51,47 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
     CMyComPtr<IArchiveExtractCallback> extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( NULL, ( UInt32 )( Int32 )( -1 ), false, extractCallback ) != S_OK )
         throw BitException( extractCallbackSpec->getErrorMessage() );
+}
+
+void BitExtractor::extract( const wstring& in_file,
+                            vector<byte_t>& out_buffer,/*byte_t** out_buffer, size_t* buffer_size,*/ int index ) {
+//    if ( out_buffer == NULL )
+//        throw BitException( "The pointer to the output buffer cannot be NULL!" );
+
+//    *out_buffer = NULL;
+//    *buffer_size = 0;
+
+    CMyComPtr<IInArchive> inArchive;
+    mLibrary.createArchiveObject( &mFormat.guid(), &IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
+
+    CInFileStream* fileStreamSpec = new CInFileStream;
+    CMyComPtr<IInStream> fileStream = fileStreamSpec;
+    if ( !fileStreamSpec->Open( in_file.c_str() ) )
+        throw BitException( L"Cannot open archive file '" + in_file + L"'" );
+
+    OpenCallback* openCallbackSpec = new OpenCallback();
+    openCallbackSpec->setPassword( mPassword );
+
+    CMyComPtr<IArchiveOpenCallback> openCallback( openCallbackSpec );
+    if ( inArchive->Open( fileStream, 0, openCallback ) != S_OK )
+        throw BitException( L"Cannot open archive '" + in_file + L"'" );
+
+    NCOM::CPropVariant prop;
+    inArchive->GetProperty( index, kpidSize, &prop );
+
+    out_buffer.resize( prop.uintVal + 1 );
+//    *out_buffer = new byte_t[ prop.uintVal + 1 ];
+//    *buffer_size = prop.uintVal + 1;
+
+    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, mFormat,
+                                                                      out_buffer/**out_buffer, prop.uintVal + 1*/ );
+    extractCallbackSpec->setPassword( mPassword );
+
+    UInt32 indices[] = { index };
+
+    CMyComPtr<IArchiveExtractCallback> extractCallback( extractCallbackSpec );
+    if ( inArchive->Extract( indices, 1, false, extractCallback ) != S_OK )
+        throw BitException( extractCallbackSpec->getErrorMessage() );
+
+    out_buffer[prop.uintVal] = 0;
 }

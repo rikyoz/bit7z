@@ -2,9 +2,11 @@
 #define BITEXTRACTOR_HPP
 
 #include <iostream>
+#include <vector>
 
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitguids.hpp"
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
 
@@ -57,6 +59,15 @@ namespace bit7z {
              * @param out_dir   the output directory where extracted files will be put
              */
             void extract( const wstring& in_file, const wstring& out_dir = L"" ) const;
+
+            /**
+             * @brief Extracts the given archive into the output buffer
+
+             * @param in_file      the input archive file
+             * @param out_buffer   a pointer to the output buffer (byte_t*) where the content of the archive will be put
+             * @param buffer_size  a pointer to a size_t variable where the size of the output buffer will be stored
+             */
+            void extract( const wstring& in_file, vector<byte_t>& out_buffer, int index = 0 );
 
         private:
             const Bit7zLibrary& mLibrary;

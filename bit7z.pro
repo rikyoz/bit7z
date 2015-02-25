@@ -31,6 +31,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/fsutil.cpp \
            src/callback.cpp \
            src/bitformat.cpp \
+           src/memextractcallback.cpp \
            src/memupdatecallback.cpp \
     src/coutmemstream.cpp
 
@@ -59,6 +60,7 @@ HEADERS += include/bitcompressor.hpp \
            include/callback.hpp \
            include/bitformat.hpp \
            include/bitcompressionlevel.hpp \
+           include/memextractcallback.hpp \
            include/bittypes.hpp \
            include/memupdatecallback.hpp \
     include/coutmemstream.hpp
