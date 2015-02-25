@@ -26,7 +26,7 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the input archive format.
              */
-            BitExtractor( const Bit7zLibrary&, BitInFormat format );
+            BitExtractor( const Bit7zLibrary&, const BitInFormat& format );
 
             /**
              * @return the archive format used by the extractor
@@ -45,7 +45,7 @@ namespace bit7z {
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitInFormat mFormat;
+            const  BitInFormat& mFormat;
     };
 
 }

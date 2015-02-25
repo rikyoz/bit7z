@@ -35,12 +35,12 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the output archive format.
              */
-            BitCompressor( const Bit7zLibrary& lib, BitOutFormat format );
+            BitCompressor( const Bit7zLibrary& lib, const BitOutFormat& format );
 
             /**
              * @return the archive format used by the compressor
              */
-            BitOutFormat compressionFormat();
+            const BitOutFormat& compressionFormat();
 
             /**
              * @brief Sets up a password for the output archive
@@ -136,7 +136,7 @@ namespace bit7z {
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitOutFormat mFormat;
+            const BitOutFormat& mFormat;
             BitCompressionLevel mCompressionLevel;
             wstring mPassword;
             bool mCryptHeaders;

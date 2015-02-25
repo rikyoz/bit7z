@@ -8,8 +8,12 @@
 #include "../include/opencallback.hpp"
 
 using namespace bit7z;
+using namespace NWindows;
 
-BitExtractor::BitExtractor( const Bit7zLibrary& lib, BitInFormat format ) : mLibrary( lib ), mFormat( format ) {}
+using std::wstring;
+
+BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : mLibrary( lib ), mFormat( format ),
+    mPassword( L"" ) {}
 
 BitInFormat BitExtractor::extractionFormat() {
     return mFormat;
@@ -21,9 +25,7 @@ BitInFormat BitExtractor::extractionFormat() {
  *  + Use of exceptions instead of error codes */
 void BitExtractor::extract( const std::wstring& in_file, const std::wstring& out_dir, const std::wstring& pass ) const {
     CMyComPtr<IInArchive> inArchive;
-    mLibrary.createArchiveObject( mFormat.guid(),
-                                  &IID_IInArchive,
-                                  reinterpret_cast< void** >( &inArchive ) );
+    mLibrary.createArchiveObject( &mFormat.guid(), &IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
     CInFileStream* fileStreamSpec = new CInFileStream;
     CMyComPtr<IInStream> fileStream = fileStreamSpec;

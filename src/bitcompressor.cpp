@@ -12,10 +12,11 @@ using namespace std;
 using namespace bit7z;
 using namespace NWindows;
 
-BitCompressor::BitCompressor( const Bit7zLibrary& lib, BitOutFormat format ) : mLibrary( lib ), mFormat( format ),
-    mCompressionLevel( BitCompressionLevel::Normal ), mPassword( L"" ), mCryptHeaders( false ), mSolidMode( false ) {}
+BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitOutFormat& format ) : mLibrary( lib ),
+    mFormat( format ), mCompressionLevel( BitCompressionLevel::Normal ), mPassword( L"" ), mCryptHeaders( false ),
+    mSolidMode( false ) {}
 
-BitOutFormat BitCompressor::compressionFormat() {
+const BitOutFormat& BitCompressor::compressionFormat() {
     return mFormat;
 }
 
@@ -88,7 +89,7 @@ void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out
  *  + Use of exceptions instead of error codes */
 void BitCompressor::compressFS( const vector<FSItem>& in_items, const wstring& out_archive ) const {
     CMyComPtr<IOutArchive> outArchive;
-    mLibrary.createArchiveObject( mFormat.guid(), &IID_IOutArchive, reinterpret_cast< void** >( &outArchive ) );
+    mLibrary.createArchiveObject( &( mFormat.guid() ), &IID_IOutArchive, reinterpret_cast< void** >( &outArchive ) );
 
     vector< const wchar_t* > names;
     vector< NCOM::CPropVariant > values;
