@@ -17,6 +17,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            lib/7zSDK/CPP/7zip/Common/FileStreams.cpp \
            lib/7zSDK/CPP/7zip/Common/StreamObjects.cpp \
            lib/7zSDK/CPP/Common/IntToString.cpp \
+           lib/7zSDK/CPP/Common/MyVector.cpp \
            src/bitextractor.cpp \
            src/bitcompressor.cpp \
            src/bitmemcompressor.cpp \
