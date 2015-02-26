@@ -1,19 +1,19 @@
 bit7z
 =====
-
-**bit7z** is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.
+**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface with the dynamic libraries from the 7-zip SDK. It supports compression and extraction to and from the filesystem or the memory.
 
 ![](http://img.shields.io/badge/version-v1.0.0-blue.svg?style=flat) ![](http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat) ![](https://img.shields.io/badge/platform-windows-8BCF40.svg?style=flat) ![](http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat)
 
 ## Features
 bit7z supports the following features:
 
-+ Compression of files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM
++ Compression of files and directories with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM.
 + Extraction of the following archive formats: 7z, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, GZIP, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, TAR, UDF, VHD, WIM, XAR, XZ, Z and ZIP.
-+ Creation of encrypted archives (only for 7z and ZIP formats)
-+ Archive header encryption (only for 7z format)
-+ Choice of the compression level (from none to ultra, depending on the output archive format)
-+ Solid archives (only for 7z)
++ Support to compression and extraction to and from memory (compression to memory is supported only for BZIP2, GZIP, XZ and TAR formats).
++ Creation of encrypted archives (only for 7z and ZIP formats).
++ Archive header encryption (only for 7z format).
++ Choice of the compression level (from none to ultra, depending on the output archive format).
++ Solid archives (only for 7z).
 
 Please note that the presence or not of some of these features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.
 
@@ -37,13 +37,18 @@ try {
 	using namespace bit7z;
 
 	BitLibrary lib(L"7za.dll");
-	BitExtractor extractor(lib, BitInFormat::SevenZip);
+	BitExtractor extractor(lib, BitFormat::SevenZip);
 	
 	//extracts a simple archive
 	extractor.extract(L"path/to/archive.7z", L"output/dir/");
 
+	//extracts an archive to a buffer
+	vector<byte_t> buffer;
+	extractor.extract(L"path/to/archive.7z", buffer);
+
 	//extracts an encrypted archive
-	extractor.extract(L"path/to/another/archive.7z", L"output/dir/", L"password");
+	extractor.setPassword(L"password");
+	extractor.extract(L"path/to/another/archive.7z", L"output/dir/");
 } catch ( const BitException& e ) {
 	//do something with e.what()...
 }
@@ -60,7 +65,7 @@ try {
 
 	std::vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
 	BitLibrary lib(L"7z.dll");
-	BitCompressor compressor(lib, BitOutFormat::Zip);
+	BitCompressor compressor(lib, BitFormat::Zip);
 
 	//creates a simple zip archive
 	compressor.compressFiles(files, L"output_archive.zip");
@@ -71,10 +76,17 @@ try {
 	//creates an encrypted zip archive
 	compressor.setPassword(L"password");
 	compressor.compressFiles(files, L"protected_archive.zip");
+
+	//compresses a file into a buffer
+	vector<byte_t> buffer;
+	BitCompressor compressor2(lib, BitFormat::BZip2);
+	compressor2.compressFile(files[0], buffer);
 } catch ( const BitException& e ) {
 	//do something with e.what()... 
 }
 ~~~~~~~~~~~~~
+
+For more examples see the wiki.
 
 ## Usage Requirements
 + **Target OS:** Windows (supported both x86 and x64 architectures)
