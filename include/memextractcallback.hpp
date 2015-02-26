@@ -10,6 +10,7 @@
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
+#include "../include/coutmemstream.hpp"
 #include "../include/bitguids.hpp"
 #include "../include/bitformat.hpp"
 #include "../include/bittypes.hpp"
@@ -21,7 +22,7 @@ namespace bit7z {
 
     class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            MemExtractCallback( IInArchive* archiveHandler, BitInFormat BitFormat, vector<byte_t>& buffer );
+            MemExtractCallback( IInArchive* archiveHandler, vector<byte_t>& buffer );
             virtual ~MemExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
@@ -40,7 +41,6 @@ namespace bit7z {
 
         private:
             CMyComPtr<IInArchive> mArchiveHandler;
-            BitInFormat mFormat;
             vector<byte_t>& mBuffer;
             bool mExtractMode;
             struct CProcessedFileInfo {
@@ -51,7 +51,7 @@ namespace bit7z {
                 bool MTimeDefined;
             } mProcessedFileInfo;
 
-            CBufPtrSeqOutStream* mOutBuffStreamSpec;
+            COutMemStream* mOutBuffStreamSpec;
             CMyComPtr<ISequentialOutStream> mOutBuffStream;
 
             UInt64 mNumErrors;

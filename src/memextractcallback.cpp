@@ -51,8 +51,8 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler , BitInFormat format, vector<byte_t>& buffer )
-    : mArchiveHandler( archiveHandler ), mFormat( format ), mBuffer( buffer ), mExtractMode( true ), mProcessedFileInfo(),
+MemExtractCallback::MemExtractCallback(IInArchive* archiveHandler , vector<byte_t>& buffer )
+    : mArchiveHandler( archiveHandler ), mBuffer( buffer ), mExtractMode( true ), mProcessedFileInfo(),
       mOutBuffStreamSpec( NULL ), mNumErrors( 0 ) {}
 
 MemExtractCallback::~MemExtractCallback() {}
@@ -143,9 +143,8 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
     }
 
     if ( !mProcessedFileInfo.isDir ) {
-        mOutBuffStreamSpec = new CBufPtrSeqOutStream;
+        mOutBuffStreamSpec = new COutMemStream( mBuffer );
         CMyComPtr<ISequentialOutStream> outStreamLoc( mOutBuffStreamSpec );
-        mOutBuffStreamSpec->Init( &mBuffer[0], mBuffer.size() );
         mOutBuffStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }

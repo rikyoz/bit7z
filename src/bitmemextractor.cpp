@@ -57,9 +57,7 @@ void BitMemExtractor::extract( const vector<byte_t>& in_buffer, vector<byte_t>& 
     NCOM::CPropVariant prop;
     inArchive->GetProperty( index, kpidSize, &prop );
 
-    out_buffer.resize( prop.uintVal + 1 );
-
-    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, mFormat, out_buffer/**out_buffer, prop.uintVal + 1 */);
+    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, out_buffer );
     extractCallbackSpec->setPassword( mPassword );
 
     UInt32 indices[] = { index };
@@ -68,6 +66,4 @@ void BitMemExtractor::extract( const vector<byte_t>& in_buffer, vector<byte_t>& 
     if ( inArchive->Extract( indices, 1, false, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }
-
-    out_buffer[prop.uintVal] = 0;
 }

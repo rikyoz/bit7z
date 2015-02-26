@@ -69,12 +69,7 @@ void BitExtractor::extract( const wstring& in_file, vector<byte_t>& out_buffer, 
     if ( inArchive->Open( fileStream, 0, openCallback ) != S_OK )
         throw BitException( L"Cannot open archive '" + in_file + L"'" );
 
-    NCOM::CPropVariant prop;
-    inArchive->GetProperty( index, kpidSize, &prop );
-
-    out_buffer.resize( prop.uintVal + 1 );
-
-    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, mFormat, out_buffer );
+    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, out_buffer );
     extractCallbackSpec->setPassword( mPassword );
 
     UInt32 indices[] = { index };
@@ -82,6 +77,4 @@ void BitExtractor::extract( const wstring& in_file, vector<byte_t>& out_buffer, 
     CMyComPtr<IArchiveExtractCallback> extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( indices, 1, false, extractCallback ) != S_OK )
         throw BitException( extractCallbackSpec->getErrorMessage() );
-
-    out_buffer[prop.uintVal] = 0;
 }
