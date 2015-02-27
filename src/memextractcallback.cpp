@@ -21,11 +21,11 @@ using namespace bit7z;
  *    because it must implement interfaces with nothrow methods.
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
+//static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
 
-static const wstring kTestingString    =  L"Testing     ";
-static const wstring kExtractingString =  L"Extracting  ";
-static const wstring kSkippingString   =  L"Skipping    ";
+//static const wstring kTestingString    =  L"Testing     ";
+//static const wstring kExtractingString =  L"Extracting  ";
+//static const wstring kSkippingString   =  L"Skipping    ";
 
 static const wstring kUnsupportedMethod = L"Unsupported Method";
 static const wstring kCRCFailed         = L"CRC Failed";
@@ -51,9 +51,9 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-MemExtractCallback::MemExtractCallback(IInArchive* archiveHandler , vector<byte_t>& buffer )
+MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler , vector<byte_t>& buffer )
     : mArchiveHandler( archiveHandler ), mBuffer( buffer ), mExtractMode( true ), mProcessedFileInfo(),
-      mOutBuffStreamSpec( NULL ), mNumErrors( 0 ) {}
+      mOutMemStreamSpec( NULL ), mNumErrors( 0 ) {}
 
 MemExtractCallback::~MemExtractCallback() {}
 
@@ -67,7 +67,7 @@ STDMETHODIMP  MemExtractCallback::SetCompleted( const UInt64* /* completeValue *
 
 STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
     *outStream = 0;
-    mOutBuffStream.Release();
+    mOutMemStream.Release();
     // Get Name
     NCOM::CPropVariant prop;
     RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
@@ -84,7 +84,6 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract )
         return S_OK;
-
 
     // Get Attrib
     NCOM::CPropVariant prop2;
@@ -143,9 +142,9 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
     }
 
     if ( !mProcessedFileInfo.isDir ) {
-        mOutBuffStreamSpec = new COutMemStream( mBuffer );
-        CMyComPtr<ISequentialOutStream> outStreamLoc( mOutBuffStreamSpec );
-        mOutBuffStream = outStreamLoc;
+        mOutMemStreamSpec = new COutMemStream( mBuffer );
+        CMyComPtr<ISequentialOutStream> outStreamLoc( mOutMemStreamSpec );
+        mOutMemStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }
 
@@ -207,7 +206,7 @@ STDMETHODIMP  MemExtractCallback::SetOperationResult( Int32 operationResult ) {
 //    if ( mOutBuffStream != NULL ) {
 //        RINOK( mOutBuffStreamSpec->Close() );
 //    }
-    mOutBuffStream.Release();
+    mOutMemStream.Release();
 
     if ( mNumErrors > 0 ) return E_FAIL;
 

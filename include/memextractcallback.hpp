@@ -51,8 +51,8 @@ namespace bit7z {
                 bool MTimeDefined;
             } mProcessedFileInfo;
 
-            COutMemStream* mOutBuffStreamSpec;
-            CMyComPtr<ISequentialOutStream> mOutBuffStream;
+            COutMemStream* mOutMemStreamSpec;
+            CMyComPtr<ISequentialOutStream> mOutMemStream;
 
             UInt64 mNumErrors;
     };
