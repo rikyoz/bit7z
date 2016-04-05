@@ -12,7 +12,6 @@
 #include "../include/fsitem.hpp"
 
 namespace bit7z {
-
     using namespace filesystem;
 
     using std::wstring;
@@ -36,12 +35,12 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the output archive format.
              */
-            BitCompressor( const Bit7zLibrary& lib, const BitOutFormat& format );
+            BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format );
 
             /**
              * @return the archive format used by the compressor
              */
-            const BitOutFormat& compressionFormat();
+            const BitInOutFormat& compressionFormat();
 
             /**
              * @brief Sets up a password for the output archive
@@ -95,7 +94,7 @@ namespace bit7z {
              * @param in_paths      a vector of paths.
              * @param out_archive   the path (relative or absolute) to the output archive file.
              */
-            void compress( const vector<wstring>& in_paths, const wstring& out_archive ) const;
+            void compress( const vector< wstring >& in_paths, const wstring& out_archive ) const;
 
             /**
              * @brief Compresses a single file
@@ -113,7 +112,7 @@ namespace bit7z {
              * @param in_files      the path (relative or absolute) to the input files.
              * @param out_archive   the path (relative or absolute) to the output archive file.
              */
-            void compressFiles( const vector<wstring>& in_files, const wstring& out_archive ) const;
+            void compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const;
 
             /**
              * @brief Compresses the files contained in a directory
@@ -139,20 +138,18 @@ namespace bit7z {
 
             /* Compression from file system to memory buffer */
 
-            void compressFile( const wstring& in_file, vector<byte_t>& out_buffer ) const;
+            void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitOutFormat& mFormat;
+            const BitInOutFormat& mFormat;
             BitCompressionLevel mCompressionLevel;
             wstring mPassword;
             bool mCryptHeaders;
             bool mSolidMode;
 
-            void compressToFileSystem( const vector<FSItem>& in_items, const wstring& out_archive ) const;
-            void compressToMemory( const vector<FSItem>& in_items, vector<byte_t>& out_buffer ) const;
+            void compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const;
+            void compressToMemory( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;
     };
-
 }
-
 #endif // BITCOMPRESSOR_HPP

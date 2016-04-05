@@ -4,7 +4,6 @@
 #include <string>
 
 namespace bit7z {
-
     using std::wstring;
 
     class Callback {
@@ -19,7 +18,5 @@ namespace bit7z {
             wstring mPassword;
             wstring mErrorMessage;
     };
-
 }
-
 #endif // CALLBACK_HPP

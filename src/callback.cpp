@@ -13,4 +13,6 @@ bool Callback::isPasswordDefined() const {
     return mPassword.length() != 0;
 }
 
-wstring Callback::getErrorMessage() const { return mErrorMessage; }
+wstring Callback::getErrorMessage() const {
+    return mErrorMessage;
+}

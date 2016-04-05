@@ -35,7 +35,8 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/memextractcallback.cpp \
            src/memupdatecallback.cpp \
            src/bitmemextractor.cpp \
-    src/coutmemstream.cpp
+    src/coutmemstream.cpp \
+    src/util.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
 
@@ -66,7 +67,8 @@ HEADERS += include/bitcompressor.hpp \
            include/bittypes.hpp \
            include/memupdatecallback.hpp \
            include/bitmemextractor.hpp \
-    include/coutmemstream.hpp
+    include/coutmemstream.hpp \
+    include/util.hpp
 
 contains(QT_ARCH, i386) {
     QMAKE_LFLAGS         += /MACHINE:X86
@@ -76,12 +78,13 @@ contains(QT_ARCH, i386) {
     PLATFORM = x64
 }
 
-
 CONFIG(debug, debug|release) {
     BUILD = debug
 } else {
     BUILD = release
 }
+
+DISTFILES += uncrustify.cfg
 
 DESTDIR  = $$PWD/bin/$${PLATFORM}/
 OBJECTS_DIR = $$PWD/build/$${PLATFORM}/$${BUILD}/.obj

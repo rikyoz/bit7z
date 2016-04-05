@@ -10,7 +10,6 @@
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-
     using namespace filesystem;
     using std::vector;
     using std::wstring;
@@ -21,20 +20,21 @@ namespace bit7z {
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+            STDMETHOD( SetCompleted )( const UInt64 * completeValue );
 
             // IArchiveUpdateCallback2
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties, UInt32* indexInArchive );
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
+            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG * *enumerator );
+            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32 * newData, Int32 * newProperties,
+                                            UInt32 * indexInArchive );
+            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT * value );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream * *inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
 
             //ICryptoGetTextPassword2
-            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
+            STDMETHOD( CryptoGetTextPassword2 )( Int32 * passwordIsDefined, BSTR * password );
 
         public:
-            vector<UInt64> mVolumesSizes;
+            vector< UInt64 > mVolumesSizes;
             wstring mVolName;
             wstring mVolExt;
 
@@ -44,18 +44,16 @@ namespace bit7z {
 
             bool mNeedBeClosed;
 
-            vector<wstring> mFailedFiles;
-            vector<HRESULT> mFailedCodes;
+            vector< wstring > mFailedFiles;
+            vector< HRESULT > mFailedCodes;
 
-            const vector<byte_t>& mBuffer;
+            const vector< byte_t >& mBuffer;
             const wstring& mBufferName;
 
-            MemUpdateCallback( const vector<byte_t>& out_buffer, const wstring& buffer_name );
+            MemUpdateCallback( const vector< byte_t >& out_buffer, const wstring& buffer_name );
             virtual ~MemUpdateCallback();
 
             HRESULT Finilize();
     };
-
 }
-
 #endif // MEMUPDATECALLBACK_HPP

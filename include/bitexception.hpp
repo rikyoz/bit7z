@@ -5,7 +5,6 @@
 #include <exception>
 
 namespace bit7z {
-
     using std::runtime_error;
     using std::string;
     using std::wstring;
@@ -32,7 +31,5 @@ namespace bit7z {
              */
             BitException( const wstring& message );
     };
-
 }
-
 #endif // BITEXCEPTION_HPP

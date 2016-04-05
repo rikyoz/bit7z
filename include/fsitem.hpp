@@ -8,7 +8,6 @@
 
 namespace bit7z {
     namespace filesystem {
-
         typedef WIN32_FIND_DATA FSItemInfo;
 
         using std::wstring;
@@ -34,8 +33,6 @@ namespace bit7z {
                 wstring mRelativeDirectory;
                 FSItemInfo mFileData;
         };
-
     }
 }
-
 #endif // FSITEM_HPP

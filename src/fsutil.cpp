@@ -12,7 +12,7 @@ bool fsutil::is_directory( const wstring& path ) {
 }
 
 bool fsutil::path_exists( const wstring& path ) {
-    return ( GetFileAttributes( path.c_str() ) != INVALID_FILE_ATTRIBUTES );
+    return GetFileAttributes( path.c_str() ) != INVALID_FILE_ATTRIBUTES;
 }
 
 bool fsutil::has_ending( wstring const& str, const wstring& ending ) {
@@ -21,9 +21,12 @@ bool fsutil::has_ending( wstring const& str, const wstring& ending ) {
 }
 
 void fsutil::normalize_path( wstring& path ) { //this assumes that the passed path is not a file path!
-    if ( path.empty() ) return;
-    if ( path.find_last_of( L"\\/" ) != path.length() - 1 )
+    if ( path.empty() ) {
+        return;
+    }
+    if ( path.find_last_of( L"\\/" ) != path.length() - 1 ) {
         path.append( L"\\" );
+    }
 }
 
 void fsutil::filename( const wstring& path, wstring& filename ) {

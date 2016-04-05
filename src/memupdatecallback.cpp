@@ -21,13 +21,18 @@ using namespace bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 
-MemUpdateCallback::MemUpdateCallback( const vector<byte_t>& out_buffer, const wstring& buffer_name ) :
-    mAskPassword( false ), mBuffer( out_buffer ), mBufferName( buffer_name ), mNeedBeClosed( false ) {
+MemUpdateCallback::MemUpdateCallback( const vector< byte_t >& out_buffer, const wstring& buffer_name ) :
+    mAskPassword( false ),
+    mNeedBeClosed( false ),
+    mBuffer( out_buffer ),
+    mBufferName( buffer_name ) {
     mFailedFiles.clear();
     mFailedCodes.clear();
 }
 
-MemUpdateCallback::~MemUpdateCallback() { Finilize(); }
+MemUpdateCallback::~MemUpdateCallback() {
+    Finilize();
+}
 
 HRESULT MemUpdateCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
@@ -43,14 +48,15 @@ HRESULT MemUpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ )
 
 HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
                                               Int32* newProperties, UInt32* indexInArchive ) {
-    if ( newData != NULL )
+    if ( newData != NULL ) {
         *newData = 1; //= true;
-
-    if ( newProperties != NULL )
+    }
+    if ( newProperties != NULL ) {
         *newProperties = 1; //= true;
-
-    if ( indexInArchive != NULL )
+    }
+    if ( indexInArchive != NULL ) {
         *indexInArchive = static_cast< UInt32 >( -1 );
+    }
 
     return S_OK;
 }
@@ -71,9 +77,11 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
     SystemTimeToFileTime( &st, &ft ); // converts to file time format
 
     switch ( propID ) {
-        case kpidPath  : prop = ( mBufferName.empty() ) ? kEmptyFileAlias.c_str() : mBufferName.c_str(); break;
-        case kpidIsDir : prop = false; break;
-        case kpidSize  : {
+        case kpidPath: prop = ( mBufferName.empty() ) ? kEmptyFileAlias.c_str() : mBufferName.c_str();
+            break;
+        case kpidIsDir: prop = false;
+            break;
+        case kpidSize: {
             prop.vt = VT_UI8;
             prop.uhVal.QuadPart = ( sizeof( byte_t ) * mBuffer.size() );
             break;
@@ -83,23 +91,26 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
             prop.ulVal = FILE_ATTRIBUTE_NORMAL;
             break;
         }
-        case kpidCTime : prop = ft; break;
-        case kpidATime : prop = ft; break;
-        case kpidMTime : prop = ft; break;
+        case kpidCTime: prop = ft;
+            break;
+        case kpidATime: prop = ft;
+            break;
+        case kpidMTime: prop = ft;
+            break;
     }
 
     prop.Detach( value );
     /*NWindows::NCOM::CPropVariant prop;
 
-    if ( propID == kpidIsAnti ) {
+       if ( propID == kpidIsAnti ) {
         prop = false;
         prop.Detach( value );
         return S_OK;
-    }
+       }
 
-    const FSItem dirItem = mDirItems[index];
+       const FSItem dirItem = mDirItems[index];
 
-    switch ( propID ) {
+       switch ( propID ) {
         case kpidPath  : prop = dirItem.relativePath().c_str(); break;
         case kpidIsDir : prop = dirItem.isDir(); break;
         case kpidSize  : prop = dirItem.size(); break;
@@ -107,15 +118,16 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
         case kpidCTime : prop = dirItem.creationTime(); break;
         case kpidATime : prop = dirItem.lastAccessTime(); break;
         case kpidMTime : prop = dirItem.lastWriteTime(); break;
-    }
+       }
 
-    prop.Detach( value );*/
+       prop.Detach( value );*/
     return S_OK;
 }
 
 HRESULT MemUpdateCallback::Finilize() {
-    if ( mNeedBeClosed )
+    if ( mNeedBeClosed ) {
         mNeedBeClosed = false;
+    }
 
     return S_OK;
 }
@@ -124,11 +136,11 @@ HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStre
     RINOK( Finilize() );
     /*const FSItem dirItem = mDirItems[index];
 
-    if ( dirItem.isDir() )
+       if ( dirItem.isDir() )
         return S_OK;*/
 
     CBufInStream* inStreamSpec = new CBufInStream;
-    CMyComPtr<ISequentialInStream> inStreamLoc( inStreamSpec );
+    CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
     inStreamSpec->Init( &mBuffer[0], mBuffer.size() );
 
 

@@ -37,12 +37,13 @@ static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID prop
     NCOM::CPropVariant prop;
     RINOK( archive->GetProperty( index, propID, &prop ) );
 
-    if ( prop.vt == VT_BOOL )
+    if ( prop.vt == VT_BOOL ) {
         result = VARIANT_BOOLToBool( prop.boolVal );
-    else if ( prop.vt == VT_EMPTY )
+    } else if ( prop.vt == VT_EMPTY ) {
         result = false;
-    else
+    } else {
         return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -51,21 +52,25 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler , vector<byte_t>& buffer )
-    : mArchiveHandler( archiveHandler ), mBuffer( buffer ), mExtractMode( true ), mProcessedFileInfo(),
-      mOutMemStreamSpec( NULL ), mNumErrors( 0 ) {}
+MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler, vector< byte_t >& buffer ) :
+    mArchiveHandler( archiveHandler ),
+    mBuffer( buffer ),
+    mExtractMode( true ),
+    mProcessedFileInfo(),
+    mOutMemStreamSpec( NULL ),
+    mNumErrors( 0 ) {}
 
 MemExtractCallback::~MemExtractCallback() {}
 
-STDMETHODIMP  MemExtractCallback::SetTotal( UInt64 /* size */ ) {
+STDMETHODIMP MemExtractCallback::SetTotal( UInt64 /* size */ ) {
     return S_OK;
 }
 
-STDMETHODIMP  MemExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
     return S_OK;
 }
 
-STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
+STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
     *outStream = 0;
     mOutMemStream.Release();
     // Get Name
@@ -73,17 +78,19 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
     RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
     wstring fullPath;
 
-    if ( prop.vt == VT_EMPTY )
+    if ( prop.vt == VT_EMPTY ) {
         fullPath = kEmptyFileAlias;
-    else {
-        if ( prop.vt != VT_BSTR )
+    } else {
+        if ( prop.vt != VT_BSTR ) {
             return E_FAIL;
+        }
 
         fullPath = prop.bstrVal;
     }
 
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract )
+    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
+    }
 
     // Get Attrib
     NCOM::CPropVariant prop2;
@@ -93,8 +100,9 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
         mProcessedFileInfo.Attrib = 0;
         mProcessedFileInfo.AttribDefined = false;
     } else {
-        if ( prop2.vt != VT_UI4 )
+        if ( prop2.vt != VT_UI4 ) {
             return E_FAIL;
+        }
 
         mProcessedFileInfo.Attrib = prop2.ulVal;
         mProcessedFileInfo.AttribDefined = true;
@@ -129,10 +137,14 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
     if ( newFileSizeDefined ) {
         //taken from ConvertPropVariantToUInt64
         switch ( prop4.vt ) {
-            case VT_UI1: newFileSize = prop4.bVal; break;
-            case VT_UI2: newFileSize = prop4.uiVal; break;
-            case VT_UI4: newFileSize = prop4.ulVal; break;
-            case VT_UI8: newFileSize = ( UInt64 )prop4.uhVal.QuadPart; break;
+            case VT_UI1: newFileSize = prop4.bVal;
+                break;
+            case VT_UI2: newFileSize = prop4.uiVal;
+                break;
+            case VT_UI4: newFileSize = prop4.ulVal;
+                break;
+            case VT_UI8: newFileSize = static_cast< UInt64 >( prop4.uhVal.QuadPart );
+                break;
             default:
                 mErrorMessage = L"151199";
                 return E_FAIL;
@@ -143,7 +155,7 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
 
     if ( !mProcessedFileInfo.isDir ) {
         mOutMemStreamSpec = new COutMemStream( mBuffer );
-        CMyComPtr<ISequentialOutStream> outStreamLoc( mOutMemStreamSpec );
+        CMyComPtr< ISequentialOutStream > outStreamLoc( mOutMemStreamSpec );
         mOutMemStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }
@@ -151,7 +163,7 @@ STDMETHODIMP  MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
     return S_OK;
 }
 
-STDMETHODIMP  MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
+STDMETHODIMP MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     mExtractMode = false;
 
     // in future we might use this switch to handle an event like onOperationStart(Operation o)
@@ -167,16 +179,16 @@ STDMETHODIMP  MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
                 cout <<  kTestingString;
                 break;
 
-            case NArchive::NExtract::NAskMode::kSkip:
+               case NArchive::NExtract::NAskMode::kSkip:
                 cout <<  kSkippingString;
                 break;*/
-    };
+    }
 
     //wcout << mFilePath << endl;;
     return S_OK;
 }
 
-STDMETHODIMP  MemExtractCallback::SetOperationResult( Int32 operationResult ) {
+STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
     switch ( operationResult ) {
         case NArchive::NExtract::NOperationResult::kOK:
             break;
@@ -208,13 +220,15 @@ STDMETHODIMP  MemExtractCallback::SetOperationResult( Int32 operationResult ) {
 //    }
     mOutMemStream.Release();
 
-    if ( mNumErrors > 0 ) return E_FAIL;
+    if ( mNumErrors > 0 ) {
+        return E_FAIL;
+    }
 
     return S_OK;
 }
 
 
-STDMETHODIMP  MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     if ( !isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);

@@ -9,7 +9,6 @@
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-
     using std::wstring;
     using std::vector;
 
@@ -65,16 +64,14 @@ namespace bit7z {
 
              * @param in_file      the input archive file
              * @param out_buffer   a pointer to the output buffer (byte_t*) where the content of the archive will be put
-             * @param buffer_size  a pointer to a size_t variable where the size of the output buffer will be stored
+             * @param index        (??)
              */
-            void extract( const wstring& in_file, vector<byte_t>& out_buffer, int index = 0 );
+            void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );
 
         private:
             const Bit7zLibrary& mLibrary;
-            const  BitInFormat& mFormat;
-            wstring  mPassword;
+            const BitInFormat& mFormat;
+            wstring mPassword;
     };
-
 }
-
 #endif // BITEXTRACTOR_HPP

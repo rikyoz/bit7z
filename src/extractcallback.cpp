@@ -36,12 +36,13 @@ static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID prop
     NCOM::CPropVariant prop;
     RINOK( archive->GetProperty( index, propID, &prop ) );
 
-    if ( prop.vt == VT_BOOL )
+    if ( prop.vt == VT_BOOL ) {
         result = VARIANT_BOOLToBool( prop.boolVal );
-    else if ( prop.vt == VT_EMPTY )
+    } else if ( prop.vt == VT_EMPTY ) {
         result = false;
-    else
+    } else   {
         return E_FAIL;
+    }
 
     return S_OK;
 }
@@ -50,9 +51,13 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath )
-    : mArchiveHandler( archiveHandler ), mDirectoryPath( directoryPath ), mExtractMode( true ),
-      mProcessedFileInfo(), mOutFileStreamSpec( NULL ), mNumErrors( 0 ) {
+ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath ) :
+    mArchiveHandler( archiveHandler ),
+    mDirectoryPath( directoryPath ),
+    mExtractMode( true ),
+    mProcessedFileInfo(),
+    mOutFileStreamSpec( NULL ),
+    mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
     filesystem::fsutil::normalize_path( mDirectoryPath );
 }
@@ -67,9 +72,9 @@ STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) 
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
+STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
                                          ISequentialOutStream** outStream,
-                                         Int32 askExtractMode ) {
+                                         Int32                  askExtractMode ) {
     *outStream = 0;
     mOutFileStream.Release();
     // Get Name
@@ -77,19 +82,21 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
     RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
     wstring fullPath;
 
-    if ( prop.vt == VT_EMPTY )
+    if ( prop.vt == VT_EMPTY ) {
         fullPath = kEmptyFileAlias;
-    else {
-        if ( prop.vt != VT_BSTR )
+    } else   {
+        if ( prop.vt != VT_BSTR ) {
             return E_FAIL;
+        }
 
         fullPath = prop.bstrVal;
     }
 
     mFilePath = fullPath;
 
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract )
+    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
+    }
 
 
     // Get Attrib
@@ -100,8 +107,9 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
         mProcessedFileInfo.Attrib = 0;
         mProcessedFileInfo.AttribDefined = false;
     } else {
-        if ( prop2.vt != VT_UI4 )
+        if ( prop2.vt != VT_UI4 ) {
             return E_FAIL;
+        }
 
         mProcessedFileInfo.Attrib = prop2.ulVal;
         mProcessedFileInfo.AttribDefined = true;
@@ -136,10 +144,14 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
     if ( newFileSizeDefined ) {
         //taken from ConvertPropVariantToUInt64
         switch ( prop4.vt ) {
-            case VT_UI1: newFileSize = prop4.bVal; break;
-            case VT_UI2: newFileSize = prop4.uiVal; break;
-            case VT_UI4: newFileSize = prop4.ulVal; break;
-            case VT_UI8: newFileSize = ( UInt64 )prop4.uhVal.QuadPart; break;
+            case VT_UI1: newFileSize = prop4.bVal;
+                break;
+            case VT_UI2: newFileSize = prop4.uiVal;
+                break;
+            case VT_UI4: newFileSize = prop4.ulVal;
+                break;
+            case VT_UI8: newFileSize = ( UInt64 )prop4.uhVal.QuadPart;
+                break;
             default:
                 mErrorMessage = L"151199";
                 return E_FAIL;
@@ -152,15 +164,16 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
     // Create folders for file
     size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
 
-    if ( slashPos != wstring::npos )
+    if ( slashPos != wstring::npos ) {
         NFile::NDirectory::CreateComplexDirectory( ( mDirectoryPath + mFilePath.substr( 0,
-                                                     slashPos ) ).c_str() );
+                                                                                        slashPos ) ).c_str() );
+    }
     wstring fullProcessedPath = mDirectoryPath + mFilePath;
     mDiskFilePath = fullProcessedPath;
 
-    if ( mProcessedFileInfo.isDir )
+    if ( mProcessedFileInfo.isDir ) {
         NFile::NDirectory::CreateComplexDirectory( fullProcessedPath.c_str() );
-    else {
+    } else   {
         NFile::NFind::CFileInfoW fi;
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
@@ -173,7 +186,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
         }
 
         mOutFileStreamSpec = new COutFileStream;
-        CMyComPtr<ISequentialOutStream> outStreamLoc( mOutFileStreamSpec );
+        CMyComPtr< ISequentialOutStream > outStreamLoc( mOutFileStreamSpec );
 
         if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
             //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;
@@ -205,10 +218,10 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
                 cout <<  kTestingString;
                 break;
 
-            case NArchive::NExtract::NAskMode::kSkip:
+               case NArchive::NExtract::NAskMode::kSkip:
                 cout <<  kSkippingString;
                 break;*/
-    };
+    }
 
     //wcout << mFilePath << endl;;
     return S_OK;
@@ -242,18 +255,22 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     }
 
     if ( mOutFileStream != NULL ) {
-        if ( mProcessedFileInfo.MTimeDefined )
+        if ( mProcessedFileInfo.MTimeDefined ) {
             mOutFileStreamSpec->SetMTime( &mProcessedFileInfo.MTime );
+        }
 
         RINOK( mOutFileStreamSpec->Close() );
     }
 
     mOutFileStream.Release();
 
-    if ( mExtractMode && mProcessedFileInfo.AttribDefined )
+    if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
         NFile::NDirectory::MySetFileAttributes( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
+    }
 
-    if ( mNumErrors > 0 ) return E_FAIL;
+    if ( mNumErrors > 0 ) {
+        return E_FAIL;
+    }
 
     return S_OK;
 }

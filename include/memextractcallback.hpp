@@ -17,31 +17,30 @@
 #include "../include/callback.hpp"
 
 namespace bit7z {
-
     using std::vector;
 
     class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            MemExtractCallback( IInArchive* archiveHandler, vector<byte_t>& buffer );
+            MemExtractCallback( IInArchive* archiveHandler, vector< byte_t >& buffer );
             virtual ~MemExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+            STDMETHOD( SetCompleted )( const UInt64 * completeValue );
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream * *outStream, Int32 askExtractMode );
             STDMETHOD( PrepareOperation )( Int32 askExtractMode );
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
             // ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
+            STDMETHOD( CryptoGetTextPassword )( BSTR * aPassword );
 
         private:
-            CMyComPtr<IInArchive> mArchiveHandler;
-            vector<byte_t>& mBuffer;
+            CMyComPtr< IInArchive > mArchiveHandler;
+            vector< byte_t >& mBuffer;
             bool mExtractMode;
             struct CProcessedFileInfo {
                 FILETIME MTime;
@@ -52,11 +51,9 @@ namespace bit7z {
             } mProcessedFileInfo;
 
             COutMemStream* mOutMemStreamSpec;
-            CMyComPtr<ISequentialOutStream> mOutMemStream;
+            CMyComPtr< ISequentialOutStream > mOutMemStream;
 
             UInt64 mNumErrors;
     };
-
 }
-
 #endif // MEMEXTRACTCALLBACK_HPP

@@ -6,7 +6,6 @@
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
-
             using std::wstring;
 
             bool is_directory( const wstring& path );
@@ -18,5 +17,4 @@ namespace bit7z {
         }
     }
 }
-
 #endif // BITFILESYSTEM_HPP

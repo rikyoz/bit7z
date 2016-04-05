@@ -9,7 +9,6 @@
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-
     using std::wstring;
     using std::vector;
 
@@ -22,16 +21,16 @@ namespace bit7z {
 
             void setPassword( const wstring& password );
 
-            void extract( const vector<byte_t>& in_buffer, const wstring& out_dir = L"" ) const;
+            void extract( const vector< byte_t >& in_buffer, const wstring& out_dir = L"" ) const;
 
-            void extract( const vector<byte_t>& in_buffer, vector<byte_t>& out_buffer, int index = 0 ) const;
+            void extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
+                          unsigned int index = 0 ) const;
 
         private:
             const Bit7zLibrary& mLibrary;
-            const  BitInFormat  mFormat;
-            wstring  mPassword;
+            const BitInFormat mFormat;
+            wstring mPassword;
     };
-
 }
 
 #endif // BITMEMEXTRACTOR_HPP

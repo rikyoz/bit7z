@@ -13,46 +13,47 @@ using namespace bit7z;
 using namespace std;
 using namespace NWindows;
 
-BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, BitInFormat format ) : mLibrary( lib ), mFormat( format ),
-    mPassword( L"" ) {}
-
-void BitMemExtractor::extract(const vector<byte_t>& in_buffer, const wstring& out_dir ) const {
-    CMyComPtr<IInArchive> inArchive;
-    mLibrary.createArchiveObject( &mFormat.guid(), &IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
+// NOTE: this function is not a method of BitMemExtractor because it would dirty the header with extra dependencies
+CMyComPtr< IInArchive > openArchive( const Bit7zLibrary &lib, const BitInFormat &format,
+                                     const vector< byte_t >& in_buffer, const wstring &password ) {
+    CMyComPtr< IInArchive > inArchive;
+    const GUID formatGUID = format.guid();
+    lib.createArchiveObject( &formatGUID, &::IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
     CBufInStream* bufStreamSpec = new CBufInStream;
-    CMyComPtr<IInStream> bufStream( bufStreamSpec );
+    CMyComPtr< IInStream > bufStream( bufStreamSpec );
     bufStreamSpec->Init( &in_buffer[0], in_buffer.size() );
 
     OpenCallback* openCallbackSpec = new OpenCallback();
-    openCallbackSpec->setPassword( mPassword );
+    openCallbackSpec->setPassword( password );
 
-    CMyComPtr<IArchiveOpenCallback> openCallback( openCallbackSpec );
-    if ( inArchive->Open( bufStream, 0, openCallback ) != S_OK )
+    CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );
+    if ( inArchive->Open( bufStream, 0, openCallback ) != S_OK ) {
         throw BitException( L"Cannot open archive buffer" );
+    }
+    return inArchive;
+}
+
+BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, BitInFormat format ) :
+    mLibrary( lib ),
+    mFormat( format ),
+    mPassword( L"" ) {}
+
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
+    CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_buffer, mPassword );
 
     ExtractCallback* extractCallbackSpec = new ExtractCallback( inArchive, out_dir );
     extractCallbackSpec->setPassword( mPassword );
 
-    CMyComPtr<IArchiveExtractCallback> extractCallback( extractCallbackSpec );
-    if ( inArchive->Extract( NULL, ( UInt32 )( Int32 )( -1 ), false, extractCallback ) != S_OK )
+    CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
+    if ( inArchive->Extract( NULL, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
+    }
 }
 
-void BitMemExtractor::extract( const vector<byte_t>& in_buffer, vector<byte_t>& out_buffer, int index ) const {
-    CMyComPtr<IInArchive> inArchive;
-    mLibrary.createArchiveObject( &mFormat.guid(), &IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
-
-    CBufInStream* bufStreamSpec = new CBufInStream;
-    CMyComPtr<IInStream> bufStream( bufStreamSpec );
-    bufStreamSpec->Init( &in_buffer[0], in_buffer.size() );
-
-    OpenCallback* openCallbackSpec = new OpenCallback();
-    openCallbackSpec->setPassword( mPassword );
-
-    CMyComPtr<IArchiveOpenCallback> openCallback( openCallbackSpec );
-    if ( inArchive->Open( bufStream, 0, openCallback ) != S_OK )
-        throw BitException( L"Cannot open archive buffer" );
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
+                               unsigned int index ) const {
+    CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_buffer, mPassword );
 
     NCOM::CPropVariant prop;
     inArchive->GetProperty( index, kpidSize, &prop );
@@ -60,9 +61,9 @@ void BitMemExtractor::extract( const vector<byte_t>& in_buffer, vector<byte_t>& 
     MemExtractCallback* extractCallbackSpec = new MemExtractCallback( inArchive, out_buffer );
     extractCallbackSpec->setPassword( mPassword );
 
-    UInt32 indices[] = { index };
+    const UInt32 indices[] = { index };
 
-    CMyComPtr<IArchiveExtractCallback> extractCallback( extractCallbackSpec );
+    CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( indices, 1, false, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }

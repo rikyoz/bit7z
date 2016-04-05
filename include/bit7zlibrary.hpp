@@ -10,15 +10,14 @@
 #define DEFAULT_DLL L"7z.dll"
 
 namespace bit7z {
-
     /**
      * @brief The Bit7zLibrary class allows the access to the basic functionalities provided by the 7z DLLs.
      */
     class Bit7zLibrary {
-            friend class BitExtractor;
-            friend class BitCompressor;
-            friend class BitMemExtractor;
-            friend class BitMemCompressor;
+        friend class BitExtractor;
+        friend class BitCompressor;
+        friend class BitMemExtractor;
+        friend class BitMemCompressor;
 
         public:
             /**
@@ -30,18 +29,15 @@ namespace bit7z {
              */
             Bit7zLibrary( const std::wstring& dll_path = DEFAULT_DLL );
             virtual ~Bit7zLibrary();
+            void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 
         private:
-            typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** outObject );
+            typedef UINT32 ( WINAPI * CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );
 
-            void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
-
-
     };
-
 }
 
 #endif // BIT7ZLIBRARY_HPP
