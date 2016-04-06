@@ -40,7 +40,7 @@ static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID prop
         result = VARIANT_BOOLToBool( prop.boolVal );
     } else if ( prop.vt == VT_EMPTY ) {
         result = false;
-    } else   {
+    } else {
         return E_FAIL;
     }
 
@@ -84,7 +84,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
 
     if ( prop.vt == VT_EMPTY ) {
         fullPath = kEmptyFileAlias;
-    } else   {
+    } else {
         if ( prop.vt != VT_BSTR ) {
             return E_FAIL;
         }
@@ -173,7 +173,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
 
     if ( mProcessedFileInfo.isDir ) {
         NFile::NDirectory::CreateComplexDirectory( fullProcessedPath.c_str() );
-    } else   {
+    } else {
         NFile::NFind::CFileInfoW fi;
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {

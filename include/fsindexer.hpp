@@ -17,7 +17,7 @@ namespace bit7z {
                 void listFilesInDirectory( vector< FSItem >& result, bool recursive = true );
 
                 static void listFiles( const vector< wstring >& in_paths, vector< FSItem >& out_files );
-                static void removeListedDirectories(const vector< wstring >& in_paths, vector< FSItem >& out_files );
+                static void removeListedDirectories( const vector< wstring >& in_paths, vector< FSItem >& out_files );
 
             private:
                 wstring mDirectory;
