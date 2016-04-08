@@ -1,6 +1,6 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "bit7z"
-PROJECT_NUMBER         = v1.0.0-rc
+PROJECT_NUMBER         = v2.0.0
 ABBREVIATE_BRIEF       = "The $name class" \
                          "The $name widget" \
                          "The $name file" \
