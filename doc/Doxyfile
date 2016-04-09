@@ -18,7 +18,8 @@ ALIASES                = "rst=\verbatim embed:rst"
 ALIASES               += "endrst=\endverbatim"
 MARKDOWN_SUPPORT       = YES
 CPP_CLI_SUPPORT        = NO
-EXTRACT_PACKAGE        = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_PACKAGE        = NO
 EXTRACT_STATIC         = YES
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = YES
@@ -43,5 +44,6 @@ GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_EXTRA_STYLESHEET  = html/css/extra.css
 GENERATE_LATEX         = NO
-GENERATE_XML           = NO
-#XML_OUTPUT             = doxyxml
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+XML_PROGRAMLISTING     = NO
