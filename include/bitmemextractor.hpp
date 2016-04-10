@@ -15,7 +15,6 @@ namespace bit7z {
     class BitMemExtractor {
         public:
             BitMemExtractor( const Bit7zLibrary& lib, BitInFormat BitFormat );
-            virtual ~BitMemExtractor() {}
 
             BitInFormat extractionFormat();
 
