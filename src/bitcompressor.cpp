@@ -16,6 +16,34 @@ using namespace bit7z;
 using namespace bit7z::util;
 using namespace NWindows;
 
+template< class T >
+void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
+                  const vector< FSItem > &in_items, const wstring &password ) {
+    UpdateCallback *updateCallbackSpec = new UpdateCallback( in_items );
+    updateCallbackSpec->setPassword( password );
+
+    CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
+    HRESULT result = outArc->UpdateItems( outStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
+    updateCallbackSpec->Finilize();
+
+    if ( result == E_NOTIMPL ) {
+        throw BitException( "Unsupported operation!" );
+    } else if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
+        throw BitException( "Failed operation (unkwown error)!" );
+    } else if ( result != S_OK ) {
+        throw BitException( updateCallbackSpec->getErrorMessage() );
+    }
+
+    wstring errorString = L"Error for files: ";
+    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
+        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
+    }
+
+    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
+        throw BitException( errorString );
+    }
+}
+
 BitCompressor::BitCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
     mLibrary( lib ),
     mFormat( format ),
@@ -30,8 +58,7 @@ const BitInOutFormat &BitCompressor::compressionFormat() {
 
 void BitCompressor::setPassword( const wstring &password, bool crypt_headers ) {
     mPassword = password;
-    mCryptHeaders =
-        ( password.length() > 0 ) && crypt_headers; // true only if a password is set and crypt_headers is true
+    mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
 
 void BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
@@ -114,25 +141,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem > &in_items, cons
         throw BitException( L"Can't create archive file '" + out_archive + L"'" );
     }
 
-    UpdateCallback *updateCallbackSpec = new UpdateCallback( in_items );
-    updateCallbackSpec->setPassword( mPassword );
-
-    CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
-    HRESULT result = outArc->UpdateItems( outFileStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
-    updateCallbackSpec->Finilize();
-
-    if ( result != S_OK ) {
-        throw BitException( updateCallbackSpec->getErrorMessage() );
-    }
-
-    wstring errorString = L"Error for files: ";
-    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
-    }
-
-    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
-        throw BitException( errorString );
-    }
+    compressOut( outArc, outFileStream, in_items, mPassword );
 }
 
 // FS -> Memory
@@ -149,27 +158,5 @@ void BitCompressor::compressToMemory( const vector< FSItem > &in_items, vector< 
     COutMemStream * outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
-    UpdateCallback *updateCallbackSpec = new UpdateCallback( in_items );
-    updateCallbackSpec->setPassword( mPassword );
-
-    CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
-    HRESULT result = outArc->UpdateItems( outMemStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
-    updateCallbackSpec->Finilize();
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( "Unsupported operation!" );
-    } else if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
-        throw BitException( "Failed operation (unkwown error)!" );
-    } else if ( result != S_OK ) {
-        throw BitException( updateCallbackSpec->getErrorMessage() );
-    }
-
-    wstring errorString = L"Error for files: ";
-    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
-    }
-
-    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
-        throw BitException( errorString );
-    }
+    compressOut( outArc, outMemStream, in_items, mPassword );
 }

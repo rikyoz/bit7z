@@ -18,6 +18,34 @@ using namespace NWindows;
 using std::wstring;
 using std::vector;
 
+template< class T >
+void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
+                  const vector< byte_t > &in_buffer, const wstring &in_buffer_name, const wstring &password ) {
+    MemUpdateCallback *updateCallbackSpec = new MemUpdateCallback( in_buffer, in_buffer_name );
+    updateCallbackSpec->setPassword( password );
+
+    CMyComPtr< IArchiveUpdateCallback > updateCallback( updateCallbackSpec );
+    HRESULT result = outArc->UpdateItems( outStream, 1, updateCallback );
+    updateCallbackSpec->Finilize();
+
+    if ( result == E_NOTIMPL ) {
+        throw BitException( "Unsupported operation!" );
+    } else if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
+        throw BitException( "Failed operation (unkwown error)!" );
+    } else if ( result != S_OK ) {
+        throw BitException( updateCallbackSpec->getErrorMessage() );
+    }
+
+    wstring errorString = L"Error for files: ";
+    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
+        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
+    }
+
+    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
+        throw BitException( errorString );
+    }
+}
+
 BitMemCompressor::BitMemCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
     mLibrary( lib ),
     mFormat( format ),
@@ -39,25 +67,7 @@ void BitMemCompressor::compress( const vector< byte_t > &in_buffer, const wstrin
         fsutil::filename( out_archive, in_buffer_name );
     }
 
-    MemUpdateCallback *updateCallbackSpec = new MemUpdateCallback( in_buffer, in_buffer_name /*, in_buffer_size*/ );
-    updateCallbackSpec->setPassword( mPassword );
-
-    CMyComPtr< IArchiveUpdateCallback > updateCallback( updateCallbackSpec );
-    HRESULT result = outArc->UpdateItems( outFileStream, 1, updateCallback );
-    updateCallbackSpec->Finilize();
-
-    if ( result != S_OK ) {
-        throw BitException( updateCallbackSpec->getErrorMessage() );
-    }
-
-    wstring errorString = L"Error for files: ";
-    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
-    }
-
-    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
-        throw BitException( errorString );
-    }
+    compressOut( outArc, outFileStream, in_buffer, in_buffer_name, mPassword );
 }
 
 void BitMemCompressor::compress( const vector< byte_t > &in_buffer, vector< byte_t > &out_buffer,
@@ -71,27 +81,5 @@ void BitMemCompressor::compress( const vector< byte_t > &in_buffer, vector< byte
     COutMemStream *outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
-    MemUpdateCallback *updateCallbackSpec = new MemUpdateCallback( in_buffer, in_buffer_name );
-    updateCallbackSpec->setPassword( mPassword );
-
-    CMyComPtr< IArchiveUpdateCallback > updateCallback( updateCallbackSpec );
-    HRESULT result = outArc->UpdateItems( outMemStream, 1, updateCallback );
-    updateCallbackSpec->Finilize();
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( "Unsupported operation!" );
-    } else if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
-        throw BitException( "Failed operation (unkwown error)!" );
-    } else if ( result != S_OK ) {
-        throw BitException( updateCallbackSpec->getErrorMessage() );
-    }
-
-    wstring errorString = L"Error for files: ";
-    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
-    }
-
-    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
-        throw BitException( errorString );
-    }
+    compressOut( outArc, outMemStream, in_buffer, in_buffer_name, mPassword );
 }

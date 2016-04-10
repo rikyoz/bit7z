@@ -22,7 +22,7 @@ namespace bit7z {
             STDMETHOD( SetTotal )( UInt64 size );
             STDMETHOD( SetCompleted )( const UInt64 * completeValue );
 
-            // IArchiveUpdateCallback2
+            // IArchiveUpdateCallback
             STDMETHOD( EnumProperties )( IEnumSTATPROPSTG * *enumerator );
             STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32 * newData, Int32 * newProperties,
                                             UInt32 * indexInArchive );
