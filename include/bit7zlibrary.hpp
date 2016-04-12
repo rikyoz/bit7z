@@ -34,7 +34,6 @@ namespace bit7z {
         private:
             typedef UINT32 ( WINAPI * CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );
 
-
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
     };

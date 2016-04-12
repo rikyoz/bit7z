@@ -27,7 +27,7 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the input archive format.
              */
-            BitExtractor( const Bit7zLibrary&, const BitInFormat& format );
+            BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format );
 
             /**
              * @return the archive format used by the extractor
@@ -64,7 +64,7 @@ namespace bit7z {
 
              * @param in_file      the input archive file
              * @param out_buffer   a pointer to the output buffer (byte_t*) where the content of the archive will be put
-             * @param index        (??)
+             * @param index        the index of the file to be extracted from in_file
              */
             void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );
 

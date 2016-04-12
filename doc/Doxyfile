@@ -47,3 +47,6 @@ GENERATE_LATEX         = NO
 GENERATE_XML           = YES
 XML_OUTPUT             = xml
 XML_PROGRAMLISTING     = NO
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = ..
+STRIP_FROM_INC_PATH    = ..
