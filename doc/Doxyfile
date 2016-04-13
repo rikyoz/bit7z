@@ -21,9 +21,10 @@ CPP_CLI_SUPPORT        = NO
 EXTRACT_PRIVATE        = NO
 EXTRACT_PACKAGE        = NO
 EXTRACT_STATIC         = YES
+EXTRACT_LOCAL_CLASSES  = NO
 HIDE_UNDOC_MEMBERS     = NO
 HIDE_UNDOC_CLASSES     = YES
-SHOW_INCLUDE_FILES     = YES
+SHOW_INCLUDE_FILES     = NO
 SHOW_GROUPED_MEMB_INC  = NO
 FORCE_LOCAL_INCLUDES   = YES
 GENERATE_TODOLIST      = YES
@@ -34,8 +35,8 @@ SHOW_USED_FILES        = YES
 SHOW_FILES             = NO
 SHOW_NAMESPACES        = YES
 INPUT                  = ../include \
-                         ../src \
                          ../README.md
+FILE_PATTERNS          = bit*.hpp
 INPUT_ENCODING         = UTF-8
 RECURSIVE              = NO
 EXCLUDE                = lib
