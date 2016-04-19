@@ -25,9 +25,9 @@ namespace bit7z {
      * @brief The BitInFormat class specifies the extractable archive formats
      */
     class BitInFormat {
-        friend class BitFormat;
-
         public:
+            BitInFormat( unsigned char value );
+
             int value() const;
 
             bool operator==( BitInFormat const &other ) const;
@@ -35,8 +35,6 @@ namespace bit7z {
 
             const GUID guid() const;
 
-        protected:
-            BitInFormat( unsigned char value );
 
         private:
             const unsigned char mValue;
@@ -46,28 +44,24 @@ namespace bit7z {
      * @brief The BitInOutFormat class specifies the formats available for creating new archives and extract old ones
      */
     class BitInOutFormat : public BitInFormat {
-        friend class BitFormat;
-
         public:
+            BitInOutFormat( unsigned char value, const wstring &ext, bitset< FEATURES_COUNT > features );
+
             const wstring                 &extension() const;
             const bitset< FEATURES_COUNT > features() const;
             bool hasFeature( FormatFeatures feature ) const;
-
-        protected:
-            BitInOutFormat( unsigned char value, const wstring &ext, bitset< FEATURES_COUNT > features );
 
         private:
             const wstring mExtension;
             const bitset< FEATURES_COUNT > mFeatures;
     };
 
-    class BitFormat {
-        public:
-            static const BitInFormat Rar, Arj, Z, Lzh, Cab, Nsis, Lzma, Lzma86, Ppmd, TE, UEFIc, UEFIs, SquashFS,
+    namespace BitFormat {
+        extern const BitInFormat Rar, Arj, Z, Lzh, Cab, Nsis, Lzma, Lzma86, Ppmd, TE, UEFIc, UEFIs, SquashFS,
                                      CramFS, APM, Mslz, Flv, Swf, Swfc, Ntfs, Fat, Mbr, Vhd, Pe, Elf, Macho, Udf, Xar,
                                      Mub, Hfs, Dmg, Compound, Iso, Chm, Split, Rpm, Deb, Cpio;
 
-            static const BitInOutFormat Zip, BZip2, SevenZip, Xz, Wim, Tar, GZip;
+        extern const BitInOutFormat Zip, BZip2, SevenZip, Xz, Wim, Tar, GZip;
     };
 }
 #endif // BITFORMAT
