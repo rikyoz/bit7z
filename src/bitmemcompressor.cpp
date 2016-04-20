@@ -53,6 +53,10 @@ BitMemCompressor::BitMemCompressor( const Bit7zLibrary &lib, const BitInOutForma
     mCryptHeaders( false ),
     mSolidMode( false ) {}
 
+const BitInOutFormat& BitMemCompressor::compressionFormat() {
+    return mFormat;
+}
+
 void BitMemCompressor::compress( const vector< byte_t > &in_buffer, const wstring &out_archive,
                                  wstring in_buffer_name ) const {
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );

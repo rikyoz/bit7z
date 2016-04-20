@@ -32,7 +32,7 @@ namespace bit7z {
             /**
              * @return the archive format used by the extractor
              */
-            BitInFormat extractionFormat();
+            const BitInFormat& extractionFormat();
 
             /**
              * @brief Sets up a password to be used to open the archives

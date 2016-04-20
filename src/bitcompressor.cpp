@@ -52,7 +52,7 @@ BitCompressor::BitCompressor( const Bit7zLibrary &lib, const BitInOutFormat &for
     mCryptHeaders( false ),
     mSolidMode( false ) {}
 
-const BitInOutFormat &BitCompressor::compressionFormat() {
+const BitInOutFormat& BitCompressor::compressionFormat() {
     return mFormat;
 }
 

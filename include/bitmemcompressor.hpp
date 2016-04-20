@@ -17,7 +17,10 @@ namespace bit7z {
         public:
             BitMemCompressor( Bit7zLibrary const& lib, BitInOutFormat const& format );
 
-            BitInOutFormat compressionFormat();
+            /**
+             * @return The archive format used by the compressor
+             */
+            const BitInOutFormat& compressionFormat();
 
             void setPassword( const wstring& password, bool crypt_headers = false );
 

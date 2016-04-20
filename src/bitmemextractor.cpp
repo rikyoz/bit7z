@@ -34,10 +34,14 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary &lib, const BitInFormat 
     return inArchive;
 }
 
-BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, BitInFormat format ) :
+BitMemExtractor::BitMemExtractor(const Bit7zLibrary& lib, const BitInFormat &format ) :
     mLibrary( lib ),
     mFormat( format ),
     mPassword( L"" ) {}
+
+const BitInFormat& BitMemExtractor::extractionFormat() {
+    return mFormat;
+}
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_buffer, mPassword );

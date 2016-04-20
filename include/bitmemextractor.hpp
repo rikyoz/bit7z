@@ -14,9 +14,12 @@ namespace bit7z {
 
     class BitMemExtractor {
         public:
-            BitMemExtractor( const Bit7zLibrary& lib, BitInFormat BitFormat );
+            BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format );
 
-            BitInFormat extractionFormat();
+            /**
+             * @return the archive format used by the extractor
+             */
+            const BitInFormat& extractionFormat();
 
             void setPassword( const wstring& password );
 
@@ -27,7 +30,7 @@ namespace bit7z {
 
         private:
             const Bit7zLibrary& mLibrary;
-            const BitInFormat mFormat;
+            const BitInFormat& mFormat;
             wstring mPassword;
     };
 }

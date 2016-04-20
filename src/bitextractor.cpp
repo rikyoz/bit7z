@@ -42,7 +42,7 @@ BitExtractor::BitExtractor( const Bit7zLibrary &lib, const BitInFormat &format )
     mFormat( format ),
     mPassword( L"" ) {}
 
-BitInFormat BitExtractor::extractionFormat() {
+const BitInFormat& BitExtractor::extractionFormat() {
     return mFormat;
 }
 
