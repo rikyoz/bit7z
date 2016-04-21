@@ -49,7 +49,7 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
 BitMemCompressor::BitMemCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
     mLibrary( lib ),
     mFormat( format ),
-    mCompressionLevel( BitCompressionLevel::Normal ),
+    mCompressionLevel( BitCompressionLevel::NORMAL ),
     mCryptHeaders( false ),
     mSolidMode( false ) {}
 

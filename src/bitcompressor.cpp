@@ -47,7 +47,7 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
 BitCompressor::BitCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
     mLibrary( lib ),
     mFormat( format ),
-    mCompressionLevel( BitCompressionLevel::Normal ),
+    mCompressionLevel( BitCompressionLevel::NORMAL ),
     mPassword( L"" ),
     mCryptHeaders( false ),
     mSolidMode( false ) {}
