@@ -63,7 +63,7 @@ namespace bit7z {
              * @brief Extracts the given archive into the output buffer
 
              * @param in_file      the input archive file
-             * @param out_buffer   a pointer to the output buffer (byte_t*) where the content of the archive will be put
+             * @param out_buffer   the output buffer where the content of the archive will be put
              * @param index        the index of the file to be extracted from in_file
              */
             void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );

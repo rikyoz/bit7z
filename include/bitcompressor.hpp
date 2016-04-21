@@ -29,7 +29,7 @@ namespace bit7z {
              * @brief Constructs a BitCompressor object
              *
              * The Bit7zLibrary parameter is needed in order to have access to the functionalities
-             * of the 7z DLLs. On the other hand, the BitOutFormat is required in order to know the
+             * of the 7z DLLs. On the other hand, the BitInOutFormat is required in order to know the
              * format of the output archive.
              *
              * @param lib       the 7z library used.
@@ -138,6 +138,14 @@ namespace bit7z {
 
             /* Compression from file system to memory buffer */
 
+            /**
+             * @brief Compresses the input file to the output buffer
+             *
+             * @note If the format of the output archive doesn't support in memory compression, a BitException is thrown
+             *
+             * @param in_file           the file to be compressed
+             * @param out_buffer        the buffer going to contain the output archive
+             */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
         private:
