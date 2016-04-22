@@ -6,13 +6,15 @@
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
-            bool is_directory( const std::wstring& path );
-            bool path_exists( const std::wstring& path );
-            bool has_ending( const std::wstring& str, const std::wstring& ending );
+            using std::wstring;
 
-            void normalize_path( std::wstring& path );
+            bool is_directory( const wstring& path );
+            bool path_exists( const wstring& path );
+            bool has_ending( const wstring& str, const wstring& ending );
+
+            void normalize_path( wstring& path );
+            void filename( const wstring& path, wstring& filename );
         }
     }
 }
-
 #endif // BITFILESYSTEM_HPP

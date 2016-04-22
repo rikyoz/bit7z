@@ -10,7 +10,6 @@
 #include "../include/callback.hpp"
 
 namespace bit7z {
-
     class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
             OpenCallback();
@@ -18,12 +17,10 @@ namespace bit7z {
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
 
-            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes );
-            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes );
+            STDMETHOD( SetTotal )( const UInt64 * files, const UInt64 * bytes );
+            STDMETHOD( SetCompleted )( const UInt64 * files, const UInt64 * bytes );
 
-            STDMETHOD( CryptoGetTextPassword )( BSTR* password );
+            STDMETHOD( CryptoGetTextPassword )( BSTR * password );
     };
-
 }
-
 #endif // OPENCALLBACK_HPP

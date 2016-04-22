@@ -8,34 +8,42 @@
 using namespace std;
 using namespace bit7z::filesystem;
 
-FSItem::FSItem( const wstring& path, const wstring& relative_dir ) : mDirectory( path ),
-    mRelativeDirectory( relative_dir ), mFileData() {
+FSItem::FSItem( const wstring& path, const wstring& relative_dir ) :
+    mDirectory( path ),
+    mRelativeDirectory( relative_dir ),
+    mFileData() {
     bool isdir = fsutil::is_directory( mDirectory );
     if ( isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
-        if ( lastSlashIndex == mDirectory.length() - 1 )
+        if ( lastSlashIndex == mDirectory.length() - 1 ) {
             mDirectory.pop_back();
+        }
     }
     HANDLE find_handle = FindFirstFile( mDirectory.c_str(), &mFileData );
-    if ( find_handle == INVALID_HANDLE_VALUE ) throw BitException( L"Invalid path '" + mDirectory + L"'!" );
+    if ( find_handle == INVALID_HANDLE_VALUE ) {
+        throw BitException( L"Invalid path '" + mDirectory + L"'!" );
+    }
     if ( !isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
-        if ( wstring::npos != lastSlashIndex )
+        if ( wstring::npos != lastSlashIndex ) {
             mDirectory.resize( lastSlashIndex );
+        }
     }
     FindClose( find_handle );
-
 }
 
-FSItem::FSItem( const wstring& dir, const wstring& relative_dir, FSItemInfo data ) : mDirectory( dir ),
-    mRelativeDirectory( relative_dir ), mFileData( data ) {
+FSItem::FSItem( const wstring& dir, const wstring& relative_dir, FSItemInfo data ) :
+    mDirectory( dir ),
+    mRelativeDirectory( relative_dir ),
+    mFileData( data ) {
     const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
-    if ( lastSlashIndex == mDirectory.length() - 1 )
+    if ( lastSlashIndex == mDirectory.length() - 1 ) {
         mDirectory.pop_back();
+    }
 }
 
 bool FSItem::exists() const {
-    return ( mFileData.dwFileAttributes != INVALID_FILE_ATTRIBUTES );
+    return mFileData.dwFileAttributes != INVALID_FILE_ATTRIBUTES;
 }
 
 bool FSItem::isDir() const {
@@ -66,8 +74,9 @@ wstring FSItem::name() const {
 }
 
 wstring FSItem::relativePath() const {
-    if ( mRelativeDirectory.empty() )
+    if ( mRelativeDirectory.empty() ) {
         return mFileData.cFileName;
+    }
     return mRelativeDirectory + L"\\" + mFileData.cFileName;
 }
 

@@ -1,6 +1,6 @@
 DOXYFILE_ENCODING      = UTF-8
 PROJECT_NAME           = "bit7z"
-PROJECT_NUMBER         = v1.0.0-rc
+PROJECT_NUMBER         = v2.0.0
 ABBREVIATE_BRIEF       = "The $name class" \
                          "The $name widget" \
                          "The $name file" \
@@ -14,15 +14,19 @@ ABBREVIATE_BRIEF       = "The $name class" \
                          the
 INLINE_INHERITED_MEMB  = YES
 QT_AUTOBRIEF           = YES
+JAVADOC_AUTOBRIEF      = YES
 ALIASES                = "rst=\verbatim embed:rst"
 ALIASES               += "endrst=\endverbatim"
 MARKDOWN_SUPPORT       = YES
 CPP_CLI_SUPPORT        = NO
-EXTRACT_PACKAGE        = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_PACKAGE        = NO
 EXTRACT_STATIC         = YES
-HIDE_UNDOC_MEMBERS     = NO
+EXTRACT_LOCAL_CLASSES  = NO
+HIDE_UNDOC_MEMBERS     = YES
 HIDE_UNDOC_CLASSES     = YES
-SHOW_INCLUDE_FILES     = YES
+HIDE_SCOPE_NAMES       = YES
+SHOW_INCLUDE_FILES     = NO
 SHOW_GROUPED_MEMB_INC  = NO
 FORCE_LOCAL_INCLUDES   = YES
 GENERATE_TODOLIST      = YES
@@ -33,15 +37,21 @@ SHOW_USED_FILES        = YES
 SHOW_FILES             = NO
 SHOW_NAMESPACES        = YES
 INPUT                  = ../include \
-                         ../src \
                          ../README.md
+FILE_PATTERNS          = bit*.hpp
 INPUT_ENCODING         = UTF-8
 RECURSIVE              = NO
-EXCLUDE                = lib
+EXCLUDE                = lib \
+                         ../include/bitguids.hpp
+EXCLUDE_PATTERN        = ../include/fs*
 USE_MDFILE_AS_MAINPAGE = README.md
 GENERATE_HTML          = YES
 HTML_OUTPUT            = html
 HTML_EXTRA_STYLESHEET  = html/css/extra.css
 GENERATE_LATEX         = NO
-GENERATE_XML           = NO
-#XML_OUTPUT             = doxyxml
+GENERATE_XML           = YES
+XML_OUTPUT             = xml
+XML_PROGRAMLISTING     = NO
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = ..
+STRIP_FROM_INC_PATH    = ..

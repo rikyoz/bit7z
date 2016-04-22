@@ -5,18 +5,21 @@
 #include <exception>
 
 namespace bit7z {
+    using std::runtime_error;
+    using std::string;
+    using std::wstring;
 
     /**
      * @brief The BitException class represents a generic exception thrown from the bit7z classes
      */
-    class BitException : public std::runtime_error {
+    class BitException : public runtime_error {
         public:
             /**
              * @brief Constructs a BitException object with the given message
              *
              * @param message   the message associated with the exception object
              */
-            BitException( const std::string& message );
+            BitException( const string& message );
 
             /**
              * @brief Constructs a BitException object with the given message
@@ -26,9 +29,7 @@ namespace bit7z {
              *
              * @param message   the message associated with the exception object
              */
-            BitException( const std::wstring& message );
+            BitException( const wstring& message );
     };
-
 }
-
 #endif // BITEXCEPTION_HPP

@@ -11,3 +11,7 @@ pack/
 test/
 roadmap.txt
 gh-pages/
+doc/xml/
+doc/html/
+doc/rst/
+doc/md/
