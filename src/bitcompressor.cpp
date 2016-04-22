@@ -5,6 +5,7 @@
 #include "Windows/COM.h"
 #include "Windows/PropVariant.h"
 
+#include "../include/fsitem.hpp"
 #include "../include/util.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"

@@ -9,13 +9,14 @@
 #include "../include/bittypes.hpp"
 #include "../include/bitcompressionlevel.hpp"
 
-#include "../include/fsitem.hpp"
-
 namespace bit7z {
-    using namespace filesystem;
+    namespace filesystem {
+        class FSItem; //avoids inclusion of fsitem.hpp in this header (and then in the release package)
+    }
 
     using std::wstring;
     using std::vector;
+    using filesystem::FSItem;
 
     /**
      * @brief The BitCompressor class allows to compress files and directories.
