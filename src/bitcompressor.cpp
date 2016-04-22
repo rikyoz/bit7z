@@ -133,25 +133,10 @@ void BitCompressor::compressFile( const wstring &in_file, vector< byte_t > &out_
 void BitCompressor::compressToFileSystem( const vector< FSItem > &in_items, const wstring &out_archive ) const {
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-<<<<<<< HEAD
-    if ( names.size() > 0 ) {
-        CMyComPtr<ISetProperties> setProperties;
-        if ( outArchive->QueryInterface( IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) ) != S_OK )
-            throw BitException( "ISetProperties unsupported" );
-        if ( setProperties->SetProperties( &names[0], &values[0], static_cast<UInt32>( names.size() ) ) != S_OK )
-            throw BitException( "Cannot set properties of the archive" );
-    }
-
-    COutFileStream* outFileStreamSpec = new COutFileStream();
-    /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
-     * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
-    CMyComPtr<IOutStream> outFileStream = outFileStreamSpec;
-=======
     COutFileStream *outFileStreamSpec = new COutFileStream();
     /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
      * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
     CMyComPtr< IOutStream > outFileStream = outFileStreamSpec;
->>>>>>> release/v2.0.0-beta
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
         delete outFileStreamSpec;
         throw BitException( L"Can't create archive file '" + out_archive + L"'" );
