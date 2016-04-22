@@ -65,7 +65,7 @@ BitCompressor compressor2(lib, BitFormat::BZip2);
 compressor2.compressFile(files[0], buffer);
 ~~~~~~~~~~~~~
 
-A complete ***API reference*** is available [here](https://github.com/rikyoz/bit7z/wiki/API-Reference).
+A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference)*** and a ***[Getting Started](https://github.com/rikyoz/bit7z/wiki/Getting-Started)*** guide are available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
 ## Downloads
 
@@ -80,10 +80,11 @@ Obviously, you can also clone/download repository this repository and build the 
 ## Usage Requirements
 + **Target OS:** Windows (both x86 and x64)
 + **Compiler:** MSVC (tested with version 2013)
++ **DLLs:** 7-zip DLLs (v9.20, newer versions were not tested with bit7z)
 
 The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
 
-Note: in order to use this library you should link your program with both **bit7z** and *oleaut32* (e.g. `-lbit7z -loleaut32`)
+**Note**: in order to use this library you should link your program with both **bit7z** and *oleaut32* (e.g. `-lbit7z -loleaut32`)
 
 ## Building bit7z
 
