@@ -2,8 +2,8 @@ bit7z
 =====
 **bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface with the dynamic libraries from the 7-zip SDK. It supports compression and extraction to and from the filesystem or the memory.
 
-[![](http://img.shields.io/badge/stable-v1.0.0-blue.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/tag/v1.0.0)
-![](http://img.shields.io/badge/latest-v2.0.0--beta-yellow.svg?style=flat)
+[![](http://img.shields.io/badge/stable-v1.0.0-blue.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/latest)
+[![](http://img.shields.io/badge/latest-v2.0.0--beta-yellow.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/tag/v2.0.0-beta)
 ![](http://img.shields.io/badge/compiler-MSVC-red.svg?style=flat)
 ![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat)
 
@@ -69,9 +69,9 @@ A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference
 
 ## Downloads
 
-[Latest stable release](https://github.com/rikyoz/bit7z/releases/tag/v1.0.0)
+[Latest stable release](https://github.com/rikyoz/bit7z/releases/latest)
 
-[Latest release](https://github.com/rikyoz/bit7z/releases/latest)
+[Latest release](https://github.com/rikyoz/bit7z/releases/tag/v2.0.0-beta)
 
 The release packages contain a precompiled version of the library and they are available for both x86 and x64 architectures.
 
