@@ -27,7 +27,7 @@ Below are a few examples that show how to use some of the main features of bit7z
 ### Extracting files from an archive
 
 ~~~~~~~~~~~~~{.cpp}
-BitLibrary lib(L"7za.dll");
+Bit7zLibrary lib(L"7za.dll");
 BitExtractor extractor(lib, BitFormat::SevenZip);
 	
 //extracts a simple archive
@@ -45,7 +45,7 @@ extractor.extract(L"path/to/another/archive.7z", L"output/dir/");
 ### Compressing files into an archive
 
 ~~~~~~~~~~~~~{.cpp}
-BitLibrary lib(L"7z.dll");
+Bit7zLibrary lib(L"7z.dll");
 BitCompressor compressor(lib, BitFormat::Zip);
 
 std::vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
