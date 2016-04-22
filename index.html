@@ -1,42 +1,33 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en-us">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset="UTF-8">
     <title>Bit7z by rikyoz</title>
-
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
   <body>
-    <div class="wrapper">
-      <header>
-        <h1>Bit7z</h1>
-        <p>A clean, simple and object-oriented interface to the 7zip SDK</p>
+    <section class="page-header">
+      <h1 class="project-name">Bit7z</h1>
+      <h2 class="project-tagline">A clean, simple and object-oriented interface to the 7zip SDK</h2>
+      <a href="https://github.com/rikyoz/bit7z" class="btn">View on GitHub</a>
+      <a href="https://github.com/rikyoz/bit7z/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/rikyoz/bit7z/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-        <p class="view"><a href="https://github.com/rikyoz/bit7z">View the Project on GitHub <small>rikyoz/bit7z</small></a></p>
-
-
-        <ul>
-          <li><a href="https://github.com/rikyoz/bit7z/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/rikyoz/bit7z/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/rikyoz/bit7z">View On <strong>GitHub</strong></a></li>
-        </ul>
-      </header>
-      <section>
-        <h1>
-<a id="bit7z" class="anchor" href="#bit7z" aria-hidden="true"><span class="octicon octicon-link"></span></a>bit7z</h1>
+    <section class="main-content">
+      <h1>
+<a id="bit7z" class="anchor" href="#bit7z" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>bit7z</h1>
 
 <p><strong>bit7z</strong> is a C++ static library aiming to offer a clean, simple and object-oriented interface to the dlls supplied by the 7zip SDK. It allows to compress to and extract from many archive file formats from C++ code.</p>
 
 <p><img src="http://img.shields.io/badge/version-v1.0.0-blue.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/license-GPL%20v2-red.svg?style=flat" alt=""> <img src="https://img.shields.io/badge/platform-windows-8BCF40.svg?style=flat" alt=""> <img src="http://img.shields.io/badge/compiler-MSVC-lightgrey.svg?style=flat" alt=""></p>
 
 <h2>
-<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Features</h2>
 
 <p>bit7z supports the following features:</p>
 
@@ -52,7 +43,7 @@
 <p>Please note that the presence or not of some of these features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files.</p>
 
 <h2>
-<a id="downloads" class="anchor" href="#downloads" aria-hidden="true"><span class="octicon octicon-link"></span></a>Downloads</h2>
+<a id="downloads" class="anchor" href="#downloads" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Downloads</h2>
 
 <p><a href="https://github.com/rikyoz/bit7z/releases/latest">Latest stable release</a></p>
 
@@ -61,57 +52,57 @@
 <p>Of course you can also clone/download repository this repository and build the library by yourself (please, see the <a href="#how-to-build">How to Build</a> section).</p>
 
 <h2>
-<a id="getting-started-library-usage" class="anchor" href="#getting-started-library-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting Started (Library Usage)</h2>
+<a id="getting-started-library-usage" class="anchor" href="#getting-started-library-usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Getting Started (Library Usage)</h2>
 
 <h3>
-<a id="extracting-files-from-an-archive" class="anchor" href="#extracting-files-from-an-archive" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extracting files from an archive</h3>
+<a id="extracting-files-from-an-archive" class="anchor" href="#extracting-files-from-an-archive" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Extracting files from an archive</h3>
 
-<div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitextractor.hpp<span class="pl-pds">"</span></span>
-#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>include/bitextractor.hpp<span class="pl-pds">"</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
 ...
 <span class="pl-k">try</span> {
-    <span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
+    <span class="pl-k">using</span> <span class="pl-k">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
 
-    BitLibrary <span class="pl-vo">lib</span>(L<span class="pl-s1"><span class="pl-pds">"</span>7za.dll<span class="pl-pds">"</span></span>);
-    BitExtractor <span class="pl-vo">extractor</span>(lib, BitInFormat::SevenZip);
+    BitLibrary <span class="pl-smi">lib</span>(L<span class="pl-s"><span class="pl-pds">"</span>7za.dll<span class="pl-pds">"</span></span>);
+    BitExtractor <span class="pl-smi">extractor</span>(lib, BitInFormat::SevenZip);
 
     <span class="pl-c">//extracts a simple archive</span>
-    extractor.<span class="pl-s3">extract</span>(L<span class="pl-s1"><span class="pl-pds">"</span>path/to/archive.7z<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>output/dir/<span class="pl-pds">"</span></span>);
+    extractor.<span class="pl-c1">extract</span>(L<span class="pl-s"><span class="pl-pds">"</span>path/to/archive.7z<span class="pl-pds">"</span></span>, L<span class="pl-s"><span class="pl-pds">"</span>output/dir/<span class="pl-pds">"</span></span>);
 
     <span class="pl-c">//extracts an encrypted archive</span>
-    extractor.<span class="pl-s3">extract</span>(L<span class="pl-s1"><span class="pl-pds">"</span>path/to/another/archive.7z<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>output/dir/<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>);
-} <span class="pl-k">catch</span> ( <span class="pl-s">const</span> BitException&amp; e ) {
+    extractor.<span class="pl-c1">extract</span>(L<span class="pl-s"><span class="pl-pds">"</span>path/to/another/archive.7z<span class="pl-pds">"</span></span>, L<span class="pl-s"><span class="pl-pds">"</span>output/dir/<span class="pl-pds">"</span></span>, L<span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>);
+} <span class="pl-k">catch</span> ( <span class="pl-k">const</span> BitException&amp; e ) {
     <span class="pl-c">//do something with e.what()...</span>
 }</pre></div>
 
 <h3>
-<a id="compressing-files-into-an-archive" class="anchor" href="#compressing-files-into-an-archive" aria-hidden="true"><span class="octicon octicon-link"></span></a>Compressing files into an archive</h3>
+<a id="compressing-files-into-an-archive" class="anchor" href="#compressing-files-into-an-archive" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Compressing files into an archive</h3>
 
-<div class="highlight highlight-cpp"><pre>#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitcompressor.hpp<span class="pl-pds">"</span></span>
-#<span class="pl-k">include</span> <span class="pl-s1"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>include/bitcompressor.hpp<span class="pl-pds">"</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">"</span>include/bitexception.hpp<span class="pl-pds">"</span></span>
 ...
 <span class="pl-k">try</span> {
-    <span class="pl-k">using</span> <span class="pl-st">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
+    <span class="pl-k">using</span> <span class="pl-k">namespace</span> <span class="pl-en">bit7z</span><span class="pl-k">;</span>
 
-    std::vector&lt;std::wstring&gt; files = {L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file1.jpg<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>path/to/file2.pdf<span class="pl-pds">"</span></span>};
-    BitLibrary <span class="pl-vo">lib</span>(L<span class="pl-s1"><span class="pl-pds">"</span>7z.dll<span class="pl-pds">"</span></span>);
-    BitCompressor <span class="pl-vo">compressor</span>(lib, BitOutFormat::Zip);
+    std::vector&lt;std::wstring&gt; files = {L<span class="pl-s"><span class="pl-pds">"</span>path/to/file1.jpg<span class="pl-pds">"</span></span>, L<span class="pl-s"><span class="pl-pds">"</span>path/to/file2.pdf<span class="pl-pds">"</span></span>};
+    BitLibrary <span class="pl-smi">lib</span>(L<span class="pl-s"><span class="pl-pds">"</span>7z.dll<span class="pl-pds">"</span></span>);
+    BitCompressor <span class="pl-smi">compressor</span>(lib, BitOutFormat::Zip);
 
     <span class="pl-c">//creates a simple zip archive</span>
-    compressor.<span class="pl-s3">compressFiles</span>(files, L<span class="pl-s1"><span class="pl-pds">"</span>output_archive.zip<span class="pl-pds">"</span></span>);
+    compressor.<span class="pl-c1">compressFiles</span>(files, L<span class="pl-s"><span class="pl-pds">"</span>output_archive.zip<span class="pl-pds">"</span></span>);
 
     <span class="pl-c">//compresses a directory</span>
-    compressor.<span class="pl-s3">compressDirectory</span>(L<span class="pl-s1"><span class="pl-pds">"</span>dir/path/<span class="pl-pds">"</span></span>, L<span class="pl-s1"><span class="pl-pds">"</span>dir_archive.zip<span class="pl-pds">"</span></span>);
+    compressor.<span class="pl-c1">compressDirectory</span>(L<span class="pl-s"><span class="pl-pds">"</span>dir/path/<span class="pl-pds">"</span></span>, L<span class="pl-s"><span class="pl-pds">"</span>dir_archive.zip<span class="pl-pds">"</span></span>);
 
     <span class="pl-c">//creates an encrypted zip archive</span>
-    compressor.<span class="pl-s3">setPassword</span>(L<span class="pl-s1"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>);
-    compressor.<span class="pl-s3">compressFiles</span>(files, L<span class="pl-s1"><span class="pl-pds">"</span>protected_archive.zip<span class="pl-pds">"</span></span>);
-} <span class="pl-k">catch</span> ( <span class="pl-s">const</span> BitException&amp; e ) {
+    compressor.<span class="pl-c1">setPassword</span>(L<span class="pl-s"><span class="pl-pds">"</span>password<span class="pl-pds">"</span></span>);
+    compressor.<span class="pl-c1">compressFiles</span>(files, L<span class="pl-s"><span class="pl-pds">"</span>protected_archive.zip<span class="pl-pds">"</span></span>);
+} <span class="pl-k">catch</span> ( <span class="pl-k">const</span> BitException&amp; e ) {
     <span class="pl-c">//do something with e.what()... </span>
 }</pre></div>
 
 <h2>
-<a id="usage-requirements" class="anchor" href="#usage-requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage Requirements</h2>
+<a id="usage-requirements" class="anchor" href="#usage-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage Requirements</h2>
 
 <ul>
 <li>
@@ -125,7 +116,7 @@
 <p>Note: in order to use this library you should link your program with both <strong>bit7z</strong> and <em>oleaut32</em> (e.g. <code>-lbit7z -loleaut32</code>)</p>
 
 <h2>
-<a id="building-requirements" class="anchor" href="#building-requirements" aria-hidden="true"><span class="octicon octicon-link"></span></a>Building Requirements</h2>
+<a id="building-requirements" class="anchor" href="#building-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Building Requirements</h2>
 
 <ul>
 <li>
@@ -145,7 +136,7 @@
 <p><img src="http://i.imgur.com/pgS7UHl.png" alt=""></p>
 
 <h3>
-<a id="how-to-build" class="anchor" href="#how-to-build" aria-hidden="true"><span class="octicon octicon-link"></span></a>How to Build</h3>
+<a id="how-to-build" class="anchor" href="#how-to-build" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to Build</h3>
 
 <p>In order to build this library, you can choose one of the following methods:</p>
 
@@ -160,18 +151,18 @@
 
 <p>Example (x64):</p>
 
-<div class="highlight highlight-bat"><pre><span class="pl-k">set</span> <span class="pl-k">PATH</span>=%<span class="pl-k">PATH</span>%;C:\<span class="pl-k">path</span>\to\x64\qt5\bin
+<div class="highlight highlight-source-dosbatch"><pre><span class="pl-k">set</span> <span class="pl-k">PATH</span>=%<span class="pl-k">PATH</span>%;C:\<span class="pl-k">path</span>\to\x64\qt5\bin
 vcvarsall amd64
 build x64</pre></div>
 
 <p>Example (x86):</p>
 
-<div class="highlight highlight-bat"><pre><span class="pl-k">set</span> <span class="pl-k">PATH</span>=%<span class="pl-k">PATH</span>%;C:\<span class="pl-k">path</span>\to\x86\qt5\bin
+<div class="highlight highlight-source-dosbatch"><pre><span class="pl-k">set</span> <span class="pl-k">PATH</span>=%<span class="pl-k">PATH</span>%;C:\<span class="pl-k">path</span>\to\x86\qt5\bin
 vcvarsall x86
 build x86</pre></div>
 
 <h2>
-<a id="license-gpl-v2" class="anchor" href="#license-gpl-v2" aria-hidden="true"><span class="octicon octicon-link"></span></a>License (GPL v2)</h2>
+<a id="license-gpl-v2" class="anchor" href="#license-gpl-v2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License (GPL v2)</h2>
 
 <pre><code>This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -189,14 +180,16 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 </code></pre>
 
 <p>Copyright © 2014-2015 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)</p>
-      </section>
-      <footer>
-        <p>This project is maintained by <a href="https://github.com/rikyoz">rikyoz</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/rikyoz/bit7z">Bit7z</a> is maintained by <a href="https://github.com/rikyoz">rikyoz</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
-    <script src="javascripts/scale.fix.js"></script>
-              <script type="text/javascript">
+
+    </section>
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
