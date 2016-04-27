@@ -1,6 +1,6 @@
 bit7z
 =====
-**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface with the dynamic libraries from the 7-zip SDK. It supports compression and extraction to and from the filesystem or the memory.
+**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface with the dynamic libraries from the 7-zip SDK. It supports compression and extraction to and from the filesystem or the memory (from v2.x).
 
 [![](http://img.shields.io/badge/stable-v1.0.0-blue.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/latest)
 [![](http://img.shields.io/badge/latest-v2.0.0--beta-yellow.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/tag/v2.0.0-beta)
@@ -12,7 +12,7 @@ bit7z supports the following features:
 
 + **Compression of files and directories** with the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM.
 + **Extraction** of the following archive formats: 7z, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, FAT, GZIP, HFS, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, RAR, RPM, SquashFS, TAR, UDF, VHD, WIM, XAR, XZ, Z and ZIP.
-+ Support to **compression and extraction to and from memory** (compression to memory is supported only for BZIP2, GZIP, XZ and TAR formats).
++ Support to **compression and extraction to and from memory** (from v2.x &mdash; compression to memory is supported only for BZIP2, GZIP, XZ and TAR formats).
 + Creation of **encrypted archives** (only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
 + Choice of the **compression level** (from none to ultra, depending on the output archive format).
