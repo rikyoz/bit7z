@@ -1,0 +1,3 @@
+[submodule "lib/7zSDK"]
+	path = lib/7zSDK
+	url = git@github.com:CoolOppo/7-Zip.git

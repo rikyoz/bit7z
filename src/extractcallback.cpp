@@ -165,19 +165,19 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
 
     if ( slashPos != wstring::npos ) {
-        NFile::NDirectory::CreateComplexDirectory( ( mDirectoryPath + mFilePath.substr( 0,
+        NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0,
                                                                                         slashPos ) ).c_str() );
     }
     wstring fullProcessedPath = mDirectoryPath + mFilePath;
     mDiskFilePath = fullProcessedPath;
 
     if ( mProcessedFileInfo.isDir ) {
-        NFile::NDirectory::CreateComplexDirectory( fullProcessedPath.c_str() );
+        NFile::NDir::CreateComplexDir( fullProcessedPath.c_str() );
     } else {
-        NFile::NFind::CFileInfoW fi;
+        NFile::NFind::CFileInfo fi;
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
-            if ( !NFile::NDirectory::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
+            if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
                 //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
                 //throw BitException( kCantDeleteOutputFile + fullProcessedPath );
                 mErrorMessage = kCantDeleteOutputFile + fullProcessedPath;
@@ -236,7 +236,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
             mNumErrors++;
 
             switch ( operationResult ) {
-                case NArchive::NExtract::NOperationResult::kUnSupportedMethod:
+                case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
                     mErrorMessage = kUnsupportedMethod;
                     break;
 
@@ -265,7 +265,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     mOutFileStream.Release();
 
     if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
-        NFile::NDirectory::MySetFileAttributes( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
+        NFile::NDir::SetFileAttrib( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
     }
 
     if ( mNumErrors > 0 ) {

@@ -1,11 +1,14 @@
-bit7z
-=====
-**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface with the dynamic libraries from the 7-zip SDK. It supports compression and extraction to and from the filesystem or the memory (from v2.x).
+Fork Notes
+=====================
+[bit7z]:https://github.com/rikyoz/bit7z
+[Premake]:https://premake.github.io
 
-[![](http://img.shields.io/badge/stable-v1.0.0-blue.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/latest)
-[![](http://img.shields.io/badge/latest-v2.0.0--beta-yellow.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/tag/v2.0.0-beta)
-![](http://img.shields.io/badge/compiler-MSVC-red.svg?style=flat)
-![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat)
+This is a fork of [bit7z] that builds with [Premake] and targets modern 7-Zip SDK.
+
+bit7z
+====
+
+**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface with the dynamic libraries from the 7-zip SDK. It supports compression and extraction to and from the filesystem or the memory (from v2.x).
 
 ## Features
 bit7z supports the following features:
@@ -29,7 +32,7 @@ Below are a few examples that show how to use some of the main features of bit7z
 ~~~~~~~~~~~~~{.cpp}
 Bit7zLibrary lib(L"7za.dll");
 BitExtractor extractor(lib, BitFormat::SevenZip);
-	
+
 //extracts a simple archive
 extractor.extract(L"path/to/archive.7z", L"output/dir/");
 
@@ -79,8 +82,8 @@ Obviously, you can also clone/download repository this repository and build the 
 
 ## Usage Requirements
 + **Target OS:** Windows (both x86 and x64)
-+ **Compiler:** MSVC (tested with version 2013)
-+ **DLLs:** 7-zip DLLs (v9.20, newer versions were not tested with bit7z)
++ **Compiler:** MSVC (tested with version 2013 and 2015)
++ **DLLs:** 7-zip DLLs (v16.02)
 
 The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
 

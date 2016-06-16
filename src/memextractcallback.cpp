@@ -197,7 +197,7 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
             mNumErrors++;
 
             switch ( operationResult ) {
-                case NArchive::NExtract::NOperationResult::kUnSupportedMethod:
+                case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
                     mErrorMessage = kUnsupportedMethod;
                     break;
 

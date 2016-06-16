@@ -1,5 +1,6 @@
 lib/
 build/
+out/
 test/files/
 *.regx
 *.autosave
