@@ -71,7 +71,15 @@ bool BitInFormat::operator!=( const BitInFormat &other ) const {
 }
 
 const GUID BitInFormat::guid() const {
-    return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } };
+    GUID ret;
+    ret.Data1 = 0x23170F69;
+    ret.Data2 = 0x40C1;
+    ret.Data3 = 0x278A;
+    
+    const unsigned char data4 [] = { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 };
+    std::copy(data4, data4+8, ret.Data4);
+
+    return ret;
 }
 
 BitInOutFormat::BitInOutFormat( unsigned char value, const wstring &ext, bitset< FEATURES_COUNT > features ) :

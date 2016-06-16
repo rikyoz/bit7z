@@ -2,9 +2,12 @@
 #define FSITEM_HPP
 
 #include <iostream>
-#include <cinttypes>
+//#include <stdint>
 
 #include <Windows.h>
+
+typedef unsigned __int32 uint32_t;
+typedef unsigned __int64 uint64_t;
 
 namespace bit7z {
     namespace filesystem {
