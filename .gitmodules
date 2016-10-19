@@ -1,0 +1,3 @@
+[submodule "lib/7zSDK"]
+	path = lib/7zSDK
+	url = https://github.com/rikyoz/7-Zip.git
