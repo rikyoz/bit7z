@@ -1,10 +1,3 @@
-Fork Notes
-=====================
-[bit7z]:https://github.com/rikyoz/bit7z
-[Premake]:https://premake.github.io
-
-This is a fork of [bit7z] that builds with [Premake] and targets modern 7-Zip SDK.
-
 bit7z
 ====
 
