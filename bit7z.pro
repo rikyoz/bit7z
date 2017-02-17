@@ -34,8 +34,8 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/memextractcallback.cpp \
            src/memupdatecallback.cpp \
            src/bitmemextractor.cpp \
-    src/coutmemstream.cpp \
-    src/util.cpp
+           src/coutmemstream.cpp \
+           src/util.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
 
