@@ -55,6 +55,9 @@ namespace bit7z {
     extern "C" const GUID IID_IInStream;
     extern "C" const GUID IID_IOutStream;
     extern "C" const GUID IID_IStreamGetSize;
+    extern "C" const GUID IID_IStreamGetProps;
+    extern "C" const GUID IID_IStreamGetProps2;
+    extern "C" const GUID IID_ISequentialInStream;
     extern "C" const GUID IID_IArchiveUpdateCallback2;
     extern "C" const GUID IID_ICryptoGetTextPassword;
     extern "C" const GUID IID_ICryptoGetTextPassword2;

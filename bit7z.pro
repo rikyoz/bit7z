@@ -16,6 +16,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            lib/7zSDK/CPP/7zip/Common/FileStreams.cpp \
            lib/7zSDK/CPP/7zip/Common/StreamObjects.cpp \
            lib/7zSDK/CPP/Common/IntToString.cpp \
+           lib/7zSDK/CPP/Common/MyString.cpp \
            lib/7zSDK/CPP/Common/MyVector.cpp \
            src/bitextractor.cpp \
            src/bitcompressor.cpp \
@@ -66,8 +67,8 @@ HEADERS += include/bitcompressor.hpp \
            include/bittypes.hpp \
            include/memupdatecallback.hpp \
            include/bitmemextractor.hpp \
-    include/coutmemstream.hpp \
-    include/util.hpp
+           include/coutmemstream.hpp \
+           include/util.hpp
 
 contains(QT_ARCH, i386) {
     QMAKE_LFLAGS         += /MACHINE:X86
