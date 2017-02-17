@@ -21,15 +21,15 @@ namespace bit7z {
 
             vector< const wchar_t * >    names;
             vector< NCOM::CPropVariant > values;
-            if ( cryptHeaders && format.hasFeature( FormatFeatures::HEADER_ENCRYPTION ) ) {
+            if ( cryptHeaders && format.hasFeature( HEADER_ENCRYPTION ) ) {
                 names.push_back( L"he" );
                 values.push_back( true );
             }
-            if ( format.hasFeature( FormatFeatures::COMPRESSION_LEVEL ) ) {
+            if ( format.hasFeature( COMPRESSION_LEVEL ) ) {
                 names.push_back( L"x" );
                 values.push_back( static_cast< UInt32 >( compressionLevel ) );
             }
-            if ( solidMode && format.hasFeature( FormatFeatures::SOLID_ARCHIVE ) ) {
+            if ( solidMode && format.hasFeature( SOLID_ARCHIVE ) ) {
                 names.push_back( L"s" );
                 values.push_back( solidMode );
             }

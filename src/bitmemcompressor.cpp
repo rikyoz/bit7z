@@ -49,7 +49,7 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
 BitMemCompressor::BitMemCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
     mLibrary( lib ),
     mFormat( format ),
-    mCompressionLevel( BitCompressionLevel::NORMAL ),
+    mCompressionLevel( NORMAL ),
     mCryptHeaders( false ),
     mSolidMode( false ) {}
 
@@ -76,7 +76,7 @@ void BitMemCompressor::compress( const vector< byte_t > &in_buffer, const wstrin
 
 void BitMemCompressor::compress( const vector< byte_t > &in_buffer, vector< byte_t > &out_buffer,
                                  wstring in_buffer_name ) const {
-    if ( !mFormat.hasFeature( FormatFeatures::INMEM_COMPRESSION ) ) {
+    if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 

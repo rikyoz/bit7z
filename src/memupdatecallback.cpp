@@ -61,7 +61,7 @@ HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVARIANT* value ) {
     NWindows::NCOM::CPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
@@ -132,7 +132,7 @@ HRESULT MemUpdateCallback::Finilize() {
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+HRESULT MemUpdateCallback::GetStream( UInt32 /*index*/, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
     /*const FSItem dirItem = mDirItems[index];
 

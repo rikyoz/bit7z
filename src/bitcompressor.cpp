@@ -48,7 +48,7 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
 BitCompressor::BitCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
     mLibrary( lib ),
     mFormat( format ),
-    mCompressionLevel( BitCompressionLevel::NORMAL ),
+    mCompressionLevel( NORMAL ),
     mPassword( L"" ),
     mCryptHeaders( false ),
     mSolidMode( false ) {}
@@ -73,7 +73,7 @@ void BitCompressor::setSolidMode( bool solid_mode ) {
 /* from filesystem to filesystem */
 
 void BitCompressor::compress( const vector< wstring > &in_paths, const wstring &out_archive ) const {
-    if ( in_paths.size() > 1 && !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+    if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
     vector< FSItem > dirItems;
@@ -88,7 +88,7 @@ void BitCompressor::compressFile( const wstring &in_file, const wstring &out_arc
 }
 
 void BitCompressor::compressFiles( const vector< wstring > &in_files, const wstring &out_archive ) const {
-    if ( in_files.size() > 1 && !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+    if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
     vector< FSItem > dirItems;
@@ -102,7 +102,7 @@ void BitCompressor::compressDirectory( const wstring &in_dir, const wstring &out
 
 void BitCompressor::compressFiles( const wstring &in_dir, const wstring &out_archive, const wstring &filter,
                                    bool recursive ) const {
-    if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+    if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
     vector< FSItem > dirItems;
@@ -150,7 +150,7 @@ void BitCompressor::compressToMemory( const vector< FSItem > &in_items, vector< 
     if ( in_items.size() == 0 ) {
         throw BitException( "The list of files/directories cannot be empty!" );
     }
-    if ( !mFormat.hasFeature( FormatFeatures::INMEM_COMPRESSION ) ) {
+    if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 

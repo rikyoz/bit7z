@@ -3,7 +3,7 @@
 #include "../include/fsutil.hpp"
 #include "../include/bitexception.hpp"
 
-using namespace std;
+using std::wstring;
 using namespace bit7z::filesystem;
 
 FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirectory( directory ), mFilter( filter ) {
@@ -12,21 +12,18 @@ FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirec
         mDirectory.pop_back();
     }
     FSItem dirItem( mDirectory );
-    if ( !dirItem.exists() )
-    {
+    if ( !dirItem.exists() ) {
+        // It seems that msvc2010 doesn't support the concatenation operator+ for wstrings
         std::wstring msg = L"'";
         msg += dirItem.name();
         msg += L"' does not exist!";
-
-        throw BitException(msg);
+        throw BitException( msg );
     }
-    if ( !dirItem.isDir() )
-    {
+    if ( !dirItem.isDir() ) {
         std::wstring msg = L"'";
         msg += dirItem.name();
         msg += L"' is not a directory!";
-
-        throw BitException(msg);
+        throw BitException( msg );
     }
     mDirName = dirItem.name();
 }
@@ -43,8 +40,7 @@ void FSIndexer::listFiles( const vector< wstring >& in_paths, vector< FSItem >& 
             std::wstring msg = L"Item '";
             msg += item.name();
             msg += L"' does not exist!";
-
-            throw BitException(msg);
+            throw BitException( msg );
         }
         if ( item.isDir() ) {
             FSIndexer indexer( filePath );
@@ -81,8 +77,7 @@ void FSIndexer::listFilesInDirectory( vector< FSItem >& result, bool recursive, 
         std::wstring msg = L"Invalid path '";
         msg += filtered_path;
         msg += L"'";
-
-        throw BitException(msg);
+        throw BitException( msg );
     }
 
     do {
@@ -104,15 +99,12 @@ void FSIndexer::listFilesInDirectory( vector< FSItem >& result, bool recursive, 
 
         FSItem currentItem = FSItem( ndir, dirName, data );
         if ( currentItem.isDir() ) {
-            if ( recursive ) {
-                if ( currentItem.name().compare(L".") != 0 && currentItem.name().compare(L"..") != 0 ) {
-                    //wstring nprefix = ( prefix.empty() ) ? currentItem.name() : prefix + L"\\" + currentItem.name();
-                    wstring listDir = prefix;
-                    listDir += L"\\";
-                    listDir += currentItem.name();
-
-                    listFilesInDirectory( result, true, listDir );
-                }
+            if ( recursive && currentItem.name().compare(L".") != 0 && currentItem.name().compare(L"..") != 0 ) {
+                //wstring nprefix = ( prefix.empty() ) ? currentItem.name() : prefix + L"\\" + currentItem.name();
+                wstring listDir = prefix;
+                listDir += L"\\";
+                listDir += currentItem.name();
+                listFilesInDirectory( result, true, listDir );
             }
         } else {
             result.push_back( currentItem );

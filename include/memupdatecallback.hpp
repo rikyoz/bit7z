@@ -26,8 +26,8 @@ namespace bit7z {
             STDMETHOD( EnumProperties )( IEnumSTATPROPSTG * *enumerator );
             STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32 * newData, Int32 * newProperties,
                                             UInt32 * indexInArchive );
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT * value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream * *inStream );
+            STDMETHOD( GetProperty )( UInt32 /*index*/, PROPID propID, PROPVARIANT * value );
+            STDMETHOD( GetStream )( UInt32 /*index*/, ISequentialInStream * *inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
 
             //ICryptoGetTextPassword2

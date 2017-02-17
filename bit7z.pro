@@ -6,7 +6,6 @@ CONFIG  -= app_bundle
 CONFIG  -= qt
 
 SOURCES += lib/7zSDK/C/Alloc.c \
-           lib/7zSDK/CPP/Windows/Error.cpp \
            lib/7zSDK/CPP/Windows/DLL.cpp \
            lib/7zSDK/CPP/Windows/FileIO.cpp \
            lib/7zSDK/CPP/Windows/FileDir.cpp \
