@@ -8,6 +8,8 @@ using namespace bit7z;
 
 COutMemStream::COutMemStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ) {}
 
+COutMemStream::~COutMemStream(){}
+
 STDMETHODIMP COutMemStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != NULL ) {
         *processedSize = 0;

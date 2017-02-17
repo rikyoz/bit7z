@@ -36,7 +36,7 @@ namespace bit7z {
              * @brief Constructs a BitInFormat object with the id value used by the 7z SDK
              * @param value  the value of the format in the 7z SDK
              */
-            BitInFormat( unsigned char value );
+            explicit BitInFormat( unsigned char value );
 
             /**
              * @return the value of the format in the 7z SDK

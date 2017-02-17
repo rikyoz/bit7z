@@ -19,7 +19,7 @@ namespace bit7z {
              *
              * @param message   the message associated with the exception object
              */
-            BitException( const string& message );
+            explicit BitException( const string& message );
 
             /**
              * @brief Constructs a BitException object with the given message
@@ -29,7 +29,7 @@ namespace bit7z {
              *
              * @param message   the message associated with the exception object
              */
-            BitException( const wstring& message );
+            explicit BitException( const wstring& message );
     };
 }
 #endif // BITEXCEPTION_HPP

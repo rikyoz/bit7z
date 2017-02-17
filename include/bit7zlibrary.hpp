@@ -27,7 +27,7 @@ namespace bit7z {
              *
              * @param dll_path the path to the dll wanted
              */
-            Bit7zLibrary( const std::wstring& dll_path = DEFAULT_DLL );
+            explicit Bit7zLibrary( const std::wstring& dll_path = DEFAULT_DLL );
 
             /**
              * @brief Destructs the Bit7zLibrary object, freeing the loaded dynamic-link library (DLL) module

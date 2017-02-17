@@ -17,7 +17,7 @@ namespace bit7z {
         public:
             vector< wstring > mFailedFiles;
 
-            UpdateCallback( const vector< FSItem >& dirItems );
+            explicit UpdateCallback( const vector< FSItem >& dirItems );
             virtual ~UpdateCallback();
 
             HRESULT Finilize();
