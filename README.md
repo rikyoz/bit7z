@@ -75,8 +75,8 @@ Obviously, you can also clone/download repository this repository and build the 
 
 ## Usage Requirements
 + **Target OS:** Windows (both x86 and x64)
-+ **Compiler:** MSVC (tested with version 2013 and 2015)
-+ **DLLs:** 7-zip DLLs (v16.02)
++ **Compiler:** MSVC (tested with versions 2010, 2013 and 2015)
++ **DLLs:** 7-zip DLLs (v16.04)
 
 The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
 
@@ -101,4 +101,4 @@ A complete guide on how to build this library is available [here](https://github
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-Copyright &copy; 2014-2016 Riccardo Ostani ([@rikyoz](https://github.com/rikyoz))
+Copyright &copy; 2014-2017 Riccardo Ostani ([@rikyoz](https://github.com/rikyoz))
