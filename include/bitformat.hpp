@@ -115,6 +115,14 @@ namespace bit7z {
                                  Lzma,      ///< LZMA Archive Format
                                  Lzma86,    ///< LZMA86 Archive Format
                                  Ppmd,      ///< PPMD Archive Format
+                                 Ext,       ///< EXT Archive Format
+                                 VMDK,      ///< VMDK Archive Format
+                                 VDI,       ///< VDI Archive Format
+                                 QCow,      ///< QCOW Archive Format
+                                 GPT,       ///< GPT Archive Format
+                                 Rar5,      ///< RAR5 Archive Format
+                                 IHex,      ///< IHEX Archive Format
+                                 Hxs,       ///< HXS Archive Format
                                  TE,        ///< TE Archive Format
                                  UEFIc,     ///< UEFIc Archive Format
                                  UEFIs,     ///< UEFIs Archive Format
