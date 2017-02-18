@@ -80,7 +80,9 @@ Obviously, you can also clone/download repository this repository and build the 
 
 The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
 
-**Note**: in order to use this library you should link your program with both **bit7z** and *oleaut32* (e.g. `-lbit7z -loleaut32`)
+**Note**: in order to use this library you should link your program not only with **bit7z** but also with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`)
+
+**Note 2**: the library, even if compiled with latest version of 7-zip, _should_ work also with the dlls of previous versions, such as 9.20. However, it is strongly suggested to use dlls with the same version.
 
 ## Building bit7z
 
