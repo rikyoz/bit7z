@@ -1,5 +1,4 @@
 TEMPLATE = lib
-TARGET   = bit7z
 VERSION  = 1.0
 CONFIG  += staticlib
 CONFIG  -= app_bundle
@@ -76,13 +75,17 @@ contains(QT_ARCH, i386) {
 } else {
     QMAKE_LFLAGS         += /MACHINE:X64
     PLATFORM = x64
+    ARCH_SUFFIX = 64
 }
 
 CONFIG(debug, debug|release) {
     BUILD = debug
+    BUILD_SUFFIX = d
 } else {
     BUILD = release
 }
+
+TARGET =  bit7z$${ARCH_SUFFIX}_$${BUILD_SUFFIX}
 
 DISTFILES += uncrustify.cfg
 
