@@ -1,0 +1,63 @@
+version: 2.0.0-build{build}
+skip_non_tags: true
+os: Visual Studio 2015
+shallow_clone: true
+
+branches:
+  only:
+  - master
+  - develop
+  
+environment:
+  bit7z_version: 2.0.0
+  msvc_dir: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC
+  
+  matrix:
+  #MSVC x86
+  - name: msvc2015_x86
+    arch: x86
+    qt_dir: C:\Qt\5.8\msvc2015\bin
+    
+  #MSVC x64
+  - name: msvc2015_x64
+    arch: x64
+    qt_dir: C:\Qt\5.8\msvc2015_64\bin
+
+init:
+    - set PATH=%PATH%;%msvc_dir%;%qt_dir%
+    - vcvarsall.bat %arch%
+    
+build_script:
+    - mkdir build
+    - cd build
+    - qmake ..\bit7z.pro "CONFIG += release"
+    - nmake release
+    - qmake ..\bit7z.pro "CONFIG += debug"
+    - nmake debug
+    - cd ..
+    - mkdir pkg
+    - mkdir pkg\lib\
+    - mkdir pkg\include\
+    - copy bin\%arch%\*.* pkg\lib\
+    - copy include\bit*.hpp pkg\include\
+    - cd pkg
+    - 7z a -t7z bit7z-v%bit7z_version%-bin-%name%.7z *
+    
+artifacts:
+    - path: pkg\*.7z
+      name: binary
+
+test: off
+
+deploy:
+    provider: GitHub
+    release: $(APPVEYOR_REPO_TAG_NAME)
+    description: 'Binaries of Bit7z v%bit7z_version%'
+    auth_token:
+      secure: 4V5xJQT+iVPUhK05TBLkNkLY8HTArZ+omH394hfXqQuxfrkaQqnR8132rDnB/HVm
+    artifact: /.*\.7z/
+    draft: true
+    prerelease: false
+    on:
+      branch: master
+      appveyor_repo_tag: true
