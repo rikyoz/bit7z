@@ -26,6 +26,7 @@ environment:
 init:
     - set PATH=%PATH%;%msvc_dir%;%qt_dir%
     - vcvarsall.bat %arch%
+    - git submodule update --init --recursive
     
 build_script:
     - mkdir build
