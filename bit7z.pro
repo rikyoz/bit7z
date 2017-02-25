@@ -1,5 +1,5 @@
+#VERSION  = 2.0
 TEMPLATE = lib
-VERSION  = 1.0
 CONFIG  += staticlib
 CONFIG  -= app_bundle
 CONFIG  -= qt
@@ -39,10 +39,8 @@ SOURCES += lib/7zSDK/C/Alloc.c \
 
 INCLUDEPATH += lib/7zSDK/CPP/
 
-CONFIG  += embed_manifest_dll
-
-QMAKE_CFLAGS_WARN_ON -= -W3
-QMAKE_CFLAGS_WARN_ON += -W4
+QMAKE_CFLAGS_WARN_ON = -W4
+QMAKE_CXXFLAGS_WARN_ON = -W4
 
 DEFINES += _UNICODE
 
@@ -80,14 +78,12 @@ contains(QT_ARCH, i386) {
 
 CONFIG(debug, debug|release) {
     BUILD = debug
-    BUILD_SUFFIX = d
+    BUILD_SUFFIX = _d
 } else {
     BUILD = release
 }
 
-TARGET =  bit7z$${ARCH_SUFFIX}_$${BUILD_SUFFIX}
-
-DISTFILES += uncrustify.cfg
+TARGET =  bit7z$${ARCH_SUFFIX}$${BUILD_SUFFIX}
 
 DESTDIR  = $$PWD/bin/$${PLATFORM}/
 OBJECTS_DIR = $$PWD/build/$${PLATFORM}/$${BUILD}/.obj
