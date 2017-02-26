@@ -18,19 +18,19 @@ environment:
     arch: x86
     mt: FALSE
     qt_dir: C:\Qt\5.8\msvc2015\bin
-    
+
   # MSVC x86 MT
   - name: msvc2015_mt_x86
     arch: x86
-    mt:TRUE
+    mt: TRUE
     qt_dir: C:\Qt\5.8\msvc2015\bin
-    
+
   # MSVC x64
   - name: msvc2015_x64
     arch: x64
     mt: FALSE
     qt_dir: C:\Qt\5.8\msvc2015_64\bin
-    
+
   # MSVC x64 MT
   - name: msvc2015_mt_x64
     arch: x64
