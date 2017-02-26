@@ -16,7 +16,6 @@ environment:
   # MSVC x86
   - name: msvc2015_x86
     arch: x86
-    mt: FALSE
     qt_dir: C:\Qt\5.8\msvc2015\bin
 
   # MSVC x86 MT
@@ -28,7 +27,6 @@ environment:
   # MSVC x64
   - name: msvc2015_x64
     arch: x64
-    mt: FALSE
     qt_dir: C:\Qt\5.8\msvc2015_64\bin
 
   # MSVC x64 MT
@@ -45,7 +43,7 @@ build_script:
     - git submodule update --init --recursive
     - mkdir build
     - cd build
-    - if [%mt%] (
+    - if "%mt%"=="" (
         qmake ..\bit7z.pro "QMAKE_CFLAGS_RELEASE = -O2 -MT" "QMAKE_CXXFLAGS_RELEASE = -O2 -MT" "QMAKE_CFLAGS_DEBUG = -Zi -MTd" "QMAKE_CXXFLAGS_DEBUG = -Zi -MTd"
       ) else (
         qmake ..\bit7z.pro        
