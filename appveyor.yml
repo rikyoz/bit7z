@@ -55,10 +55,10 @@ build_script:
     - mkdir pkg\bit7z-v%bit7z_version%-%name%\
     - mkdir pkg\bit7z-v%bit7z_version%-%name%\lib\
     - mkdir pkg\bit7z-v%bit7z_version%-%name%\include\
-    - copy bin\%arch%\*.* pkg\lib\
-    - copy include\bit*.hpp pkg\include\
-    - copy README.md pkg\
-    - copy LICENSE pkg\
+    - copy bin\%arch%\*.* pkg\bit7z-v%bit7z_version%-%name%\lib\
+    - copy include\bit*.hpp pkg\bit7z-v%bit7z_version%-%name%\include\
+    - copy README.md pkg\bit7z-v%bit7z_version%-%name%\
+    - copy LICENSE pkg\bit7z-v%bit7z_version%-%name%\
     - cd pkg
     - 7z a -t7z bit7z-v%bit7z_version%-%name%.7z *
     
