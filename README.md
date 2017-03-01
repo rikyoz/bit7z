@@ -53,12 +53,12 @@ std::vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
 //creates a simple zip archive of two files
 compressor.compressFiles(files, L"output_archive.zip");
 
+//compresses a directory
+compressor.compressDirectory(L"dir/path/", L"dir_archive.zip");
+
 //creates an encrypted zip archive of two files
 compressor.setPassword(L"password");
 compressor.compressFiles(files, L"protected_archive.zip");
-
-//compresses a directory
-compressor.compressDirectory(L"dir/path/", L"dir_archive.zip");
 
 //compresses a single file into a buffer
 vector<byte_t> buffer;
