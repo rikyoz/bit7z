@@ -5,7 +5,8 @@ bit7z
 
 [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm82n?svg=true)](https://ci.appveyor.com/project/rikyoz/bit7z)
 [![GitHub release](https://img.shields.io/github/release/rikyoz/bit7z.svg)](https://github.com/rikyoz/bit7z/releases/latest)
-![](http://img.shields.io/badge/compiler-MSVC-red.svg?style=flat)
+![](http://img.shields.io/badge/compiler-MSVC%202010%20--%202015-red.svg?style=flat)
+![](http://img.shields.io/badge/arch-x86,%20x86__64-yellow.svg?style=flat)
 ![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat)
 
 ## Features
