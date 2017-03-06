@@ -4,7 +4,7 @@ bit7z
 **bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project. It supports compression and extraction to and from the filesystem or the memory (the latter from v2.x).
 
 [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm82n?svg=true)](https://ci.appveyor.com/project/rikyoz/bit7z)
-[![](http://img.shields.io/badge/stable-v2.0.0-blue.svg?style=flat)](https://github.com/rikyoz/bit7z/releases/latest)
+[![GitHub release](https://img.shields.io/github/release/rikyoz/bit7z.svg)](https://github.com/rikyoz/bit7z/releases/latest)
 ![](http://img.shields.io/badge/compiler-MSVC-red.svg?style=flat)
 ![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat)
 
