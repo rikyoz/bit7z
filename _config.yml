@@ -2,7 +2,7 @@ title: bit7z
 description: A clean, simple and object-oriented interface to the 7zip DLLs
 google_analytics: UA-58175742-1
 show_downloads: true
-theme: jekyll-theme-cayman
+theme: jekyll-theme-slate
 
 gems:
   - jekyll-mentions
