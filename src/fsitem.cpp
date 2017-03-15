@@ -27,6 +27,8 @@ FSItem::FSItem( const wstring& path, const wstring& relative_dir ) :
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( wstring::npos != lastSlashIndex ) {
             mDirectory.resize( lastSlashIndex );
+        } else {
+            mDirectory.clear();
         }
     }
     FindClose( find_handle );
@@ -82,6 +84,10 @@ wstring FSItem::relativePath() const {
 
 wstring FSItem::fullPath() const {
     return mDirectory + L"\\" + mFileData.cFileName;
+}
+
+wstring FSItem::upDirectory() const {
+    return mDirectory;
 }
 
 uint32_t FSItem::attributes() const {

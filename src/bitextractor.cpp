@@ -27,7 +27,7 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary &lib, const BitInFormat 
         throw BitException( L"Cannot open archive file '" + in_file + L"'" );
     }
 
-    OpenCallback *openCallbackSpec = new OpenCallback();
+    OpenCallback *openCallbackSpec = new OpenCallback( in_file );
     openCallbackSpec->setPassword( password );
 
     CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );

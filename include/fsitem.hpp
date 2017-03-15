@@ -26,6 +26,7 @@ namespace bit7z {
                 wstring name() const;
                 wstring relativePath() const;
                 wstring fullPath() const;
+                wstring upDirectory() const;
                 uint32_t attributes() const;
 
             private:
