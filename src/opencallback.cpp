@@ -1,5 +1,7 @@
 #include "../include/opencallback.hpp"
 
+#include "../include/fsutil.hpp"
+
 #include <iostream>
 
 #include "7zip/Common/FileStreams.h"
@@ -7,6 +9,7 @@
 
 using namespace std;
 using namespace bit7z;
+using namespace bit7z::filesystem;
 
 /* Most of this code is taken from the COpenCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
@@ -75,11 +78,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
             fullPath += L"\\";
         }
         fullPath += name;
-        try {
-            FSItem streamItem( fullPath );
-            if ( !streamItem.exists() || streamItem.isDir() )
-                return S_FALSE;
-        } catch ( ... ) {
+        if ( !fsutil::path_exists(fullPath) || fsutil::is_directory( fullPath ) ) {
             return S_FALSE;
         }
         CInFileStream* inFile = new CInFileStream;
