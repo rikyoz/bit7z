@@ -27,8 +27,8 @@ FSItem::FSItem( const wstring& path, const wstring& relative_dir ) :
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( wstring::npos != lastSlashIndex ) {
             mDirectory.resize( lastSlashIndex );
-        } else {
-            mDirectory.clear();
+        } else { //path contains only the file name, hence we consider the current directory
+            mDirectory = L".\\";
         }
     }
     FindClose( find_handle );

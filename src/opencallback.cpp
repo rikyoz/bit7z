@@ -71,8 +71,9 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
 STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) {
     try {
         *inStream = NULL;
-        if ( mSubArchiveMode )
+        if ( mSubArchiveMode ) {
             return S_FALSE;
+        }
         wstring fullPath = mFileItem.upDirectory();
         if ( !fullPath.empty() ) {
             fullPath += L"\\";

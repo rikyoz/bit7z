@@ -138,7 +138,6 @@ void BitCompressor::compressToFileSystem( const vector< FSItem > &in_items, cons
      * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
     CMyComPtr< IOutStream > outFileStream = outFileStreamSpec;
     if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
-        delete outFileStreamSpec;
         throw BitException( L"Can't create archive file '" + out_archive + L"'" );
     }
 
