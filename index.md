@@ -20,8 +20,7 @@ Please note that the presence or not of some of the above features depends on th
 Below are a few examples that show how to use some of the main features of bit7z:
 
 ### Extracting files from an archive
-
-~~~~~~~~~~~~~{.cpp}
+~~~~~~~~~~~~~cpp
 Bit7zLibrary lib(L"7za.dll");
 BitExtractor extractor(lib, BitFormat::SevenZip);
 
@@ -38,8 +37,7 @@ extractor.extract(L"path/to/another/archive.7z", L"output/dir/");
 ~~~~~~~~~~~~~
 
 ### Compressing files into an archive
-
-~~~~~~~~~~~~~{.cpp}
+~~~~~~~~~~~~~cpp
 Bit7zLibrary lib(L"7z.dll");
 BitCompressor compressor(lib, BitFormat::Zip);
 
