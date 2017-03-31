@@ -16,7 +16,7 @@ namespace bit7z {
     class OpenCallback : public IArchiveOpenCallback, public IArchiveOpenVolumeCallback,
         ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            OpenCallback( const std::wstring &filename = L"" );
+            OpenCallback( const std::wstring &filename = L"." );
             virtual ~OpenCallback();
 
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )

@@ -30,7 +30,6 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 }
 
 STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
-    //to be implemented
     NWindows::NCOM::CPropVariant prop;
     if ( mSubArchiveMode ) {
         switch ( propID ) {

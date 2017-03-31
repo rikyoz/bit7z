@@ -13,7 +13,7 @@ FSItem::FSItem( const wstring& path, const wstring& relative_dir ) :
     mRelativeDirectory( relative_dir ),
     mFileData() {
     bool isdir = fsutil::is_directory( mDirectory );
-    if ( isdir ) {
+    if ( isdir && !mDirectory.empty() ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( lastSlashIndex == mDirectory.length() - 1 ) {
             mDirectory.pop_back();
