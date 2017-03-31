@@ -20,6 +20,8 @@ namespace bit7z {
             explicit UpdateCallback( const vector< FSItem >& dirItems );
             virtual ~UpdateCallback();
 
+            void setVolumeSize( uint64_t size );
+
             HRESULT Finilize();
 
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
@@ -42,7 +44,7 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword2 )( Int32 * passwordIsDefined, BSTR * password );
 
         private:
-            vector< UInt64 > mVolumesSizes;
+            uint64_t mVolSize;
             wstring mVolName;
             wstring mVolExt;
 
