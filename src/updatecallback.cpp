@@ -21,6 +21,7 @@ using namespace bit7z;
 const std::wstring kEmptyFileAlias = L"[Content]";
 
 UpdateCallback::UpdateCallback( const vector< FSItem >& dirItems ) :
+    mVolSize( 0 ),
     mDirItems( dirItems ),
     mAskPassword( false ) {
     mNeedBeClosed = false;
@@ -30,6 +31,10 @@ UpdateCallback::UpdateCallback( const vector< FSItem >& dirItems ) :
 
 UpdateCallback::~UpdateCallback() {
     Finilize();
+}
+
+void UpdateCallback::setVolumeSize( uint64_t size ) {
+    mVolSize = size;
 }
 
 HRESULT UpdateCallback::SetTotal( UInt64 /* size */ ) {
@@ -133,17 +138,10 @@ HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
     return S_OK;
 }
 
-HRESULT UpdateCallback::GetVolumeSize( UInt32 index, UInt64* size ) {
-    if ( mVolumesSizes.size() == 0 ) {
-        return S_FALSE;
-    }
+HRESULT UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
+    if ( mVolSize == 0 ) return S_FALSE;
 
-    UInt32 volumes_size = static_cast< UInt32 >( mVolumesSizes.size() );
-    if ( index >= volumes_size ) {
-        index = volumes_size - 1;
-    }
-
-    *size = mVolumesSizes[index];
+    *size = mVolSize;
     return S_OK;
 }
 

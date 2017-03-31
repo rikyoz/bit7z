@@ -35,6 +35,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/memupdatecallback.cpp \
            src/bitmemextractor.cpp \
            src/coutmemstream.cpp \
+           src/coutmultivolstream.cpp \
            src/util.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
@@ -42,7 +43,7 @@ INCLUDEPATH += lib/7zSDK/CPP/
 QMAKE_CFLAGS_WARN_ON = -W4
 QMAKE_CXXFLAGS_WARN_ON = -W4
 
-DEFINES += _UNICODE
+DEFINES += _UNICODE _7Z_VOL
 
 HEADERS += include/bitcompressor.hpp \
            include/bitmemcompressor.hpp \
@@ -65,6 +66,7 @@ HEADERS += include/bitcompressor.hpp \
            include/memupdatecallback.hpp \
            include/bitmemextractor.hpp \
            include/coutmemstream.hpp \
+           include/coutmultivolstream.hpp \
            include/util.hpp
 
 contains(QT_ARCH, i386) {

@@ -84,6 +84,13 @@ namespace bit7z {
              */
             void setSolidMode( bool solid_mode );
 
+            /**
+             * @brief Sets the size (in bytes) of the archive volumes
+             *
+             * @param size    The dimension of a volume.
+             */
+            void setVolumeSize( uint64_t size );
+
             /* Compression from file system to file system */
 
             /**
@@ -156,6 +163,7 @@ namespace bit7z {
             wstring mPassword;
             bool mCryptHeaders;
             bool mSolidMode;
+            uint64_t mVolumeSize;
 
             void compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const;
             void compressToMemory( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;

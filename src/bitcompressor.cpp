@@ -9,6 +9,7 @@
 #include "../include/util.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
+#include "../include/coutmultivolstream.hpp"
 #include "../include/memupdatecallback.hpp"
 #include "../include/updatecallback.hpp"
 
@@ -19,9 +20,10 @@ using namespace NWindows;
 
 template< class T >
 void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
-                  const vector< FSItem > &in_items, const wstring &password ) {
+                  const vector< FSItem > &in_items, const wstring &password, const uint64_t volumeSize ) {
     UpdateCallback *updateCallbackSpec = new UpdateCallback( in_items );
     updateCallbackSpec->setPassword( password );
+    updateCallbackSpec->setVolumeSize( volumeSize );
 
     CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
     HRESULT result = outArc->UpdateItems( outStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
@@ -51,7 +53,8 @@ BitCompressor::BitCompressor( const Bit7zLibrary &lib, const BitInOutFormat &for
     mCompressionLevel( NORMAL ),
     mPassword( L"" ),
     mCryptHeaders( false ),
-    mSolidMode( false ) {}
+    mSolidMode( false ),
+    mVolumeSize( 0 ) {}
 
 const BitInOutFormat& BitCompressor::compressionFormat() {
     return mFormat;
@@ -68,6 +71,10 @@ void BitCompressor::setCompressionLevel( BitCompressionLevel compression_level )
 
 void BitCompressor::setSolidMode( bool solid_mode ) {
     mSolidMode = solid_mode;
+}
+
+void BitCompressor::setVolumeSize( uint64_t size ) {
+    mVolumeSize = size;
 }
 
 /* from filesystem to filesystem */
@@ -133,16 +140,21 @@ void BitCompressor::compressFile( const wstring &in_file, vector< byte_t > &out_
 void BitCompressor::compressToFileSystem( const vector< FSItem > &in_items, const wstring &out_archive ) const {
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    COutFileStream *outFileStreamSpec = new COutFileStream();
-    /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
-     * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
-    CMyComPtr< IOutStream > outFileStream = outFileStreamSpec;
-    if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
-        delete outFileStreamSpec;
-        throw BitException( L"Can't create archive file '" + out_archive + L"'" );
+    CMyComPtr< IOutStream > outFileStream;
+    if ( mVolumeSize > 0 ) {
+        COutMultiVolStream *outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
+        outFileStream = outMultiVolStreamSpec;
+    } else {
+        COutFileStream *outFileStreamSpec = new COutFileStream();
+        /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
+         * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
+        outFileStream = outFileStreamSpec;
+        if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
+            throw BitException( L"Can't create archive file '" + out_archive + L"'" );
+        }
     }
 
-    compressOut( outArc, outFileStream, in_items, mPassword );
+    compressOut( outArc, outFileStream, in_items, mPassword, mVolumeSize );
 }
 
 // FS -> Memory
@@ -159,5 +171,5 @@ void BitCompressor::compressToMemory( const vector< FSItem > &in_items, vector< 
     COutMemStream * outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
-    compressOut( outArc, outMemStream, in_items, mPassword );
+    compressOut( outArc, outMemStream, in_items, mPassword, mVolumeSize );
 }
