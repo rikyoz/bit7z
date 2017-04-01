@@ -9,6 +9,7 @@
 #include "../include/util.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
+#include "../include/coutmultivolstream.hpp"
 #include "../include/fsutil.hpp"
 #include "../include/memupdatecallback.hpp"
 
@@ -20,8 +21,8 @@ using std::vector;
 
 template< class T >
 void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
-                  const vector< byte_t > &in_buffer, const wstring &in_buffer_name, const wstring &password ) {
-    MemUpdateCallback *updateCallbackSpec = new MemUpdateCallback( in_buffer, in_buffer_name );
+                  const vector< byte_t >& in_buffer, const wstring& in_buffer_name, const wstring& password ) {
+    MemUpdateCallback* updateCallbackSpec = new MemUpdateCallback( in_buffer, in_buffer_name );
     updateCallbackSpec->setPassword( password );
 
     CMyComPtr< IArchiveUpdateCallback > updateCallback( updateCallbackSpec );
@@ -46,25 +47,23 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
     }
 }
 
-BitMemCompressor::BitMemCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
-    mLibrary( lib ),
-    mFormat( format ),
-    mCompressionLevel( NORMAL ),
-    mCryptHeaders( false ),
-    mSolidMode( false ) {}
+BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
+    : BitArchiveCreator( lib, format ) {}
 
-const BitInOutFormat& BitMemCompressor::compressionFormat() {
-    return mFormat;
-}
-
-void BitMemCompressor::compress( const vector< byte_t > &in_buffer, const wstring &out_archive,
+void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstring& out_archive,
                                  wstring in_buffer_name ) const {
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    COutFileStream *outFileStreamSpec     = new COutFileStream();
-    CMyComPtr< IOutStream > outFileStream = outFileStreamSpec;
-    if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
-        throw BitException( L"Can't create archive file '" + out_archive + L"'" );
+    CMyComPtr< IOutStream > outFileStream;
+    if ( mVolumeSize > 0 ) {
+        COutMultiVolStream* outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
+        outFileStream = outMultiVolStreamSpec;
+    } else {
+        COutFileStream* outFileStreamSpec = new COutFileStream();
+        outFileStream = outFileStreamSpec;
+        if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
+            throw BitException( L"Can't create archive file '" + out_archive + L"'" );
+        }
     }
 
     if ( in_buffer_name.empty() ) {
@@ -74,7 +73,7 @@ void BitMemCompressor::compress( const vector< byte_t > &in_buffer, const wstrin
     compressOut( outArc, outFileStream, in_buffer, in_buffer_name, mPassword );
 }
 
-void BitMemCompressor::compress( const vector< byte_t > &in_buffer, vector< byte_t > &out_buffer,
+void BitMemCompressor::compress( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
                                  wstring in_buffer_name ) const {
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( "Unsupported format for in-memory compression!" );
@@ -82,7 +81,7 @@ void BitMemCompressor::compress( const vector< byte_t > &in_buffer, vector< byte
 
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    COutMemStream *outMemStreamSpec = new COutMemStream( out_buffer );
+    COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
     compressOut( outArc, outMemStream, in_buffer, in_buffer_name, mPassword );
