@@ -14,8 +14,8 @@ using namespace std;
 using namespace NWindows;
 
 // NOTE: this function is not a method of BitMemExtractor because it would dirty the header with extra dependencies
-CMyComPtr< IInArchive > openArchive( const Bit7zLibrary &lib, const BitInFormat &format,
-                                     const vector< byte_t >& in_buffer, const wstring &password ) {
+CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
+                                     const vector< byte_t >& in_buffer, const wstring& password ) {
     CMyComPtr< IInArchive > inArchive;
     const GUID formatGUID = format.guid();
     lib.createArchiveObject( &formatGUID, &::IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
@@ -34,14 +34,8 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary &lib, const BitInFormat 
     return inArchive;
 }
 
-BitMemExtractor::BitMemExtractor(const Bit7zLibrary& lib, const BitInFormat &format ) :
-    mLibrary( lib ),
-    mFormat( format ),
-    mPassword( L"" ) {}
-
-const BitInFormat& BitMemExtractor::extractionFormat() {
-    return mFormat;
-}
+BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
+    : BitArchiveOpener( lib, format ) {}
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_buffer, mPassword );

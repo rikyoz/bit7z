@@ -37,6 +37,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/coutmemstream.cpp \
            src/coutmultivolstream.cpp \
            src/bitarchivecreator.cpp \
+           src/bitarchiveopener.cpp \
            src/util.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
@@ -69,6 +70,7 @@ HEADERS += include/bitcompressor.hpp \
            include/coutmemstream.hpp \
            include/coutmultivolstream.hpp \
            include/bitarchivecreator.hpp \
+           include/bitarchiveopener.hpp \
            include/util.hpp
 
 contains(QT_ARCH, i386) {
