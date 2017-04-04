@@ -2,11 +2,12 @@
 #define BITARCHIVEOPENER_HPP
 
 #include "../include/bit7zlibrary.hpp"
+#include "../include/bitarchivehandler.hpp"
 
 namespace bit7z {
     using std::wstring;
 
-    class BitArchiveOpener {
+    class BitArchiveOpener : public BitArchiveHandler {
         public:
             BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format );
 
@@ -18,6 +19,16 @@ namespace bit7z {
             const BitInFormat& extractionFormat();
 
             /**
+             * @return the password used to open the archive
+             */
+            const wstring password();
+
+            /**
+             * @return true if a password is defined, false otherwise
+             */
+            const bool isPasswordDefined();
+
+            /**
              * @brief Sets up a password to be used to open the archives
              *
              * When setting a password, the opened archive will be decrypted using the default
@@ -26,11 +37,11 @@ namespace bit7z {
              * @note Calling setPassword when the input archive is not encrypted does not have effect on
              * the extraction process.
              *
-             * @note After a password has been set, it will be used for every extraction operation.
-             * To cancel the password, it must be performed a new call to setPassword with argument
-             * an empty password.
+             * @note After a password has been set, it will be used for every subsequent operation.
+             * To cancel the password, it must be performed a new call to setPassword with an empty password
+             * as argument.
              *
-             * @param password          the password to be used.
+             * @param password    the password to be used.
              */
             void setPassword( const wstring& password );
 

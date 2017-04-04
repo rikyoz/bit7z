@@ -5,6 +5,7 @@
 #include "../include/bitformat.hpp"
 #include "../include/bittypes.hpp"
 #include "../include/bitcompressionlevel.hpp"
+#include "../include/bitarchivehandler.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -12,7 +13,7 @@ namespace bit7z {
     /**
      * @brief Abstract class representing a generic archive creator.
      */
-    class BitArchiveCreator {
+    class BitArchiveCreator : public BitArchiveHandler {
         public:
             /**
              * @brief BitArchiveCreator constructor
@@ -31,6 +32,37 @@ namespace bit7z {
              * @return the archive format used by the archive creator
              */
             const BitInOutFormat& compressionFormat();
+
+            /**
+             * @return the password used to encrypt the archvies created
+             */
+            const wstring password();
+
+            /**
+             * @return true if a password is defined, false otherwise
+             */
+            const bool isPasswordDefined();
+
+            /**
+             * @return whether the creator crypts also the headers of archives or not
+             */
+            const bool cryptHeaders();
+
+            /**
+             * @return the compression level used by the archive creator
+             */
+            const BitCompressionLevel compressionLevel();
+
+            /**
+             * @return whether the archive creator uses solid compression or not
+             */
+            const bool solidMode();
+
+            /**
+             * @return the size (in bytes) of the archive volume used by the creator
+             *         (a 0 value means that all files are going in a single archive)
+             */
+            const uint64_t volumeSize();
 
             /**
              * @brief Sets up a password for the output archive

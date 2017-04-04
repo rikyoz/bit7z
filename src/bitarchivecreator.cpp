@@ -1,8 +1,9 @@
 #include "include/bitarchivecreator.hpp"
 
+using std::wstring;
 using namespace bit7z;
 
-BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
+BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format ) :
     mLibrary( lib ),
     mFormat( format ),
     mCompressionLevel( NORMAL ),
@@ -15,6 +16,30 @@ BitArchiveCreator::~BitArchiveCreator() {}
 
 const BitInOutFormat& BitArchiveCreator::compressionFormat() {
     return mFormat;
+}
+
+const wstring BitArchiveCreator::password() {
+    return mPassword;
+}
+
+const bool BitArchiveCreator::isPasswordDefined() {
+    return mPassword.size() != 0;
+}
+
+const bool BitArchiveCreator::cryptHeaders() {
+    return mCryptHeaders;
+}
+
+const BitCompressionLevel BitArchiveCreator::compressionLevel() {
+    return mCompressionLevel;
+}
+
+const bool BitArchiveCreator::solidMode() {
+    return mSolidMode;
+}
+
+const uint64_t BitArchiveCreator::volumeSize() {
+    return mVolumeSize;
 }
 
 void BitArchiveCreator::setPassword( const wstring& password, bool crypt_headers ) {
