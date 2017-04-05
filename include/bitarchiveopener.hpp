@@ -21,12 +21,12 @@ namespace bit7z {
             /**
              * @return the password used to open the archive
              */
-            const wstring password();
+            const wstring password() const;
 
             /**
              * @return true if a password is defined, false otherwise
              */
-            const bool isPasswordDefined();
+            bool isPasswordDefined() const;
 
             /**
              * @brief Sets up a password to be used to open the archives

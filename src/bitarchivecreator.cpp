@@ -18,27 +18,27 @@ const BitInOutFormat& BitArchiveCreator::compressionFormat() {
     return mFormat;
 }
 
-const wstring BitArchiveCreator::password() {
+const wstring BitArchiveCreator::password() const {
     return mPassword;
 }
 
-const bool BitArchiveCreator::isPasswordDefined() {
+bool BitArchiveCreator::isPasswordDefined() const {
     return mPassword.size() != 0;
 }
 
-const bool BitArchiveCreator::cryptHeaders() {
+bool BitArchiveCreator::cryptHeaders() const {
     return mCryptHeaders;
 }
 
-const BitCompressionLevel BitArchiveCreator::compressionLevel() {
+BitCompressionLevel BitArchiveCreator::compressionLevel() const {
     return mCompressionLevel;
 }
 
-const bool BitArchiveCreator::solidMode() {
+bool BitArchiveCreator::solidMode() const {
     return mSolidMode;
 }
 
-const uint64_t BitArchiveCreator::volumeSize() {
+uint64_t BitArchiveCreator::volumeSize() const {
     return mVolumeSize;
 }
 

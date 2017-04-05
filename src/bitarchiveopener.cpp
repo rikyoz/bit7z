@@ -12,11 +12,11 @@ const BitInFormat& BitArchiveOpener::extractionFormat() {
     return mFormat;
 }
 
-const wstring BitArchiveOpener::password() {
+const wstring BitArchiveOpener::password() const {
     return mPassword;
 }
 
-const bool BitArchiveOpener::isPasswordDefined() {
+bool BitArchiveOpener::isPasswordDefined() const {
     return mPassword.size() != 0;
 }
 

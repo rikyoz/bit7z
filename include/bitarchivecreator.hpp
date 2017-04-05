@@ -36,33 +36,33 @@ namespace bit7z {
             /**
              * @return the password used to encrypt the archvies created
              */
-            const wstring password();
+            const wstring password() const;
 
             /**
              * @return true if a password is defined, false otherwise
              */
-            const bool isPasswordDefined();
+            bool isPasswordDefined() const;
 
             /**
              * @return whether the creator crypts also the headers of archives or not
              */
-            const bool cryptHeaders();
+            bool cryptHeaders() const;
 
             /**
              * @return the compression level used by the archive creator
              */
-            const BitCompressionLevel compressionLevel();
+            BitCompressionLevel compressionLevel() const;
 
             /**
              * @return whether the archive creator uses solid compression or not
              */
-            const bool solidMode();
+            bool solidMode() const;
 
             /**
              * @return the size (in bytes) of the archive volume used by the creator
              *         (a 0 value means that all files are going in a single archive)
              */
-            const uint64_t volumeSize();
+            uint64_t volumeSize() const;
 
             /**
              * @brief Sets up a password for the output archive
