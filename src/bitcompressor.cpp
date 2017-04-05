@@ -20,10 +20,8 @@ using namespace NWindows;
 
 template< class T >
 void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
-                  const vector< FSItem >& in_items, const wstring& password, const uint64_t volumeSize ) {
-    UpdateCallback* updateCallbackSpec = new UpdateCallback( in_items );
-    updateCallbackSpec->setPassword( password );
-    updateCallbackSpec->setVolumeSize( volumeSize );
+                  const vector< FSItem >& in_items, const BitArchiveCreator& creator ) {
+    UpdateCallback* updateCallbackSpec = new UpdateCallback( creator, in_items );
 
     CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
     HRESULT result = outArc->UpdateItems( outStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
@@ -127,7 +125,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
         }
     }
 
-    compressOut( outArc, outFileStream, in_items, mPassword, mVolumeSize );
+    compressOut( outArc, outFileStream, in_items, *this );
 }
 
 // FS -> Memory
@@ -144,5 +142,5 @@ void BitCompressor::compressToMemory( const vector< FSItem >& in_items, vector< 
     COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
-    compressOut( outArc, outMemStream, in_items, mPassword, mVolumeSize );
+    compressOut( outArc, outMemStream, in_items, *this );
 }

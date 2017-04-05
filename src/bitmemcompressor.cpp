@@ -21,9 +21,8 @@ using std::vector;
 
 template< class T >
 void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
-                  const vector< byte_t >& in_buffer, const wstring& in_buffer_name, const wstring& password ) {
-    MemUpdateCallback* updateCallbackSpec = new MemUpdateCallback( in_buffer, in_buffer_name );
-    updateCallbackSpec->setPassword( password );
+                  const vector< byte_t >& in_buffer, const wstring& in_buffer_name, const BitArchiveCreator& creator ) {
+    MemUpdateCallback* updateCallbackSpec = new MemUpdateCallback( creator, in_buffer, in_buffer_name );
 
     CMyComPtr< IArchiveUpdateCallback > updateCallback( updateCallbackSpec );
     HRESULT result = outArc->UpdateItems( outStream, 1, updateCallback );
@@ -70,7 +69,7 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstrin
         fsutil::filename( out_archive, in_buffer_name );
     }
 
-    compressOut( outArc, outFileStream, in_buffer, in_buffer_name, mPassword );
+    compressOut( outArc, outFileStream, in_buffer, in_buffer_name, *this );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
@@ -84,5 +83,5 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer, vector< byte
     COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
-    compressOut( outArc, outMemStream, in_buffer, in_buffer_name, mPassword );
+    compressOut( outArc, outMemStream, in_buffer, in_buffer_name, *this );
 }

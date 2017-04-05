@@ -51,7 +51,8 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath ) :
+ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, const wstring& directoryPath ) :
+    mOpener( opener ),
     mArchiveHandler( archiveHandler ),
     mDirectoryPath( directoryPath ),
     mExtractMode( true ),
@@ -64,11 +65,17 @@ ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& dir
 
 ExtractCallback::~ExtractCallback() {}
 
-STDMETHODIMP ExtractCallback::SetTotal( UInt64 /* size */ ) {
+STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
+    if ( mOpener.totalCallback() ) {
+        mOpener.totalCallback()( size );
+    }
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
+    if ( mOpener.progressCallback() ) {
+        mOpener.progressCallback()( *completeValue );
+    }
     return S_OK;
 }
 
@@ -277,7 +284,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( !isPasswordDefined() ) {
+    if ( !mOpener.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
@@ -286,5 +293,5 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         return E_FAIL;
     }
 
-    return StringToBstr( mPassword.c_str(), password );
+    return StringToBstr( mOpener.password().c_str(), password );
 }

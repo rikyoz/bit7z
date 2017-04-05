@@ -8,6 +8,7 @@
 #include "../include/fsindexer.hpp"
 #include "../include/callback.hpp"
 #include "../include/bittypes.hpp"
+#include "../include/bitarchivecreator.hpp"
 
 namespace bit7z {
     using namespace filesystem;
@@ -34,6 +35,7 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword2 )( Int32 * passwordIsDefined, BSTR * password );
 
         public:
+            const BitArchiveCreator& mCreator;
             vector< UInt64 > mVolumesSizes;
             wstring mVolName;
             wstring mVolExt;
@@ -50,7 +52,7 @@ namespace bit7z {
             const vector< byte_t >& mBuffer;
             const wstring& mBufferName;
 
-            MemUpdateCallback( const vector< byte_t >& out_buffer, const wstring& buffer_name );
+            MemUpdateCallback( const BitArchiveCreator& creator, const vector< byte_t >& out_buffer, const wstring& buffer_name );
             virtual ~MemUpdateCallback();
 
             HRESULT Finilize();

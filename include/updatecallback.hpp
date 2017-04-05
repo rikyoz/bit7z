@@ -7,6 +7,7 @@
 
 #include "../include/fsindexer.hpp"
 #include "../include/callback.hpp"
+#include "../include/bitarchivecreator.hpp"
 
 namespace bit7z {
     using namespace filesystem;
@@ -17,10 +18,8 @@ namespace bit7z {
         public:
             vector< wstring > mFailedFiles;
 
-            explicit UpdateCallback( const vector< FSItem >& dirItems );
+            explicit UpdateCallback( const BitArchiveCreator& creator, const vector< FSItem >& dirItems );
             virtual ~UpdateCallback();
-
-            void setVolumeSize( uint64_t size );
 
             HRESULT Finilize();
 
@@ -50,6 +49,7 @@ namespace bit7z {
 
             wstring mDirPrefix;
             const vector< FSItem >& mDirItems;
+            const BitArchiveCreator& mCreator;
 
             bool mAskPassword;
 
