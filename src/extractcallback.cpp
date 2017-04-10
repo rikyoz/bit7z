@@ -86,6 +86,7 @@ STDMETHODIMP ExtractCallback::SetRatioInfo(const UInt64* inSize, const UInt64* o
     return S_OK;
 }
 
+//TODO: clean and optimize!
 STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
                                          ISequentialOutStream** outStream,
                                          Int32                  askExtractMode ) {
@@ -201,6 +202,10 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
 
         mOutFileStreamSpec = new COutFileStream;
         CMyComPtr< ISequentialOutStream > outStreamLoc( mOutFileStreamSpec );
+
+        if ( mOpener.fileCallback() ) {
+            mOpener.fileCallback()( wstring( fi.Name ) );
+        }
 
         if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
             //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;

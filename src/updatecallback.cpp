@@ -118,6 +118,10 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
     RINOK( Finilize() );
     const FSItem dirItem = mDirItems[index];
 
+    if ( mCreator.fileCallback() ) {
+        mCreator.fileCallback()( dirItem.name() );
+    }
+
     if ( dirItem.isDir() ) {
         return S_OK;
     }
