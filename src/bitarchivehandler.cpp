@@ -12,6 +12,10 @@ std::function<void ( uint64_t )> BitArchiveHandler::progressCallback() const {
     return mProgressCallback;
 }
 
+std::function<void (uint64_t, uint64_t)> BitArchiveHandler::ratioCallback() const {
+    return mRatioCallback;
+}
+
 BitArchiveHandler::~BitArchiveHandler() {}
 
 void BitArchiveHandler::setTotalCallback( std::function<void ( uint64_t )> callback ) {
@@ -20,4 +24,8 @@ void BitArchiveHandler::setTotalCallback( std::function<void ( uint64_t )> callb
 
 void BitArchiveHandler::setProgressCallback( std::function<void ( uint64_t )> callback ) {
     mProgressCallback = callback;
+}
+
+void BitArchiveHandler::setRatioCallback( std::function<void (uint64_t, uint64_t)> callback ) {
+    mRatioCallback = callback;
 }

@@ -73,8 +73,15 @@ STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
 }
 
 STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mOpener.progressCallback() ) {
+    if ( mOpener.progressCallback() && completeValue != nullptr ) {
         mOpener.progressCallback()( *completeValue );
+    }
+    return S_OK;
+}
+
+STDMETHODIMP ExtractCallback::SetRatioInfo(const UInt64* inSize, const UInt64* outSize) {
+    if ( mOpener.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+        mOpener.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
 }

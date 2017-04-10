@@ -2,6 +2,7 @@
 #define UPDATECALLBACK_HPP
 
 #include "7zip/Archive/IArchive.h"
+#include "7zip/ICoder.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
@@ -14,7 +15,8 @@ namespace bit7z {
     using std::vector;
     using std::wstring;
 
-    class UpdateCallback : public IArchiveUpdateCallback2, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
+    class UpdateCallback : public IArchiveUpdateCallback2, public ICompressProgressInfo,
+            ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
             vector< wstring > mFailedFiles;
 
@@ -23,11 +25,14 @@ namespace bit7z {
 
             HRESULT Finilize();
 
-            MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
+            MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
             STDMETHOD( SetCompleted )( const UInt64 * completeValue );
+
+            // ICompressProgressInfo
+            STDMETHOD( SetRatioInfo )( const UInt64 *inSize, const UInt64 *outSize );
 
             // IArchiveUpdateCallback2
             STDMETHOD( EnumProperties )( IEnumSTATPROPSTG * *enumerator );

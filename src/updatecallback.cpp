@@ -42,8 +42,15 @@ HRESULT UpdateCallback::SetTotal( UInt64 size ) {
 }
 
 HRESULT UpdateCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mCreator.progressCallback() ) {
+    if ( mCreator.progressCallback() && completeValue != nullptr ) {
         mCreator.progressCallback()( *completeValue );
+    }
+    return S_OK;
+}
+
+STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+    if ( mCreator.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+        mCreator.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
 }
