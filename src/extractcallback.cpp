@@ -191,6 +191,12 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     } else {
         NFile::NFind::CFileInfo fi;
 
+        if ( mOpener.fileCallback() ) {
+            wstring filename;
+            filesystem::fsutil::filename( fullProcessedPath, filename, true );
+            mOpener.fileCallback()( filename );
+        }
+
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
             if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
                 //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
@@ -202,10 +208,6 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
 
         mOutFileStreamSpec = new COutFileStream;
         CMyComPtr< ISequentialOutStream > outStreamLoc( mOutFileStreamSpec );
-
-        if ( mOpener.fileCallback() ) {
-            mOpener.fileCallback()( wstring( fi.Name ) );
-        }
 
         if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
             //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;
