@@ -20,6 +20,10 @@ std::function<void (std::wstring)> BitArchiveHandler::fileCallback() const {
     return mFileCallback;
 }
 
+std::function<std::wstring ()> BitArchiveHandler::passwordCallback() const {
+    return mPasswordCallback;
+}
+
 BitArchiveHandler::~BitArchiveHandler() {}
 
 void BitArchiveHandler::setTotalCallback( std::function<void ( uint64_t )> callback ) {
@@ -36,4 +40,8 @@ void BitArchiveHandler::setRatioCallback( std::function<void (uint64_t, uint64_t
 
 void BitArchiveHandler::setFileCallback( std::function<void (std::wstring)> callback ) {
     mFileCallback = callback;
+}
+
+void BitArchiveHandler::setPasswordCallback(std::function<std::wstring ()> callback) {
+    mPasswordCallback = callback;
 }

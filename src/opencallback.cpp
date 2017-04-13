@@ -100,13 +100,23 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 }
 
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
+    cout << "Password requested!" << endl;
+    wstring pass;
     if ( !mOpener.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        mErrorMessage = L"Password is not defined";
-        return E_ABORT;
+        if ( mOpener.passwordCallback() ) {
+            pass = mOpener.passwordCallback()();
+        }
+
+        if ( pass.empty() ){
+            mErrorMessage = L"Password is not defined";
+            return E_ABORT;
+        }
+    } else {
+        pass = mOpener.password();
     }
 
-    return StringToBstr( mOpener.password().c_str(), password );
+    return StringToBstr( pass.c_str(), password );
 }

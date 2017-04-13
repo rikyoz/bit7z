@@ -13,17 +13,20 @@ namespace bit7z {
             std::function<void(uint64_t)> progressCallback() const;
             std::function<void(uint64_t, uint64_t)> ratioCallback() const;
             std::function<void(std::wstring)> fileCallback() const;
+            std::function<std::wstring()> passwordCallback() const;
 
             void setTotalCallback( std::function<void(uint64_t)> callback );
             void setProgressCallback( std::function<void(uint64_t)> callback );
             void setRatioCallback( std::function<void(uint64_t, uint64_t)> callback );
             void setFileCallback( std::function<void(std::wstring)> callback );
+            void setPasswordCallback( std::function<std::wstring()> callback );
 
         protected:
             std::function<void(uint64_t)> mTotalCallback;
             std::function<void(uint64_t)> mProgressCallback;
             std::function<void(uint64_t, uint64_t)> mRatioCallback;
             std::function<void(std::wstring)> mFileCallback;
+            std::function<std::wstring()> mPasswordCallback;
     };
 }
 
