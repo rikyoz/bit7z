@@ -4,29 +4,36 @@
 #include <functional>
 
 namespace bit7z {
+
+    typedef std::function<void(uint64_t)> TotalCallback;
+    typedef std::function<void(uint64_t)> ProgressCallback;
+    typedef std::function<void(uint64_t, uint64_t)> RatioCallback;
+    typedef std::function<void(std::wstring)> FileCallback;
+    typedef std::function<std::wstring()> PasswordCallback;
+
     class BitArchiveHandler {
         public:
             BitArchiveHandler();
             virtual ~BitArchiveHandler() = 0;
 
-            std::function<void(uint64_t)> totalCallback() const;
-            std::function<void(uint64_t)> progressCallback() const;
-            std::function<void(uint64_t, uint64_t)> ratioCallback() const;
-            std::function<void(std::wstring)> fileCallback() const;
-            std::function<std::wstring()> passwordCallback() const;
+            TotalCallback totalCallback() const;
+            ProgressCallback progressCallback() const;
+            RatioCallback ratioCallback() const;
+            FileCallback fileCallback() const;
+            PasswordCallback passwordCallback() const;
 
-            void setTotalCallback( std::function<void(uint64_t)> callback );
-            void setProgressCallback( std::function<void(uint64_t)> callback );
-            void setRatioCallback( std::function<void(uint64_t, uint64_t)> callback );
-            void setFileCallback( std::function<void(std::wstring)> callback );
-            void setPasswordCallback( std::function<std::wstring()> callback );
+            void setTotalCallback( TotalCallback callback );
+            void setProgressCallback( ProgressCallback callback );
+            void setRatioCallback( RatioCallback callback );
+            void setFileCallback( FileCallback callback );
+            void setPasswordCallback( PasswordCallback callback );
 
         protected:
-            std::function<void(uint64_t)> mTotalCallback;
-            std::function<void(uint64_t)> mProgressCallback;
-            std::function<void(uint64_t, uint64_t)> mRatioCallback;
-            std::function<void(std::wstring)> mFileCallback;
-            std::function<std::wstring()> mPasswordCallback;
+            TotalCallback mTotalCallback;
+            ProgressCallback mProgressCallback;
+            RatioCallback mRatioCallback;
+            FileCallback mFileCallback;
+            PasswordCallback mPasswordCallback;
     };
 }
 

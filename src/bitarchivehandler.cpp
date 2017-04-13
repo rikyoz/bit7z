@@ -4,44 +4,44 @@ using namespace bit7z;
 
 BitArchiveHandler::BitArchiveHandler() {}
 
-std::function<void ( uint64_t )> BitArchiveHandler::totalCallback() const {
+TotalCallback BitArchiveHandler::totalCallback() const {
     return mTotalCallback;
 }
 
-std::function<void ( uint64_t )> BitArchiveHandler::progressCallback() const {
+ProgressCallback BitArchiveHandler::progressCallback() const {
     return mProgressCallback;
 }
 
-std::function<void (uint64_t, uint64_t)> BitArchiveHandler::ratioCallback() const {
+RatioCallback BitArchiveHandler::ratioCallback() const {
     return mRatioCallback;
 }
 
-std::function<void (std::wstring)> BitArchiveHandler::fileCallback() const {
+FileCallback BitArchiveHandler::fileCallback() const {
     return mFileCallback;
 }
 
-std::function<std::wstring ()> BitArchiveHandler::passwordCallback() const {
+PasswordCallback BitArchiveHandler::passwordCallback() const {
     return mPasswordCallback;
 }
 
 BitArchiveHandler::~BitArchiveHandler() {}
 
-void BitArchiveHandler::setTotalCallback( std::function<void ( uint64_t )> callback ) {
+void BitArchiveHandler::setTotalCallback( TotalCallback callback ) {
     mTotalCallback = callback;
 }
 
-void BitArchiveHandler::setProgressCallback( std::function<void ( uint64_t )> callback ) {
+void BitArchiveHandler::setProgressCallback( ProgressCallback callback ) {
     mProgressCallback = callback;
 }
 
-void BitArchiveHandler::setRatioCallback( std::function<void (uint64_t, uint64_t)> callback ) {
+void BitArchiveHandler::setRatioCallback( RatioCallback callback ) {
     mRatioCallback = callback;
 }
 
-void BitArchiveHandler::setFileCallback( std::function<void (std::wstring)> callback ) {
+void BitArchiveHandler::setFileCallback( FileCallback callback ) {
     mFileCallback = callback;
 }
 
-void BitArchiveHandler::setPasswordCallback(std::function<std::wstring ()> callback) {
+void BitArchiveHandler::setPasswordCallback( PasswordCallback callback) {
     mPasswordCallback = callback;
 }
