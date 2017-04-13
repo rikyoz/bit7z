@@ -100,7 +100,6 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 }
 
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
-    cout << "Password requested!" << endl;
     wstring pass;
     if ( !mOpener.isPasswordDefined() ) {
         // You can ask real password here from user

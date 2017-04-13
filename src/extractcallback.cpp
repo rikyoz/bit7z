@@ -298,14 +298,22 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+    wstring pass;
     if ( !mOpener.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        //in future, no exception but an event (i.e. onPasswordRequest) call
-        mErrorMessage = L"Password is not defined";
-        return E_FAIL;
+        if ( mOpener.passwordCallback() ) {
+            pass = mOpener.passwordCallback()();
+        }
+
+        if ( pass.empty() ){
+            mErrorMessage = L"Password is not defined";
+            return E_FAIL;
+        }
+    } else {
+        pass = mOpener.password();
     }
 
-    return StringToBstr( mOpener.password().c_str(), password );
+    return StringToBstr( pass.c_str(), password );
 }
