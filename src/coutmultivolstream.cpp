@@ -18,7 +18,7 @@ COutMultiVolStream::COutMultiVolStream(uint64_t size , const wstring &archiveNam
     mLength = 0;
     mVolSize = size;
     mVolPrefix = archiveName;
-    mVolPrefix += L"."; //not done in with the + operator since it doesn't compile with MSVC 2010
+    mVolPrefix += L"."; //we don't use the + operator since it doesn't compile with MSVC 2010
 }
 
 COutMultiVolStream::~COutMultiVolStream() {
