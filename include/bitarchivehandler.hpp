@@ -1,6 +1,7 @@
 #ifndef BITARCHIVEHANDLER_HPP
 #define BITARCHIVEHANDLER_HPP
 
+#include <cstdint>
 #include <functional>
 
 namespace bit7z {
