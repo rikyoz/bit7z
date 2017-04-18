@@ -34,16 +34,6 @@ namespace bit7z {
             const BitInOutFormat& compressionFormat();
 
             /**
-             * @return the password used to encrypt the archvies created
-             */
-            const wstring password() const;
-
-            /**
-             * @return true if a password is defined, false otherwise
-             */
-            bool isPasswordDefined() const;
-
-            /**
              * @return whether the creator crypts also the headers of archives or not
              */
             bool cryptHeaders() const;
@@ -64,6 +54,8 @@ namespace bit7z {
              */
             uint64_t volumeSize() const;
 
+            void setPassword( const wstring &password ) override;
+
             /**
              * @brief Sets up a password for the output archive
              *
@@ -79,15 +71,15 @@ namespace bit7z {
              * @note Calling setPassword with "crypt_headers" set to true does not have effects on
              * formats different from 7z.
              *
-             * @note After a password has been set, it will be used for every compression operation.
-             * To cancel the password, it must be performed a new call to setPassword with argument
-             * an empty password.
+             * @note After a password has been set, it will be used for every subsequent operation.
+             * To cancel the password, it must be performed a new call to setPassword with an empty password
+             * as argument.
              *
              * @param password          the password desired.
              * @param crypt_headers     if true, the headers of the output archive will be encrypted
              *                          (valid only with 7z format).
              */
-            void setPassword( const wstring& password, bool crypt_headers = false );
+            void setPassword( const wstring& password, bool crypt_headers );
 
             /**
              * @brief Sets the compression level to use when creating an archive
@@ -115,10 +107,8 @@ namespace bit7z {
             void setVolumeSize( uint64_t size );
 
         protected:
-            const Bit7zLibrary& mLibrary;
             const BitInOutFormat& mFormat;
             BitCompressionLevel mCompressionLevel;
-            wstring mPassword;
             bool mCryptHeaders;
             bool mSolidMode;
             uint64_t mVolumeSize;

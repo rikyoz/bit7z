@@ -4,10 +4,9 @@ using std::wstring;
 using namespace bit7z;
 
 BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format ) :
-    mLibrary( lib ),
+    BitArchiveHandler( lib ),
     mFormat( format ),
     mCompressionLevel( NORMAL ),
-    mPassword( L"" ),
     mCryptHeaders( false ),
     mSolidMode( false ),
     mVolumeSize( 0 ) {}
@@ -16,14 +15,6 @@ BitArchiveCreator::~BitArchiveCreator() {}
 
 const BitInOutFormat& BitArchiveCreator::compressionFormat() {
     return mFormat;
-}
-
-const wstring BitArchiveCreator::password() const {
-    return mPassword;
-}
-
-bool BitArchiveCreator::isPasswordDefined() const {
-    return mPassword.size() != 0;
 }
 
 bool BitArchiveCreator::cryptHeaders() const {
@@ -40,6 +31,10 @@ bool BitArchiveCreator::solidMode() const {
 
 uint64_t BitArchiveCreator::volumeSize() const {
     return mVolumeSize;
+}
+
+void BitArchiveCreator::setPassword( const wstring &password ) {
+    setPassword( password, mCryptHeaders );
 }
 
 void BitArchiveCreator::setPassword( const wstring& password, bool crypt_headers ) {

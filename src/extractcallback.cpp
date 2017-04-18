@@ -296,7 +296,6 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     return S_OK;
 }
 
-
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
     if ( !mOpener.isPasswordDefined() ) {

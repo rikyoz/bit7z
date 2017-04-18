@@ -1,8 +1,19 @@
 #include "include/bitarchivehandler.hpp"
 
 using namespace bit7z;
+using std::wstring;
 
-BitArchiveHandler::BitArchiveHandler() {}
+BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary &lib ) : mLibrary( lib ), mPassword(L"") {}
+
+BitArchiveHandler::~BitArchiveHandler() {}
+
+const wstring BitArchiveHandler::password() const {
+    return mPassword;
+}
+
+bool BitArchiveHandler::isPasswordDefined() const {
+    return !mPassword.empty();
+}
 
 TotalCallback BitArchiveHandler::totalCallback() const {
     return mTotalCallback;
@@ -24,7 +35,9 @@ PasswordCallback BitArchiveHandler::passwordCallback() const {
     return mPasswordCallback;
 }
 
-BitArchiveHandler::~BitArchiveHandler() {}
+void BitArchiveHandler::setPassword( const wstring& password ) {
+    mPassword = password;
+}
 
 void BitArchiveHandler::setTotalCallback( TotalCallback callback ) {
     mTotalCallback = callback;
@@ -42,6 +55,6 @@ void BitArchiveHandler::setFileCallback( FileCallback callback ) {
     mFileCallback = callback;
 }
 
-void BitArchiveHandler::setPasswordCallback( PasswordCallback callback) {
+void BitArchiveHandler::setPasswordCallback( PasswordCallback callback ) {
     mPasswordCallback = callback;
 }
