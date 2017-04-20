@@ -7,6 +7,7 @@
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitguids.hpp"
 #include "../include/bittypes.hpp"
+#include "../include/bitarchiveopener.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -15,7 +16,7 @@ namespace bit7z {
     /**
      * @brief The BitExtractor class allows to extract the content of various file archives
      */
-    class BitExtractor {
+    class BitExtractor : public BitArchiveOpener {
         public:
             /**
              * @brief Constructs a BitExtractor object
@@ -28,28 +29,6 @@ namespace bit7z {
              * @param format    the input archive format.
              */
             BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format );
-
-            /**
-             * @return the archive format used by the extractor
-             */
-            const BitInFormat& extractionFormat();
-
-            /**
-             * @brief Sets up a password to be used to open the archives
-             *
-             * When setting a password, the opened archive will be decrypted using the default
-             * cryptographic method of the input format.
-             *
-             * @note Calling setPassword when the input archive is not encrypted does not have effect on
-             * the extraction process.
-             *
-             * @note After a password has been set, it will be used for every extraction operation.
-             * To cancel the password, it must be performed a new call to setPassword with argument
-             * an empty password.
-             *
-             * @param password          the password to be used.
-             */
-            void setPassword( const wstring& password );
 
             /**
              * @brief Extracts the given archive into the choosen directory
@@ -67,11 +46,6 @@ namespace bit7z {
              * @param index        the index of the file to be extracted from in_file
              */
             void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );
-
-        private:
-            const Bit7zLibrary& mLibrary;
-            const BitInFormat& mFormat;
-            wstring mPassword;
     };
 }
 #endif // BITEXTRACTOR_HPP

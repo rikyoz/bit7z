@@ -52,7 +52,8 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler, vector< byte_t >& buffer ) :
+MemExtractCallback::MemExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, vector< byte_t >& buffer ) :
+    mOpener( opener ),
     mArchiveHandler( archiveHandler ),
     mBuffer( buffer ),
     mExtractMode( true ),
@@ -62,11 +63,17 @@ MemExtractCallback::MemExtractCallback( IInArchive* archiveHandler, vector< byte
 
 MemExtractCallback::~MemExtractCallback() {}
 
-STDMETHODIMP MemExtractCallback::SetTotal( UInt64 /* size */ ) {
+STDMETHODIMP MemExtractCallback::SetTotal( UInt64 size ) {
+    if ( mOpener.totalCallback() ) {
+        mOpener.totalCallback()( size );
+    }
     return S_OK;
 }
 
-STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* completeValue ) {
+    if ( mOpener.progressCallback() ) {
+        mOpener.progressCallback()( *completeValue );
+    }
     return S_OK;
 }
 
@@ -229,7 +236,7 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 
 STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( !isPasswordDefined() ) {
+    if ( !mOpener.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
@@ -238,5 +245,5 @@ STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         return E_FAIL;
     }
 
-    return StringToBstr( mPassword.c_str(), password );
+    return StringToBstr( mOpener.password().c_str(), password );
 }

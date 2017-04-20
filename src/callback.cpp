@@ -3,15 +3,7 @@
 using namespace std;
 using namespace bit7z;
 
-Callback::Callback() : mPassword( L"" ), mErrorMessage( L"" ) {}
-
-void Callback::setPassword( const wstring& password ) {
-    mPassword = password;
-}
-
-bool Callback::isPasswordDefined() const {
-    return mPassword.length() != 0;
-}
+Callback::Callback() : mErrorMessage( L"" ) {}
 
 wstring Callback::getErrorMessage() const {
     return mErrorMessage;

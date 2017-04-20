@@ -20,10 +20,8 @@ using namespace NWindows;
 
 template< class T >
 void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
-                  const vector< FSItem > &in_items, const wstring &password, const uint64_t volumeSize ) {
-    UpdateCallback *updateCallbackSpec = new UpdateCallback( in_items );
-    updateCallbackSpec->setPassword( password );
-    updateCallbackSpec->setVolumeSize( volumeSize );
+                  const vector< FSItem >& in_items, const BitArchiveCreator& creator ) {
+    UpdateCallback* updateCallbackSpec = new UpdateCallback( creator, in_items );
 
     CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
     HRESULT result = outArc->UpdateItems( outStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
@@ -47,39 +45,12 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
     }
 }
 
-BitCompressor::BitCompressor( const Bit7zLibrary &lib, const BitInOutFormat &format ) :
-    mLibrary( lib ),
-    mFormat( format ),
-    mCompressionLevel( NORMAL ),
-    mPassword( L"" ),
-    mCryptHeaders( false ),
-    mSolidMode( false ),
-    mVolumeSize( 0 ) {}
-
-const BitInOutFormat& BitCompressor::compressionFormat() {
-    return mFormat;
-}
-
-void BitCompressor::setPassword( const wstring &password, bool crypt_headers ) {
-    mPassword = password;
-    mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
-}
-
-void BitCompressor::setCompressionLevel( BitCompressionLevel compression_level ) {
-    mCompressionLevel = compression_level;
-}
-
-void BitCompressor::setSolidMode( bool solid_mode ) {
-    mSolidMode = solid_mode;
-}
-
-void BitCompressor::setVolumeSize( uint64_t size ) {
-    mVolumeSize = size;
-}
+BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
+    : BitArchiveCreator( lib, format ) {}
 
 /* from filesystem to filesystem */
 
-void BitCompressor::compress( const vector< wstring > &in_paths, const wstring &out_archive ) const {
+void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& out_archive ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
@@ -88,13 +59,13 @@ void BitCompressor::compress( const vector< wstring > &in_paths, const wstring &
     compressToFileSystem( dirItems, out_archive );
 }
 
-void BitCompressor::compressFile( const wstring &in_file, const wstring &out_archive ) const {
+void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
     vector< wstring > vfiles;
     vfiles.push_back( in_file );
     compressFiles( vfiles, out_archive );
 }
 
-void BitCompressor::compressFiles( const vector< wstring > &in_files, const wstring &out_archive ) const {
+void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const {
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
@@ -103,11 +74,11 @@ void BitCompressor::compressFiles( const vector< wstring > &in_files, const wstr
     compressToFileSystem( dirItems, out_archive );
 }
 
-void BitCompressor::compressDirectory( const wstring &in_dir, const wstring &out_archive, bool recursive ) const {
+void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive ) const {
     compressFiles( in_dir, out_archive, L"*", recursive );
 }
 
-void BitCompressor::compressFiles( const wstring &in_dir, const wstring &out_archive, const wstring &filter,
+void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter,
                                    bool recursive ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
@@ -120,7 +91,7 @@ void BitCompressor::compressFiles( const wstring &in_dir, const wstring &out_arc
 
 /* from filesystem to memory buffer */
 
-void BitCompressor::compressFile( const wstring &in_file, vector< byte_t > &out_buffer ) const {
+void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const {
     FSItem item( in_file );
     if ( item.isDir() ) {
         throw BitException( "Cannot compress a directory into a memory buffer!" );
@@ -137,15 +108,15 @@ void BitCompressor::compressFile( const wstring &in_file, vector< byte_t > &out_
  * Main changes made:
  *  + Generalized the code to work with any type of format (original works only with 7z format)
  *  + Use of exceptions instead of error codes */
-void BitCompressor::compressToFileSystem( const vector< FSItem > &in_items, const wstring &out_archive ) const {
+void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
     CMyComPtr< IOutStream > outFileStream;
     if ( mVolumeSize > 0 ) {
-        COutMultiVolStream *outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
+        COutMultiVolStream* outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
         outFileStream = outMultiVolStreamSpec;
     } else {
-        COutFileStream *outFileStreamSpec = new COutFileStream();
+        COutFileStream* outFileStreamSpec = new COutFileStream();
         /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
          * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
         outFileStream = outFileStreamSpec;
@@ -154,11 +125,11 @@ void BitCompressor::compressToFileSystem( const vector< FSItem > &in_items, cons
         }
     }
 
-    compressOut( outArc, outFileStream, in_items, mPassword, mVolumeSize );
+    compressOut( outArc, outFileStream, in_items, *this );
 }
 
 // FS -> Memory
-void BitCompressor::compressToMemory( const vector< FSItem > &in_items, vector< byte_t > &out_buffer ) const {
+void BitCompressor::compressToMemory( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const {
     if ( in_items.size() == 0 ) {
         throw BitException( "The list of files/directories cannot be empty!" );
     }
@@ -168,8 +139,8 @@ void BitCompressor::compressToMemory( const vector< FSItem > &in_items, vector< 
 
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    COutMemStream * outMemStreamSpec = new COutMemStream( out_buffer );
+    COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
-    compressOut( outArc, outMemStream, in_items, mPassword, mVolumeSize );
+    compressOut( outArc, outMemStream, in_items, *this );
 }

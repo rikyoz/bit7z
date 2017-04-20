@@ -16,8 +16,8 @@ using namespace bit7z::filesystem;
  *  + Use of wstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
-OpenCallback::OpenCallback( const wstring &filename ) : mSubArchiveMode( false ), mSubArchiveName( L"" ),
-    mFileItem( filename ) {}
+OpenCallback::OpenCallback( const BitArchiveOpener& opener, const wstring &filename )
+    : mOpener( opener ), mSubArchiveMode( false ), mSubArchiveName( L"" ), mFileItem( filename ) {}
 
 OpenCallback::~OpenCallback() {}
 
@@ -100,13 +100,22 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 }
 
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( !isPasswordDefined() ) {
+    wstring pass;
+    if ( !mOpener.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        mErrorMessage = L"Password is not defined";
-        return E_ABORT;
+        if ( mOpener.passwordCallback() ) {
+            pass = mOpener.passwordCallback()();
+        }
+
+        if ( pass.empty() ){
+            mErrorMessage = L"Password is not defined";
+            return E_ABORT;
+        }
+    } else {
+        pass = mOpener.password();
     }
 
-    return StringToBstr( mPassword.c_str(), password );
+    return StringToBstr( pass.c_str(), password );
 }
