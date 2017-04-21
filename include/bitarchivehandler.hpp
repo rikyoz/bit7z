@@ -59,6 +59,8 @@ namespace bit7z {
              */
             virtual void setPassword( const wstring& password );
 
+            void clearPassword();
+
             void setTotalCallback( TotalCallback callback );
             void setProgressCallback( ProgressCallback callback );
             void setRatioCallback( RatioCallback callback );

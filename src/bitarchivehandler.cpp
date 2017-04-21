@@ -39,6 +39,10 @@ void BitArchiveHandler::setPassword( const wstring& password ) {
     mPassword = password;
 }
 
+void BitArchiveHandler::clearPassword() {
+    setPassword( L"" );
+}
+
 void BitArchiveHandler::setTotalCallback( TotalCallback callback ) {
     mTotalCallback = callback;
 }
