@@ -3,8 +3,6 @@ bit7z [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm
 
 **bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project. It supports compression and extraction to and from the filesystem or the memory (the latter from v2.x).
 
-
-
 ## Features
 bit7z supports the following features:
 
@@ -23,8 +21,7 @@ Please note that the presence or not of some of the above features depends on th
 Below are a few examples that show how to use some of the main features of bit7z:
 
 ### Extracting files from an archive
-
-~~~~~~~~~~~~~{.cpp}
+~~~~~~~~~~~~~cpp
 Bit7zLibrary lib(L"7za.dll");
 BitExtractor extractor(lib, BitFormat::SevenZip);
 
@@ -41,8 +38,7 @@ extractor.extract(L"path/to/another/archive.7z", L"output/dir/");
 ~~~~~~~~~~~~~
 
 ### Compressing files into an archive
-
-~~~~~~~~~~~~~{.cpp}
+~~~~~~~~~~~~~cpp
 Bit7zLibrary lib(L"7z.dll");
 BitCompressor compressor(lib, BitFormat::Zip);
 
