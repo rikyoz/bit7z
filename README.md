@@ -61,7 +61,7 @@ compressor2.compressFile(files[0], buffer);
 
 A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference)*** and a ***[Getting Started](https://github.com/rikyoz/bit7z/wiki/Getting-Started)*** guide are available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
-## Downloads [![Github Releases](https://img.shields.io/github/downloads/rikyoz/bit7z/latest/total.png?label=latest%20version)]() [![Github All Releases](https://img.shields.io/github/downloads/rikyoz/bit7z/total.png?label=all%20versions)]()
+## Downloads
 
 <div align="center">
 
@@ -89,7 +89,7 @@ The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](h
 A complete guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-bit7z).
 
 ## Donations
-If you have found this project useful, please consider a small donation, thank you! :)
+If you have found this project useful, please consider a small donation! Thank you! :)
 
 <div align="center">
 
