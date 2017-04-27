@@ -1,4 +1,4 @@
-bit7z [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm82n?svg=true)](https://ci.appveyor.com/project/rikyoz/bit7z) [![GitHub release](https://img.shields.io/github/release/rikyoz/bit7z.svg)](https://github.com/rikyoz/bit7z/releases/latest) ![](http://img.shields.io/badge/compiler-MSVC%202010%20--%202015-red.svg?style=flat) ![](http://img.shields.io/badge/arch-x86,%20x86__64-yellow.svg?style=flat) [![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat)](https://github.com/rikyoz/bit7z/blob/master/LICENSE)
+bit7z [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm82n?svg=true)](https://ci.appveyor.com/project/rikyoz/bit7z) [![GitHub release](https://img.shields.io/github/release/rikyoz/bit7z.png)](https://github.com/rikyoz/bit7z/releases/latest) ![](http://img.shields.io/badge/compiler-MSVC%202010%20--%202015-red.png) ![](http://img.shields.io/badge/arch-x86,%20x86__64-orange.png) [![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.png)](https://github.com/rikyoz/bit7z/blob/master/LICENSE) [![donate](https://img.shields.io/donate/PayPal.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
 =====
 
 **bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project. It supports compression and extraction to and from the filesystem or the memory (the latter from v2.x).
@@ -21,7 +21,7 @@ Please note that the presence or not of some of the above features depends on th
 Below are a few examples that show how to use some of the main features of bit7z:
 
 ### Extracting files from an archive
-~~~~~~~~~~~~~cpp
+```cpp
 Bit7zLibrary lib(L"7za.dll");
 BitExtractor extractor(lib, BitFormat::SevenZip);
 
@@ -35,10 +35,10 @@ extractor.extract(L"path/to/archive.7z", buffer);
 //extracts an encrypted archive
 extractor.setPassword(L"password");
 extractor.extract(L"path/to/another/archive.7z", L"output/dir/");
-~~~~~~~~~~~~~
+```
 
 ### Compressing files into an archive
-~~~~~~~~~~~~~cpp
+```cpp
 Bit7zLibrary lib(L"7z.dll");
 BitCompressor compressor(lib, BitFormat::Zip);
 
@@ -57,17 +57,21 @@ compressor.compressFiles(files, L"protected_archive.zip");
 vector<byte_t> buffer;
 BitCompressor compressor2(lib, BitFormat::BZip2);
 compressor2.compressFile(files[0], buffer);
-~~~~~~~~~~~~~
+```
 
 A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference)*** and a ***[Getting Started](https://github.com/rikyoz/bit7z/wiki/Getting-Started)*** guide are available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
-## Downloads
+## Downloads [![Github Releases](https://img.shields.io/github/downloads/rikyoz/bit7z/latest/total.png?label=latest%20version)]() [![Github All Releases](https://img.shields.io/github/downloads/rikyoz/bit7z/total.png?label=all%20versions)]()
 
-[Latest release](https://github.com/rikyoz/bit7z/releases/latest)
+<div align="center">
+
+[<img alt="Latest release" src="https://img.shields.io/badge/&#129095;-Download-green.svg" height="64"/>](https://github.com/rikyoz/bit7z/releases/latest)
+
+</div>
 
 The release packages contain a precompiled version of the library and they are available for both x86 and x64 architectures.
 
-Obviously, you can also clone/download repository this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-bit7z)).
+Obviously, you can also clone/download repository this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## Usage Requirements
 + **Target OS:** Windows (both x86 and x64)
@@ -84,6 +88,15 @@ The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](h
 
 A complete guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-bit7z).
 
+## Donations
+If you have found this project useful, please consider a small donation, thank you! :)
+
+<div align="center">
+
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+
+</div>
+
 ## License (GPL v2)
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -98,5 +111,7 @@ A complete guide on how to build this library is available [here](https://github
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+<br/>
 
 Copyright &copy; 2014-2017 Riccardo Ostani ([@rikyoz](https://github.com/rikyoz))
