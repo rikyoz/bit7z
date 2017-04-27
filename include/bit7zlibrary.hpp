@@ -25,7 +25,7 @@ namespace bit7z {
              *
              * By default, it searches a 7z.dll in the same path of the application.
              *
-             * @param dll_path the path to the dll wanted
+             * @param dll_path  the path to the dll wanted
              */
             explicit Bit7zLibrary( const std::wstring& dll_path = DEFAULT_DLL );
 
@@ -36,6 +36,8 @@ namespace bit7z {
 
             /**
              * @brief Initiates the object needed to create a new archive or use an old one
+             *
+             * @note Usually this method should not be called directly by users of the bit7z library.
              *
              * @param format_ID     GUID of the archive format (see BitInFormat's guid() method)
              * @param interface_ID  ID of the archive interface to be requested (IID_IInArchive or IID_IOutArchive)

@@ -45,7 +45,7 @@ namespace bit7z {
             /**
              * @brief BitArchiveHandler constructor
              *
-             * @param lib       the 7z library used by the handler.
+             * @param lib   the 7z library used by the handler.
              */
             BitArchiveHandler( const Bit7zLibrary& lib );
 
@@ -103,19 +103,19 @@ namespace bit7z {
              * throw exceptions and it has no effects on compression operations).
              *
              * @note After a password has been set, it will be used for every subsequent operation.
-             * To disable the use of the password, you need to call to the clearPassword method, which is equivalent
+             * To disable the use of the password, you need to call the clearPassword method, which is equivalent
              * to call setPassword(L"").
              *
-             * @param password    the password to be used.
+             * @param password  the password to be used.
              */
             virtual void setPassword( const wstring& password );
 
             /**
-             * @brief Clear the current password used by the handler
+             * @brief Clear the current password used by the handler.
              *
              * Calling clearPassword() will disable the encryption/decryption of archives.
              *
-             * @note Equivalent to setPassword(L"")
+             * @note This is equivalent to calling setPassword(L"").
              */
             void clearPassword();
 
@@ -130,7 +130,7 @@ namespace bit7z {
              * @brief Sets the callback to be called when the processed size of the ongoing operation is updated.
              *
              * @note The percentage of completition of the current operation can be obtained by calculating
-             * static_cast<int>( ( 100.0 * progressSize ) / totalSize )
+             * static_cast<int>( ( 100.0 * processed_size ) / total_size ).
              *
              * @param callback  the progress callback to be used.
              */
@@ -141,7 +141,7 @@ namespace bit7z {
              * ongoing operation are known.
              *
              * @note The ratio percentage of a compression operation can be obtained by calculating
-             * static_cast<int>( ( 100.0 * outputSize ) / inputSize )
+             * static_cast<int>( ( 100.0 * output_size ) / input_size ).
              *
              * @param callback  the ratio callback to be used.
              */
