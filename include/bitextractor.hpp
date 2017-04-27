@@ -14,12 +14,12 @@ namespace bit7z {
     using std::vector;
 
     /**
-     * @brief The BitExtractor class allows to extract the content of various file archives
+     * @brief The BitExtractor class allows to extract the content of file archives.
      */
     class BitExtractor : public BitArchiveOpener {
         public:
             /**
-             * @brief Constructs a BitExtractor object
+             * @brief Constructs a BitExtractor object.
              *
              * The Bit7zLibrary parameter is needed in order to have access to the functionalities
              * of the 7z DLLs. On the other hand, the BitInFormat is required in order to know the
@@ -31,19 +31,19 @@ namespace bit7z {
             BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format );
 
             /**
-             * @brief Extracts the given archive into the choosen directory
+             * @brief Extracts the given archive into the choosen directory.
 
-             * @param in_file   the input archive file
-             * @param out_dir   the output directory where extracted files will be put
+             * @param in_file   the input archive file.
+             * @param out_dir   the output directory where extracted files will be put.
              */
             void extract( const wstring& in_file, const wstring& out_dir = L"" ) const;
 
             /**
-             * @brief Extracts the given archive into the output buffer
+             * @brief Extracts the given archive into the output buffer.
 
-             * @param in_file      the input archive file
-             * @param out_buffer   the output buffer where the content of the archive will be put
-             * @param index        the index of the file to be extracted from in_file
+             * @param in_file      the input archive file.
+             * @param out_buffer   the output buffer where the content of the archive will be put.
+             * @param index        the index of the file to be extracted from in_file.
              */
             void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );
     };

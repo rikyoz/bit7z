@@ -16,7 +16,7 @@ namespace bit7z {
     class BitArchiveCreator : public BitArchiveHandler {
         public:
             /**
-             * @brief BitArchiveCreator constructor
+             * @brief BitArchiveCreator constructor.
              *
              * @param lib       the 7z library used.
              * @param format    the output archive format.
@@ -24,12 +24,12 @@ namespace bit7z {
             BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format );
 
             /**
-             * @brief BitArchiveCreator destructor
+             * @brief BitArchiveCreator destructor.
              */
             virtual ~BitArchiveCreator() = 0;
 
             /**
-             * @return the archive format used by the archive creator
+             * @return the archive format used by the archive creator.
              */
             const BitInOutFormat& compressionFormat();
 
@@ -39,25 +39,25 @@ namespace bit7z {
             bool cryptHeaders() const;
 
             /**
-             * @return the compression level used by the archive creator
+             * @return the compression level used by the archive creator.
              */
             BitCompressionLevel compressionLevel() const;
 
             /**
-             * @return whether the archive creator uses solid compression or not
+             * @return whether the archive creator uses solid compression or not.
              */
             bool solidMode() const;
 
             /**
              * @return the size (in bytes) of the archive volume used by the creator
-             *         (a 0 value means that all files are going in a single archive)
+             *         (a 0 value means that all files are going in a single archive).
              */
             uint64_t volumeSize() const;
 
             void setPassword( const wstring &password ) override;
 
             /**
-             * @brief Sets up a password for the output archive
+             * @brief Sets up a password for the output archive.
              *
              * When setting a password, the produced archive will be encrypted using the default
              * cryptographic method of the output format. If the format is 7z and the option
@@ -82,14 +82,14 @@ namespace bit7z {
             void setPassword( const wstring& password, bool crypt_headers );
 
             /**
-             * @brief Sets the compression level to use when creating an archive
+             * @brief Sets the compression level to use when creating an archive.
              *
              * @param compression_level the compression level desired.
              */
             void setCompressionLevel( BitCompressionLevel compression_level );
 
             /**
-             * @brief Sets whether to use solid compression or not
+             * @brief Sets whether to use solid compression or not.
              *
              * @note Setting the solid compression mode to true has effect only when using the 7z format.
              *
@@ -98,9 +98,9 @@ namespace bit7z {
             void setSolidMode( bool solid_mode );
 
             /**
-             * @brief Sets the size (in bytes) of the archive volumes
+             * @brief Sets the size (in bytes) of the archive volumes.
              *
-             * @note This setting has effects only when the destination archive is on filesystem
+             * @note This setting has effects only when the destination archive is on filesystem.
              *
              * @param size    The dimension of a volume.
              */

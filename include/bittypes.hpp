@@ -3,7 +3,7 @@
 
 namespace bit7z {
     /**
-     * @brief A type representing a byte (equivalent to an unsigned char)
+     * @brief A type representing a byte (equivalent to an unsigned char).
      */
     typedef unsigned char byte_t;
 }

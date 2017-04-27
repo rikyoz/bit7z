@@ -3,8 +3,8 @@
 
 namespace bit7z {
     /**
-     * @brief The BitCompressionLevel enum represents the compression level used by 7z when creating archives
-     * @note It uses the same values as in the 7z SDK (https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX)
+     * @brief The BitCompressionLevel enum represents the compression level used by 7z when creating archives.
+     * @note It uses the same values as in the 7z SDK (https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
      */
     enum BitCompressionLevel { NONE = 0,    ///< Copy mode (no compression)
                                FASTEST = 1, ///< Fastest compressing

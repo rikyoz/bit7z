@@ -13,7 +13,7 @@ namespace bit7z {
     using std::bitset;
 
     /**
-     * @brief The FormatFeatures enum specifies the features supported by an archive file format
+     * @brief The FormatFeatures enum specifies the features supported by an archive file format.
      */
     enum FormatFeatures {
         MULTIPLE_FILES    = 1 << 0,///< The format can compress/extract multiple files (2^0 = 000001)
@@ -25,38 +25,38 @@ namespace bit7z {
     };
 
     /**
-     * @brief The BitInFormat class specifies an extractable archive format
+     * @brief The BitInFormat class specifies an extractable archive format.
      *
      * @note Usually, the user of the library should not create new formats and, instead,
-     * use the ones provided by the BitFormat namespace
+     * use the ones provided by the BitFormat namespace.
      */
     class BitInFormat {
         public:
             /**
-             * @brief Constructs a BitInFormat object with the id value used by the 7z SDK
-             * @param value  the value of the format in the 7z SDK
+             * @brief Constructs a BitInFormat object with the id value used by the 7z SDK.
+             * @param value  the value of the format in the 7z SDK.
              */
             explicit BitInFormat( unsigned char value );
 
             /**
-             * @return the value of the format in the 7z SDK
+             * @return the value of the format in the 7z SDK.
              */
             int value() const;
 
             /**
-             * @return the GUID that identifies the file format in the 7z SDK
+             * @return the GUID that identifies the file format in the 7z SDK.
              */
             const GUID guid() const;
 
             /**
-             * @param other  the target object to compare to
-             * @return true if this format is equal to "other"
+             * @param other  the target object to compare to.
+             * @return true if this format is equal to "other".
              */
             bool operator==( BitInFormat const &other ) const;
 
             /**
-             * @param other  the target object to compare to
-             * @return true if this format is not equal to "other"
+             * @param other  the target object to compare to.
+             * @return true if this format is not equal to "other".
              */
             bool operator!=( BitInFormat const &other ) const;
 

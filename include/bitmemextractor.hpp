@@ -14,12 +14,12 @@ namespace bit7z {
     using std::vector;
 
     /**
-     * @brief The BitMemExtractor class allows to extract the content of in-memory archives
+     * @brief The BitMemExtractor class allows to extract the content of in-memory archives.
      */
     class BitMemExtractor : public BitArchiveOpener {
         public:
             /**
-             * @brief Constructs a BitMemExtractor object
+             * @brief Constructs a BitMemExtractor object.
              *
              * The Bit7zLibrary parameter is needed in order to have access to the functionalities
              * of the 7z DLLs. On the other hand, the BitInFormat is required in order to know the
@@ -31,19 +31,19 @@ namespace bit7z {
             BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format );
 
             /**
-             * @brief Extracts the given buffer archive into the choosen directory
+             * @brief Extracts the given buffer archive into the choosen directory.
              *
-             * @param in_buffer     the buffer containing the archive to be extracted
-             * @param out_dir       the output directory where to put the file extracted
+             * @param in_buffer     the buffer containing the archive to be extracted.
+             * @param out_dir       the output directory where to put the file extracted.
              */
             void extract( const vector< byte_t >& in_buffer, const wstring& out_dir = L"" ) const;
 
             /**
-             * @brief Extracts the given buffer archive into the output buffer
+             * @brief Extracts the given buffer archive into the output buffer.
              *
-             * @param in_buffer    the buffer containing the archive to be extracted
-             * @param out_buffer   the output buffer where the content of the archive will be put
-             * @param index        the index of the file to be extracted from in_buffer
+             * @param in_buffer    the buffer containing the archive to be extracted.
+             * @param out_buffer   the output buffer where the content of the archive will be put.
+             * @param index        the index of the file to be extracted from in_buffer.
              */
             void extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
                           unsigned int index = 0 ) const;

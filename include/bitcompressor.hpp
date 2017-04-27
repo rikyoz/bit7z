@@ -19,7 +19,7 @@ namespace bit7z {
     using filesystem::FSItem;
 
     /**
-     * @brief The BitCompressor class allows to compress files and directories.
+     * @brief The BitCompressor class allows to compress files and directories into file archives.
      *
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.
@@ -27,7 +27,7 @@ namespace bit7z {
     class BitCompressor : public BitArchiveCreator {
         public:
             /**
-             * @brief Constructs a BitCompressor object
+             * @brief Constructs a BitCompressor object.
              *
              * The Bit7zLibrary parameter is needed in order to have access to the functionalities
              * of the 7z DLLs. On the other hand, the BitInOutFormat is required in order to know the
@@ -41,7 +41,7 @@ namespace bit7z {
             /* Compression from file system to file system */
 
             /**
-             * @brief Compresses the given files or directories
+             * @brief Compresses the given files or directories.
              *
              * The items in the first argument must be the relative or absolute paths to files or
              * directories existing on the filesystem.
@@ -52,7 +52,7 @@ namespace bit7z {
             void compress( const vector< wstring >& in_paths, const wstring& out_archive ) const;
 
             /**
-             * @brief Compresses a single file
+             * @brief Compresses a single file.
              *
              * @param in_file       the path (relative or absolute) to the input file.
              * @param out_archive   the path (relative or absolute) to the output archive file.
@@ -60,7 +60,7 @@ namespace bit7z {
             void compressFile( const wstring& in_file, const wstring& out_archive ) const;
 
             /**
-             * @brief Compresses a group of files
+             * @brief Compresses a group of files.
              *
              * @note Any path to a directory or to a not-existing file will be ignored!
              *
@@ -70,7 +70,7 @@ namespace bit7z {
             void compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const;
 
             /**
-             * @brief Compresses the files contained in a directory
+             * @brief Compresses the files contained in a directory.
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
@@ -81,9 +81,9 @@ namespace bit7z {
                                 bool recursive = true ) const;
 
             /**
-             * @brief Compresses an entire directory
+             * @brief Compresses an entire directory.
              *
-             * @note This method is equivalent to compressFiles with filter set to L"*"
+             * @note This method is equivalent to compressFiles with filter set to L"*".
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
@@ -94,12 +94,12 @@ namespace bit7z {
             /* Compression from file system to memory buffer */
 
             /**
-             * @brief Compresses the input file to the output buffer
+             * @brief Compresses the input file to the output buffer.
              *
-             * @note If the format of the output archive doesn't support in memory compression, a BitException is thrown
+             * @note If the format of the output doesn't support in memory compression, a BitException is thrown.
              *
-             * @param in_file           the file to be compressed
-             * @param out_buffer        the buffer going to contain the output archive
+             * @param in_file           the file to be compressed.
+             * @param out_buffer        the buffer going to contain the output archive.
              */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
