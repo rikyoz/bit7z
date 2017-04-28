@@ -1,4 +1,8 @@
+<div align="center">
+
 [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm82n?svg=true)](https://ci.appveyor.com/project/rikyoz/bit7z) [![GitHub release](https://img.shields.io/github/release/rikyoz/bit7z.png)](https://github.com/rikyoz/bit7z/releases/latest) ![](http://img.shields.io/badge/compiler-MSVC%202010%20--%202015-red.png) ![](http://img.shields.io/badge/arch-x86,%20x86__64-orange.png) [![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.png)](https://github.com/rikyoz/bit7z/blob/master/LICENSE) [![donate](https://img.shields.io/donate/PayPal.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+
+</div>
 
 **bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project. It supports compression and extraction to and from the filesystem or the memory, multi-volume archives and operation progress callbacks.
 
@@ -96,7 +100,8 @@ If you have found this project useful, please consider a small donation! Thank y
 
 <div align="center">
 
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC"><img alt="donate" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"/></a>
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+
 </div>
 
 
