@@ -59,7 +59,7 @@ BitCompressor compressor2(lib, BitFormat::BZip2);
 compressor2.compressFile(files[0], buffer);
 ```
 
-A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference)*** and a ***[Getting Started](https://github.com/rikyoz/bit7z/wiki/Getting-Started)*** guide are available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
+A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference)*** is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
 ## Downloads
 
