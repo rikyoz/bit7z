@@ -96,8 +96,7 @@ If you have found this project useful, please consider a small donation! Thank y
 
 <div align="center">
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
-
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC"><img alt="donate" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif"/></a>
 </div>
 
 
