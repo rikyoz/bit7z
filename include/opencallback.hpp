@@ -8,19 +8,39 @@
 #include "Common/MyCom.h"
 
 #include "../include/callback.hpp"
+#include "../include/fsitem.hpp"
+#include "../include/bitarchiveopener.hpp"
 
 namespace bit7z {
-    class OpenCallback : public IArchiveOpenCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+    using filesystem::FSItem;
+
+    class OpenCallback : public IArchiveOpenCallback, public IArchiveOpenVolumeCallback,
+        ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            OpenCallback();
+            OpenCallback( const BitArchiveOpener& opener, const std::wstring &filename = L"." );
             virtual ~OpenCallback();
 
-            MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
+            MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
 
-            STDMETHOD( SetTotal )( const UInt64 * files, const UInt64 * bytes );
-            STDMETHOD( SetCompleted )( const UInt64 * files, const UInt64 * bytes );
+            //IArchiveOpenCallback
+            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes );
+            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes );
 
-            STDMETHOD( CryptoGetTextPassword )( BSTR * password );
+            //IArchiveOpenVolumeCallback
+            STDMETHOD( GetProperty )( PROPID propID, PROPVARIANT* value );
+            STDMETHOD( GetStream )( const wchar_t* name, IInStream** inStream );
+
+            //IArchiveOpenSetSubArchiveName
+            STDMETHOD( SetSubArchiveName )( const wchar_t *name );
+
+            //ICryptoGetTextPassword
+            STDMETHOD( CryptoGetTextPassword )( BSTR* password );
+
+        private:
+            const BitArchiveOpener& mOpener;
+            bool mSubArchiveMode;
+            wstring mSubArchiveName;
+            FSItem mFileItem;
     };
 }
 #endif // OPENCALLBACK_HPP

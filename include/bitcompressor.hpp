@@ -7,7 +7,7 @@
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitformat.hpp"
 #include "../include/bittypes.hpp"
-#include "../include/bitcompressionlevel.hpp"
+#include "../include/bitarchivecreator.hpp"
 
 namespace bit7z {
     namespace filesystem {
@@ -19,15 +19,15 @@ namespace bit7z {
     using filesystem::FSItem;
 
     /**
-     * @brief The BitCompressor class allows to compress files and directories.
+     * @brief The BitCompressor class allows to compress files and directories into file archives.
      *
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.
      */
-    class BitCompressor {
+    class BitCompressor : public BitArchiveCreator {
         public:
             /**
-             * @brief Constructs a BitCompressor object
+             * @brief Constructs a BitCompressor object.
              *
              * The Bit7zLibrary parameter is needed in order to have access to the functionalities
              * of the 7z DLLs. On the other hand, the BitInOutFormat is required in order to know the
@@ -38,56 +38,10 @@ namespace bit7z {
              */
             BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format );
 
-            /**
-             * @return the archive format used by the compressor
-             */
-            const BitInOutFormat& compressionFormat();
-
-            /**
-             * @brief Sets up a password for the output archive
-             *
-             * When setting a password, the produced archive will be encrypted using the default
-             * cryptographic method of the output format. If the format is 7z and the option
-             * "crypt_headers" is set to true, also the headers of the archive will be encrypted,
-             * resulting in a password request everytime the output file will be opened.
-             *
-             * @note Calling setPassword when the output format doesn't support archive encryption
-             * (e.g. GZip, BZip2, etc...) does not have any effects (in other words, it doesn't
-             * throw exceptions and it has no effects on compression operations).
-             *
-             * @note Calling setPassword with "crypt_headers" set to true does not have effects on
-             * formats different from 7z.
-             *
-             * @note After a password has been set, it will be used for every compression operation.
-             * To cancel the password, it must be performed a new call to setPassword with argument
-             * an empty password.
-             *
-             * @param password          the password desired.
-             * @param crypt_headers     if true, the headers of the output archive will be encrypted
-             *                          (valid only with 7z format).
-             */
-            void setPassword( const wstring& password, bool crypt_headers = false );
-
-            /**
-             * @brief Sets the compression level to use when creating an archive
-             *
-             * @param compression_level the compression level desired.
-             */
-            void setCompressionLevel( BitCompressionLevel compression_level );
-
-            /**
-             * @brief Sets whether to use solid compression or not
-             *
-             * @note Setting the solid compression mode to true has effect only when using the 7z format.
-             *
-             * @param solid_mode    if true, it will be used the "solid compression" method.
-             */
-            void setSolidMode( bool solid_mode );
-
             /* Compression from file system to file system */
 
             /**
-             * @brief Compresses the given files or directories
+             * @brief Compresses the given files or directories.
              *
              * The items in the first argument must be the relative or absolute paths to files or
              * directories existing on the filesystem.
@@ -98,7 +52,7 @@ namespace bit7z {
             void compress( const vector< wstring >& in_paths, const wstring& out_archive ) const;
 
             /**
-             * @brief Compresses a single file
+             * @brief Compresses a single file.
              *
              * @param in_file       the path (relative or absolute) to the input file.
              * @param out_archive   the path (relative or absolute) to the output archive file.
@@ -106,7 +60,7 @@ namespace bit7z {
             void compressFile( const wstring& in_file, const wstring& out_archive ) const;
 
             /**
-             * @brief Compresses a group of files
+             * @brief Compresses a group of files.
              *
              * @note Any path to a directory or to a not-existing file will be ignored!
              *
@@ -116,7 +70,7 @@ namespace bit7z {
             void compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const;
 
             /**
-             * @brief Compresses the files contained in a directory
+             * @brief Compresses the files contained in a directory.
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
@@ -127,9 +81,9 @@ namespace bit7z {
                                 bool recursive = true ) const;
 
             /**
-             * @brief Compresses an entire directory
+             * @brief Compresses an entire directory.
              *
-             * @note This method is equivalent to compressFiles with filter set to L"*"
+             * @note This method is equivalent to compressFiles with filter set to L"*".
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
@@ -140,23 +94,16 @@ namespace bit7z {
             /* Compression from file system to memory buffer */
 
             /**
-             * @brief Compresses the input file to the output buffer
+             * @brief Compresses the input file to the output buffer.
              *
-             * @note If the format of the output archive doesn't support in memory compression, a BitException is thrown
+             * @note If the format of the output doesn't support in memory compression, a BitException is thrown.
              *
-             * @param in_file           the file to be compressed
-             * @param out_buffer        the buffer going to contain the output archive
+             * @param in_file           the file to be compressed.
+             * @param out_buffer        the buffer going to contain the output archive.
              */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
         private:
-            const Bit7zLibrary& mLibrary;
-            const BitInOutFormat& mFormat;
-            BitCompressionLevel mCompressionLevel;
-            wstring mPassword;
-            bool mCryptHeaders;
-            bool mSolidMode;
-
             void compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const;
             void compressToMemory( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;
     };

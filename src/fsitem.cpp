@@ -13,7 +13,7 @@ FSItem::FSItem( const wstring& path, const wstring& relative_dir ) :
     mRelativeDirectory( relative_dir ),
     mFileData() {
     bool isdir = fsutil::is_directory( mDirectory );
-    if ( isdir ) {
+    if ( isdir && !mDirectory.empty() ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( lastSlashIndex == mDirectory.length() - 1 ) {
             mDirectory.pop_back();
@@ -27,6 +27,8 @@ FSItem::FSItem( const wstring& path, const wstring& relative_dir ) :
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( wstring::npos != lastSlashIndex ) {
             mDirectory.resize( lastSlashIndex );
+        } else { //path contains only the file name, hence we consider the current directory
+            mDirectory = L".\\";
         }
     }
     FindClose( find_handle );
@@ -82,6 +84,10 @@ wstring FSItem::relativePath() const {
 
 wstring FSItem::fullPath() const {
     return mDirectory + L"\\" + mFileData.cFileName;
+}
+
+wstring FSItem::upDirectory() const {
+    return mDirectory;
 }
 
 uint32_t FSItem::attributes() const {

@@ -21,7 +21,8 @@ using namespace bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 
-MemUpdateCallback::MemUpdateCallback( const vector< byte_t >& out_buffer, const wstring& buffer_name ) :
+MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator, const vector< byte_t >& out_buffer, const wstring& buffer_name ) :
+    mCreator( creator ),
     mAskPassword( false ),
     mNeedBeClosed( false ),
     mBuffer( out_buffer ),
@@ -34,11 +35,17 @@ MemUpdateCallback::~MemUpdateCallback() {
     Finilize();
 }
 
-HRESULT MemUpdateCallback::SetTotal( UInt64 /* size */ ) {
+HRESULT MemUpdateCallback::SetTotal( UInt64 size ) {
+    if ( mCreator.totalCallback() ) {
+        mCreator.totalCallback()( size );
+    }
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+HRESULT MemUpdateCallback::SetCompleted( const UInt64* completeValue ) {
+    if ( mCreator.progressCallback() ) {
+        mCreator.progressCallback()( *completeValue );
+    }
     return S_OK;
 }
 
@@ -167,7 +174,7 @@ HRESULT MemUpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
 }
 
 HRESULT MemUpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( mPassword.length() == 0 ) {
+    if ( !mCreator.isPasswordDefined() ) {
         if ( mAskPassword ) {
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
@@ -177,6 +184,6 @@ HRESULT MemUpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BST
         }
     }
 
-    *passwordIsDefined = ( mPassword.length() != 0 ? 1 : 0 );
-    return StringToBstr( mPassword.c_str(), password );
+    *passwordIsDefined = ( mCreator.isPasswordDefined() ? 1 : 0 );
+    return StringToBstr( mCreator.password().c_str(), password );
 }

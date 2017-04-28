@@ -5,25 +5,31 @@
 
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
+#include "7zip/ICoder.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
 #include "../include/bitguids.hpp"
 #include "../include/callback.hpp"
+#include "../include/bitarchiveopener.hpp"
 
 namespace bit7z {
     using std::wstring;
 
-    class ExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+    class ExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
+            ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath );
+            ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, const wstring& directoryPath );
             virtual ~ExtractCallback();
 
-            MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
+            MY_UNKNOWN_IMP2( ICompressProgressInfo, ICryptoGetTextPassword )
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
             STDMETHOD( SetCompleted )( const UInt64 * completeValue );
+
+            // ICompressProgressInfo
+            STDMETHOD( SetRatioInfo )( const UInt64 *inSize, const UInt64 *outSize );
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream * *outStream, Int32 askExtractMode );
@@ -34,6 +40,7 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword )( BSTR * aPassword );
 
         private:
+            const BitArchiveOpener& mOpener;
             CMyComPtr< IInArchive > mArchiveHandler;
             wstring mDirectoryPath;  // Output directory
             wstring mFilePath;       // name inside arcvhive

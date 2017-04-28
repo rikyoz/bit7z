@@ -1,7 +1,7 @@
-bit7z [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm82n?svg=true)](https://ci.appveyor.com/project/rikyoz/bit7z) [![GitHub release](https://img.shields.io/github/release/rikyoz/bit7z.svg)](https://github.com/rikyoz/bit7z/releases/latest) ![](http://img.shields.io/badge/compiler-MSVC%202010%20--%202015-red.svg?style=flat) ![](http://img.shields.io/badge/arch-x86,%20x86__64-yellow.svg?style=flat) ![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat)
+bit7z [![Build status](https://ci.appveyor.com/api/projects/status/5la21g1kb7ikm82n?svg=true)](https://ci.appveyor.com/project/rikyoz/bit7z) [![GitHub release](https://img.shields.io/github/release/rikyoz/bit7z.png)](https://github.com/rikyoz/bit7z/releases/latest) ![](http://img.shields.io/badge/compiler-MSVC%202010%20--%202015-red.png) ![](http://img.shields.io/badge/arch-x86,%20x86__64-orange.png) [![](http://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.png)](https://github.com/rikyoz/bit7z/blob/master/LICENSE) [![donate](https://img.shields.io/donate/PayPal.png?color=yellow)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
 =====
 
-**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project. It supports compression and extraction to and from the filesystem or the memory (the latter from v2.x).
+**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project. It supports compression and extraction to and from the filesystem or the memory (the latter from v2.x) and operation progress callbacks (from v2.1.x).
 
 ## Features
 bit7z supports the following features:
@@ -13,6 +13,7 @@ bit7z supports the following features:
 + **Archive header encryption** (only for 7z format).
 + Choice of the **compression level** (from none to ultra, not all supported by every output archive format).
 + **Solid archives** (only for 7z).
++ Support to **operation callbacks**, through which it is possible to obtain real time informations about the ongoing extraction or compression operation (from v2.1.x)
 
 Please note that the presence or not of some of the above features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files. For more information about the 7z SDK DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
@@ -21,7 +22,7 @@ Please note that the presence or not of some of the above features depends on th
 Below are a few examples that show how to use some of the main features of bit7z:
 
 ### Extracting files from an archive
-~~~~~~~~~~~~~cpp
+```cpp
 Bit7zLibrary lib(L"7za.dll");
 BitExtractor extractor(lib, BitFormat::SevenZip);
 
@@ -35,10 +36,10 @@ extractor.extract(L"path/to/archive.7z", buffer);
 //extracts an encrypted archive
 extractor.setPassword(L"password");
 extractor.extract(L"path/to/another/archive.7z", L"output/dir/");
-~~~~~~~~~~~~~
+```
 
 ### Compressing files into an archive
-~~~~~~~~~~~~~cpp
+```cpp
 Bit7zLibrary lib(L"7z.dll");
 BitCompressor compressor(lib, BitFormat::Zip);
 
@@ -57,17 +58,23 @@ compressor.compressFiles(files, L"protected_archive.zip");
 vector<byte_t> buffer;
 BitCompressor compressor2(lib, BitFormat::BZip2);
 compressor2.compressFile(files[0], buffer);
-~~~~~~~~~~~~~
+```
 
-A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference)*** and a ***[Getting Started](https://github.com/rikyoz/bit7z/wiki/Getting-Started)*** guide are available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
+A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference)*** is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
 ## Downloads
 
-[Latest release](https://github.com/rikyoz/bit7z/releases/latest)
+<div align="center">
+
+### [Download Latest Version](https://github.com/rikyoz/bit7z/releases/latest)
+
+[![Github All Releases](https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg)]()
+
+</div>
 
 The release packages contain a precompiled version of the library and they are available for both x86 and x64 architectures.
 
-Obviously, you can also clone/download repository this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-bit7z)).
+Obviously, you can also clone/download repository this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## Usage Requirements
 + **Target OS:** Windows (both x86 and x64)
@@ -84,6 +91,15 @@ The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](h
 
 A complete guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-bit7z).
 
+## Donations
+If you have found this project useful, please consider a small donation! Thank you! :)
+
+<div align="center">
+
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+
+</div>
+
 ## License (GPL v2)
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -98,5 +114,7 @@ A complete guide on how to build this library is available [here](https://github
     You should have received a copy of the GNU General Public License along
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+<br/>
 
 Copyright &copy; 2014-2017 Riccardo Ostani ([@rikyoz](https://github.com/rikyoz))

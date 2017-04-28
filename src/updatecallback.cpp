@@ -20,8 +20,10 @@ using namespace bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 
-UpdateCallback::UpdateCallback( const vector< FSItem >& dirItems ) :
+UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const vector< FSItem >& dirItems ) :
+    mVolSize( 0 ),
     mDirItems( dirItems ),
+    mCreator( creator ),
     mAskPassword( false ) {
     mNeedBeClosed = false;
     mFailedFiles.clear();
@@ -32,11 +34,24 @@ UpdateCallback::~UpdateCallback() {
     Finilize();
 }
 
-HRESULT UpdateCallback::SetTotal( UInt64 /* size */ ) {
+HRESULT UpdateCallback::SetTotal( UInt64 size ) {
+    if ( mCreator.totalCallback() ) {
+        mCreator.totalCallback()( size );
+    }
     return S_OK;
 }
 
-HRESULT UpdateCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+HRESULT UpdateCallback::SetCompleted( const UInt64* completeValue ) {
+    if ( mCreator.progressCallback() && completeValue != nullptr ) {
+        mCreator.progressCallback()( *completeValue );
+    }
+    return S_OK;
+}
+
+STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+    if ( mCreator.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+        mCreator.ratioCallback()( *inSize, *outSize );
+    }
     return S_OK;
 }
 
@@ -103,6 +118,10 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
     RINOK( Finilize() );
     const FSItem dirItem = mDirItems[index];
 
+    if ( mCreator.fileCallback() ) {
+        mCreator.fileCallback()( dirItem.name() );
+    }
+
     if ( dirItem.isDir() ) {
         return S_OK;
     }
@@ -133,17 +152,10 @@ HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
     return S_OK;
 }
 
-HRESULT UpdateCallback::GetVolumeSize( UInt32 index, UInt64* size ) {
-    if ( mVolumesSizes.size() == 0 ) {
-        return S_FALSE;
-    }
+HRESULT UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
+    if ( mVolSize == 0 ) return S_FALSE;
 
-    UInt32 volumes_size = static_cast< UInt32 >( mVolumesSizes.size() );
-    if ( index >= volumes_size ) {
-        index = volumes_size - 1;
-    }
-
-    *size = mVolumesSizes[index];
+    *size = mVolSize;
     return S_OK;
 }
 
@@ -169,7 +181,7 @@ HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** vo
 }
 
 HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( mPassword.length() == 0 ) {
+    if ( !mCreator.isPasswordDefined() ) {
         if ( mAskPassword ) {
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
@@ -179,6 +191,6 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
         }
     }
 
-    *passwordIsDefined = ( mPassword.length() != 0 ? 1 : 0 );
-    return StringToBstr( mPassword.c_str(), password );
+    *passwordIsDefined = ( mCreator.isPasswordDefined() ? 1 : 0 );
+    return StringToBstr( mCreator.password().c_str(), password );
 }

@@ -15,13 +15,14 @@
 #include "../include/bitformat.hpp"
 #include "../include/bittypes.hpp"
 #include "../include/callback.hpp"
+#include "../include/bitarchiveopener.hpp"
 
 namespace bit7z {
     using std::vector;
 
     class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            MemExtractCallback( IInArchive* archiveHandler, vector< byte_t >& buffer );
+            MemExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, vector< byte_t >& buffer );
             virtual ~MemExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
@@ -39,6 +40,7 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword )( BSTR * aPassword );
 
         private:
+            const BitArchiveOpener& mOpener;
             CMyComPtr< IInArchive > mArchiveHandler;
             vector< byte_t >& mBuffer;
             bool mExtractMode;

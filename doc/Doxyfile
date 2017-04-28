@@ -12,7 +12,7 @@ ABBREVIATE_BRIEF       = "The $name class" \
                          a \
                          an \
                          the
-INLINE_INHERITED_MEMB  = YES
+# INLINE_INHERITED_MEMB  = YES
 QT_AUTOBRIEF           = YES
 JAVADOC_AUTOBRIEF      = YES
 ALIASES                = "rst=\verbatim embed:rst"

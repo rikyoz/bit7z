@@ -15,20 +15,19 @@ using namespace NWindows;
 using std::wstring;
 
 // NOTE: this function is not a method of BitExtractor because it would dirty the header with extra dependencies
-CMyComPtr< IInArchive > openArchive( const Bit7zLibrary &lib, const BitInFormat &format,
-                                     const wstring &in_file, const wstring &password ) {
+CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
+                                     const wstring& in_file, const BitArchiveOpener& opener ) {
     CMyComPtr< IInArchive > inArchive;
     const GUID formatGUID = format.guid();
     lib.createArchiveObject( &formatGUID, &::IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
-    CInFileStream *fileStreamSpec = new CInFileStream;
+    CInFileStream* fileStreamSpec = new CInFileStream;
     CMyComPtr< IInStream > fileStream = fileStreamSpec;
     if ( !fileStreamSpec->Open( in_file.c_str() ) ) {
         throw BitException( L"Cannot open archive file '" + in_file + L"'" );
     }
 
-    OpenCallback *openCallbackSpec = new OpenCallback();
-    openCallbackSpec->setPassword( password );
+    OpenCallback* openCallbackSpec = new OpenCallback( opener, in_file );
 
     CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );
     if ( inArchive->Open( fileStream, 0, openCallback ) != S_OK ) {
@@ -37,18 +36,7 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary &lib, const BitInFormat 
     return inArchive;
 }
 
-BitExtractor::BitExtractor( const Bit7zLibrary &lib, const BitInFormat &format ) :
-    mLibrary( lib ),
-    mFormat( format ),
-    mPassword( L"" ) {}
-
-const BitInFormat& BitExtractor::extractionFormat() {
-    return mFormat;
-}
-
-void BitExtractor::setPassword( const wstring &password ) {
-    mPassword = password;
-}
+BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
 
 //TODO: Improve reusing of code (both extract methods do the same operations when opening an archive)
 
@@ -56,11 +44,10 @@ void BitExtractor::setPassword( const wstring &password ) {
  * Main changes made:
  *  + Generalized the code to work with any type of format (the original works only with 7z format)
  *  + Use of exceptions instead of error codes */
-void BitExtractor::extract( const wstring &in_file, const wstring &out_dir ) const {
-    CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, mPassword );
+void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) const {
+    CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, *this );
 
-    ExtractCallback *extractCallbackSpec = new ExtractCallback( inArchive, out_dir );
-    extractCallbackSpec->setPassword( mPassword );
+    ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( NULL, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
@@ -68,11 +55,10 @@ void BitExtractor::extract( const wstring &in_file, const wstring &out_dir ) con
     }
 }
 
-void BitExtractor::extract( const wstring &in_file, vector< byte_t > &out_buffer, unsigned int index ) {
-    CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, mPassword );
+void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) {
+    CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, *this );
 
-    MemExtractCallback *extractCallbackSpec = new MemExtractCallback( inArchive, out_buffer );
-    extractCallbackSpec->setPassword( mPassword );
+    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( *this, inArchive, out_buffer );
 
     const UInt32 indices[] = { index };
 

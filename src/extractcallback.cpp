@@ -51,7 +51,8 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& directoryPath ) :
+ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, const wstring& directoryPath ) :
+    mOpener( opener ),
     mArchiveHandler( archiveHandler ),
     mDirectoryPath( directoryPath ),
     mExtractMode( true ),
@@ -64,14 +65,28 @@ ExtractCallback::ExtractCallback( IInArchive* archiveHandler, const wstring& dir
 
 ExtractCallback::~ExtractCallback() {}
 
-STDMETHODIMP ExtractCallback::SetTotal( UInt64 /* size */ ) {
+STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
+    if ( mOpener.totalCallback() ) {
+        mOpener.totalCallback()( size );
+    }
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* /* completeValue */ ) {
+STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
+    if ( mOpener.progressCallback() && completeValue != nullptr ) {
+        mOpener.progressCallback()( *completeValue );
+    }
     return S_OK;
 }
 
+STDMETHODIMP ExtractCallback::SetRatioInfo(const UInt64* inSize, const UInt64* outSize) {
+    if ( mOpener.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+        mOpener.ratioCallback()( *inSize, *outSize );
+    }
+    return S_OK;
+}
+
+//TODO: clean and optimize!
 STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
                                          ISequentialOutStream** outStream,
                                          Int32                  askExtractMode ) {
@@ -176,6 +191,12 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     } else {
         NFile::NFind::CFileInfo fi;
 
+        if ( mOpener.fileCallback() ) {
+            wstring filename;
+            filesystem::fsutil::filename( fullProcessedPath, filename, true );
+            mOpener.fileCallback()( filename );
+        }
+
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
             if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
                 //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
@@ -275,16 +296,23 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     return S_OK;
 }
 
-
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( !isPasswordDefined() ) {
+    wstring pass;
+    if ( !mOpener.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        //in future, no exception but an event (i.e. onPasswordRequest) call
-        mErrorMessage = L"Password is not defined";
-        return E_FAIL;
+        if ( mOpener.passwordCallback() ) {
+            pass = mOpener.passwordCallback()();
+        }
+
+        if ( pass.empty() ){
+            mErrorMessage = L"Password is not defined";
+            return E_FAIL;
+        }
+    } else {
+        pass = mOpener.password();
     }
 
-    return StringToBstr( mPassword.c_str(), password );
+    return StringToBstr( pass.c_str(), password );
 }
