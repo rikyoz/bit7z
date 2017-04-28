@@ -65,7 +65,9 @@ A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference
 
 <div align="center">
 
-[<img alt="Latest release" src="https://img.shields.io/badge/&#129095;-Download-green.svg" height="64"/>](https://github.com/rikyoz/bit7z/releases/latest)
+### [Download Latest Version](https://github.com/rikyoz/bit7z/releases/latest)
+
+[![Github All Releases](https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg)]()
 
 </div>
 
