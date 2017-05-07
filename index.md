@@ -64,13 +64,10 @@ A complete ***[API reference](https://github.com/rikyoz/bit7z/wiki/API-Reference
 
 ## Downloads
 
-<div align="center">
-
 ### [Download Latest Version](https://github.com/rikyoz/bit7z/releases/latest)
 
 [![Github All Releases](https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg)]()
 
-</div>
 
 The release packages contain a precompiled version of the library and they are available for both x86 and x64 architectures.
 
