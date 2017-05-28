@@ -14,7 +14,7 @@ bit7z supports the following features:
 + Choice of the **compression level** (from none to ultra, not all supported by every output archive format).
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
-+ Support to **operation callbacks**, through which it is possible to obtain real time informations about the ongoing extraction or compression operation (from v2.1.x).
++ Support to **operation callbacks**, through which it is possible to obtain real time information about the ongoing extraction or compression operation (from v2.1.x).
 
 Please note that the presence or not of some of the above features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files. For more information about the 7z SDK DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
