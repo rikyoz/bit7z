@@ -1,5 +1,7 @@
 #include "../include/fsindexer.hpp"
 
+#include <string>
+
 #include "../include/fsutil.hpp"
 #include "../include/bitexception.hpp"
 
@@ -13,17 +15,10 @@ FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirec
     }
     FSItem dirItem( mDirectory );
     if ( !dirItem.exists() ) {
-        // It seems that msvc2010 doesn't support the concatenation operator+ for wstrings
-        std::wstring msg = L"'";
-        msg += dirItem.name();
-        msg += L"' does not exist!";
-        throw BitException( msg );
+        throw BitException( L"'" + dirItem.name() + L"' does not exist!" );
     }
     if ( !dirItem.isDir() ) {
-        std::wstring msg = L"'";
-        msg += dirItem.name();
-        msg += L"' is not a directory!";
-        throw BitException( msg );
+        throw BitException( L"'" + dirItem.name() + L"' is not a directory!" );
     }
     mDirName = dirItem.name();
 }
@@ -37,10 +32,7 @@ void FSIndexer::listFiles( const vector< wstring >& in_paths, vector< FSItem >& 
         const std::wstring & filePath = *itr;
         FSItem item( filePath );
         if ( !item.exists() ) {
-            std::wstring msg = L"Item '";
-            msg += item.name();
-            msg += L"' does not exist!";
-            throw BitException( msg );
+            throw BitException( L"Item '" + item.name() + L"' does not exist!" );
         }
         if ( item.isDir() ) {
             FSIndexer indexer( filePath );
@@ -62,22 +54,16 @@ void FSIndexer::removeListedDirectories( const vector< wstring >& in_paths, vect
 }
 
 void FSIndexer::listFilesInDirectory( vector< FSItem >& result, bool recursive, const wstring& prefix ) {
-    wstring filtered_path = mDirectory;
-    filtered_path += L"\\";
-
+    wstring filtered_path = mDirectory + L"\\";
     if ( !prefix.empty() ) {
-        filtered_path += prefix;
-        filtered_path += L"\\";
+        filtered_path += prefix + L"\\";
     }
     filtered_path += mFilter;
     FSItemInfo data;
     HANDLE hFind = FindFirstFile( filtered_path.c_str(), &data );
 
     if ( INVALID_HANDLE_VALUE == hFind ) {
-        std::wstring msg = L"Invalid path '";
-        msg += filtered_path;
-        msg += L"'";
-        throw BitException( msg );
+        throw BitException( L"Invalid path '" + filtered_path + L"'" );
     }
 
     do {
@@ -86,24 +72,18 @@ void FSIndexer::listFilesInDirectory( vector< FSItem >& result, bool recursive, 
         if ( prefix.empty() ) {
             ndir = mDirectory;
         } else if ( prefix[0] == '\\' || prefix[0] == '/' ) {
-            ndir = mDirectory;
-            ndir += prefix;
+            ndir = mDirectory + prefix;
         } else {
-            ndir = mDirectory;
-            ndir += L"\\";
-            ndir += prefix;
+            ndir = mDirectory + L"\\" + prefix;
         }
 
-        wstring dirName = mDirName;
-        dirName += prefix;
+        wstring dirName = mDirName + prefix;
 
         FSItem currentItem = FSItem( ndir, dirName, data );
         if ( currentItem.isDir() ) {
             if ( recursive && currentItem.name().compare(L".") != 0 && currentItem.name().compare(L"..") != 0 ) {
                 //wstring nprefix = ( prefix.empty() ) ? currentItem.name() : prefix + L"\\" + currentItem.name();
-                wstring listDir = prefix;
-                listDir += L"\\";
-                listDir += currentItem.name();
+                wstring listDir = prefix + L"\\" + currentItem.name();
                 listFilesInDirectory( result, true, listDir );
             }
         } else {
