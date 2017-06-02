@@ -47,7 +47,7 @@ BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
 void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, *this );
 
-    ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, out_dir );
+    ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, in_file, out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( NULL, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {

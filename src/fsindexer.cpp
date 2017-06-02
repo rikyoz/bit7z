@@ -81,7 +81,7 @@ void FSIndexer::listFilesInDirectory( vector< FSItem >& result, bool recursive, 
 
         FSItem currentItem = FSItem( ndir, dirName, data );
         if ( currentItem.isDir() ) {
-            if ( recursive && currentItem.name().compare(L".") != 0 && currentItem.name().compare(L"..") != 0 ) {
+            if ( recursive && currentItem.name() != L"." && currentItem.name() != L".." ) {
                 //wstring nprefix = ( prefix.empty() ) ? currentItem.name() : prefix + L"\\" + currentItem.name();
                 wstring listDir = prefix + L"\\" + currentItem.name();
                 listFilesInDirectory( result, true, listDir );

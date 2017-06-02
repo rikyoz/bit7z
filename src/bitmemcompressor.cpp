@@ -66,7 +66,7 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstrin
     }
 
     if ( in_buffer_name.empty() ) {
-        fsutil::filename( out_archive, in_buffer_name );
+        in_buffer_name = fsutil::filename( out_archive );
     }
 
     compressOut( outArc, outFileStream, in_buffer, in_buffer_name, *this );

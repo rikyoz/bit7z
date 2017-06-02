@@ -39,7 +39,7 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& fo
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_buffer, *this );
 
-    ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, out_dir );
+    ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, L"", out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( NULL, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {

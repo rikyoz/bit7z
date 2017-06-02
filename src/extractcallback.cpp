@@ -51,9 +51,11 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, const wstring& directoryPath ) :
+ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler,
+                                  const wstring& inFilePath, const wstring& directoryPath ) :
     mOpener( opener ),
     mArchiveHandler( archiveHandler ),
+    mInFilePath( inFilePath ),
     mDirectoryPath( directoryPath ),
     mExtractMode( true ),
     mProcessedFileInfo(),
@@ -79,7 +81,7 @@ STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::SetRatioInfo(const UInt64* inSize, const UInt64* outSize) {
+STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
     if ( mOpener.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
         mOpener.ratioCallback()( *inSize, *outSize );
     }
@@ -95,24 +97,18 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     // Get Name
     NCOM::CPropVariant prop;
     RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
-    wstring fullPath;
 
     if ( prop.vt == VT_EMPTY ) {
-        fullPath = kEmptyFileAlias;
+        mFilePath = !mInFilePath.empty() ? filesystem::fsutil::filename( mInFilePath ) : kEmptyFileAlias;
+    } else if ( prop.vt == VT_BSTR ) {
+        mFilePath = prop.bstrVal;
     } else {
-        if ( prop.vt != VT_BSTR ) {
-            return E_FAIL;
-        }
-
-        fullPath = prop.bstrVal;
+        return E_FAIL;
     }
-
-    mFilePath = fullPath;
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
     }
-
 
     // Get Attrib
     NCOM::CPropVariant prop2;
@@ -175,13 +171,11 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
         //newFileSize = ConvertPropVariantToUInt64( prop4 );
     }
 
-
     // Create folders for file
     size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
 
     if ( slashPos != wstring::npos ) {
-        NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0,
-                                                                                        slashPos ) ).c_str() );
+        NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0, slashPos ) ).c_str() );
     }
     wstring fullProcessedPath = mDirectoryPath + mFilePath;
     mDiskFilePath = fullProcessedPath;
@@ -192,8 +186,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
         NFile::NFind::CFileInfo fi;
 
         if ( mOpener.fileCallback() ) {
-            wstring filename;
-            filesystem::fsutil::filename( fullProcessedPath, filename, true );
+            wstring filename = filesystem::fsutil::filename( fullProcessedPath, true );
             mOpener.fileCallback()( filename );
         }
 

@@ -29,8 +29,8 @@ void fsutil::normalize_path( wstring& path ) { //this assumes that the passed pa
     }
 }
 
-void fsutil::filename( const wstring& path, wstring& filename, bool ext ) {
+std::wstring fsutil::filename( const wstring& path, bool ext ) {
     size_t start = path.find_last_of( L"/\\" ) + 1;
     size_t end   = ext ? path.size() : path.find_last_of( L"." );
-    filename = path.substr( start, end - start );
+    return path.substr( start, end - start ); //RVO :)
 }
