@@ -8,12 +8,10 @@
 using namespace std;
 using namespace bit7z::filesystem;
 
-FSItem::FSItem( const wstring& path, const wstring& relative_dir ) :
-    mDirectory( path ),
-    mRelativeDirectory( relative_dir ),
-    mFileData() {
+FSItem::FSItem( const wstring& path ) : mDirectory( path ) {
     bool isdir = fsutil::is_directory( mDirectory );
     if ( isdir && !mDirectory.empty() ) {
+        // The FSItem is a directory! If the path ends with a / or a \, it's removed.
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
         if ( lastSlashIndex == mDirectory.length() - 1 ) {
             mDirectory.pop_back();
