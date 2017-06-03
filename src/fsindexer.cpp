@@ -23,34 +23,38 @@ FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirec
     mDirName = dirItem.name();
 }
 
-void FSIndexer::listFilesInDirectory( vector< FSItem >& result, bool recursive ) {
+vector<FSItem> FSIndexer::listFilesInDirectory( bool recursive ) {
+    vector<FSItem> result;
     FSIndexer::listFilesInDirectory( result, recursive, L"" );
+    return result;
 }
 
-void FSIndexer::listFiles( const vector< wstring >& in_paths, vector< FSItem >& out_files ) {
+vector< FSItem > FSIndexer::listFiles( const vector< wstring >& in_paths ) {
+    vector< FSItem > out_files;
     for ( auto itr = in_paths.cbegin(); itr != in_paths.cend(); ++itr ) {
-        const std::wstring & filePath = *itr;
-        FSItem item( filePath );
+        FSItem item( *itr );
         if ( !item.exists() ) {
             throw BitException( L"Item '" + item.name() + L"' does not exist!" );
         }
         if ( item.isDir() ) {
-            FSIndexer indexer( filePath );
-            indexer.listFilesInDirectory( out_files );
+            FSIndexer indexer( *itr );
+            indexer.listFilesInDirectory( out_files, true, L"" );
         } else{
             out_files.push_back( item );
         }
     }
+    return out_files;
 }
 
-void FSIndexer::removeListedDirectories( const vector< wstring >& in_paths, vector< FSItem >& out_files ) {
+vector< FSItem > FSIndexer::removeListedDirectories( const vector< wstring >& in_paths ) {
+    vector< FSItem > out_files;
     for ( auto itr = in_paths.cbegin(); itr != in_paths.cend(); ++itr ) {
-        const std::wstring & filePath = *itr;
-        FSItem item( filePath );
+        FSItem item( *itr );
         if ( item.exists() && !item.isDir() ) {
             out_files.push_back( item );
         }
     }
+    return out_files;
 }
 
 void FSIndexer::listFilesInDirectory( vector< FSItem >& result, bool recursive, const wstring& prefix ) {

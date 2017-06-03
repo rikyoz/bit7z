@@ -23,7 +23,7 @@ FSItem::FSItem( const wstring& path ) : mDirectory( path ) {
     }
     if ( !isdir ) {
         const size_t lastSlashIndex = mDirectory.find_last_of( L"\\/" );
-        if ( wstring::npos != lastSlashIndex ) {
+        if ( wstring::npos != lastSlashIndex ) { //removing file name from mDirectory
             mDirectory.resize( lastSlashIndex );
         } else { //path contains only the file name, hence we consider the current directory
             mDirectory = L".\\";

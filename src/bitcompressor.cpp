@@ -54,8 +54,7 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dirItems;
-    FSIndexer::listFiles( in_paths, dirItems );
+    vector< FSItem > dirItems = FSIndexer::listFiles( in_paths );
     compressToFileSystem( dirItems, out_archive );
 }
 
@@ -69,8 +68,7 @@ void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstr
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dirItems;
-    FSIndexer::removeListedDirectories( in_files, dirItems );
+    vector< FSItem > dirItems = FSIndexer::removeListedDirectories( in_files );
     compressToFileSystem( dirItems, out_archive );
 }
 
@@ -82,10 +80,9 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_arc
                                    bool recursive ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
-    }
-    vector< FSItem > dirItems;
+    }    
     FSIndexer indexer( in_dir, filter );
-    indexer.listFilesInDirectory( dirItems, recursive );
+    vector< FSItem > dirItems = indexer.listFilesInDirectory( recursive );
     compressToFileSystem( dirItems, out_archive );
 }
 

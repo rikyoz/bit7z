@@ -14,10 +14,10 @@ namespace bit7z {
         class FSIndexer {
             public:
                 FSIndexer( const wstring& directory, const wstring& filter = L"*" );
-                void listFilesInDirectory( vector< FSItem >& result, bool recursive = true );
+                vector< FSItem > listFilesInDirectory( bool recursive = true );
 
-                static void listFiles( const vector< wstring >& in_paths, vector< FSItem >& out_files );
-                static void removeListedDirectories( const vector< wstring >& in_paths, vector< FSItem >& out_files );
+                static vector< FSItem > listFiles( const vector< wstring >& in_paths );
+                static vector< FSItem > removeListedDirectories( const vector< wstring >& in_paths );
 
             private:
                 wstring mDirectory;
