@@ -13,6 +13,8 @@
 #include "../include/memupdatecallback.hpp"
 #include "../include/updatecallback.hpp"
 
+#include <sstream>
+
 using namespace std;
 using namespace bit7z;
 using namespace bit7z::util;
@@ -35,13 +37,14 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
         throw BitException( updateCallbackSpec->getErrorMessage() );
     }
 
-    wstring errorString = L"Error for files: ";
-    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
-    }
-
-    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
-        throw BitException( errorString );
+    if ( updateCallbackSpec->mFailedFiles.size() > 0 ) {
+        wstringstream wsstream;
+        wsstream << L"Error for files: \n";
+        for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
+            wsstream << updateCallbackSpec->mFailedFiles[ i ];
+            wsstream  << L" (error code: " << updateCallbackSpec->mFailedCodes[ i ] << L")\n";
+        }
+        throw BitException( wsstream.str() );
     }
 }
 
@@ -80,7 +83,7 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_arc
                                    bool recursive ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
-    }    
+    }
     FSIndexer indexer( in_dir, filter );
     vector< FSItem > dirItems = indexer.listFilesInDirectory( recursive );
     compressToFileSystem( dirItems, out_archive );
