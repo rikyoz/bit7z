@@ -13,18 +13,15 @@ namespace bit7z {
 
         class FSIndexer {
             public:
-                FSIndexer( const wstring& directory, const wstring& filter = L"*" );
-                vector< FSItem > listFilesInDirectory( bool recursive = true );
-
-                static vector< FSItem > listFiles( const vector< wstring >& in_paths );
-                static vector< FSItem > removeListedDirectories( const vector< wstring >& in_paths );
+                static vector< FSItem > indexDirectory( const wstring& in_dir, const wstring& filter = L"", bool recursive = true );
+                static vector< FSItem > indexPaths( const vector< wstring >& in_paths, bool recursive = true );
 
             private:
-                wstring mDirectory;
-                wstring mDirName;
+                FSItem mDirItem;
                 wstring mFilter;
 
-                void listFilesInDirectory( vector< FSItem >& result, bool recursive, const wstring& prefix );
+                FSIndexer( const wstring& directory, const wstring& filter = L"*" );
+                void listDirectoryItems( vector< FSItem >& result, bool recursive, const wstring& prefix = L"" );
         };
     }
 }

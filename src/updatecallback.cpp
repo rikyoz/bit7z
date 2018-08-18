@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 
+#include "include/fsutil.hpp"
+
 #include "7zip/Common/FileStreams.h"
 #include "Common/IntToString.h"
 #include "Windows/PropVariant.h"
@@ -86,19 +88,26 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
     const FSItem dirItem = mDirItems[index];
 
     switch ( propID ) {
-        case kpidPath: prop = dirItem.relativePath().c_str();
+        case kpidPath:
+            prop = dirItem.inArchivePath().c_str();
             break;
-        case kpidIsDir: prop = dirItem.isDir();
+        case kpidIsDir:
+            prop = dirItem.isDir();
             break;
-        case kpidSize: prop = dirItem.size();
+        case kpidSize:
+            prop = dirItem.size();
             break;
-        case kpidAttrib: prop = dirItem.attributes();
+        case kpidAttrib:
+            prop = dirItem.attributes();
             break;
-        case kpidCTime: prop = dirItem.creationTime();
+        case kpidCTime:
+            prop = dirItem.creationTime();
             break;
-        case kpidATime: prop = dirItem.lastAccessTime();
+        case kpidATime:
+            prop = dirItem.lastAccessTime();
             break;
-        case kpidMTime: prop = dirItem.lastWriteTime();
+        case kpidMTime:
+            prop = dirItem.lastWriteTime();
             break;
     }
 
@@ -128,7 +137,7 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
 
     CInFileStream* inStreamSpec = new CInFileStream;
     CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
-    wstring path = dirItem.fullPath();
+    wstring path = dirItem.path();
 
     if ( !inStreamSpec->Open( path.c_str() ) ) {
         DWORD sysError = ::GetLastError();
