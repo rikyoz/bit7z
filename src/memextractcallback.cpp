@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/memextractcallback.hpp"
 
 #include "Windows/FileDir.h"
@@ -58,7 +61,7 @@ MemExtractCallback::MemExtractCallback( const BitArchiveOpener& opener, IInArchi
     mBuffer( buffer ),
     mExtractMode( true ),
     mProcessedFileInfo(),
-    mOutMemStreamSpec( NULL ),
+    mOutMemStreamSpec( nullptr ),
     mNumErrors( 0 ) {}
 
 MemExtractCallback::~MemExtractCallback() {}
@@ -78,7 +81,7 @@ STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* completeValue ) {
 }
 
 STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
-    *outStream = 0;
+    *outStream = nullptr;
     mOutMemStream.Release();
     // Get Name
     NCOM::CPropVariant prop;

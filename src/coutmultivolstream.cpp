@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "include/coutmultivolstream.hpp"
 
 #include <string>
@@ -53,7 +56,7 @@ bool COutMultiVolStream::SetMTime( const FILETIME* mTime ) {
 }
 
 STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
-    if ( processedSize != NULL )
+    if ( processedSize != nullptr )
         *processedSize = 0;
     while ( size > 0 ) {
         if ( mStreamIndex >= mVolStreams.size() ) {
@@ -84,11 +87,11 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             continue;
         }
         if ( mOffsetPos != altStream.pos ) {
-            RINOK( altStream.stream->Seek( mOffsetPos, STREAM_SEEK_SET, NULL ) );
+            RINOK( altStream.stream->Seek( mOffsetPos, STREAM_SEEK_SET, nullptr ) );
             altStream.pos = mOffsetPos;
         }
 
-        UInt32 curSize = ( UInt32 )MyMin( ( UInt64 )size, mVolSize - altStream.pos );
+        auto curSize = ( UInt32 )MyMin( ( UInt64 )size, mVolSize - altStream.pos );
         UInt32 realProcessed;
         RINOK( altStream.stream->Write( data, curSize, &realProcessed ) );
         data = ( void* )( ( Byte* )data + realProcessed );
@@ -100,7 +103,7 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             mLength = mAbsPos;
         if ( mOffsetPos > altStream.realSize )
             altStream.realSize = mOffsetPos;
-        if ( processedSize != NULL )
+        if ( processedSize != nullptr )
             *processedSize += realProcessed;
         if ( altStream.pos == mVolSize ) {
             mStreamIndex++;
@@ -128,7 +131,7 @@ STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
             break;
     }
     mOffsetPos = mAbsPos;
-    if ( newPosition != NULL )
+    if ( newPosition != nullptr )
         *newPosition = mAbsPos;
     mStreamIndex = 0;
     return S_OK;

@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/opencallback.hpp"
 
 #include "../include/fsutil.hpp"
@@ -69,14 +72,14 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
 
 STDMETHODIMP OpenCallback::GetStream( const wchar_t* /*name*/, IInStream** inStream ) {
     try {
-        *inStream = NULL;
+        *inStream = nullptr;
         if ( mSubArchiveMode ) {
             return S_FALSE;
         }
-        if ( !mFileItem.exists() || mFileItem.isDir() ) {
+        if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
-        CInFileStream* inFile = new CInFileStream;
+        auto* inFile = new CInFileStream;
         CMyComPtr< IInStream > inStreamTemp = inFile;
         if ( !inFile->Open( mFileItem.path().c_str() ) ) {
             return ::GetLastError();

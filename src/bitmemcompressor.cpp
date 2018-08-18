@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/bitmemcompressor.hpp"
 
 #include "7zip/Archive/IArchive.h"
@@ -22,7 +25,7 @@ using std::vector;
 template< class T >
 void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
                   const vector< byte_t >& in_buffer, const wstring& in_buffer_name, const BitArchiveCreator& creator ) {
-    MemUpdateCallback* updateCallbackSpec = new MemUpdateCallback( creator, in_buffer, in_buffer_name );
+    auto* updateCallbackSpec = new MemUpdateCallback( creator, in_buffer, in_buffer_name );
 
     CMyComPtr< IArchiveUpdateCallback > updateCallback( updateCallbackSpec );
     HRESULT result = outArc->UpdateItems( outStream, 1, updateCallback );
@@ -30,9 +33,13 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
 
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation!" );
-    } else if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
+    }
+
+    if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
         throw BitException( "Failed operation (unkwown error)!" );
-    } else if ( result != S_OK ) {
+    }
+
+    if ( result != S_OK ) {
         throw BitException( updateCallbackSpec->getErrorMessage() );
     }
 
@@ -41,7 +48,7 @@ void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
         errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
     }
 
-    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
+    if ( !updateCallbackSpec->mFailedFiles.empty() ) {
         throw BitException( errorString );
     }
 }
@@ -55,10 +62,10 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstrin
 
     CMyComPtr< IOutStream > outFileStream;
     if ( mVolumeSize > 0 ) {
-        COutMultiVolStream* outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
+        auto* outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
         outFileStream = outMultiVolStreamSpec;
     } else {
-        COutFileStream* outFileStreamSpec = new COutFileStream();
+        auto* outFileStreamSpec = new COutFileStream();
         outFileStream = outFileStreamSpec;
         if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
             throw BitException( L"Can't create archive file '" + out_archive + L"'" );
@@ -80,7 +87,7 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer, vector< byte
 
     CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
+    auto* outMemStreamSpec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
 
     compressOut( outArc, outMemStream, in_buffer, in_buffer_name, *this );
