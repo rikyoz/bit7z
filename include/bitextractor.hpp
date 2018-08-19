@@ -46,6 +46,15 @@ namespace bit7z {
              * @param index        the index of the file to be extracted from in_file.
              */
             void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );
+
+            /**
+             * @brief Tests the given archive without extracting its content.
+             *
+             * If the input archive is not valid, a BitException is thrown!
+             *
+             * @param in_file   the input archive file.
+             */
+            void test( const wstring& in_file );
     };
 }
 #endif // BITEXTRACTOR_HPP

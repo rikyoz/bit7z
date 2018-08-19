@@ -158,13 +158,17 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     if ( newFileSizeDefined ) {
         //taken from ConvertPropVariantToUInt64
         switch ( prop4.vt ) {
-            case VT_UI1: newFileSize = prop4.bVal;
+            case VT_UI1:
+                newFileSize = prop4.bVal;
                 break;
-            case VT_UI2: newFileSize = prop4.uiVal;
+            case VT_UI2:
+                newFileSize = prop4.uiVal;
                 break;
-            case VT_UI4: newFileSize = prop4.ulVal;
+            case VT_UI4:
+                newFileSize = prop4.ulVal;
                 break;
-            case VT_UI8: newFileSize = ( UInt64 )prop4.uhVal.QuadPart;
+            case VT_UI8:
+                newFileSize = ( UInt64 )prop4.uhVal.QuadPart;
                 break;
             default:
                 mErrorMessage = L"151199";
@@ -176,7 +180,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
 
     // Create folders for file
     //size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
-	size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
+    size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
 
     if ( slashPos != wstring::npos ) {
         NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0, slashPos ) ).c_str() );
@@ -232,11 +236,12 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
             //wcout <<  kExtractingString;
             break;
 
-            /*case NArchive::NExtract::NAskMode::kTest:
-                cout <<  kTestingString;
-                break;
+        case NArchive::NExtract::NAskMode::kTest:
+            mExtractMode = false;
+            //wcout <<  kTestingString;
+            break;
 
-               case NArchive::NExtract::NAskMode::kSkip:
+            /*   case NArchive::NExtract::NAskMode::kSkip:
                 cout <<  kSkippingString;
                 break;*/
     }
@@ -303,7 +308,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
             pass = mOpener.passwordCallback()();
         }
 
-        if ( pass.empty() ){
+        if ( pass.empty() ) {
             mErrorMessage = L"Password is not defined";
             return E_FAIL;
         }

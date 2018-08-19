@@ -70,3 +70,14 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }
 }
+
+void BitExtractor::test( const wstring& in_file ) {
+    CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, *this );
+
+    auto* extractCallbackSpec = new ExtractCallback( *this, inArchive, in_file, L"" );
+
+    CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
+    if ( inArchive->Extract( nullptr, static_cast< UInt32 >( -1 ), true, extractCallback ) != S_OK ) {
+        throw BitException( extractCallbackSpec->getErrorMessage() );
+    }
+}
