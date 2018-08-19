@@ -19,6 +19,7 @@ namespace bit7z {
             ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
             vector< wstring > mFailedFiles;
+            vector< HRESULT > mFailedCodes;
 
             explicit UpdateCallback( const BitArchiveCreator& creator, const vector< FSItem >& dirItems );
             virtual ~UpdateCallback();
@@ -59,8 +60,6 @@ namespace bit7z {
             bool mAskPassword;
 
             bool mNeedBeClosed;
-
-            vector< HRESULT > mFailedCodes;
     };
 }
 #endif // UPDATECALLBACK_HPP

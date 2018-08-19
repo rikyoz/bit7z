@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/bitmemextractor.hpp"
 
 #include "7zip/Archive/IArchive.h"
@@ -20,14 +23,14 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat&
     const GUID formatGUID = format.guid();
     lib.createArchiveObject( &formatGUID, &::IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
-    CBufInStream* bufStreamSpec = new CBufInStream;
+    auto* bufStreamSpec = new CBufInStream;
     CMyComPtr< IInStream > bufStream( bufStreamSpec );
     bufStreamSpec->Init( &in_buffer[0], in_buffer.size() );
 
     OpenCallback* openCallbackSpec = new OpenCallback( opener );
 
     CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );
-    if ( inArchive->Open( bufStream, 0, openCallback ) != S_OK ) {
+    if ( inArchive->Open( bufStream, nullptr, openCallback ) != S_OK ) {
         throw BitException( L"Cannot open archive buffer" );
     }
     return inArchive;
@@ -42,7 +45,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
     ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, L"", out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
-    if ( inArchive->Extract( NULL, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
+    if ( inArchive->Extract( nullptr, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }
 }
@@ -54,7 +57,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t
     NCOM::CPropVariant prop;
     inArchive->GetProperty( index, kpidSize, &prop );
 
-    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( *this, inArchive, out_buffer );
+    auto* extractCallbackSpec = new MemExtractCallback( *this, inArchive, out_buffer );
 
     const UInt32 indices[] = { index };
 

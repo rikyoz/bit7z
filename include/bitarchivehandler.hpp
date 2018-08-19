@@ -47,7 +47,7 @@ namespace bit7z {
              *
              * @param lib   the 7z library used by the handler.
              */
-            BitArchiveHandler( const Bit7zLibrary& lib );
+            explicit BitArchiveHandler( const Bit7zLibrary& lib );
 
             /**
              * @brief BitArchiveHandler destructor

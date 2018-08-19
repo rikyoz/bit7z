@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/extractcallback.hpp"
 
 #include "Windows/FileDir.h"
@@ -59,7 +62,7 @@ ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* ar
     mDirectoryPath( directoryPath ),
     mExtractMode( true ),
     mProcessedFileInfo(),
-    mOutFileStreamSpec( NULL ),
+    mOutFileStreamSpec( nullptr ),
     mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
     filesystem::fsutil::normalize_path( mDirectoryPath );
@@ -92,7 +95,7 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
                                          ISequentialOutStream** outStream,
                                          Int32                  askExtractMode ) {
-    *outStream = 0;
+    *outStream = nullptr;
     mOutFileStream.Release();
     // Get Name
     NCOM::CPropVariant prop;
@@ -172,7 +175,8 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     }
 
     // Create folders for file
-    size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
+    //size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
+	size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
 
     if ( slashPos != wstring::npos ) {
         NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0, slashPos ) ).c_str() );
@@ -268,7 +272,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
         }
     }
 
-    if ( mOutFileStream != NULL ) {
+    if ( mOutFileStream != nullptr ) {
         if ( mProcessedFileInfo.MTimeDefined ) {
             mOutFileStreamSpec->SetMTime( &mProcessedFileInfo.MTime );
         }

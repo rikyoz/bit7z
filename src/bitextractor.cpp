@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/bitextractor.hpp"
 
 #include "7zip/Archive/IArchive.h"
@@ -21,16 +24,16 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat&
     const GUID formatGUID = format.guid();
     lib.createArchiveObject( &formatGUID, &::IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
 
-    CInFileStream* fileStreamSpec = new CInFileStream;
+    auto* fileStreamSpec = new CInFileStream;
     CMyComPtr< IInStream > fileStream = fileStreamSpec;
     if ( !fileStreamSpec->Open( in_file.c_str() ) ) {
         throw BitException( L"Cannot open archive file '" + in_file + L"'" );
     }
 
-    OpenCallback* openCallbackSpec = new OpenCallback( opener, in_file );
+    auto* openCallbackSpec = new OpenCallback( opener, in_file );
 
     CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );
-    if ( inArchive->Open( fileStream, 0, openCallback ) != S_OK ) {
+    if ( inArchive->Open( fileStream, nullptr, openCallback ) != S_OK ) {
         throw BitException( L"Cannot open archive '" + in_file + L"'" );
     }
     return inArchive;
@@ -47,10 +50,10 @@ BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
 void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, *this );
 
-    ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, in_file, out_dir );
+    auto* extractCallbackSpec = new ExtractCallback( *this, inArchive, in_file, out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
-    if ( inArchive->Extract( NULL, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
+    if ( inArchive->Extract( nullptr, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }
 }
@@ -58,7 +61,7 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
 void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, *this );
 
-    MemExtractCallback* extractCallbackSpec = new MemExtractCallback( *this, inArchive, out_buffer );
+    auto* extractCallbackSpec = new MemExtractCallback( *this, inArchive, out_buffer );
 
     const UInt32 indices[] = { index };
 

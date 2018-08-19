@@ -14,25 +14,24 @@ namespace bit7z {
 
         class FSItem {
             public:
-                FSItem( const wstring& path );
-                FSItem( const wstring& dir, const wstring& relative_dir, FSItemInfo data );
+                explicit FSItem( const wstring& path );
+                explicit FSItem( const wstring& dir, FSItemInfo data , const wstring& searchPath );
 
-                bool exists() const;
+                bool isDots() const;
                 bool isDir() const;
                 uint64_t size() const;
                 FILETIME creationTime() const;
                 FILETIME lastAccessTime() const;
                 FILETIME lastWriteTime() const;
                 wstring name() const;
-                wstring relativePath() const;
-                wstring fullPath() const;
-                wstring upDirectory() const;
+                wstring path() const;
+                wstring inArchivePath() const;
                 uint32_t attributes() const;
 
             private:
-                wstring mDirectory;
-                wstring mRelativeDirectory;
+                wstring    mPath;
                 FSItemInfo mFileData;
+                wstring    mSearchPath;
         };
     }
 }

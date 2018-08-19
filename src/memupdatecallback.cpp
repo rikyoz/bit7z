@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/memupdatecallback.hpp"
 
 #include <iostream>
@@ -55,13 +58,13 @@ HRESULT MemUpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ )
 
 HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
                                               Int32* newProperties, UInt32* indexInArchive ) {
-    if ( newData != NULL ) {
+    if ( newData != nullptr ) {
         *newData = 1; //= true;
     }
-    if ( newProperties != NULL ) {
+    if ( newProperties != nullptr ) {
         *newProperties = 1; //= true;
     }
-    if ( indexInArchive != NULL ) {
+    if ( indexInArchive != nullptr ) {
         *indexInArchive = static_cast< UInt32 >( -1 );
     }
 
@@ -146,7 +149,7 @@ HRESULT MemUpdateCallback::GetStream( UInt32 /*index*/, ISequentialInStream** in
        if ( dirItem.isDir() )
         return S_OK;*/
 
-    CBufInStream* inStreamSpec = new CBufInStream;
+    auto* inStreamSpec = new CBufInStream;
     CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
     inStreamSpec->Init( &mBuffer[0], mBuffer.size() );
 

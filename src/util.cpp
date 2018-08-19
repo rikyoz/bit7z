@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/util.hpp"
 
 #include <vector>
@@ -23,18 +26,18 @@ namespace bit7z {
             vector< NCOM::CPropVariant > values;
             if ( cryptHeaders && format.hasFeature( HEADER_ENCRYPTION ) ) {
                 names.push_back( L"he" );
-                values.push_back( true );
+                values.emplace_back( true );
             }
             if ( format.hasFeature( COMPRESSION_LEVEL ) ) {
                 names.push_back( L"x" );
-                values.push_back( static_cast< UInt32 >( compressionLevel ) );
+                values.emplace_back( static_cast< UInt32 >( compressionLevel ) );
             }
             if ( solidMode && format.hasFeature( SOLID_ARCHIVE ) ) {
                 names.push_back( L"s" );
-                values.push_back( solidMode );
+                values.emplace_back( solidMode );
             }
 
-            if ( names.size() > 0 ) {
+            if ( !names.empty() ) {
                 CMyComPtr< ISetProperties > setProperties;
                 if ( outArchive->QueryInterface( ::IID_ISetProperties,
                                                  reinterpret_cast< void** >( &setProperties ) ) != S_OK ) {

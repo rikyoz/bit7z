@@ -13,8 +13,11 @@ pack/
 test/
 roadmap.txt
 gh-pages/
+doc/wiki/
 doc/xml/
 doc/html/
 doc/rst/
 doc/md/
 test*/
+
+*.lastcodeanalysissucceeded
