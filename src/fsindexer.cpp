@@ -71,13 +71,13 @@ vector< FSItem > FSIndexer::indexDirectory( const wstring& in_dir, const wstring
     return result;
 }
 
-vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool recursive ) {
+vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool ignore_dirs ) {
     vector< FSItem > out_files;
     for ( auto itr = in_paths.cbegin(); itr != in_paths.cend(); ++itr ) {
         FSItem item( *itr );
         if ( !item.isDir() ) {
             out_files.push_back( item );
-        } else if ( recursive ) { //item is a directory and we must scan it recursively
+        } else if ( !ignore_dirs ) { //item is a directory
             if ( !item.inArchivePath().empty() ) {
                 out_files.push_back( item );
             }
