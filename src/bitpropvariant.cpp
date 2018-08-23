@@ -9,15 +9,6 @@
 
 using namespace bit7z;
 
-template<class T, size_t N>
-constexpr size_t size( T ( & )[N] ) { return N; }
-
-static_assert( size( propertyNames ) == static_cast< int >( BitProperty::CopyLink ) + 1,
-               "Wrong number of elements in Property or propertyNames[]" );
-
-static_assert( size( typeNames ) == static_cast< int >( BitPropVariantType::Filetime ) + 1,
-               "Wrong number of elements in BitPropVariantType or typeNames[]" );
-
 BitPropVariantType lookupType( VARTYPE type ) {
     switch ( type ) {
         case VT_EMPTY:
@@ -143,7 +134,7 @@ bool BitPropVariant::getBool() const {
     if ( vt != VT_BOOL ) {
         throw BitException( L"BitPropVariant is not a bool" );
     }
-    return boolVal;
+    return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings
 }
 
 wstring BitPropVariant::getString() const {

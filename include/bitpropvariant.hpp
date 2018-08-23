@@ -3,11 +3,12 @@
 
 #include <cstdint>
 #include <string>
+#include <array>
 #include <Windows.h>
 
 namespace bit7z {
 
-    enum class BitProperty : uint32_t {
+    enum class BitProperty : PROPID {
         NoProperty = 0,
         MainSubfile,
         HandlerItemIndex,
@@ -107,8 +108,9 @@ namespace bit7z {
     };
 
     using std::wstring;
+    using std::array;
 
-    static const wstring propertyNames[] = {
+    static const array < wstring, static_cast< int >( BitProperty::CopyLink ) + 1 > propertyNames = {
         L"NoProperty",
         L"MainSubfile",
         L"HandlerItemIndex",
@@ -222,7 +224,7 @@ namespace bit7z {
         Filetime
     };
 
-    static const wstring typeNames[] = {
+    static const array < wstring, static_cast< uint32_t >( BitPropVariantType::Filetime ) + 1 > typeNames = {
         L"Empty",
         L"Bool",
         L"String",

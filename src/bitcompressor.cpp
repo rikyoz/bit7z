@@ -24,7 +24,7 @@ using namespace bit7z::util;
 using namespace NWindows;
 
 template< class T >
-void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
+void compressOut( const CMyComPtr< IOutArchive >& outArc, CMyComPtr< T > outStream,
                   const vector< FSItem >& in_items, const BitArchiveCreator& creator ) {
     auto* updateCallbackSpec = new UpdateCallback( creator, in_items );
 

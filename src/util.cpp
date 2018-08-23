@@ -45,7 +45,7 @@ namespace bit7z {
                     throw BitException( "ISetProperties unsupported" );
                 }
                 if ( setProperties->SetProperties( &names[ 0 ], &values[ 0 ],
-                                                   static_cast< Int32 >( names.size() ) ) != S_OK ) {
+                                                   static_cast< uint32_t >( names.size() ) ) != S_OK ) {
                     throw BitException( "Cannot set properties of the archive" );
                 }
             }

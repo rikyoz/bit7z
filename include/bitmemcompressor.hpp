@@ -53,7 +53,7 @@ namespace bit7z {
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
             void compress( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
-                           wstring in_buffer_name = L"" ) const;
+                           const wstring& in_buffer_name = L"" ) const;
     };
 }
 #endif // BITMEMCOMPRESSOR_HPP

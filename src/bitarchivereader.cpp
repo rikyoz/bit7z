@@ -27,7 +27,7 @@ BitPropVariant BitArchiveReader::getArchiveProperty( BitProperty property ) cons
     HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &propvar );
     if ( res != S_OK ) {
         throw BitException( L"Could not retrieve archive property " +
-                            propertyNames[ static_cast<PROPID>(  property ) ] );
+                            propertyNames.at( static_cast<PROPID>(  property ) ) );
     }
     return propvar;
 }
@@ -37,7 +37,7 @@ BitPropVariant BitArchiveReader::getItemProperty( uint32_t index, BitProperty pr
     HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &propvar );
     if ( res != S_OK ) {
         throw BitException( L"Could not retrieve property " +
-                            propertyNames[ static_cast<PROPID>(  property ) ] +
+                            propertyNames.at( static_cast<PROPID>( property ) ) +
                             L"for item " + std::to_wstring( index ) );
     }
     return propvar;

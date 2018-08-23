@@ -19,7 +19,7 @@ using namespace bit7z::filesystem;
  *    "foo/bar/", each FSItem created for the found elements will have mSearchDirname == "foo/bar").
  *    As in mPath, mSearchDirname does not contain trailing / or \! */
 
-FSItem::FSItem( const wstring& path ) : mPath( path ), mSearchPath( L"" ) {
+FSItem::FSItem( const wstring& path ) : mPath( path ), mFileData(), mSearchPath( L"" ) {
     bool isdir = fsutil::is_directory( mPath );
     if ( isdir && !mPath.empty() ) {
         // The FSItem is a directory!

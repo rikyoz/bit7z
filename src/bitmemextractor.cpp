@@ -27,7 +27,7 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat&
     CMyComPtr< IInStream > bufStream( bufStreamSpec );
     bufStreamSpec->Init( &in_buffer[0], in_buffer.size() );
 
-    OpenCallback* openCallbackSpec = new OpenCallback( opener );
+    auto* openCallbackSpec = new OpenCallback( opener );
 
     CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );
     if ( inArchive->Open( bufStream, nullptr, openCallback ) != S_OK ) {
@@ -42,7 +42,7 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& fo
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_buffer, *this );
 
-    ExtractCallback* extractCallbackSpec = new ExtractCallback( *this, inArchive, L"", out_dir );
+    auto* extractCallbackSpec = new ExtractCallback( *this, inArchive, L"", out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( nullptr, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
