@@ -10,34 +10,13 @@
 #include "../include/bitexception.hpp"
 #include "../include/extractcallback.hpp"
 #include "../include/memextractcallback.hpp"
-#include "../include/opencallback.hpp"
+#include "../include/util.hpp"
 
 using namespace bit7z;
+using namespace bit7z::util;
 using namespace NWindows;
 
 using std::wstring;
-
-// NOTE: this function is not a method of BitExtractor because it would dirty the header with extra dependencies
-CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
-                                     const wstring& in_file, const BitArchiveOpener& opener ) {
-    CMyComPtr< IInArchive > inArchive;
-    const GUID formatGUID = format.guid();
-    lib.createArchiveObject( &formatGUID, &::IID_IInArchive, reinterpret_cast< void** >( &inArchive ) );
-
-    auto* fileStreamSpec = new CInFileStream;
-    CMyComPtr< IInStream > fileStream = fileStreamSpec;
-    if ( !fileStreamSpec->Open( in_file.c_str() ) ) {
-        throw BitException( L"Cannot open archive file '" + in_file + L"'" );
-    }
-
-    auto* openCallbackSpec = new OpenCallback( opener, in_file );
-
-    CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );
-    if ( inArchive->Open( fileStream, nullptr, openCallback ) != S_OK ) {
-        throw BitException( L"Cannot open archive '" + in_file + L"'" );
-    }
-    return inArchive;
-}
 
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
 

@@ -32,10 +32,19 @@ void fsutil::normalize_path( wstring& path ) { //this assumes that the passed pa
     }
 }
 
-std::wstring fsutil::filename( const wstring& path, bool ext ) {
+wstring fsutil::filename( const wstring& path, bool ext ) {
     size_t start = path.find_last_of( L"/\\" ) + 1;
     size_t end   = ext ? path.size() : path.find_last_of( L'.' );
     return path.substr( start, end - start ); //RVO :)
+}
+
+wstring fsutil::extension( const wstring& path ) {
+    /*size_t last_dot = path.find_last_of( L'.' ) + 1;
+    size_t last_sep = path.find_last_of( L"/\\") + 1;
+    return last_dot != wstring::npos && last_sep < last_dot ? path.substr( last_dot ) : L""; */
+    wstring name = filename( path, true );
+    size_t last_dot = name.find_last_of( L'.' );
+    return last_dot != wstring::npos ? name.substr( last_dot + 1 ) : L"";
 }
 
 // TODO: check if find_first_of is necessary or use front()
