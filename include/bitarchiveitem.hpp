@@ -34,7 +34,7 @@ namespace bit7z {
             explicit BitArchiveItem( uint32_t item_index );
             void setProperty( BitProperty property, const BitPropVariant& value );
 
-            friend class BitArchiveReader;
+            friend class BitArchiveInfo;
     };
 }
 

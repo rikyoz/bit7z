@@ -249,10 +249,10 @@ namespace bit7z {
 
         bool getBool() const;
         wstring getString() const;
-        uint8_t getUint8() const;
-        uint16_t getUint16() const;
-        uint32_t getUint32() const;
-        uint64_t getUint64() const;
+        uint8_t getUInt8() const;
+        uint16_t getUInt16() const;
+        uint32_t getUInt32() const;
+        uint64_t getUInt64() const;
         int8_t getInt8() const;
         int16_t getInt16() const;
         int32_t getInt32() const;

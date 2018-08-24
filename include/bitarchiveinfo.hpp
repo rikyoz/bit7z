@@ -12,10 +12,10 @@ struct IInArchive;
 namespace bit7z {
     using std::vector;
 
-    class BitArchiveReader : public BitArchiveOpener {
+    class BitArchiveInfo : public BitArchiveOpener {
         public:
-            BitArchiveReader( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format );
-            virtual ~BitArchiveReader() override;
+            BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format );
+            virtual ~BitArchiveInfo() override;
 
             BitPropVariant getArchiveProperty( BitProperty property ) const;
             BitPropVariant getItemProperty( uint32_t index, BitProperty property ) const;

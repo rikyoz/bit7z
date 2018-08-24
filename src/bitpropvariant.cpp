@@ -144,7 +144,7 @@ wstring BitPropVariant::getString() const {
     return wstring( bstrVal, SysStringLen( bstrVal ) );
 }
 
-uint8_t BitPropVariant::getUint8() const {
+uint8_t BitPropVariant::getUInt8() const {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -153,7 +153,7 @@ uint8_t BitPropVariant::getUint8() const {
     }
 }
 
-uint16_t BitPropVariant::getUint16() const {
+uint16_t BitPropVariant::getUInt16() const {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -164,7 +164,7 @@ uint16_t BitPropVariant::getUint16() const {
     }
 }
 
-uint32_t BitPropVariant::getUint32() const {
+uint32_t BitPropVariant::getUInt32() const {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -179,7 +179,7 @@ uint32_t BitPropVariant::getUint32() const {
     }
 }
 
-uint64_t BitPropVariant::getUint64() const {
+uint64_t BitPropVariant::getUInt64() const {
     switch ( vt ) {
         case VT_UI1:
             return bVal;

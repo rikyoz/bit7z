@@ -45,12 +45,12 @@ wstring BitArchiveItem::path() const {
 
 uint64_t BitArchiveItem::size() const {
     BitPropVariant propvar = getProperty( BitProperty::Size );
-    return propvar.isEmpty() ? 0 : propvar.getUint64();
+    return propvar.isEmpty() ? 0 : propvar.getUInt64();
 }
 
 uint64_t BitArchiveItem::packSize() const {
     BitPropVariant propvar = getProperty( BitProperty::PackSize );
-    return propvar.isEmpty() ? 0 : propvar.getUint64();
+    return propvar.isEmpty() ? 0 : propvar.getUInt64();
 }
 
 BitPropVariant BitArchiveItem::getProperty( BitProperty property ) const {
