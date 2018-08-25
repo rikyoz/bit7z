@@ -60,7 +60,7 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
     }
 }
 
-BitPropVariant::BitPropVariant( BitPropVariant&& other ) noexcept : PROPVARIANT( other ) {
+BitPropVariant::BitPropVariant( BitPropVariant&& other ) NOEXCEPT : PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) { //this and other share the pointer to the same string, but now the string belongs to this!
         other.bstrVal = nullptr;
     }
@@ -72,13 +72,13 @@ BitPropVariant::~BitPropVariant() {
     }
 }
 
-BitPropVariant& BitPropVariant::operator=( const BitPropVariant& other ) noexcept {
+BitPropVariant& BitPropVariant::operator=( const BitPropVariant& other ) NOEXCEPT {
     BitPropVariant tmp( other ); //copy construct a tmp variable
     *this = std::move( tmp ); //move assign to this
     return *this;
 }
 
-BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
+BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) NOEXCEPT {
     if ( this != &other ) {
         if ( vt == VT_BSTR && bstrVal != nullptr ) {
             ::SysFreeString( bstrVal ); //this was a string: since it is not needed anymore, we must free it!

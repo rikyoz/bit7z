@@ -6,6 +6,12 @@
 #include <array>
 #include <Windows.h>
 
+#if _MSC_VER <= 1700
+#define NOEXCEPT
+#else
+#define NOEXCEPT noexcept
+#endif
+
 namespace bit7z {
 
     enum class BitProperty : PROPID {
@@ -242,10 +248,10 @@ namespace bit7z {
     struct BitPropVariant : public PROPVARIANT {
         BitPropVariant();
         BitPropVariant( const BitPropVariant& other );
-        BitPropVariant( BitPropVariant&& other ) noexcept;
+        BitPropVariant( BitPropVariant&& other ) NOEXCEPT;
         virtual ~BitPropVariant();
-        BitPropVariant& operator=( const BitPropVariant& other ) noexcept;
-        BitPropVariant& operator=( BitPropVariant&& other ) noexcept;
+        BitPropVariant& operator=( const BitPropVariant& other ) NOEXCEPT;
+        BitPropVariant& operator=( BitPropVariant&& other ) NOEXCEPT;
 
         bool getBool() const;
         wstring getString() const;

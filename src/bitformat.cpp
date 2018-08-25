@@ -83,7 +83,7 @@ bool BitInFormat::operator!=( const BitInFormat &other ) const {
 }
 
 const GUID BitInFormat::guid() const {
-#if _MSC_VER <= 1600
+#if _MSC_VER <= 1700
     GUID ret;
     ret.Data1 = 0x23170F69;
     ret.Data2 = 0x40C1;

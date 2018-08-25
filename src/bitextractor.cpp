@@ -25,7 +25,7 @@ using std::wstring;
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
 
 void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) const {
-    extractItems( in_file, {}, out_dir );
+    extractItems( in_file, vector<uint32_t>(), out_dir );
 }
 
 //TODO: Improve reusing of code (both extract methods do the same operations when opening an archive)
