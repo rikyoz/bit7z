@@ -153,7 +153,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     NCOM::CPropVariant prop4;
     RINOK( mArchiveHandler->GetProperty( index, kpidSize, &prop4 ) );
     bool newFileSizeDefined = ( prop4.vt != VT_EMPTY );
-    UInt64 newFileSize;
+    uint64_t newFileSize;
 
     if ( newFileSizeDefined ) {
         //taken from ConvertPropVariantToUInt64
@@ -168,7 +168,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
                 newFileSize = prop4.ulVal;
                 break;
             case VT_UI8:
-                newFileSize = ( UInt64 )prop4.uhVal.QuadPart;
+                newFileSize = prop4.uhVal.QuadPart;
                 break;
             default:
                 mErrorMessage = L"151199";

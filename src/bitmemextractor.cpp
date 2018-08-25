@@ -45,7 +45,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
     auto* extractCallbackSpec = new ExtractCallback( *this, inArchive, L"", out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
-    if ( inArchive->Extract( nullptr, static_cast< UInt32 >( -1 ), false, extractCallback ) != S_OK ) {
+    if ( inArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), false, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }
 }
@@ -59,7 +59,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t
 
     auto* extractCallbackSpec = new MemExtractCallback( *this, inArchive, out_buffer );
 
-    const UInt32 indices[] = { index };
+    const uint32_t indices[] = { index };
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     if ( inArchive->Extract( indices, 1, false, extractCallback ) != S_OK ) {

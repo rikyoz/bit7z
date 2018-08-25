@@ -9,6 +9,8 @@
 #include "../include/bittypes.hpp"
 #include "../include/bitarchiveopener.hpp"
 
+struct IInArchive;
+
 namespace bit7z {
     using std::wstring;
     using std::vector;
@@ -33,10 +35,28 @@ namespace bit7z {
             /**
              * @brief Extracts the given archive into the choosen directory.
 
-             * @param in_file   the input archive file.
-             * @param out_dir   the output directory where extracted files will be put.
+             * @param in_file       the input archive file.
+             * @param out_dir       the output directory where extracted files will be put.
              */
             void extract( const wstring& in_file, const wstring& out_dir = L"" ) const;
+
+            /**
+             * @brief Extracts the matching files in the given archive into the choosen directory.
+
+             * @param in_file       the input archive file.
+             * @param out_dir       the output directory where extracted files will be put.
+             * @param item_filter   only files with (archive) paths matching the filter will be extracted.
+             */
+            void extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir = L"" ) const;
+
+            /**
+             * @brief Extracts the specified items in the given archive into the choosen directory.
+
+             * @param in_file   the input archive file.
+             * @param out_dir   the output directory where extracted files will be put.
+             * @param indices   the array of indices of the files in the archive that must be extracted.
+             */
+            void extractItems( const wstring& in_file, const vector<uint32_t> indices, const wstring& out_dir = L"" ) const;
 
             /**
              * @brief Extracts the given archive into the output buffer.
@@ -55,6 +75,10 @@ namespace bit7z {
              * @param in_file   the input archive file.
              */
             void test( const wstring& in_file );
+
+        private:
+            void extractToFileSystem( IInArchive* inArchive, const wstring& in_file,
+                                      const wstring& out_dir, const vector<uint32_t>& indices ) const;
     };
 }
 #endif // BITEXTRACTOR_HPP

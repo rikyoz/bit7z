@@ -81,7 +81,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* /*name*/, IInStream** inStr
         }
         auto* inFile = new CInFileStream;
         CMyComPtr< IInStream > inStreamTemp = inFile;
-        if ( !inFile->Open( mFileItem.path().c_str() ) ) {
+        if ( inFile->Open( mFileItem.path().c_str() ) != S_OK ) {
             return ::GetLastError();
         }
         *inStream = inStreamTemp.Detach();

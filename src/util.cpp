@@ -68,8 +68,9 @@ namespace bit7z {
             auto* openCallbackSpec = new OpenCallback( opener, in_file );
 
             CMyComPtr< IArchiveOpenCallback > openCallback( openCallbackSpec );
-            if ( inArchive->Open( fileStream, nullptr, openCallback ) != S_OK ) {
-                throw BitException( L"Cannot open archive '" + in_file + L"'" );
+            HRESULT res = inArchive->Open( fileStream, nullptr, openCallback );
+            if ( res != S_OK ) {
+                throw BitException( L"Cannot open archive '" + in_file  + L"'" );
             }
             return inArchive;
         }
