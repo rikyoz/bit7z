@@ -1,7 +1,3 @@
-lib/
-build/
-out/
-test/files/
 *.regx
 *.autosave
 *.3-pre1
@@ -9,6 +5,14 @@ test/files/
 *.pdb
 *.lib
 *.pro.user
+*.lastcodeanalysissucceeded
+*.vcxproj
+*.filters
+.qmake.stash
+lib/
+build/
+out/
+test/files/
 pack/
 test/
 roadmap.txt
@@ -19,5 +23,4 @@ doc/html/
 doc/rst/
 doc/md/
 test*/
-
-*.lastcodeanalysissucceeded
+.vs/

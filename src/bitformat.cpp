@@ -22,6 +22,7 @@ namespace bit7z {
         const BitInOutFormat Xz( 0x0C, L".xz",
                                  COMPRESSION_LEVEL | ENCRYPTION | HEADER_ENCRYPTION | INMEM_COMPRESSION );
         const BitInFormat Ppmd( 0x0D );
+        const BitInFormat COFF( 0xC7 );
         const BitInFormat Ext( 0xC7 );
         const BitInFormat VMDK( 0xC8 );
         const BitInFormat VDI( 0xC9 );

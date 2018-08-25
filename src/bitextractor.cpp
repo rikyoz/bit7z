@@ -58,7 +58,7 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
     extractToFileSystem( inArchive, in_file, out_dir, matched_indices );
 }
 
-void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t> indices, const wstring& out_dir ) const {
+void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t>& indices, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > inArchive = openArchive( mLibrary, mFormat, in_file, *this );
     extractToFileSystem( inArchive, in_file, out_dir, indices );
 }
@@ -84,7 +84,7 @@ void BitExtractor::test( const wstring& in_file ) {
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     HRESULT res = inArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kTest, extractCallback );
     if ( res != S_OK ) {
-        throw BitException( extractCallbackSpec->getErrorMessage() + L" (error code: " + std::to_wstring(res) + L")" );
+        throw BitException( extractCallbackSpec->getErrorMessage() + L" (error code: " + std::to_wstring( res ) + L")" );
     }
 }
 
@@ -102,6 +102,6 @@ void BitExtractor::extractToFileSystem( IInArchive* in_archive, const wstring& i
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
     HRESULT res = in_archive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extractCallback );
     if ( res != S_OK ) {
-        throw BitException( extractCallbackSpec->getErrorMessage() + L" (error code: " + std::to_wstring(res) + L")" );
+        throw BitException( extractCallbackSpec->getErrorMessage() + L" (error code: " + std::to_wstring( res ) + L")" );
     }
 }
