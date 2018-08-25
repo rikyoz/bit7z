@@ -32,6 +32,12 @@ void fsutil::normalize_path( wstring& path ) { //this assumes that the passed pa
     }
 }
 
+wstring fsutil::dirname( const wstring& path ) {
+    //the directory containing the path (hence, up directory if the path is a folder)
+    size_t pos = path.find_last_of( L"\\/" );
+    return ( pos != wstring::npos ) ? path.substr( 0, pos ) : L"";
+}
+
 wstring fsutil::filename( const wstring& path, bool ext ) {
     size_t start = path.find_last_of( L"/\\" ) + 1;
     size_t end   = ext ? path.size() : path.find_last_of( L'.' );
@@ -39,9 +45,6 @@ wstring fsutil::filename( const wstring& path, bool ext ) {
 }
 
 wstring fsutil::extension( const wstring& path ) {
-    /*size_t last_dot = path.find_last_of( L'.' ) + 1;
-    size_t last_sep = path.find_last_of( L"/\\") + 1;
-    return last_dot != wstring::npos && last_sep < last_dot ? path.substr( last_dot ) : L""; */
     wstring name = filename( path, true );
     size_t last_dot = name.find_last_of( L'.' );
     return last_dot != wstring::npos ? name.substr( last_dot + 1 ) : L"";
@@ -50,7 +53,7 @@ wstring fsutil::extension( const wstring& path ) {
 // TODO: check if find_first_of is necessary or use front()
 bool fsutil::is_relative_path( const wstring& path ) {
     //return PathIsRelativeW( path.c_str() ); //WinAPI version (requires Shlwapi lib!)
-    return path.empty() || ( path.find_first_of(L"/\\") != 0 && !( path.length() >= 2 && path[1] == L':' ) );
+    return path.empty() || ( path.find_first_of( L"/\\" ) != 0 && !( path.length() >= 2 && path[1] == L':' ) );
 }
 
 // Modified version of code found here: https://stackoverflow.com/a/3300547

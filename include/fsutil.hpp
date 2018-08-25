@@ -15,6 +15,7 @@ namespace bit7z {
             bool has_ending( const wstring& str, const wstring& ending );
 
             void normalize_path( wstring& path );
+            wstring dirname( const wstring& path );
             wstring filename( const wstring& path, bool ext = false );
             wstring extension( const wstring& path );
             bool wildcard_match( const wstring& pattern, const wstring& str );

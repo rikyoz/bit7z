@@ -19,7 +19,7 @@ using namespace bit7z::filesystem;
  *  + Use of wstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
-OpenCallback::OpenCallback( const BitArchiveOpener& opener, const wstring &filename )
+OpenCallback::OpenCallback( const BitArchiveOpener& opener, const wstring& filename )
     : mOpener( opener ), mSubArchiveMode( false ), mSubArchiveName( L"" ), mFileItem( filename ) {}
 
 OpenCallback::~OpenCallback() {}
@@ -70,7 +70,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     return S_OK;
 }
 
-STDMETHODIMP OpenCallback::GetStream( const wchar_t* /*name*/, IInStream** inStream ) {
+STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) {
     try {
         *inStream = nullptr;
         if ( mSubArchiveMode ) {
@@ -79,9 +79,16 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* /*name*/, IInStream** inStr
         if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
+        wstring stream_path = mFileItem.path();
+        if ( name != nullptr ) {
+            stream_path = fsutil::dirname( stream_path ) + WCHAR_PATH_SEPARATOR + name;
+            if ( !fsutil::path_exists( stream_path ) || fsutil::is_directory( stream_path ) ) {
+                return S_FALSE;
+            }
+        }
         auto* inFile = new CInFileStream;
         CMyComPtr< IInStream > inStreamTemp = inFile;
-        if ( inFile->Open( mFileItem.path().c_str() ) != S_OK ) {
+        if ( !inFile->Open( stream_path.c_str() ) ) {
             return ::GetLastError();
         }
         *inStream = inStreamTemp.Detach();
@@ -107,7 +114,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
             pass = mOpener.passwordCallback()();
         }
 
-        if ( pass.empty() ){
+        if ( pass.empty() ) {
             mErrorMessage = L"Password is not defined";
             return E_ABORT;
         }
