@@ -74,22 +74,21 @@ namespace bit7z {
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
-             * @param filter        the filter to use when searching files inside in_dir.
              * @param recursive     if true, it searches files inside the sub-folders of in_dir.
+             * @param filter        the filter to use when searching files inside in_dir.
              */
-            void compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter = L"*",
-                                bool recursive = true ) const;
+            void compressFiles( const wstring& in_dir, const wstring& out_archive,
+                                bool recursive = true, const wstring& filter = L"*.*" ) const;
 
             /**
              * @brief Compresses an entire directory.
              *
-             * @note This method is equivalent to compressFiles with filter set to L"*".
+             * @note This method is equivalent to compressFiles with filter set to L"".
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
-             * @param recursive     if true, it searches files inside the sub-folders of in_dir.
              */
-            void compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive = true ) const;
+            void compressDirectory( const wstring& in_dir, const wstring& out_archive ) const;
 
             /* Compression from file system to memory buffer */
 

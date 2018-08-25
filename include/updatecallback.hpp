@@ -51,7 +51,7 @@ namespace bit7z {
         private:
             uint64_t mVolSize;
             wstring mVolName;
-            wstring mVolExt;
+            //wstring mVolExt;
 
             wstring mDirPrefix;
             const vector< FSItem >& mDirItems;

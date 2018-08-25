@@ -29,7 +29,7 @@ void compressOut( const CMyComPtr< IOutArchive >& outArc, CMyComPtr< T > outStre
     auto* updateCallbackSpec = new UpdateCallback( creator, in_items );
 
     CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
-    HRESULT result = outArc->UpdateItems( outStream, static_cast< UInt32 >( in_items.size() ), updateCallback );
+    HRESULT result = outArc->UpdateItems( outStream, static_cast< uint32_t >( in_items.size() ), updateCallback );
     updateCallbackSpec->Finilize();
 
     if ( result == E_NOTIMPL ) {
@@ -78,12 +78,12 @@ void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstr
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dirItems = FSIndexer::indexPaths( in_files, false );
+    vector< FSItem > dirItems = FSIndexer::indexPaths( in_files, true );
     compressToFileSystem( dirItems, out_archive );
 }
 
-void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter,
-                                   bool recursive ) const {
+void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
+                                   bool recursive, const wstring& filter ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
@@ -91,8 +91,8 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_arc
     compressToFileSystem( dirItems, out_archive );
 }
 
-void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive ) const {
-    compressFiles( in_dir, out_archive, L"*", recursive );
+void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive ) const {
+    compressFiles( in_dir, out_archive, true, L"" );
 }
 
 /* from filesystem to memory buffer */

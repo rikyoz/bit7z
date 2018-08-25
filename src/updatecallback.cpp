@@ -77,7 +77,7 @@ HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
         *newProperties = 1; //= true;
     }
     if ( indexInArchive != nullptr ) {
-        *indexInArchive = static_cast< UInt32 >( -1 );
+        *indexInArchive = static_cast< uint32_t >( -1 );
     }
 
     return S_OK;
@@ -191,18 +191,9 @@ HRESULT UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
 }
 
 HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
-    //NOTE: Commented code might break MSVC2010 compatibility
-    //wchar_t temp[16];
-    //ConvertUInt32ToString( index + 1, temp );
-    //wstring res = temp;
-    wstring res = ( index < 9 ? L"0" : L"" ); //if one digit, prepend a zero!
-    res += to_wstring( index + 1 );
+    wstring res = ( index < 9 ? L"00" : index < 99 ? L"0" : L"" ) + to_wstring( index + 1 );
 
-    /*while ( res.length() < 2 ) {  //this was not my code!
-        res = L'0' + res;
-    }*/
-
-    wstring fileName = mVolName + L'.' + res + mVolExt;
+    wstring fileName = mVolName + L'.' + res;// + mVolExt;
     auto* streamSpec = new COutFileStream;
     CMyComPtr< ISequentialOutStream > streamLoc( streamSpec );
 

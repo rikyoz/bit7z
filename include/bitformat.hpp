@@ -15,7 +15,7 @@ namespace bit7z {
     /**
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.
      */
-    enum FormatFeatures {
+    enum FormatFeatures : unsigned {
         MULTIPLE_FILES    = 1 << 0,///< The format can compress/extract multiple files (2^0 = 000001)
         SOLID_ARCHIVE     = 1 << 1,///< The format supports solid archives (2^1 = 000010)
         COMPRESSION_LEVEL = 1 << 2,///< The format is able to use different compression levels (2^2 = 000100)

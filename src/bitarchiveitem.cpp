@@ -25,7 +25,8 @@ bool BitArchiveItem::isDir() const {
 wstring BitArchiveItem::name() const {
     BitPropVariant propvar = getProperty( BitProperty::Name );
     if ( propvar.isEmpty() ) {
-        return fsutil::filename( path(), true );
+        propvar = getProperty( BitProperty::Path );
+        return propvar.isEmpty() ? L"" : fsutil::filename( propvar.getString(), true );
     }
     return propvar.getString();
 }
@@ -40,7 +41,11 @@ wstring BitArchiveItem::extension() const {
 
 wstring BitArchiveItem::path() const {
     BitPropVariant propvar = getProperty( BitProperty::Path );
-    return propvar.isEmpty() ? L"" : propvar.getString();
+    if ( propvar.isEmpty() ) {
+        propvar = getProperty( BitProperty::Name );
+        return propvar.isEmpty() ? L"" : propvar.getString();
+    }
+    return propvar.getString();
 }
 
 uint64_t BitArchiveItem::size() const {

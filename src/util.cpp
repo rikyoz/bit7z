@@ -31,9 +31,9 @@ namespace bit7z {
             }
             if ( format.hasFeature( COMPRESSION_LEVEL ) ) {
                 names.push_back( L"x" );
-                values.emplace_back( static_cast< UInt32 >( compressionLevel ) );
+                values.emplace_back( static_cast< uint32_t >( compressionLevel ) );
             }
-            if ( solidMode && format.hasFeature( SOLID_ARCHIVE ) ) {
+            if ( format.hasFeature( SOLID_ARCHIVE ) ) {
                 names.push_back( L"s" );
                 values.emplace_back( solidMode );
             }

@@ -50,7 +50,10 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             result.push_back( current_item );
         }
 
-        if ( current_item.isDir() && ( recursive || item_matches ) ) { //currentItem is a directory and we must index it recursively!
+        if ( current_item.isDir() && ( recursive || item_matches ) ) {
+            //currentItem is a directory and we must list it only if:
+            // > indexing is done recursively
+            // > indexing is not recursive but the directory name matched the filter
             wstring next_dir = prefix.empty() ? current_item.name() : prefix + L"\\" + current_item.name();
             listDirectoryItems( result, true, next_dir );
         }

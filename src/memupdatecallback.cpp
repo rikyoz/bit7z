@@ -65,7 +65,7 @@ HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData
         *newProperties = 1; //= true;
     }
     if ( indexInArchive != nullptr ) {
-        *indexInArchive = static_cast< UInt32 >( -1 );
+        *indexInArchive = static_cast< uint32_t >( -1 );
     }
 
     return S_OK;
