@@ -46,10 +46,9 @@ void compressOut( const CMyComPtr< IOutArchive >& outArc, CMyComPtr< T > outStre
 
     if ( !updateCallbackSpec->mFailedFiles.empty() ) {
         wstringstream wsstream;
-        wsstream << L"Error for files: \n";
-        for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-            wsstream << updateCallbackSpec->mFailedFiles[ i ];
-            wsstream  << L" (error code: " << updateCallbackSpec->mFailedCodes[ i ] << L")\n";
+        wsstream << L"Error for files: " << endl;
+        for ( const auto& failed_file : updateCallbackSpec->mFailedFiles ) {
+            wsstream << failed_file.first << L" (error code: " << failed_file.second << L")" << endl;
         }
         throw BitException( wsstream.str() );
     }

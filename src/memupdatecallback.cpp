@@ -29,10 +29,7 @@ MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator, const ve
     mAskPassword( false ),
     mNeedBeClosed( false ),
     mBuffer( out_buffer ),
-    mBufferName( buffer_name ) {
-    mFailedFiles.clear();
-    mFailedCodes.clear();
-}
+    mBufferName( buffer_name ) {}
 
 MemUpdateCallback::~MemUpdateCallback() {
     Finilize();

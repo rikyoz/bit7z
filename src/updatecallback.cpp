@@ -36,7 +36,6 @@ UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const vector< 
     mAskPassword( false ) {
     mNeedBeClosed = false;
     mFailedFiles.clear();
-    mFailedCodes.clear();
 }
 
 UpdateCallback::~UpdateCallback() {
@@ -163,8 +162,7 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
 
     if ( !inStreamSpec->Open( path.c_str() ) ) {
         DWORD sysError = ::GetLastError();
-        mFailedCodes.push_back( sysError );
-        mFailedFiles.push_back( path );
+        mFailedFiles[ path ] = static_cast< HRESULT >( sysError );
         // if (systemError == ERROR_SHARING_VIOLATION)
         {
             mErrorMessage = L"WARNING: Can't open file";

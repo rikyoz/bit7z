@@ -15,6 +15,7 @@
 using namespace bit7z;
 using namespace std;
 using namespace NWindows;
+using namespace NArchive;
 
 // NOTE: this function is not a method of BitMemExtractor because it would dirty the header with extra dependencies
 CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
@@ -45,7 +46,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
     auto* extractCallbackSpec = new ExtractCallback( *this, inArchive, L"", out_dir );
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
-    if ( inArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), false, extractCallback ) != S_OK ) {
+    if ( inArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kExtract, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }
 }
@@ -62,7 +63,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t
     const uint32_t indices[] = { index };
 
     CMyComPtr< IArchiveExtractCallback > extractCallback( extractCallbackSpec );
-    if ( inArchive->Extract( indices, 1, false, extractCallback ) != S_OK ) {
+    if ( inArchive->Extract( indices, 1, NExtract::NAskMode::kExtract, extractCallback ) != S_OK ) {
         throw BitException( extractCallbackSpec->getErrorMessage() );
     }
 }

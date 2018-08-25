@@ -42,15 +42,6 @@ void compressOut( const CMyComPtr< IOutArchive >& outArc, CMyComPtr< T > outStre
     if ( result != S_OK ) {
         throw BitException( updateCallbackSpec->getErrorMessage() );
     }
-
-    wstring errorString = L"Error for files: ";
-    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
-    }
-
-    if ( !updateCallbackSpec->mFailedFiles.empty() ) {
-        throw BitException( errorString );
-    }
 }
 
 BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )

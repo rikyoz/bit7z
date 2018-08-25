@@ -45,10 +45,7 @@ namespace bit7z {
             bool mAskPassword;
 
             bool mNeedBeClosed;
-
-            vector< wstring > mFailedFiles;
-            vector< HRESULT > mFailedCodes;
-
+			
             const vector< byte_t >& mBuffer;
             const wstring& mBufferName;
 

@@ -149,37 +149,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
             return E_FAIL;
     }
 
-    // Get Size
-    NCOM::CPropVariant prop4;
-    RINOK( mArchiveHandler->GetProperty( index, kpidSize, &prop4 ) );
-    bool newFileSizeDefined = ( prop4.vt != VT_EMPTY );
-    uint64_t newFileSize;
-
-    if ( newFileSizeDefined ) {
-        //taken from ConvertPropVariantToUInt64
-        switch ( prop4.vt ) {
-            case VT_UI1:
-                newFileSize = prop4.bVal;
-                break;
-            case VT_UI2:
-                newFileSize = prop4.uiVal;
-                break;
-            case VT_UI4:
-                newFileSize = prop4.ulVal;
-                break;
-            case VT_UI8:
-                newFileSize = prop4.uhVal.QuadPart;
-                break;
-            default:
-                mErrorMessage = L"151199";
-                return E_FAIL;
-        }
-
-        //newFileSize = ConvertPropVariantToUInt64( prop4 );
-    }
-
     // Create folders for file
-    //size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
     size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
 
     if ( slashPos != wstring::npos ) {
@@ -200,8 +170,6 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
             if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
-                //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
-                //throw BitException( kCantDeleteOutputFile + fullProcessedPath );
                 mErrorMessage = kCantDeleteOutputFile + fullProcessedPath;
                 return E_ABORT;
             }
@@ -211,8 +179,6 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
         CMyComPtr< ISequentialOutStream > outStreamLoc( mOutFileStreamSpec );
 
         if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
-            //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;
-            //throw BitException( L"cannot open output file " + fullProcessedPath );
             mErrorMessage = L"Cannot open output file " + fullProcessedPath;
             return E_ABORT;
         }

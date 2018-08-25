@@ -16,7 +16,7 @@
  *  + Use of uint64_t instead of UInt64
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-COutMultiVolStream::COutMultiVolStream(uint64_t size , const wstring &archiveName ) {
+COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveName ) {
     mStreamIndex = 0;
     mOffsetPos = 0;
     mAbsPos = 0;
@@ -32,7 +32,7 @@ COutMultiVolStream::~COutMultiVolStream() {
 HRESULT COutMultiVolStream::Close() {
     HRESULT res = S_OK;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
-        COutFileStream* s = (*it).streamSpec;
+        COutFileStream* s = ( *it ).streamSpec;
         if ( s ) {
             HRESULT res2 = s->Close();
             if ( res2 != S_OK )
@@ -47,7 +47,7 @@ UInt64 COutMultiVolStream::GetSize() const { return mLength; }
 bool COutMultiVolStream::SetMTime( const FILETIME* mTime ) {
     bool res = true;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
-        COutFileStream* s = (*it).streamSpec;
+        COutFileStream* s = ( *it ).streamSpec;
         if ( s )
             if ( !s->SetMTime( mTime ) )
                 res = false;
@@ -56,8 +56,9 @@ bool COutMultiVolStream::SetMTime( const FILETIME* mTime ) {
 }
 
 STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
-    if ( processedSize != nullptr )
+    if ( processedSize != nullptr ) {
         *processedSize = 0;
+    }
     while ( size > 0 ) {
         if ( mStreamIndex >= mVolStreams.size() ) {
             CAltStreamInfo altStream;
@@ -70,8 +71,9 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             name.insert( 0, mVolPrefix );
             altStream.streamSpec = new COutFileStream;
             altStream.stream = altStream.streamSpec;
-            if ( !altStream.streamSpec->Create( name.c_str(), false ) )
+            if ( !altStream.streamSpec->Create( name.c_str(), false ) ) {
                 return ::GetLastError();
+            }
 
             altStream.pos = 0;
             altStream.realSize = 0;
@@ -79,7 +81,7 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             mVolStreams.push_back( altStream );
             continue;
         }
-        CAltStreamInfo &altStream = mVolStreams[mStreamIndex];
+        CAltStreamInfo& altStream = mVolStreams[mStreamIndex];
 
         if ( mOffsetPos >= mVolSize ) {
             mOffsetPos -= mVolSize;
@@ -87,30 +89,34 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             continue;
         }
         if ( mOffsetPos != altStream.pos ) {
-            RINOK( altStream.stream->Seek( mOffsetPos, STREAM_SEEK_SET, nullptr ) );
+            RINOK( altStream.stream->Seek( static_cast< int64_t >( mOffsetPos ), STREAM_SEEK_SET, nullptr ) );
             altStream.pos = mOffsetPos;
         }
 
-        auto curSize = ( UInt32 )MyMin( ( UInt64 )size, mVolSize - altStream.pos );
+        auto curSize = static_cast< uint32_t >( MyMin( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
         UInt32 realProcessed;
         RINOK( altStream.stream->Write( data, curSize, &realProcessed ) );
-        data = ( void* )( ( Byte* )data + realProcessed );
-        size -= realProcessed;
+        //data = ( void* )( ( Byte* )data + realProcessed );
+        //size -= realProcessed;
         altStream.pos += realProcessed;
         mOffsetPos += realProcessed;
         mAbsPos += realProcessed;
-        if ( mAbsPos > mLength )
+        if ( mAbsPos > mLength ) {
             mLength = mAbsPos;
-        if ( mOffsetPos > altStream.realSize )
+        }
+        if ( mOffsetPos > altStream.realSize ) {
             altStream.realSize = mOffsetPos;
-        if ( processedSize != nullptr )
+        }
+        if ( processedSize != nullptr ) {
             *processedSize += realProcessed;
+        }
         if ( altStream.pos == mVolSize ) {
             mStreamIndex++;
             mOffsetPos = 0;
         }
-        if ( realProcessed == 0 && curSize != 0 )
+        if ( realProcessed == 0 && curSize != 0 ) {
             return E_FAIL;
+        }
         break;
     }
     return S_OK;
@@ -140,7 +146,7 @@ STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
 STDMETHODIMP COutMultiVolStream::SetSize( UInt64 newSize ) {
     unsigned i = 0;
     while ( i < mVolStreams.size() ) {
-        CAltStreamInfo &altStream = mVolStreams[i++];
+        CAltStreamInfo& altStream = mVolStreams[i++];
         if ( ( UInt64 )newSize < altStream.realSize ) {
             RINOK( altStream.stream->SetSize( newSize ) );
             altStream.realSize = newSize;
@@ -150,7 +156,7 @@ STDMETHODIMP COutMultiVolStream::SetSize( UInt64 newSize ) {
     }
     while ( i < mVolStreams.size() ) {
         {
-            CAltStreamInfo &altStream = mVolStreams.back();
+            CAltStreamInfo& altStream = mVolStreams.back();
             altStream.stream.Release();
             NWindows::NFile::NDir::DeleteFileAlways( altStream.name.c_str() );
         }

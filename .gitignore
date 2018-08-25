@@ -24,3 +24,4 @@ doc/rst/
 doc/md/
 test*/
 .vs/
+x64/
