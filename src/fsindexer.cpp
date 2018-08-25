@@ -87,8 +87,8 @@ vector< FSItem > FSIndexer::indexDirectory( const wstring& in_dir, const wstring
 
 vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool ignore_dirs ) {
     vector< FSItem > out_files;
-    for ( auto itr = in_paths.cbegin(); itr != in_paths.cend(); ++itr ) {
-        FSItem item( *itr );
+    for ( const auto& file_path : in_paths ) {
+        FSItem item( file_path );
         indexItem( item, ignore_dirs, out_files );
     }
     return out_files;
@@ -96,8 +96,8 @@ vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool 
 
 vector< FSItem > FSIndexer::indexPathsMap( const map< wstring, wstring >& in_paths, bool ignore_dirs ) {
     vector< FSItem > out_files;
-    for ( auto itr = in_paths.cbegin(); itr != in_paths.cend(); ++itr ) {
-        FSItem item( (*itr).first, (*itr).second );
+    for ( const auto& file_pair : in_paths ) {
+        FSItem item( file_pair.first, file_pair.second );
         indexItem( item, ignore_dirs, out_files );
     }
     return out_files;
