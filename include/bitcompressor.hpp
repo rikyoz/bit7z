@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitformat.hpp"
@@ -16,6 +17,7 @@ namespace bit7z {
 
     using std::wstring;
     using std::vector;
+    using std::map;
     using filesystem::FSItem;
 
     /**
@@ -50,6 +52,19 @@ namespace bit7z {
              * @param out_archive   the path (relative or absolute) to the output archive file.
              */
             void compress( const vector< wstring >& in_paths, const wstring& out_archive ) const;
+
+            /**
+             * @brief Compresses the given files or directories using the specified aliases.
+             *
+             * The items in the first argument must be the relative or absolute paths to files or
+             * directories existing on the filesystem.
+             * Each pair of the map must follow the following format:
+             *  {L"path to file in the filesystem", L"alias path in the archive"}.
+             *
+             * @param in_paths      a map of paths and corresponding aliases.
+             * @param out_archive   the path (relative or absolute) to the output archive file.
+             */
+            void compress( const map<wstring, wstring>& in_paths, const wstring& out_archive ) const;
 
             /**
              * @brief Compresses a single file.

@@ -62,6 +62,17 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
     FindClose( hFind );
 }
 
+void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem >& result ) {
+    if ( !item.isDir() ) {
+        result.push_back( item );
+    } else if ( !ignore_dirs ) { //item is a directory
+        if ( !item.inArchivePath().empty() ) {
+            result.push_back( item );
+        }
+        FSIndexer indexer( item.path() );
+        indexer.listDirectoryItems( result, true );
+    }
+}
 
 vector< FSItem > FSIndexer::indexDirectory( const wstring& in_dir, const wstring& filter, bool recursive ) {
     vector< FSItem > result;
@@ -78,15 +89,16 @@ vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool 
     vector< FSItem > out_files;
     for ( auto itr = in_paths.cbegin(); itr != in_paths.cend(); ++itr ) {
         FSItem item( *itr );
-        if ( !item.isDir() ) {
-            out_files.push_back( item );
-        } else if ( !ignore_dirs ) { //item is a directory
-            if ( !item.inArchivePath().empty() ) {
-                out_files.push_back( item );
-            }
-            FSIndexer indexer( item.path() );
-            indexer.listDirectoryItems( out_files, true );
-        }
+        indexItem( item, ignore_dirs, out_files );
+    }
+    return out_files;
+}
+
+vector< FSItem > FSIndexer::indexPathsMap( const map< wstring, wstring >& in_paths, bool ignore_dirs ) {
+    vector< FSItem > out_files;
+    for ( auto itr = in_paths.cbegin(); itr != in_paths.cend(); ++itr ) {
+        FSItem item( (*itr).first, (*itr).second );
+        indexItem( item, ignore_dirs, out_files );
     }
     return out_files;
 }

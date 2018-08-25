@@ -14,7 +14,7 @@ namespace bit7z {
 
         class FSItem {
             public:
-                explicit FSItem( const wstring& path );
+                explicit FSItem( const wstring& path, const wstring& inArchivePath = L"" );
                 explicit FSItem( const wstring& dir, FSItemInfo data , const wstring& searchPath );
 
                 bool isDots() const;
@@ -32,6 +32,7 @@ namespace bit7z {
                 wstring    mPath;
                 FSItemInfo mFileData;
                 wstring    mSearchPath;
+                wstring    mInArchivePath;
         };
     }
 }

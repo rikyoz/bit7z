@@ -68,6 +68,14 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
     compressToFileSystem( dirItems, out_archive );
 }
 
+void BitCompressor::compress( const map<wstring, wstring>& in_paths, const wstring& out_archive ) const {
+    if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
+        throw BitException( "Unsupported operation!" );
+    }
+    vector< FSItem > dirItems = FSIndexer::indexPathsMap( in_paths );
+    compressToFileSystem( dirItems, out_archive );
+}
+
 void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
     vector< wstring > vfiles;
     vfiles.push_back( in_file );

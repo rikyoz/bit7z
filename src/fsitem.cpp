@@ -19,7 +19,8 @@ using namespace bit7z::filesystem;
  *    "foo/bar/", each FSItem created for the found elements will have mSearchDirname == "foo/bar").
  *    As in mPath, mSearchDirname does not contain trailing / or \! */
 
-FSItem::FSItem( const wstring& path ) : mPath( path ), mFileData(), mSearchPath( L"" ) {
+FSItem::FSItem( const wstring& path, const wstring& inArchivePath )
+    : mPath( path ), mFileData(), mSearchPath( L"" ), mInArchivePath( inArchivePath ) {
     bool isdir = fsutil::is_directory( mPath );
     if ( isdir && !mPath.empty() ) {
         // The FSItem is a directory!
@@ -47,7 +48,7 @@ FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& searchPath )
 }
 
 bool FSItem::isDots() const {
-    return ( name() == L"." || name() == L"..");
+    return ( name() == L"." || name() == L".." );
 }
 
 bool FSItem::isDir() const {
@@ -98,8 +99,12 @@ wstring FSItem::path() const {
 wstring FSItem::inArchivePath() const {
     using namespace fsutil;
 
+    if ( !mInArchivePath.empty() ) {
+        return mInArchivePath;
+    }
+
     if ( !is_relative_path( mPath ) ||
-         mPath.find( L"./" ) != wstring::npos || mPath.find( L".\\" ) != wstring::npos ) {
+            mPath.find( L"./" ) != wstring::npos || mPath.find( L".\\" ) != wstring::npos ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
         // the interal structure of that folder (mSearchDirname), otherwise we use only the file name.
         return mSearchPath.empty() ? name() : mSearchPath + L"\\" + name();
