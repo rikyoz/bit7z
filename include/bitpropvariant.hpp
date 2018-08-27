@@ -246,28 +246,131 @@ namespace bit7z {
         L"Filetime"
     };
 
+    /**
+     * @brief The BitPropVariant struct is a light extension to the WinAPI PROPVARIANT struct providing useful getters.
+     */
     struct BitPropVariant : public PROPVARIANT {
+        /**
+         * @brief Constructs an empty BitPropVariant object.
+         */
         BitPropVariant();
+
+        /**
+         * @brief Copy constructs this BitPropVariant from another one.
+         *
+         * @param other the variant to be copied.
+         */
         BitPropVariant( const BitPropVariant& other );
+
+        /**
+         * @brief Move constructs this BitPropVariant from another one.
+         *
+         * @param other the variant to be moved.
+         */
         BitPropVariant( BitPropVariant&& other ) NOEXCEPT;
+
+        /**
+         * @brief BitPropVariant destructor.
+         */
         virtual ~BitPropVariant();
+
+        /**
+         * @brief Copy assignment operator.
+         *
+         * @param other the variant to be copied.
+         *
+         * @return a reference to *this object (with the copied values from other).
+         */
         BitPropVariant& operator=( const BitPropVariant& other ) NOEXCEPT;
+
+        /**
+         * @brief Move assignment operator.
+         *
+         * @param other the variant to be moved.
+         *
+         * @return a reference to *this object (with the moved values from other).
+         */
         BitPropVariant& operator=( BitPropVariant&& other ) NOEXCEPT;
 
+        /**
+         * @return the boolean value of this variant
+         * (it throws an expcetion if the variant is not a boolean).
+         */
         bool getBool() const;
+
+        /**
+         * @return the string value of this variant
+         * (it throws an exception if the variant is not a string).
+         */
         wstring getString() const;
+
+        /**
+         * @return the 8-bit unsigned integer value of this variant
+         * (it throws an exception if the variant is not an 8-bit unsigned integer).
+         */
         uint8_t getUInt8() const;
+
+        /**
+         * @return the 16-bit unsigned integer value of this variant
+         * (it throws an exception if the variant is not an 8 or 16-bit unsigned integer).
+         */
         uint16_t getUInt16() const;
+
+        /**
+         * @return the 32-bit unsigned integer value of this variant
+         * (it throws an exception if the variant is not an 8, 16 or 32-bit unsigned integer).
+         */
         uint32_t getUInt32() const;
+
+        /**
+         * @return the 64-bit unsigned integer value of this variant
+         * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit unsigned integer).
+         */
         uint64_t getUInt64() const;
+
+        /**
+         * @return the 8-bit integer value of this variant
+         * (it throws an exception if the variant is not an 8-bit integer).
+         */
         int8_t getInt8() const;
+
+        /**
+         * @return the 16-bit integer value of this variant
+         * (it throws an exception if the variant is not an 8 or 16-bit integer).
+         */
         int16_t getInt16() const;
+
+        /**
+         * @return the 32-bit integer value of this variant
+         * (it throws an exception if the variant is not an 8, 16 or 32-bit integer).
+         */
         int32_t getInt32() const;
+
+        /**
+         * @return the 64-bit integer value of this variant
+         * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit integer).
+         */
         int64_t getInt64() const;
+
+        /**
+         * @return the FILETIME value of this variant
+         * (it throws an exception if the variant is not a filetime).
+         */
         FILETIME getFiletime() const;
 
+        /**
+         * @return the the value of this variant converted from any supported type to std::wstring.
+         */
         wstring toString() const;
+
+        /**
+         * @return true if this variant is empty, false otherwise.
+         */
         bool isEmpty() const;
+
+        /**
+         * @return the BitPropVariantType of this variant.
+         */
         BitPropVariantType type() const;
     };
 }
