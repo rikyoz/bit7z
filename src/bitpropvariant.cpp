@@ -102,7 +102,7 @@ BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) NOEXCEPT {
                 uintVal = other.uintVal;
                 break;
             case VT_UI4:
-                ulVal = other.uiVal;
+                ulVal = other.ulVal;
                 break;
             case VT_UI8:
                 uhVal = other.uhVal;
