@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <string>
 #include <array>
+
 #include <Windows.h>
 
 #if _MSC_VER <= 1700

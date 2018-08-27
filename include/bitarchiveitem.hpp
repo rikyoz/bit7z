@@ -24,11 +24,11 @@ namespace bit7z {
             uint64_t packSize() const;
 
             BitPropVariant getProperty( BitProperty property ) const;
-            map<BitProperty, BitPropVariant> itemProperties() const;
+            map< BitProperty, BitPropVariant > itemProperties() const;
 
         private:
             const uint32_t mItemIndex;
-            map<BitProperty, BitPropVariant> mItemProperties;
+            map< BitProperty, BitPropVariant > mItemProperties;
 
             /* BitArchiveItem objects can be created and updated only by BitArchiveReader */
             explicit BitArchiveItem( uint32_t item_index );

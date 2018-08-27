@@ -14,11 +14,6 @@ namespace bit7z {
      * @brief The Bit7zLibrary class allows the access to the basic functionalities provided by the 7z DLLs.
      */
     class Bit7zLibrary {
-            friend class BitExtractor;
-            friend class BitCompressor;
-            friend class BitMemExtractor;
-            friend class BitMemCompressor;
-
         public:
             /**
              * @brief Constructs a Bit7zLibrary object using the path of the wanted 7zip DLL.
