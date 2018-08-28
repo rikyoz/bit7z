@@ -29,7 +29,7 @@ bit7z
 
 ## Introduction
 
-**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project. It supports compression and extraction to and from the filesystem or the memory, multi-volume archives and operation progress callbacks.
+**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project (https://www.7-zip.org/).<br/>It supports compression and extraction to and from the filesystem or the memory, reading of archives metadata, multi-volume archives, operation progress callbacks and many other functionalities.
 
 ## Supported Features
 
@@ -45,7 +45,7 @@ bit7z
 + Choice of the **compression level** (from none to ultra, not all supported by every output archive format).
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
-+ **Operation callbacks**, through which it is possible to obtain real time informations about the ongoing extraction or compression operation (from v2.1.x).
++ **Operation callbacks**, through which it is possible to obtain real time information about the ongoing extraction or compression operation (from v2.1.x).
 
 Please note that the presence or not of some of the above features depends on the particular .dll used along with bit7z. For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files. For more information about the 7z SDK DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
@@ -141,7 +141,7 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 </a>
 </div>
 
-Release packages contain a _precompiled version_ of the library (both in _debug_ and _release_ mode) and the _public API headers_ needed to use it in your program; they are available for both _x86_ and _x64_ architectures.
+The released packages contain a _precompiled version_ of the library (both in _debug_ and _release_ mode) and the _public API headers_ that are needed to use it in your program; they are available for both _x86_ and _x64_ architectures.
 
 Obviously, you can also clone/download this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
@@ -151,7 +151,7 @@ Obviously, you can also clone/download this repository and build the library by 
 + **Compiler:** MSVC 2012 or greater (tested with versions 2012, 2015 and 2017)
 + **DLLs:** 7-zip DLLs (v18.05)
 
-The 7zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
+The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
 
 **Note**: in order to use this library you should link your program not only with **bit7z** but also with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`)
 

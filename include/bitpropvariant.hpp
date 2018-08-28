@@ -16,102 +16,102 @@
 namespace bit7z {
 
     enum class BitProperty : PROPID {
-        NoProperty = 0,
-        MainSubfile,
-        HandlerItemIndex,
-        Path,
-        Name,
-        Extension,
-        IsDir,
-        Size,
-        PackSize,
-        Attrib,
-        CTime,
-        ATime,
-        MTime,
-        Solid,
-        Commented,
-        Encrypted,
-        SplitBefore,
-        SplitAfter,
-        DictionarySize,
-        CRC,
-        Type,
-        IsAnti,
-        Method,
-        HostOS,
-        FileSystem,
-        User,
-        Group,
-        Block,
-        Comment,
-        Position,
-        Prefix,
-        NumSubDirs,
-        NumSubFiles,
-        UnpackVer,
-        Volume,
-        IsVolume,
-        Offset,
-        Links,
-        NumBlocks,
-        NumVolumes,
-        TimeType,
-        Bit64,
-        BigEndian,
-        Cpu,
-        PhySize,
-        HeadersSize,
-        Checksum,
-        Characts,
-        Va,
-        Id,
-        ShortName,
-        CreatorApp,
-        SectorSize,
-        PosixAttrib,
-        SymLink,
-        Error,
-        TotalSize,
-        FreeSpace,
-        ClusterSize,
-        VolumeName,
-        LocalName,
-        Provider,
-        NtSecure,
-        IsAltStream,
-        IsAux,
-        IsDeleted,
-        IsTree,
-        Sha1,
-        Sha256,
-        ErrorType,
-        NumErrors,
-        ErrorFlags,
-        WarningFlags,
-        Warning,
-        NumStreams,
-        NumAltStreams,
-        AltStreamsSize,
-        VirtualSize,
-        UnpackSize,
-        TotalPhySize,
-        VolumeIndex,
-        SubType,
-        ShortComment,
-        CodePage,
-        IsNotArcType,
-        PhySizeCantBeDetected,
-        ZerosTailIsAllowed,
-        TailSize,
-        EmbeddedStubSize,
-        NtReparse,
-        HardLink,
-        INode,
-        StreamId,
-        ReadOnly,
-        OutName,
-        CopyLink
+        NoProperty = 0,         ///<
+        MainSubfile,            ///<
+        HandlerItemIndex,       ///<
+        Path,                   ///<
+        Name,                   ///<
+        Extension,              ///<
+        IsDir,                  ///<
+        Size,                   ///<
+        PackSize,               ///<
+        Attrib,                 ///<
+        CTime,                  ///<
+        ATime,                  ///<
+        MTime,                  ///<
+        Solid,                  ///<
+        Commented,              ///<
+        Encrypted,              ///<
+        SplitBefore,            ///<
+        SplitAfter,             ///<
+        DictionarySize,         ///<
+        CRC,                    ///<
+        Type,                   ///<
+        IsAnti,                 ///<
+        Method,                 ///<
+        HostOS,                 ///<
+        FileSystem,             ///<
+        User,                   ///<
+        Group,                  ///<
+        Block,                  ///<
+        Comment,                ///<
+        Position,               ///<
+        Prefix,                 ///<
+        NumSubDirs,             ///<
+        NumSubFiles,            ///<
+        UnpackVer,              ///<
+        Volume,                 ///<
+        IsVolume,               ///<
+        Offset,                 ///<
+        Links,                  ///<
+        NumBlocks,              ///<
+        NumVolumes,             ///<
+        TimeType,               ///<
+        Bit64,                  ///<
+        BigEndian,              ///<
+        Cpu,                    ///<
+        PhySize,                ///<
+        HeadersSize,            ///<
+        Checksum,               ///<
+        Characts,               ///<
+        Va,                     ///<
+        Id,                     ///<
+        ShortName,              ///<
+        CreatorApp,             ///<
+        SectorSize,             ///<
+        PosixAttrib,            ///<
+        SymLink,                ///<
+        Error,                  ///<
+        TotalSize,              ///<
+        FreeSpace,              ///<
+        ClusterSize,            ///<
+        VolumeName,             ///<
+        LocalName,              ///<
+        Provider,               ///<
+        NtSecure,               ///<
+        IsAltStream,            ///<
+        IsAux,                  ///<
+        IsDeleted,              ///<
+        IsTree,                 ///<
+        Sha1,                   ///<
+        Sha256,                 ///<
+        ErrorType,              ///<
+        NumErrors,              ///<
+        ErrorFlags,             ///<
+        WarningFlags,           ///<
+        Warning,                ///<
+        NumStreams,             ///<
+        NumAltStreams,          ///<
+        AltStreamsSize,         ///<
+        VirtualSize,            ///<
+        UnpackSize,             ///<
+        TotalPhySize,           ///<
+        VolumeIndex,            ///<
+        SubType,                ///<
+        ShortComment,           ///<
+        CodePage,               ///<
+        IsNotArcType,           ///<
+        PhySizeCantBeDetected,  ///<
+        ZerosTailIsAllowed,     ///<
+        TailSize,               ///<
+        EmbeddedStubSize,       ///<
+        NtReparse,              ///<
+        HardLink,               ///<
+        INode,                  ///<
+        StreamId,               ///<
+        ReadOnly,               ///<
+        OutName,                ///<
+        CopyLink                ///<
     };
 
     using std::wstring;
@@ -217,18 +217,18 @@ namespace bit7z {
     };
 
     enum class BitPropVariantType : uint32_t {
-        Empty,
-        Bool,
-        String,
-        UInt8,
-        UInt16,
-        UInt32,
-        UInt64,
-        Int8,
-        Int16,
-        Int32,
-        Int64,
-        Filetime
+        Empty,      ///< Empty BitPropVariant type
+        Bool,       ///< Boolean BitPropVariant type
+        String,     ///< String BitPropVariant type
+        UInt8,      ///< 8-bit unsigned int BitPropVariant type
+        UInt16,     ///< 16-bit unsigned int BitPropVariant type
+        UInt32,     ///< 32-bit unsigned int BitPropVariant type
+        UInt64,     ///< 64-bit unsigned int BitPropVariant type
+        Int8,       ///< 8-bit signed int BitPropVariant type
+        Int16,      ///< 16-bit signed int BitPropVariant type
+        Int32,      ///< 32-bit signed int BitPropVariant type
+        Int64,      ///< 64-bit signed int BitPropVariant type
+        Filetime    ///< FILETIME BitPropVariant type
     };
 
     static const array < wstring, static_cast< uint32_t >( BitPropVariantType::Filetime ) + 1 > typeNames = {
