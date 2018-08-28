@@ -137,7 +137,7 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 ## Download
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img src="https://user-images.githubusercontent.com/1334291/44652398-15ec8c00-a9ec-11e8-9208-36bfebf2d2cd.png" width="64"/><br/><img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=flat-square&label=%F0%9F%A1%87%20downloads"/>
+<img src="https://user-images.githubusercontent.com/1334291/44652398-15ec8c00-a9ec-11e8-9208-36bfebf2d2cd.png" width="64"/><br/><img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=flat-square&label=downloads"/>
 </a>
 </div>
 
