@@ -9,12 +9,12 @@ bit7z
     <img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat-square&logo=appveyor" alt="Build status">
   </a>
   <a href="https://github.com/rikyoz/bit7z/releases/latest">
-    <img src="https://img.shields.io/github/release/rikyoz/bit7z.png?style=flat-square&logo=github&logoColor=white" alt="GitHub release">
+    <img src="https://img.shields.io/github/release/rikyoz/bit7z.svg?style=flat-square&logo=github&logoColor=white" alt="GitHub release">
   </a>
-  <img src="https://img.shields.io/badge/compiler-MSVC%202012%20--%202017-red.png?style=flat-square&logo=visual-studio-code&logoColor=white" alt="MSVC version">
+  <img src="https://img.shields.io/badge/compiler-MSVC%202012%20--%202017-red.svg?style=flat-square&logo=visual-studio-code&logoColor=white" alt="MSVC version">
   <img src="https://img.shields.io/badge/arch-x86,%20x86__64-orange.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAfklEQVR42o2RRQECURQAsSh7fAXgTgSC0IcOuHfAm2DHQQbXnW823zOpIKHOHpE9dZL78JpPrFGhzjfqCnu+sVcALI+pYgvMFaBA/zYQn4Qs3ITyu2CHXSX4LFThUVxNptMHwYqCjIu1AEh5zTbfaCvE16eOjBC03z6r7fBfDto7QF382Vp4AAAAAElFTkSuQmCC" alt="Architectures">
   <a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE">
-    <img src="https://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.png?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAk0lEQVR42mJABQ0sDYDG5dKsAgCAwugCkHB3d3cn4RQk4SQSS7ALEddEx90aMgGNdyi433jP9yd+OAAgYJYTeYLfsEqLXtOmuIUVY4K+lFwDmwZfME+WDj2GuQc8bH1Tntt3Zce8F2xVrkqtUngUgBf8fi8YLl6FdgO6teo3aeafZaRQaSo1aVQsUaK4f5Y/4897AhNU/T9j8LI3AAAAAElFTkSuQmCC" alt="License">
+    <img src="https://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAk0lEQVR42mJABQ0sDYDG5dKsAgCAwugCkHB3d3cn4RQk4SQSS7ALEddEx90aMgGNdyi433jP9yd+OAAgYJYTeYLfsEqLXtOmuIUVY4K+lFwDmwZfME+WDj2GuQc8bH1Tntt3Zce8F2xVrkqtUngUgBf8fi8YLl6FdgO6teo3aeafZaRQaSo1aVQsUaK4f5Y/4897AhNU/T9j8LI3AAAAAElFTkSuQmCC" alt="License">
   </a>
 </p>
 <p align="center">
@@ -137,7 +137,7 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 ## Download
 <p align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img src="https://user-images.githubusercontent.com/1334291/44652398-15ec8c00-a9ec-11e8-9208-36bfebf2d2cd.png" width="64"/><br/><img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.png?style=flat-square"/>
+<img src="https://user-images.githubusercontent.com/1334291/44652398-15ec8c00-a9ec-11e8-9208-36bfebf2d2cd.png" width="64"/><br/><img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=flat-square"/>
 </a>
 </p>
 
