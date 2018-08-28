@@ -17,28 +17,31 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            lib/7zSDK/CPP/Common/IntToString.cpp \
            lib/7zSDK/CPP/Common/MyString.cpp \
            lib/7zSDK/CPP/Common/MyVector.cpp \
-           src/bitextractor.cpp \
-           src/bitcompressor.cpp \
-           src/bitmemcompressor.cpp \
            src/bit7zlibrary.cpp \
+           src/bitarchivecreator.cpp \
+           src/bitarchivehandler.cpp \
+           src/bitarchiveinfo.cpp \
+           src/bitarchiveitem.cpp \
+           src/bitarchiveopener.cpp \
+           src/bitcompressor.cpp \
            src/bitexception.cpp \
-           src/bitguids.cpp \
-           src/extractcallback.cpp \
-           src/opencallback.cpp \
-           src/updatecallback.cpp \
-           src/fsitem.cpp \
-           src/fsindexer.cpp \
-           src/fsutil.cpp \
-           src/callback.cpp \
+           src/bitextractor.cpp \
            src/bitformat.cpp \
-           src/memextractcallback.cpp \
-           src/memupdatecallback.cpp \
+           src/bitguids.cpp \
+           src/bitmemcompressor.cpp \
            src/bitmemextractor.cpp \
+           src/bitpropvariant.cpp \
+           src/callback.cpp \
            src/coutmemstream.cpp \
            src/coutmultivolstream.cpp \
-           src/bitarchivecreator.cpp \
-           src/bitarchiveopener.cpp \
-           src/bitarchivehandler.cpp \
+           src/extractcallback.cpp \
+           src/fsindexer.cpp \
+           src/fsitem.cpp \
+           src/fsutil.cpp \
+           src/memextractcallback.cpp \
+           src/memupdatecallback.cpp \
+           src/opencallback.cpp \
+           src/updatecallback.cpp \
            src/util.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
@@ -48,31 +51,34 @@ QMAKE_CXXFLAGS_WARN_ON = -W4
 
 DEFINES += _UNICODE _7Z_VOL
 
-HEADERS += include/bitcompressor.hpp \
-           include/bitmemcompressor.hpp \
+HEADERS += include/bit7z.hpp \
            include/bit7zlibrary.hpp \
-           include/bitexception.hpp \
-           include/bitguids.hpp \
-           include/bitextractor.hpp \
-           include/extractcallback.hpp \
-           include/opencallback.hpp \
-           include/updatecallback.hpp \
-           include/fsitem.hpp \
-           include/fsindexer.hpp \
-           include/fsutil.hpp \
-           include/bit7z.hpp \
-           include/callback.hpp \
-           include/bitformat.hpp \
+           include/bitarchivecreator.hpp \
+           include/bitarchivehandler.hpp \
+           include/bitarchiveinfo.hpp \
+           include/bitarchiveitem.hpp \
+           include/bitarchiveopener.hpp \
            include/bitcompressionlevel.hpp \
-           include/memextractcallback.hpp \
-           include/bittypes.hpp \
-           include/memupdatecallback.hpp \
+           include/bitcompressor.hpp \
+           include/bitexception.hpp \
+           include/bitextractor.hpp \
+           include/bitformat.hpp \
+           include/bitguids.hpp \
+           include/bitmemcompressor.hpp \
            include/bitmemextractor.hpp \
+           include/bitpropvariant.hpp \
+           include/bittypes.hpp \
+           include/callback.hpp \
            include/coutmemstream.hpp \
            include/coutmultivolstream.hpp \
-           include/bitarchivecreator.hpp \
-           include/bitarchiveopener.hpp \
-           include/bitarchivehandler.hpp \
+           include/extractcallback.hpp \
+           include/fsindexer.hpp \
+           include/fsitem.hpp \
+           include/fsutil.hpp \
+           include/memextractcallback.hpp \
+           include/memupdatecallback.hpp \
+           include/opencallback.hpp \
+           include/updatecallback.hpp \
            include/util.hpp
 
 contains(QT_ARCH, i386) {

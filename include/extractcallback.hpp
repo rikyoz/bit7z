@@ -19,7 +19,8 @@ namespace bit7z {
     class ExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
             ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, const wstring& directoryPath );
+            ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler,
+                             const wstring& inFilePath, const wstring& directoryPath );
             virtual ~ExtractCallback();
 
             MY_UNKNOWN_IMP2( ICompressProgressInfo, ICryptoGetTextPassword )
@@ -42,8 +43,9 @@ namespace bit7z {
         private:
             const BitArchiveOpener& mOpener;
             CMyComPtr< IInArchive > mArchiveHandler;
+            wstring mInFilePath;     // Input file path
             wstring mDirectoryPath;  // Output directory
-            wstring mFilePath;       // name inside arcvhive
+            wstring mFilePath;       // name inside archive
             wstring mDiskFilePath;   // full path to file on disk
             bool mExtractMode;
             struct CProcessedFileInfo {

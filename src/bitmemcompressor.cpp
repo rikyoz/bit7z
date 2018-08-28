@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/bitmemcompressor.hpp"
 
 #include "7zip/Archive/IArchive.h"
@@ -20,29 +23,24 @@ using std::wstring;
 using std::vector;
 
 template< class T >
-void compressOut( CMyComPtr< IOutArchive > outArc, CMyComPtr< T > outStream,
+void compressOut( const CMyComPtr< IOutArchive >& out_arc, CMyComPtr< T > out_stream,
                   const vector< byte_t >& in_buffer, const wstring& in_buffer_name, const BitArchiveCreator& creator ) {
-    MemUpdateCallback* updateCallbackSpec = new MemUpdateCallback( creator, in_buffer, in_buffer_name );
+    auto* update_callback_spec = new MemUpdateCallback( creator, in_buffer, in_buffer_name );
 
-    CMyComPtr< IArchiveUpdateCallback > updateCallback( updateCallbackSpec );
-    HRESULT result = outArc->UpdateItems( outStream, 1, updateCallback );
-    updateCallbackSpec->Finilize();
+    CMyComPtr< IArchiveUpdateCallback > update_callback( update_callback_spec );
+    HRESULT result = out_arc->UpdateItems( out_stream, 1, update_callback );
+    update_callback_spec->Finilize();
 
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation!" );
-    } else if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
+    }
+
+    if ( result == E_FAIL && update_callback_spec->getErrorMessage().empty() ) {
         throw BitException( "Failed operation (unkwown error)!" );
-    } else if ( result != S_OK ) {
-        throw BitException( updateCallbackSpec->getErrorMessage() );
     }
 
-    wstring errorString = L"Error for files: ";
-    for ( unsigned int i = 0; i < updateCallbackSpec->mFailedFiles.size(); i++ ) {
-        errorString += updateCallbackSpec->mFailedFiles[ i ] + L" ";
-    }
-
-    if ( updateCallbackSpec->mFailedFiles.size() != 0 ) {
-        throw BitException( errorString );
+    if ( result != S_OK ) {
+        throw BitException( update_callback_spec->getErrorMessage() );
     }
 }
 
@@ -51,37 +49,37 @@ BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutForma
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstring& out_archive,
                                  wstring in_buffer_name ) const {
-    CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    CMyComPtr< IOutStream > outFileStream;
+    CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
-        COutMultiVolStream* outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
-        outFileStream = outMultiVolStreamSpec;
+        auto* out_multivol_stream_spec = new COutMultiVolStream( mVolumeSize, out_archive );
+        out_file_stream = out_multivol_stream_spec;
     } else {
-        COutFileStream* outFileStreamSpec = new COutFileStream();
-        outFileStream = outFileStreamSpec;
-        if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
+        auto* out_file_stream_spec = new COutFileStream();
+        out_file_stream = out_file_stream_spec;
+        if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
             throw BitException( L"Can't create archive file '" + out_archive + L"'" );
         }
     }
 
     if ( in_buffer_name.empty() ) {
-        fsutil::filename( out_archive, in_buffer_name );
+        in_buffer_name = fsutil::filename( out_archive );
     }
 
-    compressOut( outArc, outFileStream, in_buffer, in_buffer_name, *this );
+    compressOut( out_arc, out_file_stream, in_buffer, in_buffer_name, *this );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
-                                 wstring in_buffer_name ) const {
+                                 const wstring& in_buffer_name ) const {
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 
-    CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    COutMemStream* outMemStreamSpec = new COutMemStream( out_buffer );
-    CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
+    auto* out_mem_stream_spec = new COutMemStream( out_buffer );
+    CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );
 
-    compressOut( outArc, outMemStream, in_buffer, in_buffer_name, *this );
+    compressOut( out_arc, out_mem_stream, in_buffer, in_buffer_name, *this );
 }

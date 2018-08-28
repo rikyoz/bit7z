@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/bitformat.hpp"
 
 using namespace std;
@@ -19,6 +22,7 @@ namespace bit7z {
         const BitInOutFormat Xz( 0x0C, L".xz",
                                  COMPRESSION_LEVEL | ENCRYPTION | HEADER_ENCRYPTION | INMEM_COMPRESSION );
         const BitInFormat Ppmd( 0x0D );
+        const BitInFormat COFF( 0xC7 );
         const BitInFormat Ext( 0xC7 );
         const BitInFormat VMDK( 0xC8 );
         const BitInFormat VDI( 0xC9 );
@@ -70,23 +74,23 @@ int BitInFormat::value() const {
     return mValue;
 }
 
-bool BitInFormat::operator==( const BitInFormat &other ) const {
+bool BitInFormat::operator==( const BitInFormat& other ) const {
     return mValue == other.value();
 }
 
-bool BitInFormat::operator!=( const BitInFormat &other ) const {
+bool BitInFormat::operator!=( const BitInFormat& other ) const {
     return !( *this == other );
 }
 
 const GUID BitInFormat::guid() const {
-#if _MSC_VER <= 1600
+#if _MSC_VER <= 1700
     GUID ret;
     ret.Data1 = 0x23170F69;
     ret.Data2 = 0x40C1;
     ret.Data3 = 0x278A;
-    
+
     const unsigned char data4 [] = { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 };
-    std::copy(data4, data4+8, ret.Data4);
+    std::copy( data4, data4 + 8, ret.Data4 );
 
     return ret;
 #else
@@ -94,10 +98,10 @@ const GUID BitInFormat::guid() const {
 #endif
 }
 
-BitInOutFormat::BitInOutFormat( unsigned char value, const wstring &ext, bitset< FEATURES_COUNT > features ) :
+BitInOutFormat::BitInOutFormat( unsigned char value, const wstring& ext, bitset< FEATURES_COUNT > features ) :
     BitInFormat( value ), mExtension( ext ), mFeatures( features ) {}
 
-const wstring &BitInOutFormat::extension() const {
+const wstring& BitInOutFormat::extension() const {
     return mExtension;
 }
 

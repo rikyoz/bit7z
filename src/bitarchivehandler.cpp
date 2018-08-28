@@ -1,9 +1,12 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "include/bitarchivehandler.hpp"
 
 using namespace bit7z;
 using std::wstring;
 
-BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary &lib ) : mLibrary( lib ), mPassword(L"") {}
+BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib ) : mLibrary( lib ), mPassword( L"" ) {}
 
 BitArchiveHandler::~BitArchiveHandler() {}
 
@@ -43,22 +46,22 @@ void BitArchiveHandler::clearPassword() {
     setPassword( L"" );
 }
 
-void BitArchiveHandler::setTotalCallback( TotalCallback callback ) {
+void BitArchiveHandler::setTotalCallback( const TotalCallback& callback ) {
     mTotalCallback = callback;
 }
 
-void BitArchiveHandler::setProgressCallback( ProgressCallback callback ) {
+void BitArchiveHandler::setProgressCallback( const ProgressCallback& callback ) {
     mProgressCallback = callback;
 }
 
-void BitArchiveHandler::setRatioCallback( RatioCallback callback ) {
+void BitArchiveHandler::setRatioCallback( const RatioCallback& callback ) {
     mRatioCallback = callback;
 }
 
-void BitArchiveHandler::setFileCallback( FileCallback callback ) {
+void BitArchiveHandler::setFileCallback( const FileCallback& callback ) {
     mFileCallback = callback;
 }
 
-void BitArchiveHandler::setPasswordCallback( PasswordCallback callback ) {
+void BitArchiveHandler::setPasswordCallback( const PasswordCallback& callback ) {
     mPasswordCallback = callback;
 }

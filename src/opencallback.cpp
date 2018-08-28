@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/opencallback.hpp"
 
 #include "../include/fsutil.hpp"
@@ -16,7 +19,7 @@ using namespace bit7z::filesystem;
  *  + Use of wstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
-OpenCallback::OpenCallback( const BitArchiveOpener& opener, const wstring &filename )
+OpenCallback::OpenCallback( const BitArchiveOpener& opener, const wstring& filename )
     : mOpener( opener ), mSubArchiveMode( false ), mSubArchiveName( L"" ), mFileItem( filename ) {}
 
 OpenCallback::~OpenCallback() {}
@@ -69,21 +72,23 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
 
 STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) {
     try {
-        *inStream = NULL;
+        *inStream = nullptr;
         if ( mSubArchiveMode ) {
             return S_FALSE;
         }
-        wstring fullPath = mFileItem.upDirectory();
-        if ( !fullPath.empty() ) {
-            fullPath += L"\\";
-        }
-        fullPath += name;
-        if ( !fsutil::path_exists( fullPath ) || fsutil::is_directory( fullPath ) ) {
+        if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
-        CInFileStream* inFile = new CInFileStream;
+        wstring stream_path = mFileItem.path();
+        if ( name != nullptr ) {
+            stream_path = fsutil::dirname( stream_path ) + WCHAR_PATH_SEPARATOR + name;
+            if ( !fsutil::path_exists( stream_path ) || fsutil::is_directory( stream_path ) ) {
+                return S_FALSE;
+            }
+        }
+        auto* inFile = new CInFileStream;
         CMyComPtr< IInStream > inStreamTemp = inFile;
-        if ( !inFile->Open( fullPath.c_str() ) ) {
+        if ( !inFile->Open( stream_path.c_str() ) ) {
             return ::GetLastError();
         }
         *inStream = inStreamTemp.Detach();
@@ -109,7 +114,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
             pass = mOpener.passwordCallback()();
         }
 
-        if ( pass.empty() ){
+        if ( pass.empty() ) {
             mErrorMessage = L"Password is not defined";
             return E_ABORT;
         }

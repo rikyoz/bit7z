@@ -47,7 +47,7 @@ namespace bit7z {
              *
              * @param lib   the 7z library used by the handler.
              */
-            BitArchiveHandler( const Bit7zLibrary& lib );
+            explicit BitArchiveHandler( const Bit7zLibrary& lib );
 
             /**
              * @brief BitArchiveHandler destructor
@@ -124,7 +124,7 @@ namespace bit7z {
              *
              * @param callback  the total callback to be used.
              */
-            void setTotalCallback( TotalCallback callback );
+            void setTotalCallback( const TotalCallback& callback );
 
             /**
              * @brief Sets the callback to be called when the processed size of the ongoing operation is updated.
@@ -134,7 +134,7 @@ namespace bit7z {
              *
              * @param callback  the progress callback to be used.
              */
-            void setProgressCallback( ProgressCallback callback );
+            void setProgressCallback( const ProgressCallback& callback );
 
             /**
              * @brief Sets the callback to be called when the input processed size and current output size of the
@@ -145,21 +145,21 @@ namespace bit7z {
              *
              * @param callback  the ratio callback to be used.
              */
-            void setRatioCallback( RatioCallback callback );
+            void setRatioCallback( const RatioCallback& callback );
 
             /**
              * @brief Sets the callback to be called when the currently file being processed changes.
              *
              * @param callback  the file callback to be used.
              */
-            void setFileCallback( FileCallback callback );
+            void setFileCallback( const FileCallback& callback );
 
             /**
              * @brief Sets the callback to be called when a password is needed to complete the ongoing operation.
              *
              * @param callback  the password callback to be used.
              */
-            void setPasswordCallback( PasswordCallback callback );
+            void setPasswordCallback( const PasswordCallback& callback );
 
         protected:
             const Bit7zLibrary& mLibrary;

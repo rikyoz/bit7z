@@ -26,7 +26,7 @@ namespace bit7z {
             /**
              * @brief BitArchiveCreator destructor.
              */
-            virtual ~BitArchiveCreator() = 0;
+            virtual ~BitArchiveCreator() override = 0;
 
             /**
              * @return the format used by the archive creator.

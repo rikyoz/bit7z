@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 #include "../include/extractcallback.hpp"
 
 #include "Windows/FileDir.h"
@@ -51,13 +54,15 @@ static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& res
     return IsArchiveItemProp( archive, index, kpidIsDir, result );
 }
 
-ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, const wstring& directoryPath ) :
+ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler,
+                                  const wstring& inFilePath, const wstring& directoryPath ) :
     mOpener( opener ),
     mArchiveHandler( archiveHandler ),
+    mInFilePath( inFilePath ),
     mDirectoryPath( directoryPath ),
     mExtractMode( true ),
     mProcessedFileInfo(),
-    mOutFileStreamSpec( NULL ),
+    mOutFileStreamSpec( nullptr ),
     mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
     filesystem::fsutil::normalize_path( mDirectoryPath );
@@ -79,7 +84,7 @@ STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::SetRatioInfo(const UInt64* inSize, const UInt64* outSize) {
+STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
     if ( mOpener.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
         mOpener.ratioCallback()( *inSize, *outSize );
     }
@@ -90,29 +95,23 @@ STDMETHODIMP ExtractCallback::SetRatioInfo(const UInt64* inSize, const UInt64* o
 STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
                                          ISequentialOutStream** outStream,
                                          Int32                  askExtractMode ) {
-    *outStream = 0;
+    *outStream = nullptr;
     mOutFileStream.Release();
     // Get Name
     NCOM::CPropVariant prop;
     RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
-    wstring fullPath;
 
     if ( prop.vt == VT_EMPTY ) {
-        fullPath = kEmptyFileAlias;
+        mFilePath = !mInFilePath.empty() ? filesystem::fsutil::filename( mInFilePath ) : kEmptyFileAlias;
+    } else if ( prop.vt == VT_BSTR ) {
+        mFilePath = prop.bstrVal;
     } else {
-        if ( prop.vt != VT_BSTR ) {
-            return E_FAIL;
-        }
-
-        fullPath = prop.bstrVal;
+        return E_FAIL;
     }
-
-    mFilePath = fullPath;
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
     }
-
 
     // Get Attrib
     NCOM::CPropVariant prop2;
@@ -150,38 +149,11 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
             return E_FAIL;
     }
 
-    // Get Size
-    NCOM::CPropVariant prop4;
-    RINOK( mArchiveHandler->GetProperty( index, kpidSize, &prop4 ) );
-    bool newFileSizeDefined = ( prop4.vt != VT_EMPTY );
-    UInt64 newFileSize;
-
-    if ( newFileSizeDefined ) {
-        //taken from ConvertPropVariantToUInt64
-        switch ( prop4.vt ) {
-            case VT_UI1: newFileSize = prop4.bVal;
-                break;
-            case VT_UI2: newFileSize = prop4.uiVal;
-                break;
-            case VT_UI4: newFileSize = prop4.ulVal;
-                break;
-            case VT_UI8: newFileSize = ( UInt64 )prop4.uhVal.QuadPart;
-                break;
-            default:
-                mErrorMessage = L"151199";
-                return E_FAIL;
-        }
-
-        //newFileSize = ConvertPropVariantToUInt64( prop4 );
-    }
-
-
     // Create folders for file
-    size_t slashPos = mFilePath.rfind( WSTRING_PATH_SEPARATOR );
+    size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
 
     if ( slashPos != wstring::npos ) {
-        NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0,
-                                                                                        slashPos ) ).c_str() );
+        NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0, slashPos ) ).c_str() );
     }
     wstring fullProcessedPath = mDirectoryPath + mFilePath;
     mDiskFilePath = fullProcessedPath;
@@ -192,15 +164,12 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
         NFile::NFind::CFileInfo fi;
 
         if ( mOpener.fileCallback() ) {
-            wstring filename;
-            filesystem::fsutil::filename( fullProcessedPath, filename, true );
+            wstring filename = filesystem::fsutil::filename( fullProcessedPath, true );
             mOpener.fileCallback()( filename );
         }
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
             if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
-                //cerr << UString( kCantDeleteOutputFile ) << fullProcessedPath << endl;
-                //throw BitException( kCantDeleteOutputFile + fullProcessedPath );
                 mErrorMessage = kCantDeleteOutputFile + fullProcessedPath;
                 return E_ABORT;
             }
@@ -210,8 +179,6 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
         CMyComPtr< ISequentialOutStream > outStreamLoc( mOutFileStreamSpec );
 
         if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
-            //cerr <<  ( UString )L"cannot open output file " + fullProcessedPath << endl;
-            //throw BitException( L"cannot open output file " + fullProcessedPath );
             mErrorMessage = L"Cannot open output file " + fullProcessedPath;
             return E_ABORT;
         }
@@ -235,11 +202,12 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
             //wcout <<  kExtractingString;
             break;
 
-            /*case NArchive::NExtract::NAskMode::kTest:
-                cout <<  kTestingString;
-                break;
+        case NArchive::NExtract::NAskMode::kTest:
+            mExtractMode = false;
+            //wcout <<  kTestingString;
+            break;
 
-               case NArchive::NExtract::NAskMode::kSkip:
+            /*   case NArchive::NExtract::NAskMode::kSkip:
                 cout <<  kSkippingString;
                 break;*/
     }
@@ -275,7 +243,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
         }
     }
 
-    if ( mOutFileStream != NULL ) {
+    if ( mOutFileStream != nullptr ) {
         if ( mProcessedFileInfo.MTimeDefined ) {
             mOutFileStreamSpec->SetMTime( &mProcessedFileInfo.MTime );
         }
@@ -306,7 +274,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
             pass = mOpener.passwordCallback()();
         }
 
-        if ( pass.empty() ){
+        if ( pass.empty() ) {
             mErrorMessage = L"Password is not defined";
             return E_FAIL;
         }

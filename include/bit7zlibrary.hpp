@@ -14,11 +14,6 @@ namespace bit7z {
      * @brief The Bit7zLibrary class allows the access to the basic functionalities provided by the 7z DLLs.
      */
     class Bit7zLibrary {
-        friend class BitExtractor;
-        friend class BitCompressor;
-        friend class BitMemExtractor;
-        friend class BitMemCompressor;
-
         public:
             /**
              * @brief Constructs a Bit7zLibrary object using the path of the wanted 7zip DLL.
@@ -46,10 +41,13 @@ namespace bit7z {
             void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 
         private:
-            typedef UINT32 ( WINAPI * CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );
+            typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );
 
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
+
+            Bit7zLibrary( const Bit7zLibrary& ); // not copyable!
+            Bit7zLibrary& operator=( const Bit7zLibrary& ); // not assignable!
     };
 }
 

@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "../include/fsitem.hpp"
 
@@ -10,21 +11,22 @@ namespace bit7z {
     namespace filesystem {
         using std::wstring;
         using std::vector;
+        using std::map;
 
         class FSIndexer {
             public:
-                FSIndexer( const wstring& directory, const wstring& filter = L"*" );
-                void listFilesInDirectory( vector< FSItem >& result, bool recursive = true );
-
-                static void listFiles( const vector< wstring >& in_paths, vector< FSItem >& out_files );
-                static void removeListedDirectories( const vector< wstring >& in_paths, vector< FSItem >& out_files );
+                static vector< FSItem > indexDirectory( const wstring& in_dir, const wstring& filter = L"", bool recursive = true );
+                static vector< FSItem > indexPaths( const vector< wstring >& in_paths, bool ignore_dirs = false );
+                static vector< FSItem > indexPathsMap( const map<wstring, wstring>& in_paths, bool ignore_dirs = false );
 
             private:
-                wstring mDirectory;
-                wstring mDirName;
+                FSItem mDirItem;
                 wstring mFilter;
 
-                void listFilesInDirectory( vector< FSItem >& result, bool recursive, const wstring& prefix );
+                FSIndexer( const wstring& directory, const wstring& filter = L"" );
+                void listDirectoryItems( vector< FSItem >& result, bool recursive, const wstring& prefix = L"" );
+
+                static void indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem >& result );
         };
     }
 }

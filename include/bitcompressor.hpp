@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitformat.hpp"
@@ -16,6 +17,7 @@ namespace bit7z {
 
     using std::wstring;
     using std::vector;
+    using std::map;
     using filesystem::FSItem;
 
     /**
@@ -52,6 +54,19 @@ namespace bit7z {
             void compress( const vector< wstring >& in_paths, const wstring& out_archive ) const;
 
             /**
+             * @brief Compresses the given files or directories using the specified aliases.
+             *
+             * The items in the first argument must be the relative or absolute paths to files or
+             * directories existing on the filesystem.
+             * Each pair of the map must follow the following format:
+             *  {L"path to file in the filesystem", L"alias path in the archive"}.
+             *
+             * @param in_paths      a map of paths and corresponding aliases.
+             * @param out_archive   the path (relative or absolute) to the output archive file.
+             */
+            void compress( const map<wstring, wstring>& in_paths, const wstring& out_archive ) const;
+
+            /**
              * @brief Compresses a single file.
              *
              * @param in_file       the path (relative or absolute) to the input file.
@@ -74,22 +89,21 @@ namespace bit7z {
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
-             * @param filter        the filter to use when searching files inside in_dir.
              * @param recursive     if true, it searches files inside the sub-folders of in_dir.
+             * @param filter        the filter to use when searching files inside in_dir.
              */
-            void compressFiles( const wstring& in_dir, const wstring& out_archive, const wstring& filter = L"*",
-                                bool recursive = true ) const;
+            void compressFiles( const wstring& in_dir, const wstring& out_archive,
+                                bool recursive = true, const wstring& filter = L"*.*" ) const;
 
             /**
              * @brief Compresses an entire directory.
              *
-             * @note This method is equivalent to compressFiles with filter set to L"*".
+             * @note This method is equivalent to compressFiles with filter set to L"".
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
              * @param out_archive   the path (relative or absolute) to the output archive file.
-             * @param recursive     if true, it searches files inside the sub-folders of in_dir.
              */
-            void compressDirectory( const wstring& in_dir, const wstring& out_archive, bool recursive = true ) const;
+            void compressDirectory( const wstring& in_dir, const wstring& out_archive ) const;
 
             /* Compression from file system to memory buffer */
 
