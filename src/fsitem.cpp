@@ -21,8 +21,8 @@ using namespace bit7z::filesystem;
 
 FSItem::FSItem( const wstring& path, const wstring& inArchivePath )
     : mPath( path ), mFileData(), mSearchPath( L"" ), mInArchivePath( inArchivePath ) {
-    bool isdir = fsutil::is_directory( mPath );
-    if ( isdir && !mPath.empty() ) {
+    bool is_dir = fsutil::is_directory( mPath );
+    if ( is_dir && !mPath.empty() ) {
         // The FSItem is a directory!
         // If the path ends with a / or a \, it's removed, since FindFirstFile doesn't want it!
         if ( mPath.back() == L'/' || mPath.back() == L'\\' ) {
@@ -36,8 +36,8 @@ FSItem::FSItem( const wstring& path, const wstring& inArchivePath )
     FindClose( find_handle );
 }
 
-FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& searchPath ) :
-    mPath( dir ), mFileData( data ), mSearchPath( searchPath ) {
+FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& search_path ) :
+    mPath( dir ), mFileData( data ), mSearchPath( search_path ) {
     /* Now mPath is the path without the filename, since dir is the path containing the file 'data'!
      * So we must add the filename! */
     if ( mPath.back() == L'/' || mPath.back() == L'\\' ) {

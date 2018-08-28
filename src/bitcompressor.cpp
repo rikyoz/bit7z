@@ -24,30 +24,30 @@ using namespace bit7z::util;
 using namespace NWindows;
 
 template< class T >
-void compressOut( const CMyComPtr< IOutArchive >& outArc, CMyComPtr< T > outStream,
+void compressOut( const CMyComPtr< IOutArchive >& out_arc, CMyComPtr< T > out_stream,
                   const vector< FSItem >& in_items, const BitArchiveCreator& creator ) {
-    auto* updateCallbackSpec = new UpdateCallback( creator, in_items );
+    auto* update_callback_spec = new UpdateCallback( creator, in_items );
 
-    CMyComPtr< IArchiveUpdateCallback2 > updateCallback( updateCallbackSpec );
-    HRESULT result = outArc->UpdateItems( outStream, static_cast< uint32_t >( in_items.size() ), updateCallback );
-    updateCallbackSpec->Finilize();
+    CMyComPtr< IArchiveUpdateCallback2 > update_callback( update_callback_spec );
+    HRESULT result = out_arc->UpdateItems( out_stream, static_cast< uint32_t >( in_items.size() ), update_callback );
+    update_callback_spec->Finilize();
 
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation!" );
     }
 
-    if ( result == E_FAIL && updateCallbackSpec->getErrorMessage().empty() ) {
+    if ( result == E_FAIL && update_callback_spec->getErrorMessage().empty() ) {
         throw BitException( "Failed operation (unkwown error)!" );
     }
 
     if ( result != S_OK ) {
-        throw BitException( updateCallbackSpec->getErrorMessage() );
+        throw BitException( update_callback_spec->getErrorMessage() );
     }
 
-    if ( !updateCallbackSpec->mFailedFiles.empty() ) {
+    if ( !update_callback_spec->mFailedFiles.empty() ) {
         wstringstream wsstream;
         wsstream << L"Error for files: " << endl;
-        for ( const auto& failed_file : updateCallbackSpec->mFailedFiles ) {
+        for ( const auto& failed_file : update_callback_spec->mFailedFiles ) {
             wsstream << failed_file.first << L" (error code: " << failed_file.second << L")" << endl;
         }
         throw BitException( wsstream.str() );
@@ -63,16 +63,16 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dirItems = FSIndexer::indexPaths( in_paths );
-    compressToFileSystem( dirItems, out_archive );
+    vector< FSItem > dir_items = FSIndexer::indexPaths( in_paths );
+    compressToFileSystem( dir_items, out_archive );
 }
 
 void BitCompressor::compress( const map<wstring, wstring>& in_paths, const wstring& out_archive ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dirItems = FSIndexer::indexPathsMap( in_paths );
-    compressToFileSystem( dirItems, out_archive );
+    vector< FSItem > dir_items = FSIndexer::indexPathsMap( in_paths );
+    compressToFileSystem( dir_items, out_archive );
 }
 
 void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
@@ -85,8 +85,8 @@ void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstr
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dirItems = FSIndexer::indexPaths( in_files, true );
-    compressToFileSystem( dirItems, out_archive );
+    vector< FSItem > dir_items = FSIndexer::indexPaths( in_files, true );
+    compressToFileSystem( dir_items, out_archive );
 }
 
 void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
@@ -94,8 +94,8 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_arc
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dirItems = FSIndexer::indexDirectory( in_dir, filter, recursive );
-    compressToFileSystem( dirItems, out_archive );
+    vector< FSItem > dir_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
+    compressToFileSystem( dir_items, out_archive );
 }
 
 void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive ) const {
@@ -109,9 +109,9 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
     if ( item.isDir() ) {
         throw BitException( "Cannot compress a directory into a memory buffer!" );
     }
-    vector< FSItem > dirItems;
-    dirItems.push_back( item );
-    compressToMemory( dirItems, out_buffer );
+    vector< FSItem > dir_items;
+    dir_items.push_back( item );
+    compressToMemory( dir_items, out_buffer );
 }
 
 /* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK
@@ -119,23 +119,23 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
  *  + Generalized the code to work with any type of format (original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
-    CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    CMyComPtr< IOutStream > outFileStream;
+    CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
-        auto* outMultiVolStreamSpec = new COutMultiVolStream( mVolumeSize, out_archive );
-        outFileStream = outMultiVolStreamSpec;
+        auto* out_multivol_stream_spec = new COutMultiVolStream( mVolumeSize, out_archive );
+        out_file_stream = out_multivol_stream_spec;
     } else {
-        auto* outFileStreamSpec = new COutFileStream();
+        auto* out_file_stream_spec = new COutFileStream();
         /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
          * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
-        outFileStream = outFileStreamSpec;
-        if ( !outFileStreamSpec->Create( out_archive.c_str(), false ) ) {
+        out_file_stream = out_file_stream_spec;
+        if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
             throw BitException( L"Can't create archive file '" + out_archive + L"'" );
         }
     }
 
-    compressOut( outArc, outFileStream, in_items, *this );
+    compressOut( out_arc, out_file_stream, in_items, *this );
 }
 
 // FS -> Memory
@@ -147,10 +147,10 @@ void BitCompressor::compressToMemory( const vector< FSItem >& in_items, vector< 
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 
-    CMyComPtr< IOutArchive > outArc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
 
-    auto* outMemStreamSpec = new COutMemStream( out_buffer );
-    CMyComPtr< ISequentialOutStream > outMemStream( outMemStreamSpec );
+    auto* out_mem_stream_spec = new COutMemStream( out_buffer );
+    CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );
 
-    compressOut( outArc, outMemStream, in_items, *this );
+    compressOut( out_arc, out_mem_stream, in_items, *this );
 }

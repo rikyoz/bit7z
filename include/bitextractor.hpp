@@ -77,7 +77,7 @@ namespace bit7z {
             void test( const wstring& in_file );
 
         private:
-            void extractToFileSystem( IInArchive* inArchive, const wstring& in_file,
+            void extractToFileSystem( IInArchive* in_archive, const wstring& in_file,
                                       const wstring& out_dir, const vector<uint32_t>& indices ) const;
     };
 }

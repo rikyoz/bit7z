@@ -48,9 +48,9 @@ map<BitProperty, BitPropVariant> BitArchiveInfo::archiveProperties() const {
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
         // Yeah, I know, I double cast property (here and in getArchiveProperty), but the code is easier to read!
         auto property = static_cast<BitProperty>( i );
-        BitPropVariant propertyValue = getArchiveProperty( property );
-        if ( !propertyValue.isEmpty() ) {
-            result[ property ] = propertyValue;
+        BitPropVariant property_value = getArchiveProperty( property );
+        if ( !property_value.isEmpty() ) {
+            result[ property ] = property_value;
         }
     }
     return result;
@@ -63,9 +63,9 @@ vector<BitArchiveItem> BitArchiveInfo::items() const {
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
             // Yeah, I know, I double cast property (here and in getItemProperty), but the code is easier to read!
             auto property = static_cast<BitProperty>( j );
-            BitPropVariant propertyValue = getItemProperty( i, property );
-            if ( !propertyValue.isEmpty() ) {
-                item.setProperty( property, propertyValue );
+            BitPropVariant property_value = getItemProperty( i, property );
+            if ( !property_value.isEmpty() ) {
+                item.setProperty( property, property_value );
             }
         }
         result.push_back( item );
