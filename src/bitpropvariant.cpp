@@ -18,14 +18,14 @@ BitPropVariantType lookupType( VARTYPE type ) {
         case VT_BSTR:
             return BitPropVariantType::String;
         case VT_UI1:
-            return BitPropVariantType::Uint8;
+            return BitPropVariantType::UInt8;
         case VT_UI2:
-            return BitPropVariantType::Uint16;
+            return BitPropVariantType::UInt16;
         case VT_UI4:
         case VT_UINT:
-            return BitPropVariantType::Uint32;
+            return BitPropVariantType::UInt32;
         case VT_UI8:
-            return BitPropVariantType::Uint64;
+            return BitPropVariantType::UInt64;
         case VT_I1:
             return BitPropVariantType::Int8;
         case VT_I2:
