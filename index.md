@@ -47,7 +47,30 @@ Please note that the presence or not of some of the above features depends on th
 
 ## Getting Started (Library Usage)
 
-Some examples on how to use some of the main features of bit7z are available [here](https://github.com/rikyoz/bit7z/wiki/Basic-Usage).
+A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section, where you can find also some [basic usage](https://github.com/rikyoz/bit7z/wiki/Basic-Usage) examples of bit7z main features.
+
+## Download
+<div align="center">
+<a href="https://github.com/rikyoz/bit7z/releases/latest">
+<img src="https://user-images.githubusercontent.com/1334291/44652398-15ec8c00-a9ec-11e8-9208-36bfebf2d2cd.png" width="64"/><br/><img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=flat-square&label=downloads"/>
+</a>
+</div>
+
+The released packages contain a _precompiled version_ of the library (both in _debug_ and _release_ mode) and the _public API headers_ that are needed to use it in your program; they are available for both _x86_ and _x64_ architectures.
+
+Obviously, you can also clone/download this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+
+## Requirements
+
++ **Target OS:** Windows (both x86 and x64)
++ **Compiler:** MSVC 2012 or greater (tested with versions 2012, 2015 and 2017)
++ **DLLs:** 7-zip DLLs (v18.05)
+
+The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
+
+**Note**: in order to use this library you should link your program not only with **bit7z** but also with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`)
+
+**Note 2**: even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the dlls of previous versions, such as v16.04. However, it is _strongly suggested_ to use dlls with the same version.
 
 ## Building bit7z
 
@@ -59,7 +82,9 @@ If you have found this project useful, please consider a small donation! Thank y
 
 <div align="center">
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC">
+<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" alt="Donate">
+</a>
 
 </div>
 
