@@ -39,7 +39,8 @@
   </PropertyGroup>
   <!-- Visual Studio 2017 (15.0) -->
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '15.0'">
-    <PlatformToolset>v141</PlatformToolset><!-- MSVC++ 2017 toolset has version v141 -->
+    <PlatformToolset>v141</PlatformToolset>
+    <!-- MSVC++ 2017 toolset has version v141 -->
   </PropertyGroup>
   <!--
     End of: Switch the PlatformToolset based on the Visual Studio Version
@@ -227,7 +228,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_7Z_VOL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_7Z_VOL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
