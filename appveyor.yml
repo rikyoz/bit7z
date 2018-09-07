@@ -59,7 +59,7 @@ build_script:
     - copy include\bit*.hpp pkg\bit7z\include\
     - copy README.md pkg\bit7z\
     - copy LICENSE pkg\bit7z\
-    - (echo VERSION: %bit7z_version% && echo CONFIGURATION: %name%) > pkg\bit7z\BUILD.txt
+    - echo %bit7z_version% %name% > pkg\bit7z\BUILD.txt
     - cd pkg
     - 7z a -t7z bit7z-v%bit7z_version%-%name%.7z *
     
