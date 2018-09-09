@@ -5,7 +5,6 @@
 
 #include "Windows/FileDir.h"
 #include "Windows/FileFind.h"
-#include "Windows/FileName.h"
 #include "Windows/PropVariant.h"
 #include "7zip/Common/StreamObjects.h"
 
