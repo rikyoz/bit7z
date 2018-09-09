@@ -62,6 +62,14 @@ namespace bit7z {
 
         private:
             const unsigned char mValue;
+
+            //non-copyable
+            BitInFormat( const BitInFormat& other );
+            BitInFormat& operator=( const BitInFormat& other );
+
+            //non-movable
+            BitInFormat( BitInFormat&& other );
+            BitInFormat& operator=( BitInFormat&& other );
     };
 
     /**
