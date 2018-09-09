@@ -20,6 +20,10 @@ using namespace NArchive;
 // NOTE: this function is not a method of BitMemExtractor because it would dirty the header with extra dependencies
 CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
                                      const vector< byte_t >& in_buffer, const BitArchiveOpener& opener ) {
+    if ( in_buffer.empty() ) {
+        throw BitException( L"Cannot open an empty buffer archive" );
+    }
+
     CMyComPtr< IInArchive > in_archive;
     const GUID format_GUID = format.guid();
     lib.createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
@@ -55,8 +59,11 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t
                                unsigned int index ) const {
     CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_buffer, *this );
 
-    NCOM::CPropVariant prop;
-    in_archive->GetProperty( index, kpidSize, &prop );
+    uint32_t number_items;
+    in_archive->GetNumberOfItems( &number_items );
+    if ( index >= number_items ) {
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range"  );
+    }
 
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );
 
