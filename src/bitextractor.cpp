@@ -55,7 +55,9 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
         }
     }
 
-    extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
+    if ( !matched_indices.empty() ) {
+        extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
+    }
 }
 
 void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t>& indices, const wstring& out_dir ) const {
