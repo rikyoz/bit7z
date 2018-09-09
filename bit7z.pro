@@ -5,6 +5,7 @@ CONFIG  -= app_bundle
 CONFIG  -= qt
 
 SOURCES += lib/7zSDK/C/Alloc.c \
+#           lib/7zSDK/CPP/Windows/DLL.cpp \
            lib/7zSDK/CPP/Windows/FileIO.cpp \
            lib/7zSDK/CPP/Windows/FileDir.cpp \
            lib/7zSDK/CPP/Windows/FileName.cpp \
@@ -15,6 +16,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            lib/7zSDK/CPP/7zip/Common/StreamObjects.cpp \
            lib/7zSDK/CPP/Common/IntToString.cpp \
            lib/7zSDK/CPP/Common/MyString.cpp \
+           lib/7zSDK/CPP/Common/MyVector.cpp \
            src/bit7zlibrary.cpp \
            src/bitarchivecreator.cpp \
            src/bitarchivehandler.cpp \
