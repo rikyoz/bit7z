@@ -5,7 +5,6 @@
 
 #include "7zip/Archive/IArchive.h"
 #include "Windows/COM.h"
-#include "Windows/PropVariant.h"
 
 #include "../include/bitexception.hpp"
 #include "../include/opencallback.hpp"

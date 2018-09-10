@@ -8,6 +8,7 @@
 #include "Windows/COM.h"
 #include "Windows/PropVariant.h"
 
+#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/opencallback.hpp"
 
@@ -73,6 +74,25 @@ namespace bit7z {
                 throw BitException( L"Cannot open archive '" + in_file  + L"'" );
             }
             return in_archive;
+        }
+
+        HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
+            BitPropVariant prop;
+            RINOK( archive->GetProperty( index, propID, &prop ) );
+
+            if ( prop.isEmpty() ) {
+                result = false;
+            } else if ( prop.type() == BitPropVariantType::Bool ) {
+                result = prop.getBool();
+            } else {
+                return E_FAIL;
+            }
+
+            return S_OK;
+        }
+
+        HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result ) {
+            return IsArchiveItemProp( archive, index, kpidIsDir, result );
         }
     }
 }

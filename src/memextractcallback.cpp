@@ -5,15 +5,18 @@
 
 #include "Windows/FileDir.h"
 #include "Windows/FileFind.h"
-#include "Windows/PropVariant.h"
 #include "7zip/Common/StreamObjects.h"
 
+#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
+#include "../include/util.hpp"
+
 
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
+using namespace bit7z::util;
 
 /* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
@@ -34,25 +37,6 @@ static const wstring kCRCFailed         = L"CRC Failed";
 static const wstring kDataError         = L"Data Error";
 static const wstring kUnknownError      = L"Unknown Error";
 static const wstring kEmptyFileAlias    = L"[Content]";
-
-static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
-    NCOM::CPropVariant prop;
-    RINOK( archive->GetProperty( index, propID, &prop ) );
-
-    if ( prop.vt == VT_BOOL ) {
-        result = VARIANT_BOOLToBool( prop.boolVal );
-    } else if ( prop.vt == VT_EMPTY ) {
-        result = false;
-    } else {
-        return E_FAIL;
-    }
-
-    return S_OK;
-}
-
-static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result ) {
-    return IsArchiveItemProp( archive, index, kpidIsDir, result );
-}
 
 MemExtractCallback::MemExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, vector< byte_t >& buffer ) :
     mOpener( opener ),
@@ -83,18 +67,18 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     *outStream = nullptr;
     mOutMemStream.Release();
     // Get Name
-    NCOM::CPropVariant prop;
+    BitPropVariant prop;
     RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
     wstring fullPath;
 
-    if ( prop.vt == VT_EMPTY ) {
+    if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;
     } else {
-        if ( prop.vt != VT_BSTR ) {
+        if ( prop.type() != BitPropVariantType::String ) {
             return E_FAIL;
         }
 
-        fullPath = prop.bstrVal;
+        fullPath = prop.getString();
     }
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
@@ -102,10 +86,10 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     }
 
     // Get Attrib
-    NCOM::CPropVariant prop2;
+    BitPropVariant prop2;
     RINOK( mArchiveHandler->GetProperty( index, kpidAttrib, &prop2 ) );
 
-    if ( prop2.vt == VT_EMPTY ) {
+    if ( prop2.isEmpty() ) {
         mProcessedFileInfo.Attrib = 0;
         mProcessedFileInfo.AttribDefined = false;
     } else {
@@ -119,16 +103,16 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
 
     RINOK( IsArchiveItemFolder( mArchiveHandler, index, mProcessedFileInfo.isDir ) );
     // Get Modified Time
-    NCOM::CPropVariant prop3;
+    BitPropVariant prop3;
     RINOK( mArchiveHandler->GetProperty( index, kpidMTime, &prop3 ) );
     mProcessedFileInfo.MTimeDefined = false;
 
-    switch ( prop3.vt ) {
-        case VT_EMPTY:
+    switch ( prop3.type() ) {
+        case BitPropVariantType::Empty:
             // mProcessedFileInfo.MTime = _utcMTimeDefault;
             break;
 
-        case VT_FILETIME:
+        case BitPropVariantType::Filetime:
             mProcessedFileInfo.MTime = prop3.filetime;
             mProcessedFileInfo.MTimeDefined = true;
             break;
@@ -138,14 +122,14 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     }
 
     // Get Size
-    NCOM::CPropVariant prop4;
+    BitPropVariant prop4;
     RINOK( mArchiveHandler->GetProperty( index, kpidSize, &prop4 ) );
-    bool newFileSizeDefined = ( prop4.vt != VT_EMPTY );
-    UInt64 newFileSize;
+    uint64_t newFileSize;
 
-    if ( newFileSizeDefined ) {
+    if ( !prop4.isEmpty() ) {
+        newFileSize = prop4.getUInt64();
         //taken from ConvertPropVariantToUInt64
-        switch ( prop4.vt ) {
+        /*switch ( prop4.vt ) {
             case VT_UI1: newFileSize = prop4.bVal;
                 break;
             case VT_UI2: newFileSize = prop4.uiVal;
@@ -157,7 +141,7 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
             default:
                 mErrorMessage = L"151199";
                 return E_FAIL;
-        }
+        }*/
 
         //newFileSize = ConvertPropVariantToUInt64( prop4 );
     }

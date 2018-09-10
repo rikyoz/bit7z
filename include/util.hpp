@@ -10,12 +10,16 @@
 
 namespace bit7z {
     namespace util {
-        CMyComPtr< IOutArchive > initOutArchive( const Bit7zLibrary &lib, const BitInOutFormat &format,
-                                                 const BitCompressionLevel compressionLevel,
-                                                 const bool cryptHeaders, const bool solidMode );
+        CMyComPtr< IOutArchive > initOutArchive( const Bit7zLibrary& lib, const BitInOutFormat& format,
+                const BitCompressionLevel compressionLevel,
+                const bool cryptHeaders, const bool solidMode );
 
         CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
                                              const wstring& in_file, const BitArchiveOpener& opener );
+
+        HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result );
+
+        HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result );
     }
 }
 

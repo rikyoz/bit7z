@@ -5,7 +5,6 @@
 
 #include "7zip/Archive/IArchive.h"
 #include "Windows/COM.h"
-#include "Windows/PropVariant.h"
 
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"

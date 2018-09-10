@@ -6,7 +6,6 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
 #include "Windows/COM.h"
-#include "Windows/PropVariant.h"
 
 #include "../include/fsitem.hpp"
 #include "../include/util.hpp"
