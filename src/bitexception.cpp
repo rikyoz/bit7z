@@ -5,7 +5,10 @@
 
 using namespace bit7z;
 
-BitException::BitException( const std::string &message ) : std::runtime_error( message ) {}
+BitException::BitException( const string& message ) : runtime_error( message ) {}
 
-BitException::BitException( const std::wstring &message )
-    : std::runtime_error( std::string( message.begin(), message.end() ) ) {}
+BitException::BitException( const wstring& message )
+    : runtime_error( string( message.begin(), message.end() ) ) {}
+/* NOTE: this doesn't convert the character set of the original wstring message!
+ * But we expect every error message to be ASCII (apart from those containing filenames)!
+ * This will need to be fixed in the future */
