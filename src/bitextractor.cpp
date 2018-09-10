@@ -67,7 +67,7 @@ void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t>&
     if ( std::any_of( indices.begin(), indices.end(), [&]( uint32_t index ) { return index >= number_items; }) ) {
         /* if any of the indices is greater than the number of items in the archive we throw an exception, since it is
            an invalid index! */
-        throw BitException( L"Some index is not valid" );
+        throw BitException( "Some index is not valid" );
     }
 
     extractToFileSystem( in_archive, in_file, out_dir, indices );
@@ -79,7 +79,7 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
     uint32_t number_items;
     in_archive->GetNumberOfItems( &number_items );
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range"  );
+        throw BitException( "Index " + std::to_string( index ) + " is out of range"  );
     }
 
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );

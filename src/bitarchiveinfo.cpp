@@ -77,7 +77,7 @@ uint32_t BitArchiveInfo::itemsCount() const {
     uint32_t items_count;
     HRESULT result = mInArchive->GetNumberOfItems( &items_count );
     if ( result != S_OK ) {
-        throw BitException( L"Could not retrieve the number of items in the archive" );
+        throw BitException( "Could not retrieve the number of items in the archive" );
     }
     return items_count;
 }

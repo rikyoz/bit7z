@@ -121,31 +121,6 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
             return E_FAIL;
     }
 
-    // Get Size
-    BitPropVariant prop4;
-    RINOK( mArchiveHandler->GetProperty( index, kpidSize, &prop4 ) );
-    uint64_t newFileSize;
-
-    if ( !prop4.isEmpty() ) {
-        newFileSize = prop4.getUInt64();
-        //taken from ConvertPropVariantToUInt64
-        /*switch ( prop4.vt ) {
-            case VT_UI1: newFileSize = prop4.bVal;
-                break;
-            case VT_UI2: newFileSize = prop4.uiVal;
-                break;
-            case VT_UI4: newFileSize = prop4.ulVal;
-                break;
-            case VT_UI8: newFileSize = static_cast< UInt64 >( prop4.uhVal.QuadPart );
-                break;
-            default:
-                mErrorMessage = L"151199";
-                return E_FAIL;
-        }*/
-
-        //newFileSize = ConvertPropVariantToUInt64( prop4 );
-    }
-
     if ( !mProcessedFileInfo.isDir ) {
         mOutMemStreamSpec = new COutMemStream( mBuffer );
         CMyComPtr< ISequentialOutStream > outStreamLoc( mOutMemStreamSpec );

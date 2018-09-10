@@ -20,7 +20,7 @@ using namespace NArchive;
 CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
                                      const vector< byte_t >& in_buffer, const BitArchiveOpener& opener ) {
     if ( in_buffer.empty() ) {
-        throw BitException( L"Cannot open an empty buffer archive" );
+        throw BitException( "Cannot open an empty buffer archive" );
     }
 
     CMyComPtr< IInArchive > in_archive;
@@ -35,7 +35,7 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat&
 
     CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
     if ( in_archive->Open( buf_stream, nullptr, open_callback ) != S_OK ) {
-        throw BitException( L"Cannot open archive buffer" );
+        throw BitException( "Cannot open archive buffer" );
     }
     return in_archive;
 }
@@ -61,7 +61,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t
     uint32_t number_items;
     in_archive->GetNumberOfItems( &number_items );
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range"  );
+        throw BitException( "Index " + std::to_string( index ) + " is out of range"  );
     }
 
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );
