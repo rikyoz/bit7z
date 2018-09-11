@@ -46,6 +46,7 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
     vt = VT_EMPTY;
     wReserved1 = 0;
+    bstrVal = nullptr;
 }
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
@@ -65,6 +66,88 @@ BitPropVariant::BitPropVariant( BitPropVariant&& other ) NOEXCEPT : PROPVARIANT(
          * the other object is deleted! */
         other.bstrVal = nullptr;
     }
+}
+
+BitPropVariant::BitPropVariant( bool value ) : PROPVARIANT() {
+    vt = VT_BOOL;
+    wReserved1 = 0;
+    boolVal = ( value ? VARIANT_TRUE : VARIANT_FALSE );
+}
+
+BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
+    vt = VT_BSTR;
+    wReserved1 = 0;
+    if ( value != nullptr ) {
+        bstrVal = ::SysAllocString( value );
+        if ( !bstrVal ) {
+            throw BitException( "Could not allocate memory for BitPropVariant string" );
+        }
+    } else {
+        bstrVal = nullptr;
+    }
+}
+
+BitPropVariant::BitPropVariant( const wstring& value ) : PROPVARIANT() {
+    vt = VT_BSTR;
+    wReserved1 = 0;
+    bstrVal = ::SysAllocStringLen( value.data(), static_cast< unsigned int >( value.size() ) );
+    if ( !bstrVal ) {
+        throw BitException( "Could not allocate memory for BitPropVariant string" );
+    }
+}
+
+BitPropVariant::BitPropVariant( uint8_t value ) : PROPVARIANT() {
+    vt = VT_UI1;
+    wReserved1 = 0;
+    bVal = value;
+}
+
+BitPropVariant::BitPropVariant( uint16_t value ) : PROPVARIANT() {
+    vt = VT_UI2;
+    wReserved1 = 0;
+    uiVal = value;
+}
+
+BitPropVariant::BitPropVariant( uint32_t value ) : PROPVARIANT() {
+    vt = VT_UI4;
+    wReserved1 = 0;
+    ulVal = value;
+}
+
+BitPropVariant::BitPropVariant( uint64_t value ) : PROPVARIANT() {
+    vt = VT_UI8;
+    wReserved1 = 0;
+    uhVal.QuadPart = value;
+}
+
+BitPropVariant::BitPropVariant( int8_t value ) : PROPVARIANT() {
+    vt = VT_I1;
+    wReserved1 = 0;
+    cVal = value;
+}
+
+BitPropVariant::BitPropVariant( int16_t value ) : PROPVARIANT() {
+    vt = VT_I2;
+    wReserved1 = 0;
+    iVal = value;
+}
+
+BitPropVariant::BitPropVariant( int32_t value ) : PROPVARIANT() {
+    vt = VT_I4;
+    wReserved1 = 0;
+    lVal = value;
+}
+
+BitPropVariant::BitPropVariant( int64_t value ) : PROPVARIANT() {
+    vt = VT_I8;
+    wReserved1 = 0;
+    hVal.QuadPart = value;
+}
+
+BitPropVariant::BitPropVariant( const FILETIME& value ) : PROPVARIANT() {
+    vt = VT_FILETIME;
+    wReserved1 = 0;
+    filetime = value;
 }
 
 BitPropVariant::~BitPropVariant() {
@@ -135,8 +218,13 @@ BitPropVariant& BitPropVariant::operator=( bool value ) {
 }
 
 BitPropVariant& BitPropVariant::operator=( const wchar_t* value ) {
+    internalClear();
+    vt = VT_BSTR;
     if ( value != nullptr ) {
-        *this = wstring( value ); //wstring assignment operator!
+        bstrVal = ::SysAllocString( value );
+        if ( !bstrVal ) {
+            throw BitException( "Could not allocate memory for BitPropVariant string" );
+        }
     }
     return *this;
 }
@@ -430,8 +518,6 @@ void BitPropVariant::clear() {
     }
     internalClear();
     vt = VT_EMPTY;
-    uhVal.QuadPart = ulVal = uintVal = uiVal = bVal = 0;
-    hVal.QuadPart = lVal = intVal = iVal = cVal = 0;
 }
 
 void BitPropVariant::internalClear() {
@@ -439,4 +525,8 @@ void BitPropVariant::internalClear() {
         ::SysFreeString( bstrVal ); //this was a string: since it is not needed anymore, we must free it!
         bstrVal = nullptr;
     }
+    wReserved1 = 0;
+    wReserved2 = 0;
+    wReserved3 = 0;
+    uhVal.QuadPart = 0;
 }

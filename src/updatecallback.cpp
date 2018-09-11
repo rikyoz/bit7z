@@ -10,11 +10,11 @@
 //#include <iomanip>
 //end of debug includes
 
-#include "include/fsutil.hpp"
-
 #include "7zip/Common/FileStreams.h"
 #include "Common/IntToString.h"
-#include "Windows/PropVariant.h"
+
+#include "../include/bitpropvariant.hpp"
+#include "../include/fsutil.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -96,11 +96,11 @@ HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
 }*/
 
 HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
-    NWindows::NCOM::CPropVariant prop;
+    BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
         prop = false;
-        prop.Detach( value );
+        *value = prop;
         return S_OK;
     }
 
@@ -108,7 +108,7 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
 
     switch ( propID ) {
         case kpidPath:
-            prop = dirItem.inArchivePath().c_str();
+            prop = dirItem.inArchivePath();
             break;
         case kpidIsDir:
             prop = dirItem.isDir();
@@ -132,7 +132,7 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
             break;
     }
 
-    prop.Detach( value );
+    *value = prop;
     return S_OK;
 }
 

@@ -5,9 +5,6 @@
 
 #include <vector>
 
-#include "Windows/COM.h"
-#include "Windows/PropVariant.h"
-
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/opencallback.hpp"
@@ -25,7 +22,7 @@ namespace bit7z {
             lib.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
 
             vector< const wchar_t* > names;
-            vector< NCOM::CPropVariant > values;
+            vector< BitPropVariant > values;
             if ( crypt_headers && format.hasFeature( HEADER_ENCRYPTION ) ) {
                 names.push_back( L"he" );
                 values.emplace_back( true );
@@ -45,7 +42,7 @@ namespace bit7z {
                                                   reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
                     throw BitException( "ISetProperties unsupported" );
                 }
-                if ( set_properties->SetProperties( &names[ 0 ], &values[ 0 ],
+                if ( set_properties->SetProperties( names.data(), values.data(),
                                                     static_cast< uint32_t >( names.size() ) ) != S_OK ) {
                     throw BitException( "Cannot set properties of the archive" );
                 }

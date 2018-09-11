@@ -4,7 +4,6 @@
 #include "../include/bitmemextractor.hpp"
 
 #include "7zip/Archive/IArchive.h"
-#include "Windows/COM.h"
 
 #include "../include/bitexception.hpp"
 #include "../include/opencallback.hpp"

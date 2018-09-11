@@ -6,7 +6,6 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
 #include "7zip/Common/StreamObjects.h"
-#include "Windows/COM.h"
 
 #include "../include/util.hpp"
 #include "../include/bitexception.hpp"

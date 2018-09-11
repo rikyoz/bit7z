@@ -9,7 +9,8 @@
 #include "7zip/Common/FileStreams.h"
 #include "7zip/Common/StreamObjects.h"
 #include "Common/IntToString.h"
-#include "Windows/PropVariant.h"
+
+#include "../include/bitpropvariant.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -69,11 +70,11 @@ HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData
 }
 
 HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVARIANT* value ) {
-    NWindows::NCOM::CPropVariant prop;
+    BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
         prop = false;
-        prop.Detach( value );
+        *value = prop;
         return S_OK;
     }
 
@@ -84,29 +85,30 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVAR
     SystemTimeToFileTime( &st, &ft ); // converts to file time format
 
     switch ( propID ) {
-        case kpidPath: prop = ( mBufferName.empty() ) ? kEmptyFileAlias.c_str() : mBufferName.c_str();
+        case kpidPath:
+            prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
             break;
-        case kpidIsDir: prop = false;
+        case kpidIsDir:
+            prop = false;
             break;
-        case kpidSize: {
-            prop.vt = VT_UI8;
-            prop.uhVal.QuadPart = ( sizeof( byte_t ) * mBuffer.size() );
+        case kpidSize:
+            prop = ( sizeof( byte_t ) * mBuffer.size() );
             break;
-        }
-        case kpidAttrib: {
-            prop.vt = VT_UI4;
-            prop.ulVal = FILE_ATTRIBUTE_NORMAL;
+        case kpidAttrib:
+            prop = FILE_ATTRIBUTE_NORMAL;
             break;
-        }
-        case kpidCTime: prop = ft;
+        case kpidCTime:
+            prop = ft;
             break;
-        case kpidATime: prop = ft;
+        case kpidATime:
+            prop = ft;
             break;
-        case kpidMTime: prop = ft;
+        case kpidMTime:
+            prop = ft;
             break;
     }
 
-    prop.Detach( value );
+    *value = prop;
     /*NWindows::NCOM::CPropVariant prop;
 
        if ( propID == kpidIsAnti ) {
@@ -151,18 +153,18 @@ HRESULT MemUpdateCallback::GetStream( UInt32 /*index*/, ISequentialInStream** in
     inStreamSpec->Init( &mBuffer[0], mBuffer.size() );
 
 
-//    wstring path = dirItem.fullPath();
+    //    wstring path = dirItem.fullPath();
 
-//    if ( !inStreamSpec->Open( path.c_str() ) ) {
-//        DWORD sysError = ::GetLastError();
-//        mFailedCodes.push_back( sysError );
-//        mFailedFiles.push_back( path );
-//        // if (systemError == ERROR_SHARING_VIOLATION)
-//        mErrorMessage = L"WARNING: Can't open file";
-//        // PrintString(NError::MyFormatMessageW(systemError));
-//        return S_FALSE;
-//        // return sysError;
-//    }
+    //    if ( !inStreamSpec->Open( path.c_str() ) ) {
+    //        DWORD sysError = ::GetLastError();
+    //        mFailedCodes.push_back( sysError );
+    //        mFailedFiles.push_back( path );
+    //        // if (systemError == ERROR_SHARING_VIOLATION)
+    //        mErrorMessage = L"WARNING: Can't open file";
+    //        // PrintString(NError::MyFormatMessageW(systemError));
+    //        return S_FALSE;
+    //        // return sysError;
+    //    }
 
     *inStream = inStreamLoc.Detach();
     return S_OK;

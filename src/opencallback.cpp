@@ -3,12 +3,12 @@
 
 #include "../include/opencallback.hpp"
 
-#include "../include/fsutil.hpp"
-
 #include <iostream>
 
 #include "7zip/Common/FileStreams.h"
-#include "Windows/PropVariant.h"
+
+#include "../include/bitpropvariant.hpp"
+#include "../include/fsutil.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -33,18 +33,18 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 }
 
 STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
-    NWindows::NCOM::CPropVariant prop;
+    BitPropVariant prop;
     if ( mSubArchiveMode ) {
         switch ( propID ) {
             case kpidName:
-                prop = mSubArchiveName.c_str();
+                prop = mSubArchiveName;
                 break;
                 // case kpidSize:  prop = _subArchiveSize; break; // we don't use it now
         }
     } else {
         switch ( propID ) {
             case kpidName:
-                prop = mFileItem.name().c_str();
+                prop = mFileItem.name();
                 break;
             case kpidIsDir:
                 prop = mFileItem.isDir();
@@ -66,7 +66,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
                 break;
         }
     }
-    prop.Detach( value );
+    *value = prop;
     return S_OK;
 }
 

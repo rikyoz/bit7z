@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <string>
-#include <array>
+//#include <array>
 
 #include <Windows.h>
 
@@ -117,7 +117,7 @@ namespace bit7z {
     using std::wstring;
     using std::array;
 
-    static const array < wstring, static_cast< int >( BitProperty::CopyLink ) + 1 > propertyNames = {
+    /*static const array < wstring, static_cast< int >( BitProperty::CopyLink ) + 1 > propertyNames = {
         L"NoProperty",
         L"MainSubfile",
         L"HandlerItemIndex",
@@ -214,7 +214,7 @@ namespace bit7z {
         L"ReadOnly",
         L"OutName",
         L"CopyLink"
-    };
+    };*/
 
     enum class BitPropVariantType : uint32_t {
         Empty,      ///< Empty BitPropVariant type
@@ -231,7 +231,7 @@ namespace bit7z {
         Filetime    ///< FILETIME BitPropVariant type
     };
 
-    static const array < wstring, static_cast< uint32_t >( BitPropVariantType::Filetime ) + 1 > typeNames = {
+    /*static const array < wstring, static_cast< uint32_t >( BitPropVariantType::Filetime ) + 1 > typeNames = {
         L"Empty",
         L"Bool",
         L"String",
@@ -244,7 +244,7 @@ namespace bit7z {
         L"Int32",
         L"Int64",
         L"Filetime"
-    };
+    };*/
 
     /**
      * @brief The BitPropVariant struct is a light extension to the WinAPI PROPVARIANT struct providing useful getters.
@@ -270,9 +270,95 @@ namespace bit7z {
             BitPropVariant( BitPropVariant&& other ) NOEXCEPT;
 
             /**
-             * @brief BitPropVariant destructor.
+             * @brief Constructs a boolean BitPropVariant
+             *
+             * @param value the bool value of the BitPropVariant
              */
-            virtual ~BitPropVariant();
+            explicit BitPropVariant( bool value );
+
+            /**
+             * @brief Constructs a string BitPropVariant from a null-terminated C wide string
+             *
+             * @param value the null-terminated C wide string value of the BitPropVariant
+             */
+            explicit BitPropVariant( const wchar_t* value );
+
+            /**
+             * @brief Constructs a string BitPropVariant from a wstring
+             *
+             * @param value the wstring value of the BitPropVariant
+             */
+            explicit BitPropVariant( const wstring& value );
+
+            /**
+             * @brief Constructs a 8-bit unsigned integer BitPropVariant
+             *
+             * @param value the uint8_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( uint8_t value );
+
+            /**
+             * @brief Constructs a 16-bit unsigned integer BitPropVariant
+             *
+             * @param value the uint16_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( uint16_t value );
+
+            /**
+             * @brief Constructs a 32-bit unsigned integer BitPropVariant
+             *
+             * @param value the uint32_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( uint32_t value );
+
+            /**
+             * @brief Constructs a 64-bit unsigned integer BitPropVariant
+             *
+             * @param value the uint64_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( uint64_t value );
+
+            /**
+             * @brief Constructs a 8-bit integer BitPropVariant
+             *
+             * @param value the int8_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( int8_t value );
+
+            /**
+             * @brief Constructs a 16-bit integer BitPropVariant
+             *
+             * @param value the int16_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( int16_t value );
+
+            /**
+             * @brief Constructs a 32-bit integer BitPropVariant
+             *
+             * @param value the int32_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( int32_t value );
+
+            /**
+             * @brief Constructs a 64-bit integer BitPropVariant
+             *
+             * @param value the int64_t value of the BitPropVariant
+             */
+            explicit BitPropVariant( int64_t value );
+
+            /**
+             * @brief Constructs a FILETIME BitPropVariant
+             *
+             * @param value the FILETIME value of the BitPropVariant
+             */
+            explicit BitPropVariant( const FILETIME& value );
+
+            /**
+             * @brief BitPropVariant destructor.
+             *
+             * @note This is not virtual, in order to maintain the same memory layout of the base struct!
+             */
+            ~BitPropVariant();
 
             /**
              * @brief Copy assignment operator.
