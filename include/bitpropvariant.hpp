@@ -379,112 +379,18 @@ namespace bit7z {
             BitPropVariant& operator=( BitPropVariant&& other ) NOEXCEPT;
 
             /**
-             * @brief Assignment operator for bool values.
+             * @brief Assignment operator
              *
-             * @param value the boolean value to assign to this object
+             * @note this will work only for T types for which a BitPropVariant constructor is defined!
              *
-             * @return a reference to *this object.
+             * @param value the value to be assigned to the object
+             *
+             * @return a reference to *this object having the value as new variant value
              */
-            BitPropVariant& operator=( bool value );
-
-            /**
-             * @brief Assignment operator for null-terminated C wide string values.
-             *
-             * @param value the null-terminated C wide string value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( const wchar_t* value );
-
-            /**
-             * @brief Assignment operator for wstring values.
-             *
-             * @param value the wstring value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( const wstring& value );
-
-            /**
-             * @brief Assignment operator for uint8_t values.
-             *
-             * @param value the uint8_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( uint8_t value );
-
-            /**
-             * @brief Assignment operator for uint16_t values.
-             *
-             * @param value the uint16_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( uint16_t value );
-
-            /**
-             * @brief Assignment operator for uint32_t values.
-             *
-             * @param value the uint32_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( uint32_t value );
-
-            /**
-             * @brief Assignment operator for uint64_t values.
-             *
-             * @param value the uint64_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( uint64_t value );
-
-            /**
-             * @brief Assignment operator for int8_t values.
-             *
-             * @param value the int8_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( int8_t value );
-
-            /**
-             * @brief Assignment operator for int16_t values.
-             *
-             * @param value the int16_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( int16_t value );
-
-            /**
-             * @brief Assignment operator for int32_t values.
-             *
-             * @param value the int32_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( int32_t value );
-
-            /**
-             * @brief Assignment operator for int64_t values.
-             *
-             * @param value the int64_t value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( int64_t value );
-
-            /**
-             * @brief Assignment operator for FILETIME values.
-             *
-             * @param value the FILETIME value to assign to this object
-             *
-             * @return a reference to *this object.
-             */
-            BitPropVariant& operator=( const FILETIME& value );
+            template<typename T>
+            BitPropVariant& operator=( const T& value ) {
+                return *this = BitPropVariant( value );
+            }
 
             /**
              * @return the boolean value of this variant
