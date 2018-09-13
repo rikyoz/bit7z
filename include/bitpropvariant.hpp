@@ -535,6 +535,9 @@ namespace bit7z {
 
         private:
             void internalClear();
+
+            friend bool operator ==( const BitPropVariant& a, const BitPropVariant& b );
+            friend bool operator !=( const BitPropVariant& a, const BitPropVariant& b );
     };
 }
 

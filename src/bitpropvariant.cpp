@@ -438,3 +438,45 @@ void BitPropVariant::internalClear() {
     wReserved3 = 0;
     uhVal.QuadPart = 0;
 }
+
+bool bit7z::operator !=( const BitPropVariant& a, const BitPropVariant& b ) {
+    return !( a == b );
+}
+
+bool bit7z::operator==( const BitPropVariant& a, const BitPropVariant& b ) {
+    if ( a.vt != b.vt ) {
+        return false;
+    }
+    switch ( a.vt ) { //a.vt == b.vt
+        case VT_EMPTY:
+            return true;
+        case VT_BOOL:
+            return a.boolVal == b.boolVal;
+        case VT_BSTR:
+            return wcscmp( a.bstrVal, b.bstrVal ) == 0;
+        case VT_UI1:
+            return a.bVal == b.bVal;
+        case VT_UI2:
+            return a.uiVal == b.uiVal;
+        case VT_UINT:
+            return a.uintVal == b.uintVal;
+        case VT_UI4:
+            return a.ulVal == b.ulVal;
+        case VT_UI8:
+            return a.uhVal.QuadPart == b.uhVal.QuadPart;
+        case VT_I1:
+            return a.cVal == b.cVal;
+        case VT_I2:
+            return a.iVal == b.iVal;
+        case VT_INT:
+            return a.intVal == b.intVal;
+        case VT_I4:
+            return a.lVal == b.lVal;
+        case VT_I8:
+            return a.hVal.QuadPart == b.hVal.QuadPart;
+        case VT_FILETIME:
+            return CompareFileTime( &a.filetime, &b.filetime ) == 0;
+        default:
+            return false;
+    }
+}
