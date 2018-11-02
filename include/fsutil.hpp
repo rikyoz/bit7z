@@ -12,7 +12,7 @@ namespace bit7z {
 
             bool is_directory( const wstring& path );
             bool path_exists( const wstring& path );
-            bool has_ending( const wstring& str, const wstring& ending );
+            //bool has_ending( const wstring& str, const wstring& ending );
 
             void normalize_path( wstring& path );
             wstring dirname( const wstring& path );
