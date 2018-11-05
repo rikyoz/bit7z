@@ -61,30 +61,34 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexPaths( in_paths );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexPaths( in_paths );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compress( const map<wstring, wstring>& in_paths, const wstring& out_archive ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexPathsMap( in_paths );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexPathsMap( in_paths );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
-    vector< wstring > vfiles;
-    vfiles.push_back( in_file );
-    compressFiles( vfiles, out_archive );
+    FSItem item( in_file );
+    if ( item.isDir() ) {
+        throw BitException( "Wrong argument: input path points to a directory, not a file!" );
+    }
+    vector< FSItem > fs_items;
+    fs_items.push_back( item );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const {
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexPaths( in_files, true );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexPaths( in_files, true );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
@@ -92,8 +96,8 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_arc
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive ) const {
@@ -107,9 +111,9 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
     if ( item.isDir() ) {
         throw BitException( "Cannot compress a directory into a memory buffer!" );
     }
-    vector< FSItem > dir_items;
-    dir_items.push_back( item );
-    compressToMemory( dir_items, out_buffer );
+    vector< FSItem > fs_items;
+    fs_items.push_back( item );
+    compressToMemory( fs_items, out_buffer );
 }
 
 /* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK
