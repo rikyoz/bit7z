@@ -131,7 +131,7 @@ wstring FSItem::inArchivePath() const {
     if ( !is_relative_path( mPath ) ||
             mPath.find( L"./" ) != wstring::npos || mPath.find( L".\\" ) != wstring::npos ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
-        // the interal structure of that folder (mSearchDirname), otherwise we use only the file name.
+        // the interal structure of that folder (mSearchPath), otherwise we use only the file name.
         return mSearchPath.empty() ? name() : mSearchPath + L"\\" + name();
     }
 
