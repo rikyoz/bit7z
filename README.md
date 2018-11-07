@@ -143,7 +143,7 @@ Obviously, you can also clone/download this repository and build the library by 
 ## Requirements
 
 + **Target OS:** Windows (both x86 and x64).
-+ **Compiler:** MSVC 2012 or greater (tested with versions 2012, 2015 and 2017) - MSVC2010 supported until v2.x.
++ **Compiler:** MSVC 2012 or greater (MSVC 2010 supported until v2.x).
 + **DLLs:** 7-zip DLLs (v18.05).
 
 The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
@@ -151,6 +151,8 @@ The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](
 **Note**: in order to use this library you should link your program not only with **bit7z** but also with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`)
 
 **Note 2**: even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the dlls of previous versions, such as v16.04. However, it is _strongly suggested_ to use dlls with the same version.
+
+**Note 3**: the code has been tested with MSVC 2012, 2015 and 2017.
 
 ## Building bit7z
 
