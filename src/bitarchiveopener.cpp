@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "include/bitarchiveopener.hpp"
+#include "../include/bitarchiveopener.hpp"
 
 using namespace bit7z;
 

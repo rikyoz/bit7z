@@ -133,7 +133,7 @@ namespace bit7z {
     };
 
     using std::wstring;
-    using std::array;
+    //using std::array;
 
     /*static const array < wstring, static_cast< int >( BitProperty::CopyLink ) + 1 > propertyNames = {
         L"NoProperty",
