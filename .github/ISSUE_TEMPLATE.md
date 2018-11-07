@@ -25,7 +25,7 @@
 <!--- Providing context helps us come up with a solution that is most useful in the real world -->
 
 ## Your Environment
-<!--- Include as many relevant details about the environment you experienced the bug in (put an x between the [ ] to check the box) -->
+<!--- Include as many relevant details about the environment you experienced the bug in (put an `x` in all the boxes that apply) -->
 
 * bit7z version:  
     - [ ] v2.0
