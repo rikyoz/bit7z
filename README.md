@@ -132,7 +132,7 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 ## Download
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img src="https://user-images.githubusercontent.com/1334291/44652398-15ec8c00-a9ec-11e8-9208-36bfebf2d2cd.png" width="64"/><br/><img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=flat-square&label=downloads"/>
+<img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout-square&label=downloads&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABk0lEQVR42uzQNwGAAAwEwPjDML0zsVLkgIkwcV8MXGRn3ea9bsvniy/btEVy/gEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANd9FPPylmcOiREFYRj8jpNj5iqx7WZs7GLbwj7zx2YLNRaqntRbZ+oiFLuxFUAodmnyv5I7ClUZfXmOl4HBPgZC9YqN3OQLzit4AUXYzUh+Ax9AEQ4ykN/FZ3DZUyQ1P0lY/gAPfBfhPDV5GrDkBuJHERS/SkWeFp/khN9Q+GBxKgHwH/KVfw5QEru8iQhlEQYoAWEwQkVE8mWwAEWojEC+AhahRWRVfPLmI9SEJk8DBg6hCLUBydfCB1yyBv/yrAE+EYq1e1zFbUEICMW7PMi3IiSk5tyhfAcChCJo+/K8BwFDEfotbtNLRABFGLYg34+YUFqMm5JXWowiQmgn67SB/XgziBiKMPsP+VkgfijC0h/k52EU/xHWfiG/hAShCNs/kF9DykjN939y1Cb1CCcfLOcPkBMvjz7RfeTIwFD/Ml3gkVsGJl3QH5M1zwAAAABJRU5ErkJggg=="/>
 </a>
 </div>
 
