@@ -164,7 +164,8 @@ If you have found this project useful, please consider a small donation! Thank y
 
 <div align="center">
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+[![Donate](https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&style=popout-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+[![ko-fi](https://www.ko-fi.com/img/donate_sm.png)](https://ko-fi.com/G2G1LS1P)
 
 </div>
 
