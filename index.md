@@ -80,9 +80,11 @@ Thank you! :)
 
 <p align="center">
 
-<a href='https://ko-fi.com/G2G1LS1P' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> [![Beerpay](https://beerpay.io/rikyoz/bit7z/badge.svg)](https://beerpay.io/rikyoz/bit7z) [![Beerpay Wish](https://beerpay.io/rikyoz/bit7z/make-wish.svg)](https://beerpay.io/rikyoz/bit7z)
+<a href='https://ko-fi.com/G2G1LS1P' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> <a href="https://beerpay.io/rikyoz/bit7z"><img src="https://beerpay.io/rikyoz/bit7z/badge.svg" border="0" style="border: 0px" alt="Beerpay"/></a> <a href="https://beerpay.io/rikyoz/bit7z"><img src="https://beerpay.io/rikyoz/bit7z/make-wish.svg" border="0" style="border: 0px" alt="Beerpay"/></a>
 
-[![PayPal](https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&style=popout-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC) 
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC">
+<img src="https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&style=popout-square" border="0" style="border:0px" alt="Donate with PayPal"/>
+</a>
 
 </p>
 
