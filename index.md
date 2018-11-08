@@ -78,13 +78,13 @@ A guide on how to build this library is available [here](https://github.com/riky
 If you have found this project useful, please consider supporting it with a small donation or buying me a coffee/beer, so that I can keep improving it!
 Thank you! :)
 
-<div align="center">
+<p align="center">
 
 <a href='https://ko-fi.com/G2G1LS1P' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> [![Beerpay](https://beerpay.io/rikyoz/bit7z/badge.svg)](https://beerpay.io/rikyoz/bit7z) [![Beerpay Wish](https://beerpay.io/rikyoz/bit7z/make-wish.svg)](https://beerpay.io/rikyoz/bit7z)
 
 [![PayPal](https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&style=popout-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC) 
 
-</div>
+</p>
 
 ## License (GPL v2)
 
