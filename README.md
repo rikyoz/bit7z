@@ -5,11 +5,12 @@ bit7z
 <h3 align="center">A C++ static library offering a clean and simple interface to the 7-zip DLLs</h3>
 
 <p align="center">
-  <a href="https://ci.appveyor.com/project/rikyoz/bit7z"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat-square&logo=appveyor" alt="Build status"></a>
   <a href="https://github.com/rikyoz/bit7z/releases"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat-square&logo=github&logoColor=white&colorB=blue" alt="GitHub release"></a>
   <img src="https://img.shields.io/badge/compiler-MSVC%202012%20--%202017-red.svg?style=flat-square&logo=visual-studio-code&logoColor=white" alt="MSVC version">
   <img src="https://img.shields.io/badge/arch-x86,%20x86__64-orange.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAC1UlEQVR42u3WA9AjWRSA0bu2bdu2bdssrm3btm3btm3bmX+Ms7rLTiW9NUmvcsL7XuELu6Ojoz5DWcc5nvKp2kBdPvesi21m1Pgr7OxjrfWtgw0VZZjKM9rjXfNHM+bWWzutGo2YSH/tNm+jgNe1XzdDR322V41Tox5D6K4qY0WRtVRnjyhysercH0VeVJ13o8hXqvNNFOlSna4oUlOd2r8moBPwoQfd6THfoLweauqp6aJ8wInmMmjujWAFtwMeNJup5cXsVnWYDyDtajQjmMp7QOoypxGMbMtyAe+Ztf5/JTaJAkM6mjRXrj0KpE9zdZIyAV8bLX5lBIPlszXAVlGXMwAr5fwskL4wdPzAfGUC5o9kJy+o+dCVloiwJNg2907wimddZrqcB9GtNQF3RXI+kI5yCcgADwF6yvfLNa0JWD7n5dWXAa4lbZwrR7UioKdhc76vdEB+KxzbioAncxpGr9IBM+XKDa0IuCanaWkS8BzguEhqrQg4P6e5mgasbV+7WCySvWlFwIU5zdYooMhytCbghpzGLh9gAodCWjFXXwDSV4aJH5inWcBLkbzTOMBa9rWvk92jH5BWqBvwjSHKBfQ3as4HlvoSFq2b+zcB6bXIj6pZABvnPKzPgPSJlxV/hkUH5v7SUPiv2LN5wKuRjO82wDdON6xFSwW8XvhdcGYkrzUPYJf4lcktZh4jxg8sViqA9SKZxDo2NH0km1ImgE2jDjuBLXK6FPX1N1fUYQnKBnCeGeN3jGdPfUC+P27TyO7GjN8xoUMpHZCecKZ97etE9+hD6vKQOz1jgMa6u90J+VO9V//OaXnzgE5Al+p0iyLfqM63UeRV1Xk/ilylOo9Gkc1U55AoMrz+qjJJ1OMQ1bgq6jOYr1Rh9EgFZtd+q0QjVtFeW0UzFvGJ9uhhrSjDSE7UX6tdaMIoz0R2cbvXfKE2UJevvOEe+5kuOjr+qb4H0/HV/SQ0YjEAAAAASUVORK5CYII=" alt="Architectures">
-  <a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GNU%20GPL%20v2-lightgrey.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAAvUlEQVR42u3Zt1EEURRE0Ye0gFwI4BWJoC0KGxftExk+RQATAN+nLpo1R0+v6NsJHPOLcO4vKkrPVexEcMFZN8AQ7UXwCBx0ART6VtiN4BCA1AHO+SnVAEg1AFINgFQDINUASDUAUg2AVAMg1QBINQBSDYBUAyDVAMhxAVfUdzkmYJ+7mj1xPQ7gjbWYJTmQbGsB77zy0mjPPQH9UwOKAQYYYIABBhhggAFzCTDAAAMMMGDS+v2a9V8Vzs1PH+dRolvEzoAoAAAAAElFTkSuQmCC" alt="License"></a>
+  <a href="https://github.com/rikyoz/bit7z/wiki"><img src="https://img.shields.io/badge/docs-wiki-yellow.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAABCklEQVR42u3OAUQEARCF4SkKTgASgCIhCBRAQXHVSeEEgY6gAIggQiIACAISyAEkqigRiAKQAItEOlj1B1HU7nB2VvS+B4D3W/sYZZNzHnmlxQMHzNJhZWGCS346pdfi0c0u7/zulkr8fZM8WxaLffI902VxqOIbszhc41u0KAwAvoZFoQb4qhaFBr6UPotCHd+RxWEYzwv9Fok78qTMWyymeCNLizmLx2pGwhWDVg7GueG7lBOm6bQyMcQS62ywwiQ9JiJ/ARVGqLPDBctWLPY4zFyTY86454kva1YsEnwoIDJghoXPbUcHOKj9zwAFKEABClCAAhSgAAUoQAEKUIACSGhXYgpQgOsD2giqlbnGmc4AAAAASUVORK5CYII="></a>
+  <a href="https://ci.appveyor.com/project/rikyoz/bit7z"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat-square&logo=appveyor&logoColor=white" alt="Build status"></a>
+  <a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-GPL%20v2-lightgrey.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAAvUlEQVR42u3Zt1EEURRE0Ye0gFwI4BWJoC0KGxftExk+RQATAN+nLpo1R0+v6NsJHPOLcO4vKkrPVexEcMFZN8AQ7UXwCBx0ART6VtiN4BCA1AHO+SnVAEg1AFINgFQDINUASDUAUg2AVAMg1QBINQBSDYBUAyDVAMhxAVfUdzkmYJ+7mj1xPQ7gjbWYJTmQbGsB77zy0mjPPQH9UwOKAQYYYIABBhhggAFzCTDAAAMMMGDS+v2a9V8Vzs1PH+dRolvEzoAoAAAAAElFTkSuQmCC" alt="License"></a>
 </p>
 <p align="center">
   <a href="#supported-features">Supported Features</a> •
@@ -50,57 +51,57 @@ Below are a few examples that show how to use some of the main features of bit7z
 ### Extracting files from an archive
 
 ```cpp
-Bit7zLibrary lib(L"7za.dll");
-BitExtractor extractor(lib, BitFormat::SevenZip);
+Bit7zLibrary lib( L"7za.dll" );
+BitExtractor extractor( lib, BitFormat::SevenZip );
 
 //extracts a simple archive
-extractor.extract(L"path/to/archive.7z", L"output/dir/");
+extractor.extract( L"path/to/archive.7z", L"output/dir/" );
 
 //extracts a specific file from the archive
-extractor.extractMatching(L"path/to/archive.7z", L"file.pdf", L"output/dir/");
+extractor.extractMatching( L"path/to/archive.7z", L"file.pdf", L"output/dir/" );
 
 //extracts the first file of an archive to a buffer
 vector<byte_t> buffer;
-extractor.extract(L"path/to/archive.7z", buffer);
+extractor.extract( L"path/to/archive.7z", buffer );
 
 //extracts an encrypted archive
-extractor.setPassword(L"password");
-extractor.extract(L"path/to/another/archive.7z", L"output/dir/");
+extractor.setPassword( L"password" );
+extractor.extract( L"path/to/another/archive.7z", L"output/dir/" );
 ```
 
 ### Compressing files into an archive
 
 ```cpp
-Bit7zLibrary lib(L"7z.dll");
-BitCompressor compressor(lib, BitFormat::Zip);
+Bit7zLibrary lib( L"7z.dll" );
+BitCompressor compressor( lib, BitFormat::Zip );
 
-std::vector<std::wstring> files = {L"path/to/file1.jpg", L"path/to/file2.pdf"};
+std::vector<std::wstring> files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
 //creates a simple zip archive of two files
-compressor.compress(files, L"output_archive.zip");
+compressor.compress( files, L"output_archive.zip" );
 
-std::map<std::wstring, std::wstring> files_map = {{L"path/to/file1.jpg",L"alias/path/file1.jpg"},
- {L"path/to/file2.pdf", L"alias/path/file2.pdf"}};
+std::map<std::wstring, std::wstring> files_map = { { L"path/to/file1.jpg",L"alias/path/file1.jpg" },
+ { L"path/to/file2.pdf", L"alias/path/file2.pdf" } };
 //creates a zip archive with a custom directory structure
-compressor.compress( files_map, L"output_archive2.zip");
+compressor.compress( files_map, L"output_archive2.zip" );
 
 //compresses a directory
-compressor.compressDirectory(L"dir/path/", L"dir_archive.zip");
+compressor.compressDirectory( L"dir/path/", L"dir_archive.zip" );
 
 //creates an encrypted zip archive of two files
-compressor.setPassword(L"password");
-compressor.compressFiles(files, L"protected_archive.zip");
+compressor.setPassword( L"password" );
+compressor.compressFiles( files, L"protected_archive.zip" );
 
 //compresses a single file into a buffer
 vector<byte_t> buffer;
-BitCompressor compressor2(lib, BitFormat::BZip2);
-compressor2.compressFile(files[0], buffer);
+BitCompressor compressor2( lib, BitFormat::BZip2 );
+compressor2.compressFile( files[0], buffer );
 ```
 
 ### Reading archive metadata
 
 ```cpp
-Bit7zLibrary lib(L"7za.dll");
-BitArchiveInfo info( lib, L"archive.7z", BitFormat::SevenZip);
+Bit7zLibrary lib( L"7za.dll" );
+BitArchiveInfo info( lib, L"archive.7z", BitFormat::SevenZip );
 
 //printing archive metadata
 wcout << L"Archive properties" << endl;
@@ -131,7 +132,7 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 ## Download
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img src="https://user-images.githubusercontent.com/1334291/44652398-15ec8c00-a9ec-11e8-9208-36bfebf2d2cd.png" width="64"/><br/><img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=flat-square&label=downloads"/>
+<img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout-square&label=downloads&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABk0lEQVR42uzQNwGAAAwEwPjDML0zsVLkgIkwcV8MXGRn3ea9bsvniy/btEVy/gEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANd9FPPylmcOiREFYRj8jpNj5iqx7WZs7GLbwj7zx2YLNRaqntRbZ+oiFLuxFUAodmnyv5I7ClUZfXmOl4HBPgZC9YqN3OQLzit4AUXYzUh+Ax9AEQ4ykN/FZ3DZUyQ1P0lY/gAPfBfhPDV5GrDkBuJHERS/SkWeFp/khN9Q+GBxKgHwH/KVfw5QEru8iQhlEQYoAWEwQkVE8mWwAEWojEC+AhahRWRVfPLmI9SEJk8DBg6hCLUBydfCB1yyBv/yrAE+EYq1e1zFbUEICMW7PMi3IiSk5tyhfAcChCJo+/K8BwFDEfotbtNLRABFGLYg34+YUFqMm5JXWowiQmgn67SB/XgziBiKMPsP+VkgfijC0h/k52EU/xHWfiG/hAShCNs/kF9DykjN939y1Cb1CCcfLOcPkBMvjz7RfeTIwFD/Ml3gkVsGJl3QH5M1zwAAAABJRU5ErkJggg=="/>
 </a>
 </div>
 
@@ -141,9 +142,9 @@ Obviously, you can also clone/download this repository and build the library by 
 
 ## Requirements
 
-+ **Target OS:** Windows (both x86 and x64)
-+ **Compiler:** MSVC 2012 or greater (tested with versions 2012, 2015 and 2017)
-+ **DLLs:** 7-zip DLLs (v18.05)
++ **Target OS:** Windows (both x86 and x64).
++ **Compiler:** MSVC 2012 or greater (MSVC 2010 supported until v2.x).
++ **DLLs:** 7-zip DLLs (v18.05).
 
 The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
 
@@ -151,17 +152,22 @@ The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](
 
 **Note 2**: even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the dlls of previous versions, such as v16.04. However, it is _strongly suggested_ to use dlls with the same version.
 
+**Note 3**: the code has been tested with MSVC 2012, 2015 and 2017.
+
 ## Building bit7z
 
 A guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
 ## Donations
 
-If you have found this project useful, please consider a small donation! Thank you! :)
+If you have found this project useful, please consider supporting it with a small donation or buying me a coffee/beer, so that I can keep improving it!
+Thank you! :)
 
 <div align="center">
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC)
+<a href='https://ko-fi.com/G2G1LS1P' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> [![Beerpay](https://beerpay.io/rikyoz/bit7z/badge.svg)](https://beerpay.io/rikyoz/bit7z) [![Beerpay Wish](https://beerpay.io/rikyoz/bit7z/make-wish.svg)](https://beerpay.io/rikyoz/bit7z)
+
+[![PayPal](https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&style=popout-square)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC) 
 
 </div>
 
