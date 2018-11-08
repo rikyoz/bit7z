@@ -1,11 +1,27 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+/*
+ * bit7z - A C++ static library to interface with the 7-zip DLLs.
+ * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * Bit7z is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ */
+
 #include "../include/bitmemextractor.hpp"
 
 #include "7zip/Archive/IArchive.h"
-#include "Windows/COM.h"
-#include "Windows/PropVariant.h"
 
 #include "../include/bitexception.hpp"
 #include "../include/opencallback.hpp"
@@ -20,6 +36,10 @@ using namespace NArchive;
 // NOTE: this function is not a method of BitMemExtractor because it would dirty the header with extra dependencies
 CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
                                      const vector< byte_t >& in_buffer, const BitArchiveOpener& opener ) {
+    if ( in_buffer.empty() ) {
+        throw BitException( "Cannot open an empty buffer archive" );
+    }
+
     CMyComPtr< IInArchive > in_archive;
     const GUID format_GUID = format.guid();
     lib.createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
@@ -32,7 +52,7 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat&
 
     CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
     if ( in_archive->Open( buf_stream, nullptr, open_callback ) != S_OK ) {
-        throw BitException( L"Cannot open archive buffer" );
+        throw BitException( "Cannot open archive buffer" );
     }
     return in_archive;
 }
@@ -55,8 +75,11 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t
                                unsigned int index ) const {
     CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_buffer, *this );
 
-    NCOM::CPropVariant prop;
-    in_archive->GetProperty( index, kpidSize, &prop );
+    uint32_t number_items;
+    in_archive->GetNumberOfItems( &number_items );
+    if ( index >= number_items ) {
+        throw BitException( "Index " + std::to_string( index ) + " is out of range"  );
+    }
 
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );
 

@@ -1,12 +1,28 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+/*
+ * bit7z - A C++ static library to interface with the 7-zip DLLs.
+ * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * Bit7z is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ */
+
 #include "../include/bitcompressor.hpp"
 
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
-#include "Windows/COM.h"
-#include "Windows/PropVariant.h"
 
 #include "../include/fsitem.hpp"
 #include "../include/util.hpp"
@@ -63,30 +79,34 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexPaths( in_paths );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexPaths( in_paths );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compress( const map<wstring, wstring>& in_paths, const wstring& out_archive ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexPathsMap( in_paths );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexPathsMap( in_paths );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
-    vector< wstring > vfiles;
-    vfiles.push_back( in_file );
-    compressFiles( vfiles, out_archive );
+    FSItem item( in_file );
+    if ( item.isDir() ) {
+        throw BitException( "Wrong argument: input path points to a directory, not a file!" );
+    }
+    vector< FSItem > fs_items;
+    fs_items.push_back( item );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const {
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexPaths( in_files, true );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexPaths( in_files, true );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
@@ -94,8 +114,8 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_arc
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( "Unsupported operation!" );
     }
-    vector< FSItem > dir_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
-    compressToFileSystem( dir_items, out_archive );
+    vector< FSItem > fs_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
+    compressToFileSystem( fs_items, out_archive );
 }
 
 void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive ) const {
@@ -109,9 +129,9 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
     if ( item.isDir() ) {
         throw BitException( "Cannot compress a directory into a memory buffer!" );
     }
-    vector< FSItem > dir_items;
-    dir_items.push_back( item );
-    compressToMemory( dir_items, out_buffer );
+    vector< FSItem > fs_items;
+    fs_items.push_back( item );
+    compressToMemory( fs_items, out_buffer );
 }
 
 /* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK

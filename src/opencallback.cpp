@@ -1,14 +1,32 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include "../include/opencallback.hpp"
+/*
+ * bit7z - A C++ static library to interface with the 7-zip DLLs.
+ * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * Bit7z is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ */
 
-#include "../include/fsutil.hpp"
+#include "../include/opencallback.hpp"
 
 #include <iostream>
 
 #include "7zip/Common/FileStreams.h"
-#include "Windows/PropVariant.h"
+
+#include "../include/bitpropvariant.hpp"
+#include "../include/fsutil.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -33,18 +51,18 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 }
 
 STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
-    NWindows::NCOM::CPropVariant prop;
+    BitPropVariant prop;
     if ( mSubArchiveMode ) {
         switch ( propID ) {
             case kpidName:
-                prop = mSubArchiveName.c_str();
+                prop = mSubArchiveName;
                 break;
                 // case kpidSize:  prop = _subArchiveSize; break; // we don't use it now
         }
     } else {
         switch ( propID ) {
             case kpidName:
-                prop = mFileItem.name().c_str();
+                prop = mFileItem.name();
                 break;
             case kpidIsDir:
                 prop = mFileItem.isDir();
@@ -66,7 +84,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
                 break;
         }
     }
-    prop.Detach( value );
+    *value = prop;
     return S_OK;
 }
 

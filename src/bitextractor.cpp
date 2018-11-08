@@ -1,11 +1,29 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+/*
+ * bit7z - A C++ static library to interface with the 7-zip DLLs.
+ * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * Bit7z is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ */
+
 #include "../include/bitextractor.hpp"
 
+#include <algorithm>
+
 #include "7zip/Archive/IArchive.h"
-#include "Windows/COM.h"
-#include "Windows/PropVariant.h"
 
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
@@ -55,16 +73,33 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
         }
     }
 
-    extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
+    if ( !matched_indices.empty() ) {
+        extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
+    }
 }
 
 void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t>& indices, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_file, *this );
+
+    uint32_t number_items;
+    in_archive->GetNumberOfItems( &number_items );
+    if ( std::any_of( indices.begin(), indices.end(), [&]( uint32_t index ) { return index >= number_items; }) ) {
+        /* if any of the indices is greater than the number of items in the archive we throw an exception, since it is
+           an invalid index! */
+        throw BitException( "Some index is not valid" );
+    }
+
     extractToFileSystem( in_archive, in_file, out_dir, indices );
 }
 
 void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) {
     CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_file, *this );
+
+    uint32_t number_items;
+    in_archive->GetNumberOfItems( &number_items );
+    if ( index >= number_items ) {
+        throw BitException( "Index " + std::to_string( index ) + " is out of range"  );
+    }
 
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );
 

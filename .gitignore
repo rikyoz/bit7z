@@ -6,7 +6,6 @@
 *.lib
 *.pro.user
 *.lastcodeanalysissucceeded
-*.vcxproj
 *.filters
 .qmake.stash
 lib/

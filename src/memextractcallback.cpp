@@ -1,20 +1,40 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+/*
+ * bit7z - A C++ static library to interface with the 7-zip DLLs.
+ * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * Bit7z is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ */
+
 #include "../include/memextractcallback.hpp"
 
 #include "Windows/FileDir.h"
 #include "Windows/FileFind.h"
-#include "Windows/FileName.h"
-#include "Windows/PropVariant.h"
 #include "7zip/Common/StreamObjects.h"
 
+#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
+#include "../include/util.hpp"
+
 
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
+using namespace bit7z::util;
 
 /* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
@@ -35,25 +55,6 @@ static const wstring kCRCFailed         = L"CRC Failed";
 static const wstring kDataError         = L"Data Error";
 static const wstring kUnknownError      = L"Unknown Error";
 static const wstring kEmptyFileAlias    = L"[Content]";
-
-static HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
-    NCOM::CPropVariant prop;
-    RINOK( archive->GetProperty( index, propID, &prop ) );
-
-    if ( prop.vt == VT_BOOL ) {
-        result = VARIANT_BOOLToBool( prop.boolVal );
-    } else if ( prop.vt == VT_EMPTY ) {
-        result = false;
-    } else {
-        return E_FAIL;
-    }
-
-    return S_OK;
-}
-
-static HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result ) {
-    return IsArchiveItemProp( archive, index, kpidIsDir, result );
-}
 
 MemExtractCallback::MemExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, vector< byte_t >& buffer ) :
     mOpener( opener ),
@@ -84,18 +85,18 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     *outStream = nullptr;
     mOutMemStream.Release();
     // Get Name
-    NCOM::CPropVariant prop;
+    BitPropVariant prop;
     RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
     wstring fullPath;
 
-    if ( prop.vt == VT_EMPTY ) {
+    if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;
     } else {
-        if ( prop.vt != VT_BSTR ) {
+        if ( prop.type() != BitPropVariantType::String ) {
             return E_FAIL;
         }
 
-        fullPath = prop.bstrVal;
+        fullPath = prop.getString();
     }
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
@@ -103,10 +104,10 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     }
 
     // Get Attrib
-    NCOM::CPropVariant prop2;
+    BitPropVariant prop2;
     RINOK( mArchiveHandler->GetProperty( index, kpidAttrib, &prop2 ) );
 
-    if ( prop2.vt == VT_EMPTY ) {
+    if ( prop2.isEmpty() ) {
         mProcessedFileInfo.Attrib = 0;
         mProcessedFileInfo.AttribDefined = false;
     } else {
@@ -120,47 +121,22 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
 
     RINOK( IsArchiveItemFolder( mArchiveHandler, index, mProcessedFileInfo.isDir ) );
     // Get Modified Time
-    NCOM::CPropVariant prop3;
+    BitPropVariant prop3;
     RINOK( mArchiveHandler->GetProperty( index, kpidMTime, &prop3 ) );
     mProcessedFileInfo.MTimeDefined = false;
 
-    switch ( prop3.vt ) {
-        case VT_EMPTY:
+    switch ( prop3.type() ) {
+        case BitPropVariantType::Empty:
             // mProcessedFileInfo.MTime = _utcMTimeDefault;
             break;
 
-        case VT_FILETIME:
+        case BitPropVariantType::Filetime:
             mProcessedFileInfo.MTime = prop3.filetime;
             mProcessedFileInfo.MTimeDefined = true;
             break;
 
         default:
             return E_FAIL;
-    }
-
-    // Get Size
-    NCOM::CPropVariant prop4;
-    RINOK( mArchiveHandler->GetProperty( index, kpidSize, &prop4 ) );
-    bool newFileSizeDefined = ( prop4.vt != VT_EMPTY );
-    UInt64 newFileSize;
-
-    if ( newFileSizeDefined ) {
-        //taken from ConvertPropVariantToUInt64
-        switch ( prop4.vt ) {
-            case VT_UI1: newFileSize = prop4.bVal;
-                break;
-            case VT_UI2: newFileSize = prop4.uiVal;
-                break;
-            case VT_UI4: newFileSize = prop4.ulVal;
-                break;
-            case VT_UI8: newFileSize = static_cast< UInt64 >( prop4.uhVal.QuadPart );
-                break;
-            default:
-                mErrorMessage = L"151199";
-                return E_FAIL;
-        }
-
-        //newFileSize = ConvertPropVariantToUInt64( prop4 );
     }
 
     if ( !mProcessedFileInfo.isDir ) {

@@ -1,6 +1,24 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+/*
+ * bit7z - A C++ static library to interface with the 7-zip DLLs.
+ * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * Bit7z is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ */
+
 #include "../include/memupdatecallback.hpp"
 
 #include <iostream>
@@ -9,7 +27,8 @@
 #include "7zip/Common/FileStreams.h"
 #include "7zip/Common/StreamObjects.h"
 #include "Common/IntToString.h"
-#include "Windows/PropVariant.h"
+
+#include "../include/bitpropvariant.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -69,11 +88,11 @@ HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData
 }
 
 HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVARIANT* value ) {
-    NWindows::NCOM::CPropVariant prop;
+    BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
         prop = false;
-        prop.Detach( value );
+        *value = prop;
         return S_OK;
     }
 
@@ -84,29 +103,30 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVAR
     SystemTimeToFileTime( &st, &ft ); // converts to file time format
 
     switch ( propID ) {
-        case kpidPath: prop = ( mBufferName.empty() ) ? kEmptyFileAlias.c_str() : mBufferName.c_str();
+        case kpidPath:
+            prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
             break;
-        case kpidIsDir: prop = false;
+        case kpidIsDir:
+            prop = false;
             break;
-        case kpidSize: {
-            prop.vt = VT_UI8;
-            prop.uhVal.QuadPart = ( sizeof( byte_t ) * mBuffer.size() );
+        case kpidSize:
+            prop = ( sizeof( byte_t ) * mBuffer.size() );
             break;
-        }
-        case kpidAttrib: {
-            prop.vt = VT_UI4;
-            prop.ulVal = FILE_ATTRIBUTE_NORMAL;
+        case kpidAttrib:
+            prop = FILE_ATTRIBUTE_NORMAL;
             break;
-        }
-        case kpidCTime: prop = ft;
+        case kpidCTime:
+            prop = ft;
             break;
-        case kpidATime: prop = ft;
+        case kpidATime:
+            prop = ft;
             break;
-        case kpidMTime: prop = ft;
+        case kpidMTime:
+            prop = ft;
             break;
     }
 
-    prop.Detach( value );
+    *value = prop;
     /*NWindows::NCOM::CPropVariant prop;
 
        if ( propID == kpidIsAnti ) {
@@ -151,18 +171,18 @@ HRESULT MemUpdateCallback::GetStream( UInt32 /*index*/, ISequentialInStream** in
     inStreamSpec->Init( &mBuffer[0], mBuffer.size() );
 
 
-//    wstring path = dirItem.fullPath();
+    //    wstring path = dirItem.fullPath();
 
-//    if ( !inStreamSpec->Open( path.c_str() ) ) {
-//        DWORD sysError = ::GetLastError();
-//        mFailedCodes.push_back( sysError );
-//        mFailedFiles.push_back( path );
-//        // if (systemError == ERROR_SHARING_VIOLATION)
-//        mErrorMessage = L"WARNING: Can't open file";
-//        // PrintString(NError::MyFormatMessageW(systemError));
-//        return S_FALSE;
-//        // return sysError;
-//    }
+    //    if ( !inStreamSpec->Open( path.c_str() ) ) {
+    //        DWORD sysError = ::GetLastError();
+    //        mFailedCodes.push_back( sysError );
+    //        mFailedFiles.push_back( path );
+    //        // if (systemError == ERROR_SHARING_VIOLATION)
+    //        mErrorMessage = L"WARNING: Can't open file";
+    //        // PrintString(NError::MyFormatMessageW(systemError));
+    //        return S_FALSE;
+    //        // return sysError;
+    //    }
 
     *inStream = inStreamLoc.Detach();
     return S_OK;

@@ -1,6 +1,24 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+/*
+ * bit7z - A C++ static library to interface with the 7-zip DLLs.
+ * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * Bit7z is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ */
+
 #include "../include/bitarchiveinfo.hpp"
 
 #include "7zip/PropID.h"
@@ -26,8 +44,7 @@ BitPropVariant BitArchiveInfo::getArchiveProperty( BitProperty property ) const 
     BitPropVariant propvar;
     HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &propvar );
     if ( res != S_OK ) {
-        throw BitException( L"Could not retrieve archive property " +
-                            propertyNames.at( static_cast<PROPID>(  property ) ) );
+        throw BitException( "Could not retrieve archive property" );
     }
     return propvar;
 }
@@ -36,9 +53,7 @@ BitPropVariant BitArchiveInfo::getItemProperty( uint32_t index, BitProperty prop
     BitPropVariant propvar;
     HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &propvar );
     if ( res != S_OK ) {
-        throw BitException( L"Could not retrieve property " +
-                            propertyNames.at( static_cast<PROPID>( property ) ) +
-                            L"for item " + std::to_wstring( index ) );
+        throw BitException( "Could not retrieve property for item at index " + std::to_string( index ) );
     }
     return propvar;
 }
@@ -77,7 +92,7 @@ uint32_t BitArchiveInfo::itemsCount() const {
     uint32_t items_count;
     HRESULT result = mInArchive->GetNumberOfItems( &items_count );
     if ( result != S_OK ) {
-        throw BitException( L"Could not retrieve the number of items in the archive" );
+        throw BitException( "Could not retrieve the number of items in the archive" );
     }
     return items_count;
 }
