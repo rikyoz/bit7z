@@ -32,26 +32,25 @@ using namespace NWindows;
 
 namespace bit7z {
     namespace util {
-        CMyComPtr< IOutArchive > initOutArchive( const Bit7zLibrary& lib, const BitInOutFormat& format,
-                                                 const BitCompressionLevel compression_level,
-                                                 const bool crypt_headers, const bool solid_mode ) {
+        CMyComPtr< IOutArchive > initOutArchive( const BitArchiveCreator& creator ) {
             CMyComPtr< IOutArchive > out_archive;
+            const BitInOutFormat& format = creator.compressionFormat();
             const GUID format_GUID = format.guid();
-            lib.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
+            creator.library().createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
 
             vector< const wchar_t* > names;
             vector< BitPropVariant > values;
-            if ( crypt_headers && format.hasFeature( HEADER_ENCRYPTION ) ) {
+            if ( creator.cryptHeaders() && format.hasFeature( HEADER_ENCRYPTION ) ) {
                 names.push_back( L"he" );
                 values.emplace_back( true );
             }
             if ( format.hasFeature( COMPRESSION_LEVEL ) ) {
                 names.push_back( L"x" );
-                values.emplace_back( static_cast< uint32_t >( compression_level ) );
+                values.emplace_back( static_cast< uint32_t >( creator.compressionLevel() ) );
             }
             if ( format.hasFeature( SOLID_ARCHIVE ) ) {
                 names.push_back( L"s" );
-                values.emplace_back( solid_mode );
+                values.emplace_back( creator.solidMode() );
             }
 
             if ( !names.empty() ) {
@@ -69,11 +68,10 @@ namespace bit7z {
         }
 
         // NOTE: this function is not a method of BitExtractor because it would dirty the header with extra dependencies
-        CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
-                                             const wstring& in_file, const BitArchiveOpener& opener ) {
+        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format, const wstring& in_file ) {
             CMyComPtr< IInArchive > in_archive;
             const GUID format_GUID = format.guid();
-            lib.createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
+            handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
 
             auto* file_stream_spec = new CInFileStream;
             CMyComPtr< IInStream > file_stream = file_stream_spec;
@@ -81,7 +79,7 @@ namespace bit7z {
                 throw BitException( L"Cannot open archive file '" + in_file + L"'" );
             }
 
-            auto* open_callback_spec = new OpenCallback( opener, in_file );
+            auto* open_callback_spec = new OpenCallback( handler, in_file );
 
             CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
             HRESULT res = in_archive->Open( file_stream, nullptr, open_callback );

@@ -25,15 +25,14 @@
 #include "../include/bit7zlibrary.hpp"
 #include "../include/bitcompressionlevel.hpp"
 #include "../include/bitarchiveopener.hpp"
+#include "../include/bitarchivecreator.hpp"
 
 namespace bit7z {
     namespace util {
-        CMyComPtr< IOutArchive > initOutArchive( const Bit7zLibrary& lib, const BitInOutFormat& format,
-                const BitCompressionLevel compressionLevel,
-                const bool cryptHeaders, const bool solidMode );
+        CMyComPtr< IOutArchive > initOutArchive( const BitArchiveCreator& creator );
 
-        CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
-                                             const wstring& in_file, const BitArchiveOpener& opener );
+        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format,
+                                             const wstring& in_file );
 
         HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result );
 

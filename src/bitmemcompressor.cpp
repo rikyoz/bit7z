@@ -65,7 +65,7 @@ BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutForma
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstring& out_archive,
                                  wstring in_buffer_name ) const {
-    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( *this );
 
     CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
@@ -92,7 +92,7 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer, vector< byte
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 
-    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( *this );
 
     auto* out_mem_stream_spec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );

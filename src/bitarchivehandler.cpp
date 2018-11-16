@@ -26,6 +26,10 @@ using std::wstring;
 
 BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib ) : mLibrary( lib ), mPassword( L"" ) {}
 
+const Bit7zLibrary& BitArchiveHandler::library() const {
+    return mLibrary;
+}
+
 BitArchiveHandler::~BitArchiveHandler() {}
 
 const wstring BitArchiveHandler::password() const {

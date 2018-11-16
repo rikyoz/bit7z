@@ -31,7 +31,7 @@ using namespace bit7z::util;
 
 BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {
-    mInArchive = openArchive( mLibrary, mFormat, in_file, *this ).Detach();
+    mInArchive = openArchive( *this, mFormat, in_file ).Detach();
 }
 
 BitArchiveInfo::~BitArchiveInfo() {

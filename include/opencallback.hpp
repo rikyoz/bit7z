@@ -35,7 +35,7 @@ namespace bit7z {
     class OpenCallback : public IArchiveOpenCallback, public IArchiveOpenVolumeCallback,
         public IArchiveOpenSetSubArchiveName, public ICryptoGetTextPassword, public CMyUnknownImp, public Callback {
         public:
-            OpenCallback( const BitArchiveOpener& opener, const std::wstring& filename = L"." );
+            OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
             virtual ~OpenCallback();
 
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
@@ -55,7 +55,7 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword )( BSTR* password );
 
         private:
-            const BitArchiveOpener& mOpener;
+            const BitArchiveHandler& mHandler;
             bool mSubArchiveMode;
             wstring mSubArchiveName;
             FSItem mFileItem;

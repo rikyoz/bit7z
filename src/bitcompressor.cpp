@@ -139,7 +139,7 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
  *  + Generalized the code to work with any type of format (original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
-    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( *this );
 
     CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
@@ -152,6 +152,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
         out_file_stream = out_file_stream_spec;
         if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
             throw BitException( L"Can't create archive file '" + out_archive + L"'" );
+                // (error code: " + to_wstring( ::GetLastError() ) + L")" );
         }
     }
 
@@ -167,7 +168,7 @@ void BitCompressor::compressToMemory( const vector< FSItem >& in_items, vector< 
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 
-    CMyComPtr< IOutArchive > out_arc = initOutArchive( mLibrary, mFormat, mCompressionLevel, mCryptHeaders, mSolidMode );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive( *this );
 
     auto* out_mem_stream_spec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );

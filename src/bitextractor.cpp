@@ -53,7 +53,7 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
  *  + Generalized the code to work with any type of format (the original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_file, *this );
+    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
 
     vector<uint32_t> matched_indices;
     // TODO: Use BitArchiveReader here
@@ -79,7 +79,7 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
 }
 
 void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t>& indices, const wstring& out_dir ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_file, *this );
+    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
 
     uint32_t number_items;
     in_archive->GetNumberOfItems( &number_items );
@@ -93,7 +93,7 @@ void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t>&
 }
 
 void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_file, *this );
+    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
 
     uint32_t number_items;
     in_archive->GetNumberOfItems( &number_items );
@@ -112,7 +112,7 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
 }
 
 void BitExtractor::test( const wstring& in_file ) {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_file, *this );
+    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
 
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, in_file, L"" );
 

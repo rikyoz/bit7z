@@ -61,16 +61,21 @@ namespace bit7z {
         public:
 
             /**
-             * @brief BitArchiveHandler constructor
+             * @brief BitArchiveHandler constructor.
              *
              * @param lib   the 7z library used by the handler.
              */
             explicit BitArchiveHandler( const Bit7zLibrary& lib );
 
             /**
-             * @brief BitArchiveHandler destructor
+             * @brief BitArchiveHandler destructor.
              */
             virtual ~BitArchiveHandler() = 0;
+
+            /**
+             * @return the Bit7zLibrary object used by the handler.
+             */
+            const Bit7zLibrary& library() const;
 
             /**
              * @return the password used to open, extract or encrypt the archive.
@@ -108,7 +113,7 @@ namespace bit7z {
             PasswordCallback passwordCallback() const;
 
             /**
-             * @brief Sets up a password to be used by the archive handler
+             * @brief Sets up a password to be used by the archive handler.
              *
              * The password will be used to encrypt/decrypt archives by using the default
              * cryptographic method of the archive format.

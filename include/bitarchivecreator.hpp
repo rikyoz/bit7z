@@ -49,7 +49,7 @@ namespace bit7z {
             /**
              * @return the format used by the archive creator.
              */
-            const BitInOutFormat& compressionFormat();
+            const BitInOutFormat& compressionFormat() const;
 
             /**
              * @return whether the creator crypts also the headers of archives or not

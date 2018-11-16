@@ -34,7 +34,7 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFor
 
 BitArchiveCreator::~BitArchiveCreator() {}
 
-const BitInOutFormat& BitArchiveCreator::compressionFormat() {
+const BitInOutFormat& BitArchiveCreator::compressionFormat() const {
     return mFormat;
 }
 

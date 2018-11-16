@@ -44,7 +44,7 @@ namespace bit7z {
             /**
              * @return the archive format used by the archive opener.
              */
-            const BitInFormat& extractionFormat();
+            const BitInFormat& extractionFormat() const;
 
         protected:
             const BitInFormat& mFormat;
