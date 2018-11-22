@@ -26,7 +26,6 @@
 
 #include "7zip/Common/FileStreams.h"
 #include "7zip/Common/StreamObjects.h"
-#include "Common/IntToString.h"
 
 #include "../include/bitpropvariant.hpp"
 

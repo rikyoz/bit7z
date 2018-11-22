@@ -42,7 +42,7 @@ namespace bit7z {
 
             explicit UpdateCallback( const BitArchiveCreator& creator,
                                      const vector< FSItem >& new_items,
-                                     const CMyComPtr< IInArchive >& old_items );
+                                     const CMyComPtr< IInArchive >& old_arc );
             virtual ~UpdateCallback();
 
             HRESULT Finilize();

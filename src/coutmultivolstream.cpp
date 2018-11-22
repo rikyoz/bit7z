@@ -90,7 +90,8 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             altStream.streamSpec = new COutFileStream;
             altStream.stream = altStream.streamSpec;
             if ( !altStream.streamSpec->Create( name.c_str(), false ) ) {
-                return ::GetLastError();
+                DWORD last_error = ::GetLastError();
+                return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
             }
 
             altStream.pos = 0;
@@ -165,7 +166,7 @@ STDMETHODIMP COutMultiVolStream::SetSize( UInt64 newSize ) {
     unsigned i = 0;
     while ( i < mVolStreams.size() ) {
         CAltStreamInfo& altStream = mVolStreams[i++];
-        if ( ( UInt64 )newSize < altStream.realSize ) {
+        if ( newSize < altStream.realSize ) {
             RINOK( altStream.stream->SetSize( newSize ) );
             altStream.realSize = newSize;
             break;

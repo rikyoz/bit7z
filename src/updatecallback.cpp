@@ -29,7 +29,6 @@
 //end of debug includes
 
 #include "7zip/Common/FileStreams.h"
-#include "Common/IntToString.h"
 
 #include "../include/bitpropvariant.hpp"
 #include "../include/fsutil.hpp"
@@ -232,7 +231,9 @@ HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** vo
     CMyComPtr< ISequentialOutStream > streamLoc( streamSpec );
 
     if ( !streamSpec->Create( fileName.c_str(), false ) ) {
-        return ::GetLastError();
+        //return ::GetLastError();
+        DWORD last_error = ::GetLastError();
+        return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
     }
 
     *volumeStream = streamLoc.Detach();

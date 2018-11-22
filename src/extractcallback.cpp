@@ -121,11 +121,11 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
         mProcessedFileInfo.Attrib = 0;
         mProcessedFileInfo.AttribDefined = false;
     } else {
-        if ( prop2.vt != VT_UI4 ) {
+        if ( !prop2.isUInt32() ) {
             return E_FAIL;
         }
 
-        mProcessedFileInfo.Attrib = prop2.ulVal;
+        mProcessedFileInfo.Attrib = prop2.getUInt32();
         mProcessedFileInfo.AttribDefined = true;
     }
 
@@ -141,7 +141,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
             break;
 
         case BitPropVariantType::Filetime:
-            mProcessedFileInfo.MTime = prop3.filetime;
+            mProcessedFileInfo.MTime = prop3.getFiletime();
             mProcessedFileInfo.MTimeDefined = true;
             break;
 

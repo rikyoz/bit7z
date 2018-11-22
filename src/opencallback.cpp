@@ -107,7 +107,8 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         auto* inFile = new CInFileStream;
         CMyComPtr< IInStream > inStreamTemp = inFile;
         if ( !inFile->Open( stream_path.c_str() ) ) {
-            return ::GetLastError();
+            DWORD last_error = ::GetLastError();
+            return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
         }
         *inStream = inStreamTemp.Detach();
         return S_OK;
