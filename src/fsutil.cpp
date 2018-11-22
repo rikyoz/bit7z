@@ -41,10 +41,6 @@ bool fsutil::path_exists( const wstring& path ) {
            ( 0 == str.compare( str.length() - ending.length(), ending.length(), ending ) );
 }*/
 
-bool fsutil::remove_file( const wstring& path ) {
-    return ::DeleteFile( path.c_str() ) != 0;
-}
-
 bool fsutil::rename_file( const wstring& old_name, const wstring& new_name, bool overwrite ) {
     DWORD flags = MOVEFILE_WRITE_THROUGH;
     if ( overwrite ) {
