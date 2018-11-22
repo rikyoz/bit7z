@@ -47,11 +47,19 @@ using namespace bit7z;
 
 const std::wstring kEmptyFileAlias = L"[Content]";
 
-UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const vector< FSItem >& dirItems ) :
+UpdateCallback::UpdateCallback( const BitArchiveCreator& creator,
+                                const vector< FSItem >& new_items,
+                                const CMyComPtr<IInArchive>& old_arc ) :
     mVolSize( 0 ),
-    mDirItems( dirItems ),
+    mNewItems( new_items ),
+    mOldArc( old_arc ),
+    mOldItemsCount( 0 ),
     mCreator( creator ),
-    mAskPassword( false ) {
+    mAskPassword( false )
+{
+    if ( mOldArc ) {
+        mOldArc->GetNumberOfItems( &mOldItemsCount );
+    }
     mNeedBeClosed = false;
     mFailedFiles.clear();
 }
@@ -85,16 +93,19 @@ HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
     return E_NOTIMPL;
 }
 
-HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
-                                           Int32* newProperties, UInt32* indexInArchive ) {
+HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 index, Int32* newData,
+        Int32* newProperties, UInt32* indexInArchive ) {
+
+    bool isOldItem = index < mOldItemsCount;
+
     if ( newData != nullptr ) {
-        *newData = 1; //= true;
+        *newData = isOldItem ? 0 : 1; //= true;
     }
     if ( newProperties != nullptr ) {
-        *newProperties = 1; //= true;
+        *newProperties = isOldItem ? 0 : 1; //= true;
     }
     if ( indexInArchive != nullptr ) {
-        *indexInArchive = static_cast< uint32_t >( -1 );
+        *indexInArchive = isOldItem ? index : static_cast< uint32_t >( -1 );
     }
 
     return S_OK;
@@ -110,7 +121,7 @@ HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
     stm << std::setfill(L'0') << std::setw(4) << utc.wYear << L'-' << w2 << utc.wMonth
         << L'-' << w2 << utc.wDay << L' ' << w2 << utc.wYear << L' ' << w2 << utc.wHour
         << L':' << w2 << utc.wMinute << L':' << w2 << utc.wSecond << L'Z' ;
-    return stm.str() ;
+    return stm.str();
 }*/
 
 HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
@@ -118,36 +129,35 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
 
     if ( propID == kpidIsAnti ) {
         prop = false;
-        *value = prop;
-        return S_OK;
-    }
-
-    const FSItem dirItem = mDirItems[index];
-
-    switch ( propID ) {
-        case kpidPath:
-            prop = dirItem.inArchivePath();
-            break;
-        case kpidIsDir:
-            prop = dirItem.isDir();
-            break;
-        case kpidSize:
-            prop = dirItem.size();
-            break;
-        case kpidAttrib:
-            prop = dirItem.attributes();
-            break;
-        case kpidCTime:
-            prop = dirItem.creationTime();
-            break;
-        case kpidATime:
-            prop = dirItem.lastAccessTime();
-            /*wcout << L"dirItem " << dirItem.name()
-                  << " last access time: " << to_string( dirItem.lastAccessTime() ) << endl;*/
-            break;
-        case kpidMTime:
-            prop = dirItem.lastWriteTime();
-            break;
+    } else if ( index < mOldItemsCount ) {
+        return mOldArc->GetProperty( index, propID, value );
+    } else {
+        const FSItem& new_item = mNewItems[ index - mOldItemsCount ];
+        switch ( propID ) {
+            case kpidPath:
+                prop = new_item.inArchivePath();
+                break;
+            case kpidIsDir:
+                prop = new_item.isDir();
+                break;
+            case kpidSize:
+                prop = new_item.size();
+                break;
+            case kpidAttrib:
+                prop = new_item.attributes();
+                break;
+            case kpidCTime:
+                prop = new_item.creationTime();
+                break;
+            case kpidATime:
+                prop = new_item.lastAccessTime();
+                /*wcout << L"dirItem " << dirItem.name()
+                      << " last access time: " << to_string( dirItem.lastAccessTime() ) << endl;*/
+                break;
+            case kpidMTime:
+                prop = new_item.lastWriteTime();
+                break;
+        }
     }
 
     *value = prop;
@@ -162,31 +172,39 @@ HRESULT UpdateCallback::Finilize() {
     return S_OK;
 }
 
+uint32_t UpdateCallback::getItemsCount() const {
+    return mOldItemsCount + static_cast< uint32_t >( mNewItems.size() );
+}
+
 HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
-    const FSItem dirItem = mDirItems[index];
 
-    if ( mCreator.fileCallback() ) {
-        mCreator.fileCallback()( dirItem.name() );
+    if ( index < mOldItemsCount ) { //old item in the archive
+        return S_OK;
     }
 
-    if ( dirItem.isDir() ) {
+    const FSItem& new_item = mNewItems[ index - mOldItemsCount ];
+
+    if ( mCreator.fileCallback() ) {
+        mCreator.fileCallback()( new_item.name() );
+    }
+
+    if ( new_item.isDir() ) {
         return S_OK;
     }
 
     auto* inStreamSpec = new CInFileStream;
     CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
-    wstring path = dirItem.path();
+    wstring path = new_item.path();
 
     if ( !inStreamSpec->Open( path.c_str() ) ) {
-        DWORD sysError = ::GetLastError();
-        mFailedFiles[ path ] = static_cast< HRESULT >( sysError );
-        // if (systemError == ERROR_SHARING_VIOLATION)
-        {
-            mErrorMessage = L"WARNING: Can't open file";
-            // PrintString(NError::MyFormatMessageW(systemError));
-            return S_FALSE;
-        }
+        DWORD last_error = ::GetLastError();
+        mFailedFiles[ path ] = HRESULT_FROM_WIN32( last_error );
+        // if (systemError == ERROR_SHARING_VIOLATION) {
+        mErrorMessage = L"WARNING: Can't open file";
+        // PrintString(NError::MyFormatMessageW(systemError));
+        return S_FALSE;
+        //}
         // return sysError;
     }
 

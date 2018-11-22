@@ -30,6 +30,7 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFor
     mCompressionLevel( NORMAL ),
     mCryptHeaders( false ),
     mSolidMode( false ),
+    mUpdateMode( false ),
     mVolumeSize( 0 ) {}
 
 BitArchiveCreator::~BitArchiveCreator() {}
@@ -48,6 +49,10 @@ BitCompressionLevel BitArchiveCreator::compressionLevel() const {
 
 bool BitArchiveCreator::solidMode() const {
     return mSolidMode;
+}
+
+bool BitArchiveCreator::updateMode() const {
+    return mUpdateMode;
 }
 
 uint64_t BitArchiveCreator::volumeSize() const {
@@ -69,6 +74,10 @@ void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_lev
 
 void BitArchiveCreator::setSolidMode( bool solid_mode ) {
     mSolidMode = solid_mode;
+}
+
+void BitArchiveCreator::setUpdateMode( bool update_mode ) {
+    mUpdateMode = update_mode;
 }
 
 void BitArchiveCreator::setVolumeSize( uint64_t size ) {

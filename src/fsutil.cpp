@@ -41,6 +41,18 @@ bool fsutil::path_exists( const wstring& path ) {
            ( 0 == str.compare( str.length() - ending.length(), ending.length(), ending ) );
 }*/
 
+bool fsutil::remove_file( const wstring& path ) {
+    return ::DeleteFile( path.c_str() ) != 0;
+}
+
+bool fsutil::rename_file( const wstring& old_name, const wstring& new_name, bool overwrite ) {
+    DWORD flags = MOVEFILE_WRITE_THROUGH;
+    if ( overwrite ) {
+        flags |= MOVEFILE_REPLACE_EXISTING;
+    }
+    return MoveFileEx( old_name.c_str(), new_name.c_str(), flags ) == TRUE; //WinAPI BOOL
+}
+
 void fsutil::normalize_path( wstring& path ) { //this assumes that the passed path is not a file path!
     if ( !path.empty() && path.back() != L'\\' && path.back() != L'/' ) {
         path.append( L"\\" );

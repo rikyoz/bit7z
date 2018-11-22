@@ -25,7 +25,10 @@
 #include "7zip/Common/FileStreams.h"
 
 #include "../include/fsitem.hpp"
+#include "../include/fsutil.hpp"
 #include "../include/util.hpp"
+#include "../include/bitarchiveinfo.hpp"
+#include "../include/bitextractor.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
 #include "../include/coutmultivolstream.hpp"
@@ -40,13 +43,17 @@ using namespace bit7z::util;
 using namespace NWindows;
 
 template< class T >
-void compressOut( const CMyComPtr< IOutArchive >& out_arc, CMyComPtr< T > out_stream,
-                  const vector< FSItem >& in_items, const BitArchiveCreator& creator ) {
-    auto* update_callback_spec = new UpdateCallback( creator, in_items );
-
+void compressOut( const BitArchiveCreator& creator, const CMyComPtr< IOutArchive >& out_arc, CMyComPtr< T > out_stream,
+                  const vector< FSItem >& new_items, const CMyComPtr< IInArchive >& old_arc ) {
+    auto* update_callback_spec = new UpdateCallback( creator, new_items, old_arc );
+    uint32_t items_count = update_callback_spec->getItemsCount(); //old items count + new items count
     CMyComPtr< IArchiveUpdateCallback2 > update_callback( update_callback_spec );
-    HRESULT result = out_arc->UpdateItems( out_stream, static_cast< uint32_t >( in_items.size() ), update_callback );
+    HRESULT result = out_arc->UpdateItems( out_stream, items_count, update_callback );
     update_callback_spec->Finilize();
+
+    if ( old_arc ) {
+        old_arc->Close();
+    }
 
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation!" );
@@ -139,24 +146,48 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
  *  + Generalized the code to work with any type of format (original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
-    CMyComPtr< IOutArchive > out_arc = initOutArchive( *this );
-
-    CMyComPtr< IOutStream > out_file_stream;
-    if ( mVolumeSize > 0 ) {
-        auto* out_multivol_stream_spec = new COutMultiVolStream( mVolumeSize, out_archive );
-        out_file_stream = out_multivol_stream_spec;
-    } else {
-        auto* out_file_stream_spec = new COutFileStream();
-        /* note: if you remove the following line (and you pass the outFileStreamSpec to UpdateItems method), you will not
-         * have any problem... until you try to compress files with GZip format! In that case your program will crash!! */
-        out_file_stream = out_file_stream_spec;
-        if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
-            throw BitException( L"Can't create archive file '" + out_archive + L"'" );
-                // (error code: " + to_wstring( ::GetLastError() ) + L")" );
+    bool updating_archive = false;
+    {
+        CMyComPtr< IInArchive > old_arc;
+        CMyComPtr< IOutArchive > new_arc = initOutArchive( *this );
+        CMyComPtr< IOutStream > out_file_stream;
+        if ( mVolumeSize > 0 ) {
+            auto* out_multivol_stream_spec = new COutMultiVolStream( mVolumeSize, out_archive );
+            out_file_stream = out_multivol_stream_spec;
+        } else {
+            auto* out_file_stream_spec = new COutFileStream();
+            if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
+                if ( ::GetLastError() != ERROR_FILE_EXISTS ) { //unknown error
+                    throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
+                    // (error code: " + to_wstring( ::GetLastError() ) + L")" );
+                }
+                if ( !updateMode() ) { //output archive file already exists and no update mode set
+                    throw BitException( L"Cannot update existing archive file '" + out_archive + L"'" );
+                }
+                if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+                    //update mode is set but format does not support adding more files
+                    throw BitException( L"Format does not support updating existing archive files" );
+                }
+                if ( out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
+                    updating_archive = true;
+                    old_arc = openArchive( *this, mFormat, out_archive );
+                    old_arc->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
+                } else {
+                    //could not create temporary file
+                    throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
+                }
+            }
+            out_file_stream = out_file_stream_spec;
+        }
+        compressOut( *this, new_arc, out_file_stream, in_items, old_arc );
+    }
+    if ( updating_archive ) {
+        //remove old file and rename tmp file (move file with overwriting)
+        bool renamed = fsutil::rename_file( out_archive + L".tmp", out_archive, true );
+        if ( !renamed ) {
+            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
         }
     }
-
-    compressOut( out_arc, out_file_stream, in_items, *this );
 }
 
 // FS -> Memory
@@ -173,5 +204,5 @@ void BitCompressor::compressToMemory( const vector< FSItem >& in_items, vector< 
     auto* out_mem_stream_spec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );
 
-    compressOut( out_arc, out_mem_stream, in_items, *this );
+    compressOut( *this, out_arc, out_mem_stream, in_items, nullptr );
 }

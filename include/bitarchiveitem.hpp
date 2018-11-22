@@ -61,7 +61,7 @@ namespace bit7z {
             wstring extension() const;
 
             /**
-             * @return the path of the item in the archive, if available or inferable from the name, ora an empty string
+             * @return the path of the item in the archive, if available or inferable from the name, or an empty string
              * otherwise.
              */
             wstring path() const;

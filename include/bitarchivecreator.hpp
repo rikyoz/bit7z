@@ -67,6 +67,11 @@ namespace bit7z {
             bool solidMode() const;
 
             /**
+             * @return whether the archive creator is allowed to update existing archives or not.
+             */
+            bool updateMode() const;
+
+            /**
              * @return the size (in bytes) of the archive volume used by the creator
              *         (a 0 value means that all files are going in a single archive).
              */
@@ -133,6 +138,15 @@ namespace bit7z {
             void setSolidMode( bool solid_mode );
 
             /**
+             * @brief Sets whether the creator can update existing archives or not.
+             *
+             * @note If false, an exception will be thrown in case a compression operation targets an existing archive.
+             *
+             * @param update_archives if true, compressing operations will update existing archives.
+             */
+            void setUpdateMode( bool update_mode );
+
+            /**
              * @brief Sets the size (in bytes) of the archive volumes.
              *
              * @note This setting has effects only when the destination archive is on filesystem.
@@ -146,6 +160,7 @@ namespace bit7z {
             BitCompressionLevel mCompressionLevel;
             bool mCryptHeaders;
             bool mSolidMode;
+            bool mUpdateMode;
             uint64_t mVolumeSize;
     };
 }

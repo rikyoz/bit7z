@@ -30,6 +30,8 @@ namespace bit7z {
 
             bool is_directory( const wstring& path );
             bool path_exists( const wstring& path );
+            bool remove_file( const wstring& path );
+            bool rename_file( const wstring& old_name, const wstring& new_name, bool overwrite = false );
             //bool has_ending( const wstring& str, const wstring& ending );
 
             void normalize_path( wstring& path );
