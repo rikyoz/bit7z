@@ -156,6 +156,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
             out_file_stream = out_multivol_stream_spec;
         } else {
             auto* out_file_stream_spec = new COutFileStream();
+			out_file_stream = out_file_stream_spec;
             if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
                 if ( ::GetLastError() != ERROR_FILE_EXISTS ) { //unknown error
                     throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
@@ -177,7 +178,6 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
                     throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
                 }
             }
-            out_file_stream = out_file_stream_spec;
         }
         compressOut( *this, new_arc, out_file_stream, in_items, old_arc );
     }
