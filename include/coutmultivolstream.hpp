@@ -34,7 +34,7 @@ class COutMultiVolStream : public IOutStream, public CMyUnknownImp {
         //CTempFiles* TempFiles;
         uint64_t mVolSize;
         wstring  mVolPrefix;
-        unsigned mStreamIndex; // required stream
+        size_t mStreamIndex; // required stream
         uint64_t mOffsetPos;   // offset from start of _streamIndex index
         uint64_t mAbsPos;
         uint64_t mLength;

@@ -171,6 +171,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
                 }
                 if ( out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
                     updating_archive = true;
+                    //needed to change old_arc, see https://sourceforge.net/p/sevenzip/discussion/45798/thread/23ec65b4/
                     old_arc = openArchive( *this, mFormat, out_archive );
                     old_arc->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
                 } else {
@@ -183,7 +184,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
     }
     if ( updating_archive ) {
         //remove old file and rename tmp file (move file with overwriting)
-        bool renamed = fsutil::rename_file( out_archive + L".tmp", out_archive, true );
+        bool renamed = fsutil::rename_file( out_archive + L".tmp", out_archive );
         if ( !renamed ) {
             throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
         }

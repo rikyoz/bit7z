@@ -35,7 +35,7 @@ namespace bit7z {
 
     class MemUpdateCallback : public IArchiveUpdateCallback, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
-            MY_UNKNOWN_IMP2( IArchiveUpdateCallback2, ICryptoGetTextPassword2 )
+            MY_UNKNOWN_IMP2( IArchiveUpdateCallback, ICryptoGetTextPassword2 )
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );

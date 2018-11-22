@@ -82,7 +82,7 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             CAltStreamInfo altStream;
 
             FChar temp[16];
-            ConvertUInt32ToString( mStreamIndex + 1, temp );
+            ConvertUInt64ToString( mStreamIndex + 1, temp );
             wstring name = temp;
             while ( name.length() < 3 )
                 name.insert( 0, L"0" );
@@ -163,7 +163,7 @@ STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
 }
 
 STDMETHODIMP COutMultiVolStream::SetSize( UInt64 newSize ) {
-    unsigned i = 0;
+    size_t i = 0;
     while ( i < mVolStreams.size() ) {
         CAltStreamInfo& altStream = mVolStreams[i++];
         if ( newSize < altStream.realSize ) {
