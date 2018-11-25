@@ -25,6 +25,7 @@ using namespace std;
 
 namespace bit7z {
     namespace BitFormat {
+        const BitInFormat Auto( 0x00 );
         const BitInOutFormat Zip( 0x01, L".zip", MULTIPLE_FILES | COMPRESSION_LEVEL | ENCRYPTION );
         const BitInOutFormat BZip2( 0x02, L".bz2", COMPRESSION_LEVEL | INMEM_COMPRESSION );
         const BitInFormat Rar( 0x03 );
@@ -44,7 +45,7 @@ namespace bit7z {
         const BitInFormat Ext( 0xC7 );
         const BitInFormat VMDK( 0xC8 );
         const BitInFormat VDI( 0xC9 );
-        const BitInFormat Qcow( 0xCA );
+        const BitInFormat QCow( 0xCA );
         const BitInFormat GPT( 0xCB );
         const BitInFormat Rar5( 0xCC );
         const BitInFormat IHex( 0xCD );

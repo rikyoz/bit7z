@@ -42,7 +42,7 @@ namespace bit7z {
              * @param in_file   the input archive file path.
              * @param format    the input archive format.
              */
-            BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format );
+            BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format = BitFormat::Auto );
 
             /**
              * @brief BitArchiveInfo destructor.

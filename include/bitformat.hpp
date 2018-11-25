@@ -132,7 +132,8 @@ namespace bit7z {
      * @brief The namespace BitFormat contains a set of archive formats usable with bit7z classes
      */
     namespace BitFormat {
-        extern const BitInFormat Rar,       ///< RAR Archive Format
+        extern const BitInFormat Auto,      ///< Automatic Format Detection
+                                 Rar,       ///< RAR Archive Format
                                  Arj,       ///< ARJ Archive Format
                                  Z,         ///< Z Archive Format
                                  Lzh,       ///< LZH Archive Format

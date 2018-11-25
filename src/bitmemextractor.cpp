@@ -58,7 +58,11 @@ CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat&
 }
 
 BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ) {}
+    : BitArchiveOpener( lib, format ) {
+    if ( format == BitFormat::Auto ) {
+        throw BitException( "Automatic format detection not supported for in-memory archives" );
+    }
+}
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
     CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_buffer, *this );
