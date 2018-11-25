@@ -23,7 +23,6 @@
 
 #include <string>
 
-#include "Common/IntToString.h"
 #include "Windows/FileDir.h"
 
 /* This class is a modified version of COutMultiVolStream you can find in 7zSDK/CPP/7zip/UI/Common/Update.cpp
@@ -81,9 +80,9 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
         if ( mStreamIndex >= mVolStreams.size() ) {
             CAltStreamInfo altStream;
 
-            FChar temp[16];
-            ConvertUInt64ToString( mStreamIndex + 1, temp );
-            wstring name = temp;
+            //FChar temp[16];
+            //ConvertUInt64ToString( mStreamIndex + 1, temp );
+            wstring name = std::to_wstring( mStreamIndex + 1 );
             while ( name.length() < 3 )
                 name.insert( 0, L"0" );
             name.insert( 0, mVolPrefix );
