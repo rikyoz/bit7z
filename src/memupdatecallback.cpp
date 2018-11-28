@@ -110,7 +110,7 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVAR
             prop = false;
             break;
         case kpidSize:
-            prop = ( sizeof( byte_t ) * mBuffer.size() );
+            prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
             break;
         case kpidAttrib:
             prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
@@ -127,27 +127,6 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVAR
     }
 
     *value = prop;
-    /*NWindows::NCOM::CPropVariant prop;
-
-       if ( propID == kpidIsAnti ) {
-        prop = false;
-        prop.Detach( value );
-        return S_OK;
-       }
-
-       const FSItem dirItem = mDirItems[index];
-
-       switch ( propID ) {
-        case kpidPath  : prop = dirItem.relativePath().c_str(); break;
-        case kpidIsDir : prop = dirItem.isDir(); break;
-        case kpidSize  : prop = dirItem.size(); break;
-        case kpidAttrib: prop = dirItem.attributes(); break;
-        case kpidCTime : prop = dirItem.creationTime(); break;
-        case kpidATime : prop = dirItem.lastAccessTime(); break;
-        case kpidMTime : prop = dirItem.lastWriteTime(); break;
-       }
-
-       prop.Detach( value );*/
     return S_OK;
 }
 
@@ -161,28 +140,10 @@ HRESULT MemUpdateCallback::Finilize() {
 
 HRESULT MemUpdateCallback::GetStream( UInt32 /*index*/, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
-    /*const FSItem dirItem = mDirItems[index];
-
-       if ( dirItem.isDir() )
-        return S_OK;*/
 
     auto* inStreamSpec = new CBufInStream;
     CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
     inStreamSpec->Init( &mBuffer[0], mBuffer.size() );
-
-
-    //    wstring path = dirItem.fullPath();
-
-    //    if ( !inStreamSpec->Open( path.c_str() ) ) {
-    //        DWORD sysError = ::GetLastError();
-    //        mFailedCodes.push_back( sysError );
-    //        mFailedFiles.push_back( path );
-    //        // if (systemError == ERROR_SHARING_VIOLATION)
-    //        mErrorMessage = L"WARNING: Can't open file";
-    //        // PrintString(NError::MyFormatMessageW(systemError));
-    //        return S_FALSE;
-    //        // return sysError;
-    //    }
 
     *inStream = inStreamLoc.Detach();
     return S_OK;
