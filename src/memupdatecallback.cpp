@@ -113,7 +113,7 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVAR
             prop = ( sizeof( byte_t ) * mBuffer.size() );
             break;
         case kpidAttrib:
-            prop = FILE_ATTRIBUTE_NORMAL;
+            prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
             break;
         case kpidCTime:
             prop = ft;
