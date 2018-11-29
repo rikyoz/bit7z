@@ -1,34 +1,34 @@
-version: 3.0.0-build{build}
+version: 3.0.1-build{build}
 skip_non_tags: true
 os: Visual Studio 2015
 clone_depth: 1
 
 environment:
-  bit7z_version: 3.0.0
+  bit7z_version: 3.0.1
   msvc_dir: C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC
   
   matrix:
   # MSVC x86
   - name: msvc2015_x86
     arch: x86
-    qt_dir: C:\Qt\5.11.1\msvc2015\bin
+    qt_dir: C:\Qt\5.11\msvc2015\bin
 
   # MSVC x86 MT
   - name: msvc2015_mt_x86
     arch: x86
     mt: TRUE
-    qt_dir: C:\Qt\5.11.1\msvc2015\bin
+    qt_dir: C:\Qt\5.11\msvc2015\bin
 
   # MSVC x64
   - name: msvc2015_x64
     arch: x64
-    qt_dir: C:\Qt\5.11.1\msvc2015_64\bin
+    qt_dir: C:\Qt\5.11\msvc2015_64\bin
 
   # MSVC x64 MT
   - name: msvc2015_mt_x64
     arch: x64
     mt: TRUE
-    qt_dir: C:\Qt\5.11.1\msvc2015_64\bin
+    qt_dir: C:\Qt\5.11\msvc2015_64\bin
 
 init:
     - set PATH=%PATH%;%msvc_dir%;%qt_dir%
