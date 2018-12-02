@@ -38,7 +38,8 @@ namespace bit7z {
 
         HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result );
 
-        const BitInFormat& detect_format( const wstring& in_file );
+        const BitInFormat& detect_format_by_ext( const wstring& in_file );
+        const BitInFormat& detect_format_by_sig( const wstring& in_file );
     }
 }
 

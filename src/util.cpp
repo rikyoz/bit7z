@@ -78,7 +78,19 @@ namespace bit7z {
         // NOTE: this function is not a method of BitExtractor because it would dirty the header with extra dependencies
         CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format, const wstring& in_file ) {
             CMyComPtr< IInArchive > in_archive;
-            const GUID format_GUID = ( format == BitFormat::Auto ) ? detect_format( in_file ).guid() : format.guid();
+            bool signature_detected = false;
+            GUID format_GUID;
+            if ( format == BitFormat::Auto ) {
+                const BitInFormat& detected_format = detect_format_by_ext( in_file );
+                if ( detected_format == BitFormat::Auto ) {
+                    format_GUID = detect_format_by_sig( in_file ).guid();
+                    signature_detected = true;
+                } else {
+                    format_GUID = detected_format.guid();
+                }
+            } else {
+                format_GUID = format.guid();
+            }
             handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
 
             auto* file_stream_spec = new CInFileStream;
@@ -92,6 +104,14 @@ namespace bit7z {
             CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
             HRESULT res = in_archive->Open( file_stream, nullptr, open_callback );
             if ( res != S_OK ) {
+                if ( !signature_detected ) { //wrong extension?
+                    format_GUID = detect_format_by_sig( in_file ).guid();
+                    handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
+                    res = in_archive->Open( file_stream, nullptr, open_callback );
+                    if ( res == S_OK ) {
+                        return in_archive;
+                    }
+                }
                 throw BitException( L"Cannot open archive '" + in_file  + L"'" );
             }
             return in_archive;
@@ -195,89 +215,97 @@ namespace bit7z {
             { L"taz",      BitFormat::Z }
         };
 
-        /*void print_signature_vec( const vector< byte_t >& signature ) {
-            std::wcout << std::hex;
-            for ( auto byte : signature ) {
-                std::wcout << L"0x" << std::setw(2) << std::setfill(L'0') << byte << L" ";
-            }
-            std::wcout << std::dec << std::endl;
-        }
-
-        vector< byte_t > read_signature_vec( const wstring& in_file, size_t size, std::streamoff offset = 0 ) {
-            vector< byte_t > signature( size );
-            std::ifstream stream( in_file, std::ifstream::binary );
-            if ( !stream ) {
-                throw BitException( "Cannot read file signature" );
-            }
-            if ( offset > 0 ) {
-                stream.seekg( offset );
-            }
-            stream.read( reinterpret_cast< char* >( signature.data() ), static_cast< std::streamsize >( size ) );
-            return signature;
-        }*/
-
-        uint64_t read_signature( const wstring& in_file, size_t size, std::streamoff offset = 0 ) {
-            if ( size > 8 ) { return 0; }
-
-            uint64_t signature = 0;
-            std::ifstream stream( in_file, std::ifstream::binary );
-            if ( !stream ) {
-                throw BitException( "Cannot read file signature" );
-            }
-            if ( offset > 0 ) {
-                stream.seekg( offset );
-            }
-            stream.read( reinterpret_cast< char* >( &signature ), static_cast< std::streamsize >( size ) );
-            return signature;
-        }
-
-        /* NOTE: File signatures are specified in big endian order and swapped to little endian
-                 via MSVC specific function _byteswap_uint64.
-                 Moreover, for signatures with less than 8 bytes (size of uint64), remaining bytes are set to 0.
-                 When calling read_signature, remember to request the correct number of bytes (size) and offset */
+        /* NOTE: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0 */
         const unordered_map< uint64_t, const BitInFormat& > common_signatures = {
-            { _byteswap_uint64( 0x526172211A070000 ), BitFormat::Rar },
-            { _byteswap_uint64( 0x526172211A070100 ), BitFormat::Rar5 },
-            { _byteswap_uint64( 0x4657530000000000 ), BitFormat::Swf },
-            { _byteswap_uint64( 0x4357530000000000 ), BitFormat::Swfc },
-            { _byteswap_uint64( 0x377ABCAF271C0000 ), BitFormat::SevenZip },
-            { _byteswap_uint64( 0x425A680000000000 ), BitFormat::BZip2 },
-            { _byteswap_uint64( 0x1F8B080000000000 ), BitFormat::GZip },
-            { _byteswap_uint64( 0x7573746172000000 ), BitFormat::Tar }, //OFFSET??
-            { _byteswap_uint64( 0x4D5357494D000000 ), BitFormat::Wim },
-            { _byteswap_uint64( 0xFD377A585A000000 ), BitFormat::Xz },
-            { _byteswap_uint64( 0x504B000000000000 ), BitFormat::Zip },
-            { _byteswap_uint64( 0x60EA000000000000 ), BitFormat::Arj },
-            { _byteswap_uint64( 0x4D53434600000000 ), BitFormat::Cab },
-            { _byteswap_uint64( 0x4954534600000000 ), BitFormat::Chm },
-            { _byteswap_uint64( 0xD0CF11E0A1B11AE1 ), BitFormat::Compound },
-            { _byteswap_uint64( 0xC771000000000000 ), BitFormat::Cpio },
-            { _byteswap_uint64( 0x71C7000000000000 ), BitFormat::Cpio },
-            { _byteswap_uint64( 0x3037303730000000 ), BitFormat::Cpio },
-            { _byteswap_uint64( 0x213C617263683E00 ), BitFormat::Deb },
-            { _byteswap_uint64( 0x7801730D62626000 ), BitFormat::Dmg },
-            { _byteswap_uint64( 0x7F454C4600000000 ), BitFormat::Elf },
-            { _byteswap_uint64( 0x464C560100000000 ), BitFormat::Flv },
-            { _byteswap_uint64( 0x2D6C680000000000 ), BitFormat::Lzh }, //OFFSET??
-            { _byteswap_uint64( 0x5D00000000000000 ), BitFormat::Lzma },
-            { _byteswap_uint64( 0x015D000000000000 ), BitFormat::Lzma86 },
-            { _byteswap_uint64( 0xCFFAEDFE00000000 ), BitFormat::Macho },
-            { _byteswap_uint64( 0xCAFEBABE00000000 ), BitFormat::Macho },
-            { _byteswap_uint64( 0x514649FB00000000 ), BitFormat::QCow },
-            { _byteswap_uint64( 0xEDABEEDB00000000 ), BitFormat::Rpm },
-            { _byteswap_uint64( 0x7371736800000000 ), BitFormat::SquashFS },
-            { _byteswap_uint64( 0x6873717300000000 ), BitFormat::SquashFS },
-            { _byteswap_uint64( 0x4B444D0000000000 ), BitFormat::VMDK },
-            { _byteswap_uint64( 0x3C3C3C2000000000 ), BitFormat::VDI }, //Alternatively 0x7F10DABE at offset 0x40
-            { _byteswap_uint64( 0x636F6E6563746978 ), BitFormat::Vhd },
-            { _byteswap_uint64( 0x7861722100000000 ), BitFormat::Xar },
-            { _byteswap_uint64( 0x1F9D000000000000 ), BitFormat::Z },
-            { _byteswap_uint64( 0x1FA0000000000000 ), BitFormat::Z }
+            { 0x526172211A070000, BitFormat::Rar },
+            { 0x526172211A070100, BitFormat::Rar5 },
+            { 0x4657530000000000, BitFormat::Swf },
+            { 0x4357530000000000, BitFormat::Swfc },
+            { 0x377ABCAF271C0000, BitFormat::SevenZip },
+            { 0x425A680000000000, BitFormat::BZip2 },
+            { 0x1F8B080000000000, BitFormat::GZip },
+            { 0x4D5357494D000000, BitFormat::Wim },
+            { 0xFD377A585A000000, BitFormat::Xz },
+            { 0x504B000000000000, BitFormat::Zip },
+            { 0x60EA000000000000, BitFormat::Arj },
+            { 0x4D53434600000000, BitFormat::Cab },
+            { 0x4954534600000000, BitFormat::Chm },
+            { 0xD0CF11E0A1B11AE1, BitFormat::Compound },
+            { 0xC771000000000000, BitFormat::Cpio },
+            { 0x71C7000000000000, BitFormat::Cpio },
+            { 0x3037303730000000, BitFormat::Cpio },
+            { 0x213C617263683E00, BitFormat::Deb },
+            { 0x7801730D62626000, BitFormat::Dmg },
+            { 0x7F454C4600000000, BitFormat::Elf },
+            { 0x4D5A000000000000, BitFormat::Pe },
+            { 0x464C560100000000, BitFormat::Flv },
+            { 0x5D00000000000000, BitFormat::Lzma },
+            { 0x015D000000000000, BitFormat::Lzma86 },
+            { 0xCFFAEDFE00000000, BitFormat::Macho },
+            { 0xCAFEBABE00000000, BitFormat::Macho },
+            { 0x514649FB00000000, BitFormat::QCow },
+            { 0xEDABEEDB00000000, BitFormat::Rpm },
+            { 0x7371736800000000, BitFormat::SquashFS },
+            { 0x6873717300000000, BitFormat::SquashFS },
+            { 0x4B444D0000000000, BitFormat::VMDK },
+            { 0x3C3C3C2000000000, BitFormat::VDI }, //Alternatively 0x7F10DABE at offset 0x40
+            { 0x636F6E6563746978, BitFormat::Vhd },
+            { 0x7861722100000000, BitFormat::Xar },
+            { 0x1F9D000000000000, BitFormat::Z },
+            { 0x1FA0000000000000, BitFormat::Z }
         };
 
-        //const vector< tuple< const BitFormat&, uint64_t, std::streamoff > > = {};
+        struct OffsetSignature {
+            std::streamoff offset;
+            std::streamsize size;
+            uint64_t signature;
+            const BitInFormat& format;
+        };
 
-        const BitInFormat& detect_format( const wstring& in_file ) {
+        const vector< OffsetSignature > common_offset_signatures = {
+            { 0x02,   3, 0x2D6C68,     BitFormat::Lzh },
+            { 0x40,   4, 0x7F10DABE,   BitFormat::VDI },
+            { 0x101,  5, 0x7573746172, BitFormat::Tar },
+            { 0x8001, 5, 0x4344303031, BitFormat::Iso },
+            { 0x8801, 5, 0x4344303031, BitFormat::Iso },
+            { 0x9001, 5, 0x4344303031, BitFormat::Iso }
+        };
+
+        const BitInFormat& detect_format_by_sig( const wstring& in_file ) {
+            constexpr auto SIGNATURE_SIZE = 8u;
+
+            std::ifstream stream( in_file, std::ifstream::binary );
+            if ( !stream ) {
+                throw BitException( "Cannot open file to read its signature" );
+            }
+
+            uint64_t file_signature = 0;
+            auto file_signature_array = reinterpret_cast< char* >( &file_signature );
+            stream.read( file_signature_array, SIGNATURE_SIZE );
+            file_signature = _byteswap_uint64( file_signature );
+            for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
+                auto it = common_signatures.find( file_signature );
+                if ( it != common_signatures.end() ) {
+                    //std::wcout << L"Detected format: " << std::hex << it->second.value() << std::endl;
+                    return it->second;
+                }
+                file_signature_array[ i ] = 0x00;
+            }
+
+            for ( auto& sig : common_offset_signatures ) {
+                file_signature = 0; //reset signature
+                stream.seekg( sig.offset );
+                stream.read( file_signature_array, sig.size );
+                file_signature = _byteswap_uint64( file_signature );
+                if ( file_signature == sig.signature ) {
+                    return sig.format;
+                }
+            }
+
+            throw BitException( "Cannot detect the format of the file" );
+        }
+
+        const BitInFormat& detect_format_by_ext( const wstring& in_file ) {
             wstring ext = filesystem::fsutil::extension( in_file );
             if ( ext.empty() ) {
                 throw BitException( "Cannot detect the archive format from the extension" );
@@ -286,46 +314,22 @@ namespace bit7z {
             std::transform( ext.cbegin(), ext.cend(), ext.begin(), std::towlower );
             std::wcout << ext << std::endl;
 
-            auto it = common_extensions.find( ext ); //detecting archives with common file extensions
+            //detecting archives with common file extensions
+            auto it = common_extensions.find( ext );
             if ( it != common_extensions.end() ) { //extension found in map
                 return it->second;
             }
 
-            /* TODO: [ ] Find a way to reduce size of extensions map
-             *       [ ] Check endianness problem
-             *       [ ] Check signatures map keys size problem
-             *       [ ] Check offset problem
-             *       [ ] Check multi-volume detection problem
-             */
+            //detecting archives with split file extension
+            std::wregex split_regex( L"([0-9]{3,})" );
+            if ( std::regex_match( ext, split_regex ) ) { //the file should be a splitted archive
+                return BitFormat::Split;
+            }
 
-            if ( ext == L"rar" ) {
-                //detect rar version
-                /*const vector< byte_t > rar4_sig = { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x00 };
-                const vector< byte_t > rar5_sig = { 0x52, 0x61, 0x72, 0x21, 0x1A, 0x07, 0x01 };
-                auto file_signature = read_signature( in_file, 7 ); //reading first 8 bytes
-                print_signature( file_signature );
-                std::wcout << std::hex << read_signature_2( in_file, 7 ) << std::dec << std::endl;
-                //print_signature( rar5_sig );
-                //print_signature( rar4_sig );
-                if ( file_signature == rar4_sig ) {
-                    return BitFormat::Rar;
-                } else if ( file_signature == rar5_sig ) {
-                    return BitFormat::Rar5;
-                }*/
-                //auto file_signature_vec = read_signature_vec( in_file, 7 ); //reading first 8 bytes
-                //std::wcout << L"File signature vector: ";
-                //print_signature_vec( file_signature_vec );
-                /*for ( auto& sig : common_signatures ) {
-                    std::wcout << std::hex << sig.first << std::dec << std::endl;
-                }*/
-                auto file_signature = read_signature( in_file, 7 ); //reading first 8 bytes
-                //std::wcout << L"File signature: " << std::hex << file_signature << std::dec << std::endl;
-                //std::wcout << L"File signature (little endian): " << std::hex << _byteswap_uint64( file_signature ) << std::dec << std::endl;
-                auto it = common_signatures.find( file_signature );
-                if ( it != common_signatures.end() ) {
-                    //std::wcout << L"Detected format: " << std::hex << it->second.value() << std::endl;
-                    return it->second;
-                }
+            //detecting multivolume archives extension
+            std::wregex multivolume_regex( L"(r|z)([0-9]+)" );
+            if ( std::regex_match( ext, multivolume_regex ) ) { //the files should be a multivolume zip or rar archive
+                return ext[ 0 ] == L'r' ? BitFormat::Rar : BitFormat::Zip;
             }
 
             //TODO: 7z SFX detection
@@ -333,43 +337,13 @@ namespace bit7z {
 
             }*/
 
-            if ( ext == L"iso" || ext == L"img" || ext == L"ima" ) {
+            //Note: iso, img and ima extensions can be associated with different formats -> detect by signature
 
-            }
+            /* The extension did not match any known format extension, delegating the decision to the client */
+            return BitFormat::Auto;
+            //return detect_format_by_sig( in_file );
 
-            /*if ( ext == L"swf" ) {
-                const vector< byte_t > swf_sig = { 0x46, 0x57, 0x53 };
-                const vector< byte_t > swfc_sig = { 0x43, 0x57, 0x53 };
-                auto file_signature = read_signature( in_file, 3 ); //reading first 3 bytes
-                if ( file_signature == swf_sig ) {
-                    return BitFormat::Swf;
-                } else if ( file_signature == swfc_sig ) {
-                    return BitFormat::Swfc;
-                }
-            }*/
-
-            std::wregex split_regex( L"([0-9]{3,})" );
-            if ( std::regex_match( ext, split_regex ) ) { //the file is a splitted archive
-                return BitFormat::Split;
-            }
-
-            //ELF format?
-
-            /*std::wregex multivolume_regex( L"(r|z)([0-9]+)" );
-            bool is_multivolume = std::regex_match( ext, multivolume_regex );
-            if ( is_multivolume ) {
-                if ( ext[0] == L'r' ) {
-                    //detect RAR version
-                } else {
-                    return BitFormat::Zip;
-                }
-            }*/
-
-            /*if ( ext[0] == L'z' || ext[0] == L'r' ) {
-                bool is_multi_volume = false;
-            }*/
-
-            return BitFormat::SevenZip;
+            /* TODO: [ ] Find a way to reduce size of extensions map */
         }
     }
 }
