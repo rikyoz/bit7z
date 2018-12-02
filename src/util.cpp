@@ -76,44 +76,53 @@ namespace bit7z {
 
         // NOTE: this function is not a method of BitExtractor because it would dirty the header with extra dependencies
         CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format, const wstring& in_file ) {
-            CMyComPtr< IInArchive > in_archive;
-            bool signature_detected = false;
-            GUID format_GUID;
-            if ( format == BitFormat::Auto ) {
-                const BitInFormat& detected_format = detect_format_by_ext( in_file );
-                if ( detected_format == BitFormat::Auto ) {
-                    format_GUID = detect_format_by_sig( in_file ).guid();
-                    signature_detected = true;
-                } else {
-                    format_GUID = detected_format.guid();
-                }
-            } else {
-                format_GUID = format.guid();
-            }
-            handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
-
+            // Opening file input stream
             auto* file_stream_spec = new CInFileStream;
             CMyComPtr< IInStream > file_stream = file_stream_spec;
             if ( !file_stream_spec->Open( in_file.c_str() ) ) {
                 throw BitException( L"Cannot open archive file '" + in_file + L"'" );
             }
-
+            // Creating open callback for the file
             auto* open_callback_spec = new OpenCallback( handler, in_file );
-
             CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
-            HRESULT res = in_archive->Open( file_stream, nullptr, open_callback );
-            if ( res != S_OK ) {
-                if ( !signature_detected ) { //wrong extension?
-                    format_GUID = detect_format_by_sig( in_file ).guid();
-                    handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
-                    res = in_archive->Open( file_stream, nullptr, open_callback );
-                    if ( res == S_OK ) {
-                        return in_archive;
-                    }
+
+            // Creating 7z archive object for the input file format
+            CMyComPtr< IInArchive > in_archive;
+            bool signature_detected = false;
+            GUID format_GUID;
+            if ( format == BitFormat::Auto ) { // Detecting format of the input file
+                const BitInFormat& detected_format = detectFormatByExt( in_file );
+                if ( detected_format == BitFormat::Auto ) { // Unknown extension, trying using the file signature
+                    format_GUID = detectFormatBySig( in_file ).guid();
+                    signature_detected = true;
+                } else { // Format detected from file extension
+                    format_GUID = detected_format.guid();
                 }
-                throw BitException( L"Cannot open archive '" + in_file  + L"'" );
+            } else { // Format directly given by the user
+                format_GUID = format.guid();
             }
-            return in_archive;
+            handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
+
+            // Trying to open the file with the detected format
+            HRESULT res = in_archive->Open( file_stream, nullptr, open_callback );
+            if ( res == S_OK ) {
+                return in_archive;
+            }
+            if ( format == BitFormat::Auto && !signature_detected ) {
+                /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
+                 * precise detection by checking the signature.
+                 * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
+                 *       and an exception is thrown!
+                 * NOTE 2: If signature detection was already performed (signature_detected == false), it detected a
+                 *         a wrong format, no further check can be done and an exception must be thrown! */
+                format_GUID = detectFormatBySig( in_file ).guid();
+                handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
+                res = in_archive->Open( file_stream, nullptr, open_callback );
+                if ( res == S_OK ) {
+                    return in_archive;
+                }
+            }
+            throw BitException( L"Cannot open archive '" + in_file  + L"'" );
         }
 
         HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
@@ -147,7 +156,6 @@ namespace bit7z {
             { L"tar",      BitFormat::Tar },
             { L"wim",      BitFormat::Wim },
             { L"swm",      BitFormat::Wim },
-            { L"esd",      BitFormat::Wim },
             { L"xz",       BitFormat::Xz },
             { L"txz",      BitFormat::Xz },
             { L"zip",      BitFormat::Zip },
@@ -211,6 +219,7 @@ namespace bit7z {
             { L"vdi",      BitFormat::VDI },
             { L"vhd",      BitFormat::Vhd },
             { L"xar",      BitFormat::Xar },
+            { L"pkg",      BitFormat::Xar },
             { L"z",        BitFormat::Z },
             { L"taz",      BitFormat::Z }
         };
@@ -227,6 +236,7 @@ namespace bit7z {
             { 0x4D5357494D000000, BitFormat::Wim },
             { 0xFD377A585A000000, BitFormat::Xz },
             { 0x504B000000000000, BitFormat::Zip },
+            { 0x4552000000000000, BitFormat::APM },
             { 0x60EA000000000000, BitFormat::Arj },
             { 0x4D53434600000000, BitFormat::Cab },
             { 0x4954534600000000, BitFormat::Chm },
@@ -262,57 +272,94 @@ namespace bit7z {
             const BitInFormat& format;
         };
 
-        const vector< OffsetSignature > common_offset_signatures = {
-            { 0x02,   3, 0x2D6C68,     BitFormat::Lzh },
-            { 0x40,   4, 0x7F10DABE,   BitFormat::VDI },
-            { 0x101,  5, 0x7573746172, BitFormat::Tar },
+        const vector< OffsetSignature > common_signatures_with_offset = {
+            { 0x02,   3, 0x2D6C680000000000, BitFormat::Lzh },
+            { 0x40,   4, 0x7F10DABE00000000, BitFormat::VDI },
+            { 0x101,  5, 0x7573746172000000, BitFormat::Tar }/*,
             { 0x8001, 5, 0x4344303031, BitFormat::Iso },
             { 0x8801, 5, 0x4344303031, BitFormat::Iso },
-            { 0x9001, 5, 0x4344303031, BitFormat::Iso }
+            { 0x9001, 5, 0x4344303031, BitFormat::Iso }*/
         };
 
-        const BitInFormat& detect_format_by_sig( const wstring& in_file ) {
+        const BitInFormat& detectFormatBySig( const wstring& in_file ) {
             constexpr auto SIGNATURE_SIZE = 8u;
 
             std::ifstream stream( in_file, std::ifstream::binary );
             if ( !stream ) {
                 throw BitException( "Cannot open file to read its signature" );
             }
+            stream.exceptions( std::ifstream::failbit | std::ifstream::badbit );
 
-            uint64_t file_signature = 0;
-            auto file_signature_array = reinterpret_cast< char* >( &file_signature );
-            stream.read( file_signature_array, SIGNATURE_SIZE );
-            file_signature = _byteswap_uint64( file_signature );
-            for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
-                auto it = common_signatures.find( file_signature );
-                if ( it != common_signatures.end() ) {
-                    //std::wcout << L"Detected format: " << std::hex << it->second.value() << std::endl;
-                    return it->second;
-                }
-                file_signature_array[ i ] = 0x00;
-            }
-
-            for ( auto& sig : common_offset_signatures ) {
-                file_signature = 0; //reset signature
-                stream.seekg( sig.offset );
-                stream.read( file_signature_array, sig.size );
+            try {
+                uint64_t file_signature = 0;
+                auto file_signature_array = reinterpret_cast< char* >( &file_signature );
+                stream.read( file_signature_array, SIGNATURE_SIZE );
                 file_signature = _byteswap_uint64( file_signature );
-                if ( file_signature == sig.signature ) {
-                    return sig.format;
+                for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
+                    auto it = common_signatures.find( file_signature );
+                    if ( it != common_signatures.end() ) {
+                        //std::wcout << L"Detected format: " << std::hex << it->second.value() << std::endl;
+                        return it->second;
+                    }
+                    file_signature_array[ i ] = 0x00;
                 }
+
+                for ( auto& sig : common_signatures_with_offset ) {
+                    file_signature = 0; //reset signature
+                    stream.seekg( sig.offset );
+                    stream.read( file_signature_array, sig.size );
+                    file_signature = _byteswap_uint64( file_signature );
+                    if ( file_signature == sig.signature ) {
+                        return sig.format;
+                    }
+                }
+
+                // Detecting ISO/UDF
+                constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
+                constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
+
+                constexpr auto ISO_SIGNATURE              = 0x4344303031000000; //CD001
+                constexpr auto ISO_SIGNATURE_SIZE         = 5u;
+                constexpr auto ISO_SIGNATURE_OFFSET       = 0x8001;
+
+                constexpr auto UDF_SIGNATURE              = 0x4E53523000000000; //NSR0
+                constexpr auto UDF_SIGNATURE_SIZE         = 4u;
+
+                //Checking for ISO signature
+                stream.seekg( ISO_SIGNATURE_OFFSET ); //Checking only at 0x8001, other offset to be added in future!
+                file_signature = 0; //reset signature
+                stream.read( file_signature_array, ISO_SIGNATURE_SIZE );
+                file_signature = _byteswap_uint64( file_signature );
+                if ( file_signature == ISO_SIGNATURE ) {
+                    //The file is ISO, checking if it is also UDF!
+                    for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
+                        stream.seekg( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE );
+                        file_signature = 0; //reset signature
+                        stream.read( file_signature_array, UDF_SIGNATURE_SIZE );
+                        file_signature = _byteswap_uint64( file_signature );
+                        if ( file_signature == UDF_SIGNATURE ) {
+                            std::wcout << "UDF!" << std::endl;
+                            return BitFormat::Udf;
+                        }
+                    }
+                    std::wcout << "ISO!" << std::endl;
+                    return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
+                }
+            } catch ( const std::ios_base::failure& ex ) {
+                throw BitException( ex.what() );
             }
 
             throw BitException( "Cannot detect the format of the file" );
         }
 
-        const BitInFormat& detect_format_by_ext( const wstring& in_file ) {
+        const BitInFormat& detectFormatByExt( const wstring& in_file ) {
             wstring ext = filesystem::fsutil::extension( in_file );
             if ( ext.empty() ) {
                 throw BitException( "Cannot detect the archive format from the extension" );
             }
 
             std::transform( ext.cbegin(), ext.cend(), ext.begin(), std::towlower );
-            std::wcout << ext << std::endl;
+            //std::wcout << ext << std::endl;
 
             //detecting archives with common file extensions
             auto it = common_extensions.find( ext );
@@ -322,7 +369,7 @@ namespace bit7z {
 
             //detecting multivolume archives extension
             if ( ( ext[ 0 ] == L'r' || ext[ 0 ] == L'z' ) &&
-                 ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
+                    ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
                 //extension follows the format zXX or rXX, where X is a number in range [0-9]
                 return ext[ 0 ] == L'r' ? BitFormat::Rar : BitFormat::Zip;
             }
