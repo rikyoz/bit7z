@@ -25,7 +25,6 @@
 #include <unordered_map>
 #include <algorithm>
 #include <fstream>
-#include <regex>
 #include <cwctype>
 #include <iomanip>
 
@@ -162,6 +161,7 @@ namespace bit7z {
             { L"xlsx",     BitFormat::Zip },
             { L"pptx",     BitFormat::Zip },
             { L"epub",     BitFormat::Zip },
+            { L"001",      BitFormat::Split },
             { L"apm",      BitFormat::APM },
             { L"arj",      BitFormat::Arj },
             { L"cab",      BitFormat::Cab },
@@ -320,15 +320,10 @@ namespace bit7z {
                 return it->second;
             }
 
-            //detecting archives with split file extension
-            std::wregex split_regex( L"([0-9]{3,})" );
-            if ( std::regex_match( ext, split_regex ) ) { //the file should be a splitted archive
-                return BitFormat::Split;
-            }
-
             //detecting multivolume archives extension
-            std::wregex multivolume_regex( L"(r|z)([0-9]+)" );
-            if ( std::regex_match( ext, multivolume_regex ) ) { //the files should be a multivolume zip or rar archive
+            if ( ( ext[ 0 ] == L'r' || ext[ 0 ] == L'z' ) &&
+                 ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
+                //extension follows the format zXX or rXX, where X is a number in range [0-9]
                 return ext[ 0 ] == L'r' ? BitFormat::Rar : BitFormat::Zip;
             }
 
