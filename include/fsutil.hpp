@@ -22,6 +22,8 @@
 #include <iostream>
 
 namespace bit7z {
+    class BitInFormat;
+
     namespace filesystem {
         namespace fsutil {
             using std::wstring;
@@ -38,6 +40,10 @@ namespace bit7z {
             wstring filename( const wstring& path, bool ext = false );
             wstring extension( const wstring& path );
             bool wildcard_match( const wstring& pattern, const wstring& str );
+
+            const BitInFormat& detect_format( const wstring& in_file, bool& detected_by_signature );
+            const BitInFormat& detect_format_by_ext( const wstring& in_file );
+            const BitInFormat& detect_format_by_sig( const wstring& in_file );
         }
     }
 }

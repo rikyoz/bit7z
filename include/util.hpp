@@ -37,9 +37,6 @@ namespace bit7z {
         HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result );
 
         HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result );
-
-        const BitInFormat& detectFormatByExt( const wstring& in_file );
-        const BitInFormat& detectFormatBySig( const wstring& in_file );
     }
 }
 
