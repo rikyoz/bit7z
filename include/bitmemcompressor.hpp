@@ -19,13 +19,11 @@
 #ifndef BITMEMCOMPRESSOR_HPP
 #define BITMEMCOMPRESSOR_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
     using std::wstring;

@@ -21,12 +21,9 @@
 
 #include "../include/fsindexer.hpp"
 
-#include <string>
-
 #include "../include/fsutil.hpp"
 #include "../include/bitexception.hpp"
 
-using std::wstring;
 using namespace bit7z::filesystem;
 
 FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirItem( directory ), mFilter( filter ) {

@@ -29,7 +29,7 @@
 
 #include "../include/bitguids.hpp"
 #include "../include/callback.hpp"
-#include "../include/bitarchiveopener.hpp"
+#include "../include/bitarchivehandler.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -37,7 +37,7 @@ namespace bit7z {
     class ExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
             ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler,
+            ExtractCallback( const BitArchiveHandler& handler, IInArchive* archiveHandler,
                              const wstring& inFilePath, const wstring& directoryPath );
             virtual ~ExtractCallback();
 
@@ -59,7 +59,7 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword )( BSTR * aPassword );
 
         private:
-            const BitArchiveOpener& mOpener;
+            const BitArchiveHandler& mHandler;
             CMyComPtr< IInArchive > mArchiveHandler;
             wstring mInFilePath;     // Input file path
             wstring mDirectoryPath;  // Output directory

@@ -23,12 +23,12 @@
 
 #include <unordered_map>
 #include <algorithm>
-#include <fstream>
 #include <cwctype>
-#include <iomanip>
 
 #include "../include/bitformat.hpp"
 #include "../include/bitexception.hpp"
+
+#include "7zip/IStream.h"
 
 #include <Windows.h>
 
@@ -224,6 +224,7 @@ const unordered_map< uint64_t, const BitInFormat& > common_signatures = {
     { 0x015D000000000000, BitFormat::Lzma86 },
     { 0xCFFAEDFE00000000, BitFormat::Macho },
     { 0xCAFEBABE00000000, BitFormat::Macho },
+    { 0x535A444488F02733, BitFormat::Mslz },
     { 0x514649FB00000000, BitFormat::QCow },
     { 0xEDABEEDB00000000, BitFormat::Rpm },
     { 0x7371736800000000, BitFormat::SquashFS },
@@ -238,97 +239,88 @@ const unordered_map< uint64_t, const BitInFormat& > common_signatures = {
 
 struct OffsetSignature {
     std::streamoff offset;
-    std::streamsize size;
+    uint32_t size;
     uint64_t signature;
     const BitInFormat& format;
 };
 
 const vector< OffsetSignature > common_signatures_with_offset = {
-    { 0x02,   3, 0x2D6C680000000000, BitFormat::Lzh },
-    { 0x40,   4, 0x7F10DABE00000000, BitFormat::VDI },
-    { 0x101,  5, 0x7573746172000000, BitFormat::Tar }/*,
+    { 0x02,  3, 0x2D6C680000000000, BitFormat::Lzh },
+    { 0x40,  4, 0x7F10DABE00000000, BitFormat::VDI },
+    { 0x101, 5, 0x7573746172000000, BitFormat::Tar },
+    { 0x400, 2, 0x4244000000000000, BitFormat::Hfs },
+    { 0x400, 2, 0x482B000000000000, BitFormat::Hfs },
+    { 0x400, 2, 0x4858000000000000, BitFormat::Hfs }/*,
     { 0x8001, 5, 0x4344303031, BitFormat::Iso },
     { 0x8801, 5, 0x4344303031, BitFormat::Iso },
     { 0x9001, 5, 0x4344303031, BitFormat::Iso }*/
 };
 
-uint64_t read_signature( std::ifstream& stream, std::streamsize size ) {
+uint64_t read_signature( IInStream* stream, uint32_t size ) {
     uint64_t signature = 0;
-    stream.read( reinterpret_cast< char* >( &signature ), size );
+    stream->Read( &signature, size, nullptr );
     return _byteswap_uint64( signature );
 }
 
-const BitInFormat& fsutil::detect_format( const std::wstring& in_file, bool& detected_by_signature ) {
-    const BitInFormat& detected_format = detect_format_by_ext( in_file );
-    if ( detected_format == BitFormat::Auto ) { // Unknown extension, trying using the file signature
-        detected_by_signature = true;
-        return detect_format_by_sig( in_file );
-    } else { // Format detected from file extension
-        return detected_format;
-    }
-}
-
-const BitInFormat& fsutil::detect_format_by_sig( const wstring& in_file ) {
+const BitInFormat& fsutil::detect_format_by_sig( IInStream* stream ) {
     constexpr auto SIGNATURE_SIZE = 8u;
 
-    std::ifstream stream( in_file, std::ifstream::binary );
-    if ( !stream ) {
-        throw BitException( "Cannot open file to read its signature" );
-    }
-    stream.exceptions( std::ifstream::failbit | std::ifstream::badbit );
-
-    try {
-        uint64_t file_signature = read_signature( stream, SIGNATURE_SIZE );
-        uint64_t signature_mask = 0xFFFFFFFFFFFFFFFFull;
-        for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
-            auto it = common_signatures.find( file_signature );
-            if ( it != common_signatures.end() ) {
-                //std::wcout << L"Detected format: " << std::hex << it->second.value() << std::endl;
-                return it->second;
-            }
-            signature_mask <<= 8ull;          // left shifting the mask of 1 byte, so that
-            file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
+    uint64_t file_signature = read_signature( stream, SIGNATURE_SIZE );
+    uint64_t signature_mask = 0xFFFFFFFFFFFFFFFFull;
+    for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
+        auto it = common_signatures.find( file_signature );
+        if ( it != common_signatures.end() ) {
+            //std::wcout << L"Detected format: " << std::hex << it->second.value() << std::endl;
+            stream->Seek( 0, 0, nullptr );
+            return it->second;
         }
-
-        for ( auto& sig : common_signatures_with_offset ) {
-            stream.seekg( sig.offset );
-            file_signature = read_signature( stream, sig.size );
-            if ( file_signature == sig.signature ) {
-                return sig.format;
-            }
-        }
-
-        // Detecting ISO/UDF
-        constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
-        constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
-
-        constexpr auto ISO_SIGNATURE              = 0x4344303031000000; //CD001
-        constexpr auto ISO_SIGNATURE_SIZE         = 5u;
-        constexpr auto ISO_SIGNATURE_OFFSET       = 0x8001;
-
-        constexpr auto UDF_SIGNATURE              = 0x4E53523000000000; //NSR0
-        constexpr auto UDF_SIGNATURE_SIZE         = 4u;
-
-        //Checking for ISO signature
-        stream.seekg( ISO_SIGNATURE_OFFSET );
-        file_signature = read_signature( stream, ISO_SIGNATURE_SIZE );
-        if ( file_signature == ISO_SIGNATURE ) {
-            //The file is ISO, checking if it is also UDF!
-            for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
-                stream.seekg( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE );
-                file_signature = read_signature( stream, UDF_SIGNATURE_SIZE );
-                if ( file_signature == UDF_SIGNATURE ) {
-                    //std::wcout << "UDF!" << std::endl;
-                    return BitFormat::Udf;
-                }
-            }
-            //std::wcout << "ISO!" << std::endl;
-            return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
-        }
-    } catch ( const std::ios_base::failure& ex ) {
-        throw BitException( ex.what() );
+        signature_mask <<= 8ull;          // left shifting the mask of 1 byte, so that
+        file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
     }
 
+    for ( auto& sig : common_signatures_with_offset ) {
+        //stream.seekg( sig.offset );
+        stream->Seek( sig.offset, 0, nullptr );
+        file_signature = read_signature( stream, sig.size );
+        if ( file_signature == sig.signature ) {
+            stream->Seek( 0, 0, nullptr );
+            return sig.format;
+        }
+    }
+
+    // Detecting ISO/UDF
+    constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
+    constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
+
+    constexpr auto ISO_SIGNATURE              = 0x4344303031000000; //CD001
+    constexpr auto ISO_SIGNATURE_SIZE         = 5u;
+    constexpr auto ISO_SIGNATURE_OFFSET       = 0x8001;
+
+    constexpr auto UDF_SIGNATURE              = 0x4E53523000000000; //NSR0
+    constexpr auto UDF_SIGNATURE_SIZE         = 4u;
+
+    //Checking for ISO signature
+    //stream.seekg( ISO_SIGNATURE_OFFSET );
+    stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
+    file_signature = read_signature( stream, ISO_SIGNATURE_SIZE );
+    if ( file_signature == ISO_SIGNATURE ) {
+        //The file is ISO, checking if it is also UDF!
+        for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
+            //stream.seekg( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE );
+            stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
+            file_signature = read_signature( stream, UDF_SIGNATURE_SIZE );
+            if ( file_signature == UDF_SIGNATURE ) {
+                //std::wcout << "UDF!" << std::endl;
+                stream->Seek( 0, 0, nullptr );
+                return BitFormat::Udf;
+            }
+        }
+        //std::wcout << "ISO!" << std::endl;
+        stream->Seek( 0, 0, nullptr );
+        return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
+    }
+
+    stream->Seek( 0, 0, nullptr );
     throw BitException( "Cannot detect the format of the file" );
 }
 

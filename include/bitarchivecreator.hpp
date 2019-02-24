@@ -19,11 +19,9 @@
 #ifndef BITARCHIVECREATOR_HPP
 #define BITARCHIVECREATOR_HPP
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
-#include "../include/bitcompressionlevel.hpp"
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitformat.hpp"
+#include "../include/bitcompressionlevel.hpp"
 
 namespace bit7z {
     using std::wstring;

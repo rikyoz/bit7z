@@ -24,15 +24,12 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
 
-#include "../include/fsitem.hpp"
+#include "../include/fsindexer.hpp"
 #include "../include/fsutil.hpp"
 #include "../include/util.hpp"
-#include "../include/bitarchiveinfo.hpp"
-#include "../include/bitextractor.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
 #include "../include/coutmultivolstream.hpp"
-#include "../include/memupdatecallback.hpp"
 #include "../include/updatecallback.hpp"
 
 #include <sstream>
@@ -47,6 +44,7 @@ void compressOut( const BitArchiveCreator& creator, const CMyComPtr< IOutArchive
                   const vector< FSItem >& new_items, const CMyComPtr< IInArchive >& old_arc ) {
     auto* update_callback_spec = new UpdateCallback( creator, new_items, old_arc );
     uint32_t items_count = update_callback_spec->getItemsCount(); //old items count + new items count
+
     CMyComPtr< IArchiveUpdateCallback2 > update_callback( update_callback_spec );
     HRESULT result = out_arc->UpdateItems( out_stream, items_count, update_callback );
     update_callback_spec->Finilize();
@@ -156,7 +154,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
             out_file_stream = out_multivol_stream_spec;
         } else {
             auto* out_file_stream_spec = new COutFileStream();
-			out_file_stream = out_file_stream_spec;
+            out_file_stream = out_file_stream_spec;
             if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
                 if ( ::GetLastError() != ERROR_FILE_EXISTS ) { //unknown error
                     throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );

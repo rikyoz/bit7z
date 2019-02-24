@@ -21,8 +21,6 @@
 
 #include "../include/coutmultivolstream.hpp"
 
-#include <string>
-
 #include "Common/IntToString.h"
 #include "Windows/FileDir.h"
 

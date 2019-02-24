@@ -21,7 +21,6 @@
 
 #include "../include/memupdatecallback.hpp"
 
-#include <iostream>
 #include <string>
 
 #include "7zip/Common/FileStreams.h"

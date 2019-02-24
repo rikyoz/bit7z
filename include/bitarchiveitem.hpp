@@ -19,8 +19,6 @@
 #ifndef BITARCHIVEITEMREADER_HPP
 #define BITARCHIVEITEMREADER_HPP
 
-#include <cstdint>
-#include <string>
 #include <map>
 
 #include "../include/bitpropvariant.hpp"

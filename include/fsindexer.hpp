@@ -19,7 +19,7 @@
 #ifndef FSINDEXER_HPP
 #define FSINDEXER_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
 #include <map>
 

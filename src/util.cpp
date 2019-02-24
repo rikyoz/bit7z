@@ -21,25 +21,23 @@
 
 #include "../include/util.hpp"
 
-#include <vector>
-
 #include "../include/fsutil.hpp"
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/opencallback.hpp"
 
-using std::vector;
-using namespace NWindows;
+#include "7zip/Common/StreamObjects.h"
 
 namespace bit7z {
     namespace util {
         using namespace filesystem;
 
         CMyComPtr< IOutArchive > initOutArchive( const BitArchiveCreator& creator ) {
-            CMyComPtr< IOutArchive > out_archive;
             const BitInOutFormat& format = creator.compressionFormat();
             const GUID format_GUID = format.guid();
-            creator.library().createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
+
+            CMyComPtr< IOutArchive > out_archive;
+            creator.library().initOutputArchive( &format_GUID, out_archive );
 
             vector< const wchar_t* > names;
             vector< BitPropVariant > values;
@@ -70,55 +68,62 @@ namespace bit7z {
             return out_archive;
         }
 
-        // NOTE: this function is not a method of BitExtractor because it would dirty the header with extra dependencies
-        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format, const wstring& in_file ) {
-            // Opening file input stream
-            auto* file_stream_spec = new CInFileStream;
-            CMyComPtr< IInStream > file_stream = file_stream_spec;
-            if ( !file_stream_spec->Open( in_file.c_str() ) ) {
-                throw BitException( L"Cannot open archive file '" + in_file + L"'" );
-            }
-            // Creating open callback for the file
-            auto* open_callback_spec = new OpenCallback( handler, in_file );
-            CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
-
-            // Creating 7z archive object for the input file format
-            CMyComPtr< IInArchive > in_archive;
-            bool signature_detected = false;
+        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format,
+                                             const wstring& name, IInStream* in_stream ) {
+            bool detected_by_signature = false;
             GUID format_GUID;
             if ( format == BitFormat::Auto ) { // Detecting format of the input file
-                const BitInFormat& detected_format = fsutil::detect_format_by_ext( in_file );
-                if ( detected_format == BitFormat::Auto ) { // Unknown extension, trying using the file signature
-                    format_GUID = fsutil::detect_format_by_sig( in_file ).guid();
-                    signature_detected = true;
-                } else { // Format detected from file extension
-                    format_GUID = detected_format.guid();
-                }
+                format_GUID = fsutil::detect_format_by_sig( in_stream ).guid();
+                detected_by_signature = true;
             } else { // Format directly given by the user
                 format_GUID = format.guid();
             }
-            handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
+            CMyComPtr< IInArchive > in_archive;
+            handler.library().initInputArchive( &format_GUID, in_archive );
+
+            // Creating open callback for the file
+            auto* open_callback_spec = new OpenCallback( handler, name );
+            CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
 
             // Trying to open the file with the detected format
-            HRESULT res = in_archive->Open( file_stream, nullptr, open_callback );
+            HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
             if ( res == S_OK ) {
                 return in_archive;
             }
-            if ( format == BitFormat::Auto && !signature_detected ) {
+            if ( format == BitFormat::Auto && !detected_by_signature ) {
                 /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
                  * precise detection by checking the signature.
                  * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
                  *       and an exception is thrown!
                  * NOTE 2: If signature detection was already performed (signature_detected == false), it detected a
                  *         a wrong format, no further check can be done and an exception must be thrown! */
-                format_GUID = fsutil::detect_format_by_sig( in_file ).guid();
-                handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
-                res = in_archive->Open( file_stream, nullptr, open_callback );
+                format_GUID = fsutil::detect_format_by_sig( in_stream ).guid();
+                handler.library().initInputArchive( &format_GUID, in_archive );
+                res = in_archive->Open( in_stream, nullptr, open_callback );
                 if ( res == S_OK ) {
                     return in_archive;
                 }
             }
-            throw BitException( L"Cannot open archive '" + in_file  + L"'" );
+            throw BitException( L"Cannot open archive '" + name + L"'" );
+        }
+
+        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format,
+                                             const wstring& in_file ) {
+            auto* file_stream_spec = new CInFileStream;
+            CMyComPtr< IInStream > file_stream = file_stream_spec;
+            if ( !file_stream_spec->Open( in_file.c_str() ) ) {
+                throw BitException( L"Cannot open archive file '" + in_file + L"'" );
+            }
+            const BitInFormat& detectedFormat = ( format == BitFormat::Auto ? fsutil::detect_format_by_ext( in_file ) : format );
+            return openArchive( handler, detectedFormat, in_file, file_stream );
+        }
+
+        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format,
+                                             const vector<byte_t>& in_buffer ) {
+            auto* buf_stream_spec = new CBufInStream;
+            CMyComPtr< IInStream > buf_stream = buf_stream_spec;
+            buf_stream_spec->Init( in_buffer.data(), in_buffer.size() );
+            return openArchive( handler, format, L".", buf_stream );
         }
 
         HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {

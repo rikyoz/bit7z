@@ -21,10 +21,6 @@
 
 #include "../include/coutmemstream.hpp"
 
-#include <iterator>
-#include <algorithm>
-#include <iostream>
-
 using namespace bit7z;
 
 COutMemStream::COutMemStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ) {}

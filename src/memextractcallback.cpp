@@ -56,8 +56,8 @@ static const wstring kDataError         = L"Data Error";
 static const wstring kUnknownError      = L"Unknown Error";
 static const wstring kEmptyFileAlias    = L"[Content]";
 
-MemExtractCallback::MemExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler, vector< byte_t >& buffer ) :
-    mOpener( opener ),
+MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler, IInArchive* archiveHandler, vector<byte_t>& buffer ) :
+    mHandler( handler ),
     mArchiveHandler( archiveHandler ),
     mBuffer( buffer ),
     mExtractMode( true ),
@@ -68,15 +68,15 @@ MemExtractCallback::MemExtractCallback( const BitArchiveOpener& opener, IInArchi
 MemExtractCallback::~MemExtractCallback() {}
 
 STDMETHODIMP MemExtractCallback::SetTotal( UInt64 size ) {
-    if ( mOpener.totalCallback() ) {
-        mOpener.totalCallback()( size );
+    if ( mHandler.totalCallback() ) {
+        mHandler.totalCallback()( size );
     }
     return S_OK;
 }
 
 STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mOpener.progressCallback() ) {
-        mOpener.progressCallback()( *completeValue );
+    if ( mHandler.progressCallback() ) {
+        mHandler.progressCallback()( *completeValue );
     }
     return S_OK;
 }
@@ -92,7 +92,7 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;
     } else {
-        if ( prop.type() != BitPropVariantType::String ) {
+        if ( !prop.isString() ) {
             return E_FAIL;
         }
 
@@ -201,9 +201,9 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
         }
     }
 
-//    if ( mOutBuffStream != NULL ) {
-//        RINOK( mOutBuffStreamSpec->Close() );
-//    }
+    //    if ( mOutBuffStream != NULL ) {
+    //        RINOK( mOutBuffStreamSpec->Close() );
+    //    }
     mOutMemStream.Release();
 
     if ( mNumErrors > 0 ) {
@@ -215,7 +215,7 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 
 STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    if ( !mOpener.isPasswordDefined() ) {
+    if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
@@ -224,5 +224,5 @@ STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         return E_FAIL;
     }
 
-    return StringToBstr( mOpener.password().c_str(), password );
+    return StringToBstr( mHandler.password().c_str(), password );
 }

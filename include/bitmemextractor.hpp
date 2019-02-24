@@ -19,13 +19,11 @@
 #ifndef BITMEMEXTRACTOR_HPP
 #define BITMEMEXTRACTOR_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitguids.hpp"
-#include "../include/bittypes.hpp"
 #include "../include/bitarchiveopener.hpp"
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
     using std::wstring;

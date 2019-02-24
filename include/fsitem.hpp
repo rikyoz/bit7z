@@ -19,7 +19,7 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
-#include <iostream>
+#include <string>
 #include <cstdint>
 
 #include <Windows.h>

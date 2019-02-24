@@ -44,9 +44,9 @@ using namespace bit7z::util;
 
 static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
 
-static const wstring kTestingString    =  L"Testing     ";
+/*static const wstring kTestingString    =  L"Testing     ";
 static const wstring kExtractingString =  L"Extracting  ";
-static const wstring kSkippingString   =  L"Skipping    ";
+static const wstring kSkippingString   =  L"Skipping    ";*/
 
 static const wstring kUnsupportedMethod = L"Unsupported Method";
 static const wstring kCRCFailed         = L"CRC Failed";
@@ -54,9 +54,9 @@ static const wstring kDataError         = L"Data Error";
 static const wstring kUnknownError      = L"Unknown Error";
 static const wstring kEmptyFileAlias    = L"[Content]";
 
-ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler,
+ExtractCallback::ExtractCallback( const BitArchiveHandler& handler, IInArchive* archiveHandler,
                                   const wstring& inFilePath, const wstring& directoryPath ) :
-    mOpener( opener ),
+    mHandler( handler ),
     mArchiveHandler( archiveHandler ),
     mInFilePath( inFilePath ),
     mDirectoryPath( directoryPath ),
@@ -71,22 +71,22 @@ ExtractCallback::ExtractCallback( const BitArchiveOpener& opener, IInArchive* ar
 ExtractCallback::~ExtractCallback() {}
 
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
-    if ( mOpener.totalCallback() ) {
-        mOpener.totalCallback()( size );
+    if ( mHandler.totalCallback() ) {
+        mHandler.totalCallback()( size );
     }
     return S_OK;
 }
 
 STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mOpener.progressCallback() && completeValue != nullptr ) {
-        mOpener.progressCallback()( *completeValue );
+    if ( mHandler.progressCallback() && completeValue != nullptr ) {
+        mHandler.progressCallback()( *completeValue );
     }
     return S_OK;
 }
 
 STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
-    if ( mOpener.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
-        mOpener.ratioCallback()( *inSize, *outSize );
+    if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+        mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
 }
@@ -163,9 +163,9 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     } else {
         NFile::NFind::CFileInfo fi;
 
-        if ( mOpener.fileCallback() ) {
+        if ( mHandler.fileCallback() ) {
             wstring filename = filesystem::fsutil::filename( fullProcessedPath, true );
-            mOpener.fileCallback()( filename );
+            mHandler.fileCallback()( filename );
         }
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
@@ -266,12 +266,12 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
-    if ( !mOpener.isPasswordDefined() ) {
+    if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        if ( mOpener.passwordCallback() ) {
-            pass = mOpener.passwordCallback()();
+        if ( mHandler.passwordCallback() ) {
+            pass = mHandler.passwordCallback()();
         }
 
         if ( pass.empty() ) {
@@ -279,7 +279,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
             return E_FAIL;
         }
     } else {
-        pass = mOpener.password();
+        pass = mHandler.password();
     }
 
     return StringToBstr( pass.c_str(), password );

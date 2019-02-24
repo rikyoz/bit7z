@@ -24,24 +24,17 @@
 #include "../include/bitexception.hpp"
 #include "../include/bitguids.hpp"
 
-#include <sstream>
-
 using namespace bit7z;
-using std::ostringstream;
 
 Bit7zLibrary::Bit7zLibrary( const std::wstring &dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
     if ( !mLibrary ) {
-        ostringstream os;
-        os << GetLastError();
-        throw BitException( "Cannot load 7-zip library (error " + os.str() + ")" );
+        throw BitException( "Cannot load 7-zip library (error " + std::to_string( GetLastError() ) + ")" );
     }
 
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
 
     if ( !mCreateObjectFunc ) {
-        ostringstream os;
-        os << GetLastError();
-        throw BitException( "Cannot get CreateObject (error " + os.str() + ")" );
+        throw BitException( "Cannot get CreateObject (error " + std::to_string( GetLastError() ) + ")" );
     }
 }
 
@@ -53,4 +46,12 @@ void Bit7zLibrary::createArchiveObject( const GUID *format_ID, const GUID *inter
     if ( mCreateObjectFunc( format_ID, interface_ID, out_object ) != S_OK ) {
         throw BitException( "Cannot get class object" );
     }
+}
+
+void Bit7zLibrary::initInputArchive( const GUID *format_GUID, CMyComPtr< IInArchive >& out_object ) const {
+    createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &out_object ) );
+}
+
+void Bit7zLibrary::initOutputArchive( const GUID* format_GUID, CMyComPtr< IOutArchive >& out_object ) const {
+    createArchiveObject( format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_object ) );
 }

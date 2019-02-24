@@ -24,9 +24,6 @@
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
-#include <string>
-
-using namespace std;
 using namespace bit7z::filesystem;
 
 /* NOTES:

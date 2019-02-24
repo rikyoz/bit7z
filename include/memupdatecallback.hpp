@@ -23,13 +23,13 @@
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
-#include "../include/fsindexer.hpp"
-#include "../include/callback.hpp"
-#include "../include/bittypes.hpp"
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bittypes.hpp"
+#include "../include/callback.hpp"
+
+#include <vector>
 
 namespace bit7z {
-    using namespace filesystem;
     using std::vector;
     using std::wstring;
 
@@ -39,18 +39,18 @@ namespace bit7z {
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64 * completeValue );
+            STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
             // IArchiveUpdateCallback
             STDMETHOD( EnumProperties )( IEnumSTATPROPSTG * *enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32 * newData, Int32 * newProperties,
-                                            UInt32 * indexInArchive );
-            STDMETHOD( GetProperty )( UInt32 /*index*/, PROPID propID, PROPVARIANT * value );
+            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties,
+                                            UInt32* indexInArchive );
+            STDMETHOD( GetProperty )( UInt32 /*index*/, PROPID propID, PROPVARIANT* value );
             STDMETHOD( GetStream )( UInt32 /*index*/, ISequentialInStream * *inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
 
             //ICryptoGetTextPassword2
-            STDMETHOD( CryptoGetTextPassword2 )( Int32 * passwordIsDefined, BSTR * password );
+            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
         public:
             const BitArchiveCreator& mCreator;

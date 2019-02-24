@@ -19,7 +19,7 @@
 #ifndef BITEXCEPTION_HPP
 #define BITEXCEPTION_HPP
 
-#include <iostream>
+#include <string>
 #include <exception>
 
 namespace bit7z {

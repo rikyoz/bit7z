@@ -21,7 +21,6 @@
 
 #include "../include/updatecallback.hpp"
 
-#include <iostream>
 #include <string>
 //debug includes:
 //#include <sstream>
@@ -33,7 +32,6 @@
 #include "../include/bitpropvariant.hpp"
 #include "../include/fsutil.hpp"
 
-using namespace std;
 using namespace bit7z;
 
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
@@ -224,7 +222,7 @@ HRESULT UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
 }
 
 HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
-    wstring res = ( index < 9 ? L"00" : index < 99 ? L"0" : L"" ) + to_wstring( index + 1 );
+    wstring res = ( index < 9 ? L"00" : index < 99 ? L"0" : L"" ) + std::to_wstring( index + 1 );
 
     wstring fileName = mVolName + L'.' + res;// + mVolExt;
     auto* streamSpec = new COutFileStream;

@@ -25,9 +25,11 @@
 #include "Common/MyCom.h"
 
 #include "../include/bitarchiveitem.hpp"
-#include "../include/fsindexer.hpp"
+#include "../include/fsitem.hpp"
 #include "../include/callback.hpp"
 #include "../include/bitarchivecreator.hpp"
+
+#include <vector>
 
 namespace bit7z {
     using namespace filesystem;

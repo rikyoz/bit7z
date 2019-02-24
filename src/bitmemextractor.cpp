@@ -27,35 +27,13 @@
 #include "../include/opencallback.hpp"
 #include "../include/memextractcallback.hpp"
 #include "../include/extractcallback.hpp"
+#include "../include/util.hpp"
 
 using namespace bit7z;
+using namespace bit7z::util;
 using namespace std;
 using namespace NWindows;
 using namespace NArchive;
-
-// NOTE: this function is not a method of BitMemExtractor because it would dirty the header with extra dependencies
-CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
-                                     const vector< byte_t >& in_buffer, const BitArchiveOpener& opener ) {
-    if ( in_buffer.empty() ) {
-        throw BitException( "Cannot open an empty buffer archive" );
-    }
-
-    CMyComPtr< IInArchive > in_archive;
-    const GUID format_GUID = format.guid();
-    lib.createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
-
-    auto* buf_stream_spec = new CBufInStream;
-    CMyComPtr< IInStream > buf_stream( buf_stream_spec );
-    buf_stream_spec->Init( &in_buffer[0], in_buffer.size() );
-
-    auto* open_callback_spec = new OpenCallback( opener );
-
-    CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
-    if ( in_archive->Open( buf_stream, nullptr, open_callback ) != S_OK ) {
-        throw BitException( "Cannot open archive buffer" );
-    }
-    return in_archive;
-}
 
 BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {
@@ -65,7 +43,7 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& fo
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_buffer, *this );
+    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_buffer );
 
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, L"", out_dir );
 
@@ -77,7 +55,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
                                unsigned int index ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_buffer, *this );
+    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_buffer );
 
     uint32_t number_items;
     in_archive->GetNumberOfItems( &number_items );

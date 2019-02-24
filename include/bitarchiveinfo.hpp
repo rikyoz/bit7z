@@ -21,7 +21,6 @@
 
 #include <vector>
 
-#include "../include/bit7zlibrary.hpp"
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bitarchiveitem.hpp"
 

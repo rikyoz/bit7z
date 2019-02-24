@@ -19,19 +19,19 @@
 #ifndef BITEXTRACTOR_HPP
 #define BITEXTRACTOR_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
+#include <map>
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitguids.hpp"
-#include "../include/bittypes.hpp"
 #include "../include/bitarchiveopener.hpp"
+#include "../include/bittypes.hpp"
 
 struct IInArchive;
 
 namespace bit7z {
     using std::wstring;
     using std::vector;
+    using std::map;
 
     /**
      * @brief The BitExtractor class allows to extract the content of file archives.
@@ -84,6 +84,8 @@ namespace bit7z {
              * @param index        the index of the file to be extracted from in_file.
              */
             void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );
+
+            void extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map );
 
             /**
              * @brief Tests the given archive without extracting its content.

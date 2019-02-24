@@ -19,8 +19,8 @@
 #ifndef BITARCHIVEOPENER_HPP
 #define BITARCHIVEOPENER_HPP
 
-#include "../include/bit7zlibrary.hpp"
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitformat.hpp"
 
 namespace bit7z {
     /**

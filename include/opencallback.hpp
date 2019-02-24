@@ -27,7 +27,7 @@
 
 #include "../include/callback.hpp"
 #include "../include/fsitem.hpp"
-#include "../include/bitarchiveopener.hpp"
+#include "../include/bitarchivehandler.hpp"
 
 namespace bit7z {
     using filesystem::FSItem;

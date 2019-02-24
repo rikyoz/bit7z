@@ -25,6 +25,7 @@
 #include "7zip/Common/FileStreams.h"
 #include "7zip/Common/StreamObjects.h"
 
+#include "../include/fsutil.hpp"
 #include "../include/util.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
@@ -34,6 +35,7 @@
 
 using namespace bit7z;
 using namespace bit7z::util;
+using namespace bit7z::filesystem;
 using namespace NWindows;
 using std::wstring;
 using std::vector;

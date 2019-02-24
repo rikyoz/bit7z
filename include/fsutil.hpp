@@ -19,7 +19,9 @@
 #ifndef FSUTIL_HPP
 #define FSUTIL_HPP
 
-#include <iostream>
+#include <string>
+
+struct IInStream;
 
 namespace bit7z {
     class BitInFormat;
@@ -33,7 +35,6 @@ namespace bit7z {
             bool is_directory( const wstring& path );
             bool path_exists( const wstring& path );
             bool rename_file( const wstring& old_name, const wstring& new_name );
-            //bool has_ending( const wstring& str, const wstring& ending );
 
             void normalize_path( wstring& path );
             wstring dirname( const wstring& path );
@@ -41,9 +42,8 @@ namespace bit7z {
             wstring extension( const wstring& path );
             bool wildcard_match( const wstring& pattern, const wstring& str );
 
-            const BitInFormat& detect_format( const wstring& in_file, bool& detected_by_signature );
             const BitInFormat& detect_format_by_ext( const wstring& in_file );
-            const BitInFormat& detect_format_by_sig( const wstring& in_file );
+            const BitInFormat& detect_format_by_sig( IInStream* stream );
         }
     }
 }
