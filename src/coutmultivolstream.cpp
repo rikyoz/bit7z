@@ -32,18 +32,11 @@
  *  + Use of uint64_t instead of UInt64
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveName ) {
-    mStreamIndex = 0;
-    mOffsetPos = 0;
-    mAbsPos = 0;
-    mLength = 0;
-    mVolSize = size;
-    mVolPrefix = archiveName + L".";
-}
+COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveName ) :
+    mVolSize( size ), mVolPrefix( archiveName + L"." ), mStreamIndex( 0 ), mOffsetPos( 0 ), mAbsPos( 0 ), mLength( 0 )
+{}
 
-COutMultiVolStream::~COutMultiVolStream() {
-
-}
+COutMultiVolStream::~COutMultiVolStream() {}
 
 HRESULT COutMultiVolStream::Close() {
     HRESULT res = S_OK;

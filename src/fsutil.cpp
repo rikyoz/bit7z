@@ -289,21 +289,21 @@ const BitInFormat& fsutil::detect_format_by_sig( IInStream* stream ) {
     }
 
     // Detecting ISO/UDF
-    constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
-    constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
-
     constexpr auto ISO_SIGNATURE              = 0x4344303031000000; //CD001
     constexpr auto ISO_SIGNATURE_SIZE         = 5u;
     constexpr auto ISO_SIGNATURE_OFFSET       = 0x8001;
-
-    constexpr auto UDF_SIGNATURE              = 0x4E53523000000000; //NSR0
-    constexpr auto UDF_SIGNATURE_SIZE         = 4u;
 
     //Checking for ISO signature
     //stream.seekg( ISO_SIGNATURE_OFFSET );
     stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
     file_signature = read_signature( stream, ISO_SIGNATURE_SIZE );
     if ( file_signature == ISO_SIGNATURE ) {
+        constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
+        constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
+
+        constexpr auto UDF_SIGNATURE          = 0x4E53523000000000; //NSR0
+        constexpr auto UDF_SIGNATURE_SIZE     = 4u;
+
         //The file is ISO, checking if it is also UDF!
         for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
             //stream.seekg( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE );

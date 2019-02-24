@@ -68,7 +68,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t
     const uint32_t indices[] = { index };
 
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    if ( in_archive->Extract( indices, 1, NExtract::NAskMode::kExtract, extract_callback ) != S_OK ) {
+    if ( in_archive->Extract( static_cast<const uint32_t*>( indices ), 1, NExtract::NAskMode::kExtract, extract_callback ) != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
 }

@@ -93,7 +93,7 @@ FILETIME FSItem::lastWriteTime() const {
 }
 
 wstring FSItem::name() const {
-    return mFileData.cFileName;
+    return static_cast< const wchar_t* >( mFileData.cFileName );
 }
 
 wstring FSItem::path() const {
