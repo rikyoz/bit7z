@@ -20,28 +20,12 @@
 #define UTIL_HPP
 
 #include "7zip/Archive/IArchive.h"
-#include "7zip/Common/FileStreams.h"
 
 #include "../include/bitarchivecreator.hpp"
-#include "../include/bittypes.hpp"
-
-#include <vector>
 
 namespace bit7z {
     namespace util {
-        using std::vector;
-
         CMyComPtr< IOutArchive > initOutArchive( const BitArchiveCreator& creator );
-
-        CMyComPtr< IInArchive > openFileArchive( const BitArchiveHandler& handler, const BitInFormat& format,
-                                                 const wstring& in_file );
-
-        CMyComPtr< IInArchive > openBufferArchive( const BitArchiveHandler& handler, const BitInFormat& format,
-                                                   const vector< byte_t >& in_buffer );
-
-        HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result );
-
-        HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result );
     }
 }
 

@@ -49,7 +49,7 @@
     <ProjectGuid>{0ECEDD47-4EC9-3232-B099-20D54C597639}</ProjectGuid>
     <RootNamespace>bit7z64</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -272,6 +272,7 @@
     <ClCompile Include="src\bitextractor.cpp" />
     <ClCompile Include="src\bitformat.cpp" />
     <ClCompile Include="src\bitguids.cpp" />
+    <ClCompile Include="src\bitinputarchive.cpp" />
     <ClCompile Include="src\bitmemcompressor.cpp" />
     <ClCompile Include="src\bitmemextractor.cpp" />
     <ClCompile Include="src\bitpropvariant.cpp" />
@@ -302,6 +303,7 @@
     <ClInclude Include="include\bitextractor.hpp" />
     <ClInclude Include="include\bitformat.hpp" />
     <ClInclude Include="include\bitguids.hpp" />
+    <ClInclude Include="include\bitinputarchive.hpp" />
     <ClInclude Include="include\bitmemcompressor.hpp" />
     <ClInclude Include="include\bitmemextractor.hpp" />
     <ClInclude Include="include\bitpropvariant.hpp" />

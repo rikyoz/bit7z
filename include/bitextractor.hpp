@@ -33,6 +33,8 @@ namespace bit7z {
     using std::vector;
     using std::map;
 
+    class BitInputArchive;
+
     /**
      * @brief The BitExtractor class allows to extract the content of file archives.
      */
@@ -97,8 +99,7 @@ namespace bit7z {
             void test( const wstring& in_file );
 
         private:
-            void extractToFileSystem( IInArchive* in_archive, const wstring& in_file,
-                                      const wstring& out_dir, const vector<uint32_t>& indices ) const;
+            void extractToFileSystem( const BitInputArchive& in_archive, const wstring& in_file, const wstring& out_dir, const vector<uint32_t>& indices ) const;
     };
 }
 #endif // BITEXTRACTOR_HPP

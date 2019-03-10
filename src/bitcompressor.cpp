@@ -24,6 +24,7 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/Common/FileStreams.h"
 
+#include "../include/bitinputarchive.hpp"
 #include "../include/fsindexer.hpp"
 #include "../include/fsutil.hpp"
 #include "../include/util.hpp"
@@ -41,17 +42,13 @@ using namespace NWindows;
 
 template< class T >
 void compressOut( const BitArchiveCreator& creator, const CMyComPtr< IOutArchive >& out_arc, CMyComPtr< T > out_stream,
-                  const vector< FSItem >& new_items, const CMyComPtr< IInArchive >& old_arc ) {
+                  const vector< FSItem >& new_items, const BitInputArchive* old_arc ) {
     auto* update_callback_spec = new UpdateCallback( creator, new_items, old_arc );
     uint32_t items_count = update_callback_spec->getItemsCount(); //old items count + new items count
 
     CMyComPtr< IArchiveUpdateCallback2 > update_callback( update_callback_spec );
     HRESULT result = out_arc->UpdateItems( out_stream, items_count, update_callback );
     update_callback_spec->Finilize();
-
-    if ( old_arc ) {
-        old_arc->Close();
-    }
 
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation!" );
@@ -146,7 +143,6 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
 void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
     bool updating_archive = false;
     {
-        CMyComPtr< IInArchive > old_arc;
         CMyComPtr< IOutArchive > new_arc = initOutArchive( *this );
         CMyComPtr< IOutStream > out_file_stream;
         if ( mVolumeSize > 0 ) {
@@ -170,22 +166,24 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
                 if ( out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
                     updating_archive = true;
                     //needed to change old_arc, see https://sourceforge.net/p/sevenzip/discussion/45798/thread/23ec65b4/
-                    old_arc = openArchive( *this, mFormat, out_archive );
-                    old_arc->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
+                    BitInputArchive old_arc{ *this, out_archive };
+                    old_arc.initUpdatableArchive( &new_arc );
+                    compressOut( *this, new_arc, out_file_stream, in_items, &old_arc );
+                    old_arc.close();
+                    out_file_stream_spec->Close();
+                    //remove old file and rename tmp file (move file with overwriting)
+                    bool renamed = fsutil::rename_file( out_archive + L".tmp", out_archive );
+                    if ( !renamed ) {
+                        throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
+                    }
+                    return;
                 } else {
                     //could not create temporary file
                     throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
                 }
             }
         }
-        compressOut( *this, new_arc, out_file_stream, in_items, old_arc );
-    }
-    if ( updating_archive ) {
-        //remove old file and rename tmp file (move file with overwriting)
-        bool renamed = fsutil::rename_file( out_archive + L".tmp", out_archive );
-        if ( !renamed ) {
-            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
-        }
+        compressOut( *this, new_arc, out_file_stream, in_items, nullptr );
     }
 }
 

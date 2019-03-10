@@ -42,22 +42,28 @@ using namespace bit7z::util;
  *    because it must implement interfaces with nothrow methods.
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
 
 /*static const wstring kTestingString    =  L"Testing     ";
 static const wstring kExtractingString =  L"Extracting  ";
 static const wstring kSkippingString   =  L"Skipping    ";*/
 
-static const wstring kUnsupportedMethod = L"Unsupported Method";
-static const wstring kCRCFailed         = L"CRC Failed";
-static const wstring kDataError         = L"Data Error";
-static const wstring kUnknownError      = L"Unknown Error";
-static const wstring kEmptyFileAlias    = L"[Content]";
+#if (_MSC_VER <= 1700)
+#define CONSTEXPR const
+#else
+#define CONSTEXPR constexpr
+#endif
 
-ExtractCallback::ExtractCallback( const BitArchiveHandler& handler, IInArchive* archiveHandler,
+CONSTEXPR auto kCantDeleteOutputFile = L"Cannot delete output file ";
+CONSTEXPR auto kUnsupportedMethod    = L"Unsupported Method";
+CONSTEXPR auto kCRCFailed            = L"CRC Failed";
+CONSTEXPR auto kDataError            = L"Data Error";
+CONSTEXPR auto kUnknownError         = L"Unknown Error";
+CONSTEXPR auto kEmptyFileAlias       = L"[Content]";
+
+ExtractCallback::ExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive,
                                   const wstring& inFilePath, const wstring& directoryPath ) :
     mHandler( handler ),
-    mArchiveHandler( archiveHandler ),
+    mInputArchive( inputArchive ),
     mInFilePath( inFilePath ),
     mDirectoryPath( directoryPath ),
     mExtractMode( true ),
@@ -94,12 +100,11 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 //TODO: clean and optimize!
 STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
                                          ISequentialOutStream** outStream,
-                                         Int32                  askExtractMode ) {
+                                         Int32                  askExtractMode ) try {
     *outStream = nullptr;
     mOutFileStream.Release();
     // Get Name
-    BitPropVariant prop;
-    RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
+    BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
 
     if ( prop.isEmpty() ) {
         mFilePath = !mInFilePath.empty() ? filesystem::fsutil::filename( mInFilePath ) : kEmptyFileAlias;
@@ -114,8 +119,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     }
 
     // Get Attrib
-    BitPropVariant prop2;
-    RINOK( mArchiveHandler->GetProperty( index, kpidAttrib, &prop2 ) );
+    BitPropVariant prop2 = mInputArchive.getItemProperty( index, BitProperty::Attrib );
 
     if ( prop2.isEmpty() ) {
         mProcessedFileInfo.Attrib = 0;
@@ -129,10 +133,11 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
         mProcessedFileInfo.AttribDefined = true;
     }
 
-    RINOK( IsArchiveItemFolder( mArchiveHandler, index, mProcessedFileInfo.isDir ) );
+    //RINOK( IsArchiveItemFolder( mInputArchive, index, mProcessedFileInfo.isDir ) );
+    mProcessedFileInfo.isDir = mInputArchive.isItemFolder( index );
+
     // Get Modified Time
-    BitPropVariant prop3;
-    RINOK( mArchiveHandler->GetProperty( index, kpidMTime, &prop3 ) );
+    BitPropVariant prop3 = mInputArchive.getItemProperty( index, BitProperty::MTime );
     mProcessedFileInfo.MTimeDefined = false;
 
     switch ( prop3.type() ) {
@@ -188,6 +193,8 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
     }
 
     return S_OK;
+} catch ( const BitException& ) {
+    return E_OUTOFMEMORY;
 }
 
 STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {

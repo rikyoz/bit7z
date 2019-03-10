@@ -22,10 +22,13 @@
 #include <vector>
 
 #include "../include/bitarchiveopener.hpp"
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveitem.hpp"
 #include "../include/bittypes.hpp"
 
 struct IInArchive;
+struct IOutArchive;
+struct IArchiveExtractCallback;
 
 namespace bit7z {
     using std::vector;
@@ -33,7 +36,7 @@ namespace bit7z {
     /**
      * @brief The BitArchiveInfo class allows to retrieve metadata information of archives and their content.
      */
-    class BitArchiveInfo : public BitArchiveOpener {
+    class BitArchiveInfo : public BitArchiveOpener, public BitInputArchive {
         public:
             /**
              * @brief Constructs a BitArchiveInfo object, opening the input file.
@@ -55,25 +58,6 @@ namespace bit7z {
             virtual ~BitArchiveInfo() override;
 
             /**
-             * @brief Gets the specified archive property.
-             *
-             * @param property  the property to be retrieved.
-             *
-             * @return the current value of the archive property or an empty BitPropVariant if no value is specified.
-             */
-            BitPropVariant getArchiveProperty( BitProperty property ) const;
-
-            /**
-             * @brief Gets the specified property of an item in the archive.
-             *
-             * @param index     the index (in the archive) of the item.
-             * @param property  the property to be retrieved.
-             *
-             * @return the current value of the item property or an empty BitPropVariant if no value is specified.
-             */
-            BitPropVariant getItemProperty( uint32_t index, BitProperty property ) const;
-
-            /**
              * @return a map of all the available (i.e. non empty) archive properties and their respective values.
              */
             map<BitProperty, BitPropVariant> archiveProperties() const;
@@ -82,11 +66,6 @@ namespace bit7z {
              * @return a vector of all the archive items as BitArchiveItem objects.
              */
             vector< BitArchiveItem > items() const;
-
-            /**
-             * @return the number of items contained in the archive.
-             */
-            uint32_t itemsCount() const;
 
             /**
              * @return the number of folders contained in the archive.
@@ -107,9 +86,6 @@ namespace bit7z {
              * @return the total compressed size of the archive content.
              */
             uint64_t packSize() const;
-
-        private:
-            IInArchive* mInArchive;
     };
 }
 

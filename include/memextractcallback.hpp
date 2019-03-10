@@ -19,26 +19,25 @@
 #ifndef MEMEXTRACTCALLBACK_HPP
 #define MEMEXTRACTCALLBACK_HPP
 
-#include <string>
 #include <vector>
+#include <map>
 
 #include "7zip/Archive/IArchive.h"
-#include "7zip/Common/FileStreams.h"
-#include "7zip/Common/StreamObjects.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
-#include "../include/coutmemstream.hpp"
 #include "../include/callback.hpp"
 
 namespace bit7z {
     using std::vector;
+    using std::map;
 
     class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            MemExtractCallback( const BitArchiveHandler& handler, IInArchive* archiveHandler, vector< byte_t >& buffer );
+            MemExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive, map< wstring, vector< byte_t > >& buffersMap );
             virtual ~MemExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
@@ -57,8 +56,9 @@ namespace bit7z {
 
         private:
             const BitArchiveHandler& mHandler;
-            CMyComPtr< IInArchive > mArchiveHandler;
-            vector< byte_t >& mBuffer;
+            const BitInputArchive& mInputArchive;
+            map< wstring, vector< byte_t > >& mBuffersMap;
+
             bool mExtractMode;
             struct CProcessedFileInfo {
                 FILETIME MTime;
@@ -68,7 +68,7 @@ namespace bit7z {
                 bool MTimeDefined;
             } mProcessedFileInfo;
 
-            COutMemStream* mOutMemStreamSpec;
+            //COutMemStream* mOutMemStreamSpec;
             CMyComPtr< ISequentialOutStream > mOutMemStream;
 
             UInt64 mNumErrors;

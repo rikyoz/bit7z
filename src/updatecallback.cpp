@@ -41,19 +41,15 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
-UpdateCallback::UpdateCallback( const BitArchiveCreator& creator,
+UpdateCallback::UpdateCallback(const BitArchiveCreator& creator,
                                 const vector< FSItem >& new_items,
-                                const CMyComPtr<IInArchive>& old_arc ) :
+                                const BitInputArchive *old_arc ) :
     mVolSize( 0 ),
     mNewItems( new_items ),
     mOldArc( old_arc ),
-    mOldItemsCount( 0 ),
+    mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ),
     mCreator( creator ),
-    mAskPassword( false )
-{
-    if ( mOldArc ) {
-        mOldArc->GetNumberOfItems( &mOldItemsCount );
-    }
+    mAskPassword( false ) {
     mNeedBeClosed = false;
     mFailedFiles.clear();
 }
@@ -90,7 +86,7 @@ HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
 HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 index, Int32* newData,
         Int32* newProperties, UInt32* indexInArchive ) {
 
-    bool isOldItem = index < mOldItemsCount;
+    bool isOldItem = index < mOldArcItemsCount;
 
     if ( newData != nullptr ) {
         *newData = isOldItem ? 0 : 1; //= true;
@@ -120,13 +116,12 @@ HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 index, Int32* newData,
 
 HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
-
     if ( propID == kpidIsAnti ) {
         prop = false;
-    } else if ( index < mOldItemsCount ) {
-        return mOldArc->GetProperty( index, propID, value );
+    } else if ( index < mOldArcItemsCount ) {
+        prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
     } else {
-        const FSItem& new_item = mNewItems[ index - mOldItemsCount ];
+        const FSItem& new_item = mNewItems[ index - mOldArcItemsCount ];
         switch ( propID ) {
             case kpidPath:
                 prop = new_item.inArchivePath();
@@ -167,17 +162,17 @@ HRESULT UpdateCallback::Finilize() {
 }
 
 uint32_t UpdateCallback::getItemsCount() const {
-    return mOldItemsCount + static_cast< uint32_t >( mNewItems.size() );
+    return mOldArcItemsCount + static_cast< uint32_t >( mNewItems.size() );
 }
 
 HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
 
-    if ( index < mOldItemsCount ) { //old item in the archive
+    if ( index < mOldArcItemsCount ) { //old item in the archive
         return S_OK;
     }
 
-    const FSItem& new_item = mNewItems[ index - mOldItemsCount ];
+    const FSItem& new_item = mNewItems[ index - mOldArcItemsCount ];
 
     if ( mCreator.fileCallback() ) {
         mCreator.fileCallback()( new_item.name() );

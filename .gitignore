@@ -25,3 +25,8 @@ doc/md/
 test*/
 .vs/
 x64/
+\.idea/
+
+cmake-build-debug/
+
+CMakeLists\.txt

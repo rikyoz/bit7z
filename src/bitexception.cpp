@@ -23,7 +23,7 @@
 
 using namespace bit7z;
 
-BitException::BitException( const string& message ) : runtime_error( message ) {}
+BitException::BitException( const char* const message ) : runtime_error( message ) {}
 
 BitException::BitException( const wstring& message )
     : runtime_error( string( message.begin(), message.end() ) ) {}

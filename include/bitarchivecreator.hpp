@@ -47,6 +47,11 @@ namespace bit7z {
             /**
              * @return the format used by the archive creator.
              */
+            const BitInFormat& format() const override;
+
+            /**
+             * @return the format used by the archive creator.
+             */
             const BitInOutFormat& compressionFormat() const;
 
             /**

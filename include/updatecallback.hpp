@@ -24,6 +24,7 @@
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveitem.hpp"
 #include "../include/fsitem.hpp"
 #include "../include/callback.hpp"
@@ -44,7 +45,7 @@ namespace bit7z {
 
             explicit UpdateCallback( const BitArchiveCreator& creator,
                                      const vector< FSItem >& new_items,
-                                     const CMyComPtr< IInArchive >& old_arc );
+                                     const BitInputArchive* old_arc );
             virtual ~UpdateCallback();
 
             HRESULT Finilize();
@@ -80,8 +81,8 @@ namespace bit7z {
             //wstring mDirPrefix;
 
             const vector< FSItem >& mNewItems;
-            const CMyComPtr< IInArchive >& mOldArc;
-            uint32_t mOldItemsCount;
+            const BitInputArchive* mOldArc;
+            const uint32_t mOldArcItemsCount;
             const BitArchiveCreator& mCreator;
 
             bool mAskPassword;

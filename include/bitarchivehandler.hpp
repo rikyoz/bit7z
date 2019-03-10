@@ -28,6 +28,8 @@ namespace bit7z {
     using std::wstring;
     using std::function;
 
+    class BitInFormat;
+
     /**
      * @brief A std::function whose argument is the total size of the ongoing operation.
      */
@@ -76,6 +78,11 @@ namespace bit7z {
              * @return the Bit7zLibrary object used by the handler.
              */
             const Bit7zLibrary& library() const;
+
+            /**
+             * @return the format used by the handler for extracting or compressing.
+             */
+            virtual const BitInFormat& format() const = 0;
 
             /**
              * @return the password used to open, extract or encrypt the archive.

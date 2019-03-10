@@ -43,32 +43,33 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& fo
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_buffer );
+    BitInputArchive in_archive{ *this, in_buffer };
 
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, L"", out_dir );
-
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    if ( in_archive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kExtract, extract_callback ) != S_OK ) {
+    HRESULT res = in_archive.extract( vector< uint32_t >(), extract_callback );
+    if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
+
 }
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
-                               unsigned int index ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_buffer );
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer, unsigned int index ) const {
+    BitInputArchive in_archive{ *this, in_buffer };
 
-    uint32_t number_items;
-    in_archive->GetNumberOfItems( &number_items );
+    uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range"  );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range"  );
     }
 
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );
-
-    const uint32_t indices[] = { index };
-
+    map< wstring, vector< byte_t > > buffersMap;
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    if ( in_archive->Extract( static_cast<const uint32_t*>( indices ), 1, NExtract::NAskMode::kExtract, extract_callback ) != S_OK ) {
+
+    const vector< uint32_t > indices = { index };
+    HRESULT res = in_archive.extract( indices, extract_callback );
+    if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
+    out_buffer = std::move( buffersMap.begin()->second );
 }

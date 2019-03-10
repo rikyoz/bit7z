@@ -25,6 +25,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitextractor.cpp \
            src/bitformat.cpp \
            src/bitguids.cpp \
+           src/bitinputarchive.cpp \
            src/bitmemcompressor.cpp \
            src/bitmemextractor.cpp \
            src/bitpropvariant.cpp \
@@ -61,6 +62,7 @@ HEADERS += include/bit7z.hpp \
            include/bitextractor.hpp \
            include/bitformat.hpp \
            include/bitguids.hpp \
+           include/bitinputarchive.hpp \
            include/bitmemcompressor.hpp \
            include/bitmemextractor.hpp \
            include/bitpropvariant.hpp \

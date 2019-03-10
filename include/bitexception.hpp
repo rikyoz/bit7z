@@ -37,7 +37,7 @@ namespace bit7z {
              *
              * @param message   the message associated with the exception object.
              */
-            explicit BitException( const string& message );
+            explicit BitException( const char* const message );
 
             /**
              * @brief Constructs a BitException object with the given message.

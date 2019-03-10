@@ -33,7 +33,12 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFor
     mUpdateMode( false ),
     mVolumeSize( 0 ) {}
 
+
 BitArchiveCreator::~BitArchiveCreator() {}
+
+const BitInFormat& BitArchiveCreator::format() const {
+    return mFormat;
+}
 
 const BitInOutFormat& BitArchiveCreator::compressionFormat() const {
     return mFormat;
@@ -59,7 +64,7 @@ uint64_t BitArchiveCreator::volumeSize() const {
     return mVolumeSize;
 }
 
-void BitArchiveCreator::setPassword( const wstring &password ) {
+void BitArchiveCreator::setPassword( const wstring& password ) {
     setPassword( password, mCryptHeaders );
 }
 

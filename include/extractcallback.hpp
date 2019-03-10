@@ -27,6 +27,7 @@
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitguids.hpp"
 #include "../include/callback.hpp"
 #include "../include/bitarchivehandler.hpp"
@@ -35,9 +36,9 @@ namespace bit7z {
     using std::wstring;
 
     class ExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
-            ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+        ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( const BitArchiveHandler& handler, IInArchive* archiveHandler,
+            ExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive,
                              const wstring& inFilePath, const wstring& directoryPath );
             virtual ~ExtractCallback();
 
@@ -45,10 +46,10 @@ namespace bit7z {
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64 * completeValue );
+            STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
             // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64 *inSize, const UInt64 *outSize );
+            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream * *outStream, Int32 askExtractMode );
@@ -56,11 +57,11 @@ namespace bit7z {
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
             // ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR * aPassword );
+            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
 
         private:
             const BitArchiveHandler& mHandler;
-            CMyComPtr< IInArchive > mArchiveHandler;
+            const BitInputArchive& mInputArchive;
             wstring mInFilePath;     // Input file path
             wstring mDirectoryPath;  // Output directory
             wstring mFilePath;       // name inside archive

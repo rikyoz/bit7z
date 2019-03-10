@@ -21,10 +21,9 @@
 
 #include "../include/memextractcallback.hpp"
 
-#include "Windows/FileDir.h"
-#include "Windows/FileFind.h"
 #include "7zip/Common/StreamObjects.h"
 
+#include "../include/coutmemstream.hpp"
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
@@ -50,20 +49,26 @@ using namespace bit7z::util;
 //static const wstring kExtractingString =  L"Extracting  ";
 //static const wstring kSkippingString   =  L"Skipping    ";
 
-static const wstring kUnsupportedMethod = L"Unsupported Method";
-static const wstring kCRCFailed         = L"CRC Failed";
-static const wstring kDataError         = L"Data Error";
-static const wstring kUnknownError      = L"Unknown Error";
-static const wstring kEmptyFileAlias    = L"[Content]";
+#if (_MSC_VER <= 1700)
+#define CONSTEXPR const
+#else
+#define CONSTEXPR constexpr
+#endif
 
-MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler, IInArchive* archiveHandler, vector<byte_t>& buffer ) :
+CONSTEXPR auto kUnsupportedMethod = L"Unsupported Method";
+CONSTEXPR auto kCRCFailed         = L"CRC Failed";
+CONSTEXPR auto kDataError         = L"Data Error";
+CONSTEXPR auto kUnknownError      = L"Unknown Error";
+CONSTEXPR auto kEmptyFileAlias    = L"[Content]";
+
+MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive, map< wstring, vector< byte_t > >& buffersMap ) :
     mHandler( handler ),
-    mArchiveHandler( archiveHandler ),
-    mBuffer( buffer ),
+    mInputArchive( inputArchive ),
+    mBuffersMap( buffersMap ),
     mExtractMode( true ),
     mProcessedFileInfo(),
-    mOutMemStreamSpec( nullptr ),
-    mNumErrors( 0 ) {}
+    mNumErrors( 0 )
+{}
 
 MemExtractCallback::~MemExtractCallback() {}
 
@@ -81,12 +86,11 @@ STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* completeValue ) {
     return S_OK;
 }
 
-STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
+STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutMemStream.Release();
     // Get Name
-    BitPropVariant prop;
-    RINOK( mArchiveHandler->GetProperty( index, kpidPath, &prop ) );
+    BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
     wstring fullPath;
 
     if ( prop.isEmpty() ) {
@@ -104,8 +108,7 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     }
 
     // Get Attrib
-    BitPropVariant prop2;
-    RINOK( mArchiveHandler->GetProperty( index, kpidAttrib, &prop2 ) );
+    BitPropVariant prop2 = mInputArchive.getItemProperty( index, BitProperty::Attrib );
 
     if ( prop2.isEmpty() ) {
         mProcessedFileInfo.Attrib = 0;
@@ -119,10 +122,11 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
         mProcessedFileInfo.AttribDefined = true;
     }
 
-    RINOK( IsArchiveItemFolder( mArchiveHandler, index, mProcessedFileInfo.isDir ) );
+    //RINOK( IsArchiveItemFolder( mInputArchive, index, mProcessedFileInfo.isDir ) );
+    mProcessedFileInfo.isDir = mInputArchive.isItemFolder( index );
+
     // Get Modified Time
-    BitPropVariant prop3;
-    RINOK( mArchiveHandler->GetProperty( index, kpidMTime, &prop3 ) );
+    BitPropVariant prop3 = mInputArchive.getItemProperty( index, BitProperty::MTime );
     mProcessedFileInfo.MTimeDefined = false;
 
     switch ( prop3.type() ) {
@@ -140,13 +144,16 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     }
 
     if ( !mProcessedFileInfo.isDir ) {
-        mOutMemStreamSpec = new COutMemStream( mBuffer );
-        CMyComPtr< ISequentialOutStream > outStreamLoc( mOutMemStreamSpec );
+        //Note: using [] operator creates the buffer if it does not exists already!
+        auto* out_mem_stream_spec = new COutMemStream( mBuffersMap[ fullPath ] );
+        CMyComPtr< ISequentialOutStream > outStreamLoc( out_mem_stream_spec );
         mOutMemStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }
 
     return S_OK;
+} catch ( const BitException& ) {
+    return E_OUTOFMEMORY;
 }
 
 STDMETHODIMP MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
