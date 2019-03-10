@@ -21,8 +21,6 @@
 
 #include <string>
 
-struct IInStream;
-
 namespace bit7z {
     class BitInFormat;
 
@@ -41,9 +39,6 @@ namespace bit7z {
             wstring filename( const wstring& path, bool ext = false );
             wstring extension( const wstring& path );
             bool wildcard_match( const wstring& pattern, const wstring& str );
-
-            const BitInFormat& detect_format_by_ext( const wstring& in_file );
-            const BitInFormat& detect_format_by_sig( IInStream* stream );
         }
     }
 }

@@ -23,6 +23,7 @@
 
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bitarchiveitem.hpp"
+#include "../include/bittypes.hpp"
 
 struct IInArchive;
 
@@ -42,6 +43,9 @@ namespace bit7z {
              * @param format    the input archive format.
              */
             BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format = BitFormat::Auto );
+
+
+            BitArchiveInfo( const Bit7zLibrary& lib, const vector<byte_t>& in_buffer, const BitInFormat& format = BitFormat::Auto );
 
             /**
              * @brief BitArchiveInfo destructor.

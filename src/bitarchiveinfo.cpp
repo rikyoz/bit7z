@@ -21,6 +21,7 @@
 
 #include "../include/bitarchiveinfo.hpp"
 
+#include "Common/MyCom.h"
 #include "7zip/PropID.h"
 
 #include "../include/bitexception.hpp"
@@ -31,7 +32,12 @@ using namespace bit7z::util;
 
 BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {
-    mInArchive = openArchive( *this, mFormat, in_file ).Detach();
+    mInArchive = openFileArchive( *this, mFormat, in_file ).Detach();
+}
+
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >& in_buffer, const BitInFormat& format )
+    : BitArchiveOpener( lib, format ) {
+    mInArchive = openBufferArchive( *this, mFormat, in_buffer ).Detach();
 }
 
 BitArchiveInfo::~BitArchiveInfo() {

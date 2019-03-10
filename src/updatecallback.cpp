@@ -21,7 +21,6 @@
 
 #include "../include/updatecallback.hpp"
 
-#include <string>
 //debug includes:
 //#include <sstream>
 //#include <iomanip>
@@ -41,8 +40,6 @@ using namespace bit7z;
  *  + Error messages are not showed (see comments in ExtractCallback)
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
-
-const std::wstring kEmptyFileAlias = L"[Content]";
 
 UpdateCallback::UpdateCallback( const BitArchiveCreator& creator,
                                 const vector< FSItem >& new_items,
@@ -215,7 +212,7 @@ HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
 }
 
 HRESULT UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
-    if ( mVolSize == 0 ) return S_FALSE;
+    if ( mVolSize == 0 ) { return S_FALSE; }
 
     *size = mVolSize;
     return S_OK;

@@ -33,11 +33,11 @@ namespace bit7z {
 
         CMyComPtr< IOutArchive > initOutArchive( const BitArchiveCreator& creator );
 
-        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format,
-                                             const wstring& in_file );
+        CMyComPtr< IInArchive > openFileArchive( const BitArchiveHandler& handler, const BitInFormat& format,
+                                                 const wstring& in_file );
 
-        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format,
-                                             const vector< byte_t >& in_buffer );
+        CMyComPtr< IInArchive > openBufferArchive( const BitArchiveHandler& handler, const BitInFormat& format,
+                                                   const vector< byte_t >& in_buffer );
 
         HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result );
 
