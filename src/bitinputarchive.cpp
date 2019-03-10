@@ -20,10 +20,10 @@ namespace bit7z {
     }
 }
 
-CMyComPtr< IInArchive > openArchiveStream( const BitArchiveHandler& handler,
-        const BitInFormat& format,
-        const wstring& name,
-        IInStream* in_stream ) {
+IInArchive* openArchiveStream( const BitArchiveHandler& handler,
+                               const BitInFormat& format,
+                               const wstring& name,
+                               IInStream* in_stream ) {
     bool detected_by_signature = false;
     GUID format_GUID;
     if ( format == BitFormat::Auto ) {  // Detecting format of the input file
@@ -41,10 +41,8 @@ CMyComPtr< IInArchive > openArchiveStream( const BitArchiveHandler& handler,
 
     // Trying to open the file with the detected format
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
-    if ( res == S_OK ) {
-        return in_archive;
-    }
-    if ( format == BitFormat::Auto && !detected_by_signature ) {
+
+    if ( res != S_OK && format == BitFormat::Auto && !detected_by_signature ) {
         /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
@@ -54,11 +52,13 @@ CMyComPtr< IInArchive > openArchiveStream( const BitArchiveHandler& handler,
         format_GUID = BitFormat::detectFormatFromSig( in_stream ).guid();
         handler.library().initInputArchive( &format_GUID, in_archive );
         res = in_archive->Open( in_stream, nullptr, open_callback );
-        if ( res == S_OK ) {
-            return in_archive;
-        }
     }
-    throw BitException( L"Cannot open archive '" + name + L"'" );
+
+    if ( res != S_OK ) {
+        throw BitException( L"Cannot open archive '" + name + L"'" );
+    }
+
+    return in_archive.Detach();
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file ) {
@@ -68,14 +68,14 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
         throw BitException( L"Cannot open archive file '" + in_file + L"'" );
     }
     auto& detectedFormat = ( handler.format() == BitFormat::Auto ? BitFormat::detectFormatFromExt( in_file ) : handler.format() );
-    mInArchive = openArchiveStream( handler, detectedFormat, in_file, file_stream ).Detach();
+    mInArchive = openArchiveStream( handler, detectedFormat, in_file, file_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector<byte_t>& in_buffer ) {
     auto* buf_stream_spec = new CBufInStream;
     CMyComPtr< IInStream > buf_stream = buf_stream_spec;
     buf_stream_spec->Init( in_buffer.data(), in_buffer.size() );
-    mInArchive = openArchiveStream( handler, handler.format(), L".", buf_stream ).Detach();
+    mInArchive = openArchiveStream( handler, handler.format(), L".", buf_stream );
 }
 
 BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
