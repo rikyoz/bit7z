@@ -21,6 +21,18 @@
 
 #include <string>
 
+#if ( _MSC_VER <= 1700 )
+#define CONSTEXPR const
+#else
+#define CONSTEXPR constexpr
+#endif
+
+CONSTEXPR auto kUnsupportedMethod = L"Unsupported Method";
+CONSTEXPR auto kCRCFailed         = L"CRC Failed";
+CONSTEXPR auto kDataError         = L"Data Error";
+CONSTEXPR auto kUnknownError      = L"Unknown Error";
+CONSTEXPR auto kEmptyFileAlias    = L"[Content]";
+
 namespace bit7z {
     using std::wstring;
 

@@ -49,18 +49,6 @@ using namespace bit7z::util;
 //static const wstring kExtractingString =  L"Extracting  ";
 //static const wstring kSkippingString   =  L"Skipping    ";
 
-#if ( _MSC_VER <= 1700 )
-#define CONSTEXPR const
-#else
-#define CONSTEXPR constexpr
-#endif
-
-CONSTEXPR auto kUnsupportedMethod = L"Unsupported Method";
-CONSTEXPR auto kCRCFailed         = L"CRC Failed";
-CONSTEXPR auto kDataError         = L"Data Error";
-CONSTEXPR auto kUnknownError      = L"Unknown Error";
-CONSTEXPR auto kEmptyFileAlias    = L"[Content]";
-
 MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler,
                                         const BitInputArchive& inputArchive,
                                         map< wstring, vector< byte_t > >& buffersMap )
@@ -81,7 +69,7 @@ STDMETHODIMP MemExtractCallback::SetTotal( UInt64 size ) {
 }
 
 STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mHandler.progressCallback() ) {
+    if ( mHandler.progressCallback() && completeValue != nullptr ) {
         mHandler.progressCallback()( *completeValue );
     }
     return S_OK;
@@ -96,12 +84,10 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
 
     if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;
-    } else {
-        if ( !prop.isString() ) {
-            return E_FAIL;
-        }
-
+    } else if ( prop.isString() ) {
         fullPath = prop.getString();
+    } else {
+        return E_FAIL;
     }
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {

@@ -42,23 +42,9 @@ using namespace bit7z::util;
  *    because it must implement interfaces with nothrow methods.
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-
 /*static const wstring kTestingString    =  L"Testing     ";
 static const wstring kExtractingString =  L"Extracting  ";
 static const wstring kSkippingString   =  L"Skipping    ";*/
-
-#if ( _MSC_VER <= 1700 )
-#define CONSTEXPR const
-#else
-#define CONSTEXPR constexpr
-#endif
-
-CONSTEXPR auto kCantDeleteOutputFile = L"Cannot delete output file ";
-CONSTEXPR auto kUnsupportedMethod    = L"Unsupported Method";
-CONSTEXPR auto kCRCFailed            = L"CRC Failed";
-CONSTEXPR auto kDataError            = L"Data Error";
-CONSTEXPR auto kUnknownError         = L"Unknown Error";
-CONSTEXPR auto kEmptyFileAlias       = L"[Content]";
 
 ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
                                   const BitInputArchive& inputArchive,
@@ -100,9 +86,7 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 }
 
 //TODO: clean and optimize!
-STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
-        ISequentialOutStream** outStream,
-        Int32 askExtractMode ) try {
+STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutFileStream.Release();
     // Get Name
@@ -110,7 +94,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
 
     if ( prop.isEmpty() ) {
         mFilePath = !mInFilePath.empty() ? filesystem::fsutil::filename( mInFilePath ) : kEmptyFileAlias;
-    } else if ( prop.type() == BitPropVariantType::String ) {
+    } else if ( prop.isString() ) {
         mFilePath = prop.getString();
     } else {
         return E_FAIL;
@@ -177,7 +161,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
             if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
-                mErrorMessage = kCantDeleteOutputFile + fullProcessedPath;
+                mErrorMessage = L"Cannot delete output file " + fullProcessedPath;
                 return E_ABORT;
             }
         }

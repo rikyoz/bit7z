@@ -36,14 +36,6 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
-#if ( _MSC_VER <= 1700 )
-#define CONSTEXPR const
-#else
-#define CONSTEXPR constexpr
-#endif
-
-CONSTEXPR auto kEmptyFileAlias = L"[Content]";
-
 MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
                                       const vector< byte_t >& out_buffer,
                                       const wstring& buffer_name )
