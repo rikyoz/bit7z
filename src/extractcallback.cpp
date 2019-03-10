@@ -47,7 +47,7 @@ using namespace bit7z::util;
 static const wstring kExtractingString =  L"Extracting  ";
 static const wstring kSkippingString   =  L"Skipping    ";*/
 
-#if (_MSC_VER <= 1700)
+#if ( _MSC_VER <= 1700 )
 #define CONSTEXPR const
 #else
 #define CONSTEXPR constexpr
@@ -60,16 +60,18 @@ CONSTEXPR auto kDataError            = L"Data Error";
 CONSTEXPR auto kUnknownError         = L"Unknown Error";
 CONSTEXPR auto kEmptyFileAlias       = L"[Content]";
 
-ExtractCallback::ExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive,
-                                  const wstring& inFilePath, const wstring& directoryPath ) :
-    mHandler( handler ),
-    mInputArchive( inputArchive ),
-    mInFilePath( inFilePath ),
-    mDirectoryPath( directoryPath ),
-    mExtractMode( true ),
-    mProcessedFileInfo(),
-    mOutFileStreamSpec( nullptr ),
-    mNumErrors( 0 ) {
+ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
+                                  const BitInputArchive& inputArchive,
+                                  const wstring& inFilePath,
+                                  const wstring& directoryPath )
+    : mHandler( handler ),
+      mInputArchive( inputArchive ),
+      mInFilePath( inFilePath ),
+      mDirectoryPath( directoryPath ),
+      mExtractMode( true ),
+      mProcessedFileInfo(),
+      mOutFileStreamSpec( nullptr ),
+      mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
     filesystem::fsutil::normalize_path( mDirectoryPath );
 }
@@ -98,9 +100,9 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 }
 
 //TODO: clean and optimize!
-STDMETHODIMP ExtractCallback::GetStream( UInt32                 index,
-                                         ISequentialOutStream** outStream,
-                                         Int32                  askExtractMode ) try {
+STDMETHODIMP ExtractCallback::GetStream( UInt32 index,
+        ISequentialOutStream** outStream,
+        Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutFileStream.Release();
     // Get Name

@@ -49,7 +49,7 @@ using namespace bit7z::util;
 //static const wstring kExtractingString =  L"Extracting  ";
 //static const wstring kSkippingString   =  L"Skipping    ";
 
-#if (_MSC_VER <= 1700)
+#if ( _MSC_VER <= 1700 )
 #define CONSTEXPR const
 #else
 #define CONSTEXPR constexpr
@@ -61,14 +61,15 @@ CONSTEXPR auto kDataError         = L"Data Error";
 CONSTEXPR auto kUnknownError      = L"Unknown Error";
 CONSTEXPR auto kEmptyFileAlias    = L"[Content]";
 
-MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive, map< wstring, vector< byte_t > >& buffersMap ) :
-    mHandler( handler ),
-    mInputArchive( inputArchive ),
-    mBuffersMap( buffersMap ),
-    mExtractMode( true ),
-    mProcessedFileInfo(),
-    mNumErrors( 0 )
-{}
+MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler,
+                                        const BitInputArchive& inputArchive,
+                                        map< wstring, vector< byte_t > >& buffersMap )
+    : mHandler( handler ),
+      mInputArchive( inputArchive ),
+      mBuffersMap( buffersMap ),
+      mExtractMode( true ),
+      mProcessedFileInfo(),
+      mNumErrors( 0 ) {}
 
 MemExtractCallback::~MemExtractCallback() {}
 

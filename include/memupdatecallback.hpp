@@ -42,11 +42,13 @@ namespace bit7z {
             STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
             // IArchiveUpdateCallback
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG * *enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties,
+            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
+            STDMETHOD( GetUpdateItemInfo )( UInt32 index,
+                                            Int32* newData,
+                                            Int32* newProperties,
                                             UInt32* indexInArchive );
             STDMETHOD( GetProperty )( UInt32 /*index*/, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 /*index*/, ISequentialInStream * *inStream );
+            STDMETHOD( GetStream )( UInt32 /*index*/, ISequentialInStream** inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
 
             //ICryptoGetTextPassword2
@@ -54,11 +56,11 @@ namespace bit7z {
 
         public:
             const BitArchiveCreator& mCreator;
-            vector< UInt64 > mVolumesSizes;
+            /*vector< UInt64 > mVolumesSizes;
             wstring mVolName;
             wstring mVolExt;
 
-            wstring mDirPrefix;
+            wstring mDirPrefix;*/
 
             bool mAskPassword;
 
@@ -67,7 +69,10 @@ namespace bit7z {
             const vector< byte_t >& mBuffer;
             const wstring& mBufferName;
 
-            MemUpdateCallback( const BitArchiveCreator& creator, const vector< byte_t >& out_buffer, const wstring& buffer_name );
+            MemUpdateCallback( const BitArchiveCreator& creator,
+                               const vector< byte_t >& out_buffer,
+                               const wstring& buffer_name );
+
             virtual ~MemUpdateCallback();
 
             HRESULT Finilize();

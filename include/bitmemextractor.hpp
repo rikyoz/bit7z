@@ -61,7 +61,8 @@ namespace bit7z {
              * @param out_buffer   the output buffer where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_buffer.
              */
-            void extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
+            void extract( const vector< byte_t >& in_buffer,
+                          vector< byte_t >& out_buffer,
                           unsigned int index = 0 ) const;
     };
 }

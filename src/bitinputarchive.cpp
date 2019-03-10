@@ -32,6 +32,8 @@ IInArchive* openArchiveStream( const BitArchiveHandler& handler,
     } else {  // Format directly given by the user
         format_GUID = format.guid();
     }
+    // CMyComPtr is still needed: if an error occurs and an exception is thrown,
+    // the IInArchive object is deleted automatically!
     CMyComPtr< IInArchive > in_archive;
     handler.library().initInputArchive( &format_GUID, in_archive );
 
@@ -67,11 +69,12 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     if ( !file_stream_spec->Open( in_file.c_str() ) ) {
         throw BitException( L"Cannot open archive file '" + in_file + L"'" );
     }
-    auto& detectedFormat = ( handler.format() == BitFormat::Auto ? BitFormat::detectFormatFromExt( in_file ) : handler.format() );
+    auto& detectedFormat = ( handler.format() == BitFormat::Auto ?
+                             BitFormat::detectFormatFromExt( in_file ) : handler.format() );
     mInArchive = openArchiveStream( handler, detectedFormat, in_file, file_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector<byte_t>& in_buffer ) {
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
     auto* buf_stream_spec = new CBufInStream;
     CMyComPtr< IInStream > buf_stream = buf_stream_spec;
     buf_stream_spec->Init( in_buffer.data(), in_buffer.size() );
@@ -114,10 +117,9 @@ HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
-HRESULT BitInputArchive::extract( const vector<uint32_t>& indices, IArchiveExtractCallback* callback ) const {
+HRESULT BitInputArchive::extract( const vector< uint32_t >& indices, IArchiveExtractCallback* callback ) const {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
-    uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) :
-                         static_cast< uint32_t >( indices.size() );
+    uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
     return mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, callback );
 }
 

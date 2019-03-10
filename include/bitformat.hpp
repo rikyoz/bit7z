@@ -70,23 +70,25 @@ namespace bit7z {
              * @param other  the target object to compare to.
              * @return true if this format is equal to "other".
              */
-            bool operator==( BitInFormat const &other ) const;
+            bool operator==( BitInFormat const& other ) const;
 
             /**
              * @param other  the target object to compare to.
              * @return true if this format is not equal to "other".
              */
-            bool operator!=( BitInFormat const &other ) const;
+            bool operator!=( BitInFormat const& other ) const;
 
         private:
             const unsigned char mValue;
 
             //non-copyable
             BitInFormat( const BitInFormat& other );
+
             BitInFormat& operator=( const BitInFormat& other );
 
             //non-movable
             BitInFormat( BitInFormat&& other );
+
             BitInFormat& operator=( BitInFormat&& other );
     };
 
@@ -104,7 +106,7 @@ namespace bit7z {
              * @param ext       the default file extension of the archive format
              * @param features  the set of features supported by the archive format
              */
-            BitInOutFormat( unsigned char value, const wstring &ext, bitset< FEATURES_COUNT > features );
+            BitInOutFormat( unsigned char value, const wstring& ext, bitset< FEATURES_COUNT > features );
 
             /**
              * @return the default file estension of the archive format

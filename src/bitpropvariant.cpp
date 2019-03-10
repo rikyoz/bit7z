@@ -457,7 +457,7 @@ void BitPropVariant::internalClear() {
     uhVal.QuadPart = 0;
 }
 
-bool bit7z::operator !=( const BitPropVariant& a, const BitPropVariant& b ) {
+bool bit7z::operator!=( const BitPropVariant& a, const BitPropVariant& b ) {
     return !( a == b );
 }
 

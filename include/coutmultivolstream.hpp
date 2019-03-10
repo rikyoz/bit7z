@@ -31,34 +31,38 @@ using std::vector;
 using std::wstring;
 
 class COutMultiVolStream : public IOutStream, public CMyUnknownImp {
-        //CTempFiles* TempFiles;
+
         uint64_t mVolSize;
-        wstring  mVolPrefix;
+        wstring mVolPrefix;
         size_t mStreamIndex; // required stream
         uint64_t mOffsetPos;   // offset from start of _streamIndex index
         uint64_t mAbsPos;
         uint64_t mLength;
 
         struct CAltStreamInfo {
+            CMyComPtr< IOutStream > stream;
             COutFileStream* streamSpec;
-            CMyComPtr<IOutStream> stream;
             wstring name;
             uint64_t pos;
             uint64_t realSize;
         };
+
         vector< CAltStreamInfo > mVolStreams;
 
     public:
-        COutMultiVolStream( uint64_t size, const wstring &archiveName );
+        COutMultiVolStream( uint64_t size, const wstring& archiveName );
+
         virtual ~COutMultiVolStream();
 
         bool SetMTime( const FILETIME* mTime );
+
         HRESULT Close();
 
         UInt64 GetSize() const;
 
         MY_UNKNOWN_IMP1( IOutStream )
 
+        // IOutStream
         STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );
         STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
         STDMETHOD( SetSize )( UInt64 newSize );

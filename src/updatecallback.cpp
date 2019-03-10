@@ -41,15 +41,15 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
-UpdateCallback::UpdateCallback(const BitArchiveCreator& creator,
+UpdateCallback::UpdateCallback( const BitArchiveCreator& creator,
                                 const vector< FSItem >& new_items,
-                                const BitInputArchive *old_arc ) :
-    mVolSize( 0 ),
-    mNewItems( new_items ),
-    mOldArc( old_arc ),
-    mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ),
-    mCreator( creator ),
-    mAskPassword( false ) {
+                                const BitInputArchive* old_arc )
+    : mVolSize( 0 ),
+      mNewItems( new_items ),
+      mOldArc( old_arc ),
+      mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ),
+      mCreator( creator ),
+      mAskPassword( false ) {
     mNeedBeClosed = false;
     mFailedFiles.clear();
 }

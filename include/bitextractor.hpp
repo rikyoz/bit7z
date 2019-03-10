@@ -67,7 +67,9 @@ namespace bit7z {
              * @param out_dir       the output directory where extracted files will be put.
              * @param item_filter   only files with (archive) paths matching the filter will be extracted.
              */
-            void extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir = L"" ) const;
+            void extractMatching( const wstring& in_file,
+                                  const wstring& item_filter,
+                                  const wstring& out_dir = L"" ) const;
 
             /**
              * @brief Extracts the specified items in the given archive into the choosen directory.
@@ -76,7 +78,9 @@ namespace bit7z {
              * @param out_dir   the output directory where extracted files will be put.
              * @param indices   the array of indices of the files in the archive that must be extracted.
              */
-            void extractItems( const wstring& in_file, const vector<uint32_t>& indices, const wstring& out_dir = L"" ) const;
+            void extractItems( const wstring& in_file,
+                               const vector< uint32_t >& indices,
+                               const wstring& out_dir = L"" ) const;
 
             /**
              * @brief Extracts the given archive into the output buffer.
@@ -99,7 +103,10 @@ namespace bit7z {
             void test( const wstring& in_file );
 
         private:
-            void extractToFileSystem( const BitInputArchive& in_archive, const wstring& in_file, const wstring& out_dir, const vector<uint32_t>& indices ) const;
+            void extractToFileSystem( const BitInputArchive& in_archive,
+                                      const wstring& in_file,
+                                      const wstring& out_dir,
+                                      const vector< uint32_t >& indices ) const;
     };
 }
 #endif // BITEXTRACTOR_HPP

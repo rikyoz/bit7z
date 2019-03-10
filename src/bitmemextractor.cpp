@@ -54,12 +54,14 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
 
 }
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer, unsigned int index ) const {
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
+                               vector< byte_t >& out_buffer,
+                               unsigned int index ) const {
     BitInputArchive in_archive{ *this, in_buffer };
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range"  );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
     }
 
     map< wstring, vector< byte_t > > buffersMap;

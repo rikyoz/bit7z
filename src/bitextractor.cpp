@@ -56,7 +56,7 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
 void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir ) const {
     BitInputArchive in_archive{ *this, in_file };
 
-    vector<uint32_t> matched_indices;
+    vector< uint32_t > matched_indices;
     if ( !item_filter.empty() ) {
         //Searching for files inside the archive that match the given filter
         uint32_t items_count = in_archive.itemsCount();
@@ -73,11 +73,13 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
     }
 }
 
-void BitExtractor::extractItems( const wstring& in_file, const vector< uint32_t >& indices, const wstring& out_dir ) const {
+void BitExtractor::extractItems( const wstring& in_file,
+                                 const vector< uint32_t >& indices,
+                                 const wstring& out_dir ) const {
     BitInputArchive in_archive{ *this, in_file };
 
     uint32_t number_items = in_archive.itemsCount();
-    if ( std::any_of( indices.begin(), indices.end(), [&]( uint32_t index ) { return index >= number_items; } ) ) {
+    if ( std::any_of( indices.begin(), indices.end(), [ & ]( uint32_t index ) { return index >= number_items; } ) ) {
         /* if any of the indices is greater than the number of items in the archive we throw an exception, since it is
            an invalid index! */
         throw BitException( "Some index is not valid" );
@@ -90,7 +92,7 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range"  );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
     }
 
     map< wstring, vector< byte_t > > buffersMap;
@@ -100,7 +102,10 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
     const vector< uint32_t > indices = { index };
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() + L" (error code: " + std::to_wstring( res ) + L")" );
+        throw BitException( extract_callback_spec->getErrorMessage() +
+                            L" (error code: " +
+                            std::to_wstring( res ) +
+                            L")" );
     }
     out_buffer = std::move( buffersMap.begin()->second );
 }
@@ -133,17 +138,25 @@ void BitExtractor::test( const wstring& in_file ) {
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = in_archive.test( extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() + L" (error code: " + std::to_wstring( res ) + L")" );
+        throw BitException( extract_callback_spec->getErrorMessage() +
+                            L" (error code: " +
+                            std::to_wstring( res ) +
+                            L")" );
     }
 }
 
-void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive, const wstring& in_file,
-                                        const wstring& out_dir, const vector<uint32_t>& indices ) const {
+void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive,
+                                        const wstring& in_file,
+                                        const wstring& out_dir,
+                                        const vector< uint32_t >& indices ) const {
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, in_file, out_dir );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
 
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() + L" (error code: " + std::to_wstring( res ) + L")" );
+        throw BitException( extract_callback_spec->getErrorMessage() +
+                            L" (error code: " +
+                            std::to_wstring( res ) +
+                            L")" );
     }
 }

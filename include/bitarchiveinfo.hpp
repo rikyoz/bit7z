@@ -45,10 +45,14 @@ namespace bit7z {
              * @param in_file   the input archive file path.
              * @param format    the input archive format.
              */
-            BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format = BitFormat::Auto );
+            BitArchiveInfo( const Bit7zLibrary& lib,
+                            const wstring& in_file,
+                            const BitInFormat& format = BitFormat::Auto );
 
 
-            BitArchiveInfo( const Bit7zLibrary& lib, const vector<byte_t>& in_buffer, const BitInFormat& format = BitFormat::Auto );
+            BitArchiveInfo( const Bit7zLibrary& lib,
+                            const vector< byte_t >& in_buffer,
+                            const BitInFormat& format = BitFormat::Auto );
 
             /**
              * @brief BitArchiveInfo destructor.
@@ -60,7 +64,7 @@ namespace bit7z {
             /**
              * @return a map of all the available (i.e. non empty) archive properties and their respective values.
              */
-            map<BitProperty, BitPropVariant> archiveProperties() const;
+            map< BitProperty, BitPropVariant > archiveProperties() const;
 
             /**
              * @return a vector of all the archive items as BitArchiveItem objects.

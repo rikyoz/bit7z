@@ -41,8 +41,11 @@ using std::wstring;
 using std::vector;
 
 template< class T >
-void compressOut( const CMyComPtr< IOutArchive >& out_arc, CMyComPtr< T > out_stream,
-                  const vector< byte_t >& in_buffer, const wstring& in_buffer_name, const BitArchiveCreator& creator ) {
+void compressOut( const CMyComPtr< IOutArchive >& out_arc,
+                  CMyComPtr< T > out_stream,
+                  const vector< byte_t >& in_buffer,
+                  const wstring& in_buffer_name,
+                  const BitArchiveCreator& creator ) {
     auto* update_callback_spec = new MemUpdateCallback( creator, in_buffer, in_buffer_name );
 
     CMyComPtr< IArchiveUpdateCallback > update_callback( update_callback_spec );

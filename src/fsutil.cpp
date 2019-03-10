@@ -37,7 +37,8 @@ bool fsutil::path_exists( const wstring& path ) {
 
 bool fsutil::rename_file( const wstring& old_name, const wstring& new_name ) {
     //NOTE: It overwrites the destination file!
-    return MoveFileEx( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) != FALSE; //WinAPI BOOL
+    return MoveFileEx( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) !=
+           FALSE; //WinAPI BOOL
 }
 
 void fsutil::normalize_path( wstring& path ) { //this assumes that the passed path is not a file path!
@@ -54,7 +55,7 @@ wstring fsutil::dirname( const wstring& path ) {
 
 wstring fsutil::filename( const wstring& path, bool ext ) {
     size_t start = path.find_last_of( L"/\\" ) + 1;
-    size_t end   = ext ? path.size() : path.find_last_of( L'.' );
+    size_t end = ext ? path.size() : path.find_last_of( L'.' );
     return path.substr( start, end - start ); //RVO :)
 }
 
@@ -67,7 +68,7 @@ wstring fsutil::extension( const wstring& path ) {
 // TODO: check if find_first_of is necessary or use front()
 bool fsutil::is_relative_path( const wstring& path ) {
     //return PathIsRelativeW( path.c_str() ); //WinAPI version (requires Shlwapi lib!)
-    return path.empty() || ( path.find_first_of( L"/\\" ) != 0 && !( path.length() >= 2 && path[1] == L':' ) );
+    return path.empty() || ( path.find_first_of( L"/\\" ) != 0 && !( path.length() >= 2 && path[ 1 ] == L':' ) );
 }
 
 // Modified version of code found here: https://stackoverflow.com/a/3300547
@@ -81,7 +82,7 @@ bool w_match( const wchar_t* needle, const wchar_t* haystack, size_t max ) {
                 ++haystack;
                 break;
             case L'*': {
-                if ( needle[1] == L'\0' ) {
+                if ( needle[ 1 ] == L'\0' ) {
                     return true;
                 }
                 for ( size_t i = 0; i < max; i++ ) {

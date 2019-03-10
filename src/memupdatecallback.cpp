@@ -36,7 +36,7 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
-#if (_MSC_VER <= 1700)
+#if ( _MSC_VER <= 1700 )
 #define CONSTEXPR const
 #else
 #define CONSTEXPR constexpr
@@ -44,12 +44,14 @@ using namespace bit7z;
 
 CONSTEXPR auto kEmptyFileAlias = L"[Content]";
 
-MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator, const vector< byte_t >& out_buffer, const wstring& buffer_name ) :
-    mCreator( creator ),
-    mAskPassword( false ),
-    mNeedBeClosed( false ),
-    mBuffer( out_buffer ),
-    mBufferName( buffer_name ) {}
+MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
+                                      const vector< byte_t >& out_buffer,
+                                      const wstring& buffer_name )
+    : mCreator( creator ),
+      mAskPassword( false ),
+      mNeedBeClosed( false ),
+      mBuffer( out_buffer ),
+      mBufferName( buffer_name ) {}
 
 MemUpdateCallback::~MemUpdateCallback() {
     Finilize();
@@ -74,7 +76,7 @@ HRESULT MemUpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ )
 }
 
 HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
-                                              Int32* newProperties, UInt32* indexInArchive ) {
+        Int32* newProperties, UInt32* indexInArchive ) {
     if ( newData != nullptr ) {
         *newData = 1; //= true;
     }
@@ -169,7 +171,7 @@ HRESULT MemUpdateCallback::GetStream( UInt32 /*index*/, ISequentialInStream** in
 
     auto* inStreamSpec = new CBufInStream;
     CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
-    inStreamSpec->Init( &mBuffer[0], mBuffer.size() );
+    inStreamSpec->Init( &mBuffer[ 0 ], mBuffer.size() );
 
 
     //    wstring path = dirItem.fullPath();

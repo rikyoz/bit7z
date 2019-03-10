@@ -37,7 +37,10 @@ namespace bit7z {
 
     class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            MemExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive, map< wstring, vector< byte_t > >& buffersMap );
+            MemExtractCallback( const BitArchiveHandler& handler,
+                                const BitInputArchive& inputArchive,
+                                map< wstring, vector< byte_t > >& buffersMap );
+
             virtual ~MemExtractCallback();
 
             MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
@@ -47,7 +50,7 @@ namespace bit7z {
             STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream * *outStream, Int32 askExtractMode );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
             STDMETHOD( PrepareOperation )( Int32 askExtractMode );
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
@@ -57,9 +60,11 @@ namespace bit7z {
         private:
             const BitArchiveHandler& mHandler;
             const BitInputArchive& mInputArchive;
+
             map< wstring, vector< byte_t > >& mBuffersMap;
 
             bool mExtractMode;
+
             struct CProcessedFileInfo {
                 FILETIME MTime;
                 UInt32 Attrib;

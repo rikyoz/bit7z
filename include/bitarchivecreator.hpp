@@ -97,7 +97,7 @@ namespace bit7z {
              *
              * @param password
              */
-            void setPassword( const wstring &password ) override;
+            void setPassword( const wstring& password ) override;
 
             /**
              * @brief Sets up a password for the output archive.

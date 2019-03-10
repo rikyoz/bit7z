@@ -36,10 +36,13 @@ namespace bit7z {
     using std::wstring;
 
     class ExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
-        ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+                            ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive,
-                             const wstring& inFilePath, const wstring& directoryPath );
+            ExtractCallback( const BitArchiveHandler& handler,
+                             const BitInputArchive& inputArchive,
+                             const wstring& inFilePath,
+                             const wstring& directoryPath );
+
             virtual ~ExtractCallback();
 
             MY_UNKNOWN_IMP2( ICompressProgressInfo, ICryptoGetTextPassword )
@@ -52,7 +55,7 @@ namespace bit7z {
             STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream * *outStream, Int32 askExtractMode );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
             STDMETHOD( PrepareOperation )( Int32 askExtractMode );
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
@@ -62,11 +65,13 @@ namespace bit7z {
         private:
             const BitArchiveHandler& mHandler;
             const BitInputArchive& mInputArchive;
+
             wstring mInFilePath;     // Input file path
             wstring mDirectoryPath;  // Output directory
             wstring mFilePath;       // name inside archive
             wstring mDiskFilePath;   // full path to file on disk
             bool mExtractMode;
+
             struct CProcessedFileInfo {
                 FILETIME MTime;
                 UInt32 Attrib;

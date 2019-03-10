@@ -1,5 +1,5 @@
-#ifndef INPUTARCHIVE_H
-#define INPUTARCHIVE_H
+#ifndef BITINPUTARCHIVE_H
+#define BITINPUTARCHIVE_H
 
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitformat.hpp"
@@ -21,6 +21,7 @@ namespace bit7z {
     class BitInputArchive {
         public:
             BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file );
+
             BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer );
 
             virtual ~BitInputArchive();
@@ -58,16 +59,21 @@ namespace bit7z {
 
         protected:
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
+
             HRESULT extract( const vector< uint32_t >& indices, IArchiveExtractCallback* callback ) const;
+
             HRESULT test( IArchiveExtractCallback* callback ) const;
+
             HRESULT close() const;
 
             IInArchive* mInArchive;
 
             friend class BitExtractor;
+
             friend class BitMemExtractor;
+
             friend class BitCompressor;
     };
 }
 
-#endif // INPUTARCHIVE_H
+#endif //BITINPUTARCHIVE_H
