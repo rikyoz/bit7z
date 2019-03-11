@@ -10,6 +10,7 @@
 #include <string>
 #include <cstdint>
 
+struct IInStream;
 struct IInArchive;
 struct IOutArchive;
 struct IArchiveExtractCallback;
@@ -58,6 +59,10 @@ namespace bit7z {
             bool isItemFolder( uint32_t index ) const;
 
         protected:
+            IInArchive* openArchiveStream( const BitArchiveHandler& handler,
+                                           const wstring& name,
+                                           IInStream* in_stream );
+
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
             HRESULT extract( const vector< uint32_t >& indices, IArchiveExtractCallback* callback ) const;
@@ -67,11 +72,10 @@ namespace bit7z {
             HRESULT close() const;
 
             IInArchive* mInArchive;
+            const BitInFormat* mDetectedFormat;
 
             friend class BitExtractor;
-
             friend class BitMemExtractor;
-
             friend class BitCompressor;
     };
 }

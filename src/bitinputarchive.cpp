@@ -20,19 +20,17 @@ namespace bit7z {
     }
 }
 
-IInArchive* openArchiveStream( const BitArchiveHandler& handler,
-                               const BitInFormat& format,
-                               const wstring& name,
-                               IInStream* in_stream ) {
+IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
+                                                const wstring& name,
+                                                IInStream* in_stream ) {
     bool detected_by_signature = false;
-    GUID format_GUID;
-    if ( format == BitFormat::Auto ) {  // Detecting format of the input file
-        format_GUID = BitFormat::detectFormatFromSig( in_stream ).guid();
+    if ( *mDetectedFormat == BitFormat::Auto ) {
+        // Detecting format of the input file
+        mDetectedFormat = &( BitFormat::detectFormatFromSig( in_stream ) );
         detected_by_signature = true;
-    } else {  // Format directly given by the user
-        format_GUID = format.guid();
     }
-    // CMyComPtr is still needed: if an error occurs and an exception is thrown,
+    GUID format_GUID = mDetectedFormat->guid();
+    // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically!
     CMyComPtr< IInArchive > in_archive;
     handler.library().initInputArchive( &format_GUID, in_archive );
@@ -44,14 +42,15 @@ IInArchive* openArchiveStream( const BitArchiveHandler& handler,
     // Trying to open the file with the detected format
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
 
-    if ( res != S_OK && format == BitFormat::Auto && !detected_by_signature ) {
+    if ( res != S_OK && handler.format() == BitFormat::Auto && !detected_by_signature ) {
         /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
-         *       and an exception is thrown!
+         *       and an exception is thrown (next if)!
          * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected a
-         *         a wrong format, no further check can be done and an exception must be thrown! */
-        format_GUID = BitFormat::detectFormatFromSig( in_stream ).guid();
+         *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
+        mDetectedFormat = &( BitFormat::detectFormatFromSig( in_stream ) );
+        format_GUID = mDetectedFormat->guid();
         handler.library().initInputArchive( &format_GUID, in_archive );
         res = in_archive->Open( in_stream, nullptr, open_callback );
     }
@@ -69,16 +68,17 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     if ( !file_stream_spec->Open( in_file.c_str() ) ) {
         throw BitException( L"Cannot open archive file '" + in_file + L"'" );
     }
-    auto& detectedFormat = ( handler.format() == BitFormat::Auto ?
-                             BitFormat::detectFormatFromExt( in_file ) : handler.format() );
-    mInArchive = openArchiveStream( handler, detectedFormat, in_file, file_stream );
+    mDetectedFormat = ( handler.format() == BitFormat::Auto ?
+                        &BitFormat::detectFormatFromExt( in_file ) : &handler.format() );
+    mInArchive = openArchiveStream( handler, in_file, file_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
     auto* buf_stream_spec = new CBufInStream;
     CMyComPtr< IInStream > buf_stream = buf_stream_spec;
     buf_stream_spec->Init( in_buffer.data(), in_buffer.size() );
-    mInArchive = openArchiveStream( handler, handler.format(), L".", buf_stream );
+    mDetectedFormat = &handler.format();
+    mInArchive = openArchiveStream( handler, L".", buf_stream );
 }
 
 BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
@@ -135,4 +135,10 @@ BitInputArchive::~BitInputArchive() {
     if ( mInArchive ) {
         mInArchive->Release();
     }
+}
+
+const BitInFormat& BitInputArchive::detectedFormat() {
+    // Defensive programming: for how the archive format is detected,
+    // a correct BitInputArchive instance should have a non null mDetectedFormat!
+    return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
 }
