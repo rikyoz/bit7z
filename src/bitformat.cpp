@@ -156,7 +156,7 @@ namespace bit7z {
             { L"mub",      Mub },
             { L"nsis",     Nsis },
             { L"ntfs",     Ntfs },
-            { L"ppmd",     Ppmd },
+            { L"pmd",      Ppmd },
             { L"qcow",     QCow },
             { L"qcow2",    QCow },
             { L"qcow2c",   QCow },
@@ -176,44 +176,44 @@ namespace bit7z {
 
         /* NOTE: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0 */
         const unordered_map< uint64_t, const BitInFormat& > common_signatures = {
-            { 0x526172211A070000, Rar },
-            { 0x526172211A070100, Rar5 },
-            { 0x4657530000000000, Swf },
-            { 0x4357530000000000, Swfc },
-            { 0x377ABCAF271C0000, SevenZip },
-            { 0x425A680000000000, BZip2 },
-            { 0x1F8B080000000000, GZip },
-            { 0x4D5357494D000000, Wim },
-            { 0xFD377A585A000000, Xz },
-            { 0x504B000000000000, Zip },
-            { 0x4552000000000000, APM },
-            { 0x60EA000000000000, Arj },
-            { 0x4D53434600000000, Cab },
-            { 0x4954534600000000, Chm },
-            { 0xD0CF11E0A1B11AE1, Compound },
-            { 0xC771000000000000, Cpio },
-            { 0x71C7000000000000, Cpio },
-            { 0x3037303730000000, Cpio },
-            { 0x213C617263683E00, Deb },
+            { 0x526172211A070000, Rar },      // R  a  r  !  1A 07 00
+            { 0x526172211A070100, Rar5 },     // R  a  r  !  1A 07 01 00
+            { 0x4657530000000000, Swf },      // F  W  S
+            { 0x4357530000000000, Swfc },     // C  W  S
+            { 0x377ABCAF271C0000, SevenZip }, // 7  z  BC AF 27 1C
+            { 0x425A680000000000, BZip2 },    // B  Z  h
+            { 0x1F8B080000000000, GZip },     // 1F 8B 08
+            { 0x4D5357494D000000, Wim },      // M  S  W  I  M  00 00 00
+            { 0xFD377A585A000000, Xz },       // FD 7  z  X  Z  00
+            { 0x504B000000000000, Zip },      // P  K
+            { 0x4552000000000000, APM },      // E  R
+            { 0x60EA000000000000, Arj },      // `  EA
+            { 0x4D53434600000000, Cab },      // M  S  C  F  00 00 00 00
+            { 0x4954534603000000, Chm },      // I  T  S  F  03
+            { 0xD0CF11E0A1B11AE1, Compound }, // D0 CF 11 E0 A1 B1 1A E1
+            { 0xC771000000000000, Cpio },     // C7 q
+            { 0x71C7000000000000, Cpio },     // q  C7
+            { 0x3037303730000000, Cpio },     // 0  7  0  7  0
+            { 0x213C617263683E00, Deb },      // !  <  a  r  c  h  >  0A
             //{ 0x7801730D62626000, Dmg }, /* DMG signature detection is not this simple */
-            { 0x7F454C4600000000, Elf },
-            { 0x4D5A000000000000, Pe },
-            { 0x464C560100000000, Flv },
-            { 0x5D00000000000000, Lzma },
-            { 0x015D000000000000, Lzma86 },
-            { 0xCFFAEDFE00000000, Macho },
-            { 0xCAFEBABE00000000, Macho },
-            { 0x535A444488F02733, Mslz },
-            { 0x514649FB00000000, QCow },
-            { 0xEDABEEDB00000000, Rpm },
-            { 0x7371736800000000, SquashFS },
-            { 0x6873717300000000, SquashFS },
-            { 0x4B444D0000000000, VMDK },
-            { 0x3C3C3C2000000000, VDI }, //Alternatively 0x7F10DABE at offset 0x40
-            { 0x636F6E6563746978, Vhd },
-            { 0x7861722100000000, Xar },
-            { 0x1F9D000000000000, Z },
-            { 0x1FA0000000000000, Z }
+            { 0x7F454C4600000000, Elf },      // 7F E  L  F
+            { 0x4D5A000000000000, Pe },       // M  Z
+            { 0x464C560100000000, Flv },      // F  L  V  01
+            { 0x5D00000000000000, Lzma },     //
+            { 0x015D000000000000, Lzma86 },   //
+            { 0xCFFAEDFE00000000, Macho },    // CF FA ED FE
+            { 0xCAFEBABE00000000, Macho },    //
+            { 0x535A444488F02733, Mslz },     // S  Z  D  D  88 F0 '  3
+            { 0x514649FB00000000, QCow },     // Q  F  I  FB 00 00 00
+            { 0xEDABEEDB00000000, Rpm },      // ED AB EE DB
+            { 0x7371736800000000, SquashFS }, // s  q  s  h
+            { 0x6873717300000000, SquashFS }, // h  s  q  s
+            { 0x4B444D0000000000, VMDK },     // K  D  M  V
+            { 0x3C3C3C2000000000, VDI },      // Alternatively 0x7F10DABE at offset 0x40)
+            { 0x636F6E6563746978, Vhd },      // c  o  n  e  c  t  i  x
+            { 0x78617221001C0000, Xar },      // x  a  r  !  00 1C
+            { 0x1F9D000000000000, Z },        // 1F 9D
+            { 0x1FA0000000000000, Z }         //
         };
 
         struct OffsetSignature {
@@ -229,7 +229,8 @@ namespace bit7z {
             { 0x7573746172000000, 0x101, 5, Tar },
             { 0x4244000000000000, 0x400, 2, Hfs },
             { 0x482B000000000000, 0x400, 2, Hfs },
-            { 0x4858000000000000, 0x400, 2, Hfs }/*,
+            { 0x4858000000000000, 0x400, 2, Hfs }
+            /*,
             { 0x4344303031, 0x8001, 5, Iso },
             { 0x4344303031, 0x8801, 5, Iso },
             { 0x4344303031, 0x9001, 5, Iso }*/
@@ -308,7 +309,6 @@ namespace bit7z {
             if ( ext.empty() ) {
                 throw BitException( "Cannot detect the archive format from the extension" );
             }
-
             std::transform( ext.cbegin(), ext.cend(), ext.begin(), std::towlower );
             //std::wcout << ext << std::endl;
 
