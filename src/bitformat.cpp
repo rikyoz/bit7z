@@ -143,6 +143,7 @@ namespace bit7z {
             { L"ext4",     Ext },
             { L"fat",      Fat },
             { L"flv",      Flv },
+            { L"gpt",      GPT },
             { L"hfs",      Hfs },
             { L"hfsx",     Hfs },
             { L"hxs",      Hxs },
@@ -204,6 +205,7 @@ namespace bit7z {
             { 0xCFFAEDFE00000000, Macho },    // CF FA ED FE
             { 0xCAFEBABE00000000, Macho },    //
             { 0x535A444488F02733, Mslz },     // S  Z  D  D  88 F0 '  3
+            { 0x8FAFAC8400000000, Ppmd },     // 8F AF AC 84
             { 0x514649FB00000000, QCow },     // Q  F  I  FB 00 00 00
             { 0xEDABEEDB00000000, Rpm },      // ED AB EE DB
             { 0x7371736800000000, SquashFS }, // s  q  s  h
@@ -224,16 +226,18 @@ namespace bit7z {
         };
 
         const vector< OffsetSignature > common_signatures_with_offset = {
-            { 0x2D6C680000000000, 0x02,  3, Lzh },
-            { 0x7F10DABE00000000, 0x40,  4, VDI },
-            { 0x7573746172000000, 0x101, 5, Tar },
-            { 0x4244000000000000, 0x400, 2, Hfs },
-            { 0x482B000000000000, 0x400, 2, Hfs },
-            { 0x4858000000000000, 0x400, 2, Hfs }
-            /*,
-            { 0x4344303031, 0x8001, 5, Iso },
-            { 0x4344303031, 0x8801, 5, Iso },
-            { 0x4344303031, 0x9001, 5, Iso }*/
+            { 0x2D6C680000000000, 0x02,  3, Lzh },    // -  l  h
+            { 0x4E54465320202020, 0x03,  8, Ntfs },   // N  T  F  S  20 20 20 20
+            { 0x4E756C6C736F6674, 0x08,  8, Nsis },   // N  u  l  l  s  o  f  t
+            { 0x436F6D7072657373, 0x10,  8, CramFS }, // C  o  m  p  r  e  s  s
+            { 0x7F10DABE00000000, 0x40,  4, VDI },    // 7F 10 DA BE
+            { 0x7573746172000000, 0x101, 5, Tar },    // u  s  t  a  r
+            { 0x55AA000000000000, 0x1FE, 2, Fat },    // U  AA
+            //{ 0x4546492050415254, 0x200, 8, GPT },    // E  F  I  20 P  A  R  T
+            { 0x4244000000000000, 0x400, 2, Hfs },    // B  D
+            { 0x482B000400000000, 0x400, 2, Hfs },    // H  +  00 04
+            { 0x4858000500000000, 0x400, 2, Hfs },    // H  X  00 05
+            { 0x53EF000000000000, 0x438, 2, Ext }     // S  EF
         };
 
         uint64_t read_signature( IInStream* stream, uint32_t size ) {
