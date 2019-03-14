@@ -164,6 +164,7 @@ namespace bit7z {
             { L"qcow2c",   QCow },
             { L"rpm",      Rpm },
             { L"squashfs", SquashFS },
+            { L"te",       TE },
             { L"udf",      Udf },
             { L"scap",     UEFIc },
             { L"uefif",    UEFIs },
@@ -207,6 +208,8 @@ namespace bit7z {
             { 0xCFFAEDFE00000000, Macho },    // CF FA ED FE
             { 0xFEEDFACE00000000, Macho },    // FE ED FA CE
             { 0xFEEDFACF00000000, Macho },    // FE ED FA CF
+            { 0xCAFEBABE00000000, Mub },      // CA FE BA BE 00 00 00
+            { 0xB9FAF10E00000000, Mub },      // B9 FA F1 0E
             { 0x535A444488F02733, Mslz },     // S  Z  D  D  88 F0 '  3
             { 0x8FAFAC8400000000, Ppmd },     // 8F AF AC 84
             { 0x514649FB00000000, QCow },     // Q  F  I  FB 00 00 00
@@ -216,6 +219,8 @@ namespace bit7z {
             { 0x7368737100000000, SquashFS }, // s  h  s  q
             { 0x7173687300000000, SquashFS }, // q  s  h  s
             { 0x4657530000000000, Swf },      // F  W  S
+            { 0x4357530000000000, Swfc },     // C  W  S
+            { 0x5A57530000000000, Swfc },     // Z  W  S
             { 0x4B444D0000000000, VMDK },     // K  D  M  V
             { 0x3C3C3C2000000000, VDI },      // Alternatively 0x7F10DABE at offset 0x40)
             { 0x636F6E6563746978, Vhd },      // c  o  n  e  c  t  i  x
