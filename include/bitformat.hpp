@@ -144,6 +144,7 @@ namespace bit7z {
                                  Lzma,      ///< LZMA Archive Format
                                  Lzma86,    ///< LZMA86 Archive Format
                                  Ppmd,      ///< PPMD Archive Format
+                                 COFF,      ///< COFF Archive Format
                                  Ext,       ///< EXT Archive Format
                                  VMDK,      ///< VMDK Archive Format
                                  VDI,       ///< VDI Archive Format
