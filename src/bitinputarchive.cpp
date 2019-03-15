@@ -137,7 +137,7 @@ BitInputArchive::~BitInputArchive() {
     }
 }
 
-const BitInFormat& BitInputArchive::detectedFormat() {
+const BitInFormat& BitInputArchive::detectedFormat() const {
     // Defensive programming: for how the archive format is detected,
     // a correct BitInputArchive instance should have a non null mDetectedFormat!
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;

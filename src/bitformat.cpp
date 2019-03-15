@@ -289,8 +289,6 @@ namespace bit7z {
         BEGIN_HASHMAP( uint64_t, const BitInFormat&, common_signatures )
             HASHMAP_ENTRY( common_signatures, 0x526172211A070000, Rar )      // R  a  r  !  1A 07 00
             HASHMAP_ENTRY( common_signatures, 0x526172211A070100, Rar5 )     // R  a  r  !  1A 07 01 00
-            HASHMAP_ENTRY( common_signatures, 0x4657530000000000, Swf )      // F  W  S
-            HASHMAP_ENTRY( common_signatures, 0x4357530000000000, Swfc )     // C  W  S
             HASHMAP_ENTRY( common_signatures, 0x377ABCAF271C0000, SevenZip ) // 7  z  BC AF 27 1C
             HASHMAP_ENTRY( common_signatures, 0x425A680000000000, BZip2 )    // B  Z  h
             HASHMAP_ENTRY( common_signatures, 0x1F8B080000000000, GZip )     // 1F 8B 08
@@ -341,8 +339,6 @@ namespace bit7z {
         /*const unordered_map< uint64_t, const BitInFormat& > common_signatures = {
                 { 0x526172211A070000, Rar },      // R  a  r  !  1A 07 00
                 { 0x526172211A070100, Rar5 },     // R  a  r  !  1A 07 01 00
-                { 0x4657530000000000, Swf },      // F  W  S
-                { 0x4357530000000000, Swfc },     // C  W  S
                 { 0x377ABCAF271C0000, SevenZip }, // 7  z  BC AF 27 1C
                 { 0x425A680000000000, BZip2 },    // B  Z  h
                 { 0x1F8B080000000000, GZip },     // 1F 8B 08

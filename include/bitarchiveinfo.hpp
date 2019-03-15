@@ -91,11 +91,11 @@ namespace bit7z {
              */
             uint64_t packSize() const;
 
-            bool isEncrypted();
+            bool isEncrypted() const;
 
-            uint32_t volumesCount();
+            uint32_t volumesCount() const;
 
-            bool isMultiVolume();
+            bool isMultiVolume() const;
     };
 }
 

@@ -107,7 +107,7 @@ uint64_t BitArchiveInfo::packSize() const {
     return result;
 }
 
-bool BitArchiveInfo::isEncrypted() {
+bool BitArchiveInfo::isEncrypted() const {
     /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
      *       the properties of a file in the archive, so we search for the index of the first file in the archive! */
     uint32_t items_count = itemsCount();
@@ -120,7 +120,7 @@ bool BitArchiveInfo::isEncrypted() {
     return false;
 }
 
-bool BitArchiveInfo::isMultiVolume() {
+bool BitArchiveInfo::isMultiVolume() const {
     if ( mFormat == BitFormat::Split ) {
         return true;
     }
@@ -128,7 +128,7 @@ bool BitArchiveInfo::isMultiVolume() {
     return propvar.isBool() && propvar.getBool();
 }
 
-uint32_t BitArchiveInfo::volumesCount() {
+uint32_t BitArchiveInfo::volumesCount() const {
     BitPropVariant propvar = getArchiveProperty( BitProperty::NumVolumes );
     return propvar.isEmpty() ? 1 : propvar.getUInt32();
 }

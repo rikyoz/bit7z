@@ -30,7 +30,7 @@ namespace bit7z {
             /**
              * @return the detected format of the file.
              */
-            const BitInFormat& detectedFormat();
+            const BitInFormat& detectedFormat() const;
 
             /**
              * @brief Gets the specified archive property.
