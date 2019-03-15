@@ -90,6 +90,8 @@ namespace bit7z {
              * @return the total compressed size of the archive content.
              */
             uint64_t packSize() const;
+
+            bool isEncrypted();
     };
 }
 
