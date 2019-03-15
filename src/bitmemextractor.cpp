@@ -42,7 +42,7 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& fo
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
-    BitInputArchive in_archive{ *this, in_buffer };
+    BitInputArchive in_archive( *this, in_buffer );
 
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, L"", out_dir );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
@@ -56,7 +56,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
                                vector< byte_t >& out_buffer,
                                unsigned int index ) const {
-    BitInputArchive in_archive{ *this, in_buffer };
+    BitInputArchive in_archive( *this, in_buffer );
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
@@ -71,7 +71,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
 
-    const vector< uint32_t > indices = { index };
+    const vector< uint32_t > indices( 1, index );
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
@@ -80,7 +80,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const {
-    BitInputArchive in_archive{ *this, in_buffer };
+    BitInputArchive in_archive( *this, in_buffer );
 
     uint32_t number_items = in_archive.itemsCount();
     vector< uint32_t > files_indices;

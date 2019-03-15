@@ -169,7 +169,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
                 throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
             }
             //needed to change old_arc, see https://sourceforge.net/p/sevenzip/discussion/45798/thread/23ec65b4/
-            BitInputArchive old_arc{ *this, out_archive };
+            BitInputArchive old_arc( *this, out_archive );
             old_arc.initUpdatableArchive( &new_arc );
             compressOut( *this, new_arc, out_file_stream, in_items, &old_arc );
             old_arc.close();

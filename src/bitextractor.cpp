@@ -54,7 +54,7 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
  *  + Generalized the code to work with any type of format (the original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir ) const {
-    BitInputArchive in_archive{ *this, in_file };
+    BitInputArchive in_archive( *this, in_file );
 
     vector< uint32_t > matched_indices;
     if ( !item_filter.empty() ) {
@@ -76,7 +76,7 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
 void BitExtractor::extractItems( const wstring& in_file,
                                  const vector< uint32_t >& indices,
                                  const wstring& out_dir ) const {
-    BitInputArchive in_archive{ *this, in_file };
+    BitInputArchive in_archive( *this, in_file );
 
     uint32_t number_items = in_archive.itemsCount();
     if ( std::any_of( indices.begin(), indices.end(), [ & ]( uint32_t index ) { return index >= number_items; } ) ) {
@@ -88,7 +88,7 @@ void BitExtractor::extractItems( const wstring& in_file,
 }
 
 void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) const {
-    BitInputArchive in_archive{ *this, in_file };
+    BitInputArchive in_archive( *this, in_file );
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
@@ -103,7 +103,7 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
 
-    const vector< uint32_t > indices = { index };
+    const vector< uint32_t > indices( 1, index );
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() +
@@ -113,7 +113,7 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
 }
 
 void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const {
-    BitInputArchive in_archive{ *this, in_file };
+    BitInputArchive in_archive( *this, in_file );
 
     uint32_t number_items = in_archive.itemsCount();
     vector< uint32_t > files_indices;
@@ -133,7 +133,7 @@ void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t
 
 
 void BitExtractor::test( const wstring& in_file ) const {
-    BitInputArchive in_archive{ *this, in_file };
+    BitInputArchive in_archive( *this, in_file );
 
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, in_file, L"" );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
