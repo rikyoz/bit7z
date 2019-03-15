@@ -59,7 +59,7 @@ ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
       mOutFileStreamSpec( nullptr ),
       mNumErrors( 0 ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
-    filesystem::fsutil::normalize_path( mDirectoryPath );
+    filesystem::fsutil::normalizePath( mDirectoryPath );
 }
 
 ExtractCallback::~ExtractCallback() {}

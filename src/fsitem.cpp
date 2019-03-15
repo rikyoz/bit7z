@@ -39,7 +39,7 @@ using namespace bit7z::filesystem;
 
 FSItem::FSItem( const wstring& path, const wstring& inArchivePath )
     : mPath( path ), mFileData(), mSearchPath( L"" ), mInArchivePath( inArchivePath ) {
-    bool is_dir = fsutil::is_directory( mPath );
+    bool is_dir = fsutil::isDirectory( mPath );
     if ( is_dir && !mPath.empty() ) {
         // The FSItem is a directory!
         // If the path ends with a / or a \, it's removed, since FindFirstFile doesn't want it!
@@ -125,7 +125,7 @@ wstring FSItem::inArchivePath() const {
         return mInArchivePath;
     }
 
-    if ( !is_relative_path( mPath ) ||
+    if ( !isRelativePath( mPath ) ||
             mPath.find( L"./" ) != wstring::npos || mPath.find( L".\\" ) != wstring::npos ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
         // the interal structure of that folder (mSearchPath), otherwise we use only the file name.

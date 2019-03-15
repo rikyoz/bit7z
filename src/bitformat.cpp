@@ -253,7 +253,7 @@ namespace bit7z {
             { 0x53EF000000000000, 0x438, 2, Ext }     // S  EF
         };
 
-        uint64_t read_signature( IInStream* stream, uint32_t size ) {
+        uint64_t readSignature( IInStream* stream, uint32_t size ) {
             uint64_t signature = 0;
             stream->Read( &signature, size, nullptr );
             return _byteswap_uint64( signature );
@@ -262,7 +262,7 @@ namespace bit7z {
         const BitInFormat& detectFormatFromSig( IInStream* stream ) {
             constexpr auto SIGNATURE_SIZE = 8u;
 
-            uint64_t file_signature = read_signature( stream, SIGNATURE_SIZE );
+            uint64_t file_signature = readSignature( stream, SIGNATURE_SIZE );
             uint64_t signature_mask = 0xFFFFFFFFFFFFFFFFull;
             for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
                 auto it = common_signatures.find( file_signature );
@@ -276,7 +276,7 @@ namespace bit7z {
 
             for ( auto& sig : common_signatures_with_offset ) {
                 stream->Seek( sig.offset, 0, nullptr );
-                file_signature = read_signature( stream, sig.size );
+                file_signature = readSignature( stream, sig.size );
                 if ( file_signature == sig.signature ) {
                     stream->Seek( 0, 0, nullptr );
                     return sig.format;
@@ -290,7 +290,7 @@ namespace bit7z {
 
             // Checking for ISO signature
             stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
-            file_signature = read_signature( stream, ISO_SIGNATURE_SIZE );
+            file_signature = readSignature( stream, ISO_SIGNATURE_SIZE );
             if ( file_signature == ISO_SIGNATURE ) {
                 constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
                 constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
@@ -301,7 +301,7 @@ namespace bit7z {
                 // The file is ISO, checking if it is also UDF!
                 for ( auto descriptor_index = 1ull; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
                     stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
-                    file_signature = read_signature( stream, UDF_SIGNATURE_SIZE );
+                    file_signature = readSignature( stream, UDF_SIGNATURE_SIZE );
                     if ( file_signature == UDF_SIGNATURE ) {
                         stream->Seek( 0, 0, nullptr );
                         return Udf;

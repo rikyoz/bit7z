@@ -175,7 +175,7 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
             old_arc.close();
             out_file_stream_spec->Close();
             //remove old file and rename tmp file (move file with overwriting)
-            bool renamed = fsutil::rename_file( out_archive + L".tmp", out_archive );
+            bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
             if ( !renamed ) {
                 throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
             }

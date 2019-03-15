@@ -27,21 +27,21 @@ using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-bool fsutil::is_directory( const wstring& path ) {
+bool fsutil::isDirectory( const wstring& path ) {
     return 0 != ( GetFileAttributes( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY );
 }
 
-bool fsutil::path_exists( const wstring& path ) {
+bool fsutil::pathExists( const wstring& path ) {
     return GetFileAttributes( path.c_str() ) != INVALID_FILE_ATTRIBUTES;
 }
 
-bool fsutil::rename_file( const wstring& old_name, const wstring& new_name ) {
+bool fsutil::renameFile( const wstring& old_name, const wstring& new_name ) {
     //NOTE: It overwrites the destination file!
     return MoveFileEx( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) !=
            FALSE; //WinAPI BOOL
 }
 
-void fsutil::normalize_path( wstring& path ) { //this assumes that the passed path is not a file path!
+void fsutil::normalizePath( wstring& path ) { //this assumes that the passed path is not a file path!
     if ( !path.empty() && path.back() != L'\\' && path.back() != L'/' ) {
         path.append( L"\\" );
     }
@@ -66,7 +66,7 @@ wstring fsutil::extension( const wstring& path ) {
 }
 
 // TODO: check if find_first_of is necessary or use front()
-bool fsutil::is_relative_path( const wstring& path ) {
+bool fsutil::isRelativePath( const wstring& path ) {
     //return PathIsRelativeW( path.c_str() ); //WinAPI version (requires Shlwapi lib!)
     return path.empty() || ( path.find_first_of( L"/\\" ) != 0 && !( path.length() >= 2 && path[ 1 ] == L':' ) );
 }
@@ -102,6 +102,6 @@ bool w_match( const wchar_t* needle, const wchar_t* haystack, size_t max ) {
     return *haystack == L'\0';
 }
 
-bool fsutil::wildcard_match( const wstring& pattern, const wstring& str ) {
+bool fsutil::wildcardMatch( const wstring& pattern, const wstring& str ) {
     return w_match( pattern.empty() ? L"*" : pattern.c_str(), str.c_str(), str.size() );
 }

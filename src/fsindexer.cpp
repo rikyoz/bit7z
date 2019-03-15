@@ -60,7 +60,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             continue;
         }
 
-        bool item_matches = fsutil::wildcard_match( mFilter, current_item.name() );
+        bool item_matches = fsutil::wildcardMatch( mFilter, current_item.name() );
         if ( item_matches ) {
             result.push_back( current_item );
         }

@@ -62,7 +62,7 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
         uint32_t items_count = in_archive.itemsCount();
         for ( uint32_t index = 0; index < items_count; ++index ) {
             BitPropVariant propvar = in_archive.getItemProperty( index, BitProperty::Path );
-            if ( propvar.isString() && fsutil::wildcard_match( item_filter, propvar.getString() ) ) {
+            if ( propvar.isString() && fsutil::wildcardMatch( item_filter, propvar.getString() ) ) {
                 matched_indices.push_back( index );
             }
         }
