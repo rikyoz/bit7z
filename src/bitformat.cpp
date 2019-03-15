@@ -221,6 +221,7 @@ namespace bit7z {
             { 0x4657530000000000, Swf },      // F  W  S
             { 0x4357530000000000, Swfc },     // C  W  S
             { 0x5A57530000000000, Swfc },     // Z  W  S
+            { 0x565A000000000000, TE },       // V  Z
             { 0x4B444D0000000000, VMDK },     // K  D  M  V
             { 0x3C3C3C2000000000, VDI },      // Alternatively 0x7F10DABE at offset 0x40)
             { 0x636F6E6563746978, Vhd },      // c  o  n  e  c  t  i  x
@@ -266,7 +267,6 @@ namespace bit7z {
             for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
                 auto it = common_signatures.find( file_signature );
                 if ( it != common_signatures.end() ) {
-                    //std::wcout << L"Detected format: " << std::hex << it->second.value() << std::endl;
                     stream->Seek( 0, 0, nullptr );
                     return it->second;
                 }
@@ -275,7 +275,6 @@ namespace bit7z {
             }
 
             for ( auto& sig : common_signatures_with_offset ) {
-                //stream.seekg( sig.offset );
                 stream->Seek( sig.offset, 0, nullptr );
                 file_signature = read_signature( stream, sig.size );
                 if ( file_signature == sig.signature ) {
@@ -289,8 +288,7 @@ namespace bit7z {
             constexpr auto ISO_SIGNATURE_SIZE         = 5ull;
             constexpr auto ISO_SIGNATURE_OFFSET       = 0x8001;
 
-            //Checking for ISO signature
-            //stream.seekg( ISO_SIGNATURE_OFFSET );
+            // Checking for ISO signature
             stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
             file_signature = read_signature( stream, ISO_SIGNATURE_SIZE );
             if ( file_signature == ISO_SIGNATURE ) {
@@ -300,18 +298,15 @@ namespace bit7z {
                 constexpr auto UDF_SIGNATURE          = 0x4E53523000000000; //NSR0
                 constexpr auto UDF_SIGNATURE_SIZE     = 4u;
 
-                //The file is ISO, checking if it is also UDF!
+                // The file is ISO, checking if it is also UDF!
                 for ( auto descriptor_index = 1ull; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
-                    //stream.seekg( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE );
                     stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
                     file_signature = read_signature( stream, UDF_SIGNATURE_SIZE );
                     if ( file_signature == UDF_SIGNATURE ) {
-                        //std::wcout << "UDF!" << std::endl;
                         stream->Seek( 0, 0, nullptr );
                         return Udf;
                     }
                 }
-                //std::wcout << "ISO!" << std::endl;
                 stream->Seek( 0, 0, nullptr );
                 return Iso; //No UDF volume signature found, i.e. simple ISO!
             }
@@ -326,29 +321,23 @@ namespace bit7z {
                 throw BitException( "Cannot detect the archive format from the extension" );
             }
             std::transform( ext.cbegin(), ext.cend(), ext.begin(), std::towlower );
-            //std::wcout << ext << std::endl;
 
-            //detecting archives with common file extensions
+            // Detecting archives with common file extensions
             auto it = common_extensions.find( ext );
             if ( it != common_extensions.end() ) { //extension found in map
                 return it->second;
             }
 
-            //detecting multivolume archives extension
+            // Detecting multivolume archives extension
             if ( ( ext[ 0 ] == L'r' || ext[ 0 ] == L'z' ) &&
                     ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
-                //extension follows the format zXX or rXX, where X is a number in range [0-9]
+                // Extension follows the format zXX or rXX, where X is a number in range [0-9]
                 return ext[ 0 ] == L'r' ? Rar : Zip;
             }
 
-            //TODO: 7z SFX detection
-            /*if ( ext == L"exe" ) { //check properties to see if 7z SFX
+            // Note: iso, img and ima extensions can be associated with different formats -> detect by signature
 
-            }*/
-
-            //Note: iso, img and ima extensions can be associated with different formats -> detect by signature
-
-            /* The extension did not match any known format extension, delegating the decision to the client */
+            // The extension did not match any known format extension, delegating the decision to the client
             return Auto;
         }
     }
