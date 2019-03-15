@@ -33,18 +33,15 @@
  *  + Use of uint64_t instead of UInt64
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveName ) {
-    mStreamIndex = 0;
-    mOffsetPos = 0;
-    mAbsPos = 0;
-    mLength = 0;
-    mVolSize = size;
-    mVolPrefix = archiveName + L".";
-}
+COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveName ) :
+    mVolSize( size ),
+    mVolPrefix( archiveName + L"." ),
+    mStreamIndex( 0 ),
+    mOffsetPos( 0 ),
+    mAbsPos( 0 ),
+    mLength( 0 ) {}
 
-COutMultiVolStream::~COutMultiVolStream() {
-
-}
+COutMultiVolStream::~COutMultiVolStream() {}
 
 HRESULT COutMultiVolStream::Close() {
     HRESULT res = S_OK;
@@ -52,8 +49,9 @@ HRESULT COutMultiVolStream::Close() {
         COutFileStream* s = ( *it ).streamSpec;
         if ( s ) {
             HRESULT res2 = s->Close();
-            if ( res2 != S_OK )
+            if ( res2 != S_OK ) {
                 res = res2;
+            }
         }
     }
     return res;
@@ -65,9 +63,11 @@ bool COutMultiVolStream::SetMTime( const FILETIME* mTime ) {
     bool res = true;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
         COutFileStream* s = ( *it ).streamSpec;
-        if ( s )
-            if ( !s->SetMTime( mTime ) )
+        if ( s ) {
+            if ( !s->SetMTime( mTime ) ) {
                 res = false;
+            }
+        }
     }
     return res;
 }
@@ -83,8 +83,9 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             //FChar temp[16];
             //ConvertUInt64ToString( mStreamIndex + 1, temp );
             wstring name = std::to_wstring( mStreamIndex + 1 );
-            while ( name.length() < 3 )
+            while ( name.length() < 3 ) {
                 name.insert( 0, L"0" );
+            }
             name.insert( 0, mVolPrefix );
             altStream.streamSpec = new COutFileStream;
             altStream.stream = altStream.streamSpec;
@@ -99,7 +100,7 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             mVolStreams.push_back( altStream );
             continue;
         }
-        CAltStreamInfo& altStream = mVolStreams[mStreamIndex];
+        CAltStreamInfo& altStream = mVolStreams[ mStreamIndex ];
 
         if ( mOffsetPos >= mVolSize ) {
             mOffsetPos -= mVolSize;
@@ -141,8 +142,9 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
 }
 
 STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
-    if ( seekOrigin >= 3 )
+    if ( seekOrigin >= 3 ) {
         return STG_E_INVALIDFUNCTION;
+    }
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             mAbsPos = offset;
@@ -155,8 +157,9 @@ STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
             break;
     }
     mOffsetPos = mAbsPos;
-    if ( newPosition != nullptr )
+    if ( newPosition != nullptr ) {
         *newPosition = mAbsPos;
+    }
     mStreamIndex = 0;
     return S_OK;
 }
@@ -164,7 +167,7 @@ STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
 STDMETHODIMP COutMultiVolStream::SetSize( UInt64 newSize ) {
     size_t i = 0;
     while ( i < mVolStreams.size() ) {
-        CAltStreamInfo& altStream = mVolStreams[i++];
+        CAltStreamInfo& altStream = mVolStreams[ i++ ];
         if ( newSize < altStream.realSize ) {
             RINOK( altStream.stream->SetSize( newSize ) );
             altStream.realSize = newSize;

@@ -21,22 +21,23 @@
 
 #include "../include/util.hpp"
 
-#include <vector>
-
-#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/opencallback.hpp"
+#include "../include/bitpropvariant.hpp"
 
-using std::vector;
-using namespace NWindows;
+#include "Common/MyCom.h"
+
+#include <vector>
 
 namespace bit7z {
     namespace util {
+        using std::vector;
+
         CMyComPtr< IOutArchive > initOutArchive( const BitArchiveCreator& creator ) {
-            CMyComPtr< IOutArchive > out_archive;
             const BitInOutFormat& format = creator.compressionFormat();
             const GUID format_GUID = format.guid();
-            creator.library().createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
+
+            CMyComPtr< IOutArchive > out_archive;
+            creator.library().initOutputArchive( &format_GUID, out_archive );
 
             vector< const wchar_t* > names;
             vector< BitPropVariant > values;
@@ -65,47 +66,6 @@ namespace bit7z {
                 }
             }
             return out_archive;
-        }
-
-        // NOTE: this function is not a method of BitExtractor because it would dirty the header with extra dependencies
-        CMyComPtr< IInArchive > openArchive( const BitArchiveHandler& handler, const BitInFormat& format, const wstring& in_file ) {
-            CMyComPtr< IInArchive > in_archive;
-            const GUID format_GUID = format.guid();
-            handler.library().createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
-
-            auto* file_stream_spec = new CInFileStream;
-            CMyComPtr< IInStream > file_stream = file_stream_spec;
-            if ( !file_stream_spec->Open( in_file.c_str() ) ) {
-                throw BitException( L"Cannot open archive file '" + in_file + L"'" );
-            }
-
-            auto* open_callback_spec = new OpenCallback( handler, in_file );
-
-            CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
-            HRESULT res = in_archive->Open( file_stream, nullptr, open_callback );
-            if ( res != S_OK ) {
-                throw BitException( L"Cannot open archive '" + in_file  + L"'" );
-            }
-            return in_archive;
-        }
-
-        HRESULT IsArchiveItemProp( IInArchive* archive, UInt32 index, PROPID propID, bool& result ) {
-            BitPropVariant prop;
-            RINOK( archive->GetProperty( index, propID, &prop ) );
-
-            if ( prop.isEmpty() ) {
-                result = false;
-            } else if ( prop.type() == BitPropVariantType::Bool ) {
-                result = prop.getBool();
-            } else {
-                return E_FAIL;
-            }
-
-            return S_OK;
-        }
-
-        HRESULT IsArchiveItemFolder( IInArchive* archive, UInt32 index, bool& result ) {
-            return IsArchiveItemProp( archive, index, kpidIsDir, result );
         }
     }
 }

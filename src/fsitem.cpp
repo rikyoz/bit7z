@@ -24,9 +24,6 @@
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
-#include <string>
-
-using namespace std;
 using namespace bit7z::filesystem;
 
 /* NOTES:
@@ -57,8 +54,8 @@ FSItem::FSItem( const wstring& path, const wstring& inArchivePath )
     FindClose( find_handle );
 }
 
-FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& search_path ) :
-    mPath( dir ), mFileData( data ), mSearchPath( search_path ) {
+FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& search_path )
+    : mPath( dir ), mFileData( data ), mSearchPath( search_path ) {
     /* Now mPath is the path without the filename, since dir is the path containing the file 'data'!
      * So we must add the filename! */
     if ( mPath.back() == L'/' || mPath.back() == L'\\' ) {
@@ -96,7 +93,7 @@ FILETIME FSItem::lastWriteTime() const {
 }
 
 wstring FSItem::name() const {
-    return mFileData.cFileName;
+    return static_cast< const wchar_t* >( mFileData.cFileName );
 }
 
 wstring FSItem::path() const {

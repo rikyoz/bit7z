@@ -27,45 +27,51 @@
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitguids.hpp"
 #include "../include/callback.hpp"
-#include "../include/bitarchiveopener.hpp"
+#include "../include/bitarchivehandler.hpp"
 
 namespace bit7z {
     using std::wstring;
 
     class ExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
-            ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+                            ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
-            ExtractCallback( const BitArchiveOpener& opener, IInArchive* archiveHandler,
-                             const wstring& inFilePath, const wstring& directoryPath );
+            ExtractCallback( const BitArchiveHandler& handler,
+                             const BitInputArchive& inputArchive,
+                             const wstring& inFilePath,
+                             const wstring& directoryPath );
+
             virtual ~ExtractCallback();
 
             MY_UNKNOWN_IMP2( ICompressProgressInfo, ICryptoGetTextPassword )
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64 * completeValue );
+            STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
             // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64 *inSize, const UInt64 *outSize );
+            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream * *outStream, Int32 askExtractMode );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
             STDMETHOD( PrepareOperation )( Int32 askExtractMode );
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
             // ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR * aPassword );
+            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
 
         private:
-            const BitArchiveOpener& mOpener;
-            CMyComPtr< IInArchive > mArchiveHandler;
+            const BitArchiveHandler& mHandler;
+            const BitInputArchive& mInputArchive;
+
             wstring mInFilePath;     // Input file path
             wstring mDirectoryPath;  // Output directory
             wstring mFilePath;       // name inside archive
             wstring mDiskFilePath;   // full path to file on disk
             bool mExtractMode;
+
             struct CProcessedFileInfo {
                 FILETIME MTime;
                 UInt32 Attrib;

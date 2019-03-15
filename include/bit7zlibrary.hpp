@@ -19,13 +19,17 @@
 #ifndef BIT7ZLIBRARY_HPP
 #define BIT7ZLIBRARY_HPP
 
-#include <iostream>
+#include <string>
 
 #include <Windows.h>
 
-#include "../include/bitformat.hpp"
-
 #define DEFAULT_DLL L"7z.dll"
+
+struct IInArchive;
+struct IOutArchive;
+
+template< typename T >
+class CMyComPtr;
 
 namespace bit7z {
     /**
@@ -57,6 +61,10 @@ namespace bit7z {
              * @param out_object    Pointer to a CMyComPtr of an object wich implements the interface requested
              */
             void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
+
+            void initInputArchive( const GUID* format_GUID, CMyComPtr< IInArchive >& out_object ) const;
+
+            void initOutputArchive( const GUID* format_GUID, CMyComPtr< IOutArchive >& out_object ) const;
 
         private:
             typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );

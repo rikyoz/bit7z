@@ -19,11 +19,9 @@
 #ifndef BITARCHIVECREATOR_HPP
 #define BITARCHIVECREATOR_HPP
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
-#include "../include/bitcompressionlevel.hpp"
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitformat.hpp"
+#include "../include/bitcompressionlevel.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -45,6 +43,11 @@ namespace bit7z {
              * @brief BitArchiveCreator destructor.
              */
             virtual ~BitArchiveCreator() override = 0;
+
+            /**
+             * @return the format used by the archive creator.
+             */
+            const BitInFormat& format() const override;
 
             /**
              * @return the format used by the archive creator.
@@ -94,7 +97,7 @@ namespace bit7z {
              *
              * @param password
              */
-            void setPassword( const wstring &password ) override;
+            void setPassword( const wstring& password ) override;
 
             /**
              * @brief Sets up a password for the output archive.

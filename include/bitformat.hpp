@@ -70,23 +70,25 @@ namespace bit7z {
              * @param other  the target object to compare to.
              * @return true if this format is equal to "other".
              */
-            bool operator==( BitInFormat const &other ) const;
+            bool operator==( BitInFormat const& other ) const;
 
             /**
              * @param other  the target object to compare to.
              * @return true if this format is not equal to "other".
              */
-            bool operator!=( BitInFormat const &other ) const;
+            bool operator!=( BitInFormat const& other ) const;
 
         private:
             const unsigned char mValue;
 
             //non-copyable
             BitInFormat( const BitInFormat& other );
+
             BitInFormat& operator=( const BitInFormat& other );
 
             //non-movable
             BitInFormat( BitInFormat&& other );
+
             BitInFormat& operator=( BitInFormat&& other );
     };
 
@@ -104,7 +106,7 @@ namespace bit7z {
              * @param ext       the default file extension of the archive format
              * @param features  the set of features supported by the archive format
              */
-            BitInOutFormat( unsigned char value, const wstring &ext, bitset< FEATURES_COUNT > features );
+            BitInOutFormat( unsigned char value, const wstring& ext, bitset< FEATURES_COUNT > features );
 
             /**
              * @return the default file estension of the archive format
@@ -132,7 +134,8 @@ namespace bit7z {
      * @brief The namespace BitFormat contains a set of archive formats usable with bit7z classes
      */
     namespace BitFormat {
-        extern const BitInFormat Rar,       ///< RAR Archive Format
+        extern const BitInFormat Auto,      ///< Automatic Format Detection
+                                 Rar,       ///< RAR Archive Format
                                  Arj,       ///< ARJ Archive Format
                                  Z,         ///< Z Archive Format
                                  Lzh,       ///< LZH Archive Format
@@ -141,6 +144,7 @@ namespace bit7z {
                                  Lzma,      ///< LZMA Archive Format
                                  Lzma86,    ///< LZMA86 Archive Format
                                  Ppmd,      ///< PPMD Archive Format
+                                 COFF,      ///< COFF Archive Format
                                  Ext,       ///< EXT Archive Format
                                  VMDK,      ///< VMDK Archive Format
                                  VDI,       ///< VDI Archive Format

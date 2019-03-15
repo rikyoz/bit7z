@@ -19,7 +19,7 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
-#include <iostream>
+#include <string>
 #include <cstdint>
 
 #include <Windows.h>
@@ -33,24 +33,34 @@ namespace bit7z {
         class FSItem {
             public:
                 explicit FSItem( const wstring& path, const wstring& inArchivePath = L"" );
-                explicit FSItem( const wstring& dir, FSItemInfo data , const wstring& searchPath );
+
+                explicit FSItem( const wstring& dir, FSItemInfo data, const wstring& searchPath );
 
                 bool isDots() const;
+
                 bool isDir() const;
+
                 uint64_t size() const;
+
                 FILETIME creationTime() const;
+
                 FILETIME lastAccessTime() const;
+
                 FILETIME lastWriteTime() const;
+
                 wstring name() const;
+
                 wstring path() const;
+
                 wstring inArchivePath() const;
+
                 uint32_t attributes() const;
 
             private:
-                wstring    mPath;
+                wstring mPath;
                 FSItemInfo mFileData;
-                wstring    mSearchPath;
-                wstring    mInArchivePath;
+                wstring mSearchPath;
+                wstring mInArchivePath;
         };
     }
 }

@@ -25,6 +25,7 @@
 
 #include "7zip/Archive/IArchive.h"
 
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/extractcallback.hpp"
@@ -53,22 +54,16 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
  *  + Generalized the code to work with any type of format (the original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
+    BitInputArchive in_archive{ *this, in_file };
 
-    vector<uint32_t> matched_indices;
-    // TODO: Use BitArchiveReader here
+    vector< uint32_t > matched_indices;
     if ( !item_filter.empty() ) {
         //Searching for files inside the archive that match the given filter
-        uint32_t items_count;
-        HRESULT result = in_archive->GetNumberOfItems( &items_count );
-        if ( result == S_OK ) {
-            for ( uint32_t index = 0; index < items_count; ++index ) {
-                BitPropVariant propvar;
-                result = in_archive->GetProperty( index, kpidPath, &propvar );
-                if ( result == S_OK && !propvar.isEmpty() && propvar.type() == BitPropVariantType::String &&
-                        fsutil::wildcard_match( item_filter, propvar.getString() ) ) {
-                    matched_indices.push_back( index );
-                }
+        uint32_t items_count = in_archive.itemsCount();
+        for ( uint32_t index = 0; index < items_count; ++index ) {
+            BitPropVariant propvar = in_archive.getItemProperty( index, BitProperty::Path );
+            if ( propvar.isString() && fsutil::wildcard_match( item_filter, propvar.getString() ) ) {
+                matched_indices.push_back( index );
             }
         }
     }
@@ -78,65 +73,87 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
     }
 }
 
-void BitExtractor::extractItems( const wstring& in_file, const vector<uint32_t>& indices, const wstring& out_dir ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
+void BitExtractor::extractItems( const wstring& in_file,
+                                 const vector< uint32_t >& indices,
+                                 const wstring& out_dir ) const {
+    BitInputArchive in_archive{ *this, in_file };
 
-    uint32_t number_items;
-    in_archive->GetNumberOfItems( &number_items );
-    if ( std::any_of( indices.begin(), indices.end(), [&]( uint32_t index ) { return index >= number_items; }) ) {
+    uint32_t number_items = in_archive.itemsCount();
+    if ( std::any_of( indices.begin(), indices.end(), [ & ]( uint32_t index ) { return index >= number_items; } ) ) {
         /* if any of the indices is greater than the number of items in the archive we throw an exception, since it is
            an invalid index! */
         throw BitException( "Some index is not valid" );
     }
-
     extractToFileSystem( in_archive, in_file, out_dir, indices );
 }
 
-void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) {
-    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
+void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) const {
+    BitInputArchive in_archive{ *this, in_file };
 
-    uint32_t number_items;
-    in_archive->GetNumberOfItems( &number_items );
+    uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range"  );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
     }
 
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );
+    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException( "Cannot extract a folder to a buffer" );
+    }
 
-    const uint32_t indices[] = { index };
-
+    map< wstring, vector< byte_t > > buffersMap;
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    if ( in_archive->Extract( indices, 1, NExtract::NAskMode::kExtract, extract_callback ) != S_OK ) {
+
+    const vector< uint32_t > indices = { index };
+    HRESULT res = in_archive.extract( indices, extract_callback );
+    if ( res != S_OK ) {
+        throw BitException( extract_callback_spec->getErrorMessage() +
+                            L" (error code: " + std::to_wstring( res ) + L")" );
+    }
+    out_buffer = std::move( buffersMap.begin()->second );
+}
+
+void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const {
+    BitInputArchive in_archive{ *this, in_file };
+
+    uint32_t number_items = in_archive.itemsCount();
+    vector< uint32_t > files_indices;
+    for ( uint32_t i = 0; i < number_items; ++i ) {
+        if ( !in_archive.isItemFolder( i ) ) { //Consider only files, not folders
+            files_indices.push_back( i );
+        }
+    }
+
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_map );
+    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
+    HRESULT res = in_archive.extract( files_indices, extract_callback );
+    if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
 }
 
-void BitExtractor::test( const wstring& in_file ) {
-    CMyComPtr< IInArchive > in_archive = openArchive( *this, mFormat, in_file );
+
+void BitExtractor::test( const wstring& in_file ) const {
+    BitInputArchive in_archive{ *this, in_file };
 
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, in_file, L"" );
-
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    HRESULT res = in_archive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kTest, extract_callback );
+    HRESULT res = in_archive.test( extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() + L" (error code: " + std::to_wstring( res ) + L")" );
+        throw BitException( extract_callback_spec->getErrorMessage() +
+                            L" (error code: " + std::to_wstring( res ) + L")" );
     }
 }
 
-
-void BitExtractor::extractToFileSystem( IInArchive* in_archive, const wstring& in_file,
-                                        const wstring& out_dir, const vector<uint32_t>& indices ) const {
-
-    //pointer to an array of the indices of the files to be extracted
-    const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
-    uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) :
-                         static_cast< uint32_t >( indices.size() );
-
+void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive,
+                                        const wstring& in_file,
+                                        const wstring& out_dir,
+                                        const vector< uint32_t >& indices ) const {
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, in_file, out_dir );
-
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    HRESULT res = in_archive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
+
+    HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() + L" (error code: " + std::to_wstring( res ) + L")" );
+        throw BitException( extract_callback_spec->getErrorMessage() +
+                            L" (error code: " + std::to_wstring( res ) + L")" );
     }
 }

@@ -21,14 +21,11 @@
 
 #include "../include/opencallback.hpp"
 
-#include <iostream>
-
 #include "7zip/Common/FileStreams.h"
 
 #include "../include/bitpropvariant.hpp"
 #include "../include/fsutil.hpp"
 
-using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 

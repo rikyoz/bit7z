@@ -19,8 +19,8 @@
 #ifndef BITARCHIVEOPENER_HPP
 #define BITARCHIVEOPENER_HPP
 
-#include "../include/bit7zlibrary.hpp"
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitformat.hpp"
 
 namespace bit7z {
     /**
@@ -40,6 +40,11 @@ namespace bit7z {
              * @brief BitArchiveOpener destructor.
              */
             virtual ~BitArchiveOpener() = 0;
+
+            /**
+             * @return the archive format used by the archive opener.
+             */
+            const BitInFormat& format() const override;
 
             /**
              * @return the archive format used by the archive opener.

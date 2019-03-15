@@ -27,15 +27,20 @@
 
 #include "../include/callback.hpp"
 #include "../include/fsitem.hpp"
-#include "../include/bitarchiveopener.hpp"
+#include "../include/bitarchivehandler.hpp"
 
 namespace bit7z {
     using filesystem::FSItem;
 
-    class OpenCallback : public IArchiveOpenCallback, public IArchiveOpenVolumeCallback,
-        public IArchiveOpenSetSubArchiveName, public ICryptoGetTextPassword, public CMyUnknownImp, public Callback {
+    class OpenCallback : public IArchiveOpenCallback,
+                         public IArchiveOpenVolumeCallback,
+                         public IArchiveOpenSetSubArchiveName,
+                         public ICryptoGetTextPassword,
+                         public CMyUnknownImp,
+                         public Callback {
         public:
             OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
+
             virtual ~OpenCallback();
 
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )

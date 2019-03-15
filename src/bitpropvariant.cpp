@@ -383,7 +383,7 @@ wstring BitPropVariant::toString() const {
         case VT_FILETIME:
             return std::to_wstring( filetime.dwHighDateTime ) + L", " + std::to_wstring( filetime.dwLowDateTime );
     }
-    throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")" );
+    throw BitException( L"BitPropVariant type not supported (vt: " + std::to_wstring( vt ) + L")" );
 }
 
 bool BitPropVariant::isEmpty() const {
@@ -457,7 +457,7 @@ void BitPropVariant::internalClear() {
     uhVal.QuadPart = 0;
 }
 
-bool bit7z::operator !=( const BitPropVariant& a, const BitPropVariant& b ) {
+bool bit7z::operator!=( const BitPropVariant& a, const BitPropVariant& b ) {
     return !( a == b );
 }
 

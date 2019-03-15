@@ -19,13 +19,11 @@
 #ifndef BITMEMCOMPRESSOR_HPP
 #define BITMEMCOMPRESSOR_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -58,7 +56,8 @@ namespace bit7z {
              * @param out_archive       the output archive path.
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
-            void compress( const vector< byte_t >& in_buffer, const wstring& out_archive,
+            void compress( const vector< byte_t >& in_buffer,
+                           const wstring& out_archive,
                            wstring in_buffer_name = L"" ) const;
 
             /**
@@ -70,7 +69,8 @@ namespace bit7z {
              * @param out_buffer        the buffer going to contain the output archive.
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
-            void compress( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
+            void compress( const vector< byte_t >& in_buffer,
+                           vector< byte_t >& out_buffer,
                            const wstring& in_buffer_name = L"" ) const;
     };
 }

@@ -81,7 +81,7 @@ BitPropVariant BitArchiveItem::getProperty( BitProperty property ) const {
     return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
 }
 
-map<BitProperty, BitPropVariant> BitArchiveItem::itemProperties() const {
+map< BitProperty, BitPropVariant > BitArchiveItem::itemProperties() const {
     return mItemProperties;
 }
 

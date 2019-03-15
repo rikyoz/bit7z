@@ -19,9 +19,11 @@
 #ifndef FSUTIL_HPP
 #define FSUTIL_HPP
 
-#include <iostream>
+#include <string>
 
 namespace bit7z {
+    class BitInFormat;
+
     namespace filesystem {
         namespace fsutil {
             using std::wstring;
@@ -29,14 +31,19 @@ namespace bit7z {
             bool is_relative_path( const wstring& path );
 
             bool is_directory( const wstring& path );
+
             bool path_exists( const wstring& path );
+
             bool rename_file( const wstring& old_name, const wstring& new_name );
-            //bool has_ending( const wstring& str, const wstring& ending );
 
             void normalize_path( wstring& path );
+
             wstring dirname( const wstring& path );
+
             wstring filename( const wstring& path, bool ext = false );
+
             wstring extension( const wstring& path );
+
             bool wildcard_match( const wstring& pattern, const wstring& str );
         }
     }

@@ -19,8 +19,6 @@
 #ifndef BITARCHIVEITEMREADER_HPP
 #define BITARCHIVEITEMREADER_HPP
 
-#include <cstdint>
-#include <string>
 #include <map>
 
 #include "../include/bitpropvariant.hpp"
@@ -96,7 +94,9 @@ namespace bit7z {
 
             /* BitArchiveItem objects can be created and updated only by BitArchiveReader */
             explicit BitArchiveItem( uint32_t item_index );
+
             void setProperty( BitProperty property, const BitPropVariant& value );
+
             friend class BitArchiveInfo;
     };
 }

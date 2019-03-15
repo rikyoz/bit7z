@@ -28,6 +28,10 @@ BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& 
 
 BitArchiveOpener::~BitArchiveOpener() {}
 
+const BitInFormat& BitArchiveOpener::format() const {
+    return mFormat;
+}
+
 const BitInFormat& BitArchiveOpener::extractionFormat() const {
     return mFormat;
 }

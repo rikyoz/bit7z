@@ -24,10 +24,13 @@
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveitem.hpp"
-#include "../include/fsindexer.hpp"
+#include "../include/fsitem.hpp"
 #include "../include/callback.hpp"
 #include "../include/bitarchivecreator.hpp"
+
+#include <vector>
 
 namespace bit7z {
     using namespace filesystem;
@@ -36,14 +39,17 @@ namespace bit7z {
     using std::wstring;
 
     class UpdateCallback : public IArchiveUpdateCallback2, public ICompressProgressInfo,
-        ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
+                           ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
             map< wstring, HRESULT > mFailedFiles;
 
             explicit UpdateCallback( const BitArchiveCreator& creator,
                                      const vector< FSItem >& new_items,
-                                     const CMyComPtr< IInArchive >& old_arc );
+                                     const BitInputArchive* old_arc );
+
             virtual ~UpdateCallback();
+
+            uint32_t getItemsCount() const;
 
             HRESULT Finilize();
 
@@ -57,19 +63,19 @@ namespace bit7z {
             STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveUpdateCallback2
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG * *enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index, Int32* newData, Int32* newProperties,
+            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
+            STDMETHOD( GetUpdateItemInfo )( UInt32 index,
+                                            Int32* newData,
+                                            Int32* newProperties,
                                             UInt32* indexInArchive );
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream * *inStream );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
             STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream * *volumeStream );
+            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
 
             //ICryptoGetTextPassword2
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
-
-            uint32_t getItemsCount() const;
 
         private:
             uint64_t mVolSize;
@@ -78,8 +84,8 @@ namespace bit7z {
             //wstring mDirPrefix;
 
             const vector< FSItem >& mNewItems;
-            const CMyComPtr< IInArchive >& mOldArc;
-            uint32_t mOldItemsCount;
+            const BitInputArchive* mOldArc;
+            const uint32_t mOldArcItemsCount;
             const BitArchiveCreator& mCreator;
 
             bool mAskPassword;
