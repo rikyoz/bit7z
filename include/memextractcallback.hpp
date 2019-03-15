@@ -43,7 +43,7 @@ namespace bit7z {
 
             virtual ~MemExtractCallback();
 
-            MY_UNKNOWN_IMP1( ICryptoGetTextPassword )
+            MY_UNKNOWN_IMP2( IArchiveExtractCallback, ICryptoGetTextPassword )
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
