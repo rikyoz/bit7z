@@ -83,9 +83,7 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             //FChar temp[16];
             //ConvertUInt64ToString( mStreamIndex + 1, temp );
             wstring name = std::to_wstring( mStreamIndex + 1 );
-            while ( name.length() < 3 ) {
-                name.insert( 0, L"0" );
-            }
+            name.insert( 0, 3 - name.length(), L'0' );
             name.insert( 0, mVolPrefix );
             altStream.streamSpec = new COutFileStream;
             altStream.stream = altStream.streamSpec;
