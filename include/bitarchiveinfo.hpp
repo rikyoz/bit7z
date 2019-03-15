@@ -92,6 +92,10 @@ namespace bit7z {
             uint64_t packSize() const;
 
             bool isEncrypted();
+
+            uint32_t volumesCount();
+
+            bool isMultiVolume();
     };
 }
 

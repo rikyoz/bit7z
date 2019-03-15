@@ -40,19 +40,6 @@ BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >&
 
 BitArchiveInfo::~BitArchiveInfo() {}
 
-bool BitArchiveInfo::isEncrypted() {
-    /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
-     *       the properties of a file in the archive, so we search for the index of the first file in the archive! */
-    uint32_t items_count = itemsCount();
-    for ( uint32_t first_file_index = 0; first_file_index < items_count; ++first_file_index ) {
-        if ( !isItemFolder( first_file_index ) ) {
-            BitPropVariant propvar = getItemProperty( first_file_index, BitProperty::Encrypted );
-            return propvar.isBool() && propvar.getBool();
-        }
-    }
-    return false;
-}
-
 map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
@@ -118,4 +105,30 @@ uint64_t BitArchiveInfo::packSize() const {
         }
     }
     return result;
+}
+
+bool BitArchiveInfo::isEncrypted() {
+    /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
+     *       the properties of a file in the archive, so we search for the index of the first file in the archive! */
+    uint32_t items_count = itemsCount();
+    for ( uint32_t first_file_index = 0; first_file_index < items_count; ++first_file_index ) {
+        if ( !isItemFolder( first_file_index ) ) {
+            BitPropVariant propvar = getItemProperty( first_file_index, BitProperty::Encrypted );
+            return propvar.isBool() && propvar.getBool();
+        }
+    }
+    return false;
+}
+
+bool BitArchiveInfo::isMultiVolume() {
+    if ( mFormat == BitFormat::Split ) {
+        return true;
+    }
+    BitPropVariant propvar = getArchiveProperty( BitProperty::IsVolume );
+    return propvar.isBool() && propvar.getBool();
+}
+
+uint32_t BitArchiveInfo::volumesCount() {
+    BitPropVariant propvar = getArchiveProperty( BitProperty::NumVolumes );
+    return propvar.isEmpty() ? 1 : propvar.getUInt32();
 }
