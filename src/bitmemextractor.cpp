@@ -31,7 +31,6 @@
 
 using namespace bit7z;
 using namespace bit7z::util;
-using namespace std;
 using namespace NWindows;
 using namespace NArchive;
 
@@ -64,6 +63,10 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
         throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
     }
 
+    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException( "Cannot extract a folder to a buffer" );
+    }
+
     map< wstring, vector< byte_t > > buffersMap;
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
@@ -74,4 +77,23 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
     out_buffer = std::move( buffersMap.begin()->second );
+}
+
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const {
+    BitInputArchive in_archive{ *this, in_buffer };
+
+    uint32_t number_items = in_archive.itemsCount();
+    vector< uint32_t > files_indices;
+    for ( uint32_t i = 0; i < number_items; ++i ) {
+        if ( !in_archive.isItemFolder( i ) ) { //Consider only files, not folders
+            files_indices.push_back( i );
+        }
+    }
+
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_map );
+    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
+    HRESULT res = in_archive.extract( files_indices, extract_callback );
+    if ( res != S_OK ) {
+        throw BitException( extract_callback_spec->getErrorMessage() );
+    }
 }

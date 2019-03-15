@@ -89,9 +89,9 @@ namespace bit7z {
              * @param out_buffer   the output buffer where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_file.
              */
-            void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 );
+            void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 ) const;
 
-            void extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map );
+            void extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const;
 
             /**
              * @brief Tests the given archive without extracting its content.
@@ -100,7 +100,7 @@ namespace bit7z {
              *
              * @param in_file   the input archive file.
              */
-            void test( const wstring& in_file );
+            void test( const wstring& in_file ) const;
 
         private:
             void extractToFileSystem( const BitInputArchive& in_archive,

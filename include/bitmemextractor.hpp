@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bittypes.hpp"
@@ -28,6 +29,7 @@
 namespace bit7z {
     using std::wstring;
     using std::vector;
+    using std::map;
 
     /**
      * @brief The BitMemExtractor class allows to extract the content of in-memory archives.
@@ -64,6 +66,9 @@ namespace bit7z {
             void extract( const vector< byte_t >& in_buffer,
                           vector< byte_t >& out_buffer,
                           unsigned int index = 0 ) const;
+
+
+            void extract( const vector< byte_t > &in_buffer, map< wstring, vector<byte_t> > &out_map ) const;
     };
 }
 
