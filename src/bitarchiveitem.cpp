@@ -76,6 +76,11 @@ uint64_t BitArchiveItem::packSize() const {
     return propvar.isEmpty() ? 0 : propvar.getUInt64();
 }
 
+bool BitArchiveItem::isEncrypted() const {
+    BitPropVariant propvar = getProperty( BitProperty::Encrypted );
+    return propvar.isBool() && propvar.getBool();
+}
+
 BitPropVariant BitArchiveItem::getProperty( BitProperty property ) const {
     auto prop_it = mItemProperties.find( property );
     return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );

@@ -58,6 +58,8 @@ namespace bit7z {
 
             bool isItemFolder( uint32_t index ) const;
 
+            bool isItemEncrypted( uint32_t index ) const;
+
         protected:
             IInArchive* openArchiveStream( const BitArchiveHandler& handler,
                                            const wstring& name,

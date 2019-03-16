@@ -108,11 +108,8 @@ bool BitArchiveInfo::hasEncryptedItems() const {
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
     uint32_t items_count = itemsCount();
     for ( uint32_t file_index = 0; file_index < items_count; ++file_index ) {
-        if ( !isItemFolder( file_index ) ) {
-            BitPropVariant propvar = getItemProperty( file_index, BitProperty::Encrypted );
-            if ( propvar.isBool() && propvar.getBool() ){
-                return true;
-            }
+        if ( !isItemFolder( file_index ) && isItemEncrypted( file_index ) ) {
+            return true;
         }
     }
     return false;

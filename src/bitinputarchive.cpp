@@ -25,8 +25,8 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
 }
 
 IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
-                                                const wstring& name,
-                                                IInStream* in_stream ) {
+        const wstring& name,
+        IInStream* in_stream ) {
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
         // Detecting format of the input file
@@ -115,6 +115,11 @@ uint32_t BitInputArchive::itemsCount() const {
 bool BitInputArchive::isItemFolder( uint32_t index ) const {
     BitPropVariant prop = getItemProperty( index, BitProperty::IsDir );
     return !prop.isEmpty() && prop.getBool();
+}
+
+bool BitInputArchive::isItemEncrypted( uint32_t index ) const {
+    BitPropVariant propvar = getItemProperty( index, BitProperty::Encrypted );
+    return propvar.isBool() && propvar.getBool();
 }
 
 HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
