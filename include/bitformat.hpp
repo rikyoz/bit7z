@@ -23,12 +23,13 @@
 #include <string>
 
 #include "../include/bitguids.hpp"
+#include "../include/bitcompressionmethod.hpp"
 
 #define FEATURES_COUNT 7
 
 namespace bit7z {
     using std::wstring;
-    using std::bitset;
+    using FeaturesSet = std::bitset< FEATURES_COUNT >;
 
     /**
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.
@@ -107,7 +108,10 @@ namespace bit7z {
              * @param ext       the default file extension of the archive format
              * @param features  the set of features supported by the archive format
              */
-            BitInOutFormat( unsigned char value, const wstring& ext, bitset< FEATURES_COUNT > features );
+            BitInOutFormat( unsigned char value,
+                            const wstring& ext,
+                            BitCompressionMethod defaultMethod,
+                            FeaturesSet features );
 
             /**
              * @return the default file estension of the archive format
@@ -117,7 +121,7 @@ namespace bit7z {
             /**
              * @return the bitset of the features supported by the format
              */
-            const bitset< FEATURES_COUNT > features() const;
+            const FeaturesSet features() const;
 
             /**
              * @brief Checks if the format has a specific feature (see FormatFeatures enum)
@@ -126,9 +130,12 @@ namespace bit7z {
              */
             bool hasFeature( FormatFeatures feature ) const;
 
+            BitCompressionMethod defaultMethod() const;
+
         private:
             const wstring mExtension;
-            const bitset< FEATURES_COUNT > mFeatures;
+            const BitCompressionMethod mDefaultMethod;
+            const FeaturesSet mFeatures;
     };
 
     /**

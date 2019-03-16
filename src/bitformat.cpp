@@ -36,20 +36,22 @@ using namespace std;
 namespace bit7z {
     namespace BitFormat {
         const BitInFormat        Auto( 0x00 );
-        const BitInOutFormat      Zip( 0x01, L".zip",
+        const BitInOutFormat      Zip( 0x01, L".zip", BitCompressionMethod::Deflate,
                                        MULTIPLE_FILES | COMPRESSION_LEVEL | ENCRYPTION | MULTIPLE_METHODS );
-        const BitInOutFormat    BZip2( 0x02, L".bz2", COMPRESSION_LEVEL | INMEM_COMPRESSION );
+        const BitInOutFormat    BZip2( 0x02, L".bz2", BitCompressionMethod::BZip2,
+                                       COMPRESSION_LEVEL | INMEM_COMPRESSION );
         const BitInFormat         Rar( 0x03 );
         const BitInFormat         Arj( 0x04 );
         const BitInFormat           Z( 0x05 );
         const BitInFormat         Lzh( 0x06 );
-        const BitInOutFormat SevenZip( 0x07, L".7z", MULTIPLE_FILES | SOLID_ARCHIVE | COMPRESSION_LEVEL |
+        const BitInOutFormat SevenZip( 0x07, L".7z", BitCompressionMethod::Lzma2,
+                                       MULTIPLE_FILES | SOLID_ARCHIVE | COMPRESSION_LEVEL |
                                        ENCRYPTION | HEADER_ENCRYPTION | MULTIPLE_METHODS );
         const BitInFormat         Cab( 0x08 );
         const BitInFormat        Nsis( 0x09 );
         const BitInFormat        Lzma( 0x0A );
         const BitInFormat      Lzma86( 0x0B );
-        const BitInOutFormat       Xz( 0x0C, L".xz",
+        const BitInOutFormat       Xz( 0x0C, L".xz", BitCompressionMethod::Lzma2,
                                        COMPRESSION_LEVEL | ENCRYPTION | HEADER_ENCRYPTION | INMEM_COMPRESSION );
         const BitInFormat        Ppmd( 0x0D );
         const BitInFormat        COFF( 0xC6 );
@@ -84,15 +86,16 @@ namespace bit7z {
         const BitInFormat         Hfs( 0xE3 );
         const BitInFormat         Dmg( 0xE4 );
         const BitInFormat    Compound( 0xE5 );
-        const BitInOutFormat      Wim( 0xE6, L".wim", MULTIPLE_FILES );
+        const BitInOutFormat      Wim( 0xE6, L".wim", BitCompressionMethod::Copy, MULTIPLE_FILES );
         const BitInFormat         Iso( 0xE7 );
         const BitInFormat         Chm( 0xE9 );
         const BitInFormat       Split( 0xEA );
         const BitInFormat         Rpm( 0xEB );
         const BitInFormat         Deb( 0xEC );
         const BitInFormat        Cpio( 0xED );
-        const BitInOutFormat      Tar( 0xEE, L".tar", MULTIPLE_FILES | INMEM_COMPRESSION );
-        const BitInOutFormat     GZip( 0xEF, L".gz", COMPRESSION_LEVEL | INMEM_COMPRESSION );
+        const BitInOutFormat      Tar( 0xEE, L".tar", BitCompressionMethod::Copy, MULTIPLE_FILES | INMEM_COMPRESSION );
+        const BitInOutFormat     GZip( 0xEF, L".gz", BitCompressionMethod::Deflate,
+                                       COMPRESSION_LEVEL | INMEM_COMPRESSION );
 
 
         /* NOTE: This macros are needed since MSVC++ 11 (VS 2012) does not support uniform initialization!
@@ -538,17 +541,24 @@ const GUID BitInFormat::guid() const {
 #endif
 }
 
-BitInOutFormat::BitInOutFormat( unsigned char value, const wstring& ext, bitset< FEATURES_COUNT > features ) :
-    BitInFormat( value ), mExtension( ext ), mFeatures( features ) {}
+BitInOutFormat::BitInOutFormat( unsigned char value,
+                                const wstring& ext,
+                                BitCompressionMethod defaultMethod,
+                                FeaturesSet features )
+    : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
 const wstring& BitInOutFormat::extension() const {
     return mExtension;
 }
 
-const bitset< FEATURES_COUNT > BitInOutFormat::features() const {
+const FeaturesSet BitInOutFormat::features() const {
     return mFeatures;
 }
 
 bool BitInOutFormat::hasFeature( FormatFeatures feature ) const {
-    return ( mFeatures & bitset< FEATURES_COUNT >( feature ) ) != 0;
+    return ( mFeatures & FeaturesSet( feature ) ) != 0;
+}
+
+BitCompressionMethod BitInOutFormat::defaultMethod() const {
+    return mDefaultMethod;
 }

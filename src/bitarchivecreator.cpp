@@ -85,7 +85,7 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFor
     BitArchiveHandler( lib ),
     mFormat( format ),
     mCompressionLevel( BitCompressionLevel::NORMAL ),
-    mCompressionMethod( BitCompressionMethod::Default ),
+    mCompressionMethod( format.defaultMethod() ),
     mCryptHeaders( false ),
     mSolidMode( false ),
     mUpdateMode( false ),
@@ -141,11 +141,11 @@ void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_lev
 
 void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_method ) {
     if ( !isValidCompressionMethod( mFormat, compression_method ) ) {
-        throw BitException( "Invalid compression method for the archive format" );
+        throw BitException( "Invalid compression method for the chosen archive format" );
     }
     if ( mFormat.hasFeature( MULTIPLE_METHODS ) ) {
         /* even though the compression method is valid, we set it only if the format supports
-         * different methods than the default one (*/
+         * different methods than the default one */
         mCompressionMethod = compression_method;
     }
 }
@@ -181,7 +181,7 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         names.push_back( L"x" );
         values.emplace_back( static_cast< uint32_t >( mCompressionLevel ) );
 
-        if ( mFormat.hasFeature( MULTIPLE_METHODS ) && mCompressionMethod != BitCompressionMethod::Default ) {
+        if ( mFormat.hasFeature( MULTIPLE_METHODS ) && mCompressionMethod != mFormat.defaultMethod() ) {
             names.push_back( mFormat == BitFormat::Zip ? L"m" : L"0" );
             values.emplace_back( methodName( mCompressionMethod ) );
         }

@@ -9,8 +9,7 @@ namespace bit7z {
         BZip2,
         Lzma,
         Lzma2,
-        Ppmd,
-        Default
+        Ppmd
     };
 }
 
