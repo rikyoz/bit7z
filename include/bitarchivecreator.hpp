@@ -22,6 +22,7 @@
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitformat.hpp"
 #include "../include/bitcompressionlevel.hpp"
+#include "../include/bitcompressionmethod.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -63,6 +64,8 @@ namespace bit7z {
              * @return the compression level used by the archive creator.
              */
             BitCompressionLevel compressionLevel() const;
+
+            BitCompressionMethod compressionMethod() const;
 
             /**
              * @return whether the archive creator uses solid compression or not.
@@ -131,6 +134,8 @@ namespace bit7z {
              */
             void setCompressionLevel( BitCompressionLevel compression_level );
 
+            void setCompressionMethod( BitCompressionMethod compression_method );
+
             /**
              * @brief Sets whether to use solid compression or not.
              *
@@ -159,8 +164,11 @@ namespace bit7z {
             void setVolumeSize( uint64_t size );
 
         protected:
+            CMyComPtr< IOutArchive > initOutArchive() const;
+
             const BitInOutFormat& mFormat;
             BitCompressionLevel mCompressionLevel;
+            BitCompressionMethod mCompressionMethod;
             bool mCryptHeaders;
             bool mSolidMode;
             bool mUpdateMode;

@@ -25,12 +25,8 @@
 #include "7zip/PropID.h"
 
 #include "../include/bitexception.hpp"
-#include "../include/util.hpp"
 
 using namespace bit7z;
-using namespace bit7z::util;
-using namespace NWindows;
-using namespace NArchive;
 
 BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format )
     : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_file ) {}

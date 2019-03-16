@@ -27,10 +27,8 @@
 #include "../include/opencallback.hpp"
 #include "../include/memextractcallback.hpp"
 #include "../include/extractcallback.hpp"
-#include "../include/util.hpp"
 
 using namespace bit7z;
-using namespace bit7z::util;
 using namespace NWindows;
 using namespace NArchive;
 

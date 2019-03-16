@@ -24,7 +24,7 @@
 
 #include "../include/bitguids.hpp"
 
-#define FEATURES_COUNT 6
+#define FEATURES_COUNT 7
 
 namespace bit7z {
     using std::wstring;
@@ -34,12 +34,13 @@ namespace bit7z {
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.
      */
     enum FormatFeatures : unsigned {
-        MULTIPLE_FILES    = 1 << 0,///< The format can compress/extract multiple files (2^0 = 000001)
-        SOLID_ARCHIVE     = 1 << 1,///< The format supports solid archives (2^1 = 000010)
-        COMPRESSION_LEVEL = 1 << 2,///< The format is able to use different compression levels (2^2 = 000100)
-        ENCRYPTION        = 1 << 3,///< The format supports archive encryption (2^3 = 001000)
-        HEADER_ENCRYPTION = 1 << 4,///< The format can encrypt the file names (2^4 = 010000)
-        INMEM_COMPRESSION = 1 << 5,///< The format is able to create archives in-memory (2^5 = 100000)
+        MULTIPLE_FILES    = 1 << 0,///< The format can compress/extract multiple files         (2^0 = 0000001)
+        SOLID_ARCHIVE     = 1 << 1,///< The format supports solid archives                     (2^1 = 0000010)
+        COMPRESSION_LEVEL = 1 << 2,///< The format is able to use different compression levels (2^2 = 0000100)
+        ENCRYPTION        = 1 << 3,///< The format supports archive encryption                 (2^3 = 0001000)
+        HEADER_ENCRYPTION = 1 << 4,///< The format can encrypt the file names                  (2^4 = 0010000)
+        INMEM_COMPRESSION = 1 << 5,///< The format is able to create archives in-memory        (2^5 = 0100000)
+        MULTIPLE_METHODS  = 1 << 6 ///< The format can use different compression methods       (2^6 = 1000000)
     };
 
     /**

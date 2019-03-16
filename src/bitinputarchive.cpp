@@ -1,7 +1,6 @@
 #include "../include/bitinputarchive.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/util.hpp"
 #include "../include/opencallback.hpp"
 
 #include "Common/MyCom.h"
@@ -9,7 +8,6 @@
 #include "7zip/Common/StreamObjects.h"
 
 using namespace bit7z;
-using namespace bit7z::util;
 using namespace NWindows;
 using namespace NArchive;
 

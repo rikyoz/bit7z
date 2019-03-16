@@ -27,7 +27,6 @@
 #include "../include/bitinputarchive.hpp"
 #include "../include/fsindexer.hpp"
 #include "../include/fsutil.hpp"
-#include "../include/util.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
 #include "../include/coutmultivolstream.hpp"
@@ -37,7 +36,6 @@
 
 using namespace std;
 using namespace bit7z;
-using namespace bit7z::util;
 using namespace NWindows;
 
 template< class T >
@@ -144,7 +142,7 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
  *  + Generalized the code to work with any type of format (original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive( *this );
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
         auto* out_multivol_stream_spec = new COutMultiVolStream( mVolumeSize, out_archive );
@@ -194,7 +192,7 @@ void BitCompressor::compressToMemory( const vector< FSItem >& in_items, vector< 
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 
-    CMyComPtr< IOutArchive > out_arc = initOutArchive( *this );
+    CMyComPtr< IOutArchive > out_arc = initOutArchive();
 
     auto* out_mem_stream_spec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );

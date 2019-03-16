@@ -27,13 +27,11 @@
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
-#include "../include/util.hpp"
 
 
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
-using namespace bit7z::util;
 
 /* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:

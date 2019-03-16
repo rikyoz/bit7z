@@ -36,14 +36,15 @@ using namespace std;
 namespace bit7z {
     namespace BitFormat {
         const BitInFormat        Auto( 0x00 );
-        const BitInOutFormat      Zip( 0x01, L".zip", MULTIPLE_FILES | COMPRESSION_LEVEL | ENCRYPTION );
+        const BitInOutFormat      Zip( 0x01, L".zip",
+                                       MULTIPLE_FILES | COMPRESSION_LEVEL | ENCRYPTION | MULTIPLE_METHODS );
         const BitInOutFormat    BZip2( 0x02, L".bz2", COMPRESSION_LEVEL | INMEM_COMPRESSION );
         const BitInFormat         Rar( 0x03 );
         const BitInFormat         Arj( 0x04 );
         const BitInFormat           Z( 0x05 );
         const BitInFormat         Lzh( 0x06 );
         const BitInOutFormat SevenZip( 0x07, L".7z", MULTIPLE_FILES | SOLID_ARCHIVE | COMPRESSION_LEVEL |
-                                       ENCRYPTION | HEADER_ENCRYPTION );
+                                       ENCRYPTION | HEADER_ENCRYPTION | MULTIPLE_METHODS );
         const BitInFormat         Cab( 0x08 );
         const BitInFormat        Nsis( 0x09 );
         const BitInFormat        Lzma( 0x0A );
