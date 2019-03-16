@@ -18,6 +18,12 @@ namespace bit7z {
     }
 }
 
+CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
+    CMyComPtr< IInArchive > arc_object;
+    lib.createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &arc_object ) );
+    return arc_object;
+}
+
 IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
                                                 const wstring& name,
                                                 IInStream* in_stream ) {
@@ -30,8 +36,8 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     GUID format_GUID = mDetectedFormat->guid();
     // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically!
-    CMyComPtr< IInArchive > in_archive;
-    handler.library().initInputArchive( &format_GUID, in_archive );
+    CMyComPtr< IInArchive > in_archive = initArchiveObject( handler.library(), &format_GUID );
+    //handler.library().initInputArchive( &format_GUID, in_archive );
 
     // Creating open callback for the file
     auto* open_callback_spec = new OpenCallback( handler, name );
@@ -49,7 +55,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
          *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
         mDetectedFormat = &( BitFormat::detectFormatFromSig( in_stream ) );
         format_GUID = mDetectedFormat->guid();
-        handler.library().initInputArchive( &format_GUID, in_archive );
+        in_archive = initArchiveObject( handler.library(), &format_GUID );
         res = in_archive->Open( in_stream, nullptr, open_callback );
     }
 

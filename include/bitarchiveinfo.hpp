@@ -91,7 +91,7 @@ namespace bit7z {
              */
             uint64_t packSize() const;
 
-            bool isEncrypted() const;
+            bool hasEncryptedItems() const;
 
             uint32_t volumesCount() const;
 

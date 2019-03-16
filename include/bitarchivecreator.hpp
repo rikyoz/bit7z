@@ -165,6 +165,7 @@ namespace bit7z {
 
         protected:
             CMyComPtr< IOutArchive > initOutArchive() const;
+            void setArchiveProperties( IOutArchive* out_archive ) const;
 
             const BitInOutFormat& mFormat;
             BitCompressionLevel mCompressionLevel;

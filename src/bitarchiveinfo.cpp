@@ -103,14 +103,16 @@ uint64_t BitArchiveInfo::packSize() const {
     return result;
 }
 
-bool BitArchiveInfo::isEncrypted() const {
+bool BitArchiveInfo::hasEncryptedItems() const {
     /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
-     *       the properties of a file in the archive, so we search for the index of the first file in the archive! */
+     *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
     uint32_t items_count = itemsCount();
-    for ( uint32_t first_file_index = 0; first_file_index < items_count; ++first_file_index ) {
-        if ( !isItemFolder( first_file_index ) ) {
-            BitPropVariant propvar = getItemProperty( first_file_index, BitProperty::Encrypted );
-            return propvar.isBool() && propvar.getBool();
+    for ( uint32_t file_index = 0; file_index < items_count; ++file_index ) {
+        if ( !isItemFolder( file_index ) ) {
+            BitPropVariant propvar = getItemProperty( file_index, BitProperty::Encrypted );
+            if ( propvar.isBool() && propvar.getBool() ){
+                return true;
+            }
         }
     }
     return false;

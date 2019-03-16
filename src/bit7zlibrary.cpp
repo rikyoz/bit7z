@@ -47,11 +47,3 @@ void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* inter
         throw BitException( "Cannot get class object" );
     }
 }
-
-void Bit7zLibrary::initInputArchive( const GUID* format_GUID, CMyComPtr< IInArchive >& out_object ) const {
-    createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &out_object ) );
-}
-
-void Bit7zLibrary::initOutputArchive( const GUID* format_GUID, CMyComPtr< IOutArchive >& out_object ) const {
-    createArchiveObject( format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_object ) );
-}

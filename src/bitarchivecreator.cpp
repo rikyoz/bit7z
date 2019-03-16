@@ -33,6 +33,12 @@ using std::wstring;
 using std::vector;
 using namespace bit7z;
 
+CMyComPtr< IOutArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
+    CMyComPtr< IOutArchive > arc_object;
+    lib.createArchiveObject( format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &arc_object ) );
+    return arc_object;
+}
+
 bool isValidCompressionMethod( const BitInFormat& format, BitCompressionMethod method ) {
     switch ( method ) {
         case BitCompressionMethod::Copy:
@@ -159,9 +165,12 @@ void BitArchiveCreator::setVolumeSize( uint64_t size ) {
 CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
     const GUID format_GUID = mFormat.guid();
 
-    CMyComPtr< IOutArchive > out_archive;
-    mLibrary.initOutputArchive( &format_GUID, out_archive );
+    CMyComPtr< IOutArchive > out_archive = initArchiveObject( mLibrary, &format_GUID );
+    setArchiveProperties( out_archive );
+    return out_archive;
+}
 
+void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
     vector< const wchar_t* > names;
     vector< BitPropVariant > values;
     if ( mCryptHeaders && mFormat.hasFeature( HEADER_ENCRYPTION ) ) {
@@ -185,13 +194,12 @@ CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
     if ( !names.empty() ) {
         CMyComPtr< ISetProperties > set_properties;
         if ( out_archive->QueryInterface( ::IID_ISetProperties,
-                                          reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
+                                        reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
             throw BitException( "ISetProperties unsupported" );
         }
         if ( set_properties->SetProperties( names.data(), values.data(),
-                                            static_cast< uint32_t >( names.size() ) ) != S_OK ) {
+                                          static_cast< uint32_t >( names.size() ) ) != S_OK ) {
             throw BitException( "Cannot set properties of the archive" );
         }
     }
-    return out_archive;
 }

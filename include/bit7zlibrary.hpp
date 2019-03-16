@@ -62,10 +62,6 @@ namespace bit7z {
              */
             void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 
-            void initInputArchive( const GUID* format_GUID, CMyComPtr< IInArchive >& out_object ) const;
-
-            void initOutputArchive( const GUID* format_GUID, CMyComPtr< IOutArchive >& out_object ) const;
-
         private:
             typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );
 
