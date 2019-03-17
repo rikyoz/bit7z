@@ -36,7 +36,6 @@
 
 using namespace std;
 using namespace bit7z;
-using namespace NWindows;
 
 template< class T >
 void compressOut( const BitArchiveCreator& creator,

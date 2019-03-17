@@ -21,6 +21,7 @@
 
 #include "../include/bitexception.hpp"
 
+using std::string;
 using namespace bit7z;
 
 BitException::BitException( const char* const message ) : runtime_error( message ) {}

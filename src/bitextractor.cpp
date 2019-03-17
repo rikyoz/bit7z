@@ -23,10 +23,7 @@
 
 #include <algorithm>
 
-#include "7zip/Archive/IArchive.h"
-
 #include "../include/bitinputarchive.hpp"
-#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/extractcallback.hpp"
 #include "../include/memextractcallback.hpp"
@@ -34,8 +31,6 @@
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
-using namespace NWindows;
-using namespace NArchive;
 
 using std::wstring;
 

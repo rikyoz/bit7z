@@ -24,7 +24,6 @@
 
 namespace bit7z {
     using std::runtime_error;
-    using std::string;
     using std::wstring;
 
     /**

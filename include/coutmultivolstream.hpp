@@ -22,7 +22,6 @@
 #include <vector>
 #include <cstdint>
 
-//#include "7zip/UI/Common/TempFiles.h"
 #include "7zip/Common/FileStreams.h"
 #include "7zip/IStream.h"
 #include "Common/MyCom.h"

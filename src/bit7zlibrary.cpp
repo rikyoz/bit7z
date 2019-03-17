@@ -22,7 +22,6 @@
 #include "../include/bit7zlibrary.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/bitguids.hpp"
 
 using namespace bit7z;
 

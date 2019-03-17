@@ -25,8 +25,8 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
 }
 
 IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
-        const wstring& name,
-        IInStream* in_stream ) {
+                                                const wstring& name,
+                                                IInStream* in_stream ) {
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
         // Detecting format of the input file

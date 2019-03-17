@@ -24,13 +24,10 @@
 #include "7zip/Archive/IArchive.h"
 
 #include "../include/bitexception.hpp"
-#include "../include/opencallback.hpp"
 #include "../include/memextractcallback.hpp"
 #include "../include/extractcallback.hpp"
 
 using namespace bit7z;
-using namespace NWindows;
-using namespace NArchive;
 
 BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {

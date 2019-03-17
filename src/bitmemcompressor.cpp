@@ -29,12 +29,10 @@
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
 #include "../include/coutmultivolstream.hpp"
-#include "../include/fsutil.hpp"
 #include "../include/memupdatecallback.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
-using namespace NWindows;
 using std::wstring;
 using std::vector;
 
@@ -66,7 +64,8 @@ void compressOut( const CMyComPtr< IOutArchive >& out_arc,
 BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitArchiveCreator( lib, format ) {}
 
-void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstring& out_archive,
+void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
+                                 const wstring& out_archive,
                                  wstring in_buffer_name ) const {
     CMyComPtr< IOutArchive > out_arc = initOutArchive();
 
@@ -89,7 +88,8 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer, const wstrin
     compressOut( out_arc, out_file_stream, in_buffer, in_buffer_name, *this );
 }
 
-void BitMemCompressor::compress( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
+void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
+                                 vector< byte_t >& out_buffer,
                                  const wstring& in_buffer_name ) const {
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( "Unsupported format for in-memory compression!" );
