@@ -56,6 +56,7 @@ HEADERS += include/bit7z.hpp \
            include/bitarchiveitem.hpp \
            include/bitarchiveopener.hpp \
            include/bitcompressionlevel.hpp \
+           include/bitcompressionmethod.hpp \
            include/bitcompressor.hpp \
            include/bitexception.hpp \
            include/bitextractor.hpp \
@@ -76,8 +77,7 @@ HEADERS += include/bit7z.hpp \
            include/memextractcallback.hpp \
            include/memupdatecallback.hpp \
            include/opencallback.hpp \
-           include/updatecallback.hpp \
-    include/bitcompressionmethod.hpp
+           include/updatecallback.hpp
 
 contains(QT_ARCH, i386) {
     QMAKE_LFLAGS         += /MACHINE:X86
