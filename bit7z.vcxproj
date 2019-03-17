@@ -287,7 +287,6 @@
     <ClCompile Include="src\memupdatecallback.cpp" />
     <ClCompile Include="src\opencallback.cpp" />
     <ClCompile Include="src\updatecallback.cpp" />
-    <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bit7z.hpp" />
@@ -298,6 +297,7 @@
     <ClInclude Include="include\bitarchiveitem.hpp" />
     <ClInclude Include="include\bitarchiveopener.hpp" />
     <ClInclude Include="include\bitcompressionlevel.hpp" />
+    <ClInclude Include="include\bitcompressionmethod.hpp" />
     <ClInclude Include="include\bitcompressor.hpp" />
     <ClInclude Include="include\bitexception.hpp" />
     <ClInclude Include="include\bitextractor.hpp" />
@@ -319,7 +319,6 @@
     <ClInclude Include="include\memupdatecallback.hpp" />
     <ClInclude Include="include\opencallback.hpp" />
     <ClInclude Include="include\updatecallback.hpp" />
-    <ClInclude Include="include\util.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
