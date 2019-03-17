@@ -60,24 +60,42 @@ bool isValidCompressionMethod( const BitInFormat& format, BitCompressionMethod m
     }
 }
 
+bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) {
+    switch ( method ) {
+        case BitCompressionMethod::Lzma:
+        case BitCompressionMethod::Lzma2:
+            return dictionary_size <= 1536 * ( 1 << 20 ); // less than 1536 MiB
+        case BitCompressionMethod::Ppmd:
+            return dictionary_size <= ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
+        case BitCompressionMethod::BZip2:
+            return dictionary_size <= 900 * ( 1 << 10 );  // less than 900 KiB
+        case BitCompressionMethod::Deflate64:
+            return dictionary_size == ( 1 << 16 );        // equal to 64 KiB, i.e. 2^16 bytes
+        case BitCompressionMethod::Deflate:
+            return dictionary_size == ( 1 << 15 );        // equal to 32 KiB, i.e. 2^15 bytes
+        default:
+            return true; //copy
+    }
+}
+
 const wchar_t* methodName( BitCompressionMethod method ) {
     switch ( method ) {
-    case BitCompressionMethod::Copy:
-        return L"Copy";
-    case BitCompressionMethod::Ppmd:
-        return L"PPMd";
-    case BitCompressionMethod::Lzma:
-        return L"LZMA";
-    case BitCompressionMethod::Lzma2:
-        return L"LZMA2";
-    case BitCompressionMethod::BZip2:
-        return L"BZip2";
-    case BitCompressionMethod::Deflate:
-        return L"Deflate";
-    case BitCompressionMethod::Deflate64:
-        return L"Deflate64";
-    default:
-        return L""; //this should not happen!
+        case BitCompressionMethod::Copy:
+            return L"Copy";
+        case BitCompressionMethod::Ppmd:
+            return L"PPMd";
+        case BitCompressionMethod::Lzma:
+            return L"LZMA";
+        case BitCompressionMethod::Lzma2:
+            return L"LZMA2";
+        case BitCompressionMethod::BZip2:
+            return L"BZip2";
+        case BitCompressionMethod::Deflate:
+            return L"Deflate";
+        case BitCompressionMethod::Deflate64:
+            return L"Deflate64";
+        default:
+            return L""; //this should not happen!
     }
 }
 
@@ -86,6 +104,7 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFor
     mFormat( format ),
     mCompressionLevel( BitCompressionLevel::NORMAL ),
     mCompressionMethod( format.defaultMethod() ),
+    mDictionarySize( 0 ),
     mCryptHeaders( false ),
     mSolidMode( false ),
     mUpdateMode( false ),
@@ -112,6 +131,10 @@ BitCompressionLevel BitArchiveCreator::compressionLevel() const {
 
 BitCompressionMethod BitArchiveCreator::compressionMethod() const {
     return mCompressionMethod;
+}
+
+uint32_t BitArchiveCreator::dictionarySize() const {
+    return mDictionarySize;
 }
 
 bool BitArchiveCreator::solidMode() const {
@@ -147,6 +170,19 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_m
         /* even though the compression method is valid, we set it only if the format supports
          * different methods than the default one */
         mCompressionMethod = compression_method;
+        mDictionarySize = 0; //reset dictionary size to default for the method
+    }
+}
+
+void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
+    if ( !isValidDictionarySize( mCompressionMethod, dictionary_size ) ) {
+        throw BitException( "Invalid dictionary size for the chosen compression method" );
+    }
+    if ( mCompressionMethod != BitCompressionMethod::Copy ||
+            mCompressionMethod != BitCompressionMethod::Deflate ||
+            mCompressionMethod != BitCompressionMethod::Deflate64 ) {
+        //ignoring setting dictionary size for copy method and for methods having fixed dictionary size (deflate family)
+        mDictionarySize = dictionary_size;
     }
 }
 
@@ -182,7 +218,7 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         values.emplace_back( static_cast< uint32_t >( mCompressionLevel ) );
 
         if ( mFormat.hasFeature( MULTIPLE_METHODS ) && mCompressionMethod != mFormat.defaultMethod() ) {
-            names.push_back( mFormat == BitFormat::Zip ? L"m" : L"0" );
+            names.push_back( mFormat == BitFormat::SevenZip ? L"0" : L"m" );
             values.emplace_back( methodName( mCompressionMethod ) );
         }
     }
@@ -190,15 +226,26 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         names.push_back( L"s" );
         values.emplace_back( mSolidMode );
     }
+    if ( mDictionarySize != 0 ) {
+        const wchar_t* prop_name;
+        //cannot optimize the following if-else, if we use wstring we have invalid pointers in names!
+        if ( mFormat == BitFormat::SevenZip ) {
+            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
+        } else {
+            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
+        }
+        names.push_back( prop_name );
+        values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
+    }
 
     if ( !names.empty() ) {
         CMyComPtr< ISetProperties > set_properties;
         if ( out_archive->QueryInterface( ::IID_ISetProperties,
-                                        reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
+                                          reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
             throw BitException( "ISetProperties unsupported" );
         }
         if ( set_properties->SetProperties( names.data(), values.data(),
-                                          static_cast< uint32_t >( names.size() ) ) != S_OK ) {
+                                            static_cast< uint32_t >( names.size() ) ) != S_OK ) {
             throw BitException( "Cannot set properties of the archive" );
         }
     }

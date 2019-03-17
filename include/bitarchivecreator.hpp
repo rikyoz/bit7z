@@ -67,6 +67,8 @@ namespace bit7z {
 
             BitCompressionMethod compressionMethod() const;
 
+            uint32_t dictionarySize() const;
+
             /**
              * @return whether the archive creator uses solid compression or not.
              */
@@ -136,6 +138,8 @@ namespace bit7z {
 
             void setCompressionMethod( BitCompressionMethod compression_method );
 
+            void setDictionarySize( uint32_t dictionary_size );
+
             /**
              * @brief Sets whether to use solid compression or not.
              *
@@ -170,6 +174,7 @@ namespace bit7z {
             const BitInOutFormat& mFormat;
             BitCompressionLevel mCompressionLevel;
             BitCompressionMethod mCompressionMethod;
+            uint32_t mDictionarySize;
             bool mCryptHeaders;
             bool mSolidMode;
             bool mUpdateMode;
