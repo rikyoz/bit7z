@@ -43,7 +43,7 @@ namespace bit7z {
         protected:
             Callback();
 
-            wstring mErrorMessage;
+            const wchar_t* mErrorMessage;
     };
 }
 #endif // CALLBACK_HPP

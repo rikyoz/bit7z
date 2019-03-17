@@ -34,14 +34,14 @@
 
 namespace bit7z {
     using namespace filesystem;
-    using std::map;
+    using std::pair;
     using std::vector;
     using std::wstring;
 
     class UpdateCallback : public IArchiveUpdateCallback2, public ICompressProgressInfo,
                            ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
         public:
-            map< wstring, HRESULT > mFailedFiles;
+            vector< pair< wstring, HRESULT > > mFailedFiles;
 
             explicit UpdateCallback( const BitArchiveCreator& creator,
                                      const vector< FSItem >& new_items,

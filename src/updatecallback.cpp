@@ -188,7 +188,7 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
 
     if ( !inStreamSpec->Open( path.c_str() ) ) {
         DWORD last_error = ::GetLastError();
-        mFailedFiles[ path ] = HRESULT_FROM_WIN32( last_error );
+        mFailedFiles.emplace_back( path, HRESULT_FROM_WIN32( last_error ) );
         // if (systemError == ERROR_SHARING_VIOLATION) {
         mErrorMessage = L"WARNING: Can't open file";
         // PrintString(NError::MyFormatMessageW(systemError));
