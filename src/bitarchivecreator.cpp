@@ -160,6 +160,7 @@ void BitArchiveCreator::setPassword( const wstring& password, bool crypt_headers
 
 void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_level ) {
     mCompressionLevel = compression_level;
+    mDictionarySize = 0; //reset dictionary size to default for the compression level
 }
 
 void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_method ) {
