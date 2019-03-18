@@ -153,11 +153,12 @@ STDMETHODIMP MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
             //wcout <<  kExtractingString;
             break;
 
-            /*case NArchive::NExtract::NAskMode::kTest:
-                cout <<  kTestingString;
-                break;
+        case NArchive::NExtract::NAskMode::kTest:
+            mExtractMode = false;
+            //wcout <<  kTestingString;
+            break;
 
-               case NArchive::NExtract::NAskMode::kSkip:
+            /* case NArchive::NExtract::NAskMode::kSkip:
                 cout <<  kSkippingString;
                 break;*/
     }
@@ -207,14 +208,22 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 
 STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+    wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        //in future, no exception but an event (i.e. onPasswordRequest) call
-        mErrorMessage = L"Password is not defined";
-        return E_FAIL;
+        if ( mHandler.passwordCallback() ) {
+            pass = mHandler.passwordCallback()();
+        }
+
+        if ( pass.empty() ) {
+            mErrorMessage = L"Password is not defined";
+            return E_FAIL;
+        }
+    } else {
+        pass = mHandler.password();
     }
 
-    return StringToBstr( mHandler.password().c_str(), password );
+    return StringToBstr( pass.c_str(), password );
 }

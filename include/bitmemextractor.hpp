@@ -68,7 +68,9 @@ namespace bit7z {
                           unsigned int index = 0 ) const;
 
 
-            void extract( const vector< byte_t > &in_buffer, map< wstring, vector<byte_t> > &out_map ) const;
+            void extract( const vector< byte_t >& in_buffer, map< wstring, vector<byte_t> >& out_map ) const;
+
+            void test( const vector< byte_t >& in_buffer ) const;
     };
 }
 

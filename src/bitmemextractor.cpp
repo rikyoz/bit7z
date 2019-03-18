@@ -62,8 +62,8 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
         throw BitException( "Cannot extract a folder to a buffer" );
     }
 
-    map< wstring, vector< byte_t > > buffersMap;
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
+    map< wstring, vector< byte_t > > buffers_map;
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffers_map );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
 
     const vector< uint32_t > indices( 1, index );
@@ -71,7 +71,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
-    out_buffer = std::move( buffersMap.begin()->second );
+    out_buffer = std::move( buffers_map.begin()->second );
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const {
@@ -88,6 +88,19 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, 
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_map );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = in_archive.extract( files_indices, extract_callback );
+    if ( res != S_OK ) {
+        throw BitException( extract_callback_spec->getErrorMessage() );
+    }
+}
+
+void BitMemExtractor::test( const vector<byte_t>& in_buffer ) const {
+    BitInputArchive in_archive( *this, in_buffer );
+
+    map< wstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, dummy_map );
+    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
+
+    HRESULT res = in_archive.test( extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
