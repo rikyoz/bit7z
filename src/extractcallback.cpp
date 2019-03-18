@@ -159,7 +159,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
 
         if ( fi.Find( fullProcessedPath.c_str() ) ) {
             if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
-                mErrorMessage = (L"Cannot delete output file " + fullProcessedPath).c_str();
+                mErrorMessage = L"Cannot delete output file " + fullProcessedPath;
                 return E_ABORT;
             }
         }
@@ -168,7 +168,7 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
         CMyComPtr< ISequentialOutStream > outStreamLoc( mOutFileStreamSpec );
 
         if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
-            mErrorMessage = (L"Cannot open output file " + fullProcessedPath).c_str();
+            mErrorMessage = L"Cannot open output file " + fullProcessedPath;
             return E_ABORT;
         }
 
