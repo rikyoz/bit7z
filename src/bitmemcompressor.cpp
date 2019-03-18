@@ -26,6 +26,7 @@
 #include "7zip/Common/StreamObjects.h"
 
 #include "../include/fsutil.hpp"
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/coutmemstream.hpp"
 #include "../include/coutmultivolstream.hpp"
@@ -37,15 +38,17 @@ using std::wstring;
 using std::vector;
 
 template< class T >
-void compressOut( const CMyComPtr< IOutArchive >& out_arc,
+void compressOut( const BitArchiveCreator& creator,
+                  const CMyComPtr< IOutArchive >& out_arc,
                   CMyComPtr< T > out_stream,
                   const vector< byte_t >& in_buffer,
                   const wstring& in_buffer_name,
-                  const BitArchiveCreator& creator ) {
-    auto* update_callback_spec = new MemUpdateCallback( creator, in_buffer, in_buffer_name );
+                  const BitInputArchive* old_arc ) {
+    auto* update_callback_spec = new MemUpdateCallback( creator, in_buffer, in_buffer_name, old_arc );
+    uint32_t items_count = update_callback_spec->getItemsCount(); //old items count + new items count
 
     CMyComPtr< IArchiveUpdateCallback > update_callback( update_callback_spec );
-    HRESULT result = out_arc->UpdateItems( out_stream, 1, update_callback );
+    HRESULT result = out_arc->UpdateItems( out_stream, items_count, update_callback );
     update_callback_spec->Finilize();
 
     if ( result == E_NOTIMPL ) {
@@ -67,7 +70,12 @@ BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutForma
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  const wstring& out_archive,
                                  wstring in_buffer_name ) const {
-    CMyComPtr< IOutArchive > out_arc = initOutArchive();
+
+    if ( in_buffer_name.empty() ) {
+        in_buffer_name = fsutil::filename( out_archive );
+    }
+
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
 
     CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
@@ -77,15 +85,36 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
         auto* out_file_stream_spec = new COutFileStream();
         out_file_stream = out_file_stream_spec;
         if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
-            throw BitException( L"Can't create archive file '" + out_archive + L"'" );
+            if ( ::GetLastError() != ERROR_FILE_EXISTS ) { //unknown error
+                throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
+                // (error code: " + to_wstring( ::GetLastError() ) + L")" );
+            }
+            if ( !updateMode() ) { //output archive file already exists and no update mode set
+                throw BitException( L"Cannot update existing archive file '" + out_archive + L"'" );
+            }
+            if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+                //update mode is set but format does not support adding more files
+                throw BitException( L"Format does not support updating existing archive files" );
+            }
+            if ( !out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
+                //could not create temporary file
+                throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
+            }
+            BitInputArchive old_arc( *this, out_archive );
+            old_arc.initUpdatableArchive( &new_arc );
+            setArchiveProperties( new_arc );
+            compressOut( *this, new_arc, out_file_stream, in_buffer, in_buffer_name, &old_arc );
+            old_arc.close();
+            out_file_stream_spec->Close();
+            //remove old file and rename tmp file (move file with overwriting)
+            bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
+            if ( !renamed ) {
+                throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
+            }
+            return;
         }
     }
-
-    if ( in_buffer_name.empty() ) {
-        in_buffer_name = fsutil::filename( out_archive );
-    }
-
-    compressOut( out_arc, out_file_stream, in_buffer, in_buffer_name, *this );
+    compressOut( *this, new_arc, out_file_stream, in_buffer, in_buffer_name, nullptr );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
@@ -95,10 +124,14 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 
+    if ( !out_buffer.empty() ) {
+        throw BitException( "Cannot overwrite or update a non empty buffer" );
+    }
+
     CMyComPtr< IOutArchive > out_arc = initOutArchive();
 
     auto* out_mem_stream_spec = new COutMemStream( out_buffer );
     CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );
 
-    compressOut( out_arc, out_mem_stream, in_buffer, in_buffer_name, *this );
+    compressOut( *this, out_arc, out_mem_stream, in_buffer, in_buffer_name, nullptr );
 }

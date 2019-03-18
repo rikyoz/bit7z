@@ -38,12 +38,15 @@ using namespace bit7z;
 
 MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
                                       const vector< byte_t >& out_buffer,
-                                      const wstring& buffer_name )
+                                      const wstring& buffer_name,
+                                      const BitInputArchive* old_arc )
     : mCreator( creator ),
       mAskPassword( false ),
       mNeedBeClosed( false ),
       mBuffer( out_buffer ),
-      mBufferName( buffer_name ) {}
+      mBufferName( buffer_name ),
+      mOldArc( old_arc ),
+      mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ) {}
 
 MemUpdateCallback::~MemUpdateCallback() {
     Finilize();
@@ -67,58 +70,61 @@ HRESULT MemUpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ )
     return E_NOTIMPL;
 }
 
-HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 /* index */, Int32* newData,
+HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 index, Int32* newData,
         Int32* newProperties, UInt32* indexInArchive ) {
+
+    bool isOldItem = index < mOldArcItemsCount;
+
     if ( newData != nullptr ) {
-        *newData = 1; //= true;
+        *newData = isOldItem ? 0 : 1; //= true;
     }
     if ( newProperties != nullptr ) {
-        *newProperties = 1; //= true;
+        *newProperties = isOldItem ? 0 : 1; //= true;
     }
     if ( indexInArchive != nullptr ) {
-        *indexInArchive = static_cast< uint32_t >( -1 );
+        *indexInArchive = isOldItem ? index : static_cast< uint32_t >( -1 );
     }
 
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::GetProperty( UInt32 /*index*/, PROPID propID, PROPVARIANT* value ) {
+HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
         prop = false;
-        *value = prop;
-        return S_OK;
-    }
+    } else if ( index < mOldArcItemsCount ) {
+        prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
+    } else {
+        FILETIME ft;
+        SYSTEMTIME st;
 
-    FILETIME ft;
-    SYSTEMTIME st;
+        GetSystemTime( &st ); // gets current time
+        SystemTimeToFileTime( &st, &ft ); // converts to file time format
 
-    GetSystemTime( &st ); // gets current time
-    SystemTimeToFileTime( &st, &ft ); // converts to file time format
-
-    switch ( propID ) {
-        case kpidPath:
-            prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
-            break;
-        case kpidIsDir:
-            prop = false;
-            break;
-        case kpidSize:
-            prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
-            break;
-        case kpidAttrib:
-            prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
-            break;
-        case kpidCTime:
-            prop = ft;
-            break;
-        case kpidATime:
-            prop = ft;
-            break;
-        case kpidMTime:
-            prop = ft;
-            break;
+        switch ( propID ) {
+            case kpidPath:
+                prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
+                break;
+            case kpidIsDir:
+                prop = false;
+                break;
+            case kpidSize:
+                prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
+                break;
+            case kpidAttrib:
+                prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
+                break;
+            case kpidCTime:
+                prop = ft;
+                break;
+            case kpidATime:
+                prop = ft;
+                break;
+            case kpidMTime:
+                prop = ft;
+                break;
+        }
     }
 
     *value = prop;
@@ -133,12 +139,20 @@ HRESULT MemUpdateCallback::Finilize() {
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::GetStream( UInt32 /*index*/, ISequentialInStream** inStream ) {
+uint32_t MemUpdateCallback::getItemsCount() const {
+    return mOldArcItemsCount + 1;
+}
+
+HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
+
+    if ( index < mOldArcItemsCount ) { //old item in the archive
+        return S_OK;
+    }
 
     auto* inStreamSpec = new CBufInStream;
     CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
-    inStreamSpec->Init( &mBuffer[ 0 ], mBuffer.size() );
+    inStreamSpec->Init( mBuffer.data(), mBuffer.size() );
 
     *inStream = inStreamLoc.Detach();
     return S_OK;

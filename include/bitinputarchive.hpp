@@ -79,6 +79,7 @@ namespace bit7z {
             friend class BitExtractor;
             friend class BitMemExtractor;
             friend class BitCompressor;
+            friend class BitMemCompressor;
     };
 }
 

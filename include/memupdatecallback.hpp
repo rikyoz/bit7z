@@ -24,6 +24,7 @@
 #include "Common/MyCom.h"
 
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
 #include "../include/callback.hpp"
 
@@ -54,6 +55,8 @@ namespace bit7z {
             //ICryptoGetTextPassword2
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
+            uint32_t getItemsCount() const;
+
         public:
             const BitArchiveCreator& mCreator;
             /*vector< UInt64 > mVolumesSizes;
@@ -68,10 +71,13 @@ namespace bit7z {
 
             const vector< byte_t >& mBuffer;
             const wstring& mBufferName;
+            const BitInputArchive* mOldArc;
+            const uint32_t mOldArcItemsCount;
 
             MemUpdateCallback( const BitArchiveCreator& creator,
                                const vector< byte_t >& out_buffer,
-                               const wstring& buffer_name );
+                               const wstring& buffer_name ,
+                               const BitInputArchive *old_arc );
 
             virtual ~MemUpdateCallback();
 
