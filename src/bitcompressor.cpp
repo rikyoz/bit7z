@@ -37,10 +37,9 @@
 using namespace std;
 using namespace bit7z;
 
-template< class T >
 void compressOut( const BitArchiveCreator& creator,
                   const CMyComPtr< IOutArchive >& out_arc,
-                  CMyComPtr< T > out_stream,
+                  ISequentialOutStream* out_stream,
                   const vector< FSItem >& new_items,
                   const BitInputArchive* old_arc ) {
     auto* update_callback_spec = new UpdateCallback( creator, new_items, old_arc );
@@ -48,7 +47,6 @@ void compressOut( const BitArchiveCreator& creator,
 
     CMyComPtr< IArchiveUpdateCallback2 > update_callback( update_callback_spec );
     HRESULT result = out_arc->UpdateItems( out_stream, items_count, update_callback );
-    update_callback_spec->Finilize();
 
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation!" );

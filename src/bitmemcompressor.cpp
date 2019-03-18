@@ -37,10 +37,9 @@ using namespace bit7z::filesystem;
 using std::wstring;
 using std::vector;
 
-template< class T >
 void compressOut( const BitArchiveCreator& creator,
                   const CMyComPtr< IOutArchive >& out_arc,
-                  CMyComPtr< T > out_stream,
+                  ISequentialOutStream* out_stream,
                   const vector< byte_t >& in_buffer,
                   const wstring& in_buffer_name,
                   const BitInputArchive* old_arc ) {
@@ -49,7 +48,6 @@ void compressOut( const BitArchiveCreator& creator,
 
     CMyComPtr< IArchiveUpdateCallback > update_callback( update_callback_spec );
     HRESULT result = out_arc->UpdateItems( out_stream, items_count, update_callback );
-    update_callback_spec->Finilize();
 
     if ( result == E_NOTIMPL ) {
         throw BitException( "Unsupported operation!" );
