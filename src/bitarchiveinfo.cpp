@@ -123,6 +123,11 @@ bool BitArchiveInfo::isMultiVolume() const {
     return propvar.isBool() && propvar.getBool();
 }
 
+bool BitArchiveInfo::isSolid() const {
+    BitPropVariant propvar = getArchiveProperty( BitProperty::Solid );
+    return propvar.isBool() && propvar.getBool();
+}
+
 uint32_t BitArchiveInfo::volumesCount() const {
     BitPropVariant propvar = getArchiveProperty( BitProperty::NumVolumes );
     return propvar.isEmpty() ? 1 : propvar.getUInt32();

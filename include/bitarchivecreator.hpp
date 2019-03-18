@@ -143,7 +143,8 @@ namespace bit7z {
             /**
              * @brief Sets whether to use solid compression or not.
              *
-             * @note Setting the solid compression mode to true has effect only when using the 7z format.
+             * @note Setting the solid compression mode to true has effect only when using the 7z format with multiple
+             *       input files.
              *
              * @param solid_mode    if true, it will be used the "solid compression" method.
              */

@@ -96,6 +96,8 @@ namespace bit7z {
             uint32_t volumesCount() const;
 
             bool isMultiVolume() const;
+
+            bool isSolid() const;
     };
 }
 
