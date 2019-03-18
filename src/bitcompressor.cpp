@@ -139,6 +139,7 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
  *  + Generalized the code to work with any type of format (original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
+    BitInputArchive* old_arc = nullptr;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
@@ -157,28 +158,29 @@ void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, cons
             }
             if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
                 //update mode is set but format does not support adding more files
-                throw BitException( L"Format does not support updating existing archive files" );
+                throw BitException( "Format does not support updating existing archive files" );
             }
             if ( !out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
                 //could not create temporary file
                 throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
             }
-            //needed to change old_arc, see https://sourceforge.net/p/sevenzip/discussion/45798/thread/23ec65b4/
-            BitInputArchive old_arc( *this, out_archive );
-            old_arc.initUpdatableArchive( &new_arc );
+            old_arc = new BitInputArchive( *this, out_archive );
+            old_arc->initUpdatableArchive( &new_arc );
             setArchiveProperties( new_arc );
-            compressOut( *this, new_arc, out_file_stream, in_items, &old_arc );
-            old_arc.close();
-            out_file_stream_spec->Close();
-            //remove old file and rename tmp file (move file with overwriting)
-            bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
-            if ( !renamed ) {
-                throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
-            }
-            return;
+            //compressOut( *this, new_arc, out_file_stream, in_buffer, in_buffer_name, old_arc );
         }
     }
-    compressOut( *this, new_arc, out_file_stream, in_items, nullptr );
+    compressOut( *this, new_arc, out_file_stream, in_items, old_arc );
+    if ( old_arc ) {
+        old_arc->close();
+        dynamic_cast< COutFileStream* >( *&out_file_stream )->Close();
+        delete old_arc;
+        //remove old file and rename tmp file (move file with overwriting)
+        bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
+        if ( !renamed ) {
+            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
+        }
+    }
 }
 
 // FS -> Memory
