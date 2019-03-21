@@ -21,53 +21,18 @@
 
 #include "../include/bitcompressor.hpp"
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/Common/FileStreams.h"
-
-#include "../include/bitinputarchive.hpp"
+#include "../include/outputarchive.hpp"
 #include "../include/fsindexer.hpp"
-#include "../include/fsutil.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/coutmemstream.hpp"
-#include "../include/coutmultivolstream.hpp"
-#include "../include/updatecallback.hpp"
-
-#include <sstream>
 
 using namespace std;
 using namespace bit7z;
 
-void compressOut( const BitArchiveCreator& creator,
-                  const CMyComPtr< IOutArchive >& out_arc,
-                  ISequentialOutStream* out_stream,
-                  const vector< FSItem >& new_items,
-                  const BitInputArchive* old_arc ) {
-    auto* update_callback_spec = new UpdateCallback( creator, new_items, old_arc );
-    uint32_t items_count = update_callback_spec->getItemsCount(); //old items count + new items count
-
-    CMyComPtr< IArchiveUpdateCallback2 > update_callback( update_callback_spec );
-    HRESULT result = out_arc->UpdateItems( out_stream, items_count, update_callback );
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( "Unsupported operation!" );
-    }
-
-    if ( result == E_FAIL && update_callback_spec->getErrorMessage().empty() ) {
-        throw BitException( "Failed operation (unkwown error)!" );
-    }
-
-    if ( result != S_OK ) {
-        throw BitException( update_callback_spec->getErrorMessage() );
-    }
-
-    if ( !update_callback_spec->mFailedFiles.empty() ) {
-        wstringstream wsstream;
-        wsstream << L"Error for files: " << endl;
-        for ( const auto& failed_file : update_callback_spec->mFailedFiles ) {
-            wsstream << failed_file.first << L" (error code: " << failed_file.second << L")" << endl;
-        }
-        throw BitException( wsstream.str() );
-    }
+void compressToFileSystem( const BitCompressor& compressor,
+                           const vector< FSItem >& in_items,
+                           const wstring& out_archive ) {
+    OutputArchive out_arc( compressor );
+    out_arc.compress( in_items, out_archive );
 }
 
 BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
@@ -80,7 +45,7 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
         throw BitException( "Unsupported operation!" );
     }
     vector< FSItem > fs_items = FSIndexer::indexPaths( in_paths );
-    compressToFileSystem( fs_items, out_archive );
+    compressToFileSystem( *this, fs_items, out_archive );
 }
 
 void BitCompressor::compress( const map< wstring, wstring >& in_paths, const wstring& out_archive ) const {
@@ -88,7 +53,7 @@ void BitCompressor::compress( const map< wstring, wstring >& in_paths, const wst
         throw BitException( "Unsupported operation!" );
     }
     vector< FSItem > fs_items = FSIndexer::indexPathsMap( in_paths );
-    compressToFileSystem( fs_items, out_archive );
+    compressToFileSystem( *this, fs_items, out_archive );
 }
 
 void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
@@ -98,7 +63,7 @@ void BitCompressor::compressFile( const wstring& in_file, const wstring& out_arc
     }
     vector< FSItem > fs_items;
     fs_items.push_back( item );
-    compressToFileSystem( fs_items, out_archive );
+    compressToFileSystem( *this, fs_items, out_archive );
 }
 
 void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const {
@@ -106,7 +71,7 @@ void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstr
         throw BitException( "Unsupported operation!" );
     }
     vector< FSItem > fs_items = FSIndexer::indexPaths( in_files, true );
-    compressToFileSystem( fs_items, out_archive );
+    compressToFileSystem( *this, fs_items, out_archive );
 }
 
 void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
@@ -115,7 +80,7 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_arc
         throw BitException( "Unsupported operation!" );
     }
     vector< FSItem > fs_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
-    compressToFileSystem( fs_items, out_archive );
+    compressToFileSystem( *this, fs_items, out_archive );
 }
 
 void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive ) const {
@@ -125,77 +90,18 @@ void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out
 /* from filesystem to memory buffer */
 
 void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const {
-    FSItem item( in_file );
-    if ( item.isDir() ) {
-        throw BitException( "Cannot compress a directory into a memory buffer!" );
-    }
-    vector< FSItem > fs_items;
-    fs_items.push_back( item );
-    compressToMemory( fs_items, out_buffer );
-}
-
-/* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK
- * Main changes made:
- *  + Generalized the code to work with any type of format (original works only with 7z format)
- *  + Use of exceptions instead of error codes */
-void BitCompressor::compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const {
-    BitInputArchive* old_arc = nullptr;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_file_stream;
-    if ( mVolumeSize > 0 ) {
-        auto* out_multivol_stream_spec = new COutMultiVolStream( mVolumeSize, out_archive );
-        out_file_stream = out_multivol_stream_spec;
-    } else {
-        auto* out_file_stream_spec = new COutFileStream();
-        out_file_stream = out_file_stream_spec;
-        if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
-            if ( ::GetLastError() != ERROR_FILE_EXISTS ) { //unknown error
-                throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
-                // (error code: " + to_wstring( ::GetLastError() ) + L")" );
-            }
-            if ( !updateMode() ) { //output archive file already exists and no update mode set
-                throw BitException( L"Cannot update existing archive file '" + out_archive + L"'" );
-            }
-            if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
-                //update mode is set but format does not support adding more files
-                throw BitException( "Format does not support updating existing archive files" );
-            }
-            if ( !out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
-                //could not create temporary file
-                throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
-            }
-            old_arc = new BitInputArchive( *this, out_archive );
-            old_arc->initUpdatableArchive( &new_arc );
-            setArchiveProperties( new_arc );
-            //compressOut( *this, new_arc, out_file_stream, in_buffer, in_buffer_name, old_arc );
-        }
-    }
-    compressOut( *this, new_arc, out_file_stream, in_items, old_arc );
-    if ( old_arc ) {
-        old_arc->close();
-        dynamic_cast< COutFileStream* >( *&out_file_stream )->Close();
-        delete old_arc;
-        //remove old file and rename tmp file (move file with overwriting)
-        bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
-        if ( !renamed ) {
-            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
-        }
-    }
-}
-
-// FS -> Memory
-void BitCompressor::compressToMemory( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const {
-    if ( in_items.empty() ) {
-        throw BitException( "The list of files/directories cannot be empty!" );
-    }
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( "Unsupported format for in-memory compression!" );
     }
 
-    CMyComPtr< IOutArchive > out_arc = initOutArchive();
+    FSItem item( in_file );
+    if ( item.isDir() ) {
+        throw BitException( "Cannot compress a directory into a memory buffer!" );
+    }
 
-    auto* out_mem_stream_spec = new COutMemStream( out_buffer );
-    CMyComPtr< ISequentialOutStream > out_mem_stream( out_mem_stream_spec );
+    vector< FSItem > fs_items;
+    fs_items.push_back( item );
 
-    compressOut( *this, out_arc, out_mem_stream, in_items, nullptr );
+    OutputArchive out_arc( *this );
+    out_arc.compress( fs_items, out_buffer );
 }

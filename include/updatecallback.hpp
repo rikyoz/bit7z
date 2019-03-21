@@ -26,8 +26,8 @@
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveitem.hpp"
+#include "../include/compresscallback.hpp"
 #include "../include/fsitem.hpp"
-#include "../include/callback.hpp"
 #include "../include/bitarchivecreator.hpp"
 
 #include <vector>
@@ -38,18 +38,22 @@ namespace bit7z {
     using std::vector;
     using std::wstring;
 
-    class UpdateCallback : public IArchiveUpdateCallback2, public ICompressProgressInfo,
-                           ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
+    class UpdateCallback : public CompressCallback,
+                           public ICompressProgressInfo,
+                           ICryptoGetTextPassword2,
+                           CMyUnknownImp {
         public:
             vector< pair< wstring, HRESULT > > mFailedFiles;
 
             explicit UpdateCallback( const BitArchiveCreator& creator,
                                      const vector< FSItem >& new_items,
-                                     const BitInputArchive* old_arc );
+                                     const BitInputArchive* old_arc = nullptr );
 
             virtual ~UpdateCallback();
 
-            uint32_t getItemsCount() const;
+            // CompressCallback
+            uint32_t itemsCount() const override;
+            wstring getErrorMessage() const override;
 
             HRESULT Finilize();
 
@@ -80,8 +84,6 @@ namespace bit7z {
         private:
             uint64_t mVolSize;
             wstring mVolName;
-            //wstring mVolExt;
-            //wstring mDirPrefix;
 
             const vector< FSItem >& mNewItems;
             const BitInputArchive* mOldArc;

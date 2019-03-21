@@ -37,14 +37,14 @@ using namespace bit7z;
  *  + FSItem class is used instead of CDirItem struct */
 
 MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
-                                      const vector< byte_t >& out_buffer,
-                                      const wstring& buffer_name,
+                                      const vector< byte_t >& in_buffer,
+                                      const wstring& in_buffer_name,
                                       const BitInputArchive* old_arc )
     : mCreator( creator ),
       mAskPassword( false ),
       mNeedBeClosed( false ),
-      mBuffer( out_buffer ),
-      mBufferName( buffer_name ),
+      mBuffer( in_buffer ),
+      mBufferName( in_buffer_name ),
       mOldArc( old_arc ),
       mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ) {}
 
@@ -139,7 +139,7 @@ HRESULT MemUpdateCallback::Finilize() {
     return S_OK;
 }
 
-uint32_t MemUpdateCallback::getItemsCount() const {
+uint32_t MemUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
 
@@ -176,4 +176,14 @@ HRESULT MemUpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BST
 
     *passwordIsDefined = ( mCreator.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( mCreator.password().c_str(), password );
+}
+
+/* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
+   this class and UpdateCallback! */
+HRESULT MemUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
+    return S_OK;
+}
+
+HRESULT MemUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
+    return S_OK;
 }

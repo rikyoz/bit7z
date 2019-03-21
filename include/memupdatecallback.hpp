@@ -26,7 +26,7 @@
 #include "../include/bitarchivecreator.hpp"
 #include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
-#include "../include/callback.hpp"
+#include "../include/compresscallback.hpp"
 
 #include <vector>
 
@@ -34,7 +34,9 @@ namespace bit7z {
     using std::vector;
     using std::wstring;
 
-    class MemUpdateCallback : public IArchiveUpdateCallback, ICryptoGetTextPassword2, CMyUnknownImp, public Callback {
+    class MemUpdateCallback : public CompressCallback,
+                              ICryptoGetTextPassword2,
+                              CMyUnknownImp {
         public:
             MY_UNKNOWN_IMP2( IArchiveUpdateCallback, ICryptoGetTextPassword2 )
 
@@ -51,19 +53,16 @@ namespace bit7z {
             STDMETHOD( GetProperty )( UInt32 /*index*/, PROPID propID, PROPVARIANT* value );
             STDMETHOD( GetStream )( UInt32 /*index*/, ISequentialInStream** inStream );
             STDMETHOD( SetOperationResult )( Int32 operationResult );
+            STDMETHOD( GetVolumeSize )( UInt32 /*index*/, UInt64* size );
+            STDMETHOD( GetVolumeStream )( UInt32 /*index*/, ISequentialOutStream** volumeStream );
 
             //ICryptoGetTextPassword2
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
-            uint32_t getItemsCount() const;
+            uint32_t itemsCount() const override;
 
         public:
             const BitArchiveCreator& mCreator;
-            /*vector< UInt64 > mVolumesSizes;
-            wstring mVolName;
-            wstring mVolExt;
-
-            wstring mDirPrefix;*/
 
             bool mAskPassword;
 
@@ -75,9 +74,9 @@ namespace bit7z {
             const uint32_t mOldArcItemsCount;
 
             MemUpdateCallback( const BitArchiveCreator& creator,
-                               const vector< byte_t >& out_buffer,
-                               const wstring& buffer_name ,
-                               const BitInputArchive *old_arc );
+                               const vector< byte_t >& in_buffer,
+                               const wstring& in_buffer_name ,
+                               const BitInputArchive *old_arc = nullptr );
 
             virtual ~MemUpdateCallback();
 

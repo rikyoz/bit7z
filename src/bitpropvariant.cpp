@@ -69,7 +69,7 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) { //until now, I've copied only the pointer to the string, hence we need a copy!
-        bstrVal = SysAllocStringByteLen( reinterpret_cast<LPCSTR>( other.bstrVal ),
+        bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
         if ( !bstrVal ) {
             throw BitException( "Could not allocate memory for BitPropVariant string" );

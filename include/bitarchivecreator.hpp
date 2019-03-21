@@ -169,7 +169,6 @@ namespace bit7z {
             void setVolumeSize( uint64_t size );
 
         protected:
-            CMyComPtr< IOutArchive > initOutArchive() const;
             void setArchiveProperties( IOutArchive* out_archive ) const;
 
             const BitInOutFormat& mFormat;
@@ -180,6 +179,8 @@ namespace bit7z {
             bool mSolidMode;
             bool mUpdateMode;
             uint64_t mVolumeSize;
+
+            friend class OutputArchive;
     };
 }
 

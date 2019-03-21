@@ -39,7 +39,8 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/memextractcallback.cpp \
            src/memupdatecallback.cpp \
            src/opencallback.cpp \
-           src/updatecallback.cpp
+           src/updatecallback.cpp \
+           src/outputarchive.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
 
@@ -77,7 +78,9 @@ HEADERS += include/bit7z.hpp \
            include/memextractcallback.hpp \
            include/memupdatecallback.hpp \
            include/opencallback.hpp \
-           include/updatecallback.hpp
+           include/updatecallback.hpp \
+    include/outputarchive.hpp \
+    include/compresscallback.hpp
 
 contains(QT_ARCH, i386) {
     QMAKE_LFLAGS         += /MACHINE:X86

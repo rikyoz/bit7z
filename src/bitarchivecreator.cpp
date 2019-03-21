@@ -33,12 +33,6 @@ using std::wstring;
 using std::vector;
 using namespace bit7z;
 
-CMyComPtr< IOutArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
-    CMyComPtr< IOutArchive > arc_object;
-    lib.createArchiveObject( format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &arc_object ) );
-    return arc_object;
-}
-
 bool isValidCompressionMethod( const BitInFormat& format, BitCompressionMethod method ) {
     switch ( method ) {
         case BitCompressionMethod::Copy:
@@ -179,8 +173,8 @@ void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
     if ( !isValidDictionarySize( mCompressionMethod, dictionary_size ) ) {
         throw BitException( "Invalid dictionary size for the chosen compression method" );
     }
-    if ( mCompressionMethod != BitCompressionMethod::Copy ||
-            mCompressionMethod != BitCompressionMethod::Deflate ||
+    if ( mCompressionMethod != BitCompressionMethod::Copy &&
+            mCompressionMethod != BitCompressionMethod::Deflate &&
             mCompressionMethod != BitCompressionMethod::Deflate64 ) {
         //ignoring setting dictionary size for copy method and for methods having fixed dictionary size (deflate family)
         mDictionarySize = dictionary_size;
@@ -197,14 +191,6 @@ void BitArchiveCreator::setUpdateMode( bool update_mode ) {
 
 void BitArchiveCreator::setVolumeSize( uint64_t size ) {
     mVolumeSize = size;
-}
-
-CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
-    const GUID format_GUID = mFormat.guid();
-
-    CMyComPtr< IOutArchive > out_archive = initArchiveObject( mLibrary, &format_GUID );
-    setArchiveProperties( out_archive );
-    return out_archive;
 }
 
 void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {

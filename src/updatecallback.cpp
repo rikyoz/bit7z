@@ -31,6 +31,8 @@
 #include "../include/bitpropvariant.hpp"
 #include "../include/fsutil.hpp"
 
+#include <sstream>
+
 using namespace bit7z;
 
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
@@ -161,7 +163,7 @@ HRESULT UpdateCallback::Finilize() {
     return S_OK;
 }
 
-uint32_t UpdateCallback::getItemsCount() const {
+uint32_t UpdateCallback::itemsCount() const {
     return mOldArcItemsCount + static_cast< uint32_t >( mNewItems.size() );
 }
 
@@ -189,12 +191,7 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
     if ( !inStreamSpec->Open( path.c_str() ) ) {
         DWORD last_error = ::GetLastError();
         mFailedFiles.emplace_back( path, HRESULT_FROM_WIN32( last_error ) );
-        // if (systemError == ERROR_SHARING_VIOLATION) {
-        mErrorMessage = L"WARNING: Can't open file";
-        // PrintString(NError::MyFormatMessageW(systemError));
         return S_FALSE;
-        //}
-        // return sysError;
     }
 
     *inStream = inStreamLoc.Detach();
@@ -243,4 +240,16 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
 
     *passwordIsDefined = ( mCreator.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( mCreator.password().c_str(), password );
+}
+
+wstring UpdateCallback::getErrorMessage() const {
+    if ( !mFailedFiles.empty() ) {
+        std::wstringstream wsstream;
+        wsstream << L"Error for files: " << std::endl;
+        for ( const auto& failed_file : mFailedFiles ) {
+            wsstream << failed_file.first << L" (error code: " << failed_file.second << L")" << std::endl;
+        }
+        return wsstream.str();
+    }
+    return Callback::getErrorMessage();
 }

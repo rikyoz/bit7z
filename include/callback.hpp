@@ -38,10 +38,11 @@ namespace bit7z {
 
     class Callback {
         public:
-            wstring getErrorMessage() const;
+            virtual wstring getErrorMessage() const;
 
         protected:
             Callback();
+            virtual ~Callback() {}
 
             wstring mErrorMessage;
     };
