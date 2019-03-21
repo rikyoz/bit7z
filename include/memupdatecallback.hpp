@@ -34,53 +34,26 @@ namespace bit7z {
     using std::vector;
     using std::wstring;
 
-    class MemUpdateCallback : public CompressCallback,
-                              ICryptoGetTextPassword2,
-                              CMyUnknownImp {
+    class MemUpdateCallback : public CompressCallback {
         public:
-            MY_UNKNOWN_IMP2( IArchiveUpdateCallback, ICryptoGetTextPassword2 )
-
-            // IProgress
-            STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
-
-            // IArchiveUpdateCallback
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index,
-                                            Int32* newData,
-                                            Int32* newProperties,
-                                            UInt32* indexInArchive );
-            STDMETHOD( GetProperty )( UInt32 /*index*/, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 /*index*/, ISequentialInStream** inStream );
-            STDMETHOD( SetOperationResult )( Int32 operationResult );
-            STDMETHOD( GetVolumeSize )( UInt32 /*index*/, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 /*index*/, ISequentialOutStream** volumeStream );
-
-            //ICryptoGetTextPassword2
-            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
-
-            uint32_t itemsCount() const override;
-
-        public:
-            const BitArchiveCreator& mCreator;
-
-            bool mAskPassword;
-
-            bool mNeedBeClosed;
-
-            const vector< byte_t >& mBuffer;
-            const wstring& mBufferName;
-            const BitInputArchive* mOldArc;
-            const uint32_t mOldArcItemsCount;
-
             MemUpdateCallback( const BitArchiveCreator& creator,
                                const vector< byte_t >& in_buffer,
-                               const wstring& in_buffer_name ,
+                               const wstring& in_buffer_name,
                                const BitInputArchive *old_arc = nullptr );
 
             virtual ~MemUpdateCallback();
 
-            HRESULT Finilize();
+            // IArchiveUpdateCallback2
+            STDMETHOD( GetProperty )( UInt32 /*index*/, PROPID propID, PROPVARIANT* value );
+            STDMETHOD( GetStream )( UInt32 /*index*/, ISequentialInStream** inStream );
+            STDMETHOD( GetVolumeSize )( UInt32 /*index*/, UInt64* size );
+            STDMETHOD( GetVolumeStream )( UInt32 /*index*/, ISequentialOutStream** volumeStream );
+
+            uint32_t itemsCount() const override;
+
+        private:
+            const vector< byte_t >& mBuffer;
+            const wstring& mBufferName;
     };
 }
 #endif // MEMUPDATECALLBACK_HPP

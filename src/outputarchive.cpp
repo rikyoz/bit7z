@@ -123,10 +123,10 @@ HRESULT OutputArchive::compress( ISequentialOutStream* out_stream, CompressCallb
 void OutputArchive::cleanupOldArc( BitInputArchive* old_arc, IOutStream* out_stream, const wstring& out_archive ) {
     if ( old_arc ) {
         old_arc->close();
-		auto out_file_stream = dynamic_cast<COutFileStream*>(&*out_stream); //cast should not fail, but anyway...
-		if ( out_file_stream ) {
-			out_file_stream->Close();
-		}
+        auto out_file_stream = dynamic_cast<COutFileStream*>( &*out_stream ); //cast should not fail, but anyway...
+        if ( out_file_stream ) {
+            out_file_stream->Close();
+        }
         //remove old file and rename tmp file (move file with overwriting)
         bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
         if ( !renamed ) {

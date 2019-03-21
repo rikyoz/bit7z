@@ -39,12 +39,8 @@ namespace bit7z {
     using std::wstring;
 
     class UpdateCallback : public CompressCallback,
-                           public ICompressProgressInfo,
-                           ICryptoGetTextPassword2,
-                           CMyUnknownImp {
+                           public ICompressProgressInfo {
         public:
-            vector< pair< wstring, HRESULT > > mFailedFiles;
-
             explicit UpdateCallback( const BitArchiveCreator& creator,
                                      const vector< FSItem >& new_items,
                                      const BitInputArchive* old_arc = nullptr );
@@ -55,44 +51,24 @@ namespace bit7z {
             uint32_t itemsCount() const override;
             wstring getErrorMessage() const override;
 
-            HRESULT Finilize();
-
-            MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
-
-            // IProgress
-            STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+            MY_UNKNOWN_IMP1( ICompressProgressInfo )
 
             // ICompressProgressInfo
             STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveUpdateCallback2
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index,
-                                            Int32* newData,
-                                            Int32* newProperties,
-                                            UInt32* indexInArchive );
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
             STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
-            STDMETHOD( SetOperationResult )( Int32 operationResult );
             STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
             STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
 
-            //ICryptoGetTextPassword2
-            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
-
         private:
+            const vector< FSItem >& mNewItems;
+
             uint64_t mVolSize;
             wstring mVolName;
 
-            const vector< FSItem >& mNewItems;
-            const BitInputArchive* mOldArc;
-            const uint32_t mOldArcItemsCount;
-            const BitArchiveCreator& mCreator;
-
-            bool mAskPassword;
-
-            bool mNeedBeClosed;
+            vector< pair< wstring, HRESULT > > mFailedFiles;
     };
 }
 #endif // UPDATECALLBACK_HPP

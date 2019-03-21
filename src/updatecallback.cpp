@@ -46,60 +46,18 @@ using namespace bit7z;
 UpdateCallback::UpdateCallback( const BitArchiveCreator& creator,
                                 const vector< FSItem >& new_items,
                                 const BitInputArchive* old_arc )
-    : mVolSize( 0 ),
+    : CompressCallback( creator, old_arc ),
       mNewItems( new_items ),
-      mOldArc( old_arc ),
-      mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ),
-      mCreator( creator ),
-      mAskPassword( false ) {
-    mNeedBeClosed = false;
-    mFailedFiles.clear();
-}
+      mVolSize( 0 ) {}
 
 UpdateCallback::~UpdateCallback() {
     Finilize();
-}
-
-HRESULT UpdateCallback::SetTotal( UInt64 size ) {
-    if ( mCreator.totalCallback() ) {
-        mCreator.totalCallback()( size );
-    }
-    return S_OK;
-}
-
-HRESULT UpdateCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mCreator.progressCallback() && completeValue != nullptr ) {
-        mCreator.progressCallback()( *completeValue );
-    }
-    return S_OK;
 }
 
 STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
     if ( mCreator.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
         mCreator.ratioCallback()( *inSize, *outSize );
     }
-    return S_OK;
-}
-
-HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
-    return E_NOTIMPL;
-}
-
-HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 index, Int32* newData,
-        Int32* newProperties, UInt32* indexInArchive ) {
-
-    bool isOldItem = index < mOldArcItemsCount;
-
-    if ( newData != nullptr ) {
-        *newData = isOldItem ? 0 : 1; //= true;
-    }
-    if ( newProperties != nullptr ) {
-        *newProperties = isOldItem ? 0 : 1; //= true;
-    }
-    if ( indexInArchive != nullptr ) {
-        *indexInArchive = isOldItem ? index : static_cast< uint32_t >( -1 );
-    }
-
     return S_OK;
 }
 
@@ -155,14 +113,6 @@ HRESULT UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* v
     return S_OK;
 }
 
-HRESULT UpdateCallback::Finilize() {
-    if ( mNeedBeClosed ) {
-        mNeedBeClosed = false;
-    }
-
-    return S_OK;
-}
-
 uint32_t UpdateCallback::itemsCount() const {
     return mOldArcItemsCount + static_cast< uint32_t >( mNewItems.size() );
 }
@@ -198,11 +148,6 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
     return S_OK;
 }
 
-HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
-    mNeedBeClosed = true;
-    return S_OK;
-}
-
 HRESULT UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
     if ( mVolSize == 0 ) { return S_FALSE; }
 
@@ -225,21 +170,6 @@ HRESULT UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** vo
 
     *volumeStream = streamLoc.Detach();
     return S_OK;
-}
-
-HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( !mCreator.isPasswordDefined() ) {
-        if ( mAskPassword ) {
-            // You can ask real password here from user
-            // Password = GetPassword(OutStream);
-            // PasswordIsDefined = true;
-            mErrorMessage = L"Password is not defined";
-            return E_ABORT;
-        }
-    }
-
-    *passwordIsDefined = ( mCreator.isPasswordDefined() ? 1 : 0 );
-    return StringToBstr( mCreator.password().c_str(), password );
 }
 
 wstring UpdateCallback::getErrorMessage() const {

@@ -40,52 +40,12 @@ MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
                                       const vector< byte_t >& in_buffer,
                                       const wstring& in_buffer_name,
                                       const BitInputArchive* old_arc )
-    : mCreator( creator ),
-      mAskPassword( false ),
-      mNeedBeClosed( false ),
+    : CompressCallback( creator, old_arc ),
       mBuffer( in_buffer ),
-      mBufferName( in_buffer_name ),
-      mOldArc( old_arc ),
-      mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ) {}
+      mBufferName( in_buffer_name ) {}
 
 MemUpdateCallback::~MemUpdateCallback() {
     Finilize();
-}
-
-HRESULT MemUpdateCallback::SetTotal( UInt64 size ) {
-    if ( mCreator.totalCallback() ) {
-        mCreator.totalCallback()( size );
-    }
-    return S_OK;
-}
-
-HRESULT MemUpdateCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mCreator.progressCallback() ) {
-        mCreator.progressCallback()( *completeValue );
-    }
-    return S_OK;
-}
-
-HRESULT MemUpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
-    return E_NOTIMPL;
-}
-
-HRESULT MemUpdateCallback::GetUpdateItemInfo( UInt32 index, Int32* newData,
-        Int32* newProperties, UInt32* indexInArchive ) {
-
-    bool isOldItem = index < mOldArcItemsCount;
-
-    if ( newData != nullptr ) {
-        *newData = isOldItem ? 0 : 1; //= true;
-    }
-    if ( newProperties != nullptr ) {
-        *newProperties = isOldItem ? 0 : 1; //= true;
-    }
-    if ( indexInArchive != nullptr ) {
-        *indexInArchive = isOldItem ? index : static_cast< uint32_t >( -1 );
-    }
-
-    return S_OK;
 }
 
 HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
@@ -131,14 +91,6 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::Finilize() {
-    if ( mNeedBeClosed ) {
-        mNeedBeClosed = false;
-    }
-
-    return S_OK;
-}
-
 uint32_t MemUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
@@ -156,26 +108,6 @@ HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStre
 
     *inStream = inStreamLoc.Detach();
     return S_OK;
-}
-
-HRESULT MemUpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
-    mNeedBeClosed = true;
-    return S_OK;
-}
-
-HRESULT MemUpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( !mCreator.isPasswordDefined() ) {
-        if ( mAskPassword ) {
-            // You can ask real password here from user
-            // Password = GetPassword(OutStream);
-            // PasswordIsDefined = true;
-            mErrorMessage = L"Password is not defined";
-            return E_ABORT;
-        }
-    }
-
-    *passwordIsDefined = ( mCreator.isPasswordDefined() ? 1 : 0 );
-    return StringToBstr( mCreator.password().c_str(), password );
 }
 
 /* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
