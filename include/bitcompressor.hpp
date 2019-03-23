@@ -31,6 +31,12 @@ namespace bit7z {
     using std::vector;
     using std::map;
 
+    namespace filesystem {
+        class FSItem;
+    }
+
+    using namespace filesystem;
+
     /**
      * @brief The BitCompressor class allows to compress files and directories into file archives.
      *
@@ -129,6 +135,10 @@ namespace bit7z {
              * @param out_buffer        the buffer going to contain the output archive.
              */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
+
+        private:
+            void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
+            void compressOut( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;
     };
 }
 #endif // BITCOMPRESSOR_HPP

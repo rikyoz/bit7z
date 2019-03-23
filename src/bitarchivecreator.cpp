@@ -22,7 +22,10 @@
 #include "../include/bitarchivecreator.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/bitpropvariant.hpp"
+#include "../include/coutmultivolstream.hpp"
+#include "../include/coutmemstream.hpp"
+#include "../include/compresscallback.hpp"
+#include "../include/fsutil.hpp"
 
 #include <vector>
 
@@ -32,6 +35,7 @@
 using std::wstring;
 using std::vector;
 using namespace bit7z;
+using namespace bit7z::filesystem;
 
 bool isValidCompressionMethod( const BitInFormat& format, BitCompressionMethod method ) {
     switch ( method ) {
@@ -191,6 +195,90 @@ void BitArchiveCreator::setUpdateMode( bool update_mode ) {
 
 void BitArchiveCreator::setVolumeSize( uint64_t size ) {
     mVolumeSize = size;
+}
+
+CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
+    CMyComPtr< IOutArchive > new_arc;
+    const GUID format_GUID = mFormat.guid();
+    mLibrary.createArchiveObject( &format_GUID,
+                                  &::IID_IOutArchive,
+                                  reinterpret_cast< void** >( &new_arc ) );
+    setArchiveProperties( new_arc );
+    return new_arc;
+}
+
+CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out_archive,
+        CMyComPtr< IOutArchive >& new_arc,
+        unique_ptr< BitInputArchive >& old_arc ) const {
+    CMyComPtr< IOutStream > out_file_stream;
+    if ( mVolumeSize > 0 ) {
+        out_file_stream = new COutMultiVolStream( mVolumeSize, out_archive );
+    } else {
+        auto* out_file_stream_spec = new COutFileStream();
+        //NOTE: if any exception occurs in the following ifs, the file stream obj is released thanks to the CMyComPtr
+        out_file_stream = out_file_stream_spec;
+        if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
+            if ( ::GetLastError() != ERROR_FILE_EXISTS ) { //unknown error
+                throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
+            }
+            if ( !mUpdateMode ) { //output archive file already exists and no update mode set
+                throw BitException( L"Cannot update existing archive file '" + out_archive + L"'" );
+            }
+            if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+                //update mode is set but format does not support adding more files
+                throw BitException( "Format does not support updating existing archive files" );
+            }
+            if ( !out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
+                //could not create temporary file
+                throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
+            }
+            old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
+            old_arc->initUpdatableArchive( &new_arc );
+            setArchiveProperties( new_arc );
+        }
+    }
+    return out_file_stream;
+}
+
+CMyComPtr< ISequentialOutStream > BitArchiveCreator::initOutMemStream( vector<byte_t>& out_buffer ) const {
+    return new COutMemStream( out_buffer );
+}
+
+HRESULT BitArchiveCreator::compressOut( IOutArchive* out_arc,
+                                        ISequentialOutStream* out_stream,
+                                        CompressCallback* update_callback ) {
+    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
+
+    if ( result == E_NOTIMPL ) {
+        throw BitException( "Unsupported operation!" );
+    }
+
+    if ( result == E_FAIL && update_callback->getErrorMessage().empty() ) {
+        throw BitException( "Failed operation (unkwown error)!" );
+    }
+
+    if ( result != S_OK ) {
+        throw BitException( update_callback->getErrorMessage() );
+    }
+
+    return result;
+}
+
+void BitArchiveCreator::cleanupOldArc( BitInputArchive* old_arc,
+                                       IOutStream* out_stream,
+                                       const wstring& out_archive ) {
+    if ( old_arc ) {
+        old_arc->close();
+        auto out_file_stream = dynamic_cast<COutFileStream*>( out_stream ); //cast should not fail, but anyway...
+        if ( out_file_stream ) {
+            out_file_stream->Close();
+        }
+        //remove old file and rename tmp file (move file with overwriting)
+        bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
+        if ( !renamed ) {
+            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
+        }
+    }
 }
 
 void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {

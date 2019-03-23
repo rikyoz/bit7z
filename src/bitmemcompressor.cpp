@@ -22,7 +22,7 @@
 #include "../include/bitmemcompressor.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/outputarchive.hpp"
+#include "../include/memupdatecallback.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace bit7z;
@@ -41,8 +41,12 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
         in_buffer_name = fsutil::filename( out_archive );
     }
 
-    OutputArchive out_arc( *this );
-    out_arc.compress( in_buffer, in_buffer_name, out_archive );
+    unique_ptr< BitInputArchive > old_arc = nullptr;
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< IOutStream > out_file_stream = initOutFileStream( out_archive, new_arc, old_arc );
+    CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, in_buffer_name, old_arc.get() );
+    compressOut( new_arc, out_file_stream, update_callback );
+    cleanupOldArc( old_arc.get(), out_file_stream, out_archive );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
@@ -56,6 +60,8 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
         throw BitException( "Cannot overwrite or update a non empty buffer" );
     }
 
-    OutputArchive out_arc( *this );
-    out_arc.compress( in_buffer, in_buffer_name, out_buffer );
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< ISequentialOutStream > out_mem_stream = initOutMemStream( out_buffer );
+    CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, in_buffer_name );
+    compressOut( new_arc, out_mem_stream, update_callback );
 }

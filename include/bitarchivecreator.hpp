@@ -20,12 +20,19 @@
 #define BITARCHIVECREATOR_HPP
 
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitformat.hpp"
 #include "../include/bitcompressionlevel.hpp"
 #include "../include/bitcompressionmethod.hpp"
 
+struct IOutStream;
+struct ISequentialOutStream;
+
 namespace bit7z {
     using std::wstring;
+    using std::unique_ptr;
+
+    class CompressCallback;
 
     /**
      * @brief Abstract class representing a generic archive creator.
@@ -169,6 +176,22 @@ namespace bit7z {
             void setVolumeSize( uint64_t size );
 
         protected:
+            CMyComPtr< IOutArchive > initOutArchive() const;
+
+            CMyComPtr< IOutStream > initOutFileStream( const wstring& out_archive,
+                                                       CMyComPtr< IOutArchive >& new_arc,
+                                                       unique_ptr< BitInputArchive >& old_arc ) const;
+
+            CMyComPtr< ISequentialOutStream > initOutMemStream( vector< byte_t >& out_buffer ) const;
+
+            static HRESULT compressOut( IOutArchive* out_arc,
+                                        ISequentialOutStream* out_stream,
+                                        CompressCallback* update_callback );
+
+            static void cleanupOldArc( BitInputArchive* old_arc,
+                                       IOutStream* out_stream,
+                                       const wstring& out_archive );
+
             void setArchiveProperties( IOutArchive* out_archive ) const;
 
             const BitInOutFormat& mFormat;
@@ -179,8 +202,6 @@ namespace bit7z {
             bool mSolidMode;
             bool mUpdateMode;
             uint64_t mVolumeSize;
-
-            friend class OutputArchive;
     };
 }
 

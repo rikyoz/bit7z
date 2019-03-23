@@ -286,7 +286,6 @@
     <ClCompile Include="src\memextractcallback.cpp" />
     <ClCompile Include="src\memupdatecallback.cpp" />
     <ClCompile Include="src\opencallback.cpp" />
-    <ClCompile Include="src\outputarchive.cpp" />
     <ClCompile Include="src\updatecallback.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -320,7 +319,6 @@
     <ClInclude Include="include\memextractcallback.hpp" />
     <ClInclude Include="include\memupdatecallback.hpp" />
     <ClInclude Include="include\opencallback.hpp" />
-    <ClInclude Include="include\outputarchive.hpp" />
     <ClInclude Include="include\updatecallback.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
