@@ -21,13 +21,22 @@
 
 #include "../include/bitexception.hpp"
 
+#include <Windows.h>
+
 using std::string;
 using namespace bit7z;
+
+std::string ws2s( const std::wstring& wstr ) {
+	int num_chars = WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), NULL, 0, NULL, NULL );
+	std::string result;
+	if ( num_chars > 0 ) {
+		result.resize( num_chars );
+		WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), &result[0], num_chars, NULL, NULL );
+	}
+	return result;
+}
 
 BitException::BitException( const char* const message ) : runtime_error( message ) {}
 
 BitException::BitException( const wstring& message )
-    : runtime_error( string( message.begin(), message.end() ) ) {}
-/* NOTE: this doesn't convert the character set of the original wstring message!
- * But we expect every error message to be ASCII (apart from those containing filenames)!
- * This will need to be fixed in the future */
+    : runtime_error( ws2s( message ) ) {}
