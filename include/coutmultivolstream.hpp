@@ -20,6 +20,7 @@
 #define COUTMULTIVOLSTREAM_HPP
 
 #include <vector>
+#include <string>
 #include <cstdint>
 
 #include "7zip/Common/FileStreams.h"

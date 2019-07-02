@@ -20,7 +20,7 @@
 #define BITEXCEPTION_HPP
 
 #include <string>
-#include <exception>
+#include <stdexcept>
 
 namespace bit7z {
     using std::runtime_error;

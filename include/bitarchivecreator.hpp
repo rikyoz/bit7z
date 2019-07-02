@@ -25,6 +25,8 @@
 #include "../include/bitcompressionlevel.hpp"
 #include "../include/bitcompressionmethod.hpp"
 
+#include <memory>
+
 struct IOutStream;
 struct ISequentialOutStream;
 
