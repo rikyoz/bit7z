@@ -76,11 +76,7 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
                 prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
                 break;
             case kpidCTime:
-                prop = ft;
-                break;
             case kpidATime:
-                prop = ft;
-                break;
             case kpidMTime:
                 prop = ft;
                 break;

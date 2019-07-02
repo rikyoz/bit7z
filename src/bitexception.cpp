@@ -30,7 +30,7 @@ std::string ws2s( const std::wstring& wstr ) {
 	int num_chars = WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), NULL, 0, NULL, NULL );
 	std::string result;
 	if ( num_chars > 0 ) {
-		result.resize( num_chars );
+		result.resize( static_cast< size_t >( num_chars ) );
 		WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), &result[0], num_chars, NULL, NULL );
 	}
 	return result;
