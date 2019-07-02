@@ -42,6 +42,11 @@
     <PlatformToolset>v141</PlatformToolset>
     <!-- MSVC++ 2017 toolset has version v141 -->
   </PropertyGroup>
+    <!-- Visual Studio 2019 (16.0) -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '16.0'">
+    <PlatformToolset>v142</PlatformToolset>
+    <!-- MSVC++ 2019 toolset has version v142 -->
+  </PropertyGroup>
   <!--
     End of: Switch the PlatformToolset based on the Visual Studio Version
   -->
