@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -42,7 +42,7 @@
     <PlatformToolset>v141</PlatformToolset>
     <!-- MSVC++ 2017 toolset has version v141 -->
   </PropertyGroup>
-    <!-- Visual Studio 2019 (16.0) -->
+  <!-- Visual Studio 2019 (16.0) -->
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '16.0'">
     <PlatformToolset>v142</PlatformToolset>
     <!-- MSVC++ 2019 toolset has version v142 -->
@@ -284,6 +284,7 @@
     <ClCompile Include="src\callback.cpp" />
     <ClCompile Include="src\coutmemstream.cpp" />
     <ClCompile Include="src\coutmultivolstream.cpp" />
+    <ClCompile Include="src\coutstdstream.cpp" />
     <ClCompile Include="src\extractcallback.cpp" />
     <ClCompile Include="src\fsindexer.cpp" />
     <ClCompile Include="src\fsitem.cpp" />
@@ -317,6 +318,7 @@
     <ClInclude Include="include\compresscallback.hpp" />
     <ClInclude Include="include\coutmemstream.hpp" />
     <ClInclude Include="include\coutmultivolstream.hpp" />
+    <ClCompile Include="include\coutstdstream.cpp" />
     <ClInclude Include="include\extractcallback.hpp" />
     <ClInclude Include="include\fsindexer.hpp" />
     <ClInclude Include="include\fsitem.hpp" />

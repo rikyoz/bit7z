@@ -33,6 +33,7 @@ struct ISequentialOutStream;
 namespace bit7z {
     using std::wstring;
     using std::unique_ptr;
+    using std::ostream;
 
     class CompressCallback;
 
@@ -185,6 +186,8 @@ namespace bit7z {
                                                        unique_ptr< BitInputArchive >& old_arc ) const;
 
             CMyComPtr< ISequentialOutStream > initOutMemStream( vector< byte_t >& out_buffer ) const;
+
+            CMyComPtr< IOutStream > initOutStdStream( ostream &out_stream ) const;
 
             static HRESULT compressOut( IOutArchive* out_arc,
                                         ISequentialOutStream* out_stream,

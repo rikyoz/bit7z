@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 #include <map>
 
 #include "../include/bitarchivecreator.hpp"
@@ -30,6 +31,7 @@ namespace bit7z {
     using std::wstring;
     using std::vector;
     using std::map;
+    using std::ostream;
 
     namespace filesystem {
         class FSItem;
@@ -136,9 +138,12 @@ namespace bit7z {
              */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
+            void compressFile( const wstring& in_file, ostream& out_stream ) const;
+
         private:
             void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
             void compressOut( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;
+            void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };
 }
 #endif // BITCOMPRESSOR_HPP

@@ -32,6 +32,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/callback.cpp \
            src/coutmemstream.cpp \
            src/coutmultivolstream.cpp \
+           src/coutstdstream.cpp \
            src/extractcallback.cpp \
            src/fsindexer.cpp \
            src/fsitem.cpp \
@@ -71,6 +72,7 @@ HEADERS += include/bit7z.hpp \
            include/callback.hpp \
            include/coutmemstream.hpp \
            include/coutmultivolstream.hpp \
+           include/coutstdstream.hpp \
            include/extractcallback.hpp \
            include/fsindexer.hpp \
            include/fsitem.hpp \

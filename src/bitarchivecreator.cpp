@@ -22,6 +22,7 @@
 #include "../include/bitarchivecreator.hpp"
 
 #include "../include/bitexception.hpp"
+#include "../include/coutstdstream.hpp"
 #include "../include/coutmultivolstream.hpp"
 #include "../include/coutmemstream.hpp"
 #include "../include/compresscallback.hpp"
@@ -242,6 +243,10 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
 
 CMyComPtr< ISequentialOutStream > BitArchiveCreator::initOutMemStream( vector<byte_t>& out_buffer ) const {
     return new COutMemStream( out_buffer );
+}
+
+CMyComPtr< IOutStream > BitArchiveCreator::initOutStdStream( ostream& out_stream ) const {
+    return new COutStdStream( out_stream );
 }
 
 HRESULT BitArchiveCreator::compressOut( IOutArchive* out_arc,

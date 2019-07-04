@@ -98,6 +98,20 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
     compressOut( fs_items, out_buffer );
 }
 
+/* from filesystem to stream */
+
+void BitCompressor::compressFile( const wstring& in_file, ostream& out_stream ) const {
+    FSItem item( in_file );
+    if ( item.isDir() ) {
+        throw BitException( "Cannot compress a directory into a stream!" );
+    }
+
+    vector< FSItem > fs_items;
+    fs_items.push_back( item );
+
+    compressOut( fs_items, out_stream );
+}
+
 void BitCompressor::compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const {
     unique_ptr< BitInputArchive > old_arc = nullptr;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
@@ -113,3 +127,11 @@ void BitCompressor::compressOut( const vector< FSItem >& in_items, vector< byte_
     CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
     BitArchiveCreator::compressOut( new_arc, out_mem_stream, update_callback );
 }
+
+void BitCompressor::compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const {
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< IOutStream > out_std_stream = initOutStdStream( out_stream );
+    CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
+    BitArchiveCreator::compressOut( new_arc, out_std_stream, update_callback );
+}
+
