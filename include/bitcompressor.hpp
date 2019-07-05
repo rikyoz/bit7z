@@ -138,9 +138,31 @@ namespace bit7z {
              */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
-            void compressFile( const wstring& in_file, ostream& out_stream ) const;
+            /**
+             * @brief Compresses the given files or directories.
+             *
+             * The items in the first argument must be the relative or absolute paths to files or
+             * directories existing on the filesystem.
+             *
+             * @param in_paths      a vector of paths.
+             * @param out_stream    the standard ostream where to output the archive file.
+             */
+            void compress( const vector<wstring>& in_paths, ostream& out_stream ) const;
 
-        private:
+            /**
+             * @brief Compresses the given files or directories using the specified aliases.
+             *
+             * The items in the first argument must be the relative or absolute paths to files or
+             * directories existing on the filesystem.
+             * Each pair of the map must follow the following format:
+             *  {L"path to file in the filesystem", L"alias path in the archive"}.
+             *
+             * @param in_paths      a map of paths and corresponding aliases.
+             * @param out_stream    the standard ostream where to output the archive file.
+             */
+            void compress( const map<wstring, wstring>& in_paths, ostream& out_stream ) const;
+
+    private:
             void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
             void compressOut( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;
             void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
