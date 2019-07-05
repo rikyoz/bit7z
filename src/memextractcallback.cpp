@@ -23,7 +23,7 @@
 
 #include "7zip/Common/StreamObjects.h"
 
-#include "../include/coutmemstream.hpp"
+#include "../include/cbufoutstream.hpp"
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
@@ -130,7 +130,7 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
 
     if ( !mProcessedFileInfo.isDir ) {
         //Note: using [] operator creates the buffer if it does not exists already!
-        auto* out_mem_stream_spec = new COutMemStream( mBuffersMap[ fullPath ] );
+        auto* out_mem_stream_spec = new CBufOutStream( mBuffersMap[ fullPath ] );
         CMyComPtr< ISequentialOutStream > outStreamLoc( out_mem_stream_spec );
         mOutMemStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();

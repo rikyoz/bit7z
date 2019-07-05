@@ -19,17 +19,17 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/coutstdstream.hpp"
+#include "../include/cstdoutstream.hpp"
 
 #include <iterator>
 
 using namespace bit7z;
 
-COutStdStream::COutStdStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
+CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
-COutStdStream::~COutStdStream() {}
+CStdOutStream::~CStdOutStream() {}
 
-STDMETHODIMP COutStdStream::Write( const void* data, uint32_t size, uint32_t* processedSize ) {
+STDMETHODIMP CStdOutStream::Write( const void* data, uint32_t size, uint32_t* processedSize ) {
     if ( processedSize ) {
         *processedSize = 0;
     }
@@ -49,7 +49,7 @@ STDMETHODIMP COutStdStream::Write( const void* data, uint32_t size, uint32_t* pr
     return mOutputStream ? S_OK : E_FAIL;
 }
 
-STDMETHODIMP COutStdStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition ) {
+STDMETHODIMP CStdOutStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition ) {
     std::ios_base::seekdir way;
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
@@ -78,7 +78,7 @@ STDMETHODIMP COutStdStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t*
     return mOutputStream ? S_OK : E_FAIL;
 }
 
-STDMETHODIMP COutStdStream::SetSize( uint64_t newSize ) {
+STDMETHODIMP CStdOutStream::SetSize( uint64_t newSize ) {
     const auto old_pos = mOutputStream.tellp();
     mOutputStream.seekp( 0, ostream::end );
 

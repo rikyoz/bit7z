@@ -22,9 +22,9 @@
 #include "../include/bitarchivecreator.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/coutstdstream.hpp"
-#include "../include/coutmultivolstream.hpp"
-#include "../include/coutmemstream.hpp"
+#include "../include/cstdoutstream.hpp"
+#include "../include/cmultivoloutstream.hpp"
+#include "../include/cbufoutstream.hpp"
 #include "../include/compresscallback.hpp"
 #include "../include/fsutil.hpp"
 
@@ -213,7 +213,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
         unique_ptr< BitInputArchive >& old_arc ) const {
     CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
-        out_file_stream = new COutMultiVolStream( mVolumeSize, out_archive );
+        out_file_stream = new CMultiVolOutStream( mVolumeSize, out_archive );
     } else {
         auto* out_file_stream_spec = new COutFileStream();
         //NOTE: if any exception occurs in the following ifs, the file stream obj is released thanks to the CMyComPtr
@@ -242,11 +242,11 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
 }
 
 CMyComPtr< ISequentialOutStream > BitArchiveCreator::initOutMemStream( vector<byte_t>& out_buffer ) const {
-    return new COutMemStream( out_buffer );
+    return new CBufOutStream( out_buffer );
 }
 
 CMyComPtr< IOutStream > BitArchiveCreator::initOutStdStream( ostream& out_stream ) const {
-    return new COutStdStream( out_stream );
+    return new CStdOutStream( out_stream );
 }
 
 HRESULT BitArchiveCreator::compressOut( IOutArchive* out_arc,

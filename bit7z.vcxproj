@@ -282,10 +282,10 @@
     <ClCompile Include="src\bitmemextractor.cpp" />
     <ClCompile Include="src\bitpropvariant.cpp" />
     <ClCompile Include="src\callback.cpp" />
+    <ClCompile Include="src\cbufoutstream.cpp" />
+    <ClCompile Include="src\cmultivoloutstream.cpp" />
     <ClCompile Include="src\compresscallback.cpp" />
-    <ClCompile Include="src\coutmemstream.cpp" />
-    <ClCompile Include="src\coutmultivolstream.cpp" />
-    <ClCompile Include="src\coutstdstream.cpp" />
+    <ClCompile Include="src\cstdoutstream.cpp" />
     <ClCompile Include="src\extractcallback.cpp" />
     <ClCompile Include="src\fsindexer.cpp" />
     <ClCompile Include="src\fsitem.cpp" />
@@ -316,10 +316,10 @@
     <ClInclude Include="include\bitpropvariant.hpp" />
     <ClInclude Include="include\bittypes.hpp" />
     <ClInclude Include="include\callback.hpp" />
+    <ClInclude Include="include\cbufoutstream.hpp" />
+    <ClInclude Include="include\cmultivoloutstream.hpp" />
     <ClInclude Include="include\compresscallback.hpp" />
-    <ClInclude Include="include\coutmemstream.hpp" />
-    <ClInclude Include="include\coutmultivolstream.hpp" />
-    <ClInclude Include="include\coutstdstream.hpp" />
+    <ClInclude Include="include\cstdoutstream.hpp" />
     <ClInclude Include="include\extractcallback.hpp" />
     <ClInclude Include="include\fsindexer.hpp" />
     <ClInclude Include="include\fsitem.hpp" />

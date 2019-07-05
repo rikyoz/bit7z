@@ -1,5 +1,5 @@
-#ifndef COUTSTREAM_HPP
-#define COUTSTREAM_HPP
+#ifndef CSTDOUTSTREAM_HPP
+#define CSTDOUTSTREAM_HPP
 
 #include <ostream>
 
@@ -9,11 +9,11 @@
 namespace bit7z {
     using std::ostream;
 
-    class COutStdStream : public IOutStream, public CMyUnknownImp {
+    class CStdOutStream : public IOutStream, public CMyUnknownImp {
         public:
-            explicit COutStdStream( std::ostream& outputStream );
+            explicit CStdOutStream( std::ostream& outputStream );
 
-            virtual ~COutStdStream();
+            virtual ~CStdOutStream();
 
             MY_UNKNOWN_IMP1( IOutStream );
 
@@ -27,4 +27,4 @@ namespace bit7z {
     };
 }
 
-#endif // COUTSTREAM_HPP
+#endif // CSTDOUTSTREAM_HPP

@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/coutmultivolstream.hpp"
+#include "../include/cmultivoloutstream.hpp"
 
 #include <string>
 
@@ -33,7 +33,7 @@
  *  + Use of uint64_t instead of UInt64
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveName ) :
+CMultiVolOutStream::CMultiVolOutStream( uint64_t size, const wstring& archiveName ) :
     mVolSize( size ),
     mVolPrefix( archiveName + L"." ),
     mStreamIndex( 0 ),
@@ -41,9 +41,9 @@ COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveNam
     mAbsPos( 0 ),
     mLength( 0 ) {}
 
-COutMultiVolStream::~COutMultiVolStream() {}
+CMultiVolOutStream::~CMultiVolOutStream() {}
 
-HRESULT COutMultiVolStream::Close() {
+HRESULT CMultiVolOutStream::Close() {
     HRESULT res = S_OK;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
         COutFileStream* s = ( *it ).streamSpec;
@@ -57,9 +57,9 @@ HRESULT COutMultiVolStream::Close() {
     return res;
 }
 
-UInt64 COutMultiVolStream::GetSize() const { return mLength; }
+UInt64 CMultiVolOutStream::GetSize() const { return mLength; }
 
-bool COutMultiVolStream::SetMTime( const FILETIME* mTime ) {
+bool CMultiVolOutStream::SetMTime( const FILETIME* mTime ) {
     bool res = true;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
         COutFileStream* s = ( *it ).streamSpec;
@@ -72,7 +72,7 @@ bool COutMultiVolStream::SetMTime( const FILETIME* mTime ) {
     return res;
 }
 
-STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -139,7 +139,7 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
     return S_OK;
 }
 
-STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     if ( seekOrigin >= 3 ) {
         return STG_E_INVALIDFUNCTION;
     }
@@ -162,7 +162,7 @@ STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
     return S_OK;
 }
 
-STDMETHODIMP COutMultiVolStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
     size_t i = 0;
     while ( i < mVolStreams.size() ) {
         CAltStreamInfo& altStream = mVolStreams[ i++ ];

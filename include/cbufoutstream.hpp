@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef COUTMEMSTREAM_HPP
-#define COUTMEMSTREAM_HPP
+#ifndef CBUFOUTSTREAM_HPP
+#define CBUFOUTSTREAM_HPP
 
 #include <vector>
 
@@ -29,17 +29,19 @@
 namespace bit7z {
     using std::vector;
 
-    class COutMemStream : public ISequentialOutStream, public CMyUnknownImp {
+    class CBufOutStream : public ISequentialOutStream, public CMyUnknownImp {
         public:
-            explicit COutMemStream( vector< byte_t >& out_buffer );
+            explicit CBufOutStream( vector< byte_t >& out_buffer );
 
-            virtual ~COutMemStream();
+            virtual ~CBufOutStream();
 
-            vector< byte_t >& mBuffer;
+            MY_UNKNOWN_IMP1( ISequentialOutStream );
 
-            MY_UNKNOWN_IMP
-
+            // ISequentialOutStream
             STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );
+
+        private:
+            vector< byte_t >& mBuffer;
     };
 }
-#endif // COUTMEMSTREAM_HPP
+#endif // CBUFFEROUTSTREAM_HPP
