@@ -19,11 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/memextractcallback.hpp"
+#include "../include/streamextractcallback.hpp"
 
-#include "7zip/Common/StreamObjects.h"
-
-#include "../include/cbufoutstream.hpp"
+#include "../include/cstdoutstream.hpp"
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
@@ -47,35 +45,35 @@ using namespace bit7z;
 //static const wstring kExtractingString =  L"Extracting  ";
 //static const wstring kSkippingString   =  L"Skipping    ";
 
-MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler,
-                                        const BitInputArchive& inputArchive,
-                                        map< wstring, vector< byte_t > >& buffersMap )
+StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
+        const BitInputArchive& inputArchive,
+        ostream& outputStream )
     : mHandler( handler ),
       mInputArchive( inputArchive ),
-      mBuffersMap( buffersMap ),
+      mOutputStream( outputStream ),
       mExtractMode( true ),
       mProcessedFileInfo(),
       mNumErrors( 0 ) {}
 
-MemExtractCallback::~MemExtractCallback() {}
+StreamExtractCallback::~StreamExtractCallback() {}
 
-STDMETHODIMP MemExtractCallback::SetTotal( UInt64 size ) {
+STDMETHODIMP StreamExtractCallback::SetTotal( UInt64 size ) {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );
     }
     return S_OK;
 }
 
-STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* completeValue ) {
+STDMETHODIMP StreamExtractCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
         mHandler.progressCallback()( *completeValue );
     }
     return S_OK;
 }
 
-STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;
-    mOutMemStream.Release();
+    mStdOutStream.Release();
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
     wstring fullPath;
@@ -129,10 +127,9 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     }
 
     if ( !mProcessedFileInfo.isDir ) {
-        //Note: using [] operator it creates the buffer if it does not exists already!
-        auto* out_mem_stream_spec = new CBufOutStream( mBuffersMap[ fullPath ] );
-        CMyComPtr< ISequentialOutStream > outStreamLoc( out_mem_stream_spec );
-        mOutMemStream = outStreamLoc;
+        auto* out_std_stream_spec = new CStdOutStream( mOutputStream );
+        CMyComPtr< IOutStream > outStreamLoc( out_std_stream_spec );
+        mStdOutStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }
 
@@ -141,7 +138,7 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     return E_OUTOFMEMORY;
 }
 
-STDMETHODIMP MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
+STDMETHODIMP StreamExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     mExtractMode = false;
 
     // in future we might use this switch to handle an event like onOperationStart(Operation o)
@@ -167,7 +164,7 @@ STDMETHODIMP MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     return S_OK;
 }
 
-STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
+STDMETHODIMP StreamExtractCallback::SetOperationResult( Int32 operationResult ) {
     switch ( operationResult ) {
         case NArchive::NExtract::NOperationResult::kOK:
             break;
@@ -197,7 +194,7 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
     //    if ( mOutBuffStream != NULL ) {
     //        RINOK( mOutBuffStreamSpec->Close() );
     //    }
-    mOutMemStream.Release();
+    mStdOutStream.Release();
 
     if ( mNumErrors > 0 ) {
         return E_FAIL;
@@ -207,7 +204,7 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
 }
 
 
-STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP StreamExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user

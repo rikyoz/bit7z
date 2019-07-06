@@ -41,6 +41,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/memextractcallback.cpp \
            src/memupdatecallback.cpp \
            src/opencallback.cpp \
+           src/streamextractcallback.cpp \
            src/updatecallback.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
@@ -81,6 +82,7 @@ HEADERS += include/bit7z.hpp \
            include/memextractcallback.hpp \
            include/memupdatecallback.hpp \
            include/opencallback.hpp \
+           include/streamextractcallback.hpp \
            include/updatecallback.hpp
 
 contains(QT_ARCH, i386) {
