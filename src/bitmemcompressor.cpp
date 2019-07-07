@@ -65,3 +65,12 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
     CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, in_buffer_name );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
+
+void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
+                                 std::ostream& out_stream,
+                                 const std::wstring& in_buffer_name ) const {
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< IOutStream > out_std_stream = initOutStdStream( out_stream );
+    CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, in_buffer_name );
+    compressOut( new_arc, out_std_stream, update_callback );
+}
