@@ -30,6 +30,7 @@ namespace bit7z {
     using std::wstring;
     using std::vector;
     using std::map;
+    using std::ostream;
 
     /**
      * @brief The BitMemExtractor class allows to extract the content of in-memory archives.
@@ -67,6 +68,14 @@ namespace bit7z {
                           vector< byte_t >& out_buffer,
                           unsigned int index = 0 ) const;
 
+            /**
+             * @brief Extracts the given buffer archive into the output standard stream.
+             *
+             * @param in_buffer    the buffer containing the archive to be extracted.
+             * @param out_strean   the output standard stream where the content of the archive will be put.
+             * @param index        the index of the file to be extracted from in_buffer.
+             */
+            void extract( const vector< byte_t >& in_buffer, ostream& out_stream, unsigned int index = 0 ) const;
 
             void extract( const vector< byte_t >& in_buffer, map< wstring, vector<byte_t> >& out_map ) const;
 

@@ -24,8 +24,9 @@
 #include "7zip/Archive/IArchive.h"
 
 #include "../include/bitexception.hpp"
-#include "../include/memextractcallback.hpp"
 #include "../include/extractcallback.hpp"
+#include "../include/memextractcallback.hpp"
+#include "../include/streamextractcallback.hpp"
 
 using namespace bit7z;
 
@@ -72,6 +73,28 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
     out_buffer = std::move( buffers_map.begin()->second );
+}
+
+void BitMemExtractor::extract( const vector<byte_t>& in_buffer, std::ostream& out_stream, unsigned int index ) const {
+    BitInputArchive in_archive( *this, in_buffer );
+
+    uint32_t number_items = in_archive.itemsCount();
+    if ( index >= number_items ) {
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
+    }
+
+    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException( "Cannot extract a folder to a buffer" );
+    }
+
+    auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
+    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
+
+    const vector< uint32_t > indices( 1, index );
+    HRESULT res = in_archive.extract( indices, extract_callback );
+    if ( res != S_OK ) {
+        throw BitException( extract_callback_spec->getErrorMessage() );
+    }
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const {

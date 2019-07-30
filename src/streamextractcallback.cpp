@@ -57,6 +57,13 @@ StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
 
 StreamExtractCallback::~StreamExtractCallback() {}
 
+wstring StreamExtractCallback::getErrorMessage() const {
+    if ( !mOutputStream ) {
+        return L"Stream error (errno: " + std::to_wstring( errno ) + L")";
+    }
+    return Callback::getErrorMessage();
+}
+
 STDMETHODIMP StreamExtractCallback::SetTotal( UInt64 size ) {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );
@@ -67,6 +74,13 @@ STDMETHODIMP StreamExtractCallback::SetTotal( UInt64 size ) {
 STDMETHODIMP StreamExtractCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
         mHandler.progressCallback()( *completeValue );
+    }
+    return S_OK;
+}
+
+STDMETHODIMP StreamExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+    if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+        mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
 }

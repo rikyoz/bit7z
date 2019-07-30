@@ -23,6 +23,7 @@
 #include <map>
 
 #include "7zip/Archive/IArchive.h"
+#include "7zip/ICoder.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
@@ -36,7 +37,8 @@ namespace bit7z {
     using std::map;
     using std::ostream;
 
-    class StreamExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+    class StreamExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
+                                  ICryptoGetTextPassword, CMyUnknownImp, public Callback {
         public:
             StreamExtractCallback( const BitArchiveHandler& handler,
                                    const BitInputArchive& inputArchive,
@@ -44,11 +46,16 @@ namespace bit7z {
 
             virtual ~StreamExtractCallback();
 
-            MY_UNKNOWN_IMP2( IArchiveExtractCallback, ICryptoGetTextPassword )
+            wstring getErrorMessage() const;
+
+            MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 
             // IProgress
             STDMETHOD( SetTotal )( UInt64 size );
             STDMETHOD( SetCompleted )( const UInt64* completeValue );
+
+            // ICompressProgressInfo
+            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
