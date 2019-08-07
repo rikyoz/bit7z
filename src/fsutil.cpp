@@ -29,11 +29,11 @@ using namespace std;
 using namespace bit7z::filesystem;
 
 bool fsutil::is_directory( const wstring& path ) {
-    return 0 != ( GetFileAttributes( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY );
+    return 0 != ( GetFileAttributesW( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY );
 }
 
 bool fsutil::path_exists( const wstring& path ) {
-    return GetFileAttributes( path.c_str() ) != INVALID_FILE_ATTRIBUTES;
+    return GetFileAttributesW( path.c_str() ) != INVALID_FILE_ATTRIBUTES;
 }
 
 /*bool fsutil::has_ending( wstring const& str, const wstring& ending ) {

@@ -26,7 +26,7 @@
 
 namespace bit7z {
     namespace filesystem {
-        typedef WIN32_FIND_DATA FSItemInfo;
+        typedef WIN32_FIND_DATAW FSItemInfo;
 
         using std::wstring;
 

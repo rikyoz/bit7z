@@ -29,7 +29,7 @@
 using namespace bit7z;
 using std::ostringstream;
 
-Bit7zLibrary::Bit7zLibrary( const std::wstring &dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
+Bit7zLibrary::Bit7zLibrary( const std::wstring &dll_path ) : mLibrary( LoadLibraryW( dll_path.c_str() ) ) {
     if ( !mLibrary ) {
         ostringstream os;
         os << GetLastError();
