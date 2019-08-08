@@ -42,6 +42,10 @@ bool fsutil::path_exists( const wstring& path ) {
 }*/
 
 void fsutil::normalize_path( wstring& path ) { //this assumes that the passed path is not a file path!
+    while ( path.back() == L'\0' ) {
+        path.pop_back();
+    }
+
     if ( !path.empty() && path.back() != L'\\' && path.back() != L'/' ) {
         path.append( L"\\" );
     }
