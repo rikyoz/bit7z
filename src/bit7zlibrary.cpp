@@ -25,7 +25,7 @@
 
 using namespace bit7z;
 
-Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
+Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) : mLibrary( LoadLibraryW( dll_path.c_str() ) ) {
     if ( !mLibrary ) {
         throw BitException( L"Cannot load 7-zip library (error " + std::to_wstring( GetLastError() ) + L")" );
     }
