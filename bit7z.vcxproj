@@ -285,6 +285,7 @@
     <ClCompile Include="src\cbufoutstream.cpp" />
     <ClCompile Include="src\cmultivoloutstream.cpp" />
     <ClCompile Include="src\compresscallback.cpp" />
+    <ClCompile Include="src\cstdinstream.cpp" />
     <ClCompile Include="src\cstdoutstream.cpp" />
     <ClCompile Include="src\extractcallback.cpp" />
     <ClCompile Include="src\fsindexer.cpp" />
@@ -320,6 +321,7 @@
     <ClInclude Include="include\cbufoutstream.hpp" />
     <ClInclude Include="include\cmultivoloutstream.hpp" />
     <ClInclude Include="include\compresscallback.hpp" />
+    <ClInclude Include="include\cstdinstream.hpp" />
     <ClInclude Include="include\cstdoutstream.hpp" />
     <ClInclude Include="include\extractcallback.hpp" />
     <ClInclude Include="include\fsindexer.hpp" />

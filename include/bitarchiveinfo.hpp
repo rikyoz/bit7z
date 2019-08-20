@@ -49,9 +49,12 @@ namespace bit7z {
                             const wstring& in_file,
                             const BitInFormat& format = BitFormat::Auto );
 
-
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const vector< byte_t >& in_buffer,
+                            const BitInFormat& format = BitFormat::Auto );
+
+            BitArchiveInfo( const Bit7zLibrary& lib,
+                            std::istream& in_stream,
                             const BitInFormat& format = BitFormat::Auto );
 
             /**

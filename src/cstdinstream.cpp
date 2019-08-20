@@ -28,6 +28,8 @@ CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream )
 CStdInStream::~CStdInStream() {}
 
 STDMETHODIMP CStdInStream::Read( void* data, uint32_t size, uint32_t* processedSize ) {
+    mInputStream.clear();
+
     if ( processedSize ) {
         *processedSize = 0;
     }
@@ -42,10 +44,12 @@ STDMETHODIMP CStdInStream::Read( void* data, uint32_t size, uint32_t* processedS
         *processedSize = static_cast< uint32_t >( mInputStream.gcount() );
     }
 
-    return mInputStream ? S_OK : E_FAIL;
+    return mInputStream.bad() ? HRESULT_FROM_WIN32( ERROR_READ_FAULT ) : S_OK;
 }
 
 STDMETHODIMP CStdInStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition ) {
+    mInputStream.clear();
+
     std::ios_base::seekdir way;
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
@@ -61,15 +65,19 @@ STDMETHODIMP CStdInStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* 
             return STG_E_INVALIDFUNCTION;
     }
 
-    if ( offset < 0 ) {
+    /*if ( offset < 0 ) { // GZip uses negative offsets!
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-    }
+    }*/
 
     mInputStream.seekg( static_cast< std::istream::off_type >( offset ), way );
+
+    if ( mInputStream.bad() ) {
+        return HRESULT_FROM_WIN32( ERROR_SEEK );
+    }
 
     if ( newPosition ) {
         *newPosition = mInputStream.tellg();
     }
 
-    return mInputStream ? S_OK : E_FAIL;
+    return S_OK;
 }

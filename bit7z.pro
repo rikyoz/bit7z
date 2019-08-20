@@ -33,6 +33,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/cbufoutstream.cpp \
            src/cmultivoloutstream.cpp \
            src/compresscallback.cpp \
+           src/cstdinstream.cpp \
            src/cstdoutstream.cpp \
            src/extractcallback.cpp \
            src/fsindexer.cpp \
@@ -74,6 +75,7 @@ HEADERS += include/bit7z.hpp \
            include/cbufoutstream.hpp \
            include/cmultivoloutstream.hpp \
            include/compresscallback.hpp \
+           include/cstdinstream.hpp \
            include/cstdoutstream.hpp \
            include/extractcallback.hpp \
            include/fsindexer.hpp \

@@ -25,6 +25,8 @@ namespace bit7z {
 
             BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer );
 
+            BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream );
+
             virtual ~BitInputArchive();
 
             /**
