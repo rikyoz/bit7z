@@ -107,6 +107,6 @@ Thank you! :)
 <br/>
 <div align="center">
 
-Copyright &copy; 2014 - 2018 Riccardo Ostani ([@rikyoz](https://github.com/rikyoz))
+Copyright &copy; 2014 - 2018 Riccardo Ostani (@rikyoz)
 
 </div>
