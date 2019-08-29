@@ -62,8 +62,11 @@ namespace bit7z {
              */
             void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 
+            void setLargePageMode();
+
         private:
             typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );
+            typedef HRESULT ( WINAPI* SetLargePageMode )();
 
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
