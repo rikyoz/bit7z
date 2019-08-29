@@ -30,6 +30,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitmemextractor.cpp \
            src/bitpropvariant.cpp \
            src/bitstreamcompressor.cpp \
+           src/bitstreamextractor.cpp \
            src/callback.cpp \
            src/cbufoutstream.cpp \
            src/cmultivoloutstream.cpp \
@@ -73,6 +74,7 @@ HEADERS += include/bit7z.hpp \
            include/bitmemextractor.hpp \
            include/bitpropvariant.hpp \
            include/bitstreamcompressor.hpp \
+           include/bitstreamextractor.hpp \
            include/bittypes.hpp \
            include/callback.hpp \
            include/cbufoutstream.hpp \
