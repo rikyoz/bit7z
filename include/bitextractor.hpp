@@ -32,6 +32,7 @@ namespace bit7z {
     using std::wstring;
     using std::vector;
     using std::map;
+    using std::ostream;
 
     class BitInputArchive;
 
@@ -83,13 +84,23 @@ namespace bit7z {
                                const wstring& out_dir = L"" ) const;
 
             /**
-             * @brief Extracts the given archive into the output buffer.
+             * @brief Extracts a file from the given archive into the output buffer.
 
              * @param in_file      the input archive file.
              * @param out_buffer   the output buffer where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_file.
              */
             void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 ) const;
+
+
+            /**
+             * @brief Extracts a file from the given archive into the output stream.
+
+            * @param in_file      the input archive file.
+            * @param out_buffer   the output standard stream where the content of the archive will be put.
+            * @param index        the index of the file to be extracted from in_file.
+            */
+            void extract( const wstring& in_file, ostream& out_stream, unsigned int index = 0 ) const;
 
             void extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const;
 

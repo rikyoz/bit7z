@@ -28,6 +28,8 @@
 using namespace std;
 using namespace bit7z;
 
+const char* kUnsupportedOperation = "Unsupported operation!";
+
 BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitArchiveCreator( lib, format ) {}
 
@@ -35,7 +37,7 @@ BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& for
 
 void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& out_archive ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
-        throw BitException( "Unsupported operation!" );
+        throw BitException( kUnsupportedOperation );
     }
     vector< FSItem > fs_items = FSIndexer::indexPaths( in_paths );
     compressOut( fs_items, out_archive );
@@ -43,7 +45,7 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
 
 void BitCompressor::compress( const map< wstring, wstring >& in_paths, const wstring& out_archive ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
-        throw BitException( "Unsupported operation!" );
+        throw BitException( kUnsupportedOperation );
     }
     vector< FSItem > fs_items = FSIndexer::indexPathsMap( in_paths );
     compressOut( fs_items, out_archive );
@@ -61,7 +63,7 @@ void BitCompressor::compressFile( const wstring& in_file, const wstring& out_arc
 
 void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const {
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
-        throw BitException( "Unsupported operation!" );
+        throw BitException( kUnsupportedOperation );
     }
     vector< FSItem > fs_items = FSIndexer::indexPaths( in_files, true );
     compressOut( fs_items, out_archive );
@@ -70,7 +72,7 @@ void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstr
 void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
                                    bool recursive, const wstring& filter ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
-        throw BitException( "Unsupported operation!" );
+        throw BitException( kUnsupportedOperation );
     }
     vector< FSItem > fs_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
     compressOut( fs_items, out_archive );
@@ -98,6 +100,24 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
     compressOut( fs_items, out_buffer );
 }
 
+/* from filesystem to stream */
+
+void BitCompressor::compress( const vector< wstring >& in_paths, ostream& out_stream ) const {
+    if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
+        throw BitException( kUnsupportedOperation );
+    }
+    vector< FSItem > fs_items = FSIndexer::indexPaths( in_paths );
+    compressOut( fs_items, out_stream );
+}
+
+void BitCompressor::compress( const map< wstring, wstring >& in_paths, ostream& out_stream ) const {
+    if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
+        throw BitException( kUnsupportedOperation );
+    }
+    vector< FSItem > fs_items = FSIndexer::indexPathsMap( in_paths );
+    compressOut( fs_items, out_stream );
+}
+
 void BitCompressor::compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const {
     unique_ptr< BitInputArchive > old_arc = nullptr;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
@@ -113,3 +133,11 @@ void BitCompressor::compressOut( const vector< FSItem >& in_items, vector< byte_
     CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
     BitArchiveCreator::compressOut( new_arc, out_mem_stream, update_callback );
 }
+
+void BitCompressor::compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const {
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< IOutStream > out_std_stream = initOutStdStream( out_stream );
+    CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
+    BitArchiveCreator::compressOut( new_arc, out_std_stream, update_callback );
+}
+

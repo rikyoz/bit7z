@@ -34,6 +34,9 @@ BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file,
 BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >& in_buffer, const BitInFormat& format )
     : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_buffer ) {}
 
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, std::istream& in_stream, const BitInFormat& format )
+    : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_stream ) {}
+
 BitArchiveInfo::~BitArchiveInfo() {}
 
 map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {

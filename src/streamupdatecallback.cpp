@@ -19,10 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/memupdatecallback.hpp"
+#include "../include/streamupdatecallback.hpp"
 
-#include "7zip/Common/StreamObjects.h"
-
+#include "../include/cstdinstream.hpp"
 #include "../include/bitpropvariant.hpp"
 
 using namespace std;
@@ -36,19 +35,19 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
-MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
-                                      const vector< byte_t >& in_buffer,
-                                      const wstring& in_buffer_name,
-                                      const BitInputArchive* old_arc )
+StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
+                                            istream& in_stream,
+                                            const wstring& in_stream_name,
+                                            const BitInputArchive* old_arc )
     : CompressCallback( creator, old_arc ),
-      mBuffer( in_buffer ),
-      mBufferName( in_buffer_name ) {}
+      mStream( in_stream ),
+      mStreamName( in_stream_name ) {}
 
-MemUpdateCallback::~MemUpdateCallback() {
+StreamUpdateCallback::~StreamUpdateCallback() {
     Finilize();
 }
 
-HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
@@ -58,14 +57,18 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
     } else {
         switch ( propID ) {
             case kpidPath:
-                prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
+                prop = ( mStreamName.empty() ) ? kEmptyFileAlias : mStreamName;
                 break;
             case kpidIsDir:
                 prop = false;
                 break;
-            case kpidSize:
-                prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
+            case kpidSize: {
+                auto original_pos = mStream.tellg();
+                mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
+                prop = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
+                mStream.seekg( original_pos ); // seeking back to the original position in the stream
                 break;
+            }
             case kpidAttrib:
                 prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
                 break;
@@ -87,20 +90,19 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
     return S_OK;
 }
 
-uint32_t MemUpdateCallback::itemsCount() const {
+uint32_t StreamUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
 
-HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+HRESULT StreamUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
         return S_OK;
     }
 
-    auto* inStreamSpec = new CBufInStream;
+    auto* inStreamSpec = new CStdInStream( mStream );
     CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
-    inStreamSpec->Init( mBuffer.data(), mBuffer.size() );
 
     *inStream = inStreamLoc.Detach();
     return S_OK;
@@ -108,10 +110,10 @@ HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStre
 
 /* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
    this class and UpdateCallback! */
-HRESULT MemUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
+HRESULT StreamUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
+HRESULT StreamUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
     return S_OK;
 }

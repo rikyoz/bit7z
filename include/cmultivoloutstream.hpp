@@ -30,7 +30,7 @@
 using std::vector;
 using std::wstring;
 
-class COutMultiVolStream : public IOutStream, public CMyUnknownImp {
+class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
 
         uint64_t mVolSize;
         wstring mVolPrefix;
@@ -50,9 +50,9 @@ class COutMultiVolStream : public IOutStream, public CMyUnknownImp {
         vector< CAltStreamInfo > mVolStreams;
 
     public:
-        COutMultiVolStream( uint64_t size, const wstring& archiveName );
+        CMultiVolOutStream( uint64_t size, const wstring& archiveName );
 
-        virtual ~COutMultiVolStream();
+        virtual ~CMultiVolOutStream();
 
         bool SetMTime( const FILETIME* mTime );
 

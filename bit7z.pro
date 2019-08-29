@@ -29,9 +29,14 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitmemcompressor.cpp \
            src/bitmemextractor.cpp \
            src/bitpropvariant.cpp \
+           src/bitstreamcompressor.cpp \
+           src/bitstreamextractor.cpp \
            src/callback.cpp \
-           src/coutmemstream.cpp \
-           src/coutmultivolstream.cpp \
+           src/cbufoutstream.cpp \
+           src/cmultivoloutstream.cpp \
+           src/compresscallback.cpp \
+           src/cstdinstream.cpp \
+           src/cstdoutstream.cpp \
            src/extractcallback.cpp \
            src/fsindexer.cpp \
            src/fsitem.cpp \
@@ -39,8 +44,9 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/memextractcallback.cpp \
            src/memupdatecallback.cpp \
            src/opencallback.cpp \
-           src/updatecallback.cpp \
-           src/compresscallback.cpp
+           src/streamextractcallback.cpp \
+           src/streamupdatecallback.cpp \
+           src/updatecallback.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
 
@@ -67,10 +73,15 @@ HEADERS += include/bit7z.hpp \
            include/bitmemcompressor.hpp \
            include/bitmemextractor.hpp \
            include/bitpropvariant.hpp \
+           include/bitstreamcompressor.hpp \
+           include/bitstreamextractor.hpp \
            include/bittypes.hpp \
            include/callback.hpp \
-           include/coutmemstream.hpp \
-           include/coutmultivolstream.hpp \
+           include/cbufoutstream.hpp \
+           include/cmultivoloutstream.hpp \
+           include/compresscallback.hpp \
+           include/cstdinstream.hpp \
+           include/cstdoutstream.hpp \
            include/extractcallback.hpp \
            include/fsindexer.hpp \
            include/fsitem.hpp \
@@ -78,8 +89,9 @@ HEADERS += include/bit7z.hpp \
            include/memextractcallback.hpp \
            include/memupdatecallback.hpp \
            include/opencallback.hpp \
-           include/updatecallback.hpp \
-           include/compresscallback.hpp
+           include/streamextractcallback.hpp \
+           include/streamupdatecallback.hpp \
+           include/updatecallback.hpp
 
 contains(QT_ARCH, i386) {
     QMAKE_LFLAGS         += /MACHINE:X86

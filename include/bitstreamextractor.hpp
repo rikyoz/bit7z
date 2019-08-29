@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITMEMEXTRACTOR_HPP
-#define BITMEMEXTRACTOR_HPP
+#ifndef BITSTREAMEXTRACTOR_HPP
+#define BITSTREAMEXTRACTOR_HPP
 
 #include <string>
 #include <vector>
@@ -30,15 +30,16 @@ namespace bit7z {
     using std::wstring;
     using std::vector;
     using std::map;
+    using std::istream;
     using std::ostream;
 
     /**
-     * @brief The BitMemExtractor class allows to extract the content of in-memory archives.
+     * @brief The BitStreamExtractor class allows to extract the content of in-memory archives.
      */
-    class BitMemExtractor : public BitArchiveOpener {
+    class BitStreamExtractor : public BitArchiveOpener {
         public:
             /**
-             * @brief Constructs a BitMemExtractor object.
+             * @brief Constructs a BitStreamExtractor object.
              *
              * The Bit7zLibrary parameter is needed in order to have access to the functionalities
              * of the 7z DLLs. On the other hand, the BitInFormat is required in order to know the
@@ -47,40 +48,38 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the input archive format.
              */
-            BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format );
+            BitStreamExtractor( const Bit7zLibrary& lib, const BitInFormat& format );
 
             /**
-             * @brief Extracts the given buffer archive into the choosen directory.
+             * @brief Extracts the given stream archive into the choosen directory.
              *
-             * @param in_buffer     the buffer containing the archive to be extracted.
+             * @param in_stream     the stream containing the archive to be extracted.
              * @param out_dir       the output directory where to put the file extracted.
              */
-            void extract( const vector< byte_t >& in_buffer, const wstring& out_dir = L"" ) const;
+            void extract( istream& in_stream, const wstring& out_dir = L"" ) const;
 
             /**
-             * @brief Extracts the given buffer archive into the output buffer.
+             * @brief Extracts the given stream archive into the output buffer.
              *
-             * @param in_buffer    the buffer containing the archive to be extracted.
+             * @param in_stream    the stream containing the archive to be extracted.
              * @param out_buffer   the output buffer where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_buffer.
              */
-            void extract( const vector< byte_t >& in_buffer,
-                          vector< byte_t >& out_buffer,
-                          unsigned int index = 0 ) const;
+            void extract( istream& in_stream, vector< byte_t >& out_buffer, unsigned int index = 0 ) const;
 
             /**
-             * @brief Extracts the given buffer archive into the output standard stream.
+             * @brief Extracts the given stream archive into the output standard stream.
              *
-             * @param in_buffer    the buffer containing the archive to be extracted.
+             * @param in_stream    the stream containing the archive to be extracted.
              * @param out_stream   the output standard stream where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_buffer.
              */
-            void extract( const vector< byte_t >& in_buffer, ostream& out_stream, unsigned int index = 0 ) const;
+            void extract( istream& in_stream, ostream& out_stream, unsigned int index = 0 ) const;
 
-            void extract( const vector< byte_t >& in_buffer, map< wstring, vector<byte_t> >& out_map ) const;
+            void extract( istream& in_stream, map< wstring, vector<byte_t> >& out_map ) const;
 
-            void test( const vector< byte_t >& in_buffer ) const;
+            void test( istream& in_stream ) const;
     };
 }
 
-#endif // BITMEMEXTRACTOR_HPP
+#endif // BITSTREAMEXTRACTOR_HPP

@@ -58,7 +58,7 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            const wstring& out_archive,
-                           wstring in_buffer_name = L"" ) const;
+                           const wstring& in_buffer_name = L"" ) const;
 
             /**
              * @brief Compresses the given input buffer to the output buffer.
@@ -71,6 +71,19 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            vector< byte_t >& out_buffer,
+                           const wstring& in_buffer_name = L"" ) const;
+
+            /**
+             * @brief Compresses the given input buffer to the output standard stream.
+             *
+             * @note If the format of the output doesn't support in memory compression, a BitException is thrown.
+             *
+             * @param in_buffer         the buffer to be compressed.
+             * @param out_stream        the standard stream going to contain the output archive.
+             * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
+             */
+            void compress( const vector< byte_t >& in_buffer,
+                           ostream& out_stream,
                            const wstring& in_buffer_name = L"" ) const;
     };
 }

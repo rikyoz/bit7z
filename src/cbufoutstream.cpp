@@ -19,15 +19,15 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/coutmemstream.hpp"
+#include "../include/cbufoutstream.hpp"
 
 using namespace bit7z;
 
-COutMemStream::COutMemStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ) {}
+CBufOutStream::CBufOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ) {}
 
-COutMemStream::~COutMemStream() {};
+CBufOutStream::~CBufOutStream() {};
 
-STDMETHODIMP COutMemStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CBufOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

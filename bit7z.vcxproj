@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -42,7 +42,7 @@
     <PlatformToolset>v141</PlatformToolset>
     <!-- MSVC++ 2017 toolset has version v141 -->
   </PropertyGroup>
-    <!-- Visual Studio 2019 (16.0) -->
+  <!-- Visual Studio 2019 (16.0) -->
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '16.0'">
     <PlatformToolset>v142</PlatformToolset>
     <!-- MSVC++ 2019 toolset has version v142 -->
@@ -281,9 +281,14 @@
     <ClCompile Include="src\bitmemcompressor.cpp" />
     <ClCompile Include="src\bitmemextractor.cpp" />
     <ClCompile Include="src\bitpropvariant.cpp" />
+    <ClCompile Include="src\bitstreamcompressor.cpp" />
+    <ClCompile Include="src\bitstreamextractor.cpp" />
     <ClCompile Include="src\callback.cpp" />
-    <ClCompile Include="src\coutmemstream.cpp" />
-    <ClCompile Include="src\coutmultivolstream.cpp" />
+    <ClCompile Include="src\cbufoutstream.cpp" />
+    <ClCompile Include="src\cmultivoloutstream.cpp" />
+    <ClCompile Include="src\compresscallback.cpp" />
+    <ClCompile Include="src\cstdinstream.cpp" />
+    <ClCompile Include="src\cstdoutstream.cpp" />
     <ClCompile Include="src\extractcallback.cpp" />
     <ClCompile Include="src\fsindexer.cpp" />
     <ClCompile Include="src\fsitem.cpp" />
@@ -291,6 +296,8 @@
     <ClCompile Include="src\memextractcallback.cpp" />
     <ClCompile Include="src\memupdatecallback.cpp" />
     <ClCompile Include="src\opencallback.cpp" />
+    <ClCompile Include="src\streamextractcallback.cpp" />
+    <ClCompile Include="src\streamupdatecallback.cpp" />
     <ClCompile Include="src\updatecallback.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -312,11 +319,15 @@
     <ClInclude Include="include\bitmemcompressor.hpp" />
     <ClInclude Include="include\bitmemextractor.hpp" />
     <ClInclude Include="include\bitpropvariant.hpp" />
+    <ClInclude Include="include\bitstreamcompressor.hpp" />
+    <ClInclude Include="include\bitstreamextractor.hpp" />
     <ClInclude Include="include\bittypes.hpp" />
     <ClInclude Include="include\callback.hpp" />
+    <ClInclude Include="include\cbufoutstream.hpp" />
+    <ClInclude Include="include\cmultivoloutstream.hpp" />
     <ClInclude Include="include\compresscallback.hpp" />
-    <ClInclude Include="include\coutmemstream.hpp" />
-    <ClInclude Include="include\coutmultivolstream.hpp" />
+    <ClInclude Include="include\cstdinstream.hpp" />
+    <ClInclude Include="include\cstdoutstream.hpp" />
     <ClInclude Include="include\extractcallback.hpp" />
     <ClInclude Include="include\fsindexer.hpp" />
     <ClInclude Include="include\fsitem.hpp" />
@@ -324,6 +335,8 @@
     <ClInclude Include="include\memextractcallback.hpp" />
     <ClInclude Include="include\memupdatecallback.hpp" />
     <ClInclude Include="include\opencallback.hpp" />
+    <ClInclude Include="include\streamextractcallback.hpp" />
+    <ClInclude Include="include\streamupdatecallback.hpp" />
     <ClInclude Include="include\updatecallback.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

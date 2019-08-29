@@ -24,6 +24,7 @@
 namespace bit7z {
     // IStream.h
     extern "C" const GUID IID_ISequentialInStream;
+    extern "C" const GUID IID_ISequentialOutStream;
     extern "C" const GUID IID_IInStream;
     extern "C" const GUID IID_IOutStream;
     extern "C" const GUID IID_IStreamGetSize;

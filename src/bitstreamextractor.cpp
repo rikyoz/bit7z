@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitmemextractor.hpp"
+#include "../include/bitstreamextractor.hpp"
 
 #include "7zip/Archive/IArchive.h"
 
@@ -30,15 +30,15 @@
 
 using namespace bit7z;
 
-BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
+BitStreamExtractor::BitStreamExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {
     if ( format == BitFormat::Auto ) {
         throw BitException( "Automatic format detection not supported for in-memory archives" );
     }
 }
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
-    BitInputArchive in_archive( *this, in_buffer );
+void BitStreamExtractor::extract( istream& in_stream, const wstring& out_dir ) const {
+    BitInputArchive in_archive( *this, in_stream );
 
     auto* extract_callback_spec = new ExtractCallback( *this, in_archive, L"", out_dir );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
@@ -48,10 +48,8 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
     }
 }
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
-                               vector< byte_t >& out_buffer,
-                               unsigned int index ) const {
-    BitInputArchive in_archive( *this, in_buffer );
+void BitStreamExtractor::extract( istream& in_stream, vector< byte_t >& out_buffer, unsigned int index ) const {
+    BitInputArchive in_archive( *this, in_stream );
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
@@ -74,8 +72,8 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
     out_buffer = std::move( buffers_map.begin()->second );
 }
 
-void BitMemExtractor::extract( const vector<byte_t>& in_buffer, std::ostream& out_stream, unsigned int index ) const {
-    BitInputArchive in_archive( *this, in_buffer );
+void BitStreamExtractor::extract( istream& in_stream, std::ostream& out_stream, unsigned int index ) const {
+    BitInputArchive in_archive( *this, in_stream );
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
@@ -96,8 +94,8 @@ void BitMemExtractor::extract( const vector<byte_t>& in_buffer, std::ostream& ou
     }
 }
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const {
-    BitInputArchive in_archive( *this, in_buffer );
+void BitStreamExtractor::extract( istream& in_stream, map< wstring, vector< byte_t > >& out_map ) const {
+    BitInputArchive in_archive( *this, in_stream );
 
     uint32_t number_items = in_archive.itemsCount();
     vector< uint32_t > files_indices;
@@ -115,8 +113,8 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, 
     }
 }
 
-void BitMemExtractor::test( const vector<byte_t>& in_buffer ) const {
-    BitInputArchive in_archive( *this, in_buffer );
+void BitStreamExtractor::test( istream& in_stream ) const {
+    BitInputArchive in_archive( *this, in_stream );
 
     map< wstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, dummy_map );

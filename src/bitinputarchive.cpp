@@ -22,6 +22,7 @@
 #include "../include/bitinputarchive.hpp"
 
 #include "../include/bitexception.hpp"
+#include "../include/cstdinstream.hpp"
 #include "../include/opencallback.hpp"
 
 #include "Common/MyCom.h"
@@ -58,7 +59,6 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically!
     CMyComPtr< IInArchive > in_archive = initArchiveObject( handler.library(), &format_GUID );
-    //handler.library().initInputArchive( &format_GUID, in_archive );
 
     // Creating open callback for the file
     auto* open_callback_spec = new OpenCallback( handler, name );
@@ -93,6 +93,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     if ( !file_stream_spec->Open( in_file.c_str() ) ) {
         throw BitException( L"Cannot open archive file '" + in_file + L"'" );
     }
+    //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
     mDetectedFormat = ( handler.format() == BitFormat::Auto ?
                         &BitFormat::detectFormatFromExt( in_file ) : &handler.format() );
     mInArchive = openArchiveStream( handler, in_file, file_stream );
@@ -102,8 +103,15 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector
     auto* buf_stream_spec = new CBufInStream;
     CMyComPtr< IInStream > buf_stream = buf_stream_spec;
     buf_stream_spec->Init( in_buffer.data(), in_buffer.size() );
-    mDetectedFormat = &handler.format();
+    mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
     mInArchive = openArchiveStream( handler, L".", buf_stream );
+}
+
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) {
+    auto* std_stream_spec = new CStdInStream( in_stream );
+    CMyComPtr< IInStream > std_stream = std_stream_spec;
+    mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
+    mInArchive = openArchiveStream( handler, L".", std_stream );
 }
 
 BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
