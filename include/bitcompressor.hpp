@@ -138,6 +138,8 @@ namespace bit7z {
              */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
+            /* Compression from file system to standard stream */
+
             /**
              * @brief Compresses the given files or directories.
              *

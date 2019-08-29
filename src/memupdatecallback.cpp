@@ -56,12 +56,6 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
     } else if ( index < mOldArcItemsCount ) {
         prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
     } else {
-        FILETIME ft;
-        SYSTEMTIME st;
-
-        GetSystemTime( &st ); // gets current time
-        SystemTimeToFileTime( &st, &ft ); // converts to file time format
-
         switch ( propID ) {
             case kpidPath:
                 prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
@@ -77,9 +71,15 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
                 break;
             case kpidCTime:
             case kpidATime:
-            case kpidMTime:
+            case kpidMTime: {
+                FILETIME ft;
+                SYSTEMTIME st;
+
+                GetSystemTime( &st ); // gets current time
+                SystemTimeToFileTime( &st, &ft ); // converts to file time format
                 prop = ft;
                 break;
+            }
         }
     }
 

@@ -58,7 +58,7 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            const wstring& out_archive,
-                           wstring in_buffer_name = L"" ) const;
+                           const wstring& in_buffer_name = L"" ) const;
 
             /**
              * @brief Compresses the given input buffer to the output buffer.

@@ -46,8 +46,8 @@ using namespace bit7z;
 //static const wstring kSkippingString   =  L"Skipping    ";
 
 StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
-        const BitInputArchive& inputArchive,
-        ostream& outputStream )
+                                              const BitInputArchive& inputArchive,
+                                              ostream& outputStream )
     : mHandler( handler ),
       mInputArchive( inputArchive ),
       mOutputStream( outputStream ),

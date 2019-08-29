@@ -44,4 +44,4 @@ namespace bit7z {
             vector< byte_t >& mBuffer;
     };
 }
-#endif // CBUFFEROUTSTREAM_HPP
+#endif // CBUFOUTSTREAM_HPP

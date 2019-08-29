@@ -35,16 +35,14 @@ BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutForma
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  const wstring& out_archive,
-                                 wstring in_buffer_name ) const {
+                                 const wstring& in_buffer_name ) const {
 
-    if ( in_buffer_name.empty() ) {
-        in_buffer_name = fsutil::filename( out_archive );
-    }
+    const wstring& name = in_buffer_name.empty() ? fsutil::filename( out_archive ) : in_buffer_name;
 
     unique_ptr< BitInputArchive > old_arc = nullptr;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_file_stream = initOutFileStream( out_archive, new_arc, old_arc );
-    CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, in_buffer_name, old_arc.get() );
+    CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, name, old_arc.get() );
     compressOut( new_arc, out_file_stream, update_callback );
     cleanupOldArc( old_arc.get(), out_file_stream, out_archive );
 }
