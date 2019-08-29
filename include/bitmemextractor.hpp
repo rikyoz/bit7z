@@ -72,7 +72,7 @@ namespace bit7z {
              * @brief Extracts the given buffer archive into the output standard stream.
              *
              * @param in_buffer    the buffer containing the archive to be extracted.
-             * @param out_strean   the output standard stream where the content of the archive will be put.
+             * @param out_stream   the output standard stream where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_buffer.
              */
             void extract( const vector< byte_t >& in_buffer, ostream& out_stream, unsigned int index = 0 ) const;

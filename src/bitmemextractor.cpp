@@ -46,7 +46,6 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring&
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() );
     }
-
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
