@@ -113,6 +113,8 @@ namespace bit7z {
              */
             void test( const wstring& in_file ) const;
 
+            void extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const;
+
         private:
             void extractToFileSystem( const BitInputArchive& in_archive,
                                       const wstring& in_file,

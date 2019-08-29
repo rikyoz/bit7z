@@ -22,6 +22,7 @@
 #include "../include/bitextractor.hpp"
 
 #include <algorithm>
+#include <regex>
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
@@ -34,6 +35,8 @@ using namespace bit7z;
 using namespace bit7z::filesystem;
 
 using std::wstring;
+using std::wregex;
+using std::regex_match;
 
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
 
@@ -55,8 +58,31 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
         //Searching for files inside the archive that match the given filter
         uint32_t items_count = in_archive.itemsCount();
         for ( uint32_t index = 0; index < items_count; ++index ) {
+            BitPropVariant item_path = in_archive.getItemProperty( index, BitProperty::Path );
+            if ( item_path.isString() && fsutil::wildcardMatch( item_filter, item_path.getString() ) ) {
+                matched_indices.push_back( index );
+            }
+        }
+    }
+
+    if ( matched_indices.empty() ) {
+        throw BitException( "No matching file was found in the archive" );
+    }
+
+    extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
+}
+
+void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const {
+    BitInputArchive in_archive( *this, in_file );
+
+    vector< uint32_t > matched_indices;
+    if ( !regex.empty() ) {
+        const wregex regex_filter( regex, std::regex::ECMAScript | std::regex::optimize );
+        //Searching for files inside the archive that match the given regex filter
+        uint32_t items_count = in_archive.itemsCount();
+        for ( uint32_t index = 0; index < items_count; ++index ) {
             BitPropVariant propvar = in_archive.getItemProperty( index, BitProperty::Path );
-            if ( propvar.isString() && fsutil::wildcardMatch( item_filter, propvar.getString() ) ) {
+            if ( propvar.isString() && regex_match( propvar.getString(), regex_filter ) ) {
                 matched_indices.push_back( index );
             }
         }

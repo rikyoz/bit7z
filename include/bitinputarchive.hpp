@@ -49,7 +49,8 @@ namespace bit7z {
              * @param index     the index (in the archive) of the item.
              * @param property  the property to be retrieved.
              *
-             * @return the current value of the item property or an empty BitPropVariant if no value is specified.
+             * @return the current value of the item property or an empty BitPropVariant if the item has no value for
+             * the property.
              */
             BitPropVariant getItemProperty( uint32_t index, BitProperty property ) const;
 
