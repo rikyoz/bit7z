@@ -46,7 +46,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, uint32_t size, uint32_t* pr
         *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - old_pos );
     }
 
-    return mOutputStream ? S_OK : E_FAIL;
+    return mOutputStream.bad() ? HRESULT_FROM_WIN32( ERROR_WRITE_FAULT ) : S_OK;
 }
 
 STDMETHODIMP CStdOutStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition ) {
@@ -65,17 +65,21 @@ STDMETHODIMP CStdOutStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t*
             return STG_E_INVALIDFUNCTION;
     }
 
-    if ( offset < 0 ) {
+    /*if ( offset < 0 ) { //Tar sometimes uses negative offsets
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-    }
+    }*/
 
     mOutputStream.seekp( static_cast< std::ostream::off_type >( offset ), way );
+
+    if ( mOutputStream.bad() ) {
+        return HRESULT_FROM_WIN32( ERROR_SEEK );
+    }
 
     if ( newPosition ) {
         *newPosition = mOutputStream.tellp();
     }
 
-    return mOutputStream ? S_OK : E_FAIL;
+    return S_OK;
 }
 
 STDMETHODIMP CStdOutStream::SetSize( uint64_t newSize ) {

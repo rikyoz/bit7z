@@ -29,6 +29,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitmemcompressor.cpp \
            src/bitmemextractor.cpp \
            src/bitpropvariant.cpp \
+           src/bitstreamcompressor.cpp \
            src/callback.cpp \
            src/cbufoutstream.cpp \
            src/cmultivoloutstream.cpp \
@@ -43,6 +44,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/memupdatecallback.cpp \
            src/opencallback.cpp \
            src/streamextractcallback.cpp \
+           src/streamupdatecallback.cpp \
            src/updatecallback.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
@@ -70,6 +72,7 @@ HEADERS += include/bit7z.hpp \
            include/bitmemcompressor.hpp \
            include/bitmemextractor.hpp \
            include/bitpropvariant.hpp \
+           include/bitstreamcompressor.hpp \
            include/bittypes.hpp \
            include/callback.hpp \
            include/cbufoutstream.hpp \
@@ -85,6 +88,7 @@ HEADERS += include/bit7z.hpp \
            include/memupdatecallback.hpp \
            include/opencallback.hpp \
            include/streamextractcallback.hpp \
+           include/streamupdatecallback.hpp \
            include/updatecallback.hpp
 
 contains(QT_ARCH, i386) {
