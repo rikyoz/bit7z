@@ -120,6 +120,10 @@ namespace bit7z {
                                       const wstring& in_file,
                                       const wstring& out_dir,
                                       const vector< uint32_t >& indices ) const;
+
+            void extractMatchingFilter( const wstring& in_file,
+                                        const wstring& out_dir,
+                                        function<bool ( const wstring& )> filter ) const;
     };
 }
 #endif // BITEXTRACTOR_HPP

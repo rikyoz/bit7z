@@ -53,40 +53,38 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
  *  + Generalized the code to work with any type of format (the original works only with 7z format)
  *  + Use of exceptions instead of error codes */
 void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir ) const {
-    BitInputArchive in_archive( *this, in_file );
-
-    vector< uint32_t > matched_indices;
-    if ( !item_filter.empty() ) {
-        //Searching for files inside the archive that match the given filter
-        uint32_t items_count = in_archive.itemsCount();
-        for ( uint32_t index = 0; index < items_count; ++index ) {
-            BitPropVariant item_path = in_archive.getItemProperty( index, BitProperty::Path );
-            if ( item_path.isString() && fsutil::wildcardMatch( item_filter, item_path.getString() ) ) {
-                matched_indices.push_back( index );
-            }
-        }
+    if ( item_filter.empty() ) {
+        throw BitException( "Empty wildcard filter", E_INVALIDARG );
     }
 
-    if ( matched_indices.empty() ) {
-        throw BitException( kNoMatchingFile, ERROR_FILE_NOT_FOUND );
-    }
-
-    extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
+    extractMatchingFilter( in_file, out_dir, [ &item_filter ]( const wstring& item_path ) -> bool {
+        return fsutil::wildcardMatch( item_filter, item_path );
+    });
 }
 
 void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const {
+    if ( regex.empty() ) {
+        throw BitException( "Empty regex filter", E_INVALIDARG );
+    }
+
+    const wregex regex_filter( regex, std::regex::ECMAScript | std::regex::optimize );
+    extractMatchingFilter( in_file, out_dir, [ &regex_filter ]( const wstring& item_path ) -> bool {
+        return regex_match( item_path, regex_filter );
+    });
+}
+
+void BitExtractor::extractMatchingFilter( const wstring& in_file,
+                                          const wstring& out_dir,
+                                          function< bool( const wstring& ) > filter ) const {
     BitInputArchive in_archive( *this, in_file );
 
     vector< uint32_t > matched_indices;
-    if ( !regex.empty() ) {
-        const wregex regex_filter( regex, std::regex::ECMAScript | std::regex::optimize );
-        //Searching for files inside the archive that match the given regex filter
-        uint32_t items_count = in_archive.itemsCount();
-        for ( uint32_t index = 0; index < items_count; ++index ) {
-            BitPropVariant propvar = in_archive.getItemProperty( index, BitProperty::Path );
-            if ( propvar.isString() && regex_match( propvar.getString(), regex_filter ) ) {
-                matched_indices.push_back( index );
-            }
+    //Searching for files inside the archive that match the given regex filter
+    uint32_t items_count = in_archive.itemsCount();
+    for ( uint32_t index = 0; index < items_count; ++index ) {
+        BitPropVariant item_path = in_archive.getItemProperty( index, BitProperty::Path );
+        if ( item_path.isString() && filter( item_path.getString() ) ) {
+            matched_indices.push_back( index );
         }
     }
 
