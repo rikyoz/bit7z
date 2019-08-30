@@ -46,7 +46,7 @@ namespace bit7z {
 
             virtual ~StreamExtractCallback();
 
-            wstring getErrorMessage() const;
+            wstring getErrorMessage() const override;
 
             MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 

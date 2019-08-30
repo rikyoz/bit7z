@@ -34,7 +34,7 @@ namespace bit7z {
 
             virtual ~CStdInStream();
 
-            MY_UNKNOWN_IMP1( IInStream );
+            MY_UNKNOWN_IMP1( IInStream )
 
             // IInStream
             STDMETHOD( Read )( void* data, uint32_t size, uint32_t* processedSize );

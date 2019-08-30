@@ -25,11 +25,11 @@ using std::string;
 using namespace bit7z;
 
 std::string ws2s( const std::wstring& wstr ) {
-    int num_chars = WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), NULL, 0, NULL, NULL );
+    int num_chars = WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), nullptr, 0, nullptr, nullptr );
     std::string result;
     if ( num_chars > 0 ) {
         result.resize( static_cast< size_t >( num_chars ) );
-        WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), &result[0], num_chars, NULL, NULL );
+        WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), &result[0], num_chars, nullptr, nullptr );
     }
     return result;
 }
@@ -37,13 +37,13 @@ std::string ws2s( const std::wstring& wstr ) {
 BitException::BitException( const char* const message, HRESULT code ) : runtime_error( message ), mErrorCode( code ) {}
 
 BitException::BitException( const char* const message, DWORD code )
-    : BitException( message, HRESULT_FROM_WIN32( code ) ) {}
+    : runtime_error( message ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
 
 BitException::BitException( const wstring& message, HRESULT code )
     : runtime_error( ws2s( message ) ), mErrorCode( code ) {}
 
 BitException::BitException( const wstring& message, DWORD code )
-    : BitException( message, HRESULT_FROM_WIN32( code ) ) {}
+    : runtime_error( ws2s( message ) ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
 
 HRESULT BitException::getErrorCode() {
     return mErrorCode;

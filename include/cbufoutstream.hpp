@@ -35,7 +35,7 @@ namespace bit7z {
 
             virtual ~CBufOutStream();
 
-            MY_UNKNOWN_IMP1( ISequentialOutStream );
+            MY_UNKNOWN_IMP1( ISequentialOutStream )
 
             // ISequentialOutStream
             STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );

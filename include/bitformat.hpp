@@ -29,7 +29,7 @@
 
 namespace bit7z {
     using std::wstring;
-    using FeaturesSet = std::bitset< FEATURES_COUNT >;
+    typedef std::bitset< FEATURES_COUNT > FeaturesSet; //MSVC++11 (VS 2012) does not support new using usage!
 
     /**
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.

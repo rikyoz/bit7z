@@ -2,6 +2,7 @@
 #define CSTDOUTSTREAM_HPP
 
 #include <ostream>
+#include <cstdint>
 
 #include "7zip/IStream.h"
 #include "Common/MyCom.h"
@@ -15,7 +16,7 @@ namespace bit7z {
 
             virtual ~CStdOutStream();
 
-            MY_UNKNOWN_IMP1( IOutStream );
+            MY_UNKNOWN_IMP1( IOutStream )
 
             // IOutStream
             STDMETHOD( Write )( void const* data, uint32_t size, uint32_t* processedSize );
