@@ -33,12 +33,14 @@ using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
 
+#ifdef BIT7Z_AUTOFORMAT
 namespace bit7z {
     namespace BitFormat {
         const BitInFormat& detectFormatFromExt( const wstring& in_file );
         const BitInFormat& detectFormatFromSig( IInStream* stream );
     }
 }
+#endif
 
 CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
     CMyComPtr< IInArchive > arc_object;
@@ -71,7 +73,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     // Trying to open the file with the detected format
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
 
-#ifdef BIT7z_AUTOFORMAT
+#ifdef BIT7Z_AUTOFORMAT
     if ( res != S_OK && handler.format() == BitFormat::Auto && !detected_by_signature ) {
         /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
