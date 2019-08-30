@@ -23,19 +23,18 @@
 #include <map>
 
 #include "7zip/Archive/IArchive.h"
+#include "7zip/ICoder.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
-#include "../include/callback.hpp"
+#include "../include/extractcallback.hpp"
 
 namespace bit7z {
     using std::vector;
     using std::map;
 
-    class MemExtractCallback : public IArchiveExtractCallback, ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+    class MemExtractCallback : public ExtractCallback {
         public:
             MemExtractCallback( const BitArchiveHandler& handler,
                                 const BitInputArchive& inputArchive,
@@ -43,40 +42,13 @@ namespace bit7z {
 
             virtual ~MemExtractCallback();
 
-            MY_UNKNOWN_IMP2( IArchiveExtractCallback, ICryptoGetTextPassword )
-
-            // IProgress
-            STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
-
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
-            STDMETHOD( PrepareOperation )( Int32 askExtractMode );
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
-            // ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
-
         private:
-            const BitArchiveHandler& mHandler;
-            const BitInputArchive& mInputArchive;
-
             map< wstring, vector< byte_t > >& mBuffersMap;
-
-            bool mExtractMode;
-
-            struct CProcessedFileInfo {
-                FILETIME MTime;
-                UInt32 Attrib;
-                bool isDir;
-                bool AttribDefined;
-                bool MTimeDefined;
-            } mProcessedFileInfo;
-
-            //COutMemStream* mOutMemStreamSpec;
             CMyComPtr< ISequentialOutStream > mOutMemStream;
-
-            UInt64 mNumErrors;
     };
 }
 #endif // MEMEXTRACTCALLBACK_HPP

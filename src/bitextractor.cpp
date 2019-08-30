@@ -26,7 +26,7 @@
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/extractcallback.hpp"
+#include "../include/fileextractcallback.hpp"
 #include "../include/memextractcallback.hpp"
 #include "../include/streamextractcallback.hpp"
 #include "../include/fsutil.hpp"
@@ -180,7 +180,7 @@ void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t
 void BitExtractor::test( const wstring& in_file ) const {
     BitInputArchive in_archive( *this, in_file );
 
-    auto* extract_callback_spec = new ExtractCallback( *this, in_archive, in_file, L"" );
+    auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, L"" );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = in_archive.test( extract_callback );
     if ( res != S_OK ) {
@@ -193,7 +193,7 @@ void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive,
                                         const wstring& in_file,
                                         const wstring& out_dir,
                                         const vector< uint32_t >& indices ) const {
-    auto* extract_callback_spec = new ExtractCallback( *this, in_archive, in_file, out_dir );
+    auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, out_dir );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
 
     HRESULT res = in_archive.extract( indices, extract_callback );

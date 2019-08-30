@@ -290,6 +290,7 @@
     <ClCompile Include="src\cstdinstream.cpp" />
     <ClCompile Include="src\cstdoutstream.cpp" />
     <ClCompile Include="src\extractcallback.cpp" />
+    <ClCompile Include="src\fileextractcallback.cpp" />
     <ClCompile Include="src\fsindexer.cpp" />
     <ClCompile Include="src\fsitem.cpp" />
     <ClCompile Include="src\fsutil.cpp" />
@@ -329,6 +330,7 @@
     <ClInclude Include="include\cstdinstream.hpp" />
     <ClInclude Include="include\cstdoutstream.hpp" />
     <ClInclude Include="include\extractcallback.hpp" />
+    <ClInclude Include="include\fileextractcallback.hpp" />
     <ClInclude Include="include\fsindexer.hpp" />
     <ClInclude Include="include\fsitem.hpp" />
     <ClInclude Include="include\fsutil.hpp" />

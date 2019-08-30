@@ -28,54 +28,22 @@
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
-
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
 
-/* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
- * Main changes made:
- *  + Use of wstring instead of UString
- *  + Error messages are not showed. Instead, they are memorized into a wstring and used by BitExtractor to throw
- *    exceptions (see also Callback interface). Note that this class doesn't throw exceptions, as other classes in bit7,
- *    because it must implement interfaces with nothrow methods.
- *  + The work performed originally by the Init method is now performed by the class constructor */
-
-//static const wstring kCantDeleteOutputFile = L"Cannot delete output file ";
-
-//static const wstring kTestingString    =  L"Testing     ";
-//static const wstring kExtractingString =  L"Extracting  ";
-//static const wstring kSkippingString   =  L"Skipping    ";
-
 MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler,
                                         const BitInputArchive& inputArchive,
                                         map< wstring, vector< byte_t > >& buffersMap )
-    : mHandler( handler ),
-      mInputArchive( inputArchive ),
-      mBuffersMap( buffersMap ),
-      mExtractMode( true ),
-      mProcessedFileInfo(),
-      mNumErrors( 0 ) {}
+    : ExtractCallback ( handler, inputArchive ),
+      mBuffersMap( buffersMap ) {}
 
 MemExtractCallback::~MemExtractCallback() {}
-
-STDMETHODIMP MemExtractCallback::SetTotal( UInt64 size ) {
-    if ( mHandler.totalCallback() ) {
-        mHandler.totalCallback()( size );
-    }
-    return S_OK;
-}
-
-STDMETHODIMP MemExtractCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        mHandler.progressCallback()( *completeValue );
-    }
-    return S_OK;
-}
 
 STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutMemStream.Release();
+
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
     wstring fullPath;
@@ -92,43 +60,7 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
         return S_OK;
     }
 
-    // Get Attrib
-    BitPropVariant prop2 = mInputArchive.getItemProperty( index, BitProperty::Attrib );
-
-    if ( prop2.isEmpty() ) {
-        mProcessedFileInfo.Attrib = 0;
-        mProcessedFileInfo.AttribDefined = false;
-    } else {
-        if ( !prop2.isUInt32() ) {
-            return E_FAIL;
-        }
-
-        mProcessedFileInfo.Attrib = prop2.getUInt32();
-        mProcessedFileInfo.AttribDefined = true;
-    }
-
-    //RINOK( IsArchiveItemFolder( mInputArchive, index, mProcessedFileInfo.isDir ) );
-    mProcessedFileInfo.isDir = mInputArchive.isItemFolder( index );
-
-    // Get Modified Time
-    BitPropVariant prop3 = mInputArchive.getItemProperty( index, BitProperty::MTime );
-    mProcessedFileInfo.MTimeDefined = false;
-
-    switch ( prop3.type() ) {
-        case BitPropVariantType::Empty:
-            // mProcessedFileInfo.MTime = _utcMTimeDefault;
-            break;
-
-        case BitPropVariantType::Filetime:
-            mProcessedFileInfo.MTime = prop3.getFiletime();
-            mProcessedFileInfo.MTimeDefined = true;
-            break;
-
-        default:
-            return E_FAIL;
-    }
-
-    if ( !mProcessedFileInfo.isDir ) {
+    if ( !mInputArchive.isItemFolder( index ) ) {
         //Note: using [] operator it creates the buffer if it does not exists already!
         auto* out_mem_stream_spec = new CBufOutStream( mBuffersMap[ fullPath ] );
         CMyComPtr< ISequentialOutStream > outStreamLoc( out_mem_stream_spec );
@@ -139,32 +71,6 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     return S_OK;
 } catch ( const BitException& ) {
     return E_OUTOFMEMORY;
-}
-
-STDMETHODIMP MemExtractCallback::PrepareOperation( Int32 askExtractMode ) {
-    mExtractMode = false;
-
-    // in future we might use this switch to handle an event like onOperationStart(Operation o)
-    // with enum Operation{Extract, Test, Skip}
-
-    switch ( askExtractMode ) {
-        case NArchive::NExtract::NAskMode::kExtract:
-            mExtractMode = true;
-            //wcout <<  kExtractingString;
-            break;
-
-        case NArchive::NExtract::NAskMode::kTest:
-            mExtractMode = false;
-            //wcout <<  kTestingString;
-            break;
-
-            /* case NArchive::NExtract::NAskMode::kSkip:
-                cout <<  kSkippingString;
-                break;*/
-    }
-
-    //wcout << mFilePath << endl;;
-    return S_OK;
 }
 
 STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
@@ -194,36 +100,8 @@ STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
         }
     }
 
-    //    if ( mOutBuffStream != NULL ) {
-    //        RINOK( mOutBuffStreamSpec->Close() );
-    //    }
     mOutMemStream.Release();
 
-    if ( mNumErrors > 0 ) {
-        return E_FAIL;
-    }
-
-    return S_OK;
+    return mNumErrors > 0 ? E_FAIL : S_OK;
 }
 
-
-STDMETHODIMP MemExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    wstring pass;
-    if ( !mHandler.isPasswordDefined() ) {
-        // You can ask real password here from user
-        // Password = GetPassword(OutStream);
-        // PasswordIsDefined = true;
-        if ( mHandler.passwordCallback() ) {
-            pass = mHandler.passwordCallback()();
-        }
-
-        if ( pass.empty() ) {
-            mErrorMessage = L"Password is not defined";
-            return E_FAIL;
-        }
-    } else {
-        pass = mHandler.password();
-    }
-
-    return StringToBstr( pass.c_str(), password );
-}

@@ -38,6 +38,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/cstdinstream.cpp \
            src/cstdoutstream.cpp \
            src/extractcallback.cpp \
+           src/fileextractcallback.cpp \
            src/fsindexer.cpp \
            src/fsitem.cpp \
            src/fsutil.cpp \
@@ -85,6 +86,7 @@ HEADERS += include/bit7z.hpp \
            include/cstdinstream.hpp \
            include/cstdoutstream.hpp \
            include/extractcallback.hpp \
+           include/fileextractcallback.hpp \
            include/fsindexer.hpp \
            include/fsitem.hpp \
            include/fsutil.hpp \

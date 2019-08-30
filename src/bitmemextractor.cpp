@@ -24,7 +24,7 @@
 #include "7zip/Archive/IArchive.h"
 
 #include "../include/bitexception.hpp"
-#include "../include/extractcallback.hpp"
+#include "../include/fileextractcallback.hpp"
 #include "../include/memextractcallback.hpp"
 #include "../include/streamextractcallback.hpp"
 
@@ -42,7 +42,7 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& fo
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
     BitInputArchive in_archive( *this, in_buffer );
 
-    auto* extract_callback_spec = new ExtractCallback( *this, in_archive, L"", out_dir );
+    auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, L"", out_dir );
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = in_archive.extract( vector< uint32_t >(), extract_callback );
     if ( res != S_OK ) {

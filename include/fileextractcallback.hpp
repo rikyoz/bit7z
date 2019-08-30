@@ -16,42 +16,52 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef STREAMEXTRACTCALLBACK_HPP
-#define STREAMEXTRACTCALLBACK_HPP
+#ifndef FILEEXTRACTCALLBACK_HPP
+#define FILEEXTRACTCALLBACK_HPP
 
-#include <vector>
-#include <map>
+#include <string>
 
 #include "7zip/Archive/IArchive.h"
+#include "7zip/Common/FileStreams.h"
 #include "7zip/ICoder.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
-#include "../include/bittypes.hpp"
+#include "../include/bitguids.hpp"
 #include "../include/extractcallback.hpp"
 
 namespace bit7z {
-    using std::vector;
-    using std::map;
-    using std::ostream;
+    using std::wstring;
 
-    class StreamExtractCallback : public ExtractCallback {
+    class FileExtractCallback : public ExtractCallback {
         public:
-            StreamExtractCallback( const BitArchiveHandler& handler,
-                                   const BitInputArchive& inputArchive,
-                                   ostream& outputStream );
+            FileExtractCallback( const BitArchiveHandler& handler,
+                                 const BitInputArchive& inputArchive,
+                                 const wstring& inFilePath,
+                                 const wstring& directoryPath );
 
-            virtual ~StreamExtractCallback();
-
-            wstring getErrorMessage() const override;
+            virtual ~FileExtractCallback();
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
         private:
-            ostream& mOutputStream;
-            CMyComPtr< IOutStream > mStdOutStream;
+            wstring mInFilePath;     // Input file path
+            wstring mDirectoryPath;  // Output directory
+            wstring mFilePath;       // name inside archive
+            wstring mDiskFilePath;   // full path to file on disk
+
+            struct CProcessedFileInfo {
+                FILETIME MTime;
+                UInt32 Attrib;
+                bool isDir;
+                bool AttribDefined;
+                bool MTimeDefined;
+            } mProcessedFileInfo;
+
+            COutFileStream* mOutFileStreamSpec;
+            CMyComPtr< ISequentialOutStream > mOutFileStream;
     };
 }
-#endif // STREAMEXTRACTCALLBACK_HPP
+#endif // FILEEXTRACTCALLBACK_HPP

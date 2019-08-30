@@ -19,29 +19,24 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#include <string>
-
 #include "7zip/Archive/IArchive.h"
-#include "7zip/Common/FileStreams.h"
 #include "7zip/ICoder.h"
 #include "7zip/IPassword.h"
 #include "Common/MyCom.h"
 
-#include "../include/bitinputarchive.hpp"
-#include "../include/bitguids.hpp"
-#include "../include/callback.hpp"
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitinputarchive.hpp"
+#include "../include/callback.hpp"
 
 namespace bit7z {
-    using std::wstring;
-
-    class ExtractCallback : public IArchiveExtractCallback, public ICompressProgressInfo,
-                            ICryptoGetTextPassword, CMyUnknownImp, public Callback {
+    class ExtractCallback : public Callback,
+                            public IArchiveExtractCallback,
+                            public ICompressProgressInfo,
+                            protected ICryptoGetTextPassword,
+                            protected CMyUnknownImp {
         public:
             ExtractCallback( const BitArchiveHandler& handler,
-                             const BitInputArchive& inputArchive,
-                             const wstring& inFilePath,
-                             const wstring& directoryPath );
+                             const BitInputArchive& inputArchive);
 
             virtual ~ExtractCallback();
 
@@ -55,35 +50,19 @@ namespace bit7z {
             STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
             STDMETHOD( PrepareOperation )( Int32 askExtractMode );
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
             // ICryptoGetTextPassword
             STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
 
-        private:
+        protected:
             const BitArchiveHandler& mHandler;
             const BitInputArchive& mInputArchive;
 
-            wstring mInFilePath;     // Input file path
-            wstring mDirectoryPath;  // Output directory
-            wstring mFilePath;       // name inside archive
-            wstring mDiskFilePath;   // full path to file on disk
             bool mExtractMode;
-
-            struct CProcessedFileInfo {
-                FILETIME MTime;
-                UInt32 Attrib;
-                bool isDir;
-                bool AttribDefined;
-                bool MTimeDefined;
-            } mProcessedFileInfo;
-
-            COutFileStream* mOutFileStreamSpec;
-            CMyComPtr< ISequentialOutStream > mOutFileStream;
 
             UInt64 mNumErrors;
     };
 }
+
 #endif // EXTRACTCALLBACK_HPP
