@@ -248,11 +248,11 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
     return out_file_stream;
 }
 
-CMyComPtr< ISequentialOutStream > BitArchiveCreator::initOutMemStream( vector<byte_t>& out_buffer ) const {
+CMyComPtr< ISequentialOutStream > BitArchiveCreator::initOutMemStream( vector< byte_t >& out_buffer ) {
     return new CBufOutStream( out_buffer );
 }
 
-CMyComPtr< IOutStream > BitArchiveCreator::initOutStdStream( ostream& out_stream ) const {
+CMyComPtr< IOutStream > BitArchiveCreator::initOutStdStream( ostream& out_stream ) {
     return new CStdOutStream( out_stream );
 }
 

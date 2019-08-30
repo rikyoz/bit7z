@@ -185,9 +185,9 @@ namespace bit7z {
                                                        CMyComPtr< IOutArchive >& new_arc,
                                                        unique_ptr< BitInputArchive >& old_arc ) const;
 
-            CMyComPtr< ISequentialOutStream > initOutMemStream( vector< byte_t >& out_buffer ) const;
+            static CMyComPtr< ISequentialOutStream > initOutMemStream( vector< byte_t >& out_buffer );
 
-            CMyComPtr< IOutStream > initOutStdStream( ostream &out_stream ) const;
+            static CMyComPtr< IOutStream > initOutStdStream( ostream &out_stream );
 
             static HRESULT compressOut( IOutArchive* out_arc,
                                         ISequentialOutStream* out_stream,
