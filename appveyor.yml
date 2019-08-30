@@ -39,9 +39,9 @@ build_script:
     - mkdir build
     - cd build
     - if "%mt%"=="" (
-        qmake ..\bit7z.pro
+        qmake ..\bit7z.pro "QMAKE_CFLAGS_RELEASE += -O2 -Os" "QMAKE_CXXFLAGS_RELEASE += -O2 -Os"
       ) else (
-        qmake ..\bit7z.pro "QMAKE_CFLAGS_RELEASE = -O2 -MT" "QMAKE_CXXFLAGS_RELEASE = -O2 -MT" "QMAKE_CFLAGS_DEBUG = -Zi -MTd" "QMAKE_CXXFLAGS_DEBUG = -Zi -MTd"
+        qmake ..\bit7z.pro "QMAKE_CFLAGS_RELEASE = -O2 -Os -MT" "QMAKE_CXXFLAGS_RELEASE = -O2 -Os -MT" "QMAKE_CFLAGS_DEBUG = -Zi -MTd" "QMAKE_CXXFLAGS_DEBUG = -Zi -MTd"
       )
     - nmake release
     - nmake debug

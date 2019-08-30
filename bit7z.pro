@@ -106,6 +106,7 @@ CONFIG(debug, debug|release) {
     BUILD = debug
     BUILD_SUFFIX = _d
 } else {
+    QMAKE_CXXFLAGS_RELEASE += /O2 /Os
     BUILD = release
 }
 
