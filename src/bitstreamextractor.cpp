@@ -33,7 +33,7 @@ using namespace bit7z;
 BitStreamExtractor::BitStreamExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {
     if ( format == BitFormat::Auto ) {
-        throw BitException( "Automatic format detection not supported for in-memory archives" );
+        throw BitException( "Automatic format detection not supported for in-memory archives", E_INVALIDARG );
     }
 }
 
@@ -44,7 +44,7 @@ void BitStreamExtractor::extract( istream& in_stream, const wstring& out_dir ) c
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = in_archive.extract( vector< uint32_t >(), extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
     }
 }
 
@@ -53,11 +53,11 @@ void BitStreamExtractor::extract( istream& in_stream, vector< byte_t >& out_buff
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract a folder to a buffer" );
+        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
     }
 
     map< wstring, vector< byte_t > > buffers_map;
@@ -67,7 +67,7 @@ void BitStreamExtractor::extract( istream& in_stream, vector< byte_t >& out_buff
     const vector< uint32_t > indices( 1, index );
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
     }
     out_buffer = std::move( buffers_map.begin()->second );
 }
@@ -77,11 +77,11 @@ void BitStreamExtractor::extract( istream& in_stream, std::ostream& out_stream, 
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract a folder to a buffer" );
+        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
     }
 
     auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
@@ -90,7 +90,7 @@ void BitStreamExtractor::extract( istream& in_stream, std::ostream& out_stream, 
     const vector< uint32_t > indices( 1, index );
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
     }
 }
 
@@ -109,7 +109,7 @@ void BitStreamExtractor::extract( istream& in_stream, map< wstring, vector< byte
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = in_archive.extract( files_indices, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
     }
 }
 
@@ -122,6 +122,6 @@ void BitStreamExtractor::test( istream& in_stream ) const {
 
     HRESULT res = in_archive.test( extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
     }
 }

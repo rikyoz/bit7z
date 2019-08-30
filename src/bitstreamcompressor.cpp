@@ -20,11 +20,11 @@ void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, con
 
 void BitStreamCompressor::compress( istream& in_stream, vector<byte_t>& out_buffer, const wstring& in_stream_name ) const {
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
-        throw BitException( "Unsupported format for in-memory compression!" );
+        throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
     }
 
     if ( !out_buffer.empty() ) {
-        throw BitException( "Cannot overwrite or update a non empty buffer" );
+        throw BitException( kCannotOverwriteBuffer, E_INVALIDARG );
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();

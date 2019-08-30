@@ -11,6 +11,10 @@
 #include "Common/MyCom.h"
 
 namespace bit7z {
+    CONSTEXPR auto kUnsupportedOperation = "Unsupported operation!";
+    CONSTEXPR auto kUnsupportedInMemoryFormat = "Unsupported format for in-memory compression!";
+    CONSTEXPR auto kCannotOverwriteBuffer = "Cannot overwrite or update a non empty buffer";
+
     class CompressCallback : public Callback,
                              public IArchiveUpdateCallback2,
                              protected ICryptoGetTextPassword2,

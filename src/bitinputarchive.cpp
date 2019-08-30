@@ -81,7 +81,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     }
 
     if ( res != S_OK ) {
-        throw BitException( L"Cannot open archive '" + name + L"'" );
+        throw BitException( L"Cannot open archive '" + name + L"'", ERROR_OPEN_FAILED );
     }
 
     return in_archive.Detach();
@@ -91,7 +91,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     auto* file_stream_spec = new CInFileStream;
     CMyComPtr< IInStream > file_stream = file_stream_spec;
     if ( !file_stream_spec->Open( in_file.c_str() ) ) {
-        throw BitException( L"Cannot open archive file '" + in_file + L"'" );
+        throw BitException( L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED );
     }
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
     mDetectedFormat = ( handler.format() == BitFormat::Auto ?
@@ -118,7 +118,7 @@ BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const
     BitPropVariant propvar;
     HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &propvar );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve archive property" );
+        throw BitException( "Could not retrieve archive property", res );
     }
     return propvar;
 }
@@ -127,16 +127,16 @@ BitPropVariant BitInputArchive::getItemProperty( uint32_t index, BitProperty pro
     BitPropVariant propvar;
     HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &propvar );
     if ( res != S_OK ) {
-        throw BitException( L"Could not retrieve property for item at index " + std::to_wstring( index ) );
+        throw BitException( L"Could not retrieve property for item at index " + std::to_wstring( index ), res );
     }
     return propvar;
 }
 
 uint32_t BitInputArchive::itemsCount() const {
     uint32_t items_count;
-    HRESULT result = mInArchive->GetNumberOfItems( &items_count );
-    if ( result != S_OK ) {
-        throw BitException( "Could not retrieve the number of items in the archive" );
+    HRESULT res = mInArchive->GetNumberOfItems( &items_count );
+    if ( res != S_OK ) {
+        throw BitException( "Could not retrieve the number of items in the archive", res );
     }
     return items_count;
 }

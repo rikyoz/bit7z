@@ -51,11 +51,11 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  vector< byte_t >& out_buffer,
                                  const wstring& in_buffer_name ) const {
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
-        throw BitException( "Unsupported format for in-memory compression!" );
+        throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
     }
 
     if ( !out_buffer.empty() ) {
-        throw BitException( "Cannot overwrite or update a non empty buffer" );
+        throw BitException( kCannotOverwriteBuffer, E_INVALIDARG );
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();

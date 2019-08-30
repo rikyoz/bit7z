@@ -27,13 +27,13 @@ using namespace bit7z;
 
 Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
     if ( !mLibrary ) {
-        throw BitException( L"Cannot load 7-zip library (error " + std::to_wstring( GetLastError() ) + L")" );
+        throw BitException( L"Cannot load 7-zip library (error " + std::to_wstring( GetLastError() ) + L")", GetLastError() );
     }
 
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
 
     if ( !mCreateObjectFunc ) {
-        throw BitException( L"Cannot get CreateObject (error " + std::to_wstring( GetLastError() ) + L")" );
+        throw BitException( L"Cannot get CreateObject (error " + std::to_wstring( GetLastError() ) + L")", GetLastError() );
     }
 }
 
@@ -42,15 +42,16 @@ Bit7zLibrary::~Bit7zLibrary() {
 }
 
 void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const {
-    if ( mCreateObjectFunc( format_ID, interface_ID, out_object ) != S_OK ) {
-        throw BitException( "Cannot get class object" );
+    HRESULT res = mCreateObjectFunc( format_ID, interface_ID, out_object );
+    if ( res != S_OK ) {
+        throw BitException( "Cannot get class object", res );
     }
 }
 
 void Bit7zLibrary::setLargePageMode() {
     SetLargePageMode pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode") );
     if ( !pSetLargePageMode ) {
-        throw BitException( "Cannot set large page mode" );
+        throw BitException( "Cannot set large page mode", GetLastError() );
     }
     pSetLargePageMode();
 }

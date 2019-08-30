@@ -28,7 +28,7 @@ using namespace bit7z::filesystem;
 
 FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirItem( directory ), mFilter( filter ) {
     if ( !mDirItem.isDir() ) {
-        throw BitException( L"'" + mDirItem.name() + L"' is not a directory!" );
+        throw BitException( L"'" + mDirItem.name() + L"' is not a directory!", ERROR_DIRECTORY );
     }
 }
 
@@ -44,7 +44,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
     HANDLE hFind = FindFirstFile( filtered_path.c_str(), &data );
 
     if ( INVALID_HANDLE_VALUE == hFind ) {
-        throw BitException( L"Invalid path '" + filtered_path + L"'" );
+        throw BitException( L"Invalid path '" + filtered_path + L"'", GetLastError() );
     }
 
     do {

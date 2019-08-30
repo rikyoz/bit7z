@@ -164,7 +164,7 @@ void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_lev
 
 void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_method ) {
     if ( !isValidCompressionMethod( mFormat, compression_method ) ) {
-        throw BitException( "Invalid compression method for the chosen archive format" );
+        throw BitException( "Invalid compression method for the chosen archive format", E_INVALIDARG );
     }
     if ( mFormat.hasFeature( MULTIPLE_METHODS ) ) {
         /* even though the compression method is valid, we set it only if the format supports
@@ -176,7 +176,7 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_m
 
 void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
     if ( !isValidDictionarySize( mCompressionMethod, dictionary_size ) ) {
-        throw BitException( "Invalid dictionary size for the chosen compression method" );
+        throw BitException( "Invalid dictionary size for the chosen compression method", E_INVALIDARG );
     }
     if ( mCompressionMethod != BitCompressionMethod::Copy &&
             mCompressionMethod != BitCompressionMethod::Deflate &&
@@ -219,19 +219,20 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
         //NOTE: if any exception occurs in the following ifs, the file stream obj is released thanks to the CMyComPtr
         out_file_stream = out_file_stream_spec;
         if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
-            if ( ::GetLastError() != ERROR_FILE_EXISTS ) { //unknown error
-                throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
+            DWORD last_error = GetLastError();
+            if ( last_error != ERROR_FILE_EXISTS ) { //unknown error
+                throw BitException( L"Cannot create output archive file '" + out_archive + L"'", last_error );
             }
             if ( !mUpdateMode ) { //output archive file already exists and no update mode set
-                throw BitException( L"Cannot update existing archive file '" + out_archive + L"'" );
+                throw BitException( L"Cannot update existing archive file '" + out_archive + L"'", ERROR_FILE_EXISTS );
             }
             if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
                 //update mode is set but format does not support adding more files
-                throw BitException( "Format does not support updating existing archive files" );
+                throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
             }
             if ( !out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
                 //could not create temporary file
-                throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'" );
+                throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'", GetLastError() );
             }
             old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
             old_arc->initUpdatableArchive( &new_arc );
@@ -255,15 +256,12 @@ HRESULT BitArchiveCreator::compressOut( IOutArchive* out_arc,
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
-        throw BitException( "Unsupported operation!" );
-    }
-
-    if ( result == E_FAIL && update_callback->getErrorMessage().empty() ) {
-        throw BitException( "Failed operation (unkwown error)!" );
+        throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
 
     if ( result != S_OK ) {
-        throw BitException( update_callback->getErrorMessage() );
+        wstring error_message = update_callback->getErrorMessage();
+        throw BitException( error_message.empty() ? L"Failed operation (unkwown error)!" : error_message, result );
     }
 
     return result;
@@ -281,7 +279,7 @@ void BitArchiveCreator::cleanupOldArc( BitInputArchive* old_arc,
         //remove old file and rename tmp file (move file with overwriting)
         bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
         if ( !renamed ) {
-            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'" );
+            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'", GetLastError() );
         }
     }
 }
@@ -322,11 +320,11 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         CMyComPtr< ISetProperties > set_properties;
         if ( out_archive->QueryInterface( ::IID_ISetProperties,
                                           reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
-            throw BitException( "ISetProperties unsupported" );
+            throw BitException( "ISetProperties unsupported", ERROR_NOT_SUPPORTED );
         }
         if ( set_properties->SetProperties( names.data(), values.data(),
                                             static_cast< uint32_t >( names.size() ) ) != S_OK ) {
-            throw BitException( "Cannot set properties of the archive" );
+            throw BitException( "Cannot set properties of the archive", E_INVALIDARG );
         }
     }
 }

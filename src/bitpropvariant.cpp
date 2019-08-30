@@ -56,7 +56,7 @@ BitPropVariantType lookupType( VARTYPE type ) {
         default:
             // this is very unlikely to happen:
             // properties types used in archives are the ones supported by PropertyType enum class
-            throw BitException( "Property type not supported" );
+            throw BitException( "Property type not supported", E_INVALIDARG );
     }
 }
 

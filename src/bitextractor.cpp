@@ -38,6 +38,8 @@ using std::wstring;
 using std::wregex;
 using std::regex_match;
 
+CONSTEXPR auto kNoMatchingFile = "No matching file was found in the archive";
+
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
 
 void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) const {
@@ -66,7 +68,7 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
     }
 
     if ( matched_indices.empty() ) {
-        throw BitException( "No matching file was found in the archive" );
+        throw BitException( kNoMatchingFile, ERROR_FILE_NOT_FOUND );
     }
 
     extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
@@ -89,7 +91,7 @@ void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& 
     }
 
     if ( matched_indices.empty() ) {
-        throw BitException( "No matching file was found in the archive" );
+        throw BitException( kNoMatchingFile, ERROR_FILE_NOT_FOUND );
     }
 
     extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
@@ -104,7 +106,7 @@ void BitExtractor::extractItems( const wstring& in_file,
     if ( std::any_of( indices.begin(), indices.end(), [ & ]( uint32_t index ) { return index >= number_items; } ) ) {
         /* if any of the indices is greater than the number of items in the archive we throw an exception, since it is
            an invalid index! */
-        throw BitException( "Some index is not valid" );
+        throw BitException( "Some index is not valid", E_INVALIDARG );
     }
     extractToFileSystem( in_archive, in_file, out_dir, indices );
 }
@@ -114,11 +116,11 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract a folder to a buffer" );
+        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
     }
 
     map< wstring, vector< byte_t > > buffersMap;
@@ -129,7 +131,7 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")" );
+                            L" (error code: " + std::to_wstring( res ) + L")", res );
     }
     out_buffer = std::move( buffersMap.begin()->second );
 }
@@ -139,11 +141,11 @@ void BitExtractor::extract( const std::wstring& in_file, std::ostream& out_strea
 
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range" );
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract a folder to a buffer" );
+        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
     }
 
     auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
@@ -153,7 +155,7 @@ void BitExtractor::extract( const std::wstring& in_file, std::ostream& out_strea
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")" );
+                            L" (error code: " + std::to_wstring( res ) + L")", res );
     }
 }
 
@@ -172,7 +174,7 @@ void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t
     CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = in_archive.extract( files_indices, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
     }
 }
 
@@ -185,7 +187,7 @@ void BitExtractor::test( const wstring& in_file ) const {
     HRESULT res = in_archive.test( extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")" );
+                            L" (error code: " + std::to_wstring( res ) + L")", res );
     }
 }
 
@@ -199,6 +201,6 @@ void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive,
     HRESULT res = in_archive.extract( indices, extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")" );
+                            L" (error code: " + std::to_wstring( res ) + L")", res );
     }
 }

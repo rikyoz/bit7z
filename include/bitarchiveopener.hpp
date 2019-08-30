@@ -22,7 +22,15 @@
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitformat.hpp"
 
+#if ( _MSC_VER <= 1700 )
+#define CONSTEXPR const
+#else
+#define CONSTEXPR constexpr
+#endif
+
 namespace bit7z {
+    CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
+
     /**
      * @brief Abstract class representing a generic archive opener.
      */
