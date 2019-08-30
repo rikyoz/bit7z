@@ -49,6 +49,7 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
 IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
                                                 const wstring& name,
                                                 IInStream* in_stream ) {
+#ifdef BIT7Z_AUTOFORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
         // Detecting format of the input file
@@ -56,6 +57,9 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
         detected_by_signature = true;
     }
     GUID format_GUID = mDetectedFormat->guid();
+#else
+    GUID format_GUID = handler.format().guid();
+#endif
     // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically!
     CMyComPtr< IInArchive > in_archive = initArchiveObject( handler.library(), &format_GUID );
@@ -67,6 +71,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     // Trying to open the file with the detected format
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
 
+#ifdef BIT7z_AUTOFORMAT
     if ( res != S_OK && handler.format() == BitFormat::Auto && !detected_by_signature ) {
         /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
@@ -79,6 +84,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
         in_archive = initArchiveObject( handler.library(), &format_GUID );
         res = in_archive->Open( in_stream, nullptr, open_callback );
     }
+#endif
 
     if ( res != S_OK ) {
         throw BitException( L"Cannot open archive '" + name + L"'", ERROR_OPEN_FAILED );
@@ -93,9 +99,13 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     if ( !file_stream_spec->Open( in_file.c_str() ) ) {
         throw BitException( L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED );
     }
+#ifdef BIT7Z_AUTOFORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
     mDetectedFormat = ( handler.format() == BitFormat::Auto ?
                         &BitFormat::detectFormatFromExt( in_file ) : &handler.format() );
+#else
+    mDetectedFormat = &handler.format();
+#endif
     mInArchive = openArchiveStream( handler, in_file, file_stream );
 }
 
@@ -176,7 +186,11 @@ BitInputArchive::~BitInputArchive() {
 }
 
 const BitInFormat& BitInputArchive::detectedFormat() const {
+#ifdef BIT7Z_AUTOFORMAT
     // Defensive programming: for how the archive format is detected,
     // a correct BitInputArchive instance should have a non null mDetectedFormat!
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
+#else
+    return *mDetectedFormat;
+#endif
 }

@@ -51,7 +51,7 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the input archive format.
              */
-            BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format = BitFormat::Auto );
+            BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format DEFAULT_FORMAT );
 
             /**
              * @brief Extracts the given archive into the choosen directory.

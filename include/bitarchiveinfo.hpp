@@ -47,15 +47,15 @@ namespace bit7z {
              */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const wstring& in_file,
-                            const BitInFormat& format = BitFormat::Auto );
+                            const BitInFormat& format DEFAULT_FORMAT );
 
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const vector< byte_t >& in_buffer,
-                            const BitInFormat& format = BitFormat::Auto );
+                            const BitInFormat& format DEFAULT_FORMAT );
 
             BitArchiveInfo( const Bit7zLibrary& lib,
                             std::istream& in_stream,
-                            const BitInFormat& format = BitFormat::Auto );
+                            const BitInFormat& format DEFAULT_FORMAT );
 
             /**
              * @brief BitArchiveInfo destructor.

@@ -21,6 +21,7 @@
 
 #include "../include/bitformat.hpp"
 
+#ifdef BIT7Z_AUTOFORMAT
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
@@ -30,12 +31,15 @@
 #include <cstdint>
 
 #include "7zip/IStream.h"
+#endif
 
 using namespace std;
 
 namespace bit7z {
     namespace BitFormat {
+#ifdef BIT7Z_AUTOFORMAT
         const BitInFormat        Auto( 0x00 );
+#endif
         const BitInOutFormat      Zip( 0x01, L".zip", BitCompressionMethod::Deflate,
                                        MULTIPLE_FILES | COMPRESSION_LEVEL | ENCRYPTION | MULTIPLE_METHODS );
         const BitInOutFormat    BZip2( 0x02, L".bz2", BitCompressionMethod::BZip2,
@@ -98,8 +102,10 @@ namespace bit7z {
                                        COMPRESSION_LEVEL | INMEM_COMPRESSION );
 
 
-        /* NOTE: This macros are needed since MSVC++ 11 (VS 2012) does not support uniform initialization!
-                 Support to this compiler will be dropped in the next major release v4.x in order to clean this code! */
+#ifdef BIT7Z_AUTOFORMAT
+
+/* NOTE: These macros are needed since MSVC++ 11 (VS 2012) does not support uniform initialization!
+         Support to this compiler will be dropped in the next major release v4.x in order to clean this code! */
 #if _MSC_VER <= 1700
 #define BEGIN_HASHMAP( keytype, valuetype, name ) \
         const unordered_map< keytype, valuetype > name = []() { \
@@ -506,7 +512,10 @@ namespace bit7z {
             // The extension did not match any known format extension, delegating the decision to the client
             return Auto;
         }
+#endif
+
     }
+
 }
 
 using namespace bit7z;

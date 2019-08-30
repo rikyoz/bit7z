@@ -142,8 +142,12 @@ namespace bit7z {
      * @brief The namespace BitFormat contains a set of archive formats usable with bit7z classes
      */
     namespace BitFormat {
-        extern const BitInFormat Auto,      ///< Automatic Format Detection
-                                 Rar,       ///< RAR Archive Format
+
+#ifdef BIT7Z_AUTOFORMAT
+        extern const BitInFormat Auto;      ///< Automatic Format Detection
+#endif
+
+        extern const BitInFormat Rar,       ///< RAR Archive Format
                                  Arj,       ///< ARJ Archive Format
                                  Z,         ///< Z Archive Format
                                  Lzh,       ///< LZH Archive Format
@@ -199,5 +203,12 @@ namespace bit7z {
                                     Tar,        ///< TAR Archive Format
                                     GZip;       ///< GZIP Archive Format
     }
+
+#ifdef BIT7Z_AUTOFORMAT
+#define DEFAULT_FORMAT = BitFormat::Auto
+#else
+#define DEFAULT_FORMAT
+#endif
+
 }
 #endif // BITFORMAT_HPP

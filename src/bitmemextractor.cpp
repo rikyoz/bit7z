@@ -32,9 +32,11 @@ using namespace bit7z;
 
 BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {
+#ifdef BIT7Z_AUTOFORMAT
     if ( format == BitFormat::Auto ) {
         throw BitException( "Automatic format detection not supported for in-memory archives", E_INVALIDARG );
     }
+#endif
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
