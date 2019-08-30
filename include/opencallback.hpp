@@ -39,7 +39,7 @@ namespace bit7z {
                          public CMyUnknownImp,
                          public Callback {
         public:
-            OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
+            explicit OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
 
             virtual ~OpenCallback();
 
