@@ -38,6 +38,19 @@ using std::vector;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
+void compressOut( IOutArchive* out_arc,ISequentialOutStream* out_stream, CompressCallback* update_callback ) {
+    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
+
+    if ( result == E_NOTIMPL ) {
+        throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
+    }
+
+    if ( result != S_OK ) {
+        wstring error_message = update_callback->getErrorMessage();
+        throw BitException( error_message.empty() ? L"Failed operation (unkwown error)!" : error_message, result );
+    }
+}
+
 bool isValidCompressionMethod( const BitInFormat& format, BitCompressionMethod method ) {
     switch ( method ) {
         case BitCompressionMethod::Copy:
@@ -215,8 +228,8 @@ CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
 #endif
 
 CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out_archive,
-        CMyComPtr< IOutArchive >& new_arc,
-        unique_ptr< BitInputArchive >& old_arc ) const {
+                                                              CMyComPtr< IOutArchive >& new_arc,
+                                                              unique_ptr< BitInputArchive >& old_arc ) const {
     CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
         out_file_stream = new CMultiVolOutStream( mVolumeSize, out_archive );
@@ -248,46 +261,44 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
     return out_file_stream;
 }
 
-CMyComPtr< ISequentialOutStream > BitArchiveCreator::initOutMemStream( vector< byte_t >& out_buffer ) {
-    return new CBufOutStream( out_buffer );
-}
-
-CMyComPtr< IOutStream > BitArchiveCreator::initOutStdStream( ostream& out_stream ) {
-    return new CStdOutStream( out_stream );
-}
-
-HRESULT BitArchiveCreator::compressOut( IOutArchive* out_arc,
-                                        ISequentialOutStream* out_stream,
-                                        CompressCallback* update_callback ) {
-    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
-    }
-
-    if ( result != S_OK ) {
-        wstring error_message = update_callback->getErrorMessage();
-        throw BitException( error_message.empty() ? L"Failed operation (unkwown error)!" : error_message, result );
-    }
-
-    return result;
-}
-
-void BitArchiveCreator::cleanupOldArc( BitInputArchive* old_arc,
-                                       IOutStream* out_stream,
-                                       const wstring& out_archive ) {
+void BitArchiveCreator::compressToFile( const wstring& out_file, CompressCallback* update_callback ) const {
+    unique_ptr< BitInputArchive > old_arc = nullptr;
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, new_arc, old_arc );
+    update_callback->setOldArc( old_arc.get() );
+    compressOut( new_arc, out_stream, update_callback );
     if ( old_arc ) {
         old_arc->close();
-        auto out_file_stream = dynamic_cast<COutFileStream*>( out_stream ); //cast should not fail, but anyway...
+        auto out_file_stream = dynamic_cast< COutFileStream* >( *&out_stream ); //cast should not fail, but anyway...
         if ( out_file_stream ) {
             out_file_stream->Close();
         }
         //remove old file and rename tmp file (move file with overwriting)
-        bool renamed = fsutil::renameFile( out_archive + L".tmp", out_archive );
+        bool renamed = fsutil::renameFile( out_file + L".tmp", out_file );
         if ( !renamed ) {
-            throw BitException( L"Cannot rename temp archive file to  '" + out_archive + L"'", GetLastError() );
+            throw BitException( L"Cannot rename temp archive file to  '" + out_file + L"'", GetLastError() );
         }
     }
+}
+
+void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback ) const {
+    if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
+        throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
+    }
+
+    if ( !out_buffer.empty() ) {
+        throw BitException( kCannotOverwriteBuffer, E_INVALIDARG );
+    }
+
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< ISequentialOutStream > out_mem_stream = new CBufOutStream( out_buffer );
+    compressOut( new_arc, out_mem_stream, update_callback );
+}
+
+void BitArchiveCreator::compressToStream( ostream& out_stream, CompressCallback* update_callback ) const {
+    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
+    compressOut( new_arc, out_std_stream, update_callback );
 }
 
 void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {

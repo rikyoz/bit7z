@@ -37,9 +37,11 @@ namespace bit7z {
                              public ICompressProgressInfo,
                              protected ICryptoGetTextPassword2 {
         public:
-            CompressCallback( const BitArchiveCreator& creator, const BitInputArchive* old_arc );
+            CompressCallback( const BitArchiveCreator& creator );
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICryptoGetTextPassword2, ICompressProgressInfo )
+
+            void setOldArc( const BitInputArchive* old_arc );
 
             virtual uint32_t itemsCount() const = 0;
 
@@ -65,7 +67,7 @@ namespace bit7z {
 
         protected:
             const BitInputArchive* mOldArc;
-            const uint32_t mOldArcItemsCount;
+            uint32_t mOldArcItemsCount;
 
             bool mAskPassword;
             bool mNeedBeClosed;

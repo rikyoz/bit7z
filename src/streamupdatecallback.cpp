@@ -37,9 +37,8 @@ using namespace bit7z;
 
 StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
                                             istream& in_stream,
-                                            const wstring& in_stream_name,
-                                            const BitInputArchive* old_arc )
-    : CompressCallback( creator, old_arc ),
+                                            const wstring& in_stream_name )
+    : CompressCallback( creator ),
       mStream( in_stream ),
       mStreamName( in_stream_name ) {}
 

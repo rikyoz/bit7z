@@ -166,7 +166,6 @@ namespace bit7z {
 
     private:
             void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
-            void compressOut( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;
             void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };
 }

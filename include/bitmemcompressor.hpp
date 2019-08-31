@@ -53,11 +53,11 @@ namespace bit7z {
              * @brief Compresses the given buffer to an archive on the filesystem.
              *
              * @param in_buffer         the buffer to be compressed.
-             * @param out_archive       the output archive path.
+             * @param out_file          the output archive path.
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
             void compress( const vector< byte_t >& in_buffer,
-                           const wstring& out_archive,
+                           const wstring& out_file,
                            const wstring& in_buffer_name = L"" ) const;
 
             /**

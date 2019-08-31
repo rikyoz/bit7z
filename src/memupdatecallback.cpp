@@ -38,9 +38,8 @@ using namespace bit7z;
 
 MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
                                       const vector< byte_t >& in_buffer,
-                                      const wstring& in_buffer_name,
-                                      const BitInputArchive* old_arc )
-    : CompressCallback( creator, old_arc ),
+                                      const wstring& in_buffer_name )
+    : CompressCallback( creator ),
       mBuffer( in_buffer ),
       mBufferName( in_buffer_name ) {}
 

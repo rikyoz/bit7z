@@ -34,8 +34,7 @@ namespace bit7z {
         public:
             MemUpdateCallback( const BitArchiveCreator& creator,
                                const vector< byte_t >& in_buffer,
-                               const wstring& in_buffer_name,
-                               const BitInputArchive *old_arc = nullptr );
+                               const wstring& in_buffer_name );
 
             virtual ~MemUpdateCallback();
 

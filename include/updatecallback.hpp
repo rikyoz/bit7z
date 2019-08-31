@@ -36,8 +36,7 @@ namespace bit7z {
     class UpdateCallback : public CompressCallback {
         public:
             explicit UpdateCallback( const BitArchiveCreator& creator,
-                                     const vector< FSItem >& new_items,
-                                     const BitInputArchive* old_arc = nullptr );
+                                     const vector< FSItem >& new_items );
 
             virtual ~UpdateCallback();
 

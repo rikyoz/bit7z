@@ -33,34 +33,18 @@ BitStreamCompressor::BitStreamCompressor( const Bit7zLibrary& lib, const BitInOu
     : BitArchiveCreator( lib, format ) {}
 
 void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, const wstring& in_stream_name ) const {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_std_stream = initOutStdStream( out_stream );
     CMyComPtr< CompressCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
-    BitArchiveCreator::compressOut( new_arc, out_std_stream, update_callback );
+    BitArchiveCreator::compressToStream( out_stream, update_callback );
 }
 
 void BitStreamCompressor::compress( istream& in_stream, vector< byte_t >& out_buffer, const wstring& in_stream_name ) const {
-    if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
-        throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
-    }
-
-    if ( !out_buffer.empty() ) {
-        throw BitException( kCannotOverwriteBuffer, E_INVALIDARG );
-    }
-
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< ISequentialOutStream > out_mem_stream = initOutMemStream( out_buffer );
     CMyComPtr< CompressCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
-    BitArchiveCreator::compressOut( new_arc, out_mem_stream, update_callback );
+    BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }
 
 void BitStreamCompressor::compress( istream& in_stream, const wstring& out_file, const wstring& in_stream_name ) const {
     const wstring& name = in_stream_name.empty() ? fsutil::filename( out_file ) : in_stream_name;
 
-    unique_ptr< BitInputArchive > old_arc = nullptr;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_file_stream = initOutFileStream( out_file, new_arc, old_arc );
-    CMyComPtr< CompressCallback > update_callback = new StreamUpdateCallback( *this, in_stream, name, old_arc.get() );
-    BitArchiveCreator::compressOut( new_arc, out_file_stream, update_callback );
-    cleanupOldArc( old_arc.get(), out_file_stream, out_file );
+    CMyComPtr< CompressCallback > update_callback = new StreamUpdateCallback( *this, in_stream, name );
+    BitArchiveCreator::compressToFile( out_file, update_callback );
 }

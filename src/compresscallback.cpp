@@ -23,12 +23,19 @@
 
 using namespace bit7z;
 
-CompressCallback::CompressCallback( const BitArchiveCreator& creator, const BitInputArchive* old_arc )
+CompressCallback::CompressCallback( const BitArchiveCreator& creator )
     : Callback( creator ),
-      mOldArc( old_arc ),
-      mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ),
+      mOldArc( nullptr ),
+      mOldArcItemsCount( 0 ),
       mAskPassword( false ),
       mNeedBeClosed( false ) {}
+
+void CompressCallback::setOldArc( const BitInputArchive* old_arc ) {
+    if ( old_arc ) {
+        mOldArc = old_arc;
+        mOldArcItemsCount = old_arc->itemsCount();
+    }
+}
 
 HRESULT CompressCallback::Finilize() {
     if ( mNeedBeClosed ) {
@@ -63,8 +70,10 @@ HRESULT CompressCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) 
     return E_NOTIMPL;
 }
 
-HRESULT CompressCallback::GetUpdateItemInfo( UInt32 index, Int32* newData,
-                                          Int32* newProperties, UInt32* indexInArchive ) {
+HRESULT CompressCallback::GetUpdateItemInfo( UInt32 index,
+                                             Int32* newData,
+                                             Int32* newProperties,
+                                             UInt32* indexInArchive ) {
 
     bool isOldItem = index < mOldArcItemsCount;
 

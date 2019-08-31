@@ -33,60 +33,56 @@ BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& for
 
 /* from filesystem to filesystem */
 
-void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& out_archive ) const {
+void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& out_file ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
     vector< FSItem > fs_items = FSIndexer::indexPaths( in_paths );
-    compressOut( fs_items, out_archive );
+    compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compress( const map< wstring, wstring >& in_paths, const wstring& out_archive ) const {
+void BitCompressor::compress( const map< wstring, wstring >& in_paths, const wstring& out_file ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
     vector< FSItem > fs_items = FSIndexer::indexPathsMap( in_paths );
-    compressOut( fs_items, out_archive );
+    compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFile( const wstring& in_file, const wstring& out_archive ) const {
+void BitCompressor::compressFile( const wstring& in_file, const wstring& out_file ) const {
     FSItem item( in_file );
     if ( item.isDir() ) {
         throw BitException( "Wrong argument: input path points to a directory, not a file!", E_INVALIDARG );
     }
     vector< FSItem > fs_items;
     fs_items.push_back( item );
-    compressOut( fs_items, out_archive );
+    compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const {
+void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_file ) const {
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
     vector< FSItem > fs_items = FSIndexer::indexPaths( in_files, true );
-    compressOut( fs_items, out_archive );
+    compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_archive,
+void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_file,
                                    bool recursive, const wstring& filter ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
     vector< FSItem > fs_items = FSIndexer::indexDirectory( in_dir, filter, recursive );
-    compressOut( fs_items, out_archive );
+    compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_archive ) const {
-    compressFiles( in_dir, out_archive, true, L"" );
+void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_file ) const {
+    compressFiles( in_dir, out_file, true, L"" );
 }
 
 /* from filesystem to memory buffer */
 
 void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const {
-    if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
-        throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
-    }
-
     FSItem item( in_file );
     if ( item.isDir() ) {
         throw BitException( "Cannot compress a directory into a memory buffer!", E_INVALIDARG );
@@ -95,7 +91,8 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
     vector< FSItem > fs_items;
     fs_items.push_back( item );
 
-    compressOut( fs_items, out_buffer );
+    CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, fs_items );
+    BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }
 
 /* from filesystem to stream */
@@ -116,26 +113,13 @@ void BitCompressor::compress( const map< wstring, wstring >& in_paths, ostream& 
     compressOut( fs_items, out_stream );
 }
 
-void BitCompressor::compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const {
-    unique_ptr< BitInputArchive > old_arc = nullptr;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_file_stream = initOutFileStream( out_archive, new_arc, old_arc );
-    CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items, old_arc.get() );
-    BitArchiveCreator::compressOut( new_arc, out_file_stream, update_callback );
-    cleanupOldArc( old_arc.get(), out_file_stream, out_archive );
-}
-
-void BitCompressor::compressOut( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< ISequentialOutStream > out_mem_stream = initOutMemStream( out_buffer );
+void BitCompressor::compressOut( const vector< FSItem >& in_items, const wstring& out_file ) const {
     CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
-    BitArchiveCreator::compressOut( new_arc, out_mem_stream, update_callback );
+    BitArchiveCreator::compressToFile( out_file, update_callback );
 }
 
 void BitCompressor::compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_std_stream = initOutStdStream( out_stream );
     CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
-    BitArchiveCreator::compressOut( new_arc, out_std_stream, update_callback );
+    BitArchiveCreator::compressToStream( out_stream, update_callback );
 }
 

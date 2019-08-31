@@ -34,41 +34,24 @@ BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutForma
     : BitArchiveCreator( lib, format ) {}
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
-                                 const wstring& out_archive,
+                                 const wstring& out_file,
                                  const wstring& in_buffer_name ) const {
+    const wstring& name = in_buffer_name.empty() ? fsutil::filename( out_file ) : in_buffer_name;
 
-    const wstring& name = in_buffer_name.empty() ? fsutil::filename( out_archive ) : in_buffer_name;
-
-    unique_ptr< BitInputArchive > old_arc = nullptr;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_file_stream = initOutFileStream( out_archive, new_arc, old_arc );
-    CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, name, old_arc.get() );
-    compressOut( new_arc, out_file_stream, update_callback );
-    cleanupOldArc( old_arc.get(), out_file_stream, out_archive );
+    CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, name );
+    BitArchiveCreator::compressToFile( out_file, update_callback );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  vector< byte_t >& out_buffer,
                                  const wstring& in_buffer_name ) const {
-    if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
-        throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
-    }
-
-    if ( !out_buffer.empty() ) {
-        throw BitException( kCannotOverwriteBuffer, E_INVALIDARG );
-    }
-
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< ISequentialOutStream > out_mem_stream = initOutMemStream( out_buffer );
     CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, in_buffer_name );
-    compressOut( new_arc, out_mem_stream, update_callback );
+    BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  std::ostream& out_stream,
                                  const std::wstring& in_buffer_name ) const {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_std_stream = initOutStdStream( out_stream );
     CMyComPtr< CompressCallback > update_callback = new MemUpdateCallback( *this, in_buffer, in_buffer_name );
-    compressOut( new_arc, out_std_stream, update_callback );
+    BitArchiveCreator::compressToStream( out_stream, update_callback );
 }

@@ -185,18 +185,6 @@ namespace bit7z {
                                                        CMyComPtr< IOutArchive >& new_arc,
                                                        unique_ptr< BitInputArchive >& old_arc ) const;
 
-            static CMyComPtr< ISequentialOutStream > initOutMemStream( vector< byte_t >& out_buffer );
-
-            static CMyComPtr< IOutStream > initOutStdStream( ostream &out_stream );
-
-            static HRESULT compressOut( IOutArchive* out_arc,
-                                        ISequentialOutStream* out_stream,
-                                        CompressCallback* update_callback );
-
-            static void cleanupOldArc( BitInputArchive* old_arc,
-                                       IOutStream* out_stream,
-                                       const wstring& out_archive );
-
             void setArchiveProperties( IOutArchive* out_archive ) const;
 
             const BitInOutFormat& mFormat;
@@ -207,6 +195,10 @@ namespace bit7z {
             bool mSolidMode;
             bool mUpdateMode;
             uint64_t mVolumeSize;
+
+            void compressToFile( const wstring& out_file, CompressCallback* update_callback_spec ) const;
+            void compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback_spec ) const;
+            void compressToStream( ostream& out_stream, CompressCallback* update_callback_spec ) const;
     };
 }
 

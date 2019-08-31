@@ -35,8 +35,7 @@ namespace bit7z {
         public:
             StreamUpdateCallback( const BitArchiveCreator& creator,
                                   istream& in_stream,
-                                  const wstring& in_stream_name,
-                                  const BitInputArchive *old_arc = nullptr );
+                                  const wstring& in_stream_name );
 
             virtual ~StreamUpdateCallback();
 
