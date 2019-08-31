@@ -36,7 +36,6 @@ using namespace bit7z::filesystem;
 
 using std::wstring;
 using std::wregex;
-using std::regex_match;
 
 CONSTEXPR auto kNoMatchingFile = "No matching file was found in the archive";
 
@@ -69,7 +68,7 @@ void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& 
 
     const wregex regex_filter( regex, std::regex::ECMAScript | std::regex::optimize );
     extractMatchingFilter( in_file, out_dir, [ &regex_filter ]( const wstring& item_path ) -> bool {
-        return regex_match( item_path, regex_filter );
+        return std::regex_match( item_path, regex_filter );
     });
 }
 

@@ -54,13 +54,6 @@ UpdateCallback::~UpdateCallback() {
     Finilize();
 }
 
-STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
-    if ( mCreator.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
-        mCreator.ratioCallback()( *inSize, *outSize );
-    }
-    return S_OK;
-}
-
 // debug purposes
 /*wstring to_string( FILETIME ftime ) {// ISO format, time zone designator Z == zero (UTC)
     SYSTEMTIME utc ;
@@ -126,8 +119,8 @@ HRESULT UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream 
 
     const FSItem& new_item = mNewItems[ index - mOldArcItemsCount ];
 
-    if ( mCreator.fileCallback() ) {
-        mCreator.fileCallback()( new_item.name() );
+    if ( mHandler.fileCallback() ) {
+        mHandler.fileCallback()( new_item.name() );
     }
 
     if ( new_item.isDir() ) {

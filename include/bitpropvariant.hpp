@@ -23,7 +23,7 @@
 #include <string>
 //#include <array>
 
-#include <Windows.h>
+#include <Propidl.h>
 
 #if _MSC_VER <= 1700
 #define NOEXCEPT

@@ -25,7 +25,7 @@ using namespace bit7z;
 
 ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
                                   const BitInputArchive& inputArchive )
-    : mHandler( handler ),
+    : Callback( handler ),
       mInputArchive( inputArchive ),
       mExtractMode( true ),
       mNumErrors( 0 ) {}

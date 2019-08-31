@@ -36,7 +36,6 @@ namespace bit7z {
                          public IArchiveOpenVolumeCallback,
                          public IArchiveOpenSetSubArchiveName,
                          public ICryptoGetTextPassword,
-                         public CMyUnknownImp,
                          public Callback {
         public:
             explicit OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
@@ -60,7 +59,6 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword )( BSTR* password );
 
         private:
-            const BitArchiveHandler& mHandler;
             bool mSubArchiveMode;
             wstring mSubArchiveName;
             FSItem mFileItem;

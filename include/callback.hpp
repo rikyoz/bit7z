@@ -21,6 +21,10 @@
 
 #include <string>
 
+#include "Common/MyCom.h"
+
+#include "../include/bitarchivehandler.hpp"
+
 #if ( _MSC_VER <= 1700 )
 #define CONSTEXPR const
 #else
@@ -36,15 +40,17 @@ CONSTEXPR auto kEmptyFileAlias    = L"[Content]";
 namespace bit7z {
     using std::wstring;
 
-    class Callback {
+    class Callback : protected CMyUnknownImp {
         public:
             virtual wstring getErrorMessage() const;
 
         protected:
-            Callback();
+            Callback( const BitArchiveHandler& handler );
             virtual ~Callback() {}
 
+            const BitArchiveHandler& mHandler;
             wstring mErrorMessage;
+
     };
 }
 #endif // CALLBACK_HPP

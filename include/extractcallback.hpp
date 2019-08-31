@@ -22,7 +22,6 @@
 #include "7zip/Archive/IArchive.h"
 #include "7zip/ICoder.h"
 #include "7zip/IPassword.h"
-#include "Common/MyCom.h"
 
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitinputarchive.hpp"
@@ -32,17 +31,11 @@ namespace bit7z {
     class ExtractCallback : public Callback,
                             public IArchiveExtractCallback,
                             public ICompressProgressInfo,
-                            protected ICryptoGetTextPassword,
-                            protected CMyUnknownImp {
+                            protected ICryptoGetTextPassword {
         public:
-            ExtractCallback( const BitArchiveHandler& handler,
-                             const BitInputArchive& inputArchive);
+            MY_UNKNOWN_IMP2( IArchiveExtractCallback, ICryptoGetTextPassword )
 
-            virtual ~ExtractCallback();
-
-            MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
-
-            // IProgress
+            // IProgress from IArchiveExtractCallback
             STDMETHOD( SetTotal )( UInt64 size );
             STDMETHOD( SetCompleted )( const UInt64* completeValue );
 
@@ -56,7 +49,11 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
 
         protected:
-            const BitArchiveHandler& mHandler;
+            ExtractCallback( const BitArchiveHandler& handler,
+                             const BitInputArchive& inputArchive);
+
+            virtual ~ExtractCallback();
+
             const BitInputArchive& mInputArchive;
 
             bool mExtractMode;

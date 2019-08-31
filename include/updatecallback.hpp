@@ -19,11 +19,6 @@
 #ifndef UPDATECALLBACK_HPP
 #define UPDATECALLBACK_HPP
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/ICoder.h"
-#include "7zip/IPassword.h"
-#include "Common/MyCom.h"
-
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveitem.hpp"
 #include "../include/compresscallback.hpp"
@@ -38,8 +33,7 @@ namespace bit7z {
     using std::vector;
     using std::wstring;
 
-    class UpdateCallback : public CompressCallback,
-                           public ICompressProgressInfo {
+    class UpdateCallback : public CompressCallback {
         public:
             explicit UpdateCallback( const BitArchiveCreator& creator,
                                      const vector< FSItem >& new_items,
@@ -50,11 +44,6 @@ namespace bit7z {
             // CompressCallback
             uint32_t itemsCount() const override;
             wstring getErrorMessage() const override;
-
-            MY_UNKNOWN_IMP1( ICompressProgressInfo )
-
-            // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );

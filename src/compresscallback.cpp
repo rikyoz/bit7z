@@ -24,7 +24,7 @@
 using namespace bit7z;
 
 CompressCallback::CompressCallback( const BitArchiveCreator& creator, const BitInputArchive* old_arc )
-    : mCreator( creator ),
+    : Callback( creator ),
       mOldArc( old_arc ),
       mOldArcItemsCount( old_arc ? old_arc->itemsCount() : 0 ),
       mAskPassword( false ),
@@ -38,16 +38,23 @@ HRESULT CompressCallback::Finilize() {
     return S_OK;
 }
 
-HRESULT CompressCallback::SetTotal( UInt64 size ) {
-    if ( mCreator.totalCallback() ) {
-        mCreator.totalCallback()( size );
+STDMETHODIMP CompressCallback::SetTotal( UInt64 size ) {
+    if ( mHandler.totalCallback() ) {
+        mHandler.totalCallback()( size );
     }
     return S_OK;
 }
 
-HRESULT CompressCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mCreator.progressCallback() && completeValue != nullptr ) {
-        mCreator.progressCallback()( *completeValue );
+STDMETHODIMP CompressCallback::SetCompleted( const UInt64* completeValue ) {
+    if ( mHandler.progressCallback() && completeValue != nullptr ) {
+        mHandler.progressCallback()( *completeValue );
+    }
+    return S_OK;
+}
+
+STDMETHODIMP CompressCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+    if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+        mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
 }
@@ -80,7 +87,7 @@ HRESULT CompressCallback::SetOperationResult( Int32 /* operationResult */ ) {
 }
 
 HRESULT CompressCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( !mCreator.isPasswordDefined() ) {
+    if ( !mHandler.isPasswordDefined() ) {
         if ( mAskPassword ) {
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
@@ -90,6 +97,6 @@ HRESULT CompressCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR
         }
     }
 
-    *passwordIsDefined = ( mCreator.isPasswordDefined() ? 1 : 0 );
-    return StringToBstr( mCreator.password().c_str(), password );
+    *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
+    return StringToBstr( mHandler.password().c_str(), password );
 }
