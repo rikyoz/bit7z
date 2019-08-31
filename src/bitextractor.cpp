@@ -21,7 +21,10 @@
 
 #include "../include/bitextractor.hpp"
 
+#include <algorithm>
+#ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
+#endif
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
@@ -32,7 +35,10 @@ using namespace bit7z;
 using namespace bit7z::filesystem;
 
 using std::wstring;
+
+#ifdef BIT7Z_REGEX_MATCHING
 using std::wregex;
+#endif
 
 CONSTEXPR auto kNoMatchingFile = "No matching file was found in the archive";
 
@@ -52,6 +58,7 @@ void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_
     });
 }
 
+#ifdef BIT7Z_REGEX_MATCHING
 void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const {
     if ( regex.empty() ) {
         throw BitException( "Empty regex filter", E_INVALIDARG );
@@ -62,10 +69,11 @@ void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& 
         return std::regex_match( item_path, regex_filter );
     });
 }
+#endif
 
 void BitExtractor::extractMatchingFilter( const wstring& in_file,
-                                          const wstring& out_dir,
-                                          function< bool( const wstring& ) > filter ) const {
+                                         const wstring& out_dir,
+                                         function< bool( const wstring& ) > filter ) const {
     BitInputArchive in_archive( *this, in_file );
 
     vector< uint32_t > matched_indices;

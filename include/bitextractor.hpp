@@ -104,7 +104,9 @@ namespace bit7z {
              */
             void test( const wstring& in_file ) const;
 
+#ifdef BIT7Z_REGEX_MATCHING
             void extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const;
+#endif
 
         private:
             void extractMatchingFilter( const wstring& in_file,
