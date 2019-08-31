@@ -143,7 +143,7 @@ namespace bit7z {
      */
     namespace BitFormat {
 
-#ifdef BIT7Z_AUTOFORMAT
+#ifdef BIT7Z_AUTO_FORMAT
         extern const BitInFormat Auto;      ///< Automatic Format Detection
 #endif
 
@@ -204,7 +204,7 @@ namespace bit7z {
                                     GZip;       ///< GZIP Archive Format
     }
 
-#ifdef BIT7Z_AUTOFORMAT
+#ifdef BIT7Z_AUTO_FORMAT
 #define DEFAULT_FORMAT = BitFormat::Auto
 #else
 #define DEFAULT_FORMAT

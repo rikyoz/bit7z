@@ -29,7 +29,7 @@ using namespace bit7z;
 
 BitStreamExtractor::BitStreamExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {
-#ifdef BIT7Z_AUTOFORMAT
+#ifdef BIT7Z_AUTO_FORMAT
     if ( format == BitFormat::Auto ) {
         throw BitException( "Automatic format detection not supported for in-memory archives", E_INVALIDARG );
     }

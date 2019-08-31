@@ -214,9 +214,7 @@ void BitArchiveCreator::setVolumeSize( uint64_t size ) {
 CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     const GUID format_GUID = mFormat.guid();
-    mLibrary.createArchiveObject( &format_GUID,
-                                  &::IID_IOutArchive,
-                                  reinterpret_cast< void** >( &new_arc ) );
+    mLibrary.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
     setArchiveProperties( new_arc );
     return new_arc;
 }

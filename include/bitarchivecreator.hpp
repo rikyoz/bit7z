@@ -196,9 +196,9 @@ namespace bit7z {
             bool mUpdateMode;
             uint64_t mVolumeSize;
 
-            void compressToFile( const wstring& out_file, CompressCallback* update_callback_spec ) const;
-            void compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback_spec ) const;
-            void compressToStream( ostream& out_stream, CompressCallback* update_callback_spec ) const;
+            void compressToFile( const wstring& out_file, CompressCallback* update_callback ) const;
+            void compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback ) const;
+            void compressToStream( ostream& out_stream, CompressCallback* update_callback ) const;
     };
 }
 

@@ -21,7 +21,7 @@
 
 #include "../include/bitformat.hpp"
 
-#ifdef BIT7Z_AUTOFORMAT
+#ifdef BIT7Z_AUTO_FORMAT
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
@@ -37,7 +37,7 @@ using namespace std;
 
 namespace bit7z {
     namespace BitFormat {
-#ifdef BIT7Z_AUTOFORMAT
+#ifdef BIT7Z_AUTO_FORMAT
         const BitInFormat        Auto( 0x00 );
 #endif
         const BitInOutFormat      Zip( 0x01, L".zip", BitCompressionMethod::Deflate,
@@ -102,7 +102,7 @@ namespace bit7z {
                                        COMPRESSION_LEVEL | INMEM_COMPRESSION );
 
 
-#ifdef BIT7Z_AUTOFORMAT
+#ifdef BIT7Z_AUTO_FORMAT
 
 /* NOTE: These macros are needed since MSVC++ 11 (VS 2012) does not support uniform initialization!
          Support to this compiler will be dropped in the next major release v4.x in order to clean this code! */
