@@ -21,14 +21,11 @@
 
 #include "../include/bitextractor.hpp"
 
-#include <algorithm>
 #include <regex>
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fileextractcallback.hpp"
-#include "../include/memextractcallback.hpp"
-#include "../include/streamextractcallback.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace bit7z;
@@ -100,63 +97,27 @@ void BitExtractor::extractItems( const wstring& in_file,
     BitInputArchive in_archive( *this, in_file );
 
     uint32_t number_items = in_archive.itemsCount();
-    if ( std::any_of( indices.begin(), indices.end(), [ & ]( uint32_t index ) { return index >= number_items; } ) ) {
-        /* if any of the indices is greater than the number of items in the archive we throw an exception, since it is
-           an invalid index! */
-        throw BitException( "Some index is not valid", E_INVALIDARG );
+    for ( uint32_t index : indices ) {
+        if ( index >= number_items ) {
+            throw BitException( L"Index " + std::to_wstring(index) + L"is not valid", E_INVALIDARG );
+        }
     }
     extractToFileSystem( in_archive, in_file, out_dir, indices );
 }
 
 void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index ) const {
     BitInputArchive in_archive( *this, in_file );
-
-    uint32_t number_items = in_archive.itemsCount();
-    if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
-    }
-
-    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
-    }
-
-    const vector< uint32_t > indices( 1, index );
-    map< wstring, vector< byte_t > > buffersMap;
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
-    in_archive.extract( indices, extract_callback_spec );
-    out_buffer = std::move( buffersMap.begin()->second );
+    extractToBuffer( in_archive, out_buffer, index );
 }
 
 void BitExtractor::extract( const std::wstring& in_file, std::ostream& out_stream, unsigned int index ) const {
     BitInputArchive in_archive( *this, in_file );
-
-    uint32_t number_items = in_archive.itemsCount();
-    if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
-    }
-
-    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
-    }
-
-    const vector< uint32_t > indices( 1, index );
-    auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
-    in_archive.extract( indices, extract_callback_spec );
+    extractToStream( in_archive, out_stream, index );
 }
 
 void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const {
     BitInputArchive in_archive( *this, in_file );
-
-    uint32_t number_items = in_archive.itemsCount();
-    vector< uint32_t > files_indices;
-    for ( uint32_t i = 0; i < number_items; ++i ) {
-        if ( !in_archive.isItemFolder( i ) ) { //Consider only files, not folders
-            files_indices.push_back( i );
-        }
-    }
-
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_map );
-    in_archive.extract( files_indices, extract_callback_spec );
+    extractToBufferMap( in_archive, out_map );
 }
 
 void BitExtractor::test( const wstring& in_file ) const {
@@ -164,12 +125,4 @@ void BitExtractor::test( const wstring& in_file ) const {
 
     auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, L"" );
     in_archive.test( extract_callback_spec );
-}
-
-void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive,
-                                        const wstring& in_file,
-                                        const wstring& out_dir,
-                                        const vector< uint32_t >& indices ) const {
-    auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, out_dir );
-    in_archive.extract( indices, extract_callback_spec );
 }

@@ -19,17 +19,18 @@
 #ifndef BITARCHIVEOPENER_HPP
 #define BITARCHIVEOPENER_HPP
 
+#include <vector>
+#include <map>
+
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitformat.hpp"
-
-#if ( _MSC_VER <= 1700 )
-#define CONSTEXPR const
-#else
-#define CONSTEXPR constexpr
-#endif
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
-    CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
+    using std::vector;
+    using std::map;
+
+    class BitInputArchive;
 
     /**
      * @brief Abstract class representing a generic archive opener.
@@ -61,6 +62,22 @@ namespace bit7z {
 
         protected:
             const BitInFormat& mFormat;
+
+            void extractToFileSystem( const BitInputArchive& in_archive,
+                                      const wstring& in_file,
+                                      const wstring& out_dir,
+                                      const vector< uint32_t >& indices ) const;
+
+            void extractToBuffer( const BitInputArchive& in_archive,
+                                  vector< byte_t >& out_buffer,
+                                  unsigned int index ) const;
+
+            void extractToStream( const BitInputArchive& in_archive,
+                                  std::ostream& out_stream,
+                                  unsigned int index ) const;
+
+            void extractToBufferMap( const BitInputArchive& in_archive,
+                                     map< wstring, vector< byte_t > >& out_map ) const;
     };
 }
 

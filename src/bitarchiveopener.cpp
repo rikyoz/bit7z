@@ -21,7 +21,18 @@
 
 #include "../include/bitarchiveopener.hpp"
 
+#include "../include/bitexception.hpp"
+#include "../include/bitinputarchive.hpp"
+#include "../include/fileextractcallback.hpp"
+#include "../include/memextractcallback.hpp"
+#include "../include/streamextractcallback.hpp"
+
+#include <map>
+
+using std::map;
 using namespace bit7z;
+
+CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
 
 BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveHandler( lib ), mFormat( format ) {}
@@ -34,4 +45,63 @@ const BitInFormat& BitArchiveOpener::format() const {
 
 const BitInFormat& BitArchiveOpener::extractionFormat() const {
     return mFormat;
+}
+
+void BitArchiveOpener::extractToFileSystem( const BitInputArchive& in_archive,
+                                            const wstring& in_file,
+                                            const wstring& out_dir,
+                                            const vector< uint32_t >& indices ) const {
+    auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, out_dir );
+    in_archive.extract( indices, extract_callback_spec );
+}
+
+void BitArchiveOpener::extractToStream( const BitInputArchive& in_archive,
+                                        std::ostream& out_stream,
+                                        unsigned int index ) const {
+    uint32_t number_items = in_archive.itemsCount();
+    if ( index >= number_items ) {
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
+    }
+
+    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
+    }
+
+    const vector< uint32_t > indices( 1, index );
+    auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
+    in_archive.extract( indices, extract_callback_spec );
+}
+
+void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
+                                        vector< byte_t >& out_buffer,
+                                        unsigned int index ) const {
+    uint32_t number_items = in_archive.itemsCount();
+    if ( index >= number_items ) {
+        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
+    }
+
+    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
+    }
+
+    const vector< uint32_t > indices( 1, index );
+    map< wstring, vector< byte_t > > buffers_map;
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffers_map );
+    in_archive.extract( indices, extract_callback_spec );
+    out_buffer = std::move( buffers_map.begin()->second );
+}
+
+void BitArchiveOpener::extractToBufferMap( const BitInputArchive& in_archive,
+                                           map< wstring, vector< byte_t > >& out_map ) const {
+    uint32_t number_items = in_archive.itemsCount();
+    vector< uint32_t > files_indices;
+    for ( uint32_t i = 0; i < number_items; ++i ) {
+        if ( !in_archive.isItemFolder( i ) ) { //Consider only files, not folders
+            files_indices.push_back( i );
+        }
+    }
+
+    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_map );
+    in_archive.extract( files_indices, extract_callback_spec );
+
 }

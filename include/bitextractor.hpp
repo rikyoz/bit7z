@@ -116,11 +116,6 @@ namespace bit7z {
             void extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const;
 
         private:
-            void extractToFileSystem( const BitInputArchive& in_archive,
-                                      const wstring& in_file,
-                                      const wstring& out_dir,
-                                      const vector< uint32_t >& indices ) const;
-
             void extractMatchingFilter( const wstring& in_file,
                                         const wstring& out_dir,
                                         function<bool ( const wstring& )> filter ) const;

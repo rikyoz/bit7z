@@ -81,6 +81,7 @@ namespace bit7z {
             IInArchive* mInArchive;
             const BitInFormat* mDetectedFormat;
 
+            friend class BitArchiveOpener;
             friend class BitExtractor;
             friend class BitMemExtractor;
             friend class BitStreamExtractor;
