@@ -45,7 +45,8 @@ CONSTEXPR auto kNoMatchingFile = "No matching file was found in the archive";
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
 
 void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) const {
-    extractItems( in_file, vector< uint32_t >(), out_dir );
+    BitInputArchive in_archive( *this, in_file );
+    extractToFileSystem( in_archive, in_file, out_dir, vector< uint32_t >() );
 }
 
 void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir ) const {
@@ -72,8 +73,8 @@ void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& 
 #endif
 
 void BitExtractor::extractMatchingFilter( const wstring& in_file,
-                                         const wstring& out_dir,
-                                         function< bool( const wstring& ) > filter ) const {
+                                          const wstring& out_dir,
+                                          function< bool( const wstring& ) > filter ) const {
     BitInputArchive in_archive( *this, in_file );
 
     vector< uint32_t > matched_indices;
@@ -96,8 +97,11 @@ void BitExtractor::extractMatchingFilter( const wstring& in_file,
 void BitExtractor::extractItems( const wstring& in_file,
                                  const vector< uint32_t >& indices,
                                  const wstring& out_dir ) const {
-    BitInputArchive in_archive( *this, in_file );
+    if ( indices.empty() ) {
+        throw BitException( "Empty indices vector", E_INVALIDARG );
+    }
 
+    BitInputArchive in_archive( *this, in_file );
     uint32_t n_items = in_archive.itemsCount();
     const auto find_res = std::find_if( indices.cbegin(), indices.cend(), [ &n_items ]( uint32_t index ) -> bool {
         return index >= n_items;
