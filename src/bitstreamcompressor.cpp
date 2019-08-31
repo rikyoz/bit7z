@@ -39,7 +39,7 @@ void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, con
     BitArchiveCreator::compressOut( new_arc, out_std_stream, update_callback );
 }
 
-void BitStreamCompressor::compress( istream& in_stream, vector<byte_t>& out_buffer, const wstring& in_stream_name ) const {
+void BitStreamCompressor::compress( istream& in_stream, vector< byte_t >& out_buffer, const wstring& in_stream_name ) const {
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
     }

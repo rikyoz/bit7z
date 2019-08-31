@@ -19,19 +19,11 @@
 #ifndef BITSTREAMEXTRACTOR_HPP
 #define BITSTREAMEXTRACTOR_HPP
 
-#include <string>
-#include <vector>
-#include <map>
-
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-    using std::wstring;
-    using std::vector;
-    using std::map;
     using std::istream;
-    using std::ostream;
 
     /**
      * @brief The BitStreamExtractor class allows to extract the content of in-memory archives.
@@ -76,7 +68,7 @@ namespace bit7z {
              */
             void extract( istream& in_stream, ostream& out_stream, unsigned int index = 0 ) const;
 
-            void extract( istream& in_stream, map< wstring, vector<byte_t> >& out_map ) const;
+            void extract( istream& in_stream, map< wstring, vector< byte_t > >& out_map ) const;
 
             void test( istream& in_stream ) const;
     };

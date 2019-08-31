@@ -45,7 +45,7 @@ namespace bit7z {
             virtual wstring getErrorMessage() const;
 
         protected:
-            Callback( const BitArchiveHandler& handler );
+            explicit Callback( const BitArchiveHandler& handler );
             virtual ~Callback() {}
 
             const BitArchiveHandler& mHandler;

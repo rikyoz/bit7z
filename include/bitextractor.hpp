@@ -19,21 +19,12 @@
 #ifndef BITEXTRACTOR_HPP
 #define BITEXTRACTOR_HPP
 
-#include <string>
-#include <vector>
-#include <map>
-
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bittypes.hpp"
 
 struct IInArchive;
 
 namespace bit7z {
-    using std::wstring;
-    using std::vector;
-    using std::map;
-    using std::ostream;
-
     class BitInputArchive;
 
     /**

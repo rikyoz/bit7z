@@ -29,6 +29,7 @@
 namespace bit7z {
     using std::vector;
     using std::map;
+    using std::ostream;
 
     class BitInputArchive;
 
@@ -73,7 +74,7 @@ namespace bit7z {
                                   unsigned int index ) const;
 
             void extractToStream( const BitInputArchive& in_archive,
-                                  std::ostream& out_stream,
+                                  ostream& out_stream,
                                   unsigned int index ) const;
 
             void extractToBufferMap( const BitInputArchive& in_archive,

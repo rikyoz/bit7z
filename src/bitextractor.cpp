@@ -42,12 +42,6 @@ void BitExtractor::extract( const wstring& in_file, const wstring& out_dir ) con
     extractItems( in_file, vector< uint32_t >(), out_dir );
 }
 
-//TODO: Improve reusing of code (both extract methods do the same operations when opening an archive)
-
-/* Most of this code, though heavily modified, is taken from the main() of Client7z.cpp in the 7z SDK
- * Main changes made:
- *  + Generalized the code to work with any type of format (the original works only with 7z format)
- *  + Use of exceptions instead of error codes */
 void BitExtractor::extractMatching( const wstring& in_file, const wstring& item_filter, const wstring& out_dir ) const {
     if ( item_filter.empty() ) {
         throw BitException( "Empty wildcard filter", E_INVALIDARG );
@@ -96,12 +90,14 @@ void BitExtractor::extractItems( const wstring& in_file,
                                  const wstring& out_dir ) const {
     BitInputArchive in_archive( *this, in_file );
 
-    uint32_t number_items = in_archive.itemsCount();
-    for ( uint32_t index : indices ) {
-        if ( index >= number_items ) {
-            throw BitException( L"Index " + std::to_wstring(index) + L"is not valid", E_INVALIDARG );
-        }
+    uint32_t n_items = in_archive.itemsCount();
+    const auto find_res = std::find_if( indices.cbegin(), indices.cend(), [ &n_items ]( uint32_t index ) -> bool {
+        return index >= n_items;
+    });
+    if ( find_res != indices.cend() ) {
+        throw BitException( L"Index " + std::to_wstring( *find_res ) + L" is not valid", E_INVALIDARG );
     }
+
     extractToFileSystem( in_archive, in_file, out_dir, indices );
 }
 

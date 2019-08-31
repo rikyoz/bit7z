@@ -19,19 +19,10 @@
 #ifndef BITMEMEXTRACTOR_HPP
 #define BITMEMEXTRACTOR_HPP
 
-#include <string>
-#include <vector>
-#include <map>
-
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-    using std::wstring;
-    using std::vector;
-    using std::map;
-    using std::ostream;
-
     /**
      * @brief The BitMemExtractor class allows to extract the content of in-memory archives.
      */

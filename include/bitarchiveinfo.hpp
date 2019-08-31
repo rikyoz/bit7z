@@ -19,8 +19,6 @@
 #ifndef BITARCHIVEINFO_HPP
 #define BITARCHIVEINFO_HPP
 
-#include <vector>
-
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveitem.hpp"
@@ -31,8 +29,6 @@ struct IOutArchive;
 struct IArchiveExtractCallback;
 
 namespace bit7z {
-    using std::vector;
-
     /**
      * @brief The BitArchiveInfo class allows to retrieve metadata information of archives and their content.
      */
