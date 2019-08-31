@@ -111,7 +111,7 @@ namespace bit7z {
         private:
             void extractMatchingFilter( const wstring& in_file,
                                         const wstring& out_dir,
-                                        function<bool ( const wstring& )> filter ) const;
+                                        const function< bool( const wstring& ) >& filter ) const;
     };
 }
 #endif // BITEXTRACTOR_HPP

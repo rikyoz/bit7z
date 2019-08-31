@@ -74,7 +74,7 @@ void BitExtractor::extractMatchingRegex( const wstring& in_file, const wstring& 
 
 void BitExtractor::extractMatchingFilter( const wstring& in_file,
                                           const wstring& out_dir,
-                                          function< bool( const wstring& ) > filter ) const {
+                                          const function< bool( const wstring& ) >& filter ) const {
     BitInputArchive in_archive( *this, in_file );
 
     vector< uint32_t > matched_indices;

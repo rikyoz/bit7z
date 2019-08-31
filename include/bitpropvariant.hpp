@@ -407,7 +407,8 @@ namespace bit7z {
              */
             template<typename T>
             BitPropVariant& operator=( const T& value ) {
-                return *this = BitPropVariant( value );
+                *this = BitPropVariant( value );
+                return *this;
             }
 
             /**

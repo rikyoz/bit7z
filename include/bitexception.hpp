@@ -39,7 +39,7 @@ namespace bit7z {
              * @param message   the message associated with the exception object.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const char* const message, HRESULT code = E_FAIL );
+            explicit BitException( const char* message, HRESULT code = E_FAIL );
 
             /**
              * @brief Constructs a BitException object with the given message.
@@ -49,7 +49,7 @@ namespace bit7z {
              * @param message   the message associated with the exception object.
              * @param code      the Win32 error code associated with the exception object.
              */
-            BitException( const char* const message, DWORD code );
+            BitException( const char* message, DWORD code );
 
             /**
              * @brief Constructs a BitException object with the given message.
