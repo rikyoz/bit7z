@@ -24,6 +24,7 @@
 #include "../include/bitexception.hpp"
 #include "../include/cstdinstream.hpp"
 #include "../include/opencallback.hpp"
+#include "../include/extractcallback.hpp"
 
 #include "Common/MyCom.h"
 #include "7zip/Common/FileStreams.h"
@@ -167,14 +168,23 @@ HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
-HRESULT BitInputArchive::extract( const vector< uint32_t >& indices, IArchiveExtractCallback* callback ) const {
+void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback_spec ) const {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
     uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
-    return mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, callback );
+
+    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
+    HRESULT res = mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
+    if ( res != S_OK ) {
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
+    }
 }
 
-HRESULT BitInputArchive::test( IArchiveExtractCallback* callback ) const {
-    return mInArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kTest, callback );
+void BitInputArchive::test( ExtractCallback* extract_callback_spec ) const {
+    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
+    HRESULT res = mInArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kTest, extract_callback );
+    if ( res != S_OK ) {
+        throw BitException( extract_callback_spec->getErrorMessage(), res );
+    }
 }
 
 HRESULT BitInputArchive::close() const {

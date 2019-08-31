@@ -120,16 +120,10 @@ void BitExtractor::extract( const wstring& in_file, vector< byte_t >& out_buffer
         throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
     }
 
+    const vector< uint32_t > indices( 1, index );
     map< wstring, vector< byte_t > > buffersMap;
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffersMap );
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-
-    const vector< uint32_t > indices( 1, index );
-    HRESULT res = in_archive.extract( indices, extract_callback );
-    if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")", res );
-    }
+    in_archive.extract( indices, extract_callback_spec );
     out_buffer = std::move( buffersMap.begin()->second );
 }
 
@@ -145,15 +139,9 @@ void BitExtractor::extract( const std::wstring& in_file, std::ostream& out_strea
         throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
     }
 
-    auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-
     const vector< uint32_t > indices( 1, index );
-    HRESULT res = in_archive.extract( indices, extract_callback );
-    if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")", res );
-    }
+    auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
+    in_archive.extract( indices, extract_callback_spec );
 }
 
 void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const {
@@ -168,24 +156,14 @@ void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t
     }
 
     auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_map );
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    HRESULT res = in_archive.extract( files_indices, extract_callback );
-    if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage(), res );
-    }
+    in_archive.extract( files_indices, extract_callback_spec );
 }
-
 
 void BitExtractor::test( const wstring& in_file ) const {
     BitInputArchive in_archive( *this, in_file );
 
     auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, L"" );
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    HRESULT res = in_archive.test( extract_callback );
-    if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")", res );
-    }
+    in_archive.test( extract_callback_spec );
 }
 
 void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive,
@@ -193,11 +171,5 @@ void BitExtractor::extractToFileSystem( const BitInputArchive& in_archive,
                                         const wstring& out_dir,
                                         const vector< uint32_t >& indices ) const {
     auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, out_dir );
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-
-    HRESULT res = in_archive.extract( indices, extract_callback );
-    if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() +
-                            L" (error code: " + std::to_wstring( res ) + L")", res );
-    }
+    in_archive.extract( indices, extract_callback_spec );
 }

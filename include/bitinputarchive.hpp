@@ -19,6 +19,8 @@ namespace bit7z {
     using std::wstring;
     using std::vector;
 
+    class ExtractCallback;
+
     class BitInputArchive {
         public:
             BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file );
@@ -70,9 +72,9 @@ namespace bit7z {
 
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
-            HRESULT extract( const vector< uint32_t >& indices, IArchiveExtractCallback* callback ) const;
+            void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback_spec ) const;
 
-            HRESULT test( IArchiveExtractCallback* callback ) const;
+            void test( ExtractCallback* extract_callback_spec ) const;
 
             HRESULT close() const;
 
