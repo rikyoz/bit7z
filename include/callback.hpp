@@ -42,11 +42,11 @@ namespace bit7z {
 
     class Callback : protected CMyUnknownImp {
         public:
+            virtual ~Callback();
             virtual wstring getErrorMessage() const;
 
         protected:
-            explicit Callback( const BitArchiveHandler& handler );
-            virtual ~Callback() {}
+            explicit Callback( const BitArchiveHandler& handler ); // Protected constructor => Abstract class
 
             const BitArchiveHandler& mHandler;
             wstring mErrorMessage;

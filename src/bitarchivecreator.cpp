@@ -25,7 +25,7 @@
 #include "../include/cstdoutstream.hpp"
 #include "../include/cmultivoloutstream.hpp"
 #include "../include/cbufoutstream.hpp"
-#include "../include/compresscallback.hpp"
+#include "../include/updatecallback.hpp"
 #include "../include/fsutil.hpp"
 
 #include <vector>
@@ -38,7 +38,7 @@ using std::vector;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-void compressOut( IOutArchive* out_arc,ISequentialOutStream* out_stream, CompressCallback* update_callback ) {
+void compressOut( IOutArchive* out_arc, ISequentialOutStream* out_stream, UpdateCallback* update_callback ) {
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
@@ -259,7 +259,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
     return out_file_stream;
 }
 
-void BitArchiveCreator::compressToFile( const wstring& out_file, CompressCallback* update_callback ) const {
+void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback* update_callback ) const {
     unique_ptr< BitInputArchive > old_arc = nullptr;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, new_arc, old_arc );
@@ -279,7 +279,7 @@ void BitArchiveCreator::compressToFile( const wstring& out_file, CompressCallbac
     }
 }
 
-void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback ) const {
+void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const {
     if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
         throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
     }
@@ -293,7 +293,7 @@ void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, Compress
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
-void BitArchiveCreator::compressToStream( ostream& out_stream, CompressCallback* update_callback ) const {
+void BitArchiveCreator::compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const {
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
     compressOut( new_arc, out_std_stream, update_callback );

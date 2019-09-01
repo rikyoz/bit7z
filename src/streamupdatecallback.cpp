@@ -38,13 +38,11 @@ using namespace bit7z;
 StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
                                             istream& in_stream,
                                             const wstring& in_stream_name )
-    : CompressCallback( creator ),
+    : UpdateCallback( creator ),
       mStream( in_stream ),
       mStreamName( in_stream_name ) {}
 
-StreamUpdateCallback::~StreamUpdateCallback() {
-    Finilize();
-}
+StreamUpdateCallback::~StreamUpdateCallback() {}
 
 HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;

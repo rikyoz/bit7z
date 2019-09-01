@@ -82,9 +82,9 @@ namespace bit7z {
 
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
-            void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback_spec ) const;
+            void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const;
 
-            void test( ExtractCallback* extract_callback_spec ) const;
+            void test( ExtractCallback* extract_callback ) const;
 
             HRESULT close() const;
 

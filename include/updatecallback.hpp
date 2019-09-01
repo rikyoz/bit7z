@@ -16,47 +16,63 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef UPDATECALLBACK_HPP
-#define UPDATECALLBACK_HPP
+#ifndef COMPRESSCALLBACK_HPP
+#define COMPRESSCALLBACK_HPP
 
-#include "../include/bitinputarchive.hpp"
-#include "../include/bitarchiveitem.hpp"
-#include "../include/compresscallback.hpp"
-#include "../include/fsitem.hpp"
+#include "7zip/Archive/IArchive.h"
+#include "7zip/ICoder.h"
+#include "7zip/IPassword.h"
+
+#include "../include/callback.hpp"
 #include "../include/bitarchivecreator.hpp"
-
-#include <vector>
+#include "../include/bitinputarchive.hpp"
 
 namespace bit7z {
-    using namespace filesystem;
-    using std::pair;
-    using std::vector;
-    using std::wstring;
+    CONSTEXPR auto kUnsupportedOperation = "Unsupported operation!";
+    CONSTEXPR auto kUnsupportedInMemoryFormat = "Unsupported format for in-memory compression!";
+    CONSTEXPR auto kCannotOverwriteBuffer = "Cannot overwrite or update a non empty buffer";
 
-    class UpdateCallback : public CompressCallback {
+    class UpdateCallback : public Callback,
+                           public IArchiveUpdateCallback2,
+                           public ICompressProgressInfo,
+                           protected ICryptoGetTextPassword2 {
         public:
-            explicit UpdateCallback( const BitArchiveCreator& creator,
-                                     const vector< FSItem >& new_items );
+            virtual ~UpdateCallback() override;
+            virtual uint32_t itemsCount() const = 0;
 
-            virtual ~UpdateCallback();
+            MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
-            // CompressCallback
-            uint32_t itemsCount() const override;
-            wstring getErrorMessage() const override;
+            void setOldArc( const BitInputArchive* old_arc );
+
+            HRESULT Finilize();
+
+            // IProgress from IArchiveUpdateCallback2
+            STDMETHOD( SetTotal )( UInt64 size );
+            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+
+            // ICompressProgressInfo
+            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
+            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
+            STDMETHOD( GetUpdateItemInfo )( UInt32 index,
+                                            Int32* newData,
+                                            Int32* newProperties,
+                                            UInt32* indexInArchive );
+            STDMETHOD( SetOperationResult )( Int32 operationResult );
 
-        private:
-            const vector< FSItem >& mNewItems;
+            //ICryptoGetTextPassword2
+            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
 
-            uint64_t mVolSize;
-            wstring mVolName;
+        protected:
+            const BitInputArchive* mOldArc;
+            uint32_t mOldArcItemsCount;
 
-            vector< pair< wstring, HRESULT > > mFailedFiles;
+            bool mAskPassword;
+            bool mNeedBeClosed;
+
+            UpdateCallback( const BitArchiveCreator& creator );
     };
 }
-#endif // UPDATECALLBACK_HPP
+
+#endif // COMPRESSCALLBACK_HPP

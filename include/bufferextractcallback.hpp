@@ -29,13 +29,13 @@ namespace bit7z {
     using std::vector;
     using std::map;
 
-    class MemExtractCallback : public ExtractCallback {
+    class BufferExtractCallback : public ExtractCallback {
         public:
-            MemExtractCallback( const BitArchiveHandler& handler,
-                                const BitInputArchive& inputArchive,
-                                map< wstring, vector< byte_t > >& buffersMap );
+            BufferExtractCallback( const BitArchiveHandler& handler,
+                                   const BitInputArchive& inputArchive,
+                                   map< wstring, vector< byte_t > >& buffersMap );
 
-            virtual ~MemExtractCallback();
+            virtual ~BufferExtractCallback();
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );

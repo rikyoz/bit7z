@@ -23,7 +23,7 @@
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/memextractcallback.hpp"
+#include "../include/bufferextractcallback.hpp"
 
 using namespace bit7z;
 
@@ -60,6 +60,6 @@ void BitStreamExtractor::test( istream& in_stream ) const {
     BitInputArchive in_archive( *this, in_stream );
 
     map< wstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, dummy_map );
+    CMyComPtr< ExtractCallback > extract_callback_spec = new BufferExtractCallback( *this, in_archive, dummy_map );
     in_archive.test( extract_callback_spec );
 }

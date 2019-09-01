@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef STREAMUPDATECALLBACK_HPP
-#define STREAMUPDATECALLBACK_HPP
+#ifndef MEMUPDATECALLBACK_HPP
+#define MEMUPDATECALLBACK_HPP
 
 #include "../include/bitarchivecreator.hpp"
 #include "../include/bitinputarchive.hpp"
@@ -29,15 +29,14 @@
 namespace bit7z {
     using std::vector;
     using std::wstring;
-    using std::istream;
 
-    class StreamUpdateCallback : public UpdateCallback {
+    class BufferUpdateCallback : public UpdateCallback {
         public:
-            StreamUpdateCallback( const BitArchiveCreator& creator,
-                                  istream& in_stream,
-                                  const wstring& in_stream_name );
+            BufferUpdateCallback( const BitArchiveCreator& creator,
+                                  const vector< byte_t >& in_buffer,
+                                  const wstring& in_buffer_name );
 
-            virtual ~StreamUpdateCallback() override;
+            virtual ~BufferUpdateCallback() override;
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
@@ -48,8 +47,8 @@ namespace bit7z {
             uint32_t itemsCount() const override;
 
         private:
-            istream& mStream;
-            const wstring& mStreamName;
+            const vector< byte_t >& mBuffer;
+            const wstring& mBufferName;
     };
 }
-#endif // STREAMUPDATECALLBACK_HPP
+#endif // MEMUPDATECALLBACK_HPP

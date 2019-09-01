@@ -35,7 +35,7 @@ namespace bit7z {
     using std::unique_ptr;
     using std::ostream;
 
-    class CompressCallback;
+    class UpdateCallback;
 
     /**
      * @brief Abstract class representing a generic archive creator.
@@ -191,13 +191,13 @@ namespace bit7z {
             CMyComPtr< IOutArchive > initOutArchive() const;
 
             CMyComPtr< IOutStream > initOutFileStream( const wstring& out_archive,
-                                                    CMyComPtr< IOutArchive >& new_arc,
-                                                    unique_ptr< BitInputArchive >& old_arc ) const;
+                                                       CMyComPtr< IOutArchive >& new_arc,
+                                                       unique_ptr< BitInputArchive >& old_arc ) const;
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
-            void compressToFile( const wstring& out_file, CompressCallback* update_callback ) const;
-            void compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback ) const;
-            void compressToStream( ostream& out_stream, CompressCallback* update_callback ) const;
+            void compressToFile( const wstring& out_file, UpdateCallback* update_callback ) const;
+            void compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const;
+            void compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const;
 
         private:
             BitCompressionLevel mCompressionLevel;
