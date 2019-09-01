@@ -35,7 +35,7 @@ namespace bit7z {
     class BitArchiveInfo : public BitArchiveOpener, public BitInputArchive {
         public:
             /**
-             * @brief Constructs a BitArchiveInfo object, opening the input file.
+             * @brief Constructs a BitArchiveInfo object, opening the input file archive.
              *
              * @param lib       the 7z library used.
              * @param in_file   the input archive file path.
@@ -45,10 +45,24 @@ namespace bit7z {
                             const wstring& in_file,
                             const BitInFormat& format DEFAULT_FORMAT );
 
+            /**
+             * @brief Constructs a BitArchiveInfo object, opening the archive in the input buffer.
+             *
+             * @param lib       the 7z library used.
+             * @param in_buffer the input buffer containing the archive.
+             * @param format    the input archive format.
+             */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const vector< byte_t >& in_buffer,
                             const BitInFormat& format DEFAULT_FORMAT );
 
+            /**
+             * @brief Constructs a BitArchiveInfo object, opening the archive from the standard input stream.
+             *
+             * @param lib       the 7z library used.
+             * @param in_stream the standard input stream of the archive.
+             * @param format    the input archive format.
+             */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             std::istream& in_stream,
                             const BitInFormat& format DEFAULT_FORMAT );
@@ -90,12 +104,24 @@ namespace bit7z {
              */
             uint64_t packSize() const;
 
+            /**
+             * @return true if and only if the archive has at least one encrypted item.
+             */
             bool hasEncryptedItems() const;
 
+            /**
+             * @return the number of volumes composing the archive.
+             */
             uint32_t volumesCount() const;
 
+            /**
+             * @return true if and only if the archive is composed by multiple volumes.
+             */
             bool isMultiVolume() const;
 
+            /**
+             * @return true if and only if the archive was created using solid compression.
+             */
             bool isSolid() const;
     };
 }

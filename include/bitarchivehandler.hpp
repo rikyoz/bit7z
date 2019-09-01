@@ -52,7 +52,7 @@ namespace bit7z {
     typedef function< void( wstring filename ) > FileCallback;
 
     /**
-     * @brief A std::functions which returns the password to be used in order to handle an archive.
+     * @brief A std::function which returns the password to be used in order to handle an archive.
      */
     typedef function< wstring() > PasswordCallback;
 
@@ -61,19 +61,6 @@ namespace bit7z {
      */
     class BitArchiveHandler {
         public:
-
-            /**
-             * @brief BitArchiveHandler constructor.
-             *
-             * @param lib   the 7z library used by the handler.
-             */
-            explicit BitArchiveHandler( const Bit7zLibrary& lib );
-
-            /**
-             * @brief BitArchiveHandler destructor.
-             */
-            virtual ~BitArchiveHandler() = 0;
-
             /**
              * @return the Bit7zLibrary object used by the handler.
              */
@@ -195,6 +182,11 @@ namespace bit7z {
             const Bit7zLibrary& mLibrary;
             wstring mPassword;
 
+            explicit BitArchiveHandler( const Bit7zLibrary& lib );
+
+            virtual ~BitArchiveHandler() = 0;
+
+        private:
             //CALLBACKS
             TotalCallback mTotalCallback;
             ProgressCallback mProgressCallback;

@@ -74,6 +74,9 @@ namespace bit7z {
              */
             uint64_t packSize() const;
 
+            /**
+             * @return true if and only if the item is encrypted.
+             */
             bool isEncrypted() const;
 
             /**

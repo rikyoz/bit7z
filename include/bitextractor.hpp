@@ -46,26 +46,37 @@ namespace bit7z {
 
             /**
              * @brief Extracts the given archive into the choosen directory.
-
+             *
              * @param in_file       the input archive file.
              * @param out_dir       the output directory where extracted files will be put.
              */
             void extract( const wstring& in_file, const wstring& out_dir = L"" ) const;
 
             /**
-             * @brief Extracts the matching files in the given archive into the choosen directory.
-
+             * @brief Extracts the wildcard matching files in the given archive into the choosen directory.
+             *
              * @param in_file       the input archive file.
+             * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.
-             * @param item_filter   only files with (archive) paths matching the filter will be extracted.
              */
             void extractMatching( const wstring& in_file,
                                   const wstring& item_filter,
                                   const wstring& out_dir = L"" ) const;
 
+#ifdef BIT7Z_REGEX_MATCHING
+            /**
+             * @brief Extracts the regex matching files in the given archive into the choosen directory.
+             *
+             * @param in_file       the input archive file.
+             * @param regex         the regex used for matching the paths of files inside the archive.
+             * @param out_dir       the output directory where extracted files will be put.
+             */
+            void extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const;
+#endif
+
             /**
              * @brief Extracts the specified items in the given archive into the choosen directory.
-
+             *
              * @param in_file   the input archive file.
              * @param out_dir   the output directory where extracted files will be put.
              * @param indices   the array of indices of the files in the archive that must be extracted.
@@ -76,7 +87,7 @@ namespace bit7z {
 
             /**
              * @brief Extracts a file from the given archive into the output buffer.
-
+             *
              * @param in_file      the input archive file.
              * @param out_buffer   the output buffer where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_file.
@@ -86,13 +97,20 @@ namespace bit7z {
 
             /**
              * @brief Extracts a file from the given archive into the output stream.
-
-            * @param in_file      the input archive file.
-            * @param out_buffer   the output standard stream where the content of the archive will be put.
-            * @param index        the index of the file to be extracted from in_file.
-            */
+             *
+             * @param in_file      the input archive file.
+             * @param out_buffer   the output standard stream where the content of the archive will be put.
+             * @param index        the index of the file to be extracted from in_file.
+             */
             void extract( const wstring& in_file, ostream& out_stream, unsigned int index = 0 ) const;
 
+            /**
+             * @brief Extracts the content of the given archive into a map of memory buffers, where keys are the paths
+             * of the files (inside the archive) and values are the corresponding decompressed contents.
+             *
+             * @param in_file   the input archive file.
+             * @param out_map   the output map.
+             */
             void extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const;
 
             /**
@@ -100,13 +118,9 @@ namespace bit7z {
              *
              * If the input archive is not valid, a BitException is thrown!
              *
-             * @param in_file   the input archive file.
+             * @param in_file   the input archive file to be tested.
              */
             void test( const wstring& in_file ) const;
-
-#ifdef BIT7Z_REGEX_MATCHING
-            void extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const;
-#endif
 
         private:
             void extractMatchingFilter( const wstring& in_file,

@@ -147,7 +147,7 @@ namespace bit7z {
              * directories existing on the filesystem.
              *
              * @param in_paths      a vector of paths.
-             * @param out_stream    the standard ostream where to output the archive file.
+             * @param out_stream    the standard ostream where the archive will be output.
              */
             void compress( const vector<wstring>& in_paths, ostream& out_stream ) const;
 
@@ -164,7 +164,7 @@ namespace bit7z {
              */
             void compress( const map<wstring, wstring>& in_paths, ostream& out_stream ) const;
 
-    private:
+        private:
             void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
             void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };

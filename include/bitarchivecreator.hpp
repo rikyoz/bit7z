@@ -43,19 +43,6 @@ namespace bit7z {
     class BitArchiveCreator : public BitArchiveHandler {
         public:
             /**
-             * @brief BitArchiveCreator constructor.
-             *
-             * @param lib       the 7z library used.
-             * @param format    the output archive format.
-             */
-            BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format );
-
-            /**
-             * @brief BitArchiveCreator destructor.
-             */
-            virtual ~BitArchiveCreator() override = 0;
-
-            /**
              * @return the format used by the archive creator.
              */
             const BitInFormat& format() const override;
@@ -75,8 +62,14 @@ namespace bit7z {
              */
             BitCompressionLevel compressionLevel() const;
 
+            /**
+             * @return the compression method used by the archive creator.
+             */
             BitCompressionMethod compressionMethod() const;
 
+            /**
+             * @return the dictionary size used by the archive creator.
+             */
             uint32_t dictionarySize() const;
 
             /**
@@ -140,21 +133,31 @@ namespace bit7z {
             void setPassword( const wstring& password, bool crypt_headers );
 
             /**
-             * @brief Sets the compression level to use when creating an archive.
+             * @brief Sets the compression level to be used when creating an archive.
              *
              * @param compression_level the compression level desired.
              */
             void setCompressionLevel( BitCompressionLevel compression_level );
 
+            /**
+             * @brief Sets the compression method to be used when creating an archive.
+             *
+             * @param compression_method the compression method desired.
+             */
             void setCompressionMethod( BitCompressionMethod compression_method );
 
+            /**
+             * @brief Sets the dictionary size to be used when creating an archive.
+             *
+             * @param dictionary_size the dictionary size desired.
+             */
             void setDictionarySize( uint32_t dictionary_size );
 
             /**
              * @brief Sets whether to use solid compression or not.
              *
              * @note Setting the solid compression mode to true has effect only when using the 7z format with multiple
-             *       input files.
+             * input files.
              *
              * @param solid_mode    if true, it will be used the "solid compression" method.
              */
@@ -179,15 +182,24 @@ namespace bit7z {
             void setVolumeSize( uint64_t size );
 
         protected:
+            const BitInOutFormat& mFormat;
+
+            BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format );
+
+            virtual ~BitArchiveCreator() override = 0;
+
             CMyComPtr< IOutArchive > initOutArchive() const;
 
             CMyComPtr< IOutStream > initOutFileStream( const wstring& out_archive,
-                                                       CMyComPtr< IOutArchive >& new_arc,
-                                                       unique_ptr< BitInputArchive >& old_arc ) const;
+                                                    CMyComPtr< IOutArchive >& new_arc,
+                                                    unique_ptr< BitInputArchive >& old_arc ) const;
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
+            void compressToFile( const wstring& out_file, CompressCallback* update_callback ) const;
+            void compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback ) const;
+            void compressToStream( ostream& out_stream, CompressCallback* update_callback ) const;
 
-            const BitInOutFormat& mFormat;
+        private:
             BitCompressionLevel mCompressionLevel;
             BitCompressionMethod mCompressionMethod;
             uint32_t mDictionarySize;
@@ -195,10 +207,6 @@ namespace bit7z {
             bool mSolidMode;
             bool mUpdateMode;
             uint64_t mVolumeSize;
-
-            void compressToFile( const wstring& out_file, CompressCallback* update_callback ) const;
-            void compressToBuffer( vector< byte_t >& out_buffer, CompressCallback* update_callback ) const;
-            void compressToStream( ostream& out_stream, CompressCallback* update_callback ) const;
     };
 }
 

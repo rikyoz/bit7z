@@ -68,8 +68,22 @@ namespace bit7z {
              */
             void extract( const vector< byte_t >& in_buffer, ostream& out_stream, unsigned int index = 0 ) const;
 
-            void extract( const vector< byte_t >& in_buffer, map< wstring, vector<byte_t> >& out_map ) const;
+            /**
+             * @brief Extracts the given buffer archive into a map of memory buffers, where keys are the paths
+             * of the files (inside the archive) and values are the corresponding decompressed contents.
+             *
+             * @param in_buffer    the buffer containing the archive to be extracted.
+             * @param out_map      the output map.
+             */
+            void extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const;
 
+            /**
+             * @brief Tests the given buffer archive without extracting its content.
+             *
+             * If the input archive is not valid, a BitException is thrown.
+             *
+             * @param in_buffer    the buffer containing the archive to be tested.
+             */
             void test( const vector< byte_t >& in_buffer ) const;
     };
 }
