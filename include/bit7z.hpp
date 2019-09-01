@@ -22,8 +22,10 @@
 #include "bitarchiveinfo.hpp"
 #include "bitcompressor.hpp"
 #include "bitmemcompressor.hpp"
+#include "bitstreamcompressor.hpp"
 #include "bitextractor.hpp"
 #include "bitmemextractor.hpp"
+#include "bitstreamextractor.hpp"
 #include "bitexception.hpp"
 
 #endif // BIT7Z_HPP
