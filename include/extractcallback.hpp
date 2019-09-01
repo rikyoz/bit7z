@@ -33,7 +33,7 @@ namespace bit7z {
                             public ICompressProgressInfo,
                             protected ICryptoGetTextPassword {
         public:
-            MY_UNKNOWN_IMP2( IArchiveExtractCallback, ICryptoGetTextPassword )
+            MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 
             // IProgress from IArchiveExtractCallback
             STDMETHOD( SetTotal )( UInt64 size );
