@@ -168,7 +168,7 @@ namespace bit7z {
              *
              * @note If false, an exception will be thrown in case a compression operation targets an existing archive.
              *
-             * @param update_archives if true, compressing operations will update existing archives.
+             * @param update_mode if true, compressing operations will update existing archives.
              */
             void setUpdateMode( bool update_mode );
 

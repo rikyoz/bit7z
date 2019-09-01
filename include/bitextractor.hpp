@@ -99,7 +99,7 @@ namespace bit7z {
              * @brief Extracts a file from the given archive into the output stream.
              *
              * @param in_file      the input archive file.
-             * @param out_buffer   the output standard stream where the content of the archive will be put.
+             * @param out_stream   the output standard stream where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_file.
              */
             void extract( const wstring& in_file, ostream& out_stream, unsigned int index = 0 ) const;

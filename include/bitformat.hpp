@@ -104,9 +104,11 @@ namespace bit7z {
         public:
             /**
              * @brief Constructs a BitInOutFormat object with a id value, an extension and a set of supported features
-             * @param value     the value of the format in the 7z SDK
-             * @param ext       the default file extension of the archive format
-             * @param features  the set of features supported by the archive format
+             *
+             * @param value         the value of the format in the 7z SDK
+             * @param ext           the default file extension of the archive format
+             * @param defaultMethod the default compression method of the archive format.
+             * @param features      the set of features supported by the archive format
              */
             BitInOutFormat( unsigned char value,
                             const wstring& ext,
@@ -130,6 +132,9 @@ namespace bit7z {
              */
             bool hasFeature( FormatFeatures feature ) const;
 
+            /**
+             * @return the default compression method of the archive format.
+             */
             BitCompressionMethod defaultMethod() const;
 
         private:
