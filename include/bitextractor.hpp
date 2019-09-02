@@ -67,6 +67,8 @@ namespace bit7z {
             /**
              * @brief Extracts the regex matching files in the given archive into the choosen directory.
              *
+             * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
+             *
              * @param in_file       the input archive file.
              * @param regex         the regex used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.

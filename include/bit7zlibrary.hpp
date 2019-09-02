@@ -31,6 +31,7 @@ struct IOutArchive;
 //! \cond IGNORE_BLOCK_IN_DOXYGEN
 template< typename T >
 class CMyComPtr;
+//! \endcond
 
 namespace bit7z {
     /**
