@@ -43,7 +43,7 @@ bit7z
 + Choice of the **compression level** (from none to ultra, not all supported by every output archive format).
 + Choice of the **compression method** (from v3.1.x &mdash; see the [wiki](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods) for the supported methods).
 + Choice of the compression **dictionary size** (from v3.1.x).
-+ **Automatic format detection** (from v3.1.x).
++ **Automatic input archive format detection** (from v3.1.x).
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
 + **Operation callbacks**, through which it is possible to obtain real time information about the ongoing extraction or compression operation (from v2.1.x).
