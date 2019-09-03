@@ -61,8 +61,8 @@ Below are a few examples that show how to use some of the main features of bit7z
 ### Extracting files from an archive
 
 ```cpp
-Bit7zLibrary lib( L"7za.dll" );
-BitExtractor extractor( lib, BitFormat::SevenZip );
+Bit7zLibrary lib{ L"7za.dll" };
+BitExtractor extractor{ lib, BitFormat::SevenZip };
 
 //extracts a simple archive
 extractor.extract( L"path/to/archive.7z", L"output/dir/" );
@@ -82,8 +82,8 @@ extractor.extract( L"path/to/another/archive.7z", L"output/dir/" );
 ### Compressing files into an archive
 
 ```cpp
-Bit7zLibrary lib( L"7z.dll" );
-BitCompressor compressor( lib, BitFormat::Zip );
+Bit7zLibrary lib{ L"7z.dll" };
+BitCompressor compressor{ lib, BitFormat::Zip };
 
 std::vector< std::wstring > files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
 //creates a simple zip archive of two files
@@ -103,15 +103,15 @@ compressor.compressFiles( files, L"protected_archive.zip" );
 
 //compresses a single file into a buffer
 std::vector< byte_t > buffer;
-BitCompressor compressor2( lib, BitFormat::BZip2 );
+BitCompressor compressor2{ lib, BitFormat::BZip2 };
 compressor2.compressFile( files[0], buffer );
 ```
 
 ### Reading archive metadata
 
 ```cpp
-Bit7zLibrary lib( L"7za.dll" );
-BitArchiveInfo arc( lib, L"archive.7z", BitFormat::SevenZip );
+Bit7zLibrary lib{ L"7za.dll" };
+BitArchiveInfo arc{ lib, L"archive.7z", BitFormat::SevenZip };
 
 //printing archive metadata
 wcout << L"Archive properties" << endl;
@@ -156,9 +156,9 @@ Obviously, you can also clone/download this repository and build the library by 
 + **Compiler:** MSVC 2012 or greater (MSVC 2010 supported until v2.x).
 + **DLLs:** 7-zip DLLs (v19.00 for the GitHub release packages).
 
-The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/)
+The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/).
 
-**Note**: in order to use this library you should link your program not only with **bit7z** but also with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`)
+**Note**: in order to use this library you should link your program not only with **bit7z** but also with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`).
 
 **Note 2**: even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the dlls of previous versions, such as v16.04. However, it is _strongly suggested_ to use dlls with the same version.
 
