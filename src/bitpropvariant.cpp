@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -56,7 +56,7 @@ BitPropVariantType lookupType( VARTYPE type ) {
         default:
             // this is very unlikely to happen:
             // properties types used in archives are the ones supported by PropertyType enum class
-            throw BitException( "Property type not supported" );
+            throw BitException( "Property type not supported", E_INVALIDARG );
     }
 }
 
@@ -69,7 +69,7 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) { //until now, I've copied only the pointer to the string, hence we need a copy!
-        bstrVal = SysAllocStringByteLen( reinterpret_cast<LPCSTR>( other.bstrVal ),
+        bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
         if ( !bstrVal ) {
             throw BitException( "Could not allocate memory for BitPropVariant string" );
@@ -383,7 +383,7 @@ wstring BitPropVariant::toString() const {
         case VT_FILETIME:
             return std::to_wstring( filetime.dwHighDateTime ) + L", " + std::to_wstring( filetime.dwLowDateTime );
     }
-    throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")" );
+    throw BitException( L"BitPropVariant type not supported (vt: " + std::to_wstring( vt ) + L")" );
 }
 
 bool BitPropVariant::isEmpty() const {
@@ -457,7 +457,7 @@ void BitPropVariant::internalClear() {
     uhVal.QuadPart = 0;
 }
 
-bool bit7z::operator !=( const BitPropVariant& a, const BitPropVariant& b ) {
+bool bit7z::operator!=( const BitPropVariant& a, const BitPropVariant& b ) {
     return !( a == b );
 }
 

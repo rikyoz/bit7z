@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,12 +21,30 @@
 
 #include "../include/bitexception.hpp"
 
+using std::string;
 using namespace bit7z;
 
-BitException::BitException( const string& message ) : runtime_error( message ) {}
+std::string ws2s( const std::wstring& wstr ) {
+    int num_chars = WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), nullptr, 0, nullptr, nullptr );
+    std::string result;
+    if ( num_chars > 0 ) {
+        result.resize( static_cast< size_t >( num_chars ) );
+        WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), &result[0], num_chars, nullptr, nullptr );
+    }
+    return result;
+}
 
-BitException::BitException( const wstring& message )
-    : runtime_error( string( message.begin(), message.end() ) ) {}
-/* NOTE: this doesn't convert the character set of the original wstring message!
- * But we expect every error message to be ASCII (apart from those containing filenames)!
- * This will need to be fixed in the future */
+BitException::BitException( const char* const message, HRESULT code ) : runtime_error( message ), mErrorCode( code ) {}
+
+BitException::BitException( const char* const message, DWORD code )
+    : runtime_error( message ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
+
+BitException::BitException( const wstring& message, HRESULT code )
+    : runtime_error( ws2s( message ) ), mErrorCode( code ) {}
+
+BitException::BitException( const wstring& message, DWORD code )
+    : runtime_error( ws2s( message ) ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
+
+HRESULT BitException::getErrorCode() {
+    return mErrorCode;
+}

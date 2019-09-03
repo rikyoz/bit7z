@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
 #ifndef FSINDEXER_HPP
 #define FSINDEXER_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
 #include <map>
 
@@ -33,15 +33,21 @@ namespace bit7z {
 
         class FSIndexer {
             public:
-                static vector< FSItem > indexDirectory( const wstring& in_dir, const wstring& filter = L"", bool recursive = true );
+                static vector< FSItem > indexDirectory( const wstring& in_dir,
+                                                        const wstring& filter = L"",
+                                                        bool recursive = true );
+
                 static vector< FSItem > indexPaths( const vector< wstring >& in_paths, bool ignore_dirs = false );
-                static vector< FSItem > indexPathsMap( const map<wstring, wstring>& in_paths, bool ignore_dirs = false );
+
+                static vector< FSItem > indexPathsMap( const map< wstring, wstring >& in_paths,
+                                                       bool ignore_dirs = false );
 
             private:
                 FSItem mDirItem;
                 wstring mFilter;
 
-                FSIndexer( const wstring& directory, const wstring& filter = L"" );
+                explicit FSIndexer( const wstring& directory, const wstring& filter = L"" );
+
                 void listDirectoryItems( vector< FSItem >& result, bool recursive, const wstring& prefix = L"" );
 
                 static void indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem >& result );

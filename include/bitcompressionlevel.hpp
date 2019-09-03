@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,12 +24,14 @@ namespace bit7z {
      * @brief The BitCompressionLevel enum represents the compression level used by 7z when creating archives.
      * @note It uses the same values as in the 7z SDK (https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
      */
-    enum BitCompressionLevel { NONE = 0,    ///< Copy mode (no compression)
-                               FASTEST = 1, ///< Fastest compressing
-                               FAST = 3,    ///< Fast compressing
-                               NORMAL = 5,  ///< Normal compressing
-                               MAX = 7,     ///< Maximum compressing
-                               ULTRA = 9    ///< Ultra compressing
-                             };
+    enum class BitCompressionLevel {
+        NONE = 0,    ///< Copy mode (no compression)
+        FASTEST = 1, ///< Fastest compressing
+        FAST = 3,    ///< Fast compressing
+        NORMAL = 5,  ///< Normal compressing
+        MAX = 7,     ///< Maximum compressing
+        ULTRA = 9    ///< Ultra compressing
+    };
 }
+
 #endif // BITCOMPRESSIONLEVEL_HPP

@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,26 +22,18 @@
 #include "../include/bit7zlibrary.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/bitguids.hpp"
-
-#include <sstream>
 
 using namespace bit7z;
-using std::ostringstream;
 
-Bit7zLibrary::Bit7zLibrary( const std::wstring &dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
+Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
     if ( !mLibrary ) {
-        ostringstream os;
-        os << GetLastError();
-        throw BitException( "Cannot load 7-zip library (error " + os.str() + ")" );
+        throw BitException( L"Cannot load 7-zip library (error " + std::to_wstring( GetLastError() ) + L")", GetLastError() );
     }
 
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
 
     if ( !mCreateObjectFunc ) {
-        ostringstream os;
-        os << GetLastError();
-        throw BitException( "Cannot get CreateObject (error " + os.str() + ")" );
+        throw BitException( L"Cannot get CreateObject (error " + std::to_wstring( GetLastError() ) + L")", GetLastError() );
     }
 }
 
@@ -49,8 +41,17 @@ Bit7zLibrary::~Bit7zLibrary() {
     FreeLibrary( mLibrary );
 }
 
-void Bit7zLibrary::createArchiveObject( const GUID *format_ID, const GUID *interface_ID, void **out_object ) const {
-    if ( mCreateObjectFunc( format_ID, interface_ID, out_object ) != S_OK ) {
-        throw BitException( "Cannot get class object" );
+void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const {
+    HRESULT res = mCreateObjectFunc( format_ID, interface_ID, out_object );
+    if ( res != S_OK ) {
+        throw BitException( "Cannot get class object", res );
     }
+}
+
+void Bit7zLibrary::setLargePageMode() {
+    auto pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode") );
+    if ( !pSetLargePageMode ) {
+        throw BitException( "Cannot set large page mode", GetLastError() );
+    }
+    pSetLargePageMode();
 }

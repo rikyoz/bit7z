@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,11 +19,10 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/coutmultivolstream.hpp"
+#include "../include/cmultivoloutstream.hpp"
 
 #include <string>
 
-#include "Common/IntToString.h"
 #include "Windows/FileDir.h"
 
 /* This class is a modified version of COutMultiVolStream you can find in 7zSDK/CPP/7zip/UI/Common/Update.cpp
@@ -34,46 +33,46 @@
  *  + Use of uint64_t instead of UInt64
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-COutMultiVolStream::COutMultiVolStream( uint64_t size, const wstring& archiveName ) {
-    mStreamIndex = 0;
-    mOffsetPos = 0;
-    mAbsPos = 0;
-    mLength = 0;
-    mVolSize = size;
-    mVolPrefix = archiveName + L".";
-}
+CMultiVolOutStream::CMultiVolOutStream( uint64_t size, const wstring& archiveName ) :
+    mVolSize( size ),
+    mVolPrefix( archiveName + L"." ),
+    mStreamIndex( 0 ),
+    mOffsetPos( 0 ),
+    mAbsPos( 0 ),
+    mLength( 0 ) {}
 
-COutMultiVolStream::~COutMultiVolStream() {
+CMultiVolOutStream::~CMultiVolOutStream() {}
 
-}
-
-HRESULT COutMultiVolStream::Close() {
+HRESULT CMultiVolOutStream::Close() {
     HRESULT res = S_OK;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
         COutFileStream* s = ( *it ).streamSpec;
         if ( s ) {
             HRESULT res2 = s->Close();
-            if ( res2 != S_OK )
+            if ( res2 != S_OK ) {
                 res = res2;
+            }
         }
     }
     return res;
 }
 
-UInt64 COutMultiVolStream::GetSize() const { return mLength; }
+UInt64 CMultiVolOutStream::GetSize() const { return mLength; }
 
-bool COutMultiVolStream::SetMTime( const FILETIME* mTime ) {
+bool CMultiVolOutStream::SetMTime( const FILETIME* mTime ) {
     bool res = true;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
         COutFileStream* s = ( *it ).streamSpec;
-        if ( s )
-            if ( !s->SetMTime( mTime ) )
+        if ( s ) {
+            if ( !s->SetMTime( mTime ) ) {
                 res = false;
+            }
+        }
     }
     return res;
 }
 
-STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -81,16 +80,16 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
         if ( mStreamIndex >= mVolStreams.size() ) {
             CAltStreamInfo altStream;
 
-            FChar temp[16];
-            ConvertUInt32ToString( mStreamIndex + 1, temp );
-            wstring name = temp;
-            while ( name.length() < 3 )
-                name.insert( 0, L"0" );
+            //FChar temp[16];
+            //ConvertUInt64ToString( mStreamIndex + 1, temp );
+            wstring name = std::to_wstring( mStreamIndex + 1 );
+            name.insert( 0, 3 - name.length(), L'0' );
             name.insert( 0, mVolPrefix );
             altStream.streamSpec = new COutFileStream;
             altStream.stream = altStream.streamSpec;
             if ( !altStream.streamSpec->Create( name.c_str(), false ) ) {
-                return ::GetLastError();
+                DWORD last_error = ::GetLastError();
+                return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
             }
 
             altStream.pos = 0;
@@ -99,7 +98,7 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
             mVolStreams.push_back( altStream );
             continue;
         }
-        CAltStreamInfo& altStream = mVolStreams[mStreamIndex];
+        CAltStreamInfo& altStream = mVolStreams[ mStreamIndex ];
 
         if ( mOffsetPos >= mVolSize ) {
             mOffsetPos -= mVolSize;
@@ -140,9 +139,10 @@ STDMETHODIMP COutMultiVolStream::Write( const void* data, UInt32 size, UInt32* p
     return S_OK;
 }
 
-STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
-    if ( seekOrigin >= 3 )
+STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+    if ( seekOrigin >= 3 ) {
         return STG_E_INVALIDFUNCTION;
+    }
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             mAbsPos = offset;
@@ -155,17 +155,18 @@ STDMETHODIMP COutMultiVolStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
             break;
     }
     mOffsetPos = mAbsPos;
-    if ( newPosition != nullptr )
+    if ( newPosition != nullptr ) {
         *newPosition = mAbsPos;
+    }
     mStreamIndex = 0;
     return S_OK;
 }
 
-STDMETHODIMP COutMultiVolStream::SetSize( UInt64 newSize ) {
-    unsigned i = 0;
+STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
+    size_t i = 0;
     while ( i < mVolStreams.size() ) {
-        CAltStreamInfo& altStream = mVolStreams[i++];
-        if ( ( UInt64 )newSize < altStream.realSize ) {
+        CAltStreamInfo& altStream = mVolStreams[ i++ ];
+        if ( newSize < altStream.realSize ) {
             RINOK( altStream.stream->SetSize( newSize ) );
             altStream.realSize = newSize;
             break;

@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -76,12 +76,17 @@ uint64_t BitArchiveItem::packSize() const {
     return propvar.isEmpty() ? 0 : propvar.getUInt64();
 }
 
+bool BitArchiveItem::isEncrypted() const {
+    BitPropVariant propvar = getProperty( BitProperty::Encrypted );
+    return propvar.isBool() && propvar.getBool();
+}
+
 BitPropVariant BitArchiveItem::getProperty( BitProperty property ) const {
     auto prop_it = mItemProperties.find( property );
     return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
 }
 
-map<BitProperty, BitPropVariant> BitArchiveItem::itemProperties() const {
+map< BitProperty, BitPropVariant > BitArchiveItem::itemProperties() const {
     return mItemProperties;
 }
 

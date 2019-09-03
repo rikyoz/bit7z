@@ -7,6 +7,7 @@
 *.pro.user
 *.lastcodeanalysissucceeded
 *.filters
+*.vcxproj.user
 .qmake.stash
 lib/
 build/
@@ -24,3 +25,13 @@ doc/md/
 test*/
 .vs/
 x64/
+\.idea/
+
+cmake-build-debug/
+
+bit7z.sln
+CMakeLists*\.txt
+
+*.suppress
+
+*.pro\.user*-pre1

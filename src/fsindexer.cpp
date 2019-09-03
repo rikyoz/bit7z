@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,17 +21,14 @@
 
 #include "../include/fsindexer.hpp"
 
-#include <string>
-
 #include "../include/fsutil.hpp"
 #include "../include/bitexception.hpp"
 
-using std::wstring;
 using namespace bit7z::filesystem;
 
 FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirItem( directory ), mFilter( filter ) {
     if ( !mDirItem.isDir() ) {
-        throw BitException( L"'" + mDirItem.name() + L"' is not a directory!" );
+        throw BitException( L"'" + mDirItem.name() + L"' is not a directory!", ERROR_DIRECTORY );
     }
 }
 
@@ -47,7 +44,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
     HANDLE hFind = FindFirstFile( filtered_path.c_str(), &data );
 
     if ( INVALID_HANDLE_VALUE == hFind ) {
-        throw BitException( L"Invalid path '" + filtered_path + L"'" );
+        throw BitException( L"Invalid path '" + filtered_path + L"'", GetLastError() );
     }
 
     do {
@@ -63,7 +60,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             continue;
         }
 
-        bool item_matches = fsutil::wildcard_match( mFilter, current_item.name() );
+        bool item_matches = fsutil::wildcardMatch( mFilter, current_item.name() );
         if ( item_matches ) {
             result.push_back( current_item );
         }

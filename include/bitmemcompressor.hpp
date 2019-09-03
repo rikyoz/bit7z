@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,13 +19,11 @@
 #ifndef BITMEMCOMPRESSOR_HPP
 #define BITMEMCOMPRESSOR_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -55,11 +53,12 @@ namespace bit7z {
              * @brief Compresses the given buffer to an archive on the filesystem.
              *
              * @param in_buffer         the buffer to be compressed.
-             * @param out_archive       the output archive path.
+             * @param out_file          the output archive path.
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
-            void compress( const vector< byte_t >& in_buffer, const wstring& out_archive,
-                           wstring in_buffer_name = L"" ) const;
+            void compress( const vector< byte_t >& in_buffer,
+                           const wstring& out_file,
+                           const wstring& in_buffer_name = L"" ) const;
 
             /**
              * @brief Compresses the given input buffer to the output buffer.
@@ -70,7 +69,21 @@ namespace bit7z {
              * @param out_buffer        the buffer going to contain the output archive.
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
-            void compress( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
+            void compress( const vector< byte_t >& in_buffer,
+                           vector< byte_t >& out_buffer,
+                           const wstring& in_buffer_name = L"" ) const;
+
+            /**
+             * @brief Compresses the given input buffer to the output standard stream.
+             *
+             * @note If the format of the output doesn't support in memory compression, a BitException is thrown.
+             *
+             * @param in_buffer         the buffer to be compressed.
+             * @param out_stream        the (binary) stream going to contain the output archive.
+             * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
+             */
+            void compress( const vector< byte_t >& in_buffer,
+                           ostream& out_stream,
                            const wstring& in_buffer_name = L"" ) const;
     };
 }

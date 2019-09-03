@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,17 +21,36 @@
 
 #include <string>
 
+#include "Common/MyCom.h"
+
+#include "../include/bitarchivehandler.hpp"
+
+#if ( _MSC_VER <= 1700 )
+#define CONSTEXPR const
+#else
+#define CONSTEXPR constexpr
+#endif
+
+CONSTEXPR auto kUnsupportedMethod = L"Unsupported Method";
+CONSTEXPR auto kCRCFailed         = L"CRC Failed";
+CONSTEXPR auto kDataError         = L"Data Error";
+CONSTEXPR auto kUnknownError      = L"Unknown Error";
+CONSTEXPR auto kEmptyFileAlias    = L"[Content]";
+
 namespace bit7z {
     using std::wstring;
 
-    class Callback {
+    class Callback : protected CMyUnknownImp {
         public:
-            wstring getErrorMessage() const;
+            virtual ~Callback();
+            virtual wstring getErrorMessage() const;
 
         protected:
-            Callback();
+            explicit Callback( const BitArchiveHandler& handler ); // Protected constructor => Abstract class
 
+            const BitArchiveHandler& mHandler;
             wstring mErrorMessage;
+
     };
 }
 #endif // CALLBACK_HPP

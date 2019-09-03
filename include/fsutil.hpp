@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,24 +19,30 @@
 #ifndef FSUTIL_HPP
 #define FSUTIL_HPP
 
-#include <iostream>
+#include <string>
 
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
             using std::wstring;
 
-            bool is_relative_path( const wstring& path );
+            bool isRelativePath( const wstring& path );
 
-            bool is_directory( const wstring& path );
-            bool path_exists( const wstring& path );
-            //bool has_ending( const wstring& str, const wstring& ending );
+            bool isDirectory( const wstring& path );
 
-            void normalize_path( wstring& path );
+            bool pathExists( const wstring& path );
+
+            bool renameFile( const wstring& old_name, const wstring& new_name );
+
+            void normalizePath( wstring& path );
+
             wstring dirname( const wstring& path );
+
             wstring filename( const wstring& path, bool ext = false );
+
             wstring extension( const wstring& path );
-            bool wildcard_match( const wstring& pattern, const wstring& str );
+
+            bool wildcardMatch( const wstring& pattern, const wstring& str );
         }
     }
 }

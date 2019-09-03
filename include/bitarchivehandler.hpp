@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,49 +28,48 @@ namespace bit7z {
     using std::wstring;
     using std::function;
 
+    class BitInFormat;
+
     /**
      * @brief A std::function whose argument is the total size of the ongoing operation.
      */
-    typedef function<void( uint64_t total_size )> TotalCallback;
+    typedef function< void( uint64_t total_size ) > TotalCallback;
 
     /**
      * @brief A std::function whose argument is the current processed size of the ongoing operation.
      */
-    typedef function<void( uint64_t progress_size )> ProgressCallback;
+    typedef function< void( uint64_t progress_size ) > ProgressCallback;
 
     /**
      * @brief A std::function whose arguments are the current processed input size and the current output size of the
      * ongoing operation.
      */
-    typedef function<void( uint64_t input_size, uint64_t output_size )> RatioCallback;
+    typedef function< void( uint64_t input_size, uint64_t output_size ) > RatioCallback;
 
     /**
      * @brief A std::function whose argument is the name of the file currently being processed by the ongoing operation.
      */
-    typedef function<void( wstring filename )> FileCallback;
+    typedef function< void( wstring filename ) > FileCallback;
 
     /**
-     * @brief A std::functions which returns the password to be used in order to handle an archive.
+     * @brief A std::function which returns the password to be used in order to handle an archive.
      */
-    typedef function<wstring()> PasswordCallback;
+    typedef function< wstring() > PasswordCallback;
 
     /**
      * @brief Abstract class representing a generic archive handler.
      */
     class BitArchiveHandler {
         public:
+            /**
+             * @return the Bit7zLibrary object used by the handler.
+             */
+            const Bit7zLibrary& library() const;
 
             /**
-             * @brief BitArchiveHandler constructor
-             *
-             * @param lib   the 7z library used by the handler.
+             * @return the format used by the handler for extracting or compressing.
              */
-            explicit BitArchiveHandler( const Bit7zLibrary& lib );
-
-            /**
-             * @brief BitArchiveHandler destructor
-             */
-            virtual ~BitArchiveHandler() = 0;
+            virtual const BitInFormat& format() const = 0;
 
             /**
              * @return the password used to open, extract or encrypt the archive.
@@ -108,7 +107,7 @@ namespace bit7z {
             PasswordCallback passwordCallback() const;
 
             /**
-             * @brief Sets up a password to be used by the archive handler
+             * @brief Sets up a password to be used by the archive handler.
              *
              * The password will be used to encrypt/decrypt archives by using the default
              * cryptographic method of the archive format.
@@ -183,6 +182,11 @@ namespace bit7z {
             const Bit7zLibrary& mLibrary;
             wstring mPassword;
 
+            explicit BitArchiveHandler( const Bit7zLibrary& lib );
+
+            virtual ~BitArchiveHandler() = 0;
+
+        private:
             //CALLBACKS
             TotalCallback mTotalCallback;
             ProgressCallback mProgressCallback;

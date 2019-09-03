@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,29 +16,33 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef COUTMEMSTREAM_HPP
-#define COUTMEMSTREAM_HPP
+#ifndef CSTDINSTREAM_HPP
+#define CSTDINSTREAM_HPP
 
-#include <vector>
-
-#include "../include/bittypes.hpp"
+#include <cstdint>
+#include <istream>
 
 #include "7zip/IStream.h"
 #include "Common/MyCom.h"
 
 namespace bit7z {
-    using std::vector;
+    using std::istream;
 
-    class COutMemStream : public ISequentialOutStream, public CMyUnknownImp {
+    class CStdInStream : public IInStream, public CMyUnknownImp {
         public:
-            explicit COutMemStream( vector< byte_t >& out_buffer );
-            virtual ~COutMemStream();
+            explicit CStdInStream( istream& inputStream );
 
-            vector< byte_t >& mBuffer;
+            virtual ~CStdInStream();
 
-            MY_UNKNOWN_IMP
+            MY_UNKNOWN_IMP1( IInStream )
 
-            STDMETHOD( Write )( const void* data, UInt32 size, UInt32 * processedSize );
+            // IInStream
+            STDMETHOD( Read )( void* data, uint32_t size, uint32_t* processedSize );
+            STDMETHOD( Seek )( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition );
+
+        private:
+            istream& mInputStream;
     };
 }
-#endif // COUTMEMSTREAM_HPP
+
+#endif // CSTDINSTREAM_HPP

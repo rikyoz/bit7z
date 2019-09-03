@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,14 +21,11 @@
 
 #include "../include/opencallback.hpp"
 
-#include <iostream>
-
 #include "7zip/Common/FileStreams.h"
 
 #include "../include/bitpropvariant.hpp"
 #include "../include/fsutil.hpp"
 
-using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
@@ -37,8 +34,8 @@ using namespace bit7z::filesystem;
  *  + Use of wstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
-OpenCallback::OpenCallback( const BitArchiveOpener& opener, const wstring& filename )
-    : mOpener( opener ), mSubArchiveMode( false ), mSubArchiveName( L"" ), mFileItem( filename ) {}
+OpenCallback::OpenCallback( const BitArchiveHandler& handler, const wstring& filename )
+    : Callback( handler ), mSubArchiveMode( false ), mSubArchiveName( L"" ), mFileItem( filename ) {}
 
 OpenCallback::~OpenCallback() {}
 
@@ -100,14 +97,15 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         wstring stream_path = mFileItem.path();
         if ( name != nullptr ) {
             stream_path = fsutil::dirname( stream_path ) + WCHAR_PATH_SEPARATOR + name;
-            if ( !fsutil::path_exists( stream_path ) || fsutil::is_directory( stream_path ) ) {
+            if ( !fsutil::pathExists( stream_path ) || fsutil::isDirectory( stream_path ) ) {
                 return S_FALSE;
             }
         }
         auto* inFile = new CInFileStream;
         CMyComPtr< IInStream > inStreamTemp = inFile;
         if ( !inFile->Open( stream_path.c_str() ) ) {
-            return ::GetLastError();
+            DWORD last_error = ::GetLastError();
+            return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
         }
         *inStream = inStreamTemp.Detach();
         return S_OK;
@@ -124,12 +122,12 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
-    if ( !mOpener.isPasswordDefined() ) {
+    if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
-        if ( mOpener.passwordCallback() ) {
-            pass = mOpener.passwordCallback()();
+        if ( mHandler.passwordCallback() ) {
+            pass = mHandler.passwordCallback()();
         }
 
         if ( pass.empty() ) {
@@ -137,7 +135,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
             return E_ABORT;
         }
     } else {
-        pass = mOpener.password();
+        pass = mHandler.password();
     }
 
     return StringToBstr( pass.c_str(), password );

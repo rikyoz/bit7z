@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,9 +24,6 @@
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
-#include <string>
-
-using namespace std;
 using namespace bit7z::filesystem;
 
 /* NOTES:
@@ -42,7 +39,7 @@ using namespace bit7z::filesystem;
 
 FSItem::FSItem( const wstring& path, const wstring& inArchivePath )
     : mPath( path ), mFileData(), mSearchPath( L"" ), mInArchivePath( inArchivePath ) {
-    bool is_dir = fsutil::is_directory( mPath );
+    bool is_dir = fsutil::isDirectory( mPath );
     if ( is_dir && !mPath.empty() ) {
         // The FSItem is a directory!
         // If the path ends with a / or a \, it's removed, since FindFirstFile doesn't want it!
@@ -52,13 +49,13 @@ FSItem::FSItem( const wstring& path, const wstring& inArchivePath )
     }
     HANDLE find_handle = FindFirstFile( mPath.c_str(), &mFileData );
     if ( find_handle == INVALID_HANDLE_VALUE ) {
-        throw BitException( L"Invalid path '" + mPath + L"'!" );
+        throw BitException( L"Invalid path '" + mPath + L"'!", GetLastError() );
     }
     FindClose( find_handle );
 }
 
-FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& search_path ) :
-    mPath( dir ), mFileData( data ), mSearchPath( search_path ) {
+FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& search_path )
+    : mPath( dir ), mFileData( data ), mSearchPath( search_path ) {
     /* Now mPath is the path without the filename, since dir is the path containing the file 'data'!
      * So we must add the filename! */
     if ( mPath.back() == L'/' || mPath.back() == L'\\' ) {
@@ -96,7 +93,7 @@ FILETIME FSItem::lastWriteTime() const {
 }
 
 wstring FSItem::name() const {
-    return mFileData.cFileName;
+    return static_cast< const wchar_t* >( mFileData.cFileName );
 }
 
 wstring FSItem::path() const {
@@ -128,7 +125,7 @@ wstring FSItem::inArchivePath() const {
         return mInArchivePath;
     }
 
-    if ( !is_relative_path( mPath ) ||
+    if ( !isRelativePath( mPath ) ||
             mPath.find( L"./" ) != wstring::npos || mPath.find( L".\\" ) != wstring::npos ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
         // the interal structure of that folder (mSearchPath), otherwise we use only the file name.

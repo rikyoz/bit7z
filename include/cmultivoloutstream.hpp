@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,9 +20,9 @@
 #define COUTMULTIVOLSTREAM_HPP
 
 #include <vector>
+#include <string>
 #include <cstdint>
 
-//#include "7zip/UI/Common/TempFiles.h"
 #include "7zip/Common/FileStreams.h"
 #include "7zip/IStream.h"
 #include "Common/MyCom.h"
@@ -30,35 +30,39 @@
 using std::vector;
 using std::wstring;
 
-class COutMultiVolStream : public IOutStream, public CMyUnknownImp {
-        //CTempFiles* TempFiles;
+class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
+
         uint64_t mVolSize;
-        wstring  mVolPrefix;
-        unsigned mStreamIndex; // required stream
+        wstring mVolPrefix;
+        size_t mStreamIndex; // required stream
         uint64_t mOffsetPos;   // offset from start of _streamIndex index
         uint64_t mAbsPos;
         uint64_t mLength;
 
         struct CAltStreamInfo {
+            CMyComPtr< IOutStream > stream;
             COutFileStream* streamSpec;
-            CMyComPtr<IOutStream> stream;
             wstring name;
             uint64_t pos;
             uint64_t realSize;
         };
+
         vector< CAltStreamInfo > mVolStreams;
 
     public:
-        COutMultiVolStream( uint64_t size, const wstring &archiveName );
-        virtual ~COutMultiVolStream();
+        CMultiVolOutStream( uint64_t size, const wstring& archiveName );
+
+        virtual ~CMultiVolOutStream();
 
         bool SetMTime( const FILETIME* mTime );
+
         HRESULT Close();
 
         UInt64 GetSize() const;
 
         MY_UNKNOWN_IMP1( IOutStream )
 
+        // IOutStream
         STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );
         STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
         STDMETHOD( SetSize )( UInt64 newSize );

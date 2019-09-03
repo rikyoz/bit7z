@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,12 +19,13 @@
 #ifndef BITEXCEPTION_HPP
 #define BITEXCEPTION_HPP
 
-#include <iostream>
-#include <exception>
+#include <string>
+#include <stdexcept>
+
+#include <Windows.h>
 
 namespace bit7z {
     using std::runtime_error;
-    using std::string;
     using std::wstring;
 
     /**
@@ -36,8 +37,19 @@ namespace bit7z {
              * @brief Constructs a BitException object with the given message.
              *
              * @param message   the message associated with the exception object.
+             * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const string& message );
+            explicit BitException( const char* message, HRESULT code = E_FAIL );
+
+            /**
+             * @brief Constructs a BitException object with the given message.
+             *
+             * @note The Win32 error code is converted to a HRESULT code through HRESULT_FROM_WIN32 macro.
+             *
+             * @param message   the message associated with the exception object.
+             * @param code      the Win32 error code associated with the exception object.
+             */
+            BitException( const char* message, DWORD code );
 
             /**
              * @brief Constructs a BitException object with the given message.
@@ -46,8 +58,30 @@ namespace bit7z {
              * class constructor.
              *
              * @param message   the message associated with the exception object.
+             * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const wstring& message );
+            explicit BitException( const wstring& message, HRESULT code = E_FAIL );
+
+            /**
+             * @brief Constructs a BitException object with the given message.
+             *
+             * @note The wstring argument is converted into a string and then passed to the base
+             * class constructor.
+             *
+             * @note The Win32 error code is converted to a HRESULT code through HRESULT_FROM_WIN32 macro.
+             *
+             * @param message   the message associated with the exception object.
+             * @param code      the Win32 error code associated with the exception object.
+             */
+            BitException( const wstring& message, DWORD code );
+
+            /**
+             * @return the HRESULT code associated with the exception object.
+             */
+            HRESULT getErrorCode();
+
+        private:
+            HRESULT mErrorCode;
     };
 }
 #endif // BITEXCEPTION_HPP

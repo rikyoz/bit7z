@@ -1,4 +1,4 @@
-#VERSION  = 3.0.1
+#VERSION  = 3.1.0
 TEMPLATE = lib
 CONFIG  += staticlib
 CONFIG  -= app_bundle
@@ -25,26 +25,36 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitextractor.cpp \
            src/bitformat.cpp \
            src/bitguids.cpp \
+           src/bitinputarchive.cpp \
            src/bitmemcompressor.cpp \
            src/bitmemextractor.cpp \
            src/bitpropvariant.cpp \
+           src/bitstreamcompressor.cpp \
+           src/bitstreamextractor.cpp \
+           src/bufferextractcallback.cpp \
+           src/bufferupdatecallback.cpp \
            src/callback.cpp \
-           src/coutmemstream.cpp \
-           src/coutmultivolstream.cpp \
+           src/cbufoutstream.cpp \
+           src/cmultivoloutstream.cpp \
+           src/cstdinstream.cpp \
+           src/cstdoutstream.cpp \
            src/extractcallback.cpp \
+           src/fileextractcallback.cpp \
+           src/fileupdatecallback.cpp \
            src/fsindexer.cpp \
            src/fsitem.cpp \
            src/fsutil.cpp \
-           src/memextractcallback.cpp \
-           src/memupdatecallback.cpp \
            src/opencallback.cpp \
-           src/updatecallback.cpp \
-           src/util.cpp
+           src/streamextractcallback.cpp \
+           src/streamupdatecallback.cpp \
+           src/updatecallback.cpp
 
 INCLUDEPATH += lib/7zSDK/CPP/
 
-QMAKE_CFLAGS_WARN_ON = -W4
-QMAKE_CXXFLAGS_WARN_ON = -W4
+QMAKE_CFLAGS_WARN_ON -= -W3
+QMAKE_CXXFLAGS_WARN_ON -= -W3
+QMAKE_CFLAGS_WARN_ON += -W4 #-analyze
+QMAKE_CXXFLAGS_WARN_ON += -W4 #-analyze
 
 DEFINES += _UNICODE _7Z_VOL
 
@@ -56,27 +66,36 @@ HEADERS += include/bit7z.hpp \
            include/bitarchiveitem.hpp \
            include/bitarchiveopener.hpp \
            include/bitcompressionlevel.hpp \
+           include/bitcompressionmethod.hpp \
            include/bitcompressor.hpp \
            include/bitexception.hpp \
            include/bitextractor.hpp \
            include/bitformat.hpp \
            include/bitguids.hpp \
+           include/bitinputarchive.hpp \
            include/bitmemcompressor.hpp \
            include/bitmemextractor.hpp \
            include/bitpropvariant.hpp \
+           include/bitstreamcompressor.hpp \
+           include/bitstreamextractor.hpp \
            include/bittypes.hpp \
+           include/bufferextractcallback.hpp \
+           include/bufferupdatecallback.hpp \
            include/callback.hpp \
-           include/coutmemstream.hpp \
-           include/coutmultivolstream.hpp \
+           include/cbufoutstream.hpp \
+           include/cmultivoloutstream.hpp \
+           include/cstdinstream.hpp \
+           include/cstdoutstream.hpp \
            include/extractcallback.hpp \
+           include/fileextractcallback.hpp \
+           include/fileupdatecallback.hpp \
            include/fsindexer.hpp \
            include/fsitem.hpp \
            include/fsutil.hpp \
-           include/memextractcallback.hpp \
-           include/memupdatecallback.hpp \
            include/opencallback.hpp \
-           include/updatecallback.hpp \
-           include/util.hpp
+           include/streamextractcallback.hpp \
+           include/streamupdatecallback.hpp \
+           include/updatecallback.hpp
 
 contains(QT_ARCH, i386) {
     QMAKE_LFLAGS         += /MACHINE:X86
@@ -91,6 +110,7 @@ CONFIG(debug, debug|release) {
     BUILD = debug
     BUILD_SUFFIX = _d
 } else {
+    QMAKE_CXXFLAGS_RELEASE += /O2 /Os
     BUILD = release
 }
 

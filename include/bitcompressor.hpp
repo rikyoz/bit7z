@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,24 +19,25 @@
 #ifndef BITCOMPRESSOR_HPP
 #define BITCOMPRESSOR_HPP
 
-#include <iostream>
+#include <string>
 #include <vector>
+#include <ostream>
 #include <map>
 
-#include "../include/bit7zlibrary.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bittypes.hpp"
 
 namespace bit7z {
-    namespace filesystem {
-        class FSItem; //avoids inclusion of fsitem.hpp in this header (and then in the release package)
-    }
-
     using std::wstring;
     using std::vector;
     using std::map;
-    using filesystem::FSItem;
+    using std::ostream;
+
+    namespace filesystem {
+        class FSItem;
+    }
+
+    using namespace filesystem;
 
     /**
      * @brief The BitCompressor class allows to compress files and directories into file archives.
@@ -82,7 +83,7 @@ namespace bit7z {
              * @param in_paths      a map of paths and corresponding aliases.
              * @param out_archive   the path (relative or absolute) to the output archive file.
              */
-            void compress( const map<wstring, wstring>& in_paths, const wstring& out_archive ) const;
+            void compress( const map< wstring, wstring >& in_paths, const wstring& out_archive ) const;
 
             /**
              * @brief Compresses a single file.
@@ -110,8 +111,10 @@ namespace bit7z {
              * @param recursive     if true, it searches files inside the sub-folders of in_dir.
              * @param filter        the filter to use when searching files inside in_dir.
              */
-            void compressFiles( const wstring& in_dir, const wstring& out_archive,
-                                bool recursive = true, const wstring& filter = L"*.*" ) const;
+            void compressFiles( const wstring& in_dir,
+                                const wstring& out_archive,
+                                bool recursive = true,
+                                const wstring& filter = L"*.*" ) const;
 
             /**
              * @brief Compresses an entire directory.
@@ -135,9 +138,35 @@ namespace bit7z {
              */
             void compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const;
 
+            /* Compression from file system to standard stream */
+
+            /**
+             * @brief Compresses the given files or directories.
+             *
+             * The items in the first argument must be the relative or absolute paths to files or
+             * directories existing on the filesystem.
+             *
+             * @param in_paths      a vector of paths.
+             * @param out_stream    the standard ostream where the archive will be output.
+             */
+            void compress( const vector<wstring>& in_paths, ostream& out_stream ) const;
+
+            /**
+             * @brief Compresses the given files or directories using the specified aliases.
+             *
+             * The items in the first argument must be the relative or absolute paths to files or
+             * directories existing on the filesystem.
+             * Each pair of the map must follow the following format:
+             *  {L"path to file in the filesystem", L"alias path in the archive"}.
+             *
+             * @param in_paths      a map of paths and corresponding aliases.
+             * @param out_stream    the standard ostream where to output the archive file.
+             */
+            void compress( const map<wstring, wstring>& in_paths, ostream& out_stream ) const;
+
         private:
-            void compressToFileSystem( const vector< FSItem >& in_items, const wstring& out_archive ) const;
-            void compressToMemory( const vector< FSItem >& in_items, vector< byte_t >& out_buffer ) const;
+            void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
+            void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };
 }
 #endif // BITCOMPRESSOR_HPP

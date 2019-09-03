@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,72 +21,41 @@
 
 #include "../include/bitmemextractor.hpp"
 
-#include "7zip/Archive/IArchive.h"
-
+#include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/opencallback.hpp"
-#include "../include/memextractcallback.hpp"
-#include "../include/extractcallback.hpp"
+#include "../include/bufferextractcallback.hpp"
 
 using namespace bit7z;
-using namespace std;
-using namespace NWindows;
-using namespace NArchive;
-
-// NOTE: this function is not a method of BitMemExtractor because it would dirty the header with extra dependencies
-CMyComPtr< IInArchive > openArchive( const Bit7zLibrary& lib, const BitInFormat& format,
-                                     const vector< byte_t >& in_buffer, const BitArchiveOpener& opener ) {
-    if ( in_buffer.empty() ) {
-        throw BitException( "Cannot open an empty buffer archive" );
-    }
-
-    CMyComPtr< IInArchive > in_archive;
-    const GUID format_GUID = format.guid();
-    lib.createArchiveObject( &format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
-
-    auto* buf_stream_spec = new CBufInStream;
-    CMyComPtr< IInStream > buf_stream( buf_stream_spec );
-    buf_stream_spec->Init( &in_buffer[0], in_buffer.size() );
-
-    auto* open_callback_spec = new OpenCallback( opener );
-
-    CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
-    if ( in_archive->Open( buf_stream, nullptr, open_callback ) != S_OK ) {
-        throw BitException( "Cannot open archive buffer" );
-    }
-    return in_archive;
-}
 
 BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {}
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_buffer, *this );
-
-    auto* extract_callback_spec = new ExtractCallback( *this, in_archive, L"", out_dir );
-
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    if ( in_archive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kExtract, extract_callback ) != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
-    }
+    BitInputArchive in_archive( *this, in_buffer );
+    extractToFileSystem( in_archive, L"", out_dir, vector< uint32_t >() );
 }
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer, vector< byte_t >& out_buffer,
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
+                               vector< byte_t >& out_buffer,
                                unsigned int index ) const {
-    CMyComPtr< IInArchive > in_archive = openArchive( mLibrary, mFormat, in_buffer, *this );
+    BitInputArchive in_archive( *this, in_buffer );
+    extractToBuffer( in_archive, out_buffer, index );
+}
 
-    uint32_t number_items;
-    in_archive->GetNumberOfItems( &number_items );
-    if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range"  );
-    }
+void BitMemExtractor::extract( const vector<byte_t>& in_buffer, std::ostream& out_stream, unsigned int index ) const {
+    BitInputArchive in_archive( *this, in_buffer );
+    extractToStream( in_archive, out_stream, index );
+}
 
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_buffer );
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const {
+    BitInputArchive in_archive( *this, in_buffer );
+    extractToBufferMap( in_archive, out_map );
+}
 
-    const uint32_t indices[] = { index };
+void BitMemExtractor::test( const vector< byte_t >& in_buffer ) const {
+    BitInputArchive in_archive( *this, in_buffer );
 
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
-    if ( in_archive->Extract( indices, 1, NExtract::NAskMode::kExtract, extract_callback ) != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage() );
-    }
+    map< wstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, dummy_map );
+    in_archive.test( extract_callback );
 }

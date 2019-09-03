@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -42,6 +42,11 @@
     <PlatformToolset>v141</PlatformToolset>
     <!-- MSVC++ 2017 toolset has version v141 -->
   </PropertyGroup>
+  <!-- Visual Studio 2019 (16.0) -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '16.0'">
+    <PlatformToolset>v142</PlatformToolset>
+    <!-- MSVC++ 2019 toolset has version v142 -->
+  </PropertyGroup>
   <!--
     End of: Switch the PlatformToolset based on the Visual Studio Version
   -->
@@ -49,8 +54,14 @@
     <ProjectGuid>{0ECEDD47-4EC9-3232-B099-20D54C597639}</ProjectGuid>
     <RootNamespace>bit7z64</RootNamespace>
     <Keyword>Qt4VSv1.0</Keyword>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <!--<WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>-->
     <WindowsTargetPlatformMinVersion>10.0.17134.0</WindowsTargetPlatformMinVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(WindowsTargetPlatformVersion)'==''">
+    <!-- Latest Target Version property -->
+    <LatestTargetPlatformVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</LatestTargetPlatformVersion>
+    <WindowsTargetPlatformVersion Condition="'$(WindowsTargetPlatformVersion)' == ''">$(LatestTargetPlatformVersion)</WindowsTargetPlatformVersion>
+    <TargetPlatformVersion>$(WindowsTargetPlatformVersion)</TargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -140,6 +151,7 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)\$(TargetName).lib</OutputFile>
@@ -172,10 +184,12 @@
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)\$(TargetName).lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetMachine>MachineX86</TargetMachine>
     </Lib>
     <Midl>
       <DefaultCharType>Unsigned</DefaultCharType>
@@ -230,16 +244,17 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_7Z_VOL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
-      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)\$(TargetName).lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetMachine>MachineX86</TargetMachine>
     </Lib>
     <Midl>
       <DefaultCharType>Unsigned</DefaultCharType>
@@ -272,21 +287,29 @@
     <ClCompile Include="src\bitextractor.cpp" />
     <ClCompile Include="src\bitformat.cpp" />
     <ClCompile Include="src\bitguids.cpp" />
+    <ClCompile Include="src\bitinputarchive.cpp" />
     <ClCompile Include="src\bitmemcompressor.cpp" />
     <ClCompile Include="src\bitmemextractor.cpp" />
     <ClCompile Include="src\bitpropvariant.cpp" />
+    <ClCompile Include="src\bitstreamcompressor.cpp" />
+    <ClCompile Include="src\bitstreamextractor.cpp" />
+    <ClCompile Include="src\bufferextractcallback.cpp" />
+    <ClCompile Include="src\bufferupdatecallback.cpp" />
     <ClCompile Include="src\callback.cpp" />
-    <ClCompile Include="src\coutmemstream.cpp" />
-    <ClCompile Include="src\coutmultivolstream.cpp" />
+    <ClCompile Include="src\cbufoutstream.cpp" />
+    <ClCompile Include="src\cmultivoloutstream.cpp" />
+    <ClCompile Include="src\cstdinstream.cpp" />
+    <ClCompile Include="src\cstdoutstream.cpp" />
     <ClCompile Include="src\extractcallback.cpp" />
+    <ClCompile Include="src\fileextractcallback.cpp" />
+    <ClCompile Include="src\fileupdatecallback.cpp" />
     <ClCompile Include="src\fsindexer.cpp" />
     <ClCompile Include="src\fsitem.cpp" />
     <ClCompile Include="src\fsutil.cpp" />
-    <ClCompile Include="src\memextractcallback.cpp" />
-    <ClCompile Include="src\memupdatecallback.cpp" />
     <ClCompile Include="src\opencallback.cpp" />
+    <ClCompile Include="src\streamextractcallback.cpp" />
+    <ClCompile Include="src\streamupdatecallback.cpp" />
     <ClCompile Include="src\updatecallback.cpp" />
-    <ClCompile Include="src\util.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bit7z.hpp" />
@@ -297,27 +320,36 @@
     <ClInclude Include="include\bitarchiveitem.hpp" />
     <ClInclude Include="include\bitarchiveopener.hpp" />
     <ClInclude Include="include\bitcompressionlevel.hpp" />
+    <ClInclude Include="include\bitcompressionmethod.hpp" />
     <ClInclude Include="include\bitcompressor.hpp" />
     <ClInclude Include="include\bitexception.hpp" />
     <ClInclude Include="include\bitextractor.hpp" />
     <ClInclude Include="include\bitformat.hpp" />
     <ClInclude Include="include\bitguids.hpp" />
+    <ClInclude Include="include\bitinputarchive.hpp" />
     <ClInclude Include="include\bitmemcompressor.hpp" />
     <ClInclude Include="include\bitmemextractor.hpp" />
     <ClInclude Include="include\bitpropvariant.hpp" />
+    <ClInclude Include="include\bitstreamcompressor.hpp" />
+    <ClInclude Include="include\bitstreamextractor.hpp" />
     <ClInclude Include="include\bittypes.hpp" />
+    <ClInclude Include="include\bufferextractcallback.hpp" />
+    <ClInclude Include="include\bufferupdatecallback.hpp" />
     <ClInclude Include="include\callback.hpp" />
-    <ClInclude Include="include\coutmemstream.hpp" />
-    <ClInclude Include="include\coutmultivolstream.hpp" />
+    <ClInclude Include="include\cbufoutstream.hpp" />
+    <ClInclude Include="include\cmultivoloutstream.hpp" />
+    <ClInclude Include="include\cstdinstream.hpp" />
+    <ClInclude Include="include\cstdoutstream.hpp" />
     <ClInclude Include="include\extractcallback.hpp" />
+    <ClInclude Include="include\fileextractcallback.hpp" />
+    <ClInclude Include="include\fileupdatecallback.hpp" />
     <ClInclude Include="include\fsindexer.hpp" />
     <ClInclude Include="include\fsitem.hpp" />
     <ClInclude Include="include\fsutil.hpp" />
-    <ClInclude Include="include\memextractcallback.hpp" />
-    <ClInclude Include="include\memupdatecallback.hpp" />
     <ClInclude Include="include\opencallback.hpp" />
+    <ClInclude Include="include\streamextractcallback.hpp" />
+    <ClInclude Include="include\streamupdatecallback.hpp" />
     <ClInclude Include="include\updatecallback.hpp" />
-    <ClInclude Include="include\util.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

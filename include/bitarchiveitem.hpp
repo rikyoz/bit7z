@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,8 +19,6 @@
 #ifndef BITARCHIVEITEMREADER_HPP
 #define BITARCHIVEITEMREADER_HPP
 
-#include <cstdint>
-#include <string>
 #include <map>
 
 #include "../include/bitpropvariant.hpp"
@@ -61,7 +59,7 @@ namespace bit7z {
             wstring extension() const;
 
             /**
-             * @return the path of the item in the archive, if available or inferable from the name, ora an empty string
+             * @return the path of the item in the archive, if available or inferable from the name, or an empty string
              * otherwise.
              */
             wstring path() const;
@@ -75,6 +73,11 @@ namespace bit7z {
              * @return the compressed size of the item.
              */
             uint64_t packSize() const;
+
+            /**
+             * @return true if and only if the item is encrypted.
+             */
+            bool isEncrypted() const;
 
             /**
              * @brief Gets the specified item property.
@@ -96,7 +99,9 @@ namespace bit7z {
 
             /* BitArchiveItem objects can be created and updated only by BitArchiveReader */
             explicit BitArchiveItem( uint32_t item_index );
+
             void setProperty( BitProperty property, const BitPropVariant& value );
+
             friend class BitArchiveInfo;
     };
 }
