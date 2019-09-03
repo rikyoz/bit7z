@@ -25,8 +25,8 @@ namespace bit7z {
             /**
              * @brief Compresses the given standard istream to the standard ostream.
              *
-             * @param in_stream         the standard istream to be compressed.
-             * @param out_stream        the standard ostream where the archive will be output.
+             * @param in_stream         the (binary) stream to be compressed.
+             * @param out_stream        the (binary) stream where the archive will be output.
              * @param in_stream_name    (optional) the name to be used for the content of the archive.
              */
             void compress( istream& in_stream, ostream& out_stream, const wstring& in_stream_name = L"" ) const;
@@ -34,7 +34,7 @@ namespace bit7z {
             /**
              * @brief Compresses the given standard istream to the output buffer.
              *
-             * @param in_stream         the standard istream to be compressed.
+             * @param in_stream         the (binary) stream to be compressed.
              * @param out_buffer        the buffer going to contain the output archive.
              * @param in_stream_name    (optional) the name to be used for the content of the archive.
              */
@@ -43,7 +43,7 @@ namespace bit7z {
             /**
              * @brief Compresses the given standard istream to an archive on the filesystem.
              *
-             * @param in_stream         the standard istream to be compressed.
+             * @param in_stream         the (binary) stream to be compressed.
              * @param out_file          the output archive file path.
              * @param in_stream_name    (optional) the name to be used for the content of the archive.
              */

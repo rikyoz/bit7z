@@ -37,6 +37,11 @@ namespace bit7z {
             /**
              * @brief Constructs a BitArchiveInfo object, opening the input file archive.
              *
+             * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
+             * argument has default value BitFormat::Auto (automatic format detection of the input archive).
+             * On the other hand, when BIT7Z_AUTO_FORMAT is not defined (i.e. no auto format detection available)
+             * the format argument must be specified.
+             *
              * @param lib       the 7z library used.
              * @param in_file   the input archive file path.
              * @param format    the input archive format.
@@ -48,6 +53,11 @@ namespace bit7z {
             /**
              * @brief Constructs a BitArchiveInfo object, opening the archive in the input buffer.
              *
+             * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
+             * argument has default value BitFormat::Auto (automatic format detection of the input archive).
+             * On the other hand, when BIT7Z_AUTO_FORMAT is not defined (i.e. no auto format detection available)
+             * the format argument must be specified.
+             *
              * @param lib       the 7z library used.
              * @param in_buffer the input buffer containing the archive.
              * @param format    the input archive format.
@@ -58,6 +68,11 @@ namespace bit7z {
 
             /**
              * @brief Constructs a BitArchiveInfo object, opening the archive from the standard input stream.
+             *
+             * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
+             * argument has default value BitFormat::Auto (automatic format detection of the input archive).
+             * On the other hand, when BIT7Z_AUTO_FORMAT is not defined (i.e. no auto format detection available)
+             * the format argument must be specified.
              *
              * @param lib       the 7z library used.
              * @param in_stream the standard input stream of the archive.

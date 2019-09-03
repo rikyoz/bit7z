@@ -39,6 +39,11 @@ namespace bit7z {
              * of the 7z DLLs. On the other hand, the BitInFormat is required in order to know the
              * format of the input archive.
              *
+             * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
+             * argument has default value BitFormat::Auto (automatic format detection of the input archive).
+             * On the other hand, when BIT7Z_AUTO_FORMAT is not defined (i.e. no auto format detection available)
+             * the format argument must be specified.
+             *
              * @param lib       the 7z library used.
              * @param format    the input archive format.
              */
@@ -101,7 +106,7 @@ namespace bit7z {
              * @brief Extracts a file from the given archive into the output stream.
              *
              * @param in_file      the input archive file.
-             * @param out_stream   the output standard stream where the content of the archive will be put.
+             * @param out_stream   the (binary) stream where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_file.
              */
             void extract( const wstring& in_file, ostream& out_stream, unsigned int index = 0 ) const;

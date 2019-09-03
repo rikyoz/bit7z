@@ -79,7 +79,7 @@ namespace bit7z {
              * @note If the format of the output doesn't support in memory compression, a BitException is thrown.
              *
              * @param in_buffer         the buffer to be compressed.
-             * @param out_stream        the standard stream going to contain the output archive.
+             * @param out_stream        the (binary) stream going to contain the output archive.
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
             void compress( const vector< byte_t >& in_buffer,
