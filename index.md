@@ -1,5 +1,3 @@
-<h3 align="center">A C++ static library offering a clean and simple interface to the 7-zip DLLs</h3>
-
 <p align="center">
   <a href="https://github.com/rikyoz/bit7z/releases"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat-square&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>
   <img src="https://img.shields.io/badge/-MSVC%202012%20--%202019-red.svg?style=flat-square&logo=visual-studio-code&logoColor=white" alt="MSVC version">
