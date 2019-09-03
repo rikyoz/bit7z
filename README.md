@@ -67,11 +67,9 @@ int main(){
     Bit7zLibrary lib{ L"7za.dll" };
     BitExtractor extractor{ lib, BitFormat::SevenZip };
 
-    //extracting a simple archive
-    extractor.extract( L"path/to/archive.7z", L"output/dir/" );
+    extractor.extract( L"path/to/archive.7z", L"out/dir/" ); //extracting a simple archive
 
-    //extracting a specific file from the archive
-    extractor.extractMatching( L"path/to/archive.7z", L"file.pdf", L"output/dir/" );
+    extractor.extractMatching( L"path/to/arc.7z", L"file.pdf", L"out/dir/" ); //extracting a specific file
 
     //extracting the first file of an archive to a buffer
     std::vector< byte_t > buffer;
@@ -79,7 +77,7 @@ int main(){
 
     //extracting an encrypted archive
     extractor.setPassword( L"password" );
-    extractor.extract( L"path/to/another/archive.7z", L"output/dir/" );
+    extractor.extract( L"path/to/another/archive.7z", L"out/dir/" );
     return 0;
 }
 ```
