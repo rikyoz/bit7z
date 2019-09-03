@@ -61,79 +61,94 @@ Below are a few examples that show how to use some of the main features of bit7z
 ### Extracting files from an archive
 
 ```cpp
-Bit7zLibrary lib{ L"7za.dll" };
-BitExtractor extractor{ lib, BitFormat::SevenZip };
+#include "bitextractor.hpp"
 
-//extracts a simple archive
-extractor.extract( L"path/to/archive.7z", L"output/dir/" );
+int main(){
+    Bit7zLibrary lib{ L"7za.dll" };
+    BitExtractor extractor{ lib, BitFormat::SevenZip };
 
-//extracts a specific file from the archive
-extractor.extractMatching( L"path/to/archive.7z", L"file.pdf", L"output/dir/" );
+    //extracts a simple archive
+    extractor.extract( L"path/to/archive.7z", L"output/dir/" );
 
-//extracts the first file of an archive to a buffer
-std::vector< byte_t > buffer;
-extractor.extract( L"path/to/archive.7z", buffer );
+    //extracts a specific file from the archive
+    extractor.extractMatching( L"path/to/archive.7z", L"file.pdf", L"output/dir/" );
 
-//extracts an encrypted archive
-extractor.setPassword( L"password" );
-extractor.extract( L"path/to/another/archive.7z", L"output/dir/" );
+    //extracts the first file of an archive to a buffer
+    std::vector< byte_t > buffer;
+    extractor.extract( L"path/to/archive.7z", buffer );
+
+    //extracts an encrypted archive
+    extractor.setPassword( L"password" );
+    extractor.extract( L"path/to/another/archive.7z", L"output/dir/" );
+    return 0;
+}
 ```
 
 ### Compressing files into an archive
 
 ```cpp
-Bit7zLibrary lib{ L"7z.dll" };
-BitCompressor compressor{ lib, BitFormat::Zip };
+#include "bitcompressor.hpp"
 
-std::vector< std::wstring > files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
-//creates a simple zip archive of two files
-compressor.compress( files, L"output_archive.zip" );
+int main(){
+    Bit7zLibrary lib{ L"7z.dll" };
+    BitCompressor compressor{ lib, BitFormat::Zip };
 
-std::map< std::wstring, std::wstring > files_map = { { L"path/to/file1.jpg",L"alias/path/file1.jpg" },
- { L"path/to/file2.pdf", L"alias/path/file2.pdf" } };
-//creates a zip archive with a custom directory structure
-compressor.compress( files_map, L"output_archive2.zip" );
+    std::vector< std::wstring > files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
+    //creates a simple zip archive of two files
+    compressor.compress( files, L"output_archive.zip" );
 
-//compresses a directory
-compressor.compressDirectory( L"dir/path/", L"dir_archive.zip" );
+    std::map< std::wstring, std::wstring > files_map = { { L"path/to/file1.jpg",L"alias/path/file1.jpg" },
+    { L"path/to/file2.pdf", L"alias/path/file2.pdf" } };
+    //creates a zip archive with a custom directory structure
+    compressor.compress( files_map, L"output_archive2.zip" );
 
-//creates an encrypted zip archive of two files
-compressor.setPassword( L"password" );
-compressor.compressFiles( files, L"protected_archive.zip" );
+    //compresses a directory
+    compressor.compressDirectory( L"dir/path/", L"dir_archive.zip" );
 
-//compresses a single file into a buffer
-std::vector< byte_t > buffer;
-BitCompressor compressor2{ lib, BitFormat::BZip2 };
-compressor2.compressFile( files[0], buffer );
+    //creates an encrypted zip archive of two files
+    compressor.setPassword( L"password" );
+    compressor.compressFiles( files, L"protected_archive.zip" );
+
+    //compresses a single file into a buffer
+    std::vector< byte_t > buffer;
+    BitCompressor compressor2{ lib, BitFormat::BZip2 };
+    compressor2.compressFile( files[0], buffer );
+    return 0;
+}
 ```
 
 ### Reading archive metadata
 
 ```cpp
-Bit7zLibrary lib{ L"7za.dll" };
-BitArchiveInfo arc{ lib, L"archive.7z", BitFormat::SevenZip };
+#include "bitarchiveinfo.hpp"
 
-//printing archive metadata
-wcout << L"Archive properties" << endl;
-wcout << L" Items count: "   << arc.itemsCount() << endl;
-wcout << L" Folders count: " << arc.foldersCount() << endl;
-wcout << L" Files count: "   << arc.filesCount() << endl;
-wcout << L" Size: "          << arc.size() << endl;
-wcout << L" Packed size: "   << arc.packSize() << endl;
-wcout << endl;
+int main(){
+    Bit7zLibrary lib{ L"7za.dll" };
+    BitArchiveInfo arc{ lib, L"archive.7z", BitFormat::SevenZip };
 
-//printing archive items metadata
-wcout << L"Archive items";
-auto arc_items = arc.items();
-for ( auto& item : arc_items ) {
+    //printing archive metadata
+    wcout << L"Archive properties" << endl;
+    wcout << L" Items count: "   << arc.itemsCount() << endl;
+    wcout << L" Folders count: " << arc.foldersCount() << endl;
+    wcout << L" Files count: "   << arc.filesCount() << endl;
+    wcout << L" Size: "          << arc.size() << endl;
+    wcout << L" Packed size: "   << arc.packSize() << endl;
     wcout << endl;
-    wcout << L" Item index: "   << item.index() << endl;
-    wcout << L"  Name: "        << item.name() << endl;
-    wcout << L"  Extension: "   << item.extension() << endl;
-    wcout << L"  Path: "        << item.path() << endl;
-    wcout << L"  IsDir: "       << item.isDir() << endl;
-    wcout << L"  Size: "        << item.size() << endl;
-    wcout << L"  Packed size: " << item.packSize() << endl;
+
+    //printing archive items metadata
+    wcout << L"Archive items";
+    auto arc_items = arc.items();
+    for ( auto& item : arc_items ) {
+        wcout << endl;
+        wcout << L" Item index: "   << item.index() << endl;
+        wcout << L"  Name: "        << item.name() << endl;
+        wcout << L"  Extension: "   << item.extension() << endl;
+        wcout << L"  Path: "        << item.path() << endl;
+        wcout << L"  IsDir: "       << item.isDir() << endl;
+        wcout << L"  Size: "        << item.size() << endl;
+        wcout << L"  Packed size: " << item.packSize() << endl;
+    }
+    return 0;
 }
 ```
 
