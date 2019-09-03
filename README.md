@@ -67,17 +67,17 @@ int main(){
     Bit7zLibrary lib{ L"7za.dll" };
     BitExtractor extractor{ lib, BitFormat::SevenZip };
 
-    //extracts a simple archive
+    //extracting a simple archive
     extractor.extract( L"path/to/archive.7z", L"output/dir/" );
 
-    //extracts a specific file from the archive
+    //extracting a specific file from the archive
     extractor.extractMatching( L"path/to/archive.7z", L"file.pdf", L"output/dir/" );
 
-    //extracts the first file of an archive to a buffer
+    //extracting the first file of an archive to a buffer
     std::vector< byte_t > buffer;
     extractor.extract( L"path/to/archive.7z", buffer );
 
-    //extracts an encrypted archive
+    //extracting an encrypted archive
     extractor.setPassword( L"password" );
     extractor.extract( L"path/to/another/archive.7z", L"output/dir/" );
     return 0;
@@ -94,22 +94,25 @@ int main(){
     BitCompressor compressor{ lib, BitFormat::Zip };
 
     std::vector< std::wstring > files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
-    //creates a simple zip archive of two files
-    compressor.compress( files, L"output_archive.zip" );
 
+    compressor.compress( files, L"output_archive.zip" ); //creating a simple zip archive
+
+    //creating a zip archive with a custom directory structure
     std::map< std::wstring, std::wstring > files_map = { { L"path/to/file1.jpg",L"alias/path/file1.jpg" },
     { L"path/to/file2.pdf", L"alias/path/file2.pdf" } };
-    //creates a zip archive with a custom directory structure
     compressor.compress( files_map, L"output_archive2.zip" );
 
-    //compresses a directory
-    compressor.compressDirectory( L"dir/path/", L"dir_archive.zip" );
+    compressor.compressDirectory( L"dir/path/", L"dir_archive.zip" ); //compressing a directory
 
-    //creates an encrypted zip archive of two files
+    //creating an encrypted zip archive of two files
     compressor.setPassword( L"password" );
     compressor.compressFiles( files, L"protected_archive.zip" );
 
-    //compresses a single file into a buffer
+    //updating an existing zip archive
+    compressor.setUpdateMode( true );
+    compressor.compressFiles( files, L"existing_archive.zip" );
+
+    //compressing a single file into a buffer
     std::vector< byte_t > buffer;
     BitCompressor compressor2{ lib, BitFormat::BZip2 };
     compressor2.compressFile( files[0], buffer );
