@@ -1,5 +1,5 @@
 title: bit7z
-description: A clean, simple and object-oriented interface to the 7zip DLLs
+description: A C++ static library offering a clean and simple interface to the 7-zip DLLs
 google_analytics: UA-58175742-1
 show_downloads: true
 theme: jekyll-theme-cayman
