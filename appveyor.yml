@@ -10,10 +10,6 @@ image:
 build:
   project: bit7z.vcxproj
   
-configuration:
-  - Release
-  - Debug
-  
 matrix:
   fast_finish: true
 
@@ -39,15 +35,20 @@ environment:
     mt: TRUE
     
 before_build:
+  - ps: Test-Path env:mt
   - ps: if (Test-Path env:mt) {
             ${content} = (Get-Content bit7z.vcxproj);
             ${content} = ${content}.Replace("DLL</RuntimeLibrary>", "</RuntimeLibrary>");
             Set-Content bit7z.vcxproj ${content};
         }
+  - git submodule update --init --recursive
+
+build_script:
+  - msbuild bit7z.vcxproj /p:configuration=release /p:platform=%platform%
+  - msbuild bit7z.vcxproj /p:configuration=debug /p:platform=%platform%  
 
 after_build:
-  - set msvc_ver=$(APPVEYOR_BUILD_WORKER_IMAGE)
-  - set msvc_ver=%msvc_ver:Visual Studio =msvc%
+  - set msvc_ver=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%name:msvc=%
   - mkdir pkg
   - mkdir pkg\bit7z\
   - mkdir pkg\bit7z\lib\
