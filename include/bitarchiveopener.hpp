@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,18 +38,6 @@ namespace bit7z {
      */
     class BitArchiveOpener : public BitArchiveHandler {
         public:
-            /**
-             * @brief BitArchiveOpener constructor.
-             *
-             * @param lib       the 7z library used.
-             * @param format    the input archive format.
-             */
-            BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format );
-
-            /**
-             * @brief BitArchiveOpener destructor.
-             */
-            virtual ~BitArchiveOpener() = 0;
 
             /**
              * @return the archive format used by the archive opener.
@@ -63,6 +51,10 @@ namespace bit7z {
 
         protected:
             const BitInFormat& mFormat;
+
+            BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format );
+
+            virtual ~BitArchiveOpener() override = 0;
 
             void extractToFileSystem( const BitInputArchive& in_archive,
                                       const wstring& in_file,

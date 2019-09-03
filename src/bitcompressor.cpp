@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@
 
 #include "../include/bitexception.hpp"
 #include "../include/fsindexer.hpp"
-#include "../include/updatecallback.hpp"
+#include "../include/fileupdatecallback.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -91,7 +91,7 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
     vector< FSItem > fs_items;
     fs_items.push_back( item );
 
-    CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, fs_items );
+    CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, fs_items );
     BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }
 
@@ -114,12 +114,12 @@ void BitCompressor::compress( const map< wstring, wstring >& in_paths, ostream& 
 }
 
 void BitCompressor::compressOut( const vector< FSItem >& in_items, const wstring& out_file ) const {
-    CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
+    CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, in_items );
     BitArchiveCreator::compressToFile( out_file, update_callback );
 }
 
 void BitCompressor::compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const {
-    CMyComPtr< CompressCallback > update_callback = new UpdateCallback( *this, in_items );
+    CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, in_items );
     BitArchiveCreator::compressToStream( out_stream, update_callback );
 }
 

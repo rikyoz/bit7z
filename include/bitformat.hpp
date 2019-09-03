@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -104,9 +104,11 @@ namespace bit7z {
         public:
             /**
              * @brief Constructs a BitInOutFormat object with a id value, an extension and a set of supported features
-             * @param value     the value of the format in the 7z SDK
-             * @param ext       the default file extension of the archive format
-             * @param features  the set of features supported by the archive format
+             *
+             * @param value         the value of the format in the 7z SDK
+             * @param ext           the default file extension of the archive format
+             * @param defaultMethod the default compression method of the archive format.
+             * @param features      the set of features supported by the archive format
              */
             BitInOutFormat( unsigned char value,
                             const wstring& ext,
@@ -130,6 +132,9 @@ namespace bit7z {
              */
             bool hasFeature( FormatFeatures feature ) const;
 
+            /**
+             * @return the default compression method of the archive format.
+             */
             BitCompressionMethod defaultMethod() const;
 
         private:
@@ -144,7 +149,7 @@ namespace bit7z {
     namespace BitFormat {
 
 #ifdef BIT7Z_AUTO_FORMAT
-        extern const BitInFormat Auto;      ///< Automatic Format Detection
+        extern const BitInFormat Auto;      ///< Automatic Format Detection (available only when compiling bit7z using the BIT7Z_AUTO_FORMAT preprocessor define)
 #endif
 
         extern const BitInFormat Rar,       ///< RAR Archive Format

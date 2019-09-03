@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -131,6 +131,6 @@ void BitExtractor::extract( const wstring& in_file, map< wstring, vector< byte_t
 void BitExtractor::test( const wstring& in_file ) const {
     BitInputArchive in_archive( *this, in_file );
 
-    auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, L"" );
-    in_archive.test( extract_callback_spec );
+    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this, in_archive, in_file, L"" );
+    in_archive.test( extract_callback );
 }

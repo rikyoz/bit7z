@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -147,7 +147,7 @@ namespace bit7z {
              * directories existing on the filesystem.
              *
              * @param in_paths      a vector of paths.
-             * @param out_stream    the standard ostream where to output the archive file.
+             * @param out_stream    the standard ostream where the archive will be output.
              */
             void compress( const vector<wstring>& in_paths, ostream& out_stream ) const;
 
@@ -164,7 +164,7 @@ namespace bit7z {
              */
             void compress( const map<wstring, wstring>& in_paths, ostream& out_stream ) const;
 
-    private:
+        private:
             void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
             void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };

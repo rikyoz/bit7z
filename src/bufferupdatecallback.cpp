@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/memupdatecallback.hpp"
+#include "../include/bufferupdatecallback.hpp"
 
 #include "7zip/Common/StreamObjects.h"
 
@@ -36,18 +36,16 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
-MemUpdateCallback::MemUpdateCallback( const BitArchiveCreator& creator,
+BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
                                       const vector< byte_t >& in_buffer,
                                       const wstring& in_buffer_name )
-    : CompressCallback( creator ),
+    : UpdateCallback( creator ),
       mBuffer( in_buffer ),
       mBufferName( in_buffer_name ) {}
 
-MemUpdateCallback::~MemUpdateCallback() {
-    Finilize();
-}
+BufferUpdateCallback::~BufferUpdateCallback() {}
 
-HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
@@ -86,11 +84,11 @@ HRESULT MemUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT
     return S_OK;
 }
 
-uint32_t MemUpdateCallback::itemsCount() const {
+uint32_t BufferUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
 
-HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+HRESULT BufferUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finilize() );
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
@@ -107,10 +105,10 @@ HRESULT MemUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStre
 
 /* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
    this class and UpdateCallback! */
-HRESULT MemUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
+HRESULT BufferUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
     return S_OK;
 }
 
-HRESULT MemUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
+HRESULT BufferUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
     return S_OK;
 }

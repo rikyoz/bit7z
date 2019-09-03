@@ -1,4 +1,4 @@
-#VERSION  = 3.0.1
+#VERSION  = 3.1.0
 TEMPLATE = lib
 CONFIG  += staticlib
 CONFIG  -= app_bundle
@@ -31,19 +31,19 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitpropvariant.cpp \
            src/bitstreamcompressor.cpp \
            src/bitstreamextractor.cpp \
+           src/bufferextractcallback.cpp \
+           src/bufferupdatecallback.cpp \
            src/callback.cpp \
            src/cbufoutstream.cpp \
            src/cmultivoloutstream.cpp \
-           src/compresscallback.cpp \
            src/cstdinstream.cpp \
            src/cstdoutstream.cpp \
            src/extractcallback.cpp \
            src/fileextractcallback.cpp \
+           src/fileupdatecallback.cpp \
            src/fsindexer.cpp \
            src/fsitem.cpp \
            src/fsutil.cpp \
-           src/memextractcallback.cpp \
-           src/memupdatecallback.cpp \
            src/opencallback.cpp \
            src/streamextractcallback.cpp \
            src/streamupdatecallback.cpp \
@@ -79,19 +79,19 @@ HEADERS += include/bit7z.hpp \
            include/bitstreamcompressor.hpp \
            include/bitstreamextractor.hpp \
            include/bittypes.hpp \
+           include/bufferextractcallback.hpp \
+           include/bufferupdatecallback.hpp \
            include/callback.hpp \
            include/cbufoutstream.hpp \
            include/cmultivoloutstream.hpp \
-           include/compresscallback.hpp \
            include/cstdinstream.hpp \
            include/cstdoutstream.hpp \
            include/extractcallback.hpp \
            include/fileextractcallback.hpp \
+           include/fileupdatecallback.hpp \
            include/fsindexer.hpp \
            include/fsitem.hpp \
            include/fsutil.hpp \
-           include/memextractcallback.hpp \
-           include/memupdatecallback.hpp \
            include/opencallback.hpp \
            include/streamextractcallback.hpp \
            include/streamupdatecallback.hpp \

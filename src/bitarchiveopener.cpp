@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,7 +24,7 @@
 #include "../include/bitexception.hpp"
 #include "../include/bitinputarchive.hpp"
 #include "../include/fileextractcallback.hpp"
-#include "../include/memextractcallback.hpp"
+#include "../include/bufferextractcallback.hpp"
 #include "../include/streamextractcallback.hpp"
 
 #include <map>
@@ -51,8 +51,8 @@ void BitArchiveOpener::extractToFileSystem( const BitInputArchive& in_archive,
                                             const wstring& in_file,
                                             const wstring& out_dir,
                                             const vector< uint32_t >& indices ) const {
-    auto* extract_callback_spec = new FileExtractCallback( *this, in_archive, in_file, out_dir );
-    in_archive.extract( indices, extract_callback_spec );
+    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this, in_archive, in_file, out_dir );
+    in_archive.extract( indices, extract_callback );
 }
 
 void BitArchiveOpener::extractToStream( const BitInputArchive& in_archive,
@@ -68,8 +68,8 @@ void BitArchiveOpener::extractToStream( const BitInputArchive& in_archive,
     }
 
     const vector< uint32_t > indices( 1, index );
-    auto* extract_callback_spec = new StreamExtractCallback( *this, in_archive, out_stream );
-    in_archive.extract( indices, extract_callback_spec );
+    CMyComPtr< ExtractCallback > extract_callback = new StreamExtractCallback( *this, in_archive, out_stream );
+    in_archive.extract( indices, extract_callback );
 }
 
 void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
@@ -86,8 +86,8 @@ void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
 
     const vector< uint32_t > indices( 1, index );
     map< wstring, vector< byte_t > > buffers_map;
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, buffers_map );
-    in_archive.extract( indices, extract_callback_spec );
+    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, buffers_map );
+    in_archive.extract( indices, extract_callback );
     out_buffer = std::move( buffers_map.begin()->second );
 }
 
@@ -101,7 +101,7 @@ void BitArchiveOpener::extractToBufferMap( const BitInputArchive& in_archive,
         }
     }
 
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, out_map );
-    in_archive.extract( files_indices, extract_callback_spec );
+    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, out_map );
+    in_archive.extract( files_indices, extract_callback );
 
 }

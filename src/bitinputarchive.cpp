@@ -168,22 +168,20 @@ HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
-void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback_spec ) const {
+void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
     uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
 
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
     HRESULT res = mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage(), res );
+        throw BitException( extract_callback->getErrorMessage(), res );
     }
 }
 
-void BitInputArchive::test( ExtractCallback* extract_callback_spec ) const {
-    CMyComPtr< IArchiveExtractCallback > extract_callback( extract_callback_spec );
+void BitInputArchive::test( ExtractCallback* extract_callback ) const {
     HRESULT res = mInArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kTest, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback_spec->getErrorMessage(), res );
+        throw BitException( extract_callback->getErrorMessage(), res );
     }
 }
 

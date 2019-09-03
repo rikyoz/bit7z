@@ -61,8 +61,18 @@ namespace bit7z {
              */
             uint32_t itemsCount() const;
 
+            /**
+             * @param index the index of an item in the archive.
+             *
+             * @return true if and only if the item at index is a folder.
+             */
             bool isItemFolder( uint32_t index ) const;
 
+            /**
+             * @param index the index of an item in the archive.
+             *
+             * @return true if and only if the item at index is encrypted.
+             */
             bool isItemEncrypted( uint32_t index ) const;
 
         protected:
@@ -72,20 +82,21 @@ namespace bit7z {
 
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
-            void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback_spec ) const;
+            void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const;
 
-            void test( ExtractCallback* extract_callback_spec ) const;
+            void test( ExtractCallback* extract_callback ) const;
 
             HRESULT close() const;
-
-            IInArchive* mInArchive;
-            const BitInFormat* mDetectedFormat;
 
             friend class BitArchiveOpener;
             friend class BitExtractor;
             friend class BitMemExtractor;
             friend class BitStreamExtractor;
             friend class BitArchiveCreator;
+
+        private:
+            IInArchive* mInArchive;
+            const BitInFormat* mDetectedFormat;
     };
 }
 

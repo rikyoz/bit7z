@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,18 +23,12 @@
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/memextractcallback.hpp"
+#include "../include/bufferextractcallback.hpp"
 
 using namespace bit7z;
 
 BitStreamExtractor::BitStreamExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ) {
-#ifdef BIT7Z_AUTO_FORMAT
-    if ( format == BitFormat::Auto ) {
-        throw BitException( "Automatic format detection not supported for in-memory archives", E_INVALIDARG );
-    }
-#endif
-}
+    : BitArchiveOpener( lib, format ) {}
 
 void BitStreamExtractor::extract( istream& in_stream, const wstring& out_dir ) const {
     BitInputArchive in_archive( *this, in_stream );
@@ -60,6 +54,6 @@ void BitStreamExtractor::test( istream& in_stream ) const {
     BitInputArchive in_archive( *this, in_stream );
 
     map< wstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
-    auto* extract_callback_spec = new MemExtractCallback( *this, in_archive, dummy_map );
+    CMyComPtr< ExtractCallback > extract_callback_spec = new BufferExtractCallback( *this, in_archive, dummy_map );
     in_archive.test( extract_callback_spec );
 }

@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -33,18 +33,18 @@ BitStreamCompressor::BitStreamCompressor( const Bit7zLibrary& lib, const BitInOu
     : BitArchiveCreator( lib, format ) {}
 
 void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, const wstring& in_stream_name ) const {
-    CMyComPtr< CompressCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
+    CMyComPtr< UpdateCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
     BitArchiveCreator::compressToStream( out_stream, update_callback );
 }
 
 void BitStreamCompressor::compress( istream& in_stream, vector< byte_t >& out_buffer, const wstring& in_stream_name ) const {
-    CMyComPtr< CompressCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
+    CMyComPtr< UpdateCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
     BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }
 
 void BitStreamCompressor::compress( istream& in_stream, const wstring& out_file, const wstring& in_stream_name ) const {
     const wstring& name = in_stream_name.empty() ? fsutil::filename( out_file ) : in_stream_name;
 
-    CMyComPtr< CompressCallback > update_callback = new StreamUpdateCallback( *this, in_stream, name );
+    CMyComPtr< UpdateCallback > update_callback = new StreamUpdateCallback( *this, in_stream, name );
     BitArchiveCreator::compressToFile( out_file, update_callback );
 }

@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/memextractcallback.hpp"
+#include "../include/bufferextractcallback.hpp"
 
 #include "7zip/Common/StreamObjects.h"
 
@@ -32,15 +32,15 @@ using namespace std;
 using namespace NWindows;
 using namespace bit7z;
 
-MemExtractCallback::MemExtractCallback( const BitArchiveHandler& handler,
-                                        const BitInputArchive& inputArchive,
-                                        map< wstring, vector< byte_t > >& buffersMap )
+BufferExtractCallback::BufferExtractCallback( const BitArchiveHandler& handler,
+                                              const BitInputArchive& inputArchive,
+                                              map< wstring, vector< byte_t > >& buffersMap )
     : ExtractCallback ( handler, inputArchive ),
       mBuffersMap( buffersMap ) {}
 
-MemExtractCallback::~MemExtractCallback() {}
+BufferExtractCallback::~BufferExtractCallback() {}
 
-STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutMemStream.Release();
 
@@ -73,7 +73,7 @@ STDMETHODIMP MemExtractCallback::GetStream( UInt32 index, ISequentialOutStream**
     return E_OUTOFMEMORY;
 }
 
-STDMETHODIMP MemExtractCallback::SetOperationResult( Int32 operationResult ) {
+STDMETHODIMP BufferExtractCallback::SetOperationResult( Int32 operationResult ) {
     switch ( operationResult ) {
         case NArchive::NExtract::NOperationResult::kOK:
             break;

@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -79,7 +79,7 @@ namespace bit7z {
              * @note If the format of the output doesn't support in memory compression, a BitException is thrown.
              *
              * @param in_buffer         the buffer to be compressed.
-             * @param out_stream        the standard stream going to contain the output archive.
+             * @param out_stream        the (binary) stream going to contain the output archive.
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
             void compress( const vector< byte_t >& in_buffer,

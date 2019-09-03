@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,8 +28,10 @@
 struct IInArchive;
 struct IOutArchive;
 
+//! \cond IGNORE_BLOCK_IN_DOXYGEN
 template< typename T >
 class CMyComPtr;
+//! \endcond
 
 namespace bit7z {
     /**
@@ -52,7 +54,7 @@ namespace bit7z {
             virtual ~Bit7zLibrary();
 
             /**
-             * @brief Initiates the object needed to create a new archive or use an old one
+             * @brief Initiates the object needed to create a new archive or use an old one.
              *
              * @note Usually this method should not be called directly by users of the bit7z library.
              *
@@ -62,6 +64,9 @@ namespace bit7z {
              */
             void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 
+            /**
+             * @brief Set the 7-zip dll to use large memory pages.
+             */
             void setLargePageMode();
 
         private:

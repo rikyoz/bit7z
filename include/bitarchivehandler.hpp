@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2018  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,7 +52,7 @@ namespace bit7z {
     typedef function< void( wstring filename ) > FileCallback;
 
     /**
-     * @brief A std::functions which returns the password to be used in order to handle an archive.
+     * @brief A std::function which returns the password to be used in order to handle an archive.
      */
     typedef function< wstring() > PasswordCallback;
 
@@ -61,19 +61,6 @@ namespace bit7z {
      */
     class BitArchiveHandler {
         public:
-
-            /**
-             * @brief BitArchiveHandler constructor.
-             *
-             * @param lib   the 7z library used by the handler.
-             */
-            explicit BitArchiveHandler( const Bit7zLibrary& lib );
-
-            /**
-             * @brief BitArchiveHandler destructor.
-             */
-            virtual ~BitArchiveHandler() = 0;
-
             /**
              * @return the Bit7zLibrary object used by the handler.
              */
@@ -195,6 +182,11 @@ namespace bit7z {
             const Bit7zLibrary& mLibrary;
             wstring mPassword;
 
+            explicit BitArchiveHandler( const Bit7zLibrary& lib );
+
+            virtual ~BitArchiveHandler() = 0;
+
+        private:
             //CALLBACKS
             TotalCallback mTotalCallback;
             ProgressCallback mProgressCallback;
