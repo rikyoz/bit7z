@@ -68,8 +68,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     CMyComPtr< IInArchive > in_archive = initArchiveObject( handler.library(), &format_GUID );
 
     // Creating open callback for the file
-    auto* open_callback_spec = new OpenCallback( handler, name );
-    CMyComPtr< IArchiveOpenCallback > open_callback( open_callback_spec );
+    CMyComPtr< IArchiveOpenCallback > open_callback = new OpenCallback( handler, name );
 
     // Trying to open the file with the detected format
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
@@ -121,8 +120,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) {
-    auto* std_stream_spec = new CStdInStream( in_stream );
-    CMyComPtr< IInStream > std_stream = std_stream_spec;
+    CMyComPtr< IInStream > std_stream = new CStdInStream( in_stream );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
     mInArchive = openArchiveStream( handler, L".", std_stream );
 }
