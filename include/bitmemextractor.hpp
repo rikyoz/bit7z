@@ -43,7 +43,7 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the input archive format.
              */
-            BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format DEFAULT_FORMAT );
+            explicit BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format DEFAULT_FORMAT );
 
             /**
              * @brief Extracts the given buffer archive into the choosen directory.
