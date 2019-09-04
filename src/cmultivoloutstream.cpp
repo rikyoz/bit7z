@@ -41,8 +41,6 @@ CMultiVolOutStream::CMultiVolOutStream( uint64_t size, const wstring& archiveNam
     mAbsPos( 0 ),
     mLength( 0 ) {}
 
-CMultiVolOutStream::~CMultiVolOutStream() {}
-
 HRESULT CMultiVolOutStream::Close() {
     HRESULT res = S_OK;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {

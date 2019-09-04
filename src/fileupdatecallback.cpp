@@ -49,8 +49,6 @@ FileUpdateCallback::FileUpdateCallback( const BitArchiveCreator& creator,
       mNewItems( new_items ),
       mVolSize( 0 ) {}
 
-FileUpdateCallback::~FileUpdateCallback() {}
-
 // debug purposes
 /*wstring to_string( FILETIME ftime ) {// ISO format, time zone designator Z == zero (UTC)
     SYSTEMTIME utc ;

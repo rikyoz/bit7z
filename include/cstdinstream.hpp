@@ -32,7 +32,7 @@ namespace bit7z {
         public:
             explicit CStdInStream( istream& inputStream );
 
-            virtual ~CStdInStream();
+            virtual ~CStdInStream() = default;
 
             MY_UNKNOWN_IMP1( IInStream )
 

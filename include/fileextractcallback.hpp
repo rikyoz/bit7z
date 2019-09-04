@@ -36,7 +36,7 @@ namespace bit7z {
                                  const wstring& inFilePath,
                                  const wstring& directoryPath );
 
-            virtual ~FileExtractCallback() override;
+            virtual ~FileExtractCallback() override = default;
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );

@@ -37,8 +37,6 @@ BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >&
 BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, std::istream& in_stream, const BitInFormat& format )
     : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_stream ) {}
 
-BitArchiveInfo::~BitArchiveInfo() {}
-
 map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {

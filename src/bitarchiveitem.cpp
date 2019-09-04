@@ -29,8 +29,6 @@ using namespace bit7z::filesystem;
 
 BitArchiveItem::BitArchiveItem( uint32_t item_index ) : mItemIndex( item_index ) {}
 
-BitArchiveItem::~BitArchiveItem() {}
-
 uint32_t BitArchiveItem::index() const {
     return mItemIndex;
 }

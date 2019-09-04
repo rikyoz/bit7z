@@ -42,8 +42,6 @@ StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
       mStream( in_stream ),
       mStreamName( in_stream_name ) {}
 
-StreamUpdateCallback::~StreamUpdateCallback() {}
-
 HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
 

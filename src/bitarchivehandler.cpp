@@ -30,8 +30,6 @@ const Bit7zLibrary& BitArchiveHandler::library() const {
     return mLibrary;
 }
 
-BitArchiveHandler::~BitArchiveHandler() {}
-
 const wstring BitArchiveHandler::password() const {
     return mPassword;
 }

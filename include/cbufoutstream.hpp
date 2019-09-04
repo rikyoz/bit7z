@@ -33,7 +33,7 @@ namespace bit7z {
         public:
             explicit CBufOutStream( vector< byte_t >& out_buffer );
 
-            virtual ~CBufOutStream();
+            virtual ~CBufOutStream() = default;
 
             MY_UNKNOWN_IMP1( ISequentialOutStream )
 

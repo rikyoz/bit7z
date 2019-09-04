@@ -27,8 +27,6 @@ using namespace bit7z;
 
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
-CStdOutStream::~CStdOutStream() {}
-
 STDMETHODIMP CStdOutStream::Write( const void* data, uint32_t size, uint32_t* processedSize ) {
     if ( processedSize ) {
         *processedSize = 0;

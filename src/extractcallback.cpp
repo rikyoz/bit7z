@@ -30,8 +30,6 @@ ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
       mExtractMode( true ),
       mNumErrors( 0 ) {}
 
-ExtractCallback::~ExtractCallback() {}
-
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );

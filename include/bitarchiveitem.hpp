@@ -35,7 +35,7 @@ namespace bit7z {
             /**
              * @brief BitArchiveItem destructor.
              */
-            virtual ~BitArchiveItem();
+            virtual ~BitArchiveItem() = default;
 
             /**
              * @return the index of the item in the archive.

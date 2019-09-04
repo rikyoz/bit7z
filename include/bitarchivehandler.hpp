@@ -33,28 +33,28 @@ namespace bit7z {
     /**
      * @brief A std::function whose argument is the total size of the ongoing operation.
      */
-    typedef function< void( uint64_t total_size ) > TotalCallback;
+    using TotalCallback = function< void ( uint64_t ) >;
 
     /**
      * @brief A std::function whose argument is the current processed size of the ongoing operation.
      */
-    typedef function< void( uint64_t progress_size ) > ProgressCallback;
+    using ProgressCallback = function< void ( uint64_t ) >;
 
     /**
      * @brief A std::function whose arguments are the current processed input size and the current output size of the
      * ongoing operation.
      */
-    typedef function< void( uint64_t input_size, uint64_t output_size ) > RatioCallback;
+    using RatioCallback = function< void ( uint64_t, uint64_t ) >;
 
     /**
      * @brief A std::function whose argument is the name of the file currently being processed by the ongoing operation.
      */
-    typedef function< void( wstring filename ) > FileCallback;
+    using FileCallback = function< void ( wstring ) >;
 
     /**
      * @brief A std::function which returns the password to be used in order to handle an archive.
      */
-    typedef function< wstring() > PasswordCallback;
+    using PasswordCallback = function< wstring () >;
 
     /**
      * @brief Abstract class representing a generic archive handler.
@@ -184,7 +184,7 @@ namespace bit7z {
 
             explicit BitArchiveHandler( const Bit7zLibrary& lib );
 
-            virtual ~BitArchiveHandler() = 0;
+            virtual ~BitArchiveHandler() = default;
 
         private:
             //CALLBACKS

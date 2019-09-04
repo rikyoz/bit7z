@@ -14,7 +14,7 @@ namespace bit7z {
         public:
             explicit CStdOutStream( std::ostream& outputStream );
 
-            virtual ~CStdOutStream();
+            virtual ~CStdOutStream() = default;
 
             MY_UNKNOWN_IMP1( IOutStream )
 

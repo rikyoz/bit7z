@@ -52,6 +52,14 @@ namespace bit7z {
      */
     class BitInFormat {
         public:
+            //non-copyable
+            BitInFormat( const BitInFormat& other ) = delete;
+            BitInFormat& operator=( const BitInFormat& other ) = delete;
+
+            //non-movable
+            BitInFormat( BitInFormat&& other ) = delete;
+            BitInFormat& operator=( BitInFormat&& other ) = delete;
+
             /**
              * @brief Constructs a BitInFormat object with the id value used by the 7z SDK.
              * @param value  the value of the format in the 7z SDK.
@@ -82,16 +90,6 @@ namespace bit7z {
 
         private:
             const unsigned char mValue;
-
-            //non-copyable
-            BitInFormat( const BitInFormat& other ) = delete;
-
-            BitInFormat& operator=( const BitInFormat& other ) = delete;
-
-            //non-movable
-            BitInFormat( BitInFormat&& other ) = delete;
-
-            BitInFormat& operator=( BitInFormat&& other ) = delete;
     };
 
     /**

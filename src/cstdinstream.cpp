@@ -25,8 +25,6 @@ using namespace bit7z;
 
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
 
-CStdInStream::~CStdInStream() {}
-
 STDMETHODIMP CStdInStream::Read( void* data, uint32_t size, uint32_t* processedSize ) {
     mInputStream.clear();
 

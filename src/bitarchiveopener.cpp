@@ -37,8 +37,6 @@ CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buff
 BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveHandler( lib ), mFormat( format ) {}
 
-BitArchiveOpener::~BitArchiveOpener() {}
-
 const BitInFormat& BitArchiveOpener::format() const {
     return mFormat;
 }

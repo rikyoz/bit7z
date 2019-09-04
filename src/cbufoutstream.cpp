@@ -25,8 +25,6 @@ using namespace bit7z;
 
 CBufOutStream::CBufOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ) {}
 
-CBufOutStream::~CBufOutStream() {};
-
 STDMETHODIMP CBufOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;

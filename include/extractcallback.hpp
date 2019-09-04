@@ -33,7 +33,7 @@ namespace bit7z {
                             public ICompressProgressInfo,
                             protected ICryptoGetTextPassword {
         public:
-            virtual ~ExtractCallback() override;
+            virtual ~ExtractCallback() override = default;
 
             MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 

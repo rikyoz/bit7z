@@ -43,8 +43,6 @@ BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
       mBuffer( in_buffer ),
       mBufferName( in_buffer_name ) {}
 
-BufferUpdateCallback::~BufferUpdateCallback() {}
-
 HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
 

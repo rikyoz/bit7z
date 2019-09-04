@@ -42,7 +42,7 @@ namespace bit7z {
 
     class Callback : protected CMyUnknownImp {
         public:
-            virtual ~Callback();
+            virtual ~Callback() = default;
             virtual wstring getErrorMessage() const;
 
         protected:

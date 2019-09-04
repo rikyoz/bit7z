@@ -26,13 +26,13 @@
 
 namespace bit7z {
     namespace filesystem {
-        typedef WIN32_FIND_DATA FSItemInfo;
+        using FSItemInfo = WIN32_FIND_DATA;
 
         using std::wstring;
 
         class FSItem {
             public:
-                explicit FSItem( const wstring& path, const wstring& inArchivePath = L"" );
+                explicit FSItem( const wstring& path, const wstring& in_archive_path = L"" );
 
                 explicit FSItem( const wstring& dir, FSItemInfo data, const wstring& searchPath );
 

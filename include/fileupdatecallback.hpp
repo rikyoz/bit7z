@@ -37,7 +37,7 @@ namespace bit7z {
         public:
             explicit FileUpdateCallback( const BitArchiveCreator& creator, const vector< FSItem >& new_items );
 
-            virtual ~FileUpdateCallback() override;
+            virtual ~FileUpdateCallback() override = default;
 
             // CompressCallback
             uint32_t itemsCount() const override;

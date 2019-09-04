@@ -38,8 +38,6 @@ BufferExtractCallback::BufferExtractCallback( const BitArchiveHandler& handler,
     : ExtractCallback ( handler, inputArchive ),
       mBuffersMap( buffersMap ) {}
 
-BufferExtractCallback::~BufferExtractCallback() {}
-
 STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutMemStream.Release();

@@ -52,7 +52,7 @@ class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
     public:
         CMultiVolOutStream( uint64_t size, const wstring& archiveName );
 
-        virtual ~CMultiVolOutStream();
+        virtual ~CMultiVolOutStream() = default;
 
         bool SetMTime( const FILETIME* mTime );
 

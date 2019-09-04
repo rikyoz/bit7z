@@ -39,6 +39,9 @@ namespace bit7z {
      */
     class Bit7zLibrary {
         public:
+            Bit7zLibrary( const Bit7zLibrary& ) = delete; // not copyable!
+            Bit7zLibrary& operator=( const Bit7zLibrary& ) = delete; // not assignable!
+
             /**
              * @brief Constructs a Bit7zLibrary object using the path of the wanted 7zip DLL.
              *
@@ -70,14 +73,11 @@ namespace bit7z {
             void setLargePageMode();
 
         private:
-            typedef UINT32 ( WINAPI* CreateObjectFunc )( const GUID* clsID, const GUID* interfaceID, void** out );
-            typedef HRESULT ( WINAPI* SetLargePageMode )();
+            using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* interfaceID, void** out );
+            using SetLargePageMode = HRESULT ( WINAPI* )();
 
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
-
-            Bit7zLibrary( const Bit7zLibrary& ) = delete; // not copyable!
-            Bit7zLibrary& operator=( const Bit7zLibrary& ) = delete; // not assignable!
     };
 }
 

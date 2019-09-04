@@ -68,9 +68,9 @@ namespace bit7z {
              * directories existing on the filesystem.
              *
              * @param in_paths      a vector of paths.
-             * @param out_archive   the path (relative or absolute) to the output archive file.
+             * @param out_file   the path (relative or absolute) to the output archive file.
              */
-            void compress( const vector< wstring >& in_paths, const wstring& out_archive ) const;
+            void compress( const vector< wstring >& in_paths, const wstring& out_file ) const;
 
             /**
              * @brief Compresses the given files or directories using the specified aliases.
@@ -81,17 +81,17 @@ namespace bit7z {
              *  {L"path to file in the filesystem", L"alias path in the archive"}.
              *
              * @param in_paths      a map of paths and corresponding aliases.
-             * @param out_archive   the path (relative or absolute) to the output archive file.
+             * @param out_file   the path (relative or absolute) to the output archive file.
              */
-            void compress( const map< wstring, wstring >& in_paths, const wstring& out_archive ) const;
+            void compress( const map< wstring, wstring >& in_paths, const wstring& out_file ) const;
 
             /**
              * @brief Compresses a single file.
              *
              * @param in_file       the path (relative or absolute) to the input file.
-             * @param out_archive   the path (relative or absolute) to the output archive file.
+             * @param out_file   the path (relative or absolute) to the output archive file.
              */
-            void compressFile( const wstring& in_file, const wstring& out_archive ) const;
+            void compressFile( const wstring& in_file, const wstring& out_file ) const;
 
             /**
              * @brief Compresses a group of files.
@@ -99,20 +99,20 @@ namespace bit7z {
              * @note Any path to a directory or to a not-existing file will be ignored!
              *
              * @param in_files      the path (relative or absolute) to the input files.
-             * @param out_archive   the path (relative or absolute) to the output archive file.
+             * @param out_file   the path (relative or absolute) to the output archive file.
              */
-            void compressFiles( const vector< wstring >& in_files, const wstring& out_archive ) const;
+            void compressFiles( const vector< wstring >& in_files, const wstring& out_file ) const;
 
             /**
              * @brief Compresses the files contained in a directory.
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
-             * @param out_archive   the path (relative or absolute) to the output archive file.
+             * @param out_file   the path (relative or absolute) to the output archive file.
              * @param recursive     if true, it searches files inside the sub-folders of in_dir.
              * @param filter        the filter to use when searching files inside in_dir.
              */
             void compressFiles( const wstring& in_dir,
-                                const wstring& out_archive,
+                                const wstring& out_file,
                                 bool recursive = true,
                                 const wstring& filter = L"*.*" ) const;
 
@@ -122,9 +122,9 @@ namespace bit7z {
              * @note This method is equivalent to compressFiles with filter set to L"".
              *
              * @param in_dir        the path (relative or absolute) to the input directory.
-             * @param out_archive   the path (relative or absolute) to the output archive file.
+             * @param out_file   the path (relative or absolute) to the output archive file.
              */
-            void compressDirectory( const wstring& in_dir, const wstring& out_archive ) const;
+            void compressDirectory( const wstring& in_dir, const wstring& out_file ) const;
 
             /* Compression from file system to memory buffer */
 
@@ -165,7 +165,7 @@ namespace bit7z {
             void compress( const map<wstring, wstring>& in_paths, ostream& out_stream ) const;
 
         private:
-            void compressOut( const vector< FSItem >& in_items, const wstring& out_archive ) const;
+            void compressOut( const vector< FSItem >& in_items, const wstring& out_file ) const;
             void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };
 }

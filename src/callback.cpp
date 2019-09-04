@@ -25,8 +25,6 @@ using namespace bit7z;
 
 Callback::Callback( const BitArchiveHandler &handler ) : mHandler( handler ), mErrorMessage( L"" ) {}
 
-Callback::~Callback() {}
-
 wstring Callback::getErrorMessage() const {
     return mErrorMessage;
 }

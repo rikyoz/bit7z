@@ -53,8 +53,6 @@ FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
     filesystem::fsutil::normalizePath( mDirectoryPath );
 }
 
-FileExtractCallback::~FileExtractCallback() {}
-
 //TODO: clean and optimize!
 STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;

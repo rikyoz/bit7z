@@ -186,7 +186,7 @@ namespace bit7z {
 
             BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format );
 
-            virtual ~BitArchiveCreator() override = 0;
+            virtual ~BitArchiveCreator() override = default;
 
             CMyComPtr< IOutArchive > initOutArchive() const;
 
