@@ -76,8 +76,8 @@ namespace bit7z {
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
 
-            Bit7zLibrary( const Bit7zLibrary& ); // not copyable!
-            Bit7zLibrary& operator=( const Bit7zLibrary& ); // not assignable!
+            Bit7zLibrary( const Bit7zLibrary& ) = delete; // not copyable!
+            Bit7zLibrary& operator=( const Bit7zLibrary& ) = delete; // not assignable!
     };
 }
 

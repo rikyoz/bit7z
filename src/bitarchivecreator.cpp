@@ -219,12 +219,6 @@ CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
     return new_arc;
 }
 
-#if _MSC_VER <= 1700
-#define MAKE_UNIQUE(T, ...) std::unique_ptr<T>(new T(__VA_ARGS__))
-#else
-#define MAKE_UNIQUE(T, ...) std::make_unique<T>(__VA_ARGS__)
-#endif
-
 CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out_archive,
                                                               CMyComPtr< IOutArchive >& new_arc,
                                                               unique_ptr< BitInputArchive >& old_arc ) const {
@@ -251,7 +245,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
                 //could not create temporary file
                 throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'", GetLastError() );
             }
-            old_arc = MAKE_UNIQUE( BitInputArchive, *this, out_archive );
+            old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
             old_arc->initUpdatableArchive( &new_arc );
             setArchiveProperties( new_arc );
         }
