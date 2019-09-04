@@ -35,3 +35,7 @@ CMakeLists*\.txt
 *.suppress
 
 *.pro\.user*-pre1
+
+*.opensdf
+
+*.sdf
