@@ -35,7 +35,7 @@ namespace bit7z {
                                    const BitInputArchive& inputArchive,
                                    map< wstring, vector< byte_t > >& buffersMap );
 
-            virtual ~BufferExtractCallback() = default;
+            ~BufferExtractCallback() override = default;
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );

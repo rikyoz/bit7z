@@ -34,7 +34,7 @@ namespace bit7z {
             public:
                 explicit FSItem( const wstring& path, const wstring& in_archive_path = L"" );
 
-                explicit FSItem( const wstring& dir, FSItemInfo data, const wstring& searchPath );
+                explicit FSItem( const wstring& dir, FSItemInfo data, const wstring& search_path );
 
                 bool isDots() const;
 

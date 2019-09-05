@@ -36,7 +36,7 @@ namespace bit7z {
                                    const BitInputArchive& inputArchive,
                                    ostream& outputStream );
 
-            virtual ~StreamExtractCallback() override = default;
+            ~StreamExtractCallback() override = default;
 
             wstring getErrorMessage() const override;
 

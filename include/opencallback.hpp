@@ -40,7 +40,7 @@ namespace bit7z {
         public:
             explicit OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
 
-            virtual ~OpenCallback() override = default;
+            ~OpenCallback() override = default;
 
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
 

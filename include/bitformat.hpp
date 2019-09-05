@@ -29,7 +29,7 @@
 
 namespace bit7z {
     using std::wstring;
-    typedef std::bitset< FEATURES_COUNT > FeaturesSet; //MSVC++11 (VS 2012) does not support new 'using' keyword usage!
+    using FeaturesSet = std::bitset<7>;
 
     /**
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.
@@ -109,7 +109,7 @@ namespace bit7z {
              * @param features      the set of features supported by the archive format
              */
             BitInOutFormat( unsigned char value,
-                            const wstring& ext,
+                            const wchar_t* ext,
                             BitCompressionMethod defaultMethod,
                             FeaturesSet features );
 

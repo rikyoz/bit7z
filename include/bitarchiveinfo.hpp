@@ -87,7 +87,7 @@ namespace bit7z {
              *
              * @note It releases the input archive file.
              */
-            virtual ~BitArchiveInfo() override = default;
+            ~BitArchiveInfo() override = default;
 
             /**
              * @return a map of all the available (i.e. non empty) archive properties and their respective values.

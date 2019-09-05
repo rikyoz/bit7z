@@ -41,10 +41,10 @@ class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
 
         struct CAltStreamInfo {
             CMyComPtr< IOutStream > stream;
-            COutFileStream* streamSpec;
+            COutFileStream* streamSpec = nullptr;
             wstring name;
-            uint64_t pos;
-            uint64_t realSize;
+            uint64_t pos{};
+            uint64_t realSize{};
         };
 
         vector< CAltStreamInfo > mVolStreams;

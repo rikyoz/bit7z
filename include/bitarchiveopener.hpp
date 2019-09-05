@@ -54,7 +54,7 @@ namespace bit7z {
 
             BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format );
 
-            virtual ~BitArchiveOpener() override = default;
+            ~BitArchiveOpener() override = default;
 
             void extractToFileSystem( const BitInputArchive& in_archive,
                                       const wstring& in_file,

@@ -37,7 +37,7 @@ namespace bit7z {
                            public ICompressProgressInfo,
                            protected ICryptoGetTextPassword2 {
         public:
-            virtual ~UpdateCallback() override;
+            ~UpdateCallback() override;
             virtual uint32_t itemsCount() const = 0;
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )

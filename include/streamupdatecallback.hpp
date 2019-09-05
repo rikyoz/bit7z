@@ -37,7 +37,7 @@ namespace bit7z {
                                   istream& in_stream,
                                   const wstring& in_stream_name );
 
-            virtual ~StreamUpdateCallback() override = default;
+            ~StreamUpdateCallback() override = default;
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );

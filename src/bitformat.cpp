@@ -380,7 +380,7 @@ const GUID BitInFormat::guid() const {
 }
 
 BitInOutFormat::BitInOutFormat( unsigned char value,
-                                const wstring& ext,
+                                const wchar_t* ext,
                                 BitCompressionMethod defaultMethod,
                                 FeaturesSet features )
     : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}

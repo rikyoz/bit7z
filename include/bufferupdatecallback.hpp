@@ -36,7 +36,7 @@ namespace bit7z {
                                   const vector< byte_t >& in_buffer,
                                   const wstring& in_buffer_name );
 
-            virtual ~BufferUpdateCallback() override = default;
+            ~BufferUpdateCallback() override = default;
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
