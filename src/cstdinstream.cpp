@@ -28,7 +28,7 @@ CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream )
 STDMETHODIMP CStdInStream::Read( void* data, uint32_t size, uint32_t* processedSize ) {
     mInputStream.clear();
 
-    if ( processedSize ) {
+    if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
 
@@ -38,7 +38,7 @@ STDMETHODIMP CStdInStream::Read( void* data, uint32_t size, uint32_t* processedS
 
     mInputStream.read( static_cast< char* >( data ), size );
 
-    if ( processedSize ) {
+    if ( processedSize != nullptr ) {
         *processedSize = static_cast< uint32_t >( mInputStream.gcount() );
     }
 
@@ -73,8 +73,8 @@ STDMETHODIMP CStdInStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* 
         return HRESULT_FROM_WIN32( ERROR_SEEK );
     }
 
-    if ( newPosition ) {
-        *newPosition = mInputStream.tellg();
+    if ( newPosition != nullptr ) {
+        *newPosition = static_cast< uint64_t >( mInputStream.tellg() );
     }
 
     return S_OK;

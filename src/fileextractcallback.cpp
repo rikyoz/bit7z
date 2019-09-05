@@ -19,6 +19,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
+#include <utility>
+
 #include "../include/fileextractcallback.hpp"
 
 #include "Windows/FileDir.h"
@@ -42,11 +44,11 @@ using namespace bit7z;
 
 FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
                                           const BitInputArchive& inputArchive,
-                                          const wstring& inFilePath,
-                                          const wstring& directoryPath )
+                                          wstring inFilePath,
+                                          wstring directoryPath )
     : ExtractCallback( handler, inputArchive ),
-      mInFilePath( inFilePath ),
-      mDirectoryPath( directoryPath ),
+      mInFilePath( std::move( inFilePath ) ),
+      mDirectoryPath( std::move( directoryPath ) ),
       mProcessedFileInfo(),
       mOutFileStreamSpec( nullptr ) {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );

@@ -188,7 +188,7 @@ HRESULT BitInputArchive::close() const {
 }
 
 BitInputArchive::~BitInputArchive() {
-    if ( mInArchive ) {
+    if ( mInArchive != nullptr ) {
         mInArchive->Release();
     }
 }

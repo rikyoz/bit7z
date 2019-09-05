@@ -51,7 +51,7 @@ void compressOut( IOutArchive* out_arc, ISequentialOutStream* out_stream, Update
     }
 }
 
-bool isValidCompressionMethod( const BitInFormat& format, BitCompressionMethod method ) {
+bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return format == BitFormat::SevenZip || format == BitFormat::Zip || format == BitFormat::Tar ||
@@ -68,7 +68,7 @@ bool isValidCompressionMethod( const BitInFormat& format, BitCompressionMethod m
         case BitCompressionMethod::Deflate64:
             return format == BitFormat::Zip;
         default:
-            return true;
+            return false;
     }
 }
 
@@ -107,7 +107,7 @@ const wchar_t* methodName( BitCompressionMethod method ) {
         case BitCompressionMethod::Deflate64:
             return L"Deflate64";
         default:
-            return L""; //this should not happen!
+            return L"Unknown"; //this should not happen!
     }
 }
 
@@ -259,7 +259,7 @@ void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback*
     if ( old_arc ) {
         old_arc->close();
         auto out_file_stream = dynamic_cast< COutFileStream* >( *&out_stream ); //cast should not fail, but anyway...
-        if ( out_file_stream ) {
+        if ( out_file_stream != nullptr ) {
             out_file_stream->Close();
         }
         //remove old file and rename tmp file (move file with overwriting)

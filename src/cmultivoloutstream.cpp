@@ -45,7 +45,7 @@ HRESULT CMultiVolOutStream::Close() {
     HRESULT res = S_OK;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
         COutFileStream* s = ( *it ).streamSpec;
-        if ( s ) {
+        if ( s != nullptr ) {
             HRESULT res2 = s->Close();
             if ( res2 != S_OK ) {
                 res = res2;
@@ -61,7 +61,7 @@ bool CMultiVolOutStream::SetMTime( const FILETIME* mTime ) {
     bool res = true;
     for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
         COutFileStream* s = ( *it ).streamSpec;
-        if ( s ) {
+        if ( s != nullptr ) {
             if ( !s->SetMTime( mTime ) ) {
                 res = false;
             }
@@ -143,13 +143,13 @@ STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
     }
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
-            mAbsPos = offset;
+            mAbsPos = static_cast< uint64_t >( offset );
             break;
         case STREAM_SEEK_CUR:
-            mAbsPos += offset;
+            mAbsPos += static_cast< uint64_t >( offset );
             break;
         case STREAM_SEEK_END:
-            mAbsPos = mLength + offset;
+            mAbsPos = mLength + static_cast< uint64_t >( offset );
             break;
     }
     mOffsetPos = mAbsPos;

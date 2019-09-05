@@ -19,6 +19,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
+#include <utility>
+
 #include "../include/fsitem.hpp"
 
 #include "../include/bitexception.hpp"
@@ -37,8 +39,8 @@ using namespace bit7z::filesystem;
  *    the path of the file in the archive), the path in the archive is calculated form mPath and mSearchPath
  *    (see inArchivePath() method). */
 
-FSItem::FSItem( const wstring& path, const wstring& in_archive_path )
-    : mPath( path ), mFileData(), mSearchPath( L"" ), mInArchivePath( in_archive_path ) {
+FSItem::FSItem( wstring path, wstring in_archive_path )
+    : mPath( std::move( path ) ), mFileData(), mSearchPath( L"" ), mInArchivePath( std::move( in_archive_path ) ) {
     bool is_dir = fsutil::isDirectory( mPath );
     if ( is_dir && !mPath.empty() ) {
         // The FSItem is a directory!
@@ -54,8 +56,8 @@ FSItem::FSItem( const wstring& path, const wstring& in_archive_path )
     FindClose( find_handle );
 }
 
-FSItem::FSItem( const wstring& dir, FSItemInfo data, const wstring& search_path )
-    : mPath( dir ), mFileData( data ), mSearchPath( search_path ) {
+FSItem::FSItem( wstring dir, FSItemInfo data, wstring search_path )
+    : mPath( std::move( dir ) ), mFileData( data ), mSearchPath( std::move( search_path ) ) {
     /* Now mPath is the path without the filename, since dir is the path containing the file 'data'!
      * So we must add the filename! */
     if ( mPath.back() == L'/' || mPath.back() == L'\\' ) {

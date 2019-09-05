@@ -19,6 +19,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
+#include <utility>
+
 #include "../include/fsindexer.hpp"
 
 #include "../include/fsutil.hpp"
@@ -26,7 +28,8 @@
 
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirItem( directory ), mFilter( filter ) {
+FSIndexer::FSIndexer( const wstring& directory, wstring filter )
+    : mDirItem( directory ), mFilter( std::move( filter ) ) {
     if ( !mDirItem.isDir() ) {
         throw BitException( L"'" + mDirItem.name() + L"' is not a directory!", ERROR_DIRECTORY );
     }

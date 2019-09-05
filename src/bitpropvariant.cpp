@@ -71,7 +71,7 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
     if ( vt == VT_BSTR ) { //until now, I've copied only the pointer to the string, hence we need a copy!
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
-        if ( !bstrVal ) {
+        if ( bstrVal == nullptr ) {
             throw BitException( "Could not allocate memory for BitPropVariant string" );
         }
     }
@@ -97,7 +97,7 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
     wReserved1 = 0;
     if ( value != nullptr ) {
         bstrVal = ::SysAllocString( value );
-        if ( !bstrVal ) {
+        if ( bstrVal == nullptr ) {
             throw BitException( "Could not allocate memory for BitPropVariant string" );
         }
     } else {
@@ -109,7 +109,7 @@ BitPropVariant::BitPropVariant( const wstring& value ) : PROPVARIANT() {
     vt = VT_BSTR;
     wReserved1 = 0;
     bstrVal = ::SysAllocStringLen( value.data(), static_cast< unsigned int >( value.size() ) );
-    if ( !bstrVal ) {
+    if ( bstrVal == nullptr ) {
         throw BitException( "Could not allocate memory for BitPropVariant string" );
     }
 }
@@ -357,7 +357,7 @@ FILETIME BitPropVariant::getFiletime() const {
 wstring BitPropVariant::toString() const {
     switch ( vt ) {
         case VT_BOOL:
-            return boolVal ? L"true" : L"false";
+            return boolVal == VARIANT_TRUE ? L"true" : L"false";
         case VT_BSTR:
             return wstring( bstrVal, SysStringLen( bstrVal ) );
         case VT_UI1:

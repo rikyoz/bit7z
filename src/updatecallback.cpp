@@ -35,7 +35,7 @@ UpdateCallback::~UpdateCallback() {
 }
 
 void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
-    if ( old_arc ) {
+    if ( old_arc != nullptr ) {
         mOldArc = old_arc;
         mOldArcItemsCount = old_arc->itemsCount();
     }

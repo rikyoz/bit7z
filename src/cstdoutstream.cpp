@@ -28,7 +28,7 @@ using namespace bit7z;
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
 STDMETHODIMP CStdOutStream::Write( const void* data, uint32_t size, uint32_t* processedSize ) {
-    if ( processedSize ) {
+    if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
 
@@ -40,7 +40,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, uint32_t size, uint32_t* pr
 
     mOutputStream.write( static_cast< const char* >( data ), size );
 
-    if ( processedSize ) {
+    if ( processedSize != nullptr ) {
         *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - old_pos );
     }
 
@@ -73,8 +73,8 @@ STDMETHODIMP CStdOutStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t*
         return HRESULT_FROM_WIN32( ERROR_SEEK );
     }
 
-    if ( newPosition ) {
-        *newPosition = mOutputStream.tellp();
+    if ( newPosition != nullptr ) {
+        *newPosition = static_cast< uint64_t >( mOutputStream.tellp() );
     }
 
     return S_OK;
@@ -84,7 +84,7 @@ STDMETHODIMP CStdOutStream::SetSize( uint64_t newSize ) {
     const auto old_pos = mOutputStream.tellp();
     mOutputStream.seekp( 0, ostream::end );
 
-    const auto diff_pos = newSize - mOutputStream.tellp();
+    const auto diff_pos = newSize - static_cast< uint64_t >( mOutputStream.tellp() );
     if ( diff_pos > 0 ) {
         std::fill_n( std::ostream_iterator< char >( mOutputStream ), diff_pos, '\0' );
     }
