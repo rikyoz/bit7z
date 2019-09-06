@@ -29,19 +29,22 @@
 namespace bit7z {
     using std::vector;
 
-    class CBufOutStream : public ISequentialOutStream, public CMyUnknownImp {
+    class CBufOutStream : public IOutStream, public CMyUnknownImp {
         public:
             explicit CBufOutStream( vector< byte_t >& out_buffer );
 
             virtual ~CBufOutStream() = default;
 
-            MY_UNKNOWN_IMP1( ISequentialOutStream )
+            MY_UNKNOWN_IMP1( IOutStream )
 
-            // ISequentialOutStream
+            // IOutStream
             STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );
+            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+            STDMETHOD( SetSize )( UInt64 newSize );
 
         private:
             vector< byte_t >& mBuffer;
+            size_t mCurrentPosition;
     };
 }
 #endif // CBUFOUTSTREAM_HPP

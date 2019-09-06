@@ -38,7 +38,7 @@ using std::vector;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-void compressOut( IOutArchive* out_arc, ISequentialOutStream* out_stream, UpdateCallback* update_callback ) {
+void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
@@ -271,16 +271,12 @@ void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback*
 }
 
 void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const {
-    if ( !mFormat.hasFeature( INMEM_COMPRESSION ) ) {
-        throw BitException( kUnsupportedInMemoryFormat, ERROR_NOT_SUPPORTED );
-    }
-
     if ( !out_buffer.empty() ) {
         throw BitException( kCannotOverwriteBuffer, E_INVALIDARG );
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< ISequentialOutStream > out_mem_stream = new CBufOutStream( out_buffer );
+    CMyComPtr< IOutStream > out_mem_stream = new CBufOutStream( out_buffer );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 

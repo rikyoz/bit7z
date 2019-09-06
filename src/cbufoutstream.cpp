@@ -21,21 +21,71 @@
 
 #include "../include/cbufoutstream.hpp"
 
+#include "../include/bitexception.hpp"
+
+#include <algorithm>
+
 using namespace bit7z;
 
-CBufOutStream::CBufOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ) {}
+CBufOutStream::CBufOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ), mCurrentPosition( 0 ) {}
+
+STDMETHODIMP CBufOutStream::SetSize( UInt64 newSize ) {
+    mBuffer.resize( static_cast< vector< byte_t >::size_type >( newSize ) );
+    return S_OK;
+}
+
+STDMETHODIMP CBufOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+    int64_t new_pos;
+
+    switch ( seekOrigin ) {
+        case STREAM_SEEK_SET:
+            new_pos = offset;
+            break;
+        case STREAM_SEEK_CUR: {
+            new_pos = static_cast< int64_t >( mCurrentPosition ) + offset;
+            break;
+        }
+        case STREAM_SEEK_END: {
+            new_pos = static_cast< int64_t >( mBuffer.size() ) + offset;
+            break;
+        }
+        default:
+            return STG_E_INVALIDFUNCTION;
+    }
+
+    if ( new_pos < 0 ) {
+        return STG_E_INVALIDFUNCTION;
+    }
+
+    mCurrentPosition = static_cast< size_t >( new_pos );
+
+    if ( newPosition != nullptr ) {
+        *newPosition = mCurrentPosition;
+    }
+
+    return S_OK;
+}
 
 STDMETHODIMP CBufOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
+
     if ( data == nullptr || size == 0 ) {
         return E_FAIL;
     }
+
+    if ( mCurrentPosition + size > mBuffer.size() ) {
+        mBuffer.resize( mCurrentPosition + size );
+    }
+
     const auto* byte_data = static_cast< const byte_t* >( data );
-    mBuffer.insert( mBuffer.end(), byte_data, byte_data + size );
+    std::copy( byte_data, byte_data + size, mBuffer.begin() + mCurrentPosition );
+    mCurrentPosition += size;
+
     if ( processedSize != nullptr ) {
         *processedSize = size;
     }
+
     return S_OK;
 }
