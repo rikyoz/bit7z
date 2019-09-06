@@ -46,7 +46,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
     FSItemInfo data;
     HANDLE hFind = FindFirstFile( filtered_path.c_str(), &data );
 
-    if ( INVALID_HANDLE_VALUE == hFind ) {
+    if ( hFind == INVALID_HANDLE_VALUE ) { // NOLINT
         throw BitException( L"Invalid path '" + filtered_path + L"'", GetLastError() );
     }
 

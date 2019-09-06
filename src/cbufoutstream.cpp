@@ -75,13 +75,14 @@ STDMETHODIMP CBufOutStream::Write( const void* data, UInt32 size, UInt32* proces
         return E_FAIL;
     }
 
-    if ( mCurrentPosition + size > mBuffer.size() ) {
-        mBuffer.resize( mCurrentPosition + size );
+    size_t new_pos = mCurrentPosition + static_cast< size_t >( size );
+    if ( new_pos > mBuffer.size() ) {
+        mBuffer.resize( new_pos );
     }
 
     const auto* byte_data = static_cast< const byte_t* >( data );
     std::copy( byte_data, byte_data + size, mBuffer.begin() + mCurrentPosition );
-    mCurrentPosition += size;
+    mCurrentPosition = new_pos;
 
     if ( processedSize != nullptr ) {
         *processedSize = size;

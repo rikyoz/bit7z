@@ -72,19 +72,25 @@ bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
     }
 }
 
+CONSTEXPR auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
+CONSTEXPR auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
+CONSTEXPR auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
+CONSTEXPR auto DEFLATE64_DICTIONARY_SIZE = ( 1 << 16 );       // equal to 64 KiB, i.e. 2^16 bytes
+CONSTEXPR auto DEFLATE_DICTIONARY_SIZE = ( 1 << 15 );         // equal to 32 KiB, i.e. 2^15 bytes
+
 bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) {
     switch ( method ) {
         case BitCompressionMethod::Lzma:
         case BitCompressionMethod::Lzma2:
-            return dictionary_size <= 1536 * ( 1 << 20 ); // less than 1536 MiB
+            return dictionary_size <= MAX_LZMA_DICTIONARY_SIZE;
         case BitCompressionMethod::Ppmd:
-            return dictionary_size <= ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
+            return dictionary_size <= MAX_PPMD_DICTIONARY_SIZE;
         case BitCompressionMethod::BZip2:
-            return dictionary_size <= 900 * ( 1 << 10 );  // less than 900 KiB
+            return dictionary_size <= MAX_BZIP2_DICTIONARY_SIZE;
         case BitCompressionMethod::Deflate64:
-            return dictionary_size == ( 1 << 16 );        // equal to 64 KiB, i.e. 2^16 bytes
+            return dictionary_size == DEFLATE64_DICTIONARY_SIZE;
         case BitCompressionMethod::Deflate:
-            return dictionary_size == ( 1 << 15 );        // equal to 32 KiB, i.e. 2^15 bytes
+            return dictionary_size == DEFLATE_DICTIONARY_SIZE;
         default:
             return true; //copy
     }

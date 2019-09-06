@@ -44,7 +44,7 @@ namespace bit7z {
                                        MULTIPLE_FILES | COMPRESSION_LEVEL | ENCRYPTION | MULTIPLE_METHODS );
         const BitInOutFormat    BZip2( 0x02, L".bz2", BitCompressionMethod::BZip2, COMPRESSION_LEVEL );
         const BitInFormat         Rar( 0x03 );
-        const BitInFormat         Arj( 0x04 );
+        const BitInFormat         Arj( 0x04 ); //-V112
         const BitInFormat           Z( 0x05 );
         const BitInFormat         Lzh( 0x06 );
         const BitInOutFormat SevenZip( 0x07, L".7z", BitCompressionMethod::Lzma2,
@@ -272,16 +272,18 @@ namespace bit7z {
 
         const BitInFormat& detectFormatFromSig( IInStream* stream ) {
             CONSTEXPR auto SIGNATURE_SIZE = 8u;
+            CONSTEXPR auto BASE_SIGNATURE_MASK = 0xFFFFFFFFFFFFFFFFull;
+            CONSTEXPR auto BYTE_SHIFT = 8ull;
 
             uint64_t file_signature = readSignature( stream, SIGNATURE_SIZE );
-            uint64_t signature_mask = 0xFFFFFFFFFFFFFFFFull;
+            uint64_t signature_mask = BASE_SIGNATURE_MASK;
             for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
                 auto it = common_signatures.find( file_signature );
                 if ( it != common_signatures.end() ) {
                     stream->Seek( 0, 0, nullptr );
                     return it->second;
                 }
-                signature_mask <<= 8ull;          // left shifting the mask of 1 byte, so that
+                signature_mask <<= BYTE_SHIFT;    // left shifting the mask of 1 byte, so that
                 file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
             }
 
@@ -373,8 +375,8 @@ bool BitInFormat::operator!=( const BitInFormat& other ) const {
     return !( *this == other );
 }
 
-const GUID BitInFormat::guid() const {
-    return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } };
+GUID BitInFormat::guid() const {
+    return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } }; // NOLINT
 }
 
 BitInOutFormat::BitInOutFormat( unsigned char value,
@@ -387,7 +389,7 @@ const wstring& BitInOutFormat::extension() const {
     return mExtension;
 }
 
-const FeaturesSet BitInOutFormat::features() const {
+FeaturesSet BitInOutFormat::features() const {
     return mFeatures;
 }
 

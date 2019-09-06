@@ -50,7 +50,7 @@ FSItem::FSItem( wstring path, wstring in_archive_path )
         }
     }
     HANDLE find_handle = FindFirstFile( mPath.c_str(), &mFileData );
-    if ( find_handle == INVALID_HANDLE_VALUE ) {
+    if ( find_handle == INVALID_HANDLE_VALUE ) { // NOLINT
         throw BitException( L"Invalid path '" + mPath + L"'!", GetLastError() );
     }
     FindClose( find_handle );

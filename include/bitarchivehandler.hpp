@@ -74,7 +74,7 @@ namespace bit7z {
             /**
              * @return the password used to open, extract or encrypt the archive.
              */
-            const wstring password() const;
+            wstring password() const;
 
             /**
              * @return true if a password is defined, false otherwise.

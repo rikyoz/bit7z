@@ -73,7 +73,7 @@ namespace bit7z {
             /**
              * @return the GUID that identifies the file format in the 7z SDK.
              */
-            const GUID guid() const;
+            GUID guid() const;
 
             /**
              * @param other  the target object to compare to.
@@ -120,7 +120,7 @@ namespace bit7z {
             /**
              * @return the bitset of the features supported by the format
              */
-            const FeaturesSet features() const;
+            FeaturesSet features() const;
 
             /**
              * @brief Checks if the format has a specific feature (see FormatFeatures enum)

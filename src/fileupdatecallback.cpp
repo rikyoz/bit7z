@@ -144,7 +144,11 @@ HRESULT FileUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
 }
 
 HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
-    wstring res = ( index < 9 ? L"00" : index < 99 ? L"0" : L"" ) + std::to_wstring( index + 1 );
+    wstring res = std::to_wstring( index + 1 );
+    if ( res.length() < 3 ) {
+        //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)
+        res.insert( res.begin(), 3 - res.length(), L'0' );
+    }
 
     wstring fileName = mVolName + L'.' + res;// + mVolExt;
     auto* streamSpec = new COutFileStream;
