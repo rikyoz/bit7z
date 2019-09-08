@@ -19,9 +19,11 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
+#define NOMINMAX
 #include "../include/cmultivoloutstream.hpp"
 
 #include <string>
+#include <algorithm>
 
 #include "Windows/FileDir.h"
 
@@ -43,8 +45,8 @@ CMultiVolOutStream::CMultiVolOutStream( uint64_t size, const wstring& archiveNam
 
 HRESULT CMultiVolOutStream::Close() {
     HRESULT res = S_OK;
-    for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
-        COutFileStream* s = ( *it ).streamSpec;
+    for ( const auto& mVolStream : mVolStreams ) {
+        COutFileStream* s = mVolStream.streamSpec;
         if ( s != nullptr ) {
             HRESULT res2 = s->Close();
             if ( res2 != S_OK ) {
@@ -59,12 +61,10 @@ UInt64 CMultiVolOutStream::GetSize() const { return mLength; }
 
 bool CMultiVolOutStream::SetMTime( const FILETIME* mTime ) {
     bool res = true;
-    for ( auto it = mVolStreams.cbegin(); it != mVolStreams.cend(); ++it ) {
-        COutFileStream* s = ( *it ).streamSpec;
-        if ( s != nullptr ) {
-            if ( !s->SetMTime( mTime ) ) {
-                res = false;
-            }
+    for ( const auto& mVolStream : mVolStreams ) {
+        COutFileStream* s = mVolStream.streamSpec;
+        if ( s != nullptr && !s->SetMTime( mTime ) ) {
+            res = false;
         }
     }
     return res;
@@ -108,7 +108,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
             altStream.pos = mOffsetPos;
         }
 
-        auto curSize = static_cast< uint32_t >( MyMin( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
+        auto curSize = static_cast< uint32_t >( std::min( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
         UInt32 realProcessed;
         RINOK( altStream.stream->Write( data, curSize, &realProcessed ) );
         //data = ( void* )( ( Byte* )data + realProcessed );
@@ -138,9 +138,6 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
 }
 
 STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
-    if ( seekOrigin >= 3 ) {
-        return STG_E_INVALIDFUNCTION;
-    }
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             mAbsPos = static_cast< uint64_t >( offset );
@@ -151,6 +148,8 @@ STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
         case STREAM_SEEK_END:
             mAbsPos = mLength + static_cast< uint64_t >( offset );
             break;
+        default:
+            return STG_E_INVALIDFUNCTION;
     }
     mOffsetPos = mAbsPos;
     if ( newPosition != nullptr ) {
