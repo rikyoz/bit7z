@@ -50,8 +50,8 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
 }
 
 IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
-                                                const wstring& name,
-                                                IInStream* in_stream ) {
+        const wstring& name,
+        IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -187,6 +187,25 @@ HRESULT BitInputArchive::close() const {
     return mInArchive->Close();
 }
 
+BitInputArchive::const_iterator BitInputArchive::begin() const NOEXCEPT {
+    return const_iterator{ 0, *this };
+}
+
+BitInputArchive::const_iterator BitInputArchive::end() const NOEXCEPT {
+    //Note: we do not use itemsCount() since it can throw an exception and end() is marked as noexcept!
+    uint32_t items_count = 0;
+    mInArchive->GetNumberOfItems( &items_count );
+    return const_iterator{ items_count, *this };
+}
+
+BitInputArchive::const_iterator BitInputArchive::cbegin() const NOEXCEPT {
+    return begin();
+}
+
+BitInputArchive::const_iterator BitInputArchive::cend() const NOEXCEPT {
+    return end();
+}
+
 BitInputArchive::~BitInputArchive() {
     if ( mInArchive != nullptr ) {
         mInArchive->Release();
@@ -202,3 +221,33 @@ const BitInFormat& BitInputArchive::detectedFormat() const {
     return *mDetectedFormat;
 #endif
 }
+
+BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() {
+    ++mItemOffset;
+    return *this;
+}
+
+BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) {
+    const_iterator retval = *this;
+    ++( *this );
+    return retval;
+}
+
+bool BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const {
+    return mItemOffset == other.mItemOffset;
+}
+
+bool BitInputArchive::const_iterator::operator!=( const BitInputArchive::const_iterator& other ) const {
+    return !( *this == other );
+}
+
+BitInputArchive::const_iterator::reference BitInputArchive::const_iterator::operator*() {
+    return mItemOffset;
+}
+
+BitInputArchive::const_iterator::pointer BitInputArchive::const_iterator::operator->() {
+    return &mItemOffset;
+}
+
+BitInputArchive::const_iterator::const_iterator( uint32_t item_index, const BitInputArchive& item_archive )
+    : mItemOffset( item_index, item_archive ) {}

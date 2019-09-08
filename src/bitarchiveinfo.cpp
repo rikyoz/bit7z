@@ -21,6 +21,9 @@
 
 #include "../include/bitarchiveinfo.hpp"
 
+#include <algorithm>
+#include <numeric>
+
 #include "Common/MyCom.h"
 #include "7zip/PropID.h"
 
@@ -41,7 +44,7 @@ map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
         // Yeah, I know, I double cast property (here and in getArchiveProperty), but the code is easier to read!
-        auto property = static_cast<BitProperty>( i );
+        auto property = static_cast< BitProperty >( i );
         BitPropVariant property_value = getArchiveProperty( property );
         if ( !property_value.isEmpty() ) {
             result[ property ] = property_value;
@@ -50,10 +53,10 @@ map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
     return result;
 }
 
-vector< BitArchiveItem > BitArchiveInfo::items() const {
-    vector< BitArchiveItem > result;
+vector< BitArchiveItemInfo > BitArchiveInfo::items() const {
+    vector< BitArchiveItemInfo > result;
     for ( uint32_t i = 0; i < itemsCount(); ++i ) {
-        BitArchiveItem item( i );
+        BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
             // Yeah, I know, I double cast property (here and in getItemProperty), but the code is easier to read!
             auto property = static_cast<BitProperty>( j );
@@ -68,14 +71,9 @@ vector< BitArchiveItem > BitArchiveInfo::items() const {
 }
 
 uint32_t BitArchiveInfo::foldersCount() const {
-    uint32_t result = 0;
-    for ( uint32_t i = 0; i < itemsCount(); ++i ) {
-        BitPropVariant prop = getItemProperty( i, BitProperty::IsDir );
-        if ( !prop.isEmpty() && prop.getBool() ) {
-            result += 1;
-        }
-    }
-    return result;
+    return std::count_if( cbegin(), cend(), []( const BitArchiveItem & item ) {
+        return item.isDir();
+    } );
 }
 
 uint32_t BitArchiveInfo::filesCount() const {
@@ -83,37 +81,23 @@ uint32_t BitArchiveInfo::filesCount() const {
 }
 
 uint64_t BitArchiveInfo::size() const {
-    uint64_t result = 0;
-    for ( uint32_t i = 0; i < itemsCount(); ++i ) {
-        BitPropVariant prop = getItemProperty( i, BitProperty::Size );
-        if ( !prop.isEmpty() ) {
-            result += prop.getUInt64();
-        }
-    }
-    return result;
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem & item ) {
+        return item.isDir() ? accumulator : accumulator + item.size();
+    } );
 }
 
 uint64_t BitArchiveInfo::packSize() const {
-    uint64_t result = 0;
-    for ( uint32_t i = 0; i < itemsCount(); ++i ) {
-        BitPropVariant prop = getItemProperty( i, BitProperty::PackSize );
-        if ( !prop.isEmpty() ) {
-            result += prop.getUInt64();
-        }
-    }
-    return result;
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem & item ) {
+        return item.isDir() ? accumulator : accumulator + item.packSize();
+    } );
 }
 
 bool BitArchiveInfo::hasEncryptedItems() const {
     /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
-    uint32_t items_count = itemsCount();
-    for ( uint32_t file_index = 0; file_index < items_count; ++file_index ) {
-        if ( !isItemFolder( file_index ) && isItemEncrypted( file_index ) ) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of( cbegin(), cend(), []( const BitArchiveItem & item ) {
+        return !item.isDir() && item.isEncrypted();
+    } );
 }
 
 bool BitArchiveInfo::isMultiVolume() const {

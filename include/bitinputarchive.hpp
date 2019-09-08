@@ -2,6 +2,8 @@
 #define BITINPUTARCHIVE_H
 
 #include "../include/bitarchivehandler.hpp"
+#include "../include/bitarchiveiteminfo.hpp"
+#include "../include/bitarchiveitemoffset.hpp"
 #include "../include/bitformat.hpp"
 #include "../include/bitpropvariant.hpp"
 #include "../include/bittypes.hpp"
@@ -97,6 +99,44 @@ namespace bit7z {
         private:
             IInArchive* mInArchive;
             const BitInFormat* mDetectedFormat;
+
+        public:
+            class const_iterator {
+                public:
+                    // iterator traits
+                    using iterator_category = std::input_iterator_tag;
+                    using value_type = BitArchiveItemOffset;
+                    using reference = const BitArchiveItemOffset&;
+                    using pointer = const BitArchiveItemOffset*;
+                    using difference_type = uint32_t; //so that count_if returns a uint32_t
+
+                    const_iterator& operator++();
+
+                    const_iterator operator++( int );
+
+                    bool operator==( const const_iterator& other ) const;
+
+                    bool operator!=( const const_iterator& other ) const;
+
+                    reference operator*();
+
+                    pointer operator->();
+
+                private:
+                    BitArchiveItemOffset mItemOffset;
+
+                    const_iterator( uint32_t item_index, const BitInputArchive& item_archive );
+
+                    friend class BitInputArchive;
+            };
+
+            const_iterator begin() const NOEXCEPT;
+
+            const_iterator end() const NOEXCEPT;
+
+            const_iterator cbegin() const NOEXCEPT;
+
+            const_iterator cend() const NOEXCEPT;
     };
 }
 

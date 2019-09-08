@@ -21,7 +21,6 @@
 
 #include "../include/bitarchiveitem.hpp"
 
-#include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace bit7z;
@@ -77,17 +76,4 @@ uint64_t BitArchiveItem::packSize() const {
 bool BitArchiveItem::isEncrypted() const {
     BitPropVariant propvar = getProperty( BitProperty::Encrypted );
     return propvar.isBool() && propvar.getBool();
-}
-
-BitPropVariant BitArchiveItem::getProperty( BitProperty property ) const {
-    auto prop_it = mItemProperties.find( property );
-    return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
-}
-
-map< BitProperty, BitPropVariant > BitArchiveItem::itemProperties() const {
-    return mItemProperties;
-}
-
-void BitArchiveItem::setProperty( BitProperty property, const BitPropVariant& value ) {
-    mItemProperties[ property ] = value;
 }

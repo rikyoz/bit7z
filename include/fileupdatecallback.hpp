@@ -20,7 +20,7 @@
 #define UPDATECALLBACK_HPP
 
 #include "../include/bitinputarchive.hpp"
-#include "../include/bitarchiveitem.hpp"
+#include "../include/bitarchiveiteminfo.hpp"
 #include "../include/updatecallback.hpp"
 #include "../include/fsitem.hpp"
 #include "../include/bitarchivecreator.hpp"

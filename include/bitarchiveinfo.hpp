@@ -21,7 +21,7 @@
 
 #include "../include/bitarchiveopener.hpp"
 #include "../include/bitinputarchive.hpp"
-#include "../include/bitarchiveitem.hpp"
+#include "../include/bitarchiveiteminfo.hpp"
 #include "../include/bittypes.hpp"
 
 struct IInArchive;
@@ -97,7 +97,7 @@ namespace bit7z {
             /**
              * @return a vector of all the archive items as BitArchiveItem objects.
              */
-            vector< BitArchiveItem > items() const;
+            vector< BitArchiveItemInfo > items() const;
 
             /**
              * @return the number of folders contained in the archive.

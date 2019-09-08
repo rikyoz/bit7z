@@ -16,20 +16,13 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITARCHIVEITEMREADER_HPP
-#define BITARCHIVEITEMREADER_HPP
-
-#include <map>
+#ifndef BITARCHIVEITEM_HPP
+#define BITARCHIVEITEM_HPP
 
 #include "../include/bitpropvariant.hpp"
 
 namespace bit7z {
-    using std::wstring;
-    using std::map;
 
-    /**
-     * @brief The BitArchiveItem class represents an item contained in an archive and contains all its properties.
-     */
     class BitArchiveItem {
         public:
             /**
@@ -86,24 +79,14 @@ namespace bit7z {
              *
              * @return the value of the item property, if available, or an empty BitPropVariant.
              */
-            BitPropVariant getProperty( BitProperty property ) const;
+            virtual BitPropVariant getProperty( BitProperty property ) const = 0;
 
-            /**
-             * @return a map of all the available (i.e. non empty) item properties and their respective values.
-             */
-            map< BitProperty, BitPropVariant > itemProperties() const;
+        protected:
+            uint32_t mItemIndex; //Note: it is not const since sub-class BitArchiveItemOffset can increment it!
 
-        private:
-            const uint32_t mItemIndex;
-            map< BitProperty, BitPropVariant > mItemProperties;
-
-            /* BitArchiveItem objects can be created and updated only by BitArchiveReader */
             explicit BitArchiveItem( uint32_t item_index );
-
-            void setProperty( BitProperty property, const BitPropVariant& value );
-
-            friend class BitArchiveInfo;
     };
+
 }
 
-#endif // BITARCHIVEITEMREADER_HPP
+#endif // BITARCHIVEITEM_HPP

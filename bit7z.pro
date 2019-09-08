@@ -19,6 +19,8 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bitarchivehandler.cpp \
            src/bitarchiveinfo.cpp \
            src/bitarchiveitem.cpp \
+           src/bitarchiveiteminfo.cpp \
+           src/bitarchiveitemoffset.cpp \
            src/bitarchiveopener.cpp \
            src/bitcompressor.cpp \
            src/bitexception.cpp \
@@ -64,6 +66,8 @@ HEADERS += include/bit7z.hpp \
            include/bitarchivehandler.hpp \
            include/bitarchiveinfo.hpp \
            include/bitarchiveitem.hpp \
+           include/bitarchiveiteminfo.hpp \
+           include/bitarchiveitemoffset.hpp \
            include/bitarchiveopener.hpp \
            include/bitcompressionlevel.hpp \
            include/bitcompressionmethod.hpp \
