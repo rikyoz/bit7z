@@ -44,8 +44,11 @@ before_build:
   - git submodule update --init --recursive
 
 build_script:
-  - msbuild bit7z.vcxproj /p:configuration=release /p:platform=%platform%
-  - msbuild bit7z.vcxproj /p:configuration=debug /p:platform=%platform%  
+  - cd build
+  - cmake ../ -DENABLE_INSTALL=True -DCMAKE_INSTALL_PREFIX=..\pkg\bit7z -DCMAKE_BUILD_TYPE=Release 
+  - cmake --build . --config Release
+  - cmake --build . --config Release --target Install
+
 
 after_build:
   - set msvc_ver=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%name:msvc=%

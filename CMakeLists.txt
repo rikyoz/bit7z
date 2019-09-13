@@ -64,3 +64,9 @@ target_compile_definitions(7z PRIVATE -D_WINDOWS=1 -DUNICODE=1 -D_UNICODE=1 -D_U
 target_compile_options(bit7z PRIVATE -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding )
 target_compile_options(7z PRIVATE -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding )
 target_link_libraries(bit7z  7z)
+if(ENABLE_INSTALL)
+  install(TARGETS bit7z DESTINATION lib)
+  install(TARGETS 7z DESTINATION lib)#I don't know if 7z will be required later
+  install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/  DESTINATION include)
+endif()
+
