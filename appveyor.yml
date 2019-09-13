@@ -53,6 +53,7 @@ build_script:
 
 after_build:
   - set msvc_ver=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%name:msvc=%
+  - cd ../
   - copy README.md pkg\bit7z\
   - copy LICENSE pkg\bit7z\
   - echo %bit7z_version% %msvc_ver% > pkg\bit7z\BUILD.txt
