@@ -62,7 +62,7 @@ Below are a few examples that show how to use some of the main features of bit7z
 
 ```cpp
 #include "bitextractor.hpp"
-
+using namespace  bit7z;
 int main(){
     Bit7zLibrary lib{ L"7za.dll" };
     BitExtractor extractor{ lib, BitFormat::SevenZip };
@@ -86,7 +86,7 @@ int main(){
 
 ```cpp
 #include "bitcompressor.hpp"
-
+using namespace  bit7z;
 int main(){
     Bit7zLibrary lib{ L"7z.dll" };
     BitCompressor compressor{ lib, BitFormat::Zip };
@@ -122,7 +122,7 @@ int main(){
 
 ```cpp
 #include "bitarchiveinfo.hpp"
-
+using namespace  bit7z;
 int main(){
     Bit7zLibrary lib{ L"7za.dll" };
     BitArchiveInfo arc{ lib, L"archive.7z", BitFormat::SevenZip };
