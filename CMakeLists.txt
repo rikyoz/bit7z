@@ -83,6 +83,7 @@ cmake ../ -DBIT7Z_AUTO_FORMAT=True
 
 ---How to add this project as a dependancy to another project---
 set(BIT7Z_AUTO_FORMAT True) #Will enable automatic archive format detection
+target_compile_definitions(${my_custon_target}   PRIVATE -DBIT7Z_AUTO_FORMAT=1) #Should also set this for your target
 add_subdirectory(bit7z)
 
 ]]
