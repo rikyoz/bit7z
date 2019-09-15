@@ -81,6 +81,10 @@ mkdir build
 cd build
 cmake ../ -DBIT7Z_AUTO_FORMAT=True
 
+---How to add this project as a dependancy to another project---
+set(BIT7Z_AUTO_FORMAT True) #Will enable automatic archive format detection
+add_subdirectory(bit7z)
+
 ]]
 
 
