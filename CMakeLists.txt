@@ -59,7 +59,7 @@ target_include_directories(bit7z INTERFACE
 ${PROJECT_SOURCE_DIR}/include 
 ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP
 )
-target_compile_definitions(bit7z PRIVATE -D_WINDOWS=1 -DUNICODE=1 -D_UNICODE=1 -D_UNICODE=1 -D_7Z_VOL=1)
+
 target_compile_definitions(7z PRIVATE -D_WINDOWS=1 -DUNICODE=1 -D_UNICODE=1 -D_UNICODE=1 -D_7Z_VOL=1)
 target_compile_options(bit7z PRIVATE -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding )
 target_compile_options(7z PRIVATE -Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding )
@@ -69,4 +69,20 @@ if(ENABLE_INSTALL)
   install(TARGETS 7z DESTINATION lib)#I don't know if 7z will be required later
   install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/  DESTINATION include)
 endif()
+if(BIT7Z_AUTO_FORMAT)
+  target_compile_definitions(bit7z PRIVATE -DBIT7Z_AUTO_FORMAT=1 -D_WINDOWS=1 -DUNICODE=1 -D_UNICODE=1 -D_UNICODE=1 -D_7Z_VOL=1)
+else()
+  target_compile_definitions(bit7z PRIVATE -D_WINDOWS=1 -DUNICODE=1 -D_UNICODE=1 -D_UNICODE=1 -D_7Z_VOL=1)
+endif()
+
+#[[
+----How to build wiki-----
+mkdir build
+cd build
+cmake ../ -DBIT7Z_AUTO_FORMAT=True
+
+]]
+
+
+
 
