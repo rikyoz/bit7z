@@ -62,8 +62,10 @@ Below are a few examples that show how to use some of the main features of bit7z
 
 ```cpp
 #include "bitextractor.hpp"
+
 using namespace  bit7z;
-int main(){
+
+try {
     Bit7zLibrary lib{ L"7za.dll" };
     BitExtractor extractor{ lib, BitFormat::SevenZip };
 
@@ -78,7 +80,8 @@ int main(){
     //extracting an encrypted archive
     extractor.setPassword( L"password" );
     extractor.extract( L"path/to/another/archive.7z", L"out/dir/" );
-    return 0;
+} catch ( const BitException& ex ) {
+    //do something with ex.what()...
 }
 ```
 
@@ -86,8 +89,10 @@ int main(){
 
 ```cpp
 #include "bitcompressor.hpp"
-using namespace  bit7z;
-int main(){
+
+using namespace bit7z;
+
+try {
     Bit7zLibrary lib{ L"7z.dll" };
     BitCompressor compressor{ lib, BitFormat::Zip };
 
@@ -114,7 +119,8 @@ int main(){
     std::vector< byte_t > buffer;
     BitCompressor compressor2{ lib, BitFormat::BZip2 };
     compressor2.compressFile( files[0], buffer );
-    return 0;
+} catch ( const BitException& ex ) {
+    //do something with ex.what()...
 }
 ```
 
@@ -122,8 +128,10 @@ int main(){
 
 ```cpp
 #include "bitarchiveinfo.hpp"
-using namespace  bit7z;
-int main(){
+
+using namespace bit7z;
+
+try {
     Bit7zLibrary lib{ L"7za.dll" };
     BitArchiveInfo arc{ lib, L"archive.7z", BitFormat::SevenZip };
 
@@ -149,7 +157,8 @@ int main(){
         wcout << L"  Size: "        << item.size() << endl;
         wcout << L"  Packed size: " << item.packSize() << endl;
     }
-    return 0;
+} catch ( const BitException& ex ) {
+    //do something with ex.what()...
 }
 ```
 
