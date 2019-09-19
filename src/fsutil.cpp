@@ -28,16 +28,16 @@ using namespace bit7z;
 using namespace bit7z::filesystem;
 
 bool fsutil::isDirectory( const wstring& path ) {
-    return 0 != ( GetFileAttributes( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY );
+    return 0 != ( GetFileAttributesW( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY );
 }
 
 bool fsutil::pathExists( const wstring& path ) {
-    return GetFileAttributes( path.c_str() ) != INVALID_FILE_ATTRIBUTES;
+    return GetFileAttributesW( path.c_str() ) != INVALID_FILE_ATTRIBUTES;
 }
 
 bool fsutil::renameFile( const wstring& old_name, const wstring& new_name ) {
     //NOTE: It overwrites the destination file!
-    return MoveFileEx( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) !=
+    return MoveFileExW( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) !=
            FALSE; //WinAPI BOOL
 }
 
