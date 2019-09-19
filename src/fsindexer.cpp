@@ -41,7 +41,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
     // Listing all files! The filter is applied separately, so we can recurse and match files also in sub directories!
     filtered_path += L"\\*";
     FSItemInfo data;
-    HANDLE hFind = FindFirstFile( filtered_path.c_str(), &data );
+    HANDLE hFind = FindFirstFileW( filtered_path.c_str(), &data );
 
     if ( INVALID_HANDLE_VALUE == hFind ) {
         throw BitException( L"Invalid path '" + filtered_path + L"'", GetLastError() );
@@ -72,7 +72,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             wstring next_dir = prefix.empty() ? current_item.name() : prefix + L"\\" + current_item.name();
             listDirectoryItems( result, true, next_dir );
         }
-    } while ( FindNextFile( hFind, &data ) != 0 );
+    } while ( FindNextFileW( hFind, &data ) != 0 );
 
     FindClose( hFind );
 }
