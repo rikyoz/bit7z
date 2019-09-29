@@ -44,16 +44,17 @@ before_build:
   - git submodule update --init --recursive
 
 build_script:
-  - mkdir build
-  - cd build
-  - cmake ../ -DBIT7Z_AUTO_FORMAT=True -DENABLE_INSTALL=True -DCMAKE_INSTALL_PREFIX=..\pkg\bit7z -DCMAKE_BUILD_TYPE=Release 
-  - cmake --build . --config Release
-  - cmake --build . --config Release --target Install
-
+  - msbuild bit7z.vcxproj /p:configuration=release /p:platform=%platform%
+  - msbuild bit7z.vcxproj /p:configuration=debug /p:platform=%platform%
 
 after_build:
   - set msvc_ver=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%name:msvc=%
-  - cd ../
+  - mkdir pkg
+  - mkdir pkg\bit7z\
+  - mkdir pkg\bit7z\lib\
+  - mkdir pkg\bit7z\include\
+  - copy bin\%platform%\*.* pkg\bit7z\lib\
+  - copy include\bit*.hpp pkg\bit7z\include\
   - copy README.md pkg\bit7z\
   - copy LICENSE pkg\bit7z\
   - echo %bit7z_version% %msvc_ver% > pkg\bit7z\BUILD.txt
