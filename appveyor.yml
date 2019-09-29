@@ -45,7 +45,7 @@ before_build:
 
 build_script:
   - msbuild bit7z.vcxproj /p:configuration=release /p:platform=%platform%
-  - msbuild bit7z.vcxproj /p:configuration=debug /p:platform=%platform%  
+  - msbuild bit7z.vcxproj /p:configuration=debug /p:platform=%platform%
 
 after_build:
   - set msvc_ver=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%name:msvc=%

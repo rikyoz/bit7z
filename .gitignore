@@ -30,7 +30,7 @@ x64/
 cmake-build-debug/
 
 bit7z.sln
-CMakeLists*\.txt
+
 
 *.suppress
 
