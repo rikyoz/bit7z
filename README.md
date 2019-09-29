@@ -101,7 +101,7 @@ try {
     compressor.compress( files, L"output_archive.zip" ); //creating a simple zip archive
 
     //creating a zip archive with a custom directory structure
-    std::map< std::wstring, std::wstring > files_map = { { L"path/to/file1.jpg",L"alias/path/file1.jpg" },
+    std::map< std::wstring, std::wstring > files_map = { { L"path/to/file1.jpg", L"alias/path/file1.jpg" },
     { L"path/to/file2.pdf", L"alias/path/file2.pdf" } };
     compressor.compress( files_map, L"output_archive2.zip" );
 
