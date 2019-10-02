@@ -2,20 +2,20 @@ version: 3.1.0-build{build}
 skip_non_tags: true
 clone_depth: 1
 
-image: 
+image:
   - Visual Studio 2015
   - Visual Studio 2017
   - Visual Studio 2019
 
 build:
   project: bit7z.vcxproj
-  
+
 matrix:
   fast_finish: true
 
 environment:
-  bit7z_version: 3.1.0-beta
-  
+  bit7z_version: 3.1.0
+
   matrix:
   - name: msvc_x86 # MSVC x86
     platform: x86
@@ -33,7 +33,7 @@ environment:
   - name: msvc_mt_x64 # MSVC x64 MT
     platform: x64
     mt: TRUE
-    
+
 before_build:
   - ps: Test-Path env:mt
   - ps: if (Test-Path env:mt) {
@@ -60,7 +60,7 @@ after_build:
   - echo %bit7z_version% %msvc_ver% > pkg\bit7z\BUILD.txt
   - cd pkg
   - 7z a -t7z bit7z-v%bit7z_version%-%msvc_ver%.7z *
-    
+
 artifacts:
   - path: pkg\*.7z
     name: binary
