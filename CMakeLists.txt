@@ -171,4 +171,17 @@ if(MSVC)
     if(MSVC_VERSION GREATER 1800) 
         target_compile_options(${TARGET_NAME} PRIVATE /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding)
     endif()
+    # static runtime option
+    if(STATIC_RUNTIME)
+        set(CompilerFlags
+            CMAKE_CXX_FLAGS_DEBUG
+            CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_C_FLAGS_DEBUG
+            CMAKE_C_FLAGS_RELEASE)
+        foreach(CompilerFlag ${CompilerFlags})
+            string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+            set(${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "msvc compiler flags" FORCE)
+            message("MSVC flags: ${CompilerFlag}:${${CompilerFlag}}")
+        endforeach()
+    endif()
 endif()
