@@ -44,7 +44,7 @@ using namespace bit7z;
  *  + FSItem class is used instead of CDirItem struct */
 
 FileUpdateCallback::FileUpdateCallback( const BitArchiveCreator& creator,
-                                const vector< FSItem >& new_items )
+                                        const vector< FSItem >& new_items )
     : UpdateCallback( creator ),
       mNewItems( new_items ),
       mVolSize( 0 ) {}

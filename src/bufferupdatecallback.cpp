@@ -37,8 +37,8 @@ using namespace bit7z;
  *  + FSItem class is used instead of CDirItem struct */
 
 BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
-                                      const vector< byte_t >& in_buffer,
-                                      const wstring& in_buffer_name )
+                                            const vector< byte_t >& in_buffer,
+                                            const wstring& in_buffer_name )
     : UpdateCallback( creator ),
       mBuffer( in_buffer ),
       mBufferName( in_buffer_name ) {}

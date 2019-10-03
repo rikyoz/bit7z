@@ -6,7 +6,7 @@ bit7z
 
 <p align="center">
   <a href="https://github.com/rikyoz/bit7z/releases"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat-square&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>
-  <img src="https://img.shields.io/badge/-MSVC%202012%20--%202019-red.svg?style=flat-square&logo=visual-studio-code&logoColor=white" alt="MSVC 2012 - 2019">
+  <img src="https://img.shields.io/badge/-MSVC%202012+-red.svg?style=flat-square&logo=visual-studio-code&logoColor=white" alt="MSVC 2012 - 2019">
   <img src="https://img.shields.io/badge/-x86,%20x86__64-orange.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAC1UlEQVR42u3WA9AjWRSA0bu2bdu2bdssrm3btm3btm3bmX+Ms7rLTiW9NUmvcsL7XuELu6Ojoz5DWcc5nvKp2kBdPvesi21m1Pgr7OxjrfWtgw0VZZjKM9rjXfNHM+bWWzutGo2YSH/tNm+jgNe1XzdDR322V41Tox5D6K4qY0WRtVRnjyhysercH0VeVJ13o8hXqvNNFOlSna4oUlOd2r8moBPwoQfd6THfoLweauqp6aJ8wInmMmjujWAFtwMeNJup5cXsVnWYDyDtajQjmMp7QOoypxGMbMtyAe+Ztf5/JTaJAkM6mjRXrj0KpE9zdZIyAV8bLX5lBIPlszXAVlGXMwAr5fwskL4wdPzAfGUC5o9kJy+o+dCVloiwJNg2907wimddZrqcB9GtNQF3RXI+kI5yCcgADwF6yvfLNa0JWD7n5dWXAa4lbZwrR7UioKdhc76vdEB+KxzbioAncxpGr9IBM+XKDa0IuCanaWkS8BzguEhqrQg4P6e5mgasbV+7WCySvWlFwIU5zdYooMhytCbghpzGLh9gAodCWjFXXwDSV4aJH5inWcBLkbzTOMBa9rWvk92jH5BWqBvwjSHKBfQ3as4HlvoSFq2b+zcB6bXIj6pZABvnPKzPgPSJlxV/hkUH5v7SUPiv2LN5wKuRjO82wDdON6xFSwW8XvhdcGYkrzUPYJf4lcktZh4jxg8sViqA9SKZxDo2NH0km1ImgE2jDjuBLXK6FPX1N1fUYQnKBnCeGeN3jGdPfUC+P27TyO7GjN8xoUMpHZCecKZ97etE9+hD6vKQOz1jgMa6u90J+VO9V//OaXnzgE5Al+p0iyLfqM63UeRV1Xk/ilylOo9Gkc1U55AoMrz+qjJJ1OMQ1bgq6jOYr1Rh9EgFZtd+q0QjVtFeW0UzFvGJ9uhhrSjDSE7UX6tdaMIoz0R2cbvXfKE2UJevvOEe+5kuOjr+qb4H0/HV/SQ0YjEAAAAASUVORK5CYII=" alt="x86, x86_64">
   <a href="https://github.com/rikyoz/bit7z/wiki"><img src="https://img.shields.io/badge/-docs-yellow.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAABCklEQVR42u3OAUQEARCF4SkKTgASgCIhCBRAQXHVSeEEgY6gAIggQiIACAISyAEkqigRiAKQAItEOlj1B1HU7nB2VvS+B4D3W/sYZZNzHnmlxQMHzNJhZWGCS346pdfi0c0u7/zulkr8fZM8WxaLffI902VxqOIbszhc41u0KAwAvoZFoQb4qhaFBr6UPotCHd+RxWEYzwv9Fok78qTMWyymeCNLizmLx2pGwhWDVg7GueG7lBOm6bQyMcQS62ywwiQ9JiJ/ARVGqLPDBctWLPY4zFyTY86454kva1YsEnwoIDJghoXPbUcHOKj9zwAFKEABClCAAhSgAAUoQAEKUIACSGhXYgpQgOsD2giqlbnGmc4AAAAASUVORK5CYII=" alt="Docs"></a>
   <a href="#donations"><img src="https://img.shields.io/badge/-donations-green.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABBCAMAAABW61JJAAAAM1BMVEUAAAD///////////////////////////////////////////////////////////////+3leKCAAAAEHRSTlMAv0CA7xBgrzDfn3BQIM+PWN4WLwAAAfhJREFUeF69llmS3CAQRLMWNi0t7n9ax/RI7lCOQMh2+H0DovQqo8A/RpNcksw0455Yu8i8ostabxFFB6sDSOcWqY7gC1p4HSPimlxHyU8dMAWXTJV4WkSpf3eFUIkib7xekC96aqE1M3ayeWXmxSOIjfd/CFMlNjjbhFCV3R4TJLaJemLqx0RgbFOpgr4igfKiud9scnVAaVfpuD2AP+O0gHjxL1JSRX/JbrrMoPSrKUl6EzRFpItSkm4qqICdDuAVLwAdRTXtWqRV48YFELpvkFaSllNMt4s0R5JlzRuEWCqjR3JSq0/2rKqa1J8kQNl2fcArAEK2tY7j+WMlkKbR/dl3m5SkEUoGQmFZ8DqIBCAcwSqUpHt8BpALBWZ8Jk0BwOIfm49mkk8rgJDqQQmUpC4pvpebn2xQkhq4mH4vs3K2yUn68JI3ZrZoOCKR2CZaSXLFmXUxYZvgmUSXy/rFbGYilzb7MynInc3eTIpdK76tIDhJa7uvPMX71503+qok06HXXQLKyeZkZqrjD9z56Kui6NGZScths0tnJm00GvqwMwFktzkGJ8mAw2af9kxSfmT14SQF2G5zFOGxnHabf3aAHX2VMcpGScy7zWGCycE7KkZz+yE8dsdZ9YtlopkxzsY2n8KPrMc42XzMRIl6TJjkNxH/kV+EeH5bYbU1DgAAAABJRU5ErkJggg==&logoColor=white" alt="Donations"></a>
@@ -25,11 +25,11 @@ bit7z
 
 ## Introduction
 
-**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project (https://www.7-zip.org/).<br/>It supports compression and extraction to and from the filesystem or the memory, reading of archives metadata, updating existing archives, creation of multi-volume archives, operation progress callbacks and many other functionalities.
+**bit7z** is a C++ static library which allows to compress and extract many file archive formats,  all through a clean, simple and entirely object-oriented interface to the dynamic libraries from the 7-zip project (<https://www.7-zip.org/>).<br/>It supports compression and extraction to and from the filesystem or the memory, reading of archives metadata, updating existing archives, creation of multi-volume archives, operation progress callbacks and many other functionalities.
 
 ## Supported Features
 
-+ **Compression** of files and directories using the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM.
++ **Compression** using the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM.
 + **Extraction** of the following archive formats: 7z, AR, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, EXT, FAT, GPT, GZIP, HFS, HXS, IHEX, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, QCOW2, RAR, RAR5, RPM, SquashFS, TAR, UDF, UEFI, VDI, VHD, VMDK, WIM, XAR, XZ, Z and ZIP.
 + **Reading metadata** of archives and of their content (from v3.x).
 + **Testing** archives for errors (from v3.x).
@@ -165,10 +165,13 @@ try {
 A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
 ## Download
+
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout-square&label=downloads&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAABk0lEQVR42uzQNwGAAAwEwPjDML0zsVLkgIkwcV8MXGRn3ea9bsvniy/btEVy/gEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANd9FPPylmcOiREFYRj8jpNj5iqx7WZs7GLbwj7zx2YLNRaqntRbZ+oiFLuxFUAodmnyv5I7ClUZfXmOl4HBPgZC9YqN3OQLzit4AUXYzUh+Ax9AEQ4ykN/FZ3DZUyQ1P0lY/gAPfBfhPDV5GrDkBuJHERS/SkWeFp/khN9Q+GBxKgHwH/KVfw5QEru8iQhlEQYoAWEwQkVE8mWwAEWojEC+AhahRWRVfPLmI9SEJk8DBg6hCLUBydfCB1yyBv/yrAE+EYq1e1zFbUEICMW7PMi3IiSk5tyhfAcChCJo+/K8BwFDEfotbtNLRABFGLYg34+YUFqMm5JXWowiQmgn67SB/XgziBiKMPsP+VkgfijC0h/k52EU/xHWfiG/hAShCNs/kF9DykjN939y1Cb1CCcfLOcPkBMvjz7RfeTIwFD/Ml3gkVsGJl3QH5M1zwAAAABJRU5ErkJggg==" height='24' style='border:0px;height:24px;'/>
-</a>
+<img alt="Github All Releases" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Latest%20Release&logo=github&style=social" height='36' style='border:0px;height:36px;'/></a>
+<br/>
+<a href="https://github.com/rikyoz/bit7z/releases/latest">
+<img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout-square&label=total%20downloads&logo=icloud&logoColor=white"/></a>
 </div>
 
 Each released package contains a _precompiled version_ of the library (both in _debug_ and _release_ mode) and the _public API headers_ that are needed to use it in your program; packages are available for both _x86_ and _x64_ architectures.
@@ -206,19 +209,21 @@ Thank you! :)
 
 ## License (GPL v2)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+```markdown
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+You should have received a copy of the GNU General Public License along
+with this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+```
 
 <br/>
 <div align="center">
