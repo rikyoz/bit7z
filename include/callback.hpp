@@ -25,7 +25,7 @@
 
 #include "../include/bitarchivehandler.hpp"
 
-#if ( _MSC_VER <= 1700 )
+#if ( _MSC_VER <= 1800 )
 #define CONSTEXPR const
 #else
 #define CONSTEXPR constexpr

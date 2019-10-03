@@ -35,3 +35,7 @@ bit7z.sln
 *.suppress
 
 *.pro\.user*-pre1
+
+*.opensdf
+
+*.sdf

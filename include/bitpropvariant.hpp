@@ -25,7 +25,7 @@
 
 #include <Propidl.h>
 
-#if _MSC_VER <= 1700
+#if _MSC_VER <= 1800
 #define NOEXCEPT
 #else
 #define NOEXCEPT noexcept

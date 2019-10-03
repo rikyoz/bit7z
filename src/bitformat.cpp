@@ -425,7 +425,7 @@ namespace bit7z {
             return _byteswap_uint64( signature );
         }
 
-#if ( _MSC_VER <= 1700 )
+#if ( _MSC_VER <= 1800 )
 #define CONSTEXPR const
 #else
 #define CONSTEXPR constexpr

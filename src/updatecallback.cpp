@@ -75,9 +75,9 @@ HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
 }
 
 HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 index,
-        Int32* newData,
-        Int32* newProperties,
-        UInt32* indexInArchive ) {
+                                           Int32* newData,
+                                           Int32* newProperties,
+                                           UInt32* indexInArchive ) {
 
     bool isOldItem = index < mOldArcItemsCount;
 
