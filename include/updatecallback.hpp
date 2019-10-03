@@ -71,7 +71,7 @@ namespace bit7z {
             bool mAskPassword;
             bool mNeedBeClosed;
 
-            UpdateCallback( const BitArchiveCreator& creator );
+            explicit UpdateCallback( const BitArchiveCreator& creator );
     };
 }
 
