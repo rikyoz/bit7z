@@ -45,6 +45,6 @@ BitException::BitException( const wstring& message, HRESULT code )
 BitException::BitException( const wstring& message, DWORD code )
     : runtime_error( ws2s( message ) ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
 
-HRESULT BitException::getErrorCode() {
+HRESULT BitException::getErrorCode() const {
     return mErrorCode;
 }
