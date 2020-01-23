@@ -5,6 +5,7 @@
 *.pdb
 *.lib
 *.pro.user
+*.txt.user
 *.lastcodeanalysissucceeded
 *.filters
 *.vcxproj.user
