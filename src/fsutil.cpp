@@ -71,6 +71,21 @@ bool fsutil::isRelativePath( const wstring& path ) {
     return path.empty() || ( path.find_first_of( L"/\\" ) != 0 && !( path.length() >= 2 && path[ 1 ] == L':' ) );
 }
 
+bool fsutil::setFileModifiedTime( const wstring& name, const FILETIME& ft_modified ) {
+    if ( name.empty() ) {
+        return false;
+    }
+
+    bool res = false;
+    HANDLE hFile = CreateFile( name.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
+                               OPEN_EXISTING, 0, nullptr );
+    if ( hFile != INVALID_HANDLE_VALUE ) {
+        res = SetFileTime( hFile, nullptr, nullptr, &ft_modified ) != FALSE;
+        CloseHandle( hFile );
+    }
+    return res;
+}
+
 // Modified version of code found here: https://stackoverflow.com/a/3300547
 bool w_match( const wchar_t* needle, const wchar_t* haystack, size_t max ) {
     for ( ; *needle != L'\0'; ++needle ) {

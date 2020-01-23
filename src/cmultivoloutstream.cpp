@@ -27,6 +27,13 @@
 
 #include "Windows/FileDir.h"
 
+#include "../include/bitexception.hpp"
+#include "../include/cstdoutstream.hpp"
+#include "../include/fsutil.hpp"
+
+using namespace bit7z;
+using namespace bit7z::filesystem;
+
 /* This class is a modified version of COutMultiVolStream you can find in 7zSDK/CPP/7zip/UI/Common/Update.cpp
  * Main changes made:
  *  + Volumes have all the same size, except the last one (original code allowed volumes of differents sizes)
@@ -35,40 +42,15 @@
  *  + Use of uint64_t instead of UInt64
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-CMultiVolOutStream::CMultiVolOutStream( uint64_t size, const wstring& archiveName ) :
-    mVolSize( size ),
+CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const wstring& archiveName ) :
+    mVolSize( volSize ),
     mVolPrefix( archiveName + L"." ),
     mStreamIndex( 0 ),
     mOffsetPos( 0 ),
     mAbsPos( 0 ),
     mLength( 0 ) {}
 
-HRESULT CMultiVolOutStream::Close() {
-    HRESULT res = S_OK;
-    for ( const auto& mVolStream : mVolStreams ) {
-        COutFileStream* s = mVolStream.streamSpec;
-        if ( s != nullptr ) {
-            HRESULT res2 = s->Close();
-            if ( res2 != S_OK ) {
-                res = res2;
-            }
-        }
-    }
-    return res;
-}
-
 UInt64 CMultiVolOutStream::GetSize() const { return mLength; }
-
-bool CMultiVolOutStream::SetMTime( const FILETIME* mTime ) {
-    bool res = true;
-    for ( const auto& mVolStream : mVolStreams ) {
-        COutFileStream* s = mVolStream.streamSpec;
-        if ( s != nullptr && !s->SetMTime( mTime ) ) {
-            res = false;
-        }
-    }
-    return res;
-}
 
 STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
@@ -76,18 +58,19 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
     }
     while ( size > 0 ) {
         if ( mStreamIndex >= mVolStreams.size() ) {
-            CAltStreamInfo altStream;
-
-            //FChar temp[16];
-            //ConvertUInt64ToString( mStreamIndex + 1, temp );
             wstring name = std::to_wstring( mStreamIndex + 1 );
             name.insert( 0, 3 - name.length(), L'0' );
             name.insert( 0, mVolPrefix );
-            altStream.streamSpec = new COutFileStream;
-            altStream.stream = altStream.streamSpec;
-            if ( !altStream.streamSpec->Create( name.c_str(), false ) ) {
-                DWORD last_error = ::GetLastError();
-                return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
+
+            CAltStreamInfo altStream;
+            try {
+                altStream.stream = new CFileOutStream( name );
+            } catch ( const BitException& ex ) {
+                return ex.getErrorCode();
+            }
+
+            if ( altStream.stream->fail() ) {
+                return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
             }
 
             altStream.pos = 0;
@@ -96,8 +79,8 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
             mVolStreams.push_back( altStream );
             continue;
         }
-        CAltStreamInfo& altStream = mVolStreams[ mStreamIndex ];
 
+        CAltStreamInfo& altStream = mVolStreams[ mStreamIndex ];
         if ( mOffsetPos >= mVolSize ) {
             mOffsetPos -= mVolSize;
             mStreamIndex++;
@@ -111,8 +94,6 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
         auto curSize = static_cast< uint32_t >( std::min( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
         UInt32 realProcessed;
         RINOK( altStream.stream->Write( data, curSize, &realProcessed ) );
-        //data = ( void* )( ( Byte* )data + realProcessed );
-        //size -= realProcessed;
         altStream.pos += realProcessed;
         mOffsetPos += realProcessed;
         mAbsPos += realProcessed;
@@ -171,12 +152,14 @@ STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
         newSize -= altStream.realSize;
     }
     while ( i < mVolStreams.size() ) {
-        {
+        /*{
             CAltStreamInfo& altStream = mVolStreams.back();
             altStream.stream.Release();
             NWindows::NFile::NDir::DeleteFileAlways( altStream.name.c_str() );
-        }
+        }*/
+        wstring streamName = mVolStreams.back().name;
         mVolStreams.pop_back();
+        NWindows::NFile::NDir::DeleteFileAlways( streamName.c_str() );
     }
     mOffsetPos = mAbsPos;
     mStreamIndex = 0;

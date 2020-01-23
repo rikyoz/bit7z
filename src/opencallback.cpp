@@ -21,9 +21,8 @@
 
 #include "../include/opencallback.hpp"
 
-#include "7zip/Common/FileStreams.h"
-
 #include "../include/bitpropvariant.hpp"
+#include "../include/cfileinstream.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace bit7z;
@@ -99,11 +98,9 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
                 return S_FALSE;
             }
         }
-        auto* inFile = new CInFileStream;
-        CMyComPtr< IInStream > inStreamTemp = inFile;
-        if ( !inFile->Open( stream_path.c_str() ) ) {
-            DWORD last_error = ::GetLastError();
-            return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
+        CMyComPtr< CFileInStream > inStreamTemp = new CFileInStream( stream_path );
+        if ( inStreamTemp->fail() ) {
+            return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
         }
         *inStream = inStreamTemp.Detach();
         return S_OK;

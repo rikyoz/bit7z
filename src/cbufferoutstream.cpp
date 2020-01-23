@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/cbufoutstream.hpp"
+#include "../include/cbufferoutstream.hpp"
 
 #include "../include/bitexception.hpp"
 
@@ -27,14 +27,14 @@
 
 using namespace bit7z;
 
-CBufOutStream::CBufOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ), mCurrentPosition( 0 ) {}
+CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ), mCurrentPosition( 0 ) {}
 
-STDMETHODIMP CBufOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {
     mBuffer.resize( static_cast< vector< byte_t >::size_type >( newSize ) );
     return S_OK;
 }
 
-STDMETHODIMP CBufOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     int64_t new_pos;
 
     switch ( seekOrigin ) {
@@ -66,7 +66,7 @@ STDMETHODIMP CBufOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
     return S_OK;
 }
 
-STDMETHODIMP CBufOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

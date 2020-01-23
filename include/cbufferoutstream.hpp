@@ -29,11 +29,11 @@
 namespace bit7z {
     using std::vector;
 
-    class CBufOutStream : public IOutStream, public CMyUnknownImp {
+    class CBufferOutStream : public IOutStream, public CMyUnknownImp {
         public:
-            explicit CBufOutStream( vector< byte_t >& out_buffer );
+            explicit CBufferOutStream( vector< byte_t >& out_buffer );
 
-            virtual ~CBufOutStream() = default;
+            virtual ~CBufferOutStream() = default;
 
             MY_UNKNOWN_IMP1( IOutStream )
 

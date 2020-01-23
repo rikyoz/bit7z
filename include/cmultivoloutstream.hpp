@@ -23,49 +23,47 @@
 #include <string>
 #include <cstdint>
 
-#include "7zip/Common/FileStreams.h"
 #include "7zip/IStream.h"
 #include "Common/MyCom.h"
+
+#include "../include/cfileoutstream.hpp"
 
 using std::vector;
 using std::wstring;
 
-class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
+namespace bit7z {
+    class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
 
-        uint64_t mVolSize;
-        wstring mVolPrefix;
-        size_t mStreamIndex; // required stream
-        uint64_t mOffsetPos;   // offset from start of _streamIndex index
-        uint64_t mAbsPos;
-        uint64_t mLength;
+            uint64_t mVolSize;
+            wstring mVolPrefix;
+            size_t mStreamIndex; // required stream
+            uint64_t mOffsetPos;   // offset from start of _streamIndex index
+            uint64_t mAbsPos;
+            uint64_t mLength;
 
-        struct CAltStreamInfo {
-            CMyComPtr< IOutStream > stream;
-            COutFileStream* streamSpec = nullptr;
-            wstring name;
-            uint64_t pos{};
-            uint64_t realSize{};
-        };
+            struct CAltStreamInfo {
+                CMyComPtr< CFileOutStream > stream;
+                wstring name;
+                uint64_t pos{};
+                uint64_t realSize{};
+            };
 
-        vector< CAltStreamInfo > mVolStreams;
+            vector< CAltStreamInfo > mVolStreams;
 
-    public:
-        CMultiVolOutStream( uint64_t size, const wstring& archiveName );
+        public:
+            CMultiVolOutStream( uint64_t volSize, const wstring& archiveName );
 
-        virtual ~CMultiVolOutStream() = default;
+            virtual ~CMultiVolOutStream() = default;
 
-        bool SetMTime( const FILETIME* mTime );
+            UInt64 GetSize() const;
 
-        HRESULT Close();
+            MY_UNKNOWN_IMP1( IOutStream )
 
-        UInt64 GetSize() const;
-
-        MY_UNKNOWN_IMP1( IOutStream )
-
-        // IOutStream
-        STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );
-        STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
-        STDMETHOD( SetSize )( UInt64 newSize );
-};
+            // IOutStream
+            STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );
+            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+            STDMETHOD( SetSize )( UInt64 newSize );
+    };
+}
 
 #endif // COUTMULTIVOLSTREAM_HPP

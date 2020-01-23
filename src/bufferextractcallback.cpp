@@ -21,9 +21,7 @@
 
 #include "../include/bufferextractcallback.hpp"
 
-#include "7zip/Common/StreamObjects.h"
-
-#include "../include/cbufoutstream.hpp"
+#include "../include/cbufferoutstream.hpp"
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
@@ -60,8 +58,7 @@ STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index, ISequentialOutStrea
 
     if ( !mInputArchive.isItemFolder( index ) ) {
         //Note: using [] operator it creates the buffer if it does not exists already!
-        auto* out_mem_stream_spec = new CBufOutStream( mBuffersMap[ fullPath ] );
-        CMyComPtr< ISequentialOutStream > outStreamLoc( out_mem_stream_spec );
+        CMyComPtr< ISequentialOutStream > outStreamLoc = new CBufferOutStream( mBuffersMap[ fullPath ] );
         mOutMemStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }

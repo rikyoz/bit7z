@@ -273,11 +273,9 @@
     <ClCompile Include="lib\7zSDK\CPP\Windows\FileFind.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Windows\FileIO.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Windows\FileName.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\7zip\Common\FileStreams.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Common\IntToString.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Common\MyString.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Common\MyVector.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\7zip\Common\StreamObjects.cpp" />
     <ClCompile Include="src\bit7zlibrary.cpp" />
     <ClCompile Include="src\bitarchivecreator.cpp" />
     <ClCompile Include="src\bitarchivehandler.cpp" />
@@ -300,7 +298,10 @@
     <ClCompile Include="src\bufferextractcallback.cpp" />
     <ClCompile Include="src\bufferupdatecallback.cpp" />
     <ClCompile Include="src\callback.cpp" />
-    <ClCompile Include="src\cbufoutstream.cpp" />
+    <ClCompile Include="src\cbufferinstream.cpp" />
+    <ClCompile Include="src\cbufferoutstream.cpp" />
+    <ClCompile Include="src\cfileinstream.cpp" />
+    <ClCompile Include="src\cfileoutstream.cpp" />
     <ClCompile Include="src\cmultivoloutstream.cpp" />
     <ClCompile Include="src\cstdinstream.cpp" />
     <ClCompile Include="src\cstdoutstream.cpp" />
@@ -342,7 +343,10 @@
     <ClInclude Include="include\bufferextractcallback.hpp" />
     <ClInclude Include="include\bufferupdatecallback.hpp" />
     <ClInclude Include="include\callback.hpp" />
-    <ClInclude Include="include\cbufoutstream.hpp" />
+    <ClInclude Include="include\cbufferinstream.hpp" />
+    <ClInclude Include="include\cbufferoutstream.hpp" />
+    <ClInclude Include="include\cfileinstream.hpp" />
+    <ClInclude Include="include\cfileoutstream.hpp" />
     <ClInclude Include="include\cmultivoloutstream.hpp" />
     <ClInclude Include="include\cstdinstream.hpp" />
     <ClInclude Include="include\cstdoutstream.hpp" />

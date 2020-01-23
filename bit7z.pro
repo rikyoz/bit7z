@@ -9,8 +9,6 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            lib/7zSDK/CPP/Windows/FileDir.cpp \
            lib/7zSDK/CPP/Windows/FileName.cpp \
            lib/7zSDK/CPP/Windows/FileFind.cpp \
-           lib/7zSDK/CPP/7zip/Common/FileStreams.cpp \
-           lib/7zSDK/CPP/7zip/Common/StreamObjects.cpp \
            lib/7zSDK/CPP/Common/IntToString.cpp \
            lib/7zSDK/CPP/Common/MyString.cpp \
            lib/7zSDK/CPP/Common/MyVector.cpp \
@@ -36,7 +34,10 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/bufferextractcallback.cpp \
            src/bufferupdatecallback.cpp \
            src/callback.cpp \
-           src/cbufoutstream.cpp \
+           src/cbufferinstream.cpp \
+           src/cbufferoutstream.cpp \
+           src/cfileinstream.cpp \
+           src/cfileoutstream.cpp \
            src/cmultivoloutstream.cpp \
            src/cstdinstream.cpp \
            src/cstdoutstream.cpp \
@@ -86,7 +87,10 @@ HEADERS += include/bit7z.hpp \
            include/bufferextractcallback.hpp \
            include/bufferupdatecallback.hpp \
            include/callback.hpp \
-           include/cbufoutstream.hpp \
+           include/cbufferinstream.hpp \
+           include/cbufferoutstream.hpp \
+           include/cfileinstream.hpp \
+           include/cfileoutstream.hpp \
            include/cmultivoloutstream.hpp \
            include/cstdinstream.hpp \
            include/cstdoutstream.hpp \

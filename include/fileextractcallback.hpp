@@ -21,9 +21,8 @@
 
 #include <string>
 
-#include "7zip/Common/FileStreams.h"
-
 #include "../include/bitguids.hpp"
+#include "../include/cfileoutstream.hpp"
 #include "../include/extractcallback.hpp"
 
 namespace bit7z {
@@ -56,8 +55,7 @@ namespace bit7z {
                 bool MTimeDefined;
             } mProcessedFileInfo;
 
-            COutFileStream* mOutFileStreamSpec;
-            CMyComPtr< ISequentialOutStream > mOutFileStream;
+            CMyComPtr< CFileOutStream > mFileOutStream;
     };
 }
 #endif // FILEEXTRACTCALLBACK_HPP

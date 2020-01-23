@@ -29,7 +29,10 @@ set(HEADER_FILES
     ${PROJECT_SOURCE_DIR}/include/bufferextractcallback.hpp
     ${PROJECT_SOURCE_DIR}/include/bufferupdatecallback.hpp
     ${PROJECT_SOURCE_DIR}/include/callback.hpp
-    ${PROJECT_SOURCE_DIR}/include/cbufoutstream.hpp
+    ${PROJECT_SOURCE_DIR}/include/cbufferinstream.hpp
+    ${PROJECT_SOURCE_DIR}/include/cbufferoutstream.hpp
+    ${PROJECT_SOURCE_DIR}/include/cfileinstream.hpp
+    ${PROJECT_SOURCE_DIR}/include/cfileoutstream.hpp
     ${PROJECT_SOURCE_DIR}/include/cmultivoloutstream.hpp
     ${PROJECT_SOURCE_DIR}/include/cstdinstream.hpp
     ${PROJECT_SOURCE_DIR}/include/cstdoutstream.hpp
@@ -52,11 +55,9 @@ set(SOURCE_FILES
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileFind.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileIO.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileName.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/7zip/Common/FileStreams.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/IntToString.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/MyString.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/MyVector.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/7zip/Common/StreamObjects.cpp
     ${PROJECT_SOURCE_DIR}/src/bit7zlibrary.cpp
     ${PROJECT_SOURCE_DIR}/src/bitarchivecreator.cpp
     ${PROJECT_SOURCE_DIR}/src/bitarchivehandler.cpp
@@ -79,7 +80,10 @@ set(SOURCE_FILES
     ${PROJECT_SOURCE_DIR}/src/bufferextractcallback.cpp
     ${PROJECT_SOURCE_DIR}/src/bufferupdatecallback.cpp
     ${PROJECT_SOURCE_DIR}/src/callback.cpp
-    ${PROJECT_SOURCE_DIR}/src/cbufoutstream.cpp
+    ${PROJECT_SOURCE_DIR}/src/cbufferinstream.cpp
+    ${PROJECT_SOURCE_DIR}/src/cbufferoutstream.cpp
+    ${PROJECT_SOURCE_DIR}/src/cfileinstream.cpp
+    ${PROJECT_SOURCE_DIR}/src/cfileoutstream.cpp
     ${PROJECT_SOURCE_DIR}/src/cmultivoloutstream.cpp
     ${PROJECT_SOURCE_DIR}/src/cstdinstream.cpp
     ${PROJECT_SOURCE_DIR}/src/cstdoutstream.cpp

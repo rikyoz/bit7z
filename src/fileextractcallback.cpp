@@ -28,6 +28,7 @@
 
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
+#include "../include/cstdoutstream.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace std;
@@ -49,8 +50,7 @@ FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
     : ExtractCallback( handler, inputArchive ),
       mInFilePath( std::move( inFilePath ) ),
       mDirectoryPath( std::move( directoryPath ) ),
-      mProcessedFileInfo(),
-      mOutFileStreamSpec( nullptr ) {
+      mProcessedFileInfo() {
     //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
     filesystem::fsutil::normalizePath( mDirectoryPath );
 }
@@ -58,7 +58,7 @@ FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
 //TODO: clean and optimize!
 STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
     *outStream = nullptr;
-    mOutFileStream.Release();
+    mFileOutStream.Release();
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
 
@@ -136,15 +136,13 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
             }
         }
 
-        mOutFileStreamSpec = new COutFileStream;
-        CMyComPtr< ISequentialOutStream > outStreamLoc( mOutFileStreamSpec );
-
-        if ( !mOutFileStreamSpec->Open( fullProcessedPath.c_str(), CREATE_ALWAYS ) ) {
+        CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( fullProcessedPath, true );
+        if ( outStreamLoc->fail() ) {
             mErrorMessage = L"Cannot open output file " + fullProcessedPath;
             return E_ABORT;
         }
 
-        mOutFileStream = outStreamLoc;
+        mFileOutStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }
 
@@ -180,15 +178,16 @@ STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
         }
     }
 
-    if ( mOutFileStream != nullptr ) {
-        if ( mProcessedFileInfo.MTimeDefined ) {
-            mOutFileStreamSpec->SetMTime( &mProcessedFileInfo.MTime );
+    if ( mFileOutStream != nullptr ) {
+        if ( mFileOutStream->fail() ) {
+            return E_FAIL;
         }
+        mFileOutStream.Release(); // We need to release the file to change its modified time!
 
-        RINOK( mOutFileStreamSpec->Close() );
+        if ( mProcessedFileInfo.MTimeDefined ) {
+            filesystem::fsutil::setFileModifiedTime( mDiskFilePath, mProcessedFileInfo.MTime );
+        }
     }
-
-    mOutFileStream.Release();
 
     if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
         NFile::NDir::SetFileAttrib( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );

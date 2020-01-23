@@ -21,6 +21,8 @@
 
 #include <string>
 
+#include <Windows.h>
+
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
@@ -41,6 +43,8 @@ namespace bit7z {
             wstring filename( const wstring& path, bool ext = false );
 
             wstring extension( const wstring& path );
+
+            bool setFileModifiedTime( const wstring& name, const FILETIME& ft_modified );
 
             bool wildcardMatch( const wstring& pattern, const wstring& str );
         }

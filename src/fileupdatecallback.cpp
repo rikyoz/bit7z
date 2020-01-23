@@ -26,9 +26,9 @@
 //#include <iomanip>
 //end of debug includes
 
-#include "7zip/Common/FileStreams.h"
-
 #include "../include/bitpropvariant.hpp"
+#include "../include/cfileinstream.hpp"
+#include "../include/cfileoutstream.hpp"
 #include "../include/fsutil.hpp"
 
 #include <sstream>
@@ -122,13 +122,12 @@ HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStr
         return S_OK;
     }
 
-    auto* inStreamSpec = new CInFileStream;
-    CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
     wstring path = new_item.path();
+    CMyComPtr< CFileInStream > inStreamLoc = new CFileInStream( path );
 
-    if ( !inStreamSpec->Open( path.c_str() ) ) {
-        DWORD last_error = ::GetLastError();
-        mFailedFiles.emplace_back( path, HRESULT_FROM_WIN32( last_error ) );
+    if ( inStreamLoc->fail() ) {
+        HRESULT error = HRESULT_FROM_WIN32( !fsutil::pathExists( path ) ? ERROR_FILE_NOT_FOUND : ERROR_ACCESS_DENIED );
+        mFailedFiles.emplace_back( path, error );
         return S_FALSE;
     }
 
@@ -151,16 +150,13 @@ HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream*
     }
 
     wstring fileName = mVolName + L'.' + res;// + mVolExt;
-    auto* streamSpec = new COutFileStream;
-    CMyComPtr< ISequentialOutStream > streamLoc( streamSpec );
+    CMyComPtr< CFileOutStream > stream = new CFileOutStream( fileName );
 
-    if ( !streamSpec->Create( fileName.c_str(), false ) ) {
-        //return ::GetLastError();
-        DWORD last_error = ::GetLastError();
-        return ( last_error == 0 ) ? E_FAIL : HRESULT_FROM_WIN32( last_error );
+    if ( stream->fail() ) {
+        return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
     }
 
-    *volumeStream = streamLoc.Detach();
+    *volumeStream = stream.Detach();
     return S_OK;
 }
 

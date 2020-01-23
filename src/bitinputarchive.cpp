@@ -22,13 +22,13 @@
 #include "../include/bitinputarchive.hpp"
 
 #include "../include/bitexception.hpp"
+#include "../include/cbufferinstream.hpp"
+#include "../include/cfileinstream.hpp"
 #include "../include/cstdinstream.hpp"
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
 
 #include "Common/MyCom.h"
-#include "7zip/Common/FileStreams.h"
-#include "7zip/Common/StreamObjects.h"
 
 using namespace bit7z;
 using namespace NWindows;
@@ -96,9 +96,8 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file ) {
-    auto* file_stream_spec = new CInFileStream;
-    CMyComPtr< IInStream > file_stream = file_stream_spec;
-    if ( !file_stream_spec->Open( in_file.c_str() ) ) {
+    CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file );
+    if ( file_stream->fail() ) {
         throw BitException( L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED );
     }
 #ifdef BIT7Z_AUTO_FORMAT
@@ -112,9 +111,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
-    auto* buf_stream_spec = new CBufInStream;
-    CMyComPtr< IInStream > buf_stream = buf_stream_spec;
-    buf_stream_spec->Init( in_buffer.data(), in_buffer.size() );
+    CMyComPtr< IInStream > buf_stream = new CBufferInStream( in_buffer );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
     mInArchive = openArchiveStream( handler, L".", buf_stream );
 }

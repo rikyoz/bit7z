@@ -24,7 +24,7 @@
 #include "../include/bitexception.hpp"
 #include "../include/cstdoutstream.hpp"
 #include "../include/cmultivoloutstream.hpp"
-#include "../include/cbufoutstream.hpp"
+#include "../include/cbufferoutstream.hpp"
 #include "../include/updatecallback.hpp"
 #include "../include/fsutil.hpp"
 
@@ -225,35 +225,36 @@ CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
 CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out_archive,
                                                               CMyComPtr< IOutArchive >& new_arc,
                                                               unique_ptr< BitInputArchive >& old_arc ) const {
-    CMyComPtr< IOutStream > out_file_stream;
     if ( mVolumeSize > 0 ) {
-        out_file_stream = new CMultiVolOutStream( mVolumeSize, out_archive );
+        return new CMultiVolOutStream( mVolumeSize, out_archive );
+    }
+
+    CMyComPtr< IOutStream > out_stream;
+    if ( mUpdateMode && filesystem::fsutil::pathExists( out_archive ) ) {
+        if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+            //Update mode is set but format does not support adding more files
+            throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
+        }
+
+        auto* file_out_stream = new CFileOutStream( out_archive + L".tmp", true );
+        out_stream = file_out_stream;
+        if ( file_out_stream->fail() ) {
+            //could not create temporary file
+            throw BitException( L"Could not create temp archive file for updating '" + out_archive + L"'" );
+        }
+
+        old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
+        old_arc->initUpdatableArchive( &new_arc );
+        setArchiveProperties( new_arc );
     } else {
-        auto* out_file_stream_spec = new COutFileStream();
-        //NOTE: if any exception occurs in the following ifs, the file stream obj is released thanks to the CMyComPtr
-        out_file_stream = out_file_stream_spec;
-        if ( !out_file_stream_spec->Create( out_archive.c_str(), false ) ) {
-            DWORD last_error = GetLastError();
-            if ( last_error != ERROR_FILE_EXISTS ) { //unknown error
-                throw BitException( L"Cannot create output archive file '" + out_archive + L"'", last_error );
-            }
-            if ( !mUpdateMode ) { //output archive file already exists and no update mode set
-                throw BitException( L"Cannot update existing archive file '" + out_archive + L"'", ERROR_FILE_EXISTS );
-            }
-            if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
-                //update mode is set but format does not support adding more files
-                throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
-            }
-            if ( !out_file_stream_spec->Create( ( out_archive + L".tmp" ).c_str(), false ) ) {
-                //could not create temporary file
-                throw BitException( L"Cannot create temp archive file for updating '" + out_archive + L"'", GetLastError() );
-            }
-            old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
-            old_arc->initUpdatableArchive( &new_arc );
-            setArchiveProperties( new_arc );
+        auto* file_out_stream = new CFileOutStream( out_archive );
+        out_stream = file_out_stream;
+        if ( file_out_stream->fail() ) {
+            //Unknown error!
+            throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
         }
     }
-    return out_file_stream;
+    return out_stream;
 }
 
 void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback* update_callback ) const {
@@ -264,10 +265,10 @@ void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback*
     compressOut( new_arc, out_stream, update_callback );
     if ( old_arc ) {
         old_arc->close();
-        auto out_file_stream = dynamic_cast< COutFileStream* >( *&out_stream ); //cast should not fail, but anyway...
-        if ( out_file_stream != nullptr ) {
-            out_file_stream->Close();
-        }
+        /* NOTE: In the following instruction, we use . (dot) not -> (arrow) operator: in fact, both CMyComPtr and
+         *       IOutStream have a Release() method, so we need to call only the one of CMyComPtr! */
+        out_stream.Release(); //Releasing the output stream so that we can remove the original file
+
         //remove old file and rename tmp file (move file with overwriting)
         bool renamed = fsutil::renameFile( out_file + L".tmp", out_file );
         if ( !renamed ) {
@@ -282,7 +283,7 @@ void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, UpdateCa
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_mem_stream = new CBufOutStream( out_buffer );
+    CMyComPtr< IOutStream > out_mem_stream = new CBufferOutStream( out_buffer );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 

@@ -21,9 +21,8 @@
 
 #include "../include/bufferupdatecallback.hpp"
 
-#include "7zip/Common/StreamObjects.h"
-
 #include "../include/bitpropvariant.hpp"
+#include "../include/cbufferinstream.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -93,10 +92,7 @@ HRESULT BufferUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inS
         return S_OK;
     }
 
-    auto* inStreamSpec = new CBufInStream;
-    CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
-    inStreamSpec->Init( mBuffer.data(), mBuffer.size() );
-
+    CMyComPtr< ISequentialInStream > inStreamLoc = new CBufferInStream( mBuffer );
     *inStream = inStreamLoc.Detach();
     return S_OK;
 }
