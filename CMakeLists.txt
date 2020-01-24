@@ -50,14 +50,14 @@ set(HEADER_FILES
 
 # sources
 set(SOURCE_FILES
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/C/Alloc.c
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileDir.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileFind.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileIO.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileName.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/IntToString.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/MyString.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/MyVector.cpp
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/C/Alloc.c
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileDir.cpp
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileFind.cpp
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileIO.cpp
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileName.cpp
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/IntToString.cpp
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/MyString.cpp
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/MyVector.cpp
     ${PROJECT_SOURCE_DIR}/src/bit7zlibrary.cpp
     ${PROJECT_SOURCE_DIR}/src/bitarchivecreator.cpp
     ${PROJECT_SOURCE_DIR}/src/bitarchivehandler.cpp
@@ -159,7 +159,7 @@ endif()
 # includes
 target_include_directories(${TARGET_NAME} PRIVATE 
     ${PROJECT_SOURCE_DIR}/include/
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/
+    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/
 )
 
 # compiler options

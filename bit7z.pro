@@ -4,14 +4,14 @@ CONFIG  += staticlib
 CONFIG  -= app_bundle
 CONFIG  -= qt
 
-SOURCES += lib/7zSDK/C/Alloc.c \
-           lib/7zSDK/CPP/Windows/FileIO.cpp \
-           lib/7zSDK/CPP/Windows/FileDir.cpp \
-           lib/7zSDK/CPP/Windows/FileName.cpp \
-           lib/7zSDK/CPP/Windows/FileFind.cpp \
-           lib/7zSDK/CPP/Common/IntToString.cpp \
-           lib/7zSDK/CPP/Common/MyString.cpp \
-           lib/7zSDK/CPP/Common/MyVector.cpp \
+SOURCES += libs/7-zip/C/Alloc.c \
+           libs/7-zip/CPP/Windows/FileIO.cpp \
+           libs/7-zip/CPP/Windows/FileDir.cpp \
+           libs/7-zip/CPP/Windows/FileName.cpp \
+           libs/7-zip/CPP/Windows/FileFind.cpp \
+           libs/7-zip/CPP/Common/IntToString.cpp \
+           libs/7-zip/CPP/Common/MyString.cpp \
+           libs/7-zip/CPP/Common/MyVector.cpp \
            src/bit7zlibrary.cpp \
            src/bitarchivecreator.cpp \
            src/bitarchivehandler.cpp \
@@ -52,7 +52,7 @@ SOURCES += lib/7zSDK/C/Alloc.c \
            src/streamupdatecallback.cpp \
            src/updatecallback.cpp
 
-INCLUDEPATH += lib/7zSDK/CPP/
+INCLUDEPATH += libs/7-zip/CPP/
 
 QMAKE_CFLAGS_WARN_ON -= -W3
 QMAKE_CXXFLAGS_WARN_ON -= -W3

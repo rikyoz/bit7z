@@ -133,7 +133,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;lib\7zSDK\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;libs\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\$(PlatformShortName)\debug\.obj\</AssemblerListingLocation>
@@ -167,7 +167,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;lib\7zSDK\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;libs\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\$(PlatformShortName)\release\.obj\</AssemblerListingLocation>
@@ -202,7 +202,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;lib\7zSDK\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;libs\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\$(PlatformShortName)\debug\.obj\</AssemblerListingLocation>
@@ -235,7 +235,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;lib\7zSDK\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;libs\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\$(PlatformShortName)\debug\.obj\</AssemblerListingLocation>
@@ -268,14 +268,14 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="lib\7zSDK\C\Alloc.c" />
-    <ClCompile Include="lib\7zSDK\CPP\Windows\FileDir.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\Windows\FileFind.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\Windows\FileIO.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\Windows\FileName.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\Common\IntToString.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\Common\MyString.cpp" />
-    <ClCompile Include="lib\7zSDK\CPP\Common\MyVector.cpp" />
+    <ClCompile Include="libs\7-zip\C\Alloc.c" />
+    <ClCompile Include="libs\7-zip\CPP\Windows\FileDir.cpp" />
+    <ClCompile Include="libs\7-zip\CPP\Windows\FileFind.cpp" />
+    <ClCompile Include="libs\7-zip\CPP\Windows\FileIO.cpp" />
+    <ClCompile Include="libs\7-zip\CPP\Windows\FileName.cpp" />
+    <ClCompile Include="libs\7-zip\CPP\Common\IntToString.cpp" />
+    <ClCompile Include="libs\7-zip\CPP\Common\MyString.cpp" />
+    <ClCompile Include="libs\7-zip\CPP\Common\MyVector.cpp" />
     <ClCompile Include="src\bit7zlibrary.cpp" />
     <ClCompile Include="src\bitarchivecreator.cpp" />
     <ClCompile Include="src\bitarchivehandler.cpp" />
