@@ -22,6 +22,7 @@
 #include "../include/cbufferinstream.hpp"
 
 #include <algorithm>
+#include <cstdint>
 
 using namespace bit7z;
 
