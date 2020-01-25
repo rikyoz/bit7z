@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(bit7z)
 
 # headers
-set(HEADER_FILES
+set(HEADERS
     ${PROJECT_SOURCE_DIR}/include/bit7z.hpp
     ${PROJECT_SOURCE_DIR}/include/bit7zlibrary.hpp
     ${PROJECT_SOURCE_DIR}/include/bitarchivecreator.hpp
@@ -49,7 +49,7 @@ set(HEADER_FILES
 )
 
 # sources
-set(SOURCE_FILES
+set(SOURCES
     ${PROJECT_SOURCE_DIR}/libs/7-zip/C/Alloc.c
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileDir.cpp
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileFind.cpp
@@ -145,7 +145,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(TARGET_NAME bit7z${ARCH_POSTFIX})
 
-add_library(${TARGET_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(${TARGET_NAME} STATIC ${SOURCES} ${HEADERS})
 
 # macros
 target_compile_definitions(${TARGET_NAME} PUBLIC UNICODE _UNICODE _7Z_VOL _WINDOWS)
@@ -189,7 +189,7 @@ if(MSVC)
         foreach(CompilerFlag ${CompilerFlags})
             string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
             set(${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "msvc compiler flags" FORCE)
-            message("MSVC flags: ${CompilerFlag}:${${CompilerFlag}}")
+            message(STATUS "MSVC flags: ${CompilerFlag}:${${CompilerFlag}}")
         endforeach()
     endif()
 endif()
