@@ -24,7 +24,7 @@
 using namespace bit7z;
 using std::wstring;
 
-BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib ) : mLibrary( lib ), mPassword( L"" ) {}
+BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib, const wstring& password) : mLibrary( lib ), mPassword(password) {}
 
 const Bit7zLibrary& BitArchiveHandler::library() const {
     return mLibrary;

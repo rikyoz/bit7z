@@ -48,7 +48,8 @@ namespace bit7z {
              */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const wstring& in_file,
-                            const BitInFormat& format DEFAULT_FORMAT );
+                            const BitInFormat& format DEFAULT_FORMAT,
+                            const wstring& password = L"");
 
             /**
              * @brief Constructs a BitArchiveInfo object, opening the archive in the input buffer.

@@ -182,7 +182,7 @@ namespace bit7z {
             const Bit7zLibrary& mLibrary;
             wstring mPassword;
 
-            explicit BitArchiveHandler( const Bit7zLibrary& lib );
+            explicit BitArchiveHandler( const Bit7zLibrary& lib, const wstring& password = L"");
 
             virtual ~BitArchiveHandler() = 0;
 
