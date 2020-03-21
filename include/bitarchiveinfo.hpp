@@ -49,7 +49,7 @@ namespace bit7z {
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const wstring& in_file,
                             const BitInFormat& format DEFAULT_FORMAT,
-                            const wstring& password = L"");
+                            const wstring& password = L"" );
 
             /**
              * @brief Constructs a BitArchiveInfo object, opening the archive in the input buffer.
@@ -65,7 +65,8 @@ namespace bit7z {
              */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const vector< byte_t >& in_buffer,
-                            const BitInFormat& format DEFAULT_FORMAT );
+                            const BitInFormat& format DEFAULT_FORMAT,
+                            const wstring& password = L"" );
 
             /**
              * @brief Constructs a BitArchiveInfo object, opening the archive from the standard input stream.
@@ -81,7 +82,8 @@ namespace bit7z {
              */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             std::istream& in_stream,
-                            const BitInFormat& format DEFAULT_FORMAT );
+                            const BitInFormat& format DEFAULT_FORMAT,
+                            const wstring& password = L"" );
 
             /**
              * @brief BitArchiveInfo destructor.

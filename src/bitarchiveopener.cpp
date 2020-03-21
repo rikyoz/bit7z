@@ -34,8 +34,8 @@ using namespace bit7z;
 
 CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
 
-BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const wstring& password)
-    : BitArchiveHandler( lib, password), mFormat( format ) {}
+BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const wstring& password )
+    : BitArchiveHandler( lib, password ), mFormat( format ) {}
 
 BitArchiveOpener::~BitArchiveOpener() {}
 
