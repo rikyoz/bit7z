@@ -1,4 +1,4 @@
-#VERSION  = 3.1.0
+#VERSION  = 3.1.1
 TEMPLATE = lib
 CONFIG  += staticlib
 CONFIG  -= app_bundle
