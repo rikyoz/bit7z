@@ -31,14 +31,14 @@
 
 using namespace bit7z;
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_file ) {}
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format, const wstring& password )
+    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_file ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >& in_buffer, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_buffer ) {}
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >& in_buffer, const BitInFormat& format, const wstring& password )
+    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_buffer ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, std::istream& in_stream, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_stream ) {}
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, std::istream& in_stream, const BitInFormat& format, const wstring& password )
+    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
 
 map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;

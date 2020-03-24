@@ -52,7 +52,7 @@ namespace bit7z {
         protected:
             const BitInFormat& mFormat;
 
-            BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format );
+            BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const wstring& password = L"" );
 
             ~BitArchiveOpener() override = default;
 

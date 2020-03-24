@@ -1,4 +1,4 @@
-version: 3.1.0-build{build}
+version: 3.1.1-build{build}
 skip_non_tags: true
 clone_depth: 1
 
@@ -14,7 +14,7 @@ matrix:
   fast_finish: true
 
 environment:
-  bit7z_version: 3.1.0
+  bit7z_version: 3.1.1
 
   matrix:
   - name: msvc_x86 # MSVC x86
