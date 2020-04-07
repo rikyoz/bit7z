@@ -3,8 +3,7 @@
 
 #include "../include/bittypes.hpp"
 #include "../include/cstdoutstream.hpp"
-
-#include <fstream>
+#include "../include/fs.hpp"
 
 namespace bit7z {
     class CFileOutStream : public CStdOutStream {
@@ -15,7 +14,7 @@ namespace bit7z {
             bool fail();
 
         private:
-            std::ofstream mFileStream;
+            fs::ofstream mFileStream;
     };
 }
 

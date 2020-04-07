@@ -23,8 +23,8 @@
 
 #include "../include/fileextractcallback.hpp"
 
-#include "Windows/FileDir.h"
-#include "Windows/FileFind.h"
+//#include "Windows/FileDir.h"
+//#include "Windows/FileFind.h"
 
 #include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
@@ -114,26 +114,27 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
     size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
 
     if ( slashPos != wstring::npos ) {
-        NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0, slashPos ) ).c_str() );
+        error_code ec;
+        fs::create_directories( mDirectoryPath + mFilePath.substr( 0, slashPos ), ec );
     }
     wstring fullProcessedPath = mDirectoryPath + mFilePath;
     mDiskFilePath = fullProcessedPath;
 
     if ( mProcessedFileInfo.isDir ) {
-        NFile::NDir::CreateComplexDir( fullProcessedPath.c_str() );
+        error_code ec;
+        fs::create_directories( fullProcessedPath, ec );
     } else {
-        NFile::NFind::CFileInfo fi;
-
         if ( mHandler.fileCallback() ) {
             wstring filename = filesystem::fsutil::filename( fullProcessedPath, true );
             mHandler.fileCallback()( filename );
         }
 
-        if ( fi.Find( fullProcessedPath.c_str() ) ) {
-            if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
+        if ( fs::exists( fullProcessedPath ) && !fs::remove( fullProcessedPath ) ) {
+        /*if ( fi.Find( fullProcessedPath.c_str() ) ) {
+            if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {*/
                 mErrorMessage = L"Cannot delete output file " + fullProcessedPath;
                 return E_ABORT;
-            }
+            //}
         }
 
         CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( fullProcessedPath, true );
@@ -190,7 +191,8 @@ STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
     }
 
     if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
-        NFile::NDir::SetFileAttrib( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
+        filesystem::fsutil::setFileAttributes( mDiskFilePath, mProcessedFileInfo.Attrib );
+        //NFile::NDir::SetFileAttrib( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
     }
 
     if ( mNumErrors > 0 ) {

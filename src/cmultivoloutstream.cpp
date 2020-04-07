@@ -25,7 +25,7 @@
 #include <string>
 #include <algorithm>
 
-#include "Windows/FileDir.h"
+//#include "Windows/FileDir.h"
 
 #include "../include/bitexception.hpp"
 #include "../include/cstdoutstream.hpp"
@@ -159,7 +159,9 @@ STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
         }*/
         wstring streamName = mVolStreams.back().name;
         mVolStreams.pop_back();
-        NWindows::NFile::NDir::DeleteFileAlways( streamName.c_str() );
+        //TODO: Remove read only attribute of as in DeleteFileAlways
+        fs::remove( streamName );
+        //NWindows::NFile::NDir::DeleteFileAlways( streamName.c_str() );
     }
     mOffsetPos = mAbsPos;
     mStreamIndex = 0;

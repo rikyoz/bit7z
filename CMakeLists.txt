@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 project(bit7z)
 
+set(CMAKE_VERBOSE_MAKEFILE on)
+
 # headers
 set(HEADERS
     ${PROJECT_SOURCE_DIR}/include/bit7z.hpp
@@ -42,6 +44,7 @@ set(HEADERS
     ${PROJECT_SOURCE_DIR}/include/fsindexer.hpp
     ${PROJECT_SOURCE_DIR}/include/fsitem.hpp
     ${PROJECT_SOURCE_DIR}/include/fsutil.hpp
+    ${PROJECT_SOURCE_DIR}/include/fs.hpp
     ${PROJECT_SOURCE_DIR}/include/opencallback.hpp
     ${PROJECT_SOURCE_DIR}/include/streamextractcallback.hpp
     ${PROJECT_SOURCE_DIR}/include/streamupdatecallback.hpp
@@ -53,7 +56,6 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/libs/7-zip/C/Alloc.c
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileDir.cpp
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileFind.cpp
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileIO.cpp
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileName.cpp
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/IntToString.cpp
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/MyString.cpp
@@ -140,18 +142,47 @@ foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
 endforeach()
 
-# c++14 required
-set(CMAKE_CXX_STANDARD 14)
-
 set(TARGET_NAME bit7z${ARCH_POSTFIX})
+
+message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
+
+# checking if compiler supports the standard filesystem library
+set(CMAKE_CXX_STANDARD 17)
+include(CheckIncludeFileCXX)
+check_include_file_cxx("filesystem" USE_STANDARD_FILESYSTEM)
+
+if(NOT USE_STANDARD_FILESYSTEM)
+    set(CMAKE_CXX_STANDARD 14) # if standard filesystem lib is not supported, revert to C++14 standard
+
+    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/libs/ghc/filesystem.hpp)
+        include(ExternalProject)
+
+        file(DOWNLOAD
+            https://raw.githubusercontent.com/gulrak/filesystem/master/include/ghc/filesystem.hpp
+            ${PROJECT_SOURCE_DIR}/libs/ghc/filesystem.hpp
+            SHOW_PROGRESS
+        )
+    endif()
+    message(STATUS "Standard filesystem: NO (using ghc::filesystem)")
+else()
+    message(STATUS "Standard filesystem: YES")
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+message(STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}")
 
 add_library(${TARGET_NAME} STATIC ${SOURCES} ${HEADERS})
 
 # macros
 target_compile_definitions(${TARGET_NAME} PUBLIC UNICODE _UNICODE _7Z_VOL _WINDOWS)
+option(BIT7Z_AUTO_FORMAT "Enable or disable auto format detection")
+message(STATUS "Auto format detection: ${BIT7Z_AUTO_FORMAT}")
 if(BIT7Z_AUTO_FORMAT)
     target_compile_definitions(${TARGET_NAME} PUBLIC BIT7Z_AUTO_FORMAT)
 endif()
+option(BIT7Z_REGEX_MATCHING "Enable or disable regex matching of archived files")
+message(STATUS "Regex matching extraction: ${BIT7Z_REGEX_MATCHING}")
 if(BIT7Z_REGEX_MATCHING)
     target_compile_definitions(${TARGET_NAME} PUBLIC BIT7Z_REGEX_MATCHING)
 endif()
@@ -159,6 +190,7 @@ endif()
 # includes
 target_include_directories(${TARGET_NAME} PRIVATE 
     ${PROJECT_SOURCE_DIR}/include/
+    ${PROJECT_SOURCE_DIR}/libs/
     ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/
 )
 

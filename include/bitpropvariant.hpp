@@ -558,6 +558,9 @@ namespace bit7z {
             friend bool operator ==( const BitPropVariant& a, const BitPropVariant& b );
             friend bool operator !=( const BitPropVariant& a, const BitPropVariant& b );
     };
+
+    bool operator ==( const BitPropVariant& a, const BitPropVariant& b );
+    bool operator !=( const BitPropVariant& a, const BitPropVariant& b );
 }
 
 #endif // BITPROPVARIANT_HPP

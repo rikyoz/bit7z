@@ -47,6 +47,8 @@ namespace bit7z {
             bool setFileModifiedTime( const wstring& name, const FILETIME& ft_modified );
 
             bool wildcardMatch( const wstring& pattern, const wstring& str );
+
+            bool setFileAttributes( const wstring& name, uint32_t attributes );
         }
     }
 }
