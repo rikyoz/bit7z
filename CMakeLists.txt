@@ -53,13 +53,6 @@ set(HEADERS
 
 # sources
 set(SOURCES
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/C/Alloc.c
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileDir.cpp
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileFind.cpp
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Windows/FileName.cpp
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/IntToString.cpp
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/MyString.cpp
-    ${PROJECT_SOURCE_DIR}/libs/7-zip/CPP/Common/MyVector.cpp
     ${PROJECT_SOURCE_DIR}/src/bit7zlibrary.cpp
     ${PROJECT_SOURCE_DIR}/src/bitarchivecreator.cpp
     ${PROJECT_SOURCE_DIR}/src/bitarchivehandler.cpp
@@ -167,6 +160,7 @@ if(NOT USE_STANDARD_FILESYSTEM)
     message(STATUS "Standard filesystem: NO (using ghc::filesystem)")
 else()
     message(STATUS "Standard filesystem: YES")
+    file(REMOVE ${PROJECT_SOURCE_DIR}/libs/ghc/filesystem.hpp)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

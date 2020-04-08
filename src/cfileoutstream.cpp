@@ -27,11 +27,11 @@
 
 using namespace bit7z;
 
-CFileOutStream::CFileOutStream( const wstring& filePath, bool createAlways ) : CStdOutStream( mFileStream ) {
+CFileOutStream::CFileOutStream( const std::wstring& filePath, bool createAlways ) : CStdOutStream( mFileStream ) {
     open( filePath, createAlways );
 }
 
-void CFileOutStream::open( const wstring& filePath, bool createAlways ) {
+void CFileOutStream::open( const std::wstring& filePath, bool createAlways ) {
     if ( !createAlways && filesystem::fsutil::pathExists( filePath ) ) {
         throw BitException( L"File '" + filePath + L"' already exists", ERROR_FILE_EXISTS );
     }

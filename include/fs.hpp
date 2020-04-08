@@ -1,11 +1,8 @@
 #ifndef FS_HPP
 #define FS_HPP
 
-#define USE_STANDARD_FILESYSTEM \
-        defined(__cpp_lib_filesystem) || \
-        ( defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>) )
-
-#if USE_STANDARD_FILESYSTEM
+#if defined(__cpp_lib_filesystem) || \
+    ( defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>) )
 #include <fstream>
 #include <filesystem>
 

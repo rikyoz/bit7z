@@ -22,7 +22,13 @@
 #include <string>
 #include <cstdint>
 
+#ifndef _WIN32
+#include "myWindows/StdAfx.h"
+#endif
+
 #include <Windows.h>
+
+#include "../include/fs.hpp"
 
 namespace bit7z {
     namespace filesystem {
@@ -32,9 +38,9 @@ namespace bit7z {
 
         class FSItem {
             public:
-                explicit FSItem( wstring path, wstring in_archive_path = L"" );
+                explicit FSItem( const fs::path& itemPath, wstring inArchivePath = L"" );
 
-                explicit FSItem( wstring dir, FSItemInfo data, wstring search_path );
+                explicit FSItem( fs::directory_entry entry, wstring searchPath );
 
                 bool isDots() const;
 
@@ -50,15 +56,18 @@ namespace bit7z {
 
                 wstring name() const;
 
-                wstring path() const;
+                fs::path path() const;
 
                 wstring inArchivePath() const;
 
                 uint32_t attributes() const;
 
             private:
-                wstring mPath;
-                FSItemInfo mFileData;
+                fs::directory_entry mFileEntry;
+                FILETIME mCreationTime;
+                FILETIME mLastAccessTime;
+                FILETIME mLastWriteTime;
+                uint32_t mAttributes;
                 wstring mSearchPath;
                 wstring mInArchivePath;
         };

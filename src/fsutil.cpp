@@ -21,24 +21,29 @@
 
 #include "../include/fsutil.hpp"
 
-#include <Windows.h>
+#include "../include/fs.hpp"
 
 using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
 bool fsutil::isDirectory( const wstring& path ) {
-    return 0 != ( GetFileAttributes( path.c_str() ) & FILE_ATTRIBUTE_DIRECTORY );
+    error_code ec;
+    return fs::is_directory( path, ec );
 }
 
 bool fsutil::pathExists( const wstring& path ) {
-    return GetFileAttributes( path.c_str() ) != INVALID_FILE_ATTRIBUTES;
+    error_code ec;
+    return fs::exists( path, ec );
 }
 
 bool fsutil::renameFile( const wstring& old_name, const wstring& new_name ) {
     //NOTE: It overwrites the destination file!
-    return MoveFileEx( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) !=
-           FALSE; //WinAPI BOOL
+    //return MoveFileEx( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) !=
+    //       FALSE; //WinAPI BOOL
+    error_code ec;
+    fs::rename( old_name, new_name, ec );
+    return !ec;
 }
 
 void fsutil::normalizePath( wstring& path ) { //this assumes that the passed path is not a file path!
@@ -121,6 +126,14 @@ bool fsutil::wildcardMatch( const wstring& pattern, const wstring& str ) {
     return w_match( pattern.empty() ? L"*" : pattern.c_str(), str.c_str(), str.size() );
 }
 
+uint32_t fsutil::getFileAttributes( const wstring& name ) {
+#ifdef _WIN32
+    return ::GetFileAttributes( name.c_str() );
+#else
+
+#endif
+}
+
 bool fsutil::setFileAttributes( const wstring& name, uint32_t attributes ) {
 #ifdef _WIN32
     return ::SetFileAttributes( name.c_str(), attributes ) == TRUE;
@@ -148,5 +161,19 @@ bool fsutil::setFileAttributes( const wstring& name, uint32_t attributes ) {
     }
 
     return true;
+#endif
+}
+
+bool fsutil::getFileTimes( const wstring& name, FILETIME& creationTime, FILETIME& accessTime, FILETIME& writeTime ) {
+#ifdef _WIN32
+    bool res = false;
+    HANDLE hFile = CreateFile( name.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
+                              OPEN_EXISTING, 0, nullptr );
+    if ( hFile != INVALID_HANDLE_VALUE ) {
+        res = ::GetFileTime( hFile, &creationTime, &accessTime, &writeTime ) == TRUE;
+        CloseHandle( hFile );
+    }
+    return res;
+#else
 #endif
 }

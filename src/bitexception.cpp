@@ -39,10 +39,16 @@ BitException::BitException( const char* const message, HRESULT code ) : runtime_
 BitException::BitException( const char* const message, DWORD code )
     : runtime_error( message ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
 
-BitException::BitException( const wstring& message, HRESULT code )
+BitException::BitException( const std::string& message, HRESULT code )
+    : runtime_error( message ), mErrorCode( code ) {}
+
+BitException::BitException( const std::string& message, DWORD code )
+    : runtime_error( message ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
+
+BitException::BitException( const std::wstring& message, HRESULT code )
     : runtime_error( ws2s( message ) ), mErrorCode( code ) {}
 
-BitException::BitException( const wstring& message, DWORD code )
+BitException::BitException( const std::wstring& message, DWORD code )
     : runtime_error( ws2s( message ) ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
 
 HRESULT BitException::getErrorCode() const {

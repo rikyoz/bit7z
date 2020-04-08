@@ -37,32 +37,18 @@ FSIndexer::FSIndexer( const wstring& directory, wstring filter )
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
 void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, const wstring& prefix ) {
-    wstring filtered_path = mDirItem.path();
+    auto path = mDirItem.path();
     if ( !prefix.empty() ) {
-        filtered_path += L"\\" + prefix;
+        path = path / prefix;
     }
-    // Listing all files! The filter is applied separately, so we can recurse and match files also in sub directories!
-    filtered_path += L"\\*";
-    FSItemInfo data;
-    HANDLE hFind = FindFirstFile( filtered_path.c_str(), &data );
-
-    if ( hFind == INVALID_HANDLE_VALUE ) { // NOLINT
-        throw BitException( L"Invalid path '" + filtered_path + L"'", GetLastError() );
-    }
-
-    do {
-        wstring ndir = mDirItem.path();
+    std::error_code ec;
+    for ( auto& current_path : fs::directory_iterator( path, ec ) ) {
         wstring search_path = !mFilter.empty() ? L"" : mDirItem.inArchivePath();
         if ( !prefix.empty() ) {
-            ndir += L"\\" + prefix;
             search_path += search_path.empty() ? prefix : L"\\" + prefix;
         }
 
-        FSItem current_item = FSItem( ndir, data, search_path );
-        if ( current_item.isDots() ) {
-            continue;
-        }
-
+        FSItem current_item{ current_path, search_path };
         bool item_matches = fsutil::wildcardMatch( mFilter, current_item.name() );
         if ( item_matches ) {
             result.push_back( current_item );
@@ -75,9 +61,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             wstring next_dir = prefix.empty() ? current_item.name() : prefix + L"\\" + current_item.name();
             listDirectoryItems( result, true, next_dir );
         }
-    } while ( FindNextFile( hFind, &data ) != 0 );
-
-    FindClose( hFind );
+    }
 }
 
 void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem >& result ) {
@@ -87,18 +71,18 @@ void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem 
         if ( !item.inArchivePath().empty() ) {
             result.push_back( item );
         }
-        FSIndexer indexer( item.path() );
+        FSIndexer indexer{ item.path() };
         indexer.listDirectoryItems( result, true );
     }
 }
 
 vector< FSItem > FSIndexer::indexDirectory( const wstring& in_dir, const wstring& filter, bool recursive ) {
     vector< FSItem > result;
-    FSItem dir_item( in_dir );
+    FSItem dir_item{ in_dir };
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
         result.push_back( dir_item );
     }
-    FSIndexer indexer( in_dir, filter );
+    FSIndexer indexer{ in_dir, filter };
     indexer.listDirectoryItems( result, recursive );
     return result;
 }
@@ -106,7 +90,7 @@ vector< FSItem > FSIndexer::indexDirectory( const wstring& in_dir, const wstring
 vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool ignore_dirs ) {
     vector< FSItem > out_files;
     for ( const auto& file_path : in_paths ) {
-        FSItem item( file_path );
+        FSItem item{ file_path };
         indexItem( item, ignore_dirs, out_files );
     }
     return out_files;
@@ -115,7 +99,7 @@ vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool 
 vector< FSItem > FSIndexer::indexPathsMap( const map< wstring, wstring >& in_paths, bool ignore_dirs ) {
     vector< FSItem > out_files;
     for ( const auto& file_pair : in_paths ) {
-        FSItem item( file_pair.first, file_pair.second );
+        FSItem item{ file_pair.first, file_pair.second };
         indexItem( item, ignore_dirs, out_files );
     }
     return out_files;
