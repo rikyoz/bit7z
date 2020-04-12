@@ -22,7 +22,6 @@
 #include "../include/streamupdatecallback.hpp"
 
 #include "../include/cstdinstream.hpp"
-#include "../include/bitpropvariant.hpp"
 
 using namespace std;
 using namespace bit7z;

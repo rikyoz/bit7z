@@ -24,7 +24,6 @@
 #include "../include/bitexception.hpp"
 #include "../include/cbufferinstream.hpp"
 #include "../include/cfileinstream.hpp"
-#include "../include/cstdinstream.hpp"
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
 
@@ -49,9 +48,7 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
     return arc_object;
 }
 
-IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
-        const wstring& name,
-        IInStream* in_stream ) {
+IInArchive* openArchiveStream( const BitArchiveHandler& handler, const wstring& name, IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {

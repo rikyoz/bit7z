@@ -28,7 +28,7 @@
 
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( const wstring& directory, wstring filter )
+FSIndexer::FSIndexer( const fs::path& directory, wstring filter )
     : mDirItem( directory ), mFilter( std::move( filter ) ) {
     if ( !mDirItem.isDir() ) {
         throw BitException( L"'" + mDirItem.name() + L"' is not a directory!", ERROR_DIRECTORY );
@@ -36,16 +36,16 @@ FSIndexer::FSIndexer( const wstring& directory, wstring filter )
 }
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
-void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, const wstring& prefix ) {
+void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, const fs::path& prefix ) {
     auto path = mDirItem.path();
     if ( !prefix.empty() ) {
         path = path / prefix;
     }
     std::error_code ec;
     for ( auto& current_path : fs::directory_iterator( path, ec ) ) {
-        wstring search_path = !mFilter.empty() ? L"" : mDirItem.inArchivePath();
+        auto search_path = !mFilter.empty() ? fs::path() : mDirItem.inArchivePath();
         if ( !prefix.empty() ) {
-            search_path += search_path.empty() ? prefix : L"\\" + prefix;
+            search_path = search_path.empty() ? prefix : search_path / prefix;
         }
 
         FSItem current_item{ current_path, search_path };
@@ -58,7 +58,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             //currentItem is a directory and we must list it only if:
             // > indexing is done recursively
             // > indexing is not recursive but the directory name matched the filter
-            wstring next_dir = prefix.empty() ? current_item.name() : prefix + L"\\" + current_item.name();
+            fs::path next_dir = prefix.empty() ? fs::path(current_item.name()) : prefix / current_item.name();
             listDirectoryItems( result, true, next_dir );
         }
     }
@@ -76,7 +76,7 @@ void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem 
     }
 }
 
-vector< FSItem > FSIndexer::indexDirectory( const wstring& in_dir, const wstring& filter, bool recursive ) {
+vector< FSItem > FSIndexer::indexDirectory( const fs::path&  in_dir, const wstring& filter, bool recursive ) {
     vector< FSItem > result;
     FSItem dir_item{ in_dir };
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {

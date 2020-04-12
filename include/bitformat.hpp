@@ -110,7 +110,7 @@ namespace bit7z {
             BitInOutFormat( unsigned char value,
                             const wchar_t* ext,
                             BitCompressionMethod defaultMethod,
-                            FeaturesSet features );
+                            const FeaturesSet& features );
 
             /**
              * @return the default file estension of the archive format

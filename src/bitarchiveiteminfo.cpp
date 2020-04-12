@@ -21,12 +21,9 @@
 
 #include "../include/bitarchiveiteminfo.hpp"
 
-#include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/fsutil.hpp"
 
 using namespace bit7z;
-using namespace bit7z::filesystem;
 
 BitArchiveItemInfo::BitArchiveItemInfo( uint32_t item_index )
     : BitArchiveItem( item_index ) {}

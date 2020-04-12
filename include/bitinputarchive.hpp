@@ -78,10 +78,6 @@ namespace bit7z {
             bool isItemEncrypted( uint32_t index ) const;
 
         protected:
-            IInArchive* openArchiveStream( const BitArchiveHandler& handler,
-                                           const wstring& name,
-                                           IInStream* in_stream );
-
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
             void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const;

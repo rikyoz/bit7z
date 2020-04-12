@@ -26,7 +26,6 @@
 #include "../include/cmultivoloutstream.hpp"
 #include "../include/cbufferoutstream.hpp"
 #include "../include/updatecallback.hpp"
-#include "../include/fsutil.hpp"
 
 #include <vector>
 
@@ -36,7 +35,6 @@
 using std::wstring;
 using std::vector;
 using namespace bit7z;
-using namespace bit7z::filesystem;
 
 void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
@@ -230,7 +228,8 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
     }
 
     CMyComPtr< IOutStream > out_stream;
-    if ( mUpdateMode && filesystem::fsutil::pathExists( out_archive ) ) {
+    std::error_code ec;
+    if ( mUpdateMode && fs::exists( out_archive, ec ) ) {
         if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
             //Update mode is set but format does not support adding more files
             throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
@@ -270,8 +269,9 @@ void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback*
         out_stream.Release(); //Releasing the output stream so that we can remove the original file
 
         //remove old file and rename tmp file (move file with overwriting)
-        bool renamed = fsutil::renameFile( out_file + L".tmp", out_file );
-        if ( !renamed ) {
+        std::error_code error;
+        fs::rename( out_file + L".tmp", out_file, error );
+        if ( error ) {
             throw BitException( L"Cannot rename temp archive file to  '" + out_file + L"'", GetLastError() );
         }
     }

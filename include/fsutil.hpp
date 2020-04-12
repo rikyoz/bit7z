@@ -23,36 +23,26 @@
 
 #include <Windows.h>
 
+#include "fs.hpp"
+
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
             using std::wstring;
 
-            bool isRelativePath( const wstring& path );
-
-            bool isDirectory( const wstring& path );
-
-            bool pathExists( const wstring& path );
-
-            bool renameFile( const wstring& old_name, const wstring& new_name );
-
-            void normalizePath( wstring& path );
-
-            wstring dirname( const wstring& path );
-
             wstring filename( const wstring& path, bool ext = false );
 
             wstring extension( const wstring& path );
 
-            bool setFileModifiedTime( const wstring& name, const FILETIME& ft_modified );
+            bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ft_modified );
 
             bool wildcardMatch( const wstring& pattern, const wstring& str );
 
             uint32_t getFileAttributes( const wstring& name );
 
-            bool setFileAttributes( const wstring& name, uint32_t attributes );
+            bool setFileAttributes( const fs::path &filePath, uint32_t attributes );
 
-            bool getFileTimes( const wstring& name, FILETIME& creationTime, FILETIME& accessTime, FILETIME& writeTime );
+            bool getFileTimes( const fs::path& filePath, FILETIME& creationTime, FILETIME& accessTime, FILETIME& writeTime );
         }
     }
 }

@@ -21,7 +21,6 @@
 
 #include "../include/bufferupdatecallback.hpp"
 
-#include "../include/bitpropvariant.hpp"
 #include "../include/cbufferinstream.hpp"
 
 using namespace std;

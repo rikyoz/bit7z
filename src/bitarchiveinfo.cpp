@@ -24,7 +24,6 @@
 #include <algorithm>
 #include <numeric>
 
-#include "Common/MyCom.h"
 #include "7zip/PropID.h"
 
 #include "../include/bitexception.hpp"

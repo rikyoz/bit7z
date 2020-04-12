@@ -91,14 +91,15 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
-        wstring stream_path = mFileItem.path();
+        auto stream_path = mFileItem.path();
         if ( name != nullptr ) {
-            stream_path = fsutil::dirname( stream_path ) + WCHAR_PATH_SEPARATOR + name;
-            if ( !fsutil::pathExists( stream_path ) || fsutil::isDirectory( stream_path ) ) {
+            stream_path = stream_path.parent_path() / wstring(name);
+            auto stream_status = fs::status( stream_path );
+            if ( !fs::exists( stream_status ) || fs::is_directory( stream_status ) ) {  // avoid exceptions using status
                 return S_FALSE;
             }
         }
-        CMyComPtr< CFileInStream > inStreamTemp = new CFileInStream( stream_path );
+        CMyComPtr< CFileInStream > inStreamTemp = new CFileInStream( stream_path.wstring() );
         if ( inStreamTemp->fail() ) {
             return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
         }

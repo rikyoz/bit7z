@@ -26,7 +26,6 @@
 //#include <iomanip>
 //end of debug includes
 
-#include "../include/bitpropvariant.hpp"
 #include "../include/cfileinstream.hpp"
 #include "../include/cfileoutstream.hpp"
 #include "../include/fsutil.hpp"
@@ -122,12 +121,13 @@ HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStr
         return S_OK;
     }
 
-    wstring path = new_item.path();
+    auto path = new_item.path();
     CMyComPtr< CFileInStream > inStreamLoc = new CFileInStream( path );
 
     if ( inStreamLoc->fail() ) {
-        HRESULT error = HRESULT_FROM_WIN32( !fsutil::pathExists( path ) ? ERROR_FILE_NOT_FOUND : ERROR_ACCESS_DENIED );
-        mFailedFiles.emplace_back( path, error );
+        std::error_code ec;
+        HRESULT error = HRESULT_FROM_WIN32( !fs::exists( path, ec ) ? ERROR_FILE_NOT_FOUND : ERROR_ACCESS_DENIED );
+        mFailedFiles.emplace_back( path.wstring(), error );
         return S_FALSE;
     }
 

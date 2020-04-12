@@ -8,8 +8,8 @@
 namespace bit7z {
     class CFileInStream : public CStdInStream {
         public:
-            CFileInStream( const std::wstring& filePath );
-            void open( const std::wstring& filePath );
+            explicit CFileInStream( const fs::path& filePath );
+            void open( const fs::path& filePath );
             bool fail();
 
         private:

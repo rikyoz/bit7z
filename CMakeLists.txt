@@ -160,7 +160,6 @@ if(NOT USE_STANDARD_FILESYSTEM)
     message(STATUS "Standard filesystem: NO (using ghc::filesystem)")
 else()
     message(STATUS "Standard filesystem: YES")
-    file(REMOVE ${PROJECT_SOURCE_DIR}/libs/ghc/filesystem.hpp)
 endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

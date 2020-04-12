@@ -21,42 +21,10 @@
 
 #include "../include/fsutil.hpp"
 
-#include "../include/fs.hpp"
-
 using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-bool fsutil::isDirectory( const wstring& path ) {
-    error_code ec;
-    return fs::is_directory( path, ec );
-}
-
-bool fsutil::pathExists( const wstring& path ) {
-    error_code ec;
-    return fs::exists( path, ec );
-}
-
-bool fsutil::renameFile( const wstring& old_name, const wstring& new_name ) {
-    //NOTE: It overwrites the destination file!
-    //return MoveFileEx( old_name.c_str(), new_name.c_str(), MOVEFILE_WRITE_THROUGH | MOVEFILE_REPLACE_EXISTING ) !=
-    //       FALSE; //WinAPI BOOL
-    error_code ec;
-    fs::rename( old_name, new_name, ec );
-    return !ec;
-}
-
-void fsutil::normalizePath( wstring& path ) { //this assumes that the passed path is not a file path!
-    if ( !path.empty() && path.back() != L'\\' && path.back() != L'/' ) {
-        path.append( L"\\" );
-    }
-}
-
-wstring fsutil::dirname( const wstring& path ) {
-    //the directory containing the path (hence, up directory if the path is a folder)
-    size_t pos = path.find_last_of( L"\\/" );
-    return ( pos != wstring::npos ) ? path.substr( 0, pos ) : L"";
-}
 
 wstring fsutil::filename( const wstring& path, bool ext ) {
     size_t start = path.find_last_of( L"/\\" ) + 1;
@@ -70,19 +38,13 @@ wstring fsutil::extension( const wstring& path ) {
     return last_dot != wstring::npos ? name.substr( last_dot + 1 ) : L"";
 }
 
-// TODO: check if find_first_of is necessary or use front()
-bool fsutil::isRelativePath( const wstring& path ) {
-    //return PathIsRelativeW( path.c_str() ); //WinAPI version (requires Shlwapi lib!)
-    return path.empty() || ( path.find_first_of( L"/\\" ) != 0 && !( path.length() >= 2 && path[ 1 ] == L':' ) );
-}
-
-bool fsutil::setFileModifiedTime( const wstring& name, const FILETIME& ft_modified ) {
-    if ( name.empty() ) {
+bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ft_modified ) {
+    if ( filePath.empty() ) {
         return false;
     }
 
     bool res = false;
-    HANDLE hFile = CreateFile( name.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
+    HANDLE hFile = CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
                                OPEN_EXISTING, 0, nullptr );
     if ( hFile != INVALID_HANDLE_VALUE ) {
         res = SetFileTime( hFile, nullptr, nullptr, &ft_modified ) != FALSE;
@@ -134,9 +96,9 @@ uint32_t fsutil::getFileAttributes( const wstring& name ) {
 #endif
 }
 
-bool fsutil::setFileAttributes( const wstring& name, uint32_t attributes ) {
+bool fsutil::setFileAttributes( const fs::path& filePath, uint32_t attributes ) {
 #ifdef _WIN32
-    return ::SetFileAttributes( name.c_str(), attributes ) == TRUE;
+    return ::SetFileAttributes( filePath.c_str(), attributes ) != FALSE;
 #else
     struct stat stat_info {};
     if ( lstat( name, &stat_info ) != 0 ) {
@@ -164,13 +126,13 @@ bool fsutil::setFileAttributes( const wstring& name, uint32_t attributes ) {
 #endif
 }
 
-bool fsutil::getFileTimes( const wstring& name, FILETIME& creationTime, FILETIME& accessTime, FILETIME& writeTime ) {
+bool fsutil::getFileTimes( const fs::path& filePath, FILETIME& creationTime, FILETIME& accessTime, FILETIME& writeTime ) {
 #ifdef _WIN32
     bool res = false;
-    HANDLE hFile = CreateFile( name.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
+    HANDLE hFile = CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
                               OPEN_EXISTING, 0, nullptr );
     if ( hFile != INVALID_HANDLE_VALUE ) {
-        res = ::GetFileTime( hFile, &creationTime, &accessTime, &writeTime ) == TRUE;
+        res = ::GetFileTime( hFile, &creationTime, &accessTime, &writeTime ) != FALSE;
         CloseHandle( hFile );
     }
     return res;

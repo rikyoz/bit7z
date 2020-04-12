@@ -25,14 +25,9 @@
 #include <string>
 #include <algorithm>
 
-//#include "Windows/FileDir.h"
-
 #include "../include/bitexception.hpp"
-#include "../include/cstdoutstream.hpp"
-#include "../include/fsutil.hpp"
 
 using namespace bit7z;
-using namespace bit7z::filesystem;
 
 /* This class is a modified version of COutMultiVolStream you can find in 7zSDK/CPP/7zip/UI/Common/Update.cpp
  * Main changes made:

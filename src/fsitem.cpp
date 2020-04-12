@@ -39,9 +39,9 @@ using namespace bit7z::filesystem;
  *    the path of the file in the archive), the path in the archive is calculated form mPath and mSearchPath
  *    (see inArchivePath() method). */
 
-FSItem::FSItem( const fs::path &itemPath, wstring inArchivePath )
+FSItem::FSItem( const fs::path &itemPath, fs::path inArchivePath )
     : mCreationTime(), mLastAccessTime(), mLastWriteTime(),
-      mSearchPath( L"" ), mInArchivePath( std::move( inArchivePath ) ) {
+      mSearchPath(), mInArchivePath( std::move( inArchivePath ) ) {
     std::error_code ec;
     mFileEntry.assign( itemPath, ec );
     if ( !mFileEntry.exists() ) { // NOLINT
@@ -52,7 +52,7 @@ FSItem::FSItem( const fs::path &itemPath, wstring inArchivePath )
     mAttributes = fsutil::getFileAttributes( mFileEntry.path() );
 }
 
-FSItem::FSItem( fs::directory_entry entry, wstring searchPath )
+FSItem::FSItem( fs::directory_entry entry, fs::path searchPath )
     : mFileEntry( std::move( entry ) ), mCreationTime(), mLastAccessTime(), mLastWriteTime(),
       mSearchPath( std::move( searchPath ) ) {
     fsutil::getFileTimes( mFileEntry.path(), mCreationTime, mLastAccessTime, mLastWriteTime );
@@ -85,7 +85,7 @@ FILETIME FSItem::lastWriteTime() const {
 }
 
 wstring FSItem::name() const {
-    return canonical( mFileEntry.path() ).filename();
+    return canonical( mFileEntry.path() ).filename().wstring();
 }
 
 fs::path FSItem::path() const {
@@ -110,7 +110,7 @@ fs::path FSItem::path() const {
  *   the file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
  *
  * If the mInArchivePath is already given (i.e. the user wants a custom mapping of files), this one is returned.*/
-wstring FSItem::inArchivePath() const {
+fs::path FSItem::inArchivePath() const {
     using namespace fsutil;
 
     if ( !mInArchivePath.empty() ) {
@@ -126,7 +126,10 @@ wstring FSItem::inArchivePath() const {
     if ( path.is_absolute() || path.wstring().find( L"./" ) != wstring::npos || path.wstring().find( L".\\" ) != wstring::npos ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
         // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
-        return mSearchPath.empty() ? name() : mSearchPath + fs::path::preferred_separator + name();
+        if ( mSearchPath.empty() ) {
+            return name();
+        }
+        return mSearchPath / name();
     }
 
     //path is relative and without ./ or ../ => e.g. foo/bar/test.txt

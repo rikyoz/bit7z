@@ -38,9 +38,9 @@ namespace bit7z {
 
         class FSItem {
             public:
-                explicit FSItem( const fs::path& itemPath, wstring inArchivePath = L"" );
+                explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
 
-                explicit FSItem( fs::directory_entry entry, wstring searchPath );
+                explicit FSItem( fs::directory_entry entry, fs::path searchPath );
 
                 bool isDots() const;
 
@@ -58,7 +58,7 @@ namespace bit7z {
 
                 fs::path path() const;
 
-                wstring inArchivePath() const;
+                fs::path inArchivePath() const;
 
                 uint32_t attributes() const;
 
@@ -68,8 +68,8 @@ namespace bit7z {
                 FILETIME mLastAccessTime;
                 FILETIME mLastWriteTime;
                 uint32_t mAttributes;
-                wstring mSearchPath;
-                wstring mInArchivePath;
+                fs::path mSearchPath;
+                fs::path mInArchivePath;
         };
     }
 }

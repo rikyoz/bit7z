@@ -34,3 +34,8 @@ bit7z.sln
 *.pro\.user*-pre1
 *.opensdf
 *.sdf
+*.TMP
+
+bit7z.vcxproj
+
+CMakeSettings.json

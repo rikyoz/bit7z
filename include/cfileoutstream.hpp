@@ -8,8 +8,8 @@
 namespace bit7z {
     class CFileOutStream : public CStdOutStream {
         public:
-            CFileOutStream( const std::wstring& filePath, bool createAlways = false );
-            void open( const std::wstring& filePath, bool createAlways = false );
+            explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
+            void open( const fs::path& filePath, bool createAlways = false );
 
             bool fail();
 

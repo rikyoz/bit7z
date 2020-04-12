@@ -52,21 +52,9 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 }
 
 STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
-    mExtractMode = false;
-
-    // in future we might use this switch to handle an event like onOperationStart(Operation o)
+    // in future we might use a switch to handle an event like onOperationStart(Operation o)
     // with enum Operation{Extract, Test, Skip}
-
-    switch ( askExtractMode ) {
-    case NArchive::NExtract::NAskMode::kExtract:
-        mExtractMode = true;
-        break;
-
-    case NArchive::NExtract::NAskMode::kTest:
-        mExtractMode = false;
-        break;
-    }
-
+    mExtractMode = ( askExtractMode == NArchive::NExtract::NAskMode::kExtract );
     return S_OK;
 }
 

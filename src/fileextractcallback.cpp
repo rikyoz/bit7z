@@ -22,14 +22,10 @@
 #include <utility>
 
 #include "../include/fileextractcallback.hpp"
-
-//#include "Windows/FileDir.h"
-//#include "Windows/FileFind.h"
-
-#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/cstdoutstream.hpp"
 #include "../include/fsutil.hpp"
+
+#include <iostream>
 
 using namespace std;
 using namespace NWindows;
@@ -44,16 +40,13 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
 FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
-                                          const BitInputArchive& inputArchive,
-                                          wstring inFilePath,
-                                          wstring directoryPath )
+        const BitInputArchive& inputArchive,
+        fs::path inFilePath,
+        fs::path directoryPath )
     : ExtractCallback( handler, inputArchive ),
-      mInFilePath( std::move( inFilePath ) ),
-      mDirectoryPath( std::move( directoryPath ) ),
-      mProcessedFileInfo() {
-    //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
-    filesystem::fsutil::normalizePath( mDirectoryPath );
-}
+      mInFilePath( std::move(inFilePath) ),
+      mDirectoryPath( std::move(directoryPath) ),
+      mProcessedFileInfo() {}
 
 //TODO: clean and optimize!
 STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
@@ -62,10 +55,11 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
 
+    fs::path filePath;
     if ( prop.isEmpty() ) {
-        mFilePath = !mInFilePath.empty() ? filesystem::fsutil::filename( mInFilePath ) : kEmptyFileAlias;
+        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
     } else if ( prop.isString() ) {
-        mFilePath = prop.getString();
+        filePath = fs::path( prop.getString() );
     } else {
         return E_FAIL;
     }
@@ -110,36 +104,27 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
             return E_FAIL;
     }
 
-    // Create folders for file
-    size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
-
-    if ( slashPos != wstring::npos ) {
-        error_code ec;
-        fs::create_directories( mDirectoryPath + mFilePath.substr( 0, slashPos ), ec );
-    }
-    wstring fullProcessedPath = mDirectoryPath + mFilePath;
-    mDiskFilePath = fullProcessedPath;
+    mDiskFilePath = mDirectoryPath / filePath;
 
     if ( mProcessedFileInfo.isDir ) {
         error_code ec;
-        fs::create_directories( fullProcessedPath, ec );
+        fs::create_directories(  mDiskFilePath, ec );
     } else {
         if ( mHandler.fileCallback() ) {
-            wstring filename = filesystem::fsutil::filename( fullProcessedPath, true );
-            mHandler.fileCallback()( filename );
+            mHandler.fileCallback()( mDiskFilePath.filename() );
         }
 
-        if ( fs::exists( fullProcessedPath ) && !fs::remove( fullProcessedPath ) ) {
-        /*if ( fi.Find( fullProcessedPath.c_str() ) ) {
-            if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {*/
-                mErrorMessage = L"Cannot delete output file " + fullProcessedPath;
-                return E_ABORT;
-            //}
+        std::error_code ec;
+        fs::create_directories( mDiskFilePath.parent_path(), ec );
+
+        if ( fs::exists( mDiskFilePath, ec ) && !fs::remove( mDiskFilePath, ec ) ) {
+            mErrorMessage = L"Cannot delete output file " + mDiskFilePath.wstring();
+            return E_ABORT;
         }
 
-        CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( fullProcessedPath, true );
+        CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( mDiskFilePath, true );
         if ( outStreamLoc->fail() ) {
-            mErrorMessage = L"Cannot open output file " + fullProcessedPath;
+            mErrorMessage = L"Cannot open output file " + mDiskFilePath.wstring();
             return E_ABORT;
         }
 

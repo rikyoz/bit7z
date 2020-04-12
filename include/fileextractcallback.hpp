@@ -32,8 +32,8 @@ namespace bit7z {
         public:
             FileExtractCallback( const BitArchiveHandler& handler,
                                  const BitInputArchive& inputArchive,
-                                 wstring inFilePath,
-                                 wstring directoryPath);
+                                 fs::path inFilePath,
+                                 fs::path directoryPath);
 
             ~FileExtractCallback() override = default;
 
@@ -42,10 +42,9 @@ namespace bit7z {
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
         private:
-            wstring mInFilePath;     // Input file path
-            wstring mDirectoryPath;  // Output directory
-            wstring mFilePath;       // name inside archive
-            wstring mDiskFilePath;   // full path to file on disk
+            fs::path mInFilePath;     // Input file path
+            fs::path mDirectoryPath;  // Output directory
+            fs::path mDiskFilePath;   // full path to file on disk
 
             struct CProcessedFileInfo {
                 FILETIME MTime;
