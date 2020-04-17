@@ -23,11 +23,16 @@
 
 #include <iterator>
 
+#ifndef _WIN32
+#include <myWindows/StdAfx.h>
+#include "../include/bittypes.hpp"  //for error codes
+#endif
+
 using namespace bit7z;
 
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
-STDMETHODIMP CStdOutStream::Write( const void* data, uint32_t size, uint32_t* processedSize ) {
+STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -47,7 +52,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, uint32_t size, uint32_t* pr
     return mOutputStream.bad() ? HRESULT_FROM_WIN32( ERROR_WRITE_FAULT ) : S_OK;
 }
 
-STDMETHODIMP CStdOutStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition ) {
+STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     std::ios_base::seekdir way;
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
@@ -80,7 +85,7 @@ STDMETHODIMP CStdOutStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t*
     return S_OK;
 }
 
-STDMETHODIMP CStdOutStream::SetSize( uint64_t newSize ) {
+STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) {
     const auto old_pos = mOutputStream.tellp();
     mOutputStream.seekp( 0, ostream::end );
 

@@ -34,9 +34,9 @@ StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
     : ExtractCallback( handler, inputArchive ),
       mOutputStream( outputStream ) {}
 
-wstring StreamExtractCallback::getErrorMessage() const {
+tstring StreamExtractCallback::getErrorMessage() const {
     if ( !mOutputStream ) {
-        return L"Stream error (errno: " + std::to_wstring( errno ) + L")";
+        return TSTRING("Stream error (errno: ") + to_tstring( errno ) + TSTRING(")");
     }
     return Callback::getErrorMessage();
 }

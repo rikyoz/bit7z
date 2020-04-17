@@ -19,11 +19,13 @@
 #ifndef OPENCALLBACK_HPP
 #define OPENCALLBACK_HPP
 
-#include <string>
+#ifndef _WIN32
+#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
+#endif
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/IPassword.h"
-#include "Common/MyCom.h"
+#include <7zip/Archive/IArchive.h>
+#include <7zip/IPassword.h>
+#include <Common/MyCom.h>
 
 #include "../include/callback.hpp"
 #include "../include/fsitem.hpp"
@@ -38,7 +40,7 @@ namespace bit7z {
                          public ICryptoGetTextPassword,
                          public Callback {
         public:
-            explicit OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
+            explicit OpenCallback( const BitArchiveHandler& handler, const tstring& filename = TSTRING(".") );
 
             ~OpenCallback() override = default;
 
@@ -60,7 +62,7 @@ namespace bit7z {
 
         private:
             bool mSubArchiveMode;
-            wstring mSubArchiveName;
+            tstring mSubArchiveName;
             FSItem mFileItem;
     };
 }

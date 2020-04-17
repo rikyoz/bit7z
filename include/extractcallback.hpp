@@ -19,9 +19,13 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/ICoder.h"
-#include "7zip/IPassword.h"
+#ifndef _WIN32
+#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
+#endif
+
+#include <7zip/Archive/IArchive.h>
+#include <7zip/ICoder.h>
+#include <7zip/IPassword.h>
 
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitinputarchive.hpp"

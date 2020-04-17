@@ -29,14 +29,14 @@ using namespace bit7z;
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of std::wstring instead of UString (see Callback base interface)
+ *  + Use of tstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback)
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
 BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
                                             const vector< byte_t >& in_buffer,
-                                            const wstring& in_buffer_name )
+                                            const tstring& in_buffer_name )
     : UpdateCallback( creator ),
       mBuffer( in_buffer ),
       mBufferName( in_buffer_name ) {}

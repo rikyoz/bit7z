@@ -20,10 +20,15 @@
 #define BITPROPVARIANT_HPP
 
 #include <cstdint>
-#include <string>
+
+#include "../include/bittypes.hpp"
 //#include <array>
 
+#ifdef _WIN32
 #include <Propidl.h>
+#else
+#include <Common/MyWindows.h>
+#endif
 
 #if defined(_MSC_VER) && _MSC_VER <= 1800
 #define NOEXCEPT
@@ -132,7 +137,6 @@ namespace bit7z {
         CopyLink                ///<
     };
 
-    using std::wstring;
     //using std::array;
 
     /*static const array < wstring, static_cast< int >( BitProperty::CopyLink ) + 1 > propertyNames = {
@@ -306,7 +310,7 @@ namespace bit7z {
              *
              * @param value the wstring value of the BitPropVariant
              */
-            explicit BitPropVariant( const wstring& value );
+            explicit BitPropVariant( const tstring& value );
 
             /**
              * @brief Constructs a 8-bit unsigned integer BitPropVariant
@@ -421,7 +425,7 @@ namespace bit7z {
              * @return the string value of this variant
              * (it throws an exception if the variant is not a string).
              */
-            wstring getString() const;
+            tstring getString() const;
 
             /**
              * @return the 8-bit unsigned integer value of this variant
@@ -480,7 +484,7 @@ namespace bit7z {
             /**
              * @return the the value of this variant converted from any supported type to std::wstring.
              */
-            wstring toString() const;
+            tstring toString() const;
 
             /**
              * @return true if this variant is empty, false otherwise.

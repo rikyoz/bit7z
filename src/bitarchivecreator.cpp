@@ -22,17 +22,16 @@
 #include "../include/bitarchivecreator.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/cstdoutstream.hpp"
+#include "../include/cfileoutstream.hpp"
 #include "../include/cmultivoloutstream.hpp"
 #include "../include/cbufferoutstream.hpp"
 #include "../include/updatecallback.hpp"
 
 #include <vector>
 
-#include "7zip/Archive/IArchive.h"
-#include "Common/MyCom.h"
+#include <7zip/Archive/IArchive.h>
+#include <Common/MyCom.h>
 
-using std::wstring;
 using std::vector;
 using namespace bit7z;
 
@@ -44,8 +43,8 @@ void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* 
     }
 
     if ( result != S_OK ) {
-        wstring error_message = update_callback->getErrorMessage();
-        throw BitException( error_message.empty() ? L"Failed operation (unkwown error)!" : error_message, result );
+        tstring error_message = update_callback->getErrorMessage();
+        throw BitException( error_message.empty() ? TSTRING("Failed operation (unkwown error)!") : error_message, result );
     }
 }
 
@@ -162,11 +161,11 @@ uint64_t BitArchiveCreator::volumeSize() const {
     return mVolumeSize;
 }
 
-void BitArchiveCreator::setPassword( const wstring& password ) {
+void BitArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders );
 }
 
-void BitArchiveCreator::setPassword( const wstring& password, bool crypt_headers ) {
+void BitArchiveCreator::setPassword( const tstring& password, bool crypt_headers ) {
     mPassword = password;
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
@@ -220,7 +219,7 @@ CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
     return new_arc;
 }
 
-CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out_archive,
+CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out_archive,
                                                               CMyComPtr< IOutArchive >& new_arc,
                                                               unique_ptr< BitInputArchive >& old_arc ) const {
     if ( mVolumeSize > 0 ) {
@@ -235,11 +234,11 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
             throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
         }
 
-        auto* file_out_stream = new CFileOutStream( out_archive + L".tmp", true );
+        auto* file_out_stream = new CFileOutStream( out_archive + TSTRING(".tmp"), true );
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //could not create temporary file
-            throw BitException( L"Could not create temp archive file for updating '" + out_archive + L"'" );
+            throw BitException( TSTRING("Could not create temp archive file for updating '") + out_archive + TSTRING("'") );
         }
 
         old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
@@ -250,13 +249,13 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //Unknown error!
-            throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
+            throw BitException( TSTRING("Cannot create output archive file '") + out_archive + TSTRING("'") );
         }
     }
     return out_stream;
 }
 
-void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback* update_callback ) const {
+void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const {
     unique_ptr< BitInputArchive > old_arc = nullptr;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, new_arc, old_arc );
@@ -270,9 +269,9 @@ void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback*
 
         //remove old file and rename tmp file (move file with overwriting)
         std::error_code error;
-        fs::rename( out_file + L".tmp", out_file, error );
+        fs::rename( out_file + TSTRING(".tmp"), out_file, error );
         if ( error ) {
-            throw BitException( L"Cannot rename temp archive file to  '" + out_file + L"'", GetLastError() );
+            throw BitException( TSTRING("Cannot rename temp archive file to  '") + out_file + TSTRING("'"), GetLastError() );
         }
     }
 }
@@ -315,14 +314,14 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
     }
     if ( mDictionarySize != 0 ) {
         const wchar_t* prop_name;
-        //cannot optimize the following if-else, if we use wstring we have invalid pointers in names!
+        //cannot optimize the following if-else, if we use tstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
         } else {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
         }
         names.push_back( prop_name );
-        values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
+        values.emplace_back( to_tstring( mDictionarySize ) + TSTRING("b") );
     }
 
     if ( !names.empty() ) {

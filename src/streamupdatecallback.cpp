@@ -29,14 +29,14 @@ using namespace bit7z;
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of std::wstring instead of UString (see Callback base interface)
+ *  + Use of tstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback)
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
 StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
                                             istream& in_stream,
-                                            const wstring& in_stream_name )
+                                            const tstring& in_stream_name )
     : UpdateCallback( creator ),
       mStream( in_stream ),
       mStreamName( in_stream_name ) {}

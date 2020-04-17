@@ -19,23 +19,20 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
-#include <string>
 #include <cstdint>
 
+#include "../include/bittypes.hpp"
+
 #ifndef _WIN32
-#include "myWindows/StdAfx.h"
+#include <myWindows/StdAfx.h>
 #endif
 
-#include <Windows.h>
+#include <windows.h>
 
 #include "../include/fs.hpp"
 
 namespace bit7z {
     namespace filesystem {
-        using FSItemInfo = WIN32_FIND_DATA;
-
-        using std::wstring;
-
         class FSItem {
             public:
                 explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
@@ -54,7 +51,7 @@ namespace bit7z {
 
                 FILETIME lastWriteTime() const;
 
-                wstring name() const;
+                tstring name() const;
 
                 fs::path path() const;
 

@@ -22,6 +22,13 @@
 #include "../include/bitpropvariant.hpp"
 
 #include "../include/bitexception.hpp"
+#include "../include/util.hpp"
+
+#ifdef _WIN32
+#define BSTR_TO_TSTRING(bstr) std::wstring( bstr, ::SysStringLen( bstr ) )
+#else
+#define BSTR_TO_TSTRING(bstr) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
+#endif
 
 using namespace bit7z;
 
@@ -105,10 +112,15 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
     }
 }
 
-BitPropVariant::BitPropVariant( const wstring& value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( const tstring& value ) : PROPVARIANT() {
     vt = VT_BSTR;
     wReserved1 = 0;
+#ifdef _WIN32
     bstrVal = ::SysAllocStringLen( value.data(), static_cast< unsigned int >( value.size() ) );
+#else
+    std::wstring widenString = bit7z::widen( value );
+    bstrVal = ::SysAllocStringLen( widenString.data(), static_cast< unsigned int >( widenString.size() ) );
+#endif
     if ( bstrVal == nullptr ) {
         throw BitException( "Could not allocate memory for BitPropVariant string" );
     }
@@ -235,12 +247,12 @@ bool BitPropVariant::getBool() const {
     return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings
 }
 
-wstring BitPropVariant::getString() const {
+tstring BitPropVariant::getString() const {
     if ( vt != VT_BSTR ) {
         throw BitException( "BitPropVariant is not a string" );
     }
     //Note: a nullptr BSTR is semantically equivalent to an empty string!
-    return bstrVal == nullptr ? L"" : wstring( bstrVal, SysStringLen( bstrVal ) );
+    return bstrVal == nullptr ? TSTRING("") : BSTR_TO_TSTRING( bstrVal );
 }
 
 uint8_t BitPropVariant::getUInt8() const {
@@ -354,36 +366,36 @@ FILETIME BitPropVariant::getFiletime() const {
     return filetime;
 }
 
-wstring BitPropVariant::toString() const {
+tstring BitPropVariant::toString() const {
     switch ( vt ) {
         case VT_BOOL:
-            return boolVal == VARIANT_TRUE ? L"true" : L"false";
+            return boolVal == VARIANT_TRUE ? TSTRING("true") : TSTRING("false");
         case VT_BSTR:
-            return wstring( bstrVal, SysStringLen( bstrVal ) );
+            return BSTR_TO_TSTRING( bstrVal );
         case VT_UI1:
-            return std::to_wstring( bVal );
+            return to_tstring( bVal );
         case VT_UI2:
-            return std::to_wstring( uiVal );
+            return to_tstring( uiVal );
         case VT_UINT:
-            return std::to_wstring( uintVal );
+            return to_tstring( uintVal );
         case VT_UI4:
-            return std::to_wstring( ulVal );
+            return to_tstring( ulVal );
         case VT_UI8:
-            return std::to_wstring( uhVal.QuadPart );
+            return to_tstring( uhVal.QuadPart );
         case VT_I1:
-            return std::to_wstring( cVal );
+            return to_tstring( cVal );
         case VT_I2:
-            return std::to_wstring( iVal );
+            return to_tstring( iVal );
         case VT_INT:
-            return std::to_wstring( intVal );
+            return to_tstring( intVal );
         case VT_I4:
-            return std::to_wstring( lVal );
+            return to_tstring( lVal );
         case VT_I8:
-            return std::to_wstring( hVal.QuadPart );
+            return to_tstring( hVal.QuadPart );
         case VT_FILETIME:
-            return std::to_wstring( filetime.dwHighDateTime ) + L", " + std::to_wstring( filetime.dwLowDateTime );
+            return to_tstring( filetime.dwHighDateTime ) + TSTRING(", ") + to_tstring( filetime.dwLowDateTime );
     }
-    throw BitException( L"BitPropVariant type not supported (vt: " + std::to_wstring( vt ) + L")" );
+    throw BitException( TSTRING("BitPropVariant type not supported (vt: ") + to_tstring( vt ) + TSTRING(")") );
 }
 
 bool BitPropVariant::isEmpty() const {

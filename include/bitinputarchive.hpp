@@ -18,14 +18,13 @@ struct IOutArchive;
 struct IArchiveExtractCallback;
 
 namespace bit7z {
-    using std::wstring;
     using std::vector;
 
     class ExtractCallback;
 
     class BitInputArchive {
         public:
-            BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file );
+            BitInputArchive( const BitArchiveHandler& handler, const tstring& in_file );
 
             BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer );
 
@@ -78,6 +77,7 @@ namespace bit7z {
             bool isItemEncrypted( uint32_t index ) const;
 
         protected:
+            IInArchive* openArchiveStream( const BitArchiveHandler& handler, const tstring& name, IInStream* in_stream );
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
             void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const;

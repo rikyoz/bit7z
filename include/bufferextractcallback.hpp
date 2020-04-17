@@ -33,7 +33,7 @@ namespace bit7z {
         public:
             BufferExtractCallback( const BitArchiveHandler& handler,
                                    const BitInputArchive& inputArchive,
-                                   map< wstring, vector< byte_t > >& buffersMap );
+                                   map< tstring, vector< byte_t > >& buffersMap );
 
             ~BufferExtractCallback() override = default;
 
@@ -42,7 +42,7 @@ namespace bit7z {
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
 
         private:
-            map< wstring, vector< byte_t > >& mBuffersMap;
+            map< tstring, vector< byte_t > >& mBuffersMap;
             CMyComPtr< ISequentialOutStream > mOutMemStream;
     };
 }

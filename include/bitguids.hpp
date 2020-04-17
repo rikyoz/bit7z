@@ -19,9 +19,17 @@
 #ifndef BITGUIDS_HPP
 #define BITGUIDS_HPP
 
+#ifdef _WIN32
 #include <guiddef.h>
+#else
+#include <Common/MyGuidDef.h>
+#endif
 
 namespace bit7z {
+#if !defined(_WIN32)
+    extern "C" const GUID IID_IUnknown;
+#endif
+
     // IStream.h
     extern "C" const GUID IID_ISequentialInStream;
     extern "C" const GUID IID_ISequentialOutStream;

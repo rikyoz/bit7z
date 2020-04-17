@@ -19,9 +19,13 @@
 #ifndef COMPRESSCALLBACK_HPP
 #define COMPRESSCALLBACK_HPP
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/ICoder.h"
-#include "7zip/IPassword.h"
+#ifndef _WIN32
+#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
+#endif
+
+#include <7zip/Archive/IArchive.h>
+#include <7zip/ICoder.h>
+#include <7zip/IPassword.h>
 
 #include "../include/callback.hpp"
 #include "../include/bitarchivecreator.hpp"
@@ -54,7 +58,6 @@ namespace bit7z {
             STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveUpdateCallback2
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
             STDMETHOD( GetUpdateItemInfo )( UInt32 index,
                                             Int32* newData,
                                             Int32* newProperties,

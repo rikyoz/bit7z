@@ -28,14 +28,13 @@
 
 namespace bit7z {
     using std::vector;
-    using std::wstring;
     using std::istream;
 
     class StreamUpdateCallback : public UpdateCallback {
         public:
             StreamUpdateCallback( const BitArchiveCreator& creator,
                                   istream& in_stream,
-                                  const wstring& in_stream_name );
+                                  const tstring& in_stream_name );
 
             ~StreamUpdateCallback() override = default;
 
@@ -49,7 +48,7 @@ namespace bit7z {
 
         private:
             istream& mStream;
-            const wstring& mStreamName;
+            const tstring& mStreamName;
     };
 }
 #endif // STREAMUPDATECALLBACK_HPP

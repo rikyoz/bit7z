@@ -35,7 +35,7 @@ namespace bit7z {
     class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
 
             uint64_t mVolSize;
-            wstring mVolPrefix;
+            tstring mVolPrefix;
             size_t mStreamIndex; // required stream
             uint64_t mOffsetPos;   // offset from start of _streamIndex index
             uint64_t mAbsPos;
@@ -43,7 +43,7 @@ namespace bit7z {
 
             struct CAltStreamInfo {
                 CMyComPtr< CFileOutStream > stream;
-                wstring name;
+                tstring name;
                 uint64_t pos{};
                 uint64_t realSize{};
             };
@@ -51,7 +51,7 @@ namespace bit7z {
             vector< CAltStreamInfo > mVolStreams;
 
         public:
-            CMultiVolOutStream( uint64_t volSize, const wstring& archiveName );
+            CMultiVolOutStream( uint64_t volSize, const tstring& archiveName );
 
             virtual ~CMultiVolOutStream() = default;
 

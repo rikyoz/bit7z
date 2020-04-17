@@ -84,8 +84,8 @@ FILETIME FSItem::lastWriteTime() const {
     return mLastWriteTime;
 }
 
-wstring FSItem::name() const {
-    return canonical( mFileEntry.path() ).filename().wstring();
+bit7z::tstring FSItem::name() const {
+    return canonical( mFileEntry.path() ).filename();
 }
 
 fs::path FSItem::path() const {
@@ -120,10 +120,11 @@ fs::path FSItem::inArchivePath() const {
     const auto& path = mFileEntry.path();
     const auto& filename = path.lexically_normal().filename();
     if ( filename == "." || filename == ".." ) {
-        return L"";
+        return TSTRING("");
     }
 
-    if ( path.is_absolute() || path.wstring().find( L"./" ) != wstring::npos || path.wstring().find( L".\\" ) != wstring::npos ) {
+    const auto& native_path = path.native();
+    if ( path.is_absolute() || native_path.find( TSTRING("./") ) != bit7z::tstring::npos || native_path.find( TSTRING(".\\") ) != bit7z::tstring::npos ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
         // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
         if ( mSearchPath.empty() ) {

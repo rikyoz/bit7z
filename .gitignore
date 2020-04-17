@@ -39,3 +39,5 @@ bit7z.sln
 bit7z.vcxproj
 
 CMakeSettings.json
+
+*.kdbx

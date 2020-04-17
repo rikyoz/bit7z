@@ -28,13 +28,12 @@
 
 namespace bit7z {
     using std::vector;
-    using std::wstring;
 
     class BufferUpdateCallback : public UpdateCallback {
         public:
             BufferUpdateCallback( const BitArchiveCreator& creator,
                                   const vector< byte_t >& in_buffer,
-                                  const wstring& in_buffer_name );
+                                  const tstring& in_buffer_name );
 
             ~BufferUpdateCallback() override = default;
 
@@ -48,7 +47,7 @@ namespace bit7z {
 
         private:
             const vector< byte_t >& mBuffer;
-            const wstring& mBufferName;
+            const tstring& mBufferName;
     };
 }
 #endif // MEMUPDATECALLBACK_HPP

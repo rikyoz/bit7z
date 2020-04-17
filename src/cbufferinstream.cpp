@@ -24,6 +24,10 @@
 #include <algorithm>
 #include <cstdint>
 
+#ifndef _WIN32
+#include <myWindows/StdAfx.h>
+#endif
+
 using namespace bit7z;
 
 CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer ) : mBuffer( in_buffer ), mCurrentPosition( 0 ) {}
@@ -42,7 +46,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
         remaining = static_cast< size_t >( size );
     }
 
-    std::copy_n( mBuffer.begin() + mCurrentPosition, remaining, static_cast< byte* >( data ) );
+    std::copy_n( mBuffer.begin() + mCurrentPosition, remaining, static_cast< byte_t* >( data ) );
 
     mCurrentPosition += remaining;
 

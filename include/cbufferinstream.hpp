@@ -5,8 +5,8 @@
 
 #include "../include/bittypes.hpp"
 
-#include "7zip/IStream.h"
-#include "Common/MyCom.h"
+#include <7zip/IStream.h>
+#include <Common/MyCom.h>
 
 namespace bit7z {
     using std::vector;

@@ -39,7 +39,7 @@ STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        mHandler.progressCallback()( *completeValue );
+        return mHandler.progressCallback()( *completeValue ) == true ? S_OK : E_ABORT;
     }
     return S_OK;
 }
@@ -58,6 +58,14 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     return S_OK;
 }
 
+#include "../include/util.hpp"
+
+#ifdef _WIN32
+#define WIDEN(tstr) tstr
+#else
+#define WIDEN(tstr) bit7z::widen(tstr)
+#endif
+
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
@@ -65,15 +73,15 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
         if ( mHandler.passwordCallback() ) {
-            pass = mHandler.passwordCallback()();
+            pass = WIDEN( mHandler.passwordCallback()() );
         }
 
         if ( pass.empty() ) {
-            mErrorMessage = L"Password is not defined";
+            mErrorMessage = TSTRING("Password is not defined");
             return E_FAIL;
         }
     } else {
-        pass = mHandler.password();
+        pass = WIDEN( mHandler.password() );
     }
 
     return StringToBstr( pass.c_str(), password );

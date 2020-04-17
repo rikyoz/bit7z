@@ -21,6 +21,10 @@
 
 #include "../include/updatecallback.hpp"
 
+#ifndef _WIN32
+#include "../include/util.hpp"
+#endif
+
 using namespace bit7z;
 
 UpdateCallback::UpdateCallback( const BitArchiveCreator& creator )
@@ -58,7 +62,7 @@ STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        mHandler.progressCallback()( *completeValue );
+        return mHandler.progressCallback()( *completeValue ) == true ? S_OK : E_ABORT;
     }
     return S_OK;
 }
@@ -68,10 +72,6 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
         mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
-}
-
-HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
-    return E_NOTIMPL;
 }
 
 HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 index,
@@ -99,17 +99,23 @@ HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
     return S_OK;
 }
 
+#ifdef _WIN32
+#define WIDEN(tstr) tstr
+#else
+#define WIDEN(tstr) bit7z::widen(tstr)
+#endif
+
 HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
     if ( !mHandler.isPasswordDefined() ) {
         if ( mAskPassword ) {
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
             // PasswordIsDefined = true;
-            mErrorMessage = L"Password is not defined";
+            mErrorMessage = TSTRING("Password is not defined");
             return E_ABORT;
         }
     }
 
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
-    return StringToBstr( mHandler.password().c_str(), password );
+    return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
 }

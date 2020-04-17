@@ -27,7 +27,7 @@
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
 
-#include "Common/MyCom.h"
+#include <Common/MyCom.h>
 
 using namespace bit7z;
 using namespace NWindows;
@@ -36,7 +36,7 @@ using namespace NArchive;
 #ifdef BIT7Z_AUTO_FORMAT
 namespace bit7z {
     namespace BitFormat {
-        const BitInFormat& detectFormatFromExt( const wstring& in_file );
+        const BitInFormat& detectFormatFromExt( const tstring& in_file );
         const BitInFormat& detectFormatFromSig( IInStream* stream );
     }
 }
@@ -48,7 +48,7 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
     return arc_object;
 }
 
-IInArchive* openArchiveStream( const BitArchiveHandler& handler, const wstring& name, IInStream* in_stream ) {
+IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler, const tstring& name, IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -86,16 +86,17 @@ IInArchive* openArchiveStream( const BitArchiveHandler& handler, const wstring& 
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( L"Cannot open archive '" + name + L"'", ERROR_OPEN_FAILED );
+        throw BitException( TSTRING("Cannot open archive '") + name + TSTRING("'"), ERROR_OPEN_FAILED );
     }
 
     return in_archive.Detach();
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file ) {
-    CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file );
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const tstring& in_file ) {
+    fs::path in_file_path = in_file;
+    CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file_path );
     if ( file_stream->fail() ) {
-        throw BitException( L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED );
+        throw BitException( TSTRING("Cannot open archive file '") + in_file + TSTRING("'"), ERROR_OPEN_FAILED );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
@@ -110,13 +111,13 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
     CMyComPtr< IInStream > buf_stream = new CBufferInStream( in_buffer );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-    mInArchive = openArchiveStream( handler, L".", buf_stream );
+    mInArchive = openArchiveStream( handler, TSTRING("."), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) {
     CMyComPtr< IInStream > std_stream = new CStdInStream( in_stream );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-    mInArchive = openArchiveStream( handler, L".", std_stream );
+    mInArchive = openArchiveStream( handler, TSTRING("."), std_stream );
 }
 
 BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
@@ -132,7 +133,7 @@ BitPropVariant BitInputArchive::getItemProperty( uint32_t index, BitProperty pro
     BitPropVariant propvar;
     HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &propvar );
     if ( res != S_OK ) {
-        throw BitException( L"Could not retrieve property for item at index " + std::to_wstring( index ), res );
+        throw BitException( TSTRING("Could not retrieve property for item at index ") + to_tstring( index ), res );
     }
     return propvar;
 }

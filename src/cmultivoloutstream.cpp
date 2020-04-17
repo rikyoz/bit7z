@@ -33,13 +33,13 @@ using namespace bit7z;
  * Main changes made:
  *  + Volumes have all the same size, except the last one (original code allowed volumes of differents sizes)
  *  + Use of vector instead of CObjectVector
- *  + Use of wstring instead of FString
+ *  + Use of tstring instead of FString
  *  + Use of uint64_t instead of UInt64
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const wstring& archiveName ) :
+CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const tstring& archiveName ) :
     mVolSize( volSize ),
-    mVolPrefix( archiveName + L"." ),
+    mVolPrefix( archiveName + TSTRING(".") ),
     mStreamIndex( 0 ),
     mOffsetPos( 0 ),
     mAbsPos( 0 ),
@@ -53,7 +53,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
     }
     while ( size > 0 ) {
         if ( mStreamIndex >= mVolStreams.size() ) {
-            wstring name = std::to_wstring( mStreamIndex + 1 );
+            tstring name = to_tstring( mStreamIndex + 1 );
             name.insert( 0, 3 - name.length(), L'0' );
             name.insert( 0, mVolPrefix );
 
@@ -152,7 +152,7 @@ STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
             altStream.stream.Release();
             NWindows::NFile::NDir::DeleteFileAlways( altStream.name.c_str() );
         }*/
-        wstring streamName = mVolStreams.back().name;
+        tstring streamName = mVolStreams.back().name;
         mVolStreams.pop_back();
         //TODO: Remove read only attribute of as in DeleteFileAlways
         fs::remove( streamName );

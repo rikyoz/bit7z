@@ -21,24 +21,24 @@
 
 #include <string>
 
-#include <Windows.h>
+#include "../include/bittypes.hpp"
+
+#include <windows.h>
 
 #include "fs.hpp"
 
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
-            using std::wstring;
+            tstring filename( const tstring& path, bool ext = false );
 
-            wstring filename( const wstring& path, bool ext = false );
-
-            wstring extension( const wstring& path );
+            tstring extension( const tstring& path );
 
             bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ft_modified );
 
-            bool wildcardMatch( const wstring& pattern, const wstring& str );
+            bool wildcardMatch( const tstring& pattern, const tstring& str );
 
-            uint32_t getFileAttributes( const wstring& name );
+            uint32_t getFileAttributes( const fs::path& filePath );
 
             bool setFileAttributes( const fs::path &filePath, uint32_t attributes );
 

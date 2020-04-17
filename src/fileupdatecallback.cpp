@@ -37,7 +37,7 @@ using namespace bit7z;
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of std::wstring instead of UString (see Callback base interface)
+ *  + Use of tstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback)
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
@@ -127,7 +127,7 @@ HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStr
     if ( inStreamLoc->fail() ) {
         std::error_code ec;
         HRESULT error = HRESULT_FROM_WIN32( !fs::exists( path, ec ) ? ERROR_FILE_NOT_FOUND : ERROR_ACCESS_DENIED );
-        mFailedFiles.emplace_back( path.wstring(), error );
+        mFailedFiles.emplace_back( path.native(), error );
         return S_FALSE;
     }
 
@@ -143,13 +143,13 @@ HRESULT FileUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
 }
 
 HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
-    wstring res = std::to_wstring( index + 1 );
+    tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
         //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)
         res.insert( res.begin(), 3 - res.length(), L'0' );
     }
 
-    wstring fileName = mVolName + L'.' + res;// + mVolExt;
+    tstring fileName = mVolName + TSTRING('.') + res;// + mVolExt;
     CMyComPtr< CFileOutStream > stream = new CFileOutStream( fileName );
 
     if ( stream->fail() ) {
@@ -160,14 +160,14 @@ HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream*
     return S_OK;
 }
 
-wstring FileUpdateCallback::getErrorMessage() const {
+tstring FileUpdateCallback::getErrorMessage() const {
     if ( !mFailedFiles.empty() ) {
-        std::wstringstream wsstream;
-        wsstream << L"Error for files: " << std::endl;
+        tstringstream sstream;
+        sstream << TSTRING("Error for files: ") << std::endl;
         for ( const auto& failed_file : mFailedFiles ) {
-            wsstream << failed_file.first << L" (error code: " << failed_file.second << L")" << std::endl;
+            sstream << failed_file.first << TSTRING(" (error code: ") << failed_file.second << TSTRING(")") << std::endl;
         }
-        return wsstream.str();
+        return sstream.str();
     }
     return Callback::getErrorMessage();
 }

@@ -24,6 +24,7 @@
 #include "../include/bitpropvariant.hpp"
 #include "../include/cfileinstream.hpp"
 #include "../include/fsutil.hpp"
+#include "../include/util.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
@@ -33,8 +34,8 @@ using namespace bit7z::filesystem;
  *  + Use of wstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
-OpenCallback::OpenCallback( const BitArchiveHandler& handler, const wstring& filename )
-    : Callback( handler ), mSubArchiveMode( false ), mSubArchiveName( L"" ), mFileItem( filename ) {}
+OpenCallback::OpenCallback( const BitArchiveHandler& handler, const tstring& filename )
+    : Callback( handler ), mSubArchiveMode( false ), mSubArchiveName(), mFileItem( filename ) {}
 
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
@@ -93,13 +94,14 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         }
         auto stream_path = mFileItem.path();
         if ( name != nullptr ) {
-            stream_path = stream_path.parent_path() / wstring(name);
+            stream_path = stream_path.parent_path();
+            stream_path.append(name); 
             auto stream_status = fs::status( stream_path );
             if ( !fs::exists( stream_status ) || fs::is_directory( stream_status ) ) {  // avoid exceptions using status
                 return S_FALSE;
             }
         }
-        CMyComPtr< CFileInStream > inStreamTemp = new CFileInStream( stream_path.wstring() );
+        CMyComPtr< CFileInStream > inStreamTemp = new CFileInStream( stream_path );
         if ( inStreamTemp->fail() ) {
             return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
         }
@@ -112,9 +114,20 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
 
 STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
     mSubArchiveMode = true;
+#ifdef _WIN32
     mSubArchiveName = name;
+#else
+    wstring nameStr = name;
+    mSubArchiveName = bit7z::narrow( name );
+#endif
     return S_OK;
 }
+
+#ifdef _WIN32
+#define WIDEN(tstr) tstr
+#else
+#define WIDEN(tstr) bit7z::widen(tstr)
+#endif
 
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
@@ -123,15 +136,15 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
         if ( mHandler.passwordCallback() ) {
-            pass = mHandler.passwordCallback()();
+            pass = WIDEN( mHandler.passwordCallback()() );
         }
 
         if ( pass.empty() ) {
-            mErrorMessage = L"Password is not defined";
+            mErrorMessage = TSTRING("Password is not defined");
             return E_ABORT;
         }
     } else {
-        pass = mHandler.password();
+        pass = WIDEN( mHandler.password() );
     }
 
     return StringToBstr( pass.c_str(), password );

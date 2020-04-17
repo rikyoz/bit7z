@@ -26,12 +26,13 @@
 #include "../include/fsutil.hpp"
 #include "../include/bitexception.hpp"
 
+using bit7z::tstring;
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( const fs::path& directory, wstring filter )
+FSIndexer::FSIndexer( const fs::path& directory, tstring filter )
     : mDirItem( directory ), mFilter( std::move( filter ) ) {
     if ( !mDirItem.isDir() ) {
-        throw BitException( L"'" + mDirItem.name() + L"' is not a directory!", ERROR_DIRECTORY );
+        throw BitException( TSTRING("'") + mDirItem.name() + TSTRING("' is not a directory!"), ERROR_DIRECTORY );
     }
 }
 
@@ -76,7 +77,7 @@ void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem 
     }
 }
 
-vector< FSItem > FSIndexer::indexDirectory( const fs::path&  in_dir, const wstring& filter, bool recursive ) {
+vector< FSItem > FSIndexer::indexDirectory( const fs::path&  in_dir, const tstring& filter, bool recursive ) {
     vector< FSItem > result;
     FSItem dir_item{ in_dir };
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
@@ -87,7 +88,7 @@ vector< FSItem > FSIndexer::indexDirectory( const fs::path&  in_dir, const wstri
     return result;
 }
 
-vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool ignore_dirs ) {
+vector< FSItem > FSIndexer::indexPaths( const vector< tstring >& in_paths, bool ignore_dirs ) {
     vector< FSItem > out_files;
     for ( const auto& file_path : in_paths ) {
         FSItem item{ file_path };
@@ -96,7 +97,7 @@ vector< FSItem > FSIndexer::indexPaths( const vector< wstring >& in_paths, bool 
     return out_files;
 }
 
-vector< FSItem > FSIndexer::indexPathsMap( const map< wstring, wstring >& in_paths, bool ignore_dirs ) {
+vector< FSItem > FSIndexer::indexPathsMap( const map< tstring, tstring >& in_paths, bool ignore_dirs ) {
     vector< FSItem > out_files;
     for ( const auto& file_pair : in_paths ) {
         FSItem item{ file_pair.first, file_pair.second };

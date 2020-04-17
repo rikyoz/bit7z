@@ -168,7 +168,7 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img alt="Github All Releases" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Latest%20Release&logo=github&style=social" height='36' style='border:0px;height:36px;'/></a>
+<img alt="Github All Releases" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Latest%20Release&logo=github&style=social" height='36' style='border:0;height:36px;'/></a>
 <br/>
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
 <img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout-square&label=total%20downloads&logo=icloud&logoColor=white"/></a>

@@ -31,7 +31,7 @@ using namespace bit7z;
 
 BufferExtractCallback::BufferExtractCallback( const BitArchiveHandler& handler,
                                               const BitInputArchive& inputArchive,
-                                              map< wstring, vector< byte_t > >& buffersMap )
+                                              map< tstring, vector< byte_t > >& buffersMap )
     : ExtractCallback ( handler, inputArchive ),
       mBuffersMap( buffersMap ) {}
 
@@ -41,7 +41,7 @@ STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index, ISequentialOutStrea
 
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
-    wstring fullPath;
+    tstring fullPath;
 
     if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;

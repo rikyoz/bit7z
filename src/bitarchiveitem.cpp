@@ -37,28 +37,28 @@ bool BitArchiveItem::isDir() const {
     return !propvar.isEmpty() && propvar.getBool();
 }
 
-wstring BitArchiveItem::name() const {
+tstring BitArchiveItem::name() const {
     BitPropVariant propvar = getProperty( BitProperty::Name );
     if ( propvar.isEmpty() ) {
         propvar = getProperty( BitProperty::Path );
-        return propvar.isEmpty() ? L"" : fsutil::filename( propvar.getString(), true );
+        return propvar.isEmpty() ? TSTRING("") : fsutil::filename( propvar.getString(), true );
     }
     return propvar.getString();
 }
 
-wstring BitArchiveItem::extension() const {
+tstring BitArchiveItem::extension() const {
     if ( isDir() ) {
-        return L"";
+        return TSTRING("");
     }
     BitPropVariant propvar = getProperty( BitProperty::Extension );
     return propvar.isEmpty() ? fsutil::extension( name() ) : propvar.getString();
 }
 
-wstring BitArchiveItem::path() const {
+tstring BitArchiveItem::path() const {
     BitPropVariant propvar = getProperty( BitProperty::Path );
     if ( propvar.isEmpty() ) {
         propvar = getProperty( BitProperty::Name );
-        return propvar.isEmpty() ? L"" : propvar.getString();
+        return propvar.isEmpty() ? TSTRING("") : propvar.getString();
     }
     return propvar.getString();
 }

@@ -24,6 +24,7 @@
 using std::string;
 using namespace bit7z;
 
+#ifdef _WIN32
 std::string ws2s( const std::wstring& wstr ) {
     int num_chars = WideCharToMultiByte( CP_UTF8, 0, wstr.c_str(), static_cast< int >( wstr.length() ), nullptr, 0, nullptr, nullptr );
     std::string result;
@@ -33,6 +34,7 @@ std::string ws2s( const std::wstring& wstr ) {
     }
     return result;
 }
+#endif
 
 BitException::BitException( const char* const message, HRESULT code ) : runtime_error( message ), mErrorCode( code ) {}
 
@@ -45,11 +47,13 @@ BitException::BitException( const std::string& message, HRESULT code )
 BitException::BitException( const std::string& message, DWORD code )
     : runtime_error( message ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
 
+#ifdef _WIN32
 BitException::BitException( const std::wstring& message, HRESULT code )
     : runtime_error( ws2s( message ) ), mErrorCode( code ) {}
 
 BitException::BitException( const std::wstring& message, DWORD code )
     : runtime_error( ws2s( message ) ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
+#endif
 
 HRESULT BitException::getErrorCode() const {
     return mErrorCode;

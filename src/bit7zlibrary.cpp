@@ -23,18 +23,26 @@
 
 #include "../include/bitexception.hpp"
 
+#ifndef _WIN32
+#include <dlfcn.h>
+
+#define LoadLibrary(lib_name) dlopen( lib_name, RTLD_LAZY )
+#define GetProcAddress dlsym
+#define FreeLibrary dlclose
+#endif
+
 using namespace bit7z;
 
-Bit7zLibrary::Bit7zLibrary( const std::wstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
+Bit7zLibrary::Bit7zLibrary( const tstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
     if ( mLibrary == nullptr ) {
-        throw BitException( L"Cannot load 7-zip library (error " + std::to_wstring( GetLastError() ) + L")", GetLastError() );
+        throw BitException( "Cannot load 7-zip library", GetLastError() );
     }
 
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
 
     if ( mCreateObjectFunc == nullptr ) {
         FreeLibrary( mLibrary );
-        throw BitException( L"Cannot get CreateObject (error " + std::to_wstring( GetLastError() ) + L")", GetLastError() );
+        throw BitException( "Cannot get CreateObject function", GetLastError() );
     }
 }
 
