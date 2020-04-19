@@ -77,7 +77,7 @@ void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem 
     }
 }
 
-vector< FSItem > FSIndexer::indexDirectory( const fs::path&  in_dir, const tstring& filter, bool recursive ) {
+vector< FSItem > FSIndexer::indexDirectory( const fs::path& in_dir, const tstring& filter, bool recursive ) {
     vector< FSItem > result;
     FSItem dir_item{ in_dir };
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {

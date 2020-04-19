@@ -97,6 +97,7 @@ HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIAN
     }
 
     *value = prop;
+    prop.bstrVal = nullptr;
     return S_OK;
 }
 
