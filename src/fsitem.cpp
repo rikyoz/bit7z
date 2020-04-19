@@ -20,6 +20,7 @@
  */
 
 #include <utility>
+#include <system_error>
 
 #include "../include/fsitem.hpp"
 
@@ -65,11 +66,15 @@ bool FSItem::isDots() const {
 }
 
 bool FSItem::isDir() const {
-    return mFileEntry.is_directory();
+    std::error_code ec;
+    bool res = mFileEntry.is_directory(ec);
+    return !ec ? res : false;
 }
 
 uint64_t FSItem::size() const {
-    return mFileEntry.file_size();
+    std::error_code ec;
+    auto res = mFileEntry.file_size(ec);
+    return !ec ? res : 0;
 }
 
 FILETIME FSItem::creationTime() const {
@@ -85,7 +90,8 @@ FILETIME FSItem::lastWriteTime() const {
 }
 
 bit7z::tstring FSItem::name() const {
-    return canonical( mFileEntry.path() ).filename();
+    [[maybe_unused]] std::error_code ec;
+    return canonical( mFileEntry.path(), ec ).filename();
 }
 
 fs::path FSItem::path() const {
