@@ -41,8 +41,8 @@ namespace bit7z {
             tstring getErrorMessage() const override;
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
+            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
 
         private:
             ostream& mOutputStream;

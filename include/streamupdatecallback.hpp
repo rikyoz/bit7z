@@ -39,10 +39,10 @@ namespace bit7z {
             ~StreamUpdateCallback() override = default;
 
             // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
+            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
 
             uint32_t itemsCount() const override;
 

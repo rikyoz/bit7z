@@ -38,8 +38,8 @@ namespace bit7z {
             ~BufferExtractCallback() override = default;
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
+            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
 
         private:
             map< tstring, vector< byte_t > >& mBuffersMap;

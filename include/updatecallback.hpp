@@ -51,21 +51,21 @@ namespace bit7z {
             HRESULT Finilize();
 
             // IProgress from IArchiveUpdateCallback2
-            STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+            STDMETHOD( SetTotal )( UInt64 size ) override;
+            STDMETHOD( SetCompleted )( const UInt64* completeValue ) override;
 
             // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
+            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize ) override;
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetUpdateItemInfo )( UInt32 index,
                                             Int32* newData,
                                             Int32* newProperties,
-                                            UInt32* indexInArchive );
-            STDMETHOD( SetOperationResult )( Int32 operationResult );
+                                            UInt32* indexInArchive ) override;
+            STDMETHOD( SetOperationResult )( Int32 operationResult ) override;
 
             //ICryptoGetTextPassword2
-            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
+            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password ) override;
 
         protected:
             const BitInputArchive* mOldArc;
