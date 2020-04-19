@@ -321,7 +321,7 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
         }
         names.push_back( prop_name );
-        values.emplace_back( to_tstring( mDictionarySize ) + TSTRING("b") );
+        values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
     }
 
     if ( !names.empty() ) {

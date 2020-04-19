@@ -23,6 +23,7 @@
 #include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
 #include "../include/updatecallback.hpp"
+#include "../include/fs.hpp"
 
 #include <vector>
 
@@ -48,7 +49,7 @@ namespace bit7z {
 
         private:
             istream& mStream;
-            const tstring& mStreamName;
+            const fs::path mStreamName;
     };
 }
 #endif // STREAMUPDATECALLBACK_HPP

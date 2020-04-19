@@ -22,6 +22,7 @@
 #include "../include/streamupdatecallback.hpp"
 
 #include "../include/cstdinstream.hpp"
+#include "../include/fs.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -39,7 +40,7 @@ StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
                                             const tstring& in_stream_name )
     : UpdateCallback( creator ),
       mStream( in_stream ),
-      mStreamName( in_stream_name ) {}
+      mStreamName( in_stream_name.empty() ? kEmptyFileAlias : in_stream_name ) {}
 
 HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
@@ -51,7 +52,7 @@ HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
     } else {
         switch ( propID ) {
             case kpidPath:
-                prop = ( mStreamName.empty() ) ? kEmptyFileAlias : mStreamName;
+                prop = mStreamName.wstring();
                 break;
             case kpidIsDir:
                 prop = false;

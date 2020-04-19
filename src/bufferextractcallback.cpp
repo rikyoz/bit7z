@@ -24,6 +24,7 @@
 #include "../include/cbufferoutstream.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
+#include "../include/util.hpp"
 
 using namespace std;
 using namespace NWindows;
@@ -44,7 +45,7 @@ STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index, ISequentialOutStrea
     tstring fullPath;
 
     if ( prop.isEmpty() ) {
-        fullPath = kEmptyFileAlias;
+        fullPath = fs::path( kEmptyFileAlias ).native();
     } else if ( prop.isString() ) {
         fullPath = prop.getString();
     } else {

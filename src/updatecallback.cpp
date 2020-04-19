@@ -62,7 +62,7 @@ STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        return mHandler.progressCallback()( *completeValue ) == true ? S_OK : E_ABORT;
+        return mHandler.progressCallback()(*completeValue) ? S_OK : E_ABORT;
     }
     return S_OK;
 }
@@ -98,12 +98,6 @@ HRESULT UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
     mNeedBeClosed = true;
     return S_OK;
 }
-
-#ifdef _WIN32
-#define WIDEN(tstr) tstr
-#else
-#define WIDEN(tstr) bit7z::widen(tstr)
-#endif
 
 HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
     if ( !mHandler.isPasswordDefined() ) {

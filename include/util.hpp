@@ -12,8 +12,13 @@ namespace bit7z {
     using std::wstring;
 
     string narrow( const wchar_t* wideString, size_t size );
-    string narrow( const wstring& wideString );
     wstring widen( const string& narrowString );
 }
+
+#ifdef _WIN32
+#define WIDEN(tstr) tstr
+#else
+#define WIDEN(tstr) bit7z::widen(tstr)
+#endif
 
 #endif //UTIL_HPP

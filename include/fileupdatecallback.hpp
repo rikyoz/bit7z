@@ -53,7 +53,7 @@ namespace bit7z {
             const vector< FSItem >& mNewItems;
 
             uint64_t mVolSize;
-            tstring mVolName;
+            tstring mVolName; //TODO: Check whether this is necessary...
 
             vector< pair< tstring, HRESULT > > mFailedFiles;
     };

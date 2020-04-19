@@ -310,7 +310,7 @@ namespace bit7z {
              *
              * @param value the wstring value of the BitPropVariant
              */
-            explicit BitPropVariant( const tstring& value );
+            explicit BitPropVariant( const std::wstring& value );
 
             /**
              * @brief Constructs a 8-bit unsigned integer BitPropVariant

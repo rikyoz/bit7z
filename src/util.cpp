@@ -34,10 +34,6 @@ string bit7z::narrow( const wchar_t* wideString, size_t size ) {
 #endif
 }
 
-string bit7z::narrow( const wstring& wideString ) {
-    return bit7z::narrow( wideString.data(), wideString.size() );
-}
-
 wstring bit7z::widen( const string& narrowString ) {
 #ifdef _WIN32
     int narrowSize = static_cast< int >( narrowString.size() );

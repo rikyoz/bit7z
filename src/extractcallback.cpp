@@ -21,6 +21,8 @@
 
 #include "../include/extractcallback.hpp"
 
+#include "../include/util.hpp"
+
 using namespace bit7z;
 
 ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
@@ -39,7 +41,7 @@ STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        return mHandler.progressCallback()( *completeValue ) == true ? S_OK : E_ABORT;
+        return mHandler.progressCallback()(*completeValue) ? S_OK : E_ABORT;
     }
     return S_OK;
 }
@@ -57,14 +59,6 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     mExtractMode = ( askExtractMode == NArchive::NExtract::NAskMode::kExtract );
     return S_OK;
 }
-
-#include "../include/util.hpp"
-
-#ifdef _WIN32
-#define WIDEN(tstr) tstr
-#else
-#define WIDEN(tstr) bit7z::widen(tstr)
-#endif
 
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;

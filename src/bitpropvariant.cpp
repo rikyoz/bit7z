@@ -112,15 +112,10 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
     }
 }
 
-BitPropVariant::BitPropVariant( const tstring& value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( const wstring& value ) : PROPVARIANT() {
     vt = VT_BSTR;
     wReserved1 = 0;
-#ifdef _WIN32
-    bstrVal = ::SysAllocStringLen( value.data(), static_cast< unsigned int >( value.size() ) );
-#else
-    std::wstring widenString = bit7z::widen( value );
-    bstrVal = ::SysAllocStringLen( widenString.data(), static_cast< unsigned int >( widenString.size() ) );
-#endif
+    bstrVal = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );
     if ( bstrVal == nullptr ) {
         throw BitException( "Could not allocate memory for BitPropVariant string" );
     }

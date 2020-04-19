@@ -22,6 +22,7 @@
 #include "../include/bufferupdatecallback.hpp"
 
 #include "../include/cbufferinstream.hpp"
+#include "../include/fs.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -39,7 +40,7 @@ BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
                                             const tstring& in_buffer_name )
     : UpdateCallback( creator ),
       mBuffer( in_buffer ),
-      mBufferName( in_buffer_name ) {}
+      mBufferName( in_buffer_name.empty() ? kEmptyFileAlias : in_buffer_name ) {}
 
 HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
@@ -51,7 +52,7 @@ HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
     } else {
         switch ( propID ) {
             case kpidPath:
-                prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
+                prop = mBufferName.wstring();
                 break;
             case kpidIsDir:
                 prop = false;

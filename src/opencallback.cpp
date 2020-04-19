@@ -50,14 +50,14 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     if ( mSubArchiveMode ) {
         switch ( propID ) {
             case kpidName:
-                prop = mSubArchiveName;
+                prop = fs::path( mSubArchiveName ).wstring();
                 break;
                 // case kpidSize:  prop = _subArchiveSize; break; // we don't use it now
         }
     } else {
         switch ( propID ) {
             case kpidName:
-                prop = mFileItem.name();
+                prop = fs::path( mFileItem.name() ).wstring();
                 break;
             case kpidIsDir:
                 prop = mFileItem.isDir();
@@ -118,17 +118,10 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 #ifdef _WIN32
     mSubArchiveName = name;
 #else
-    wstring nameStr = name;
-    mSubArchiveName = bit7z::narrow( name );
+    mSubArchiveName = fs::path( name ).string();
 #endif
     return S_OK;
 }
-
-#ifdef _WIN32
-#define WIDEN(tstr) tstr
-#else
-#define WIDEN(tstr) bit7z::widen(tstr)
-#endif
 
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;

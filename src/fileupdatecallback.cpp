@@ -71,7 +71,7 @@ HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIAN
         const FSItem& new_item = mNewItems[ index - mOldArcItemsCount ];
         switch ( propID ) {
             case kpidPath:
-                prop = new_item.inArchivePath();
+                prop = new_item.inArchivePath().wstring();
                 break;
             case kpidIsDir:
                 prop = new_item.isDir();
@@ -147,7 +147,7 @@ HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream*
     tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
         //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)
-        res.insert( res.begin(), 3 - res.length(), L'0' );
+        res.insert( res.begin(), 3 - res.length(), TSTRING('0') );
     }
 
     tstring fileName = mVolName + TSTRING('.') + res;// + mVolExt;

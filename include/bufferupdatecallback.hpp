@@ -23,6 +23,7 @@
 #include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
 #include "../include/updatecallback.hpp"
+#include "../include/fs.hpp"
 
 #include <vector>
 
@@ -47,7 +48,7 @@ namespace bit7z {
 
         private:
             const vector< byte_t >& mBuffer;
-            const tstring& mBufferName;
+            const fs::path mBufferName;
     };
 }
 #endif // MEMUPDATECALLBACK_HPP
