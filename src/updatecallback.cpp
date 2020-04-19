@@ -21,9 +21,7 @@
 
 #include "../include/updatecallback.hpp"
 
-#ifndef _WIN32
 #include "../include/util.hpp"
-#endif
 
 using namespace bit7z;
 
