@@ -24,8 +24,6 @@
 #include "../include/streamupdatecallback.hpp"
 #include "../include/fsutil.hpp"
 
-#include "../include/bitexception.hpp"
-
 using namespace bit7z;
 using namespace bit7z::filesystem;
 

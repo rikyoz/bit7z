@@ -21,12 +21,6 @@
 
 #include "../include/bitextractor.hpp"
 
-#include <algorithm>
-
-#ifdef BIT7Z_REGEX_MATCHING
-#include <regex>
-#endif
-
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fileextractcallback.hpp"

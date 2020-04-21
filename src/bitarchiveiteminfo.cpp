@@ -21,8 +21,6 @@
 
 #include "../include/bitarchiveiteminfo.hpp"
 
-#include "../include/bitexception.hpp"
-
 using namespace bit7z;
 
 BitArchiveItemInfo::BitArchiveItemInfo( uint32_t item_index ) : BitArchiveItem( item_index ) {}

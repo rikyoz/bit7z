@@ -27,12 +27,6 @@
 #include "../include/cbufferoutstream.hpp"
 #include "../include/updatecallback.hpp"
 
-#include <vector>
-
-#include <7zip/Archive/IArchive.h>
-#include <Common/MyCom.h>
-
-using std::vector;
 using namespace bit7z;
 
 void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {

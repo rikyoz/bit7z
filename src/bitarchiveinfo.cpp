@@ -21,12 +21,9 @@
 
 #include "../include/bitarchiveinfo.hpp"
 
-#include <algorithm>
 #include <numeric>
 
-#include "7zip/PropID.h"
-
-#include "../include/bitexception.hpp"
+#include <7zip/PropID.h>
 
 using namespace bit7z;
 
@@ -112,16 +109,16 @@ bool BitArchiveInfo::isMultiVolume() const {
     if ( mFormat == BitFormat::Split ) {
         return true;
     }
-    BitPropVariant propvar = getArchiveProperty( BitProperty::IsVolume );
-    return propvar.isBool() && propvar.getBool();
+    BitPropVariant is_multi_volume = getArchiveProperty( BitProperty::IsVolume );
+    return is_multi_volume.isBool() && is_multi_volume.getBool();
 }
 
 bool BitArchiveInfo::isSolid() const {
-    BitPropVariant propvar = getArchiveProperty( BitProperty::Solid );
-    return propvar.isBool() && propvar.getBool();
+    BitPropVariant is_solid = getArchiveProperty( BitProperty::Solid );
+    return is_solid.isBool() && is_solid.getBool();
 }
 
 uint32_t BitArchiveInfo::volumesCount() const {
-    BitPropVariant propvar = getArchiveProperty( BitProperty::NumVolumes );
-    return propvar.isEmpty() ? 1 : propvar.getUInt32();
+    BitPropVariant volumes_count = getArchiveProperty( BitProperty::NumVolumes );
+    return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
 }

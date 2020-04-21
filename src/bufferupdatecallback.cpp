@@ -22,7 +22,6 @@
 #include "../include/bufferupdatecallback.hpp"
 
 #include "../include/cbufferinstream.hpp"
-#include "../include/fs.hpp"
 
 using namespace std;
 using namespace bit7z;

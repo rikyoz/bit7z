@@ -21,7 +21,6 @@
 
 #include "../include/bitmemcompressor.hpp"
 
-#include "../include/bitexception.hpp"
 #include "../include/bufferupdatecallback.hpp"
 #include "../include/fsutil.hpp"
 

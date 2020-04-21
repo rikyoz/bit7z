@@ -21,7 +21,9 @@
 
 #include "../include/bitexception.hpp"
 
+#ifdef _WIN32
 #include "../include/util.hpp"
+#endif
 
 using std::string;
 using namespace bit7z;

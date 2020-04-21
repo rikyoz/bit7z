@@ -23,9 +23,6 @@
 
 #include "../include/cmultivoloutstream.hpp"
 
-#include <string>
-#include <algorithm>
-
 #include "../include/bitexception.hpp"
 
 using namespace bit7z;

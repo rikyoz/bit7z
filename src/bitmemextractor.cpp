@@ -22,7 +22,6 @@
 #include "../include/bitmemextractor.hpp"
 
 #include "../include/bitinputarchive.hpp"
-#include "../include/bitexception.hpp"
 #include "../include/bufferextractcallback.hpp"
 
 using namespace bit7z;

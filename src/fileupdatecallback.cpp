@@ -28,9 +28,6 @@
 
 #include "../include/cfileinstream.hpp"
 #include "../include/cfileoutstream.hpp"
-#include "../include/fsutil.hpp"
-
-#include <sstream>
 
 using namespace bit7z;
 

@@ -22,7 +22,6 @@
 #include "../include/fsutil.hpp"
 
 #ifndef _WIN32
-
 #include <chrono>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -30,7 +29,6 @@
 #include <unistd.h>
 #include <utime.h>
 #include <myWindows/StdAfx.h>
-
 #endif
 
 using namespace std;

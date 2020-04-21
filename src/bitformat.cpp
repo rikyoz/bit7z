@@ -27,9 +27,7 @@
 #include "../include/fsutil.hpp"
 
 #include <unordered_map>
-#include <algorithm>
 #include <cwctype>
-#include <cstdint>
 
 #include <7zip/IStream.h>
 
@@ -358,7 +356,7 @@ namespace bit7z {
                 return it->second;
             }
 
-            // Detecting multivolume archives extension
+            // Detecting multi-volume archives extension
             if ( ( ext[ 0 ] == L'r' || ext[ 0 ] == L'z' ) &&
                  ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
                 // Extension follows the format zXX or rXX, where X is a number in range [0-9]
@@ -379,7 +377,7 @@ namespace bit7z {
 
 using namespace bit7z;
 
-BitInFormat::BitInFormat( unsigned char value ) : mValue( value ) {}
+BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
 
 int BitInFormat::value() const {
     return mValue;
@@ -400,7 +398,7 @@ GUID BitInFormat::guid() const {
 BitInOutFormat::BitInOutFormat( unsigned char value,
                                 const tchar* ext,
                                 BitCompressionMethod defaultMethod,
-                                const FeaturesSet& features )
+                                const FeaturesSet& features ) noexcept
     : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
 const tstring& BitInOutFormat::extension() const {

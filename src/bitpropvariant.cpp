@@ -22,11 +22,11 @@
 #include "../include/bitpropvariant.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/util.hpp"
 
 #ifdef _WIN32
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
+#include "../include/util.hpp"
 #define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
 #endif
 
@@ -112,7 +112,7 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
     }
 }
 
-BitPropVariant::BitPropVariant( const wstring& value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( const std::wstring& value ) : PROPVARIANT() {
     vt = VT_BSTR;
     wReserved1 = 0;
     bstrVal = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );

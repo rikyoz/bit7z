@@ -32,7 +32,7 @@ using namespace bit7z::filesystem;
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what
  *    the user passes as path parameter in the constructor. If it is a directory, it doesn't contain a trailing / or \
- *    character, in order to use the method FindFirstFile without problems (as requested by that winapi function).
+ *    character, in order to use the method FindFirstFile without problems (as requested by that WinAPI function).
  * 2) mSearchPath contains the search path in which the item was found (e.g. if FSIndexer is searching items in
  *    "foo/bar/", each FSItem created for the elements it found will have mSearchPath == "foo/bar").
  *    As in mPath, mSearchPath does not contain trailing / or \! *
