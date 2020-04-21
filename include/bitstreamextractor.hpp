@@ -53,7 +53,7 @@ namespace bit7z {
              * @param in_stream     the (binary) stream containing the archive to be extracted.
              * @param out_dir       the output directory where to put the file extracted.
              */
-            void extract( istream& in_stream, const tstring& out_dir = TSTRING("") ) const;
+            void extract( istream& in_stream, const tstring& out_dir = TSTRING( "" ) ) const;
 
             /**
              * @brief Extracts the given stream archive into the output buffer.

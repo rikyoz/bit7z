@@ -32,7 +32,7 @@ BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& fo
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const tstring& out_dir ) const {
     BitInputArchive in_archive( *this, in_buffer );
-    extractToFileSystem( in_archive, TSTRING(""), out_dir, vector< uint32_t >() );
+    extractToFileSystem( in_archive, TSTRING( "" ), out_dir, vector< uint32_t >() );
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
@@ -42,7 +42,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
     extractToBuffer( in_archive, out_buffer, index );
 }
 
-void BitMemExtractor::extract( const vector<byte_t>& in_buffer, std::ostream& out_stream, unsigned int index ) const {
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, std::ostream& out_stream, unsigned int index ) const {
     BitInputArchive in_archive( *this, in_buffer );
     extractToStream( in_archive, out_stream, index );
 }

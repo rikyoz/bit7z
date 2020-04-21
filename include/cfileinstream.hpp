@@ -9,7 +9,9 @@ namespace bit7z {
     class CFileInStream : public CStdInStream {
         public:
             explicit CFileInStream( const fs::path& filePath );
+
             void open( const fs::path& filePath );
+
             bool fail();
 
         private:

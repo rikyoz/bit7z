@@ -77,7 +77,7 @@ void BitCompressor::compressFiles( const tstring& in_dir, const tstring& out_fil
 }
 
 void BitCompressor::compressDirectory( const tstring& in_dir, const tstring& out_file ) const {
-    compressFiles( in_dir, out_file, true, TSTRING("") );
+    compressFiles( in_dir, out_file, true, TSTRING( "" ) );
 }
 
 /* from filesystem to memory buffer */

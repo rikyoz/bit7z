@@ -41,7 +41,9 @@ std::string StreamExtractCallback::getErrorMessage() const {
     return Callback::getErrorMessage();
 }
 
-STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index,
+                                               ISequentialOutStream** outStream,
+                                               Int32 askExtractMode ) try {
     *outStream = nullptr;
     mStdOutStream.Release();
 
@@ -62,29 +64,24 @@ STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index, ISequentialOutStrea
 }
 
 STDMETHODIMP StreamExtractCallback::SetOperationResult( Int32 operationResult ) {
-    switch ( operationResult ) {
-        case NArchive::NExtract::NOperationResult::kOK:
-            break;
+    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+        mNumErrors++;
 
-        default: {
-            mNumErrors++;
+        switch ( operationResult ) {
+            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+                mErrorMessage = kUnsupportedMethod;
+                break;
 
-            switch ( operationResult ) {
-                case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
-                    mErrorMessage = kUnsupportedMethod;
-                    break;
+            case NArchive::NExtract::NOperationResult::kCRCError:
+                mErrorMessage = kCRCFailed;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kCRCError:
-                    mErrorMessage = kCRCFailed;
-                    break;
+            case NArchive::NExtract::NOperationResult::kDataError:
+                mErrorMessage = kDataError;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kDataError:
-                    mErrorMessage = kDataError;
-                    break;
-
-                default:
-                    mErrorMessage = kUnknownError;
-            }
+            default:
+                mErrorMessage = kUnknownError;
         }
     }
 

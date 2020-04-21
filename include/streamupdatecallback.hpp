@@ -41,8 +41,11 @@ namespace bit7z {
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+
             STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+
             STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+
             STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
 
             uint32_t itemsCount() const override;

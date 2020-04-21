@@ -113,7 +113,7 @@ namespace bit7z {
             void compressFiles( const tstring& in_dir,
                                 const tstring& out_file,
                                 bool recursive = true,
-                                const tstring& filter = TSTRING("*.*") ) const;
+                                const tstring& filter = TSTRING( "*.*" ) ) const;
 
             /**
              * @brief Compresses an entire directory.
@@ -148,7 +148,7 @@ namespace bit7z {
              * @param in_paths      a vector of paths.
              * @param out_stream    the standard ostream where the archive will be output.
              */
-            void compress( const vector<tstring>& in_paths, ostream& out_stream ) const;
+            void compress( const vector< tstring >& in_paths, ostream& out_stream ) const;
 
             /**
              * @brief Compresses the given files or directories using the specified aliases.
@@ -161,10 +161,11 @@ namespace bit7z {
              * @param in_paths      a map of paths and corresponding aliases.
              * @param out_stream    the standard ostream where to output the archive file.
              */
-            void compress( const map<tstring, tstring>& in_paths, ostream& out_stream ) const;
+            void compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const;
 
         private:
             void compressOut( const vector< FSItem >& in_items, const tstring& out_file ) const;
+
             void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };
 }

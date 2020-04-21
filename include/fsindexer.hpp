@@ -33,7 +33,7 @@ namespace bit7z {
         class FSIndexer {
             public:
                 static vector< FSItem > indexDirectory( const fs::path& in_dir,
-                                                        const tstring& filter = TSTRING(""),
+                                                        const tstring& filter = TSTRING( "" ),
                                                         bool recursive = true );
 
                 static vector< FSItem > indexPaths( const vector< tstring >& in_paths, bool ignore_dirs = false );
@@ -45,9 +45,11 @@ namespace bit7z {
                 FSItem mDirItem;
                 tstring mFilter;
 
-                explicit FSIndexer( const fs::path& directory, tstring filter = TSTRING("") );
+                explicit FSIndexer( const fs::path& directory, tstring filter = TSTRING( "" ) );
 
-                void listDirectoryItems( vector< FSItem >& result, bool recursive, const fs::path &prefix = fs::path() );
+                void listDirectoryItems( vector< FSItem >& result,
+                                         bool recursive,
+                                         const fs::path& prefix = fs::path() );
 
                 static void indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem >& result );
         };

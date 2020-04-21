@@ -25,9 +25,9 @@
 #include "../include/util.hpp"
 
 #ifdef _WIN32
-#define BSTR_TO_TSTRING(bstr) std::wstring( bstr, ::SysStringLen( bstr ) )
+#define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
-#define BSTR_TO_TSTRING(bstr) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
+#define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
 #endif
 
 using namespace bit7z;
@@ -84,7 +84,7 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
     }
 }
 
-BitPropVariant::BitPropVariant( BitPropVariant&& other ) NOEXCEPT : PROPVARIANT( other ) {
+BitPropVariant::BitPropVariant( BitPropVariant&& other ) NOEXCEPT: PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) {
         /* this and other share the pointer to the same string, but now the string belongs to this!
          * Hence, if we set the other.bstrVal to nullptr, we prevent the bstrVal from being destroyed when
@@ -247,7 +247,7 @@ tstring BitPropVariant::getString() const {
         throw BitException( "BitPropVariant is not a string" );
     }
     //Note: a nullptr BSTR is semantically equivalent to an empty string!
-    return bstrVal == nullptr ? TSTRING("") : BSTR_TO_TSTRING( bstrVal );
+    return bstrVal == nullptr ? TSTRING( "" ) : BSTR_TO_TSTRING( bstrVal );
 }
 
 uint8_t BitPropVariant::getUInt8() const {
@@ -364,7 +364,7 @@ FILETIME BitPropVariant::getFiletime() const {
 tstring BitPropVariant::toString() const {
     switch ( vt ) {
         case VT_BOOL:
-            return boolVal == VARIANT_TRUE ? TSTRING("true") : TSTRING("false");
+            return boolVal == VARIANT_TRUE ? TSTRING( "true" ) : TSTRING( "false" );
         case VT_BSTR:
             return BSTR_TO_TSTRING( bstrVal );
         case VT_UI1:
@@ -388,9 +388,9 @@ tstring BitPropVariant::toString() const {
         case VT_I8:
             return to_tstring( hVal.QuadPart );
         case VT_FILETIME:
-            return to_tstring( filetime.dwHighDateTime ) + TSTRING(", ") + to_tstring( filetime.dwLowDateTime );
+            return to_tstring( filetime.dwHighDateTime ) + TSTRING( ", " ) + to_tstring( filetime.dwLowDateTime );
     }
-    throw BitException( TSTRING("BitPropVariant type not supported (vt: ") + to_tstring( vt ) + TSTRING(")") );
+    throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")" );
 }
 
 bool BitPropVariant::isEmpty() const {

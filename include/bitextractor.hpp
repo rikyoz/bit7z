@@ -55,7 +55,7 @@ namespace bit7z {
              * @param in_file       the input archive file.
              * @param out_dir       the output directory where extracted files will be put.
              */
-            void extract( const tstring& in_file, const tstring& out_dir = TSTRING("") ) const;
+            void extract( const tstring& in_file, const tstring& out_dir = TSTRING( "" ) ) const;
 
             /**
              * @brief Extracts the wildcard matching files in the given archive into the choosen directory.
@@ -66,9 +66,10 @@ namespace bit7z {
              */
             void extractMatching( const tstring& in_file,
                                   const tstring& item_filter,
-                                  const tstring& out_dir = TSTRING("") ) const;
+                                  const tstring& out_dir = TSTRING( "" ) ) const;
 
 #ifdef BIT7Z_REGEX_MATCHING
+
             /**
              * @brief Extracts the regex matching files in the given archive into the choosen directory.
              *
@@ -79,6 +80,7 @@ namespace bit7z {
              * @param out_dir       the output directory where extracted files will be put.
              */
             void extractMatchingRegex( const tstring& in_file, const tstring& regex, const tstring& out_dir ) const;
+
 #endif
 
             /**
@@ -90,7 +92,7 @@ namespace bit7z {
              */
             void extractItems( const tstring& in_file,
                                const vector< uint32_t >& indices,
-                               const tstring& out_dir = TSTRING("") ) const;
+                               const tstring& out_dir = TSTRING( "" ) ) const;
 
             /**
              * @brief Extracts a file from the given archive into the output buffer.

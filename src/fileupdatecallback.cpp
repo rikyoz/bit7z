@@ -106,7 +106,7 @@ uint32_t FileUpdateCallback::itemsCount() const {
 }
 
 HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finilize() );
+    RINOK( Finalize() );
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
         return S_OK;
@@ -147,10 +147,10 @@ HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream*
     tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
         //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)
-        res.insert( res.begin(), 3 - res.length(), TSTRING('0') );
+        res.insert( res.begin(), 3 - res.length(), TSTRING( '0' ) );
     }
 
-    tstring fileName = mVolName + TSTRING('.') + res;// + mVolExt;
+    tstring fileName = mVolName + TSTRING( '.' ) + res;// + mVolExt;
     CMyComPtr< CFileOutStream > stream = new CFileOutStream( fileName );
 
     if ( stream->fail() ) {

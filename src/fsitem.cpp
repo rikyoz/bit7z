@@ -40,7 +40,7 @@ using namespace bit7z::filesystem;
  *    the path of the file in the archive), the path in the archive is calculated form mPath and mSearchPath
  *    (see inArchivePath() method). */
 
-FSItem::FSItem( const fs::path &itemPath, fs::path inArchivePath )
+FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     : mCreationTime(), mLastAccessTime(), mLastWriteTime(),
       mSearchPath(), mInArchivePath( std::move( inArchivePath ) ) {
     std::error_code ec;
@@ -67,13 +67,13 @@ bool FSItem::isDots() const {
 
 bool FSItem::isDir() const {
     std::error_code ec;
-    bool res = mFileEntry.is_directory(ec);
+    bool res = mFileEntry.is_directory( ec );
     return !ec ? res : false;
 }
 
 uint64_t FSItem::size() const {
     std::error_code ec;
-    auto res = mFileEntry.file_size(ec);
+    auto res = mFileEntry.file_size( ec );
     return !ec ? res : 0;
 }
 
@@ -126,11 +126,13 @@ fs::path FSItem::inArchivePath() const {
     const auto& path = mFileEntry.path();
     const auto& filename = path.lexically_normal().filename();
     if ( filename == "." || filename == ".." ) {
-        return TSTRING("");
+        return TSTRING( "" );
     }
 
     const auto& native_path = path.native();
-    if ( path.is_absolute() || native_path.find( TSTRING("./") ) != bit7z::tstring::npos || native_path.find( TSTRING(".\\") ) != bit7z::tstring::npos ) {
+    if ( path.is_absolute() ||
+         native_path.find( TSTRING( "./" ) ) != bit7z::tstring::npos ||
+         native_path.find( TSTRING( ".\\" ) ) != bit7z::tstring::npos ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
         // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
         if ( mSearchPath.empty() ) {

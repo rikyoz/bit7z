@@ -41,12 +41,16 @@ namespace bit7z {
 
             // CompressCallback
             uint32_t itemsCount() const override;
+
             std::string getErrorMessage() const override;
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+
             STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+
             STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+
             STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
 
         private:

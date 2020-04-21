@@ -51,7 +51,7 @@ namespace bit7z {
              * @param in_buffer     the buffer containing the archive to be extracted.
              * @param out_dir       the output directory where to put the file extracted.
              */
-            void extract( const vector< byte_t >& in_buffer, const tstring& out_dir = TSTRING("") ) const;
+            void extract( const vector< byte_t >& in_buffer, const tstring& out_dir = TSTRING( "" ) ) const;
 
             /**
              * @brief Extracts the given buffer archive into the output buffer.

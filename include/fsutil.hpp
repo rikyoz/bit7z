@@ -40,9 +40,12 @@ namespace bit7z {
 
             uint32_t getFileAttributes( const fs::path& filePath );
 
-            bool setFileAttributes( const fs::path &filePath, uint32_t attributes );
+            bool setFileAttributes( const fs::path& filePath, uint32_t attributes );
 
-            bool getFileTimes( const fs::path& filePath, FILETIME& creationTime, FILETIME& accessTime, FILETIME& writeTime );
+            bool getFileTimes( const fs::path& filePath,
+                               FILETIME& creationTime,
+                               FILETIME& accessTime,
+                               FILETIME& writeTime );
         }
     }
 }

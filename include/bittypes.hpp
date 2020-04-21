@@ -20,6 +20,7 @@
 #define BITTYPES_HPP
 
 #include <string>
+
 #ifdef BIT7Z_AUTO_FORMAT
 #include <regex>
 #endif
@@ -39,21 +40,19 @@ namespace bit7z {
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
     using tstring = std::wstring;
-    using tstringstream = std::wstringstream;
 #ifdef BIT7Z_AUTO_FORMAT
     using tregex = std::wregex;
 #endif
-    #define TSTRING(str) L##str
-    #define to_tstring std::to_wstring
+#define TSTRING( str ) L##str
+#define to_tstring std::to_wstring
 #else // Unix
     using tchar = char;
     using tstring = std::string;
-    using tstringstream = std::stringstream;
 #ifdef BIT7Z_AUTO_FORMAT
     using tregex = std::regex;
 #endif
-    #define TSTRING(str) str
-    #define to_tstring std::to_string
+#define TSTRING( str ) str
+#define to_tstring std::to_string
 
     CONSTEXPR auto ERROR_OPEN_FAILED = EIO;
     CONSTEXPR auto ERROR_FILE_NOT_FOUND = ENOENT;

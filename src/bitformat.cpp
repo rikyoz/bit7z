@@ -22,6 +22,7 @@
 #include "../include/bitformat.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
+
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
@@ -359,7 +360,7 @@ namespace bit7z {
 
             // Detecting multivolume archives extension
             if ( ( ext[ 0 ] == L'r' || ext[ 0 ] == L'z' ) &&
-                    ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
+                 ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
                 // Extension follows the format zXX or rXX, where X is a number in range [0-9]
                 return ext[ 0 ] == L'r' ? Rar : Zip;
             }
@@ -369,6 +370,7 @@ namespace bit7z {
             // The extension did not match any known format extension, delegating the decision to the client
             return Auto;
         }
+
 #endif
 
     }

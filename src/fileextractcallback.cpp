@@ -40,16 +40,18 @@ using namespace bit7z;
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
 FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
-        const BitInputArchive& inputArchive,
-        fs::path inFilePath,
-        fs::path directoryPath )
+                                          const BitInputArchive& inputArchive,
+                                          fs::path inFilePath,
+                                          fs::path directoryPath )
     : ExtractCallback( handler, inputArchive ),
-      mInFilePath( std::move(inFilePath) ),
-      mDirectoryPath( std::move(directoryPath) ),
+      mInFilePath( std::move( inFilePath ) ),
+      mDirectoryPath( std::move( directoryPath ) ),
       mProcessedFileInfo() {}
 
 //TODO: clean and optimize!
-STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
+                                             ISequentialOutStream** outStream,
+                                             Int32 askExtractMode ) try {
     *outStream = nullptr;
     mFileOutStream.Release();
     // Get Name
@@ -108,7 +110,7 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
 
     if ( mProcessedFileInfo.isDir ) {
         error_code ec;
-        fs::create_directories(  mDiskFilePath, ec );
+        fs::create_directories( mDiskFilePath, ec );
     } else {
         if ( mHandler.fileCallback() ) {
             mHandler.fileCallback()( mDiskFilePath.filename() );

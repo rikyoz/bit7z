@@ -42,16 +42,18 @@ namespace bit7z {
                            protected ICryptoGetTextPassword2 {
         public:
             ~UpdateCallback() override;
+
             virtual uint32_t itemsCount() const = 0;
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
             void setOldArc( const BitInputArchive* old_arc );
 
-            HRESULT Finilize();
+            HRESULT Finalize();
 
             // IProgress from IArchiveUpdateCallback2
             STDMETHOD( SetTotal )( UInt64 size ) override;
+
             STDMETHOD( SetCompleted )( const UInt64* completeValue ) override;
 
             // ICompressProgressInfo
@@ -62,6 +64,7 @@ namespace bit7z {
                                             Int32* newData,
                                             Int32* newProperties,
                                             UInt32* indexInArchive ) override;
+
             STDMETHOD( SetOperationResult )( Int32 operationResult ) override;
 
             //ICryptoGetTextPassword2

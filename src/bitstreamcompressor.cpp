@@ -37,7 +37,9 @@ void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, con
     BitArchiveCreator::compressToStream( out_stream, update_callback );
 }
 
-void BitStreamCompressor::compress( istream& in_stream, vector< byte_t >& out_buffer, const tstring& in_stream_name ) const {
+void BitStreamCompressor::compress( istream& in_stream,
+                                    vector< byte_t >& out_buffer,
+                                    const tstring& in_stream_name ) const {
     CMyComPtr< UpdateCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
     BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }

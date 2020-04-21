@@ -27,8 +27,6 @@
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
 
-#include <Common/MyCom.h>
-
 using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
@@ -37,6 +35,7 @@ using namespace NArchive;
 namespace bit7z {
     namespace BitFormat {
         const BitInFormat& detectFormatFromExt( const tstring& in_file );
+
         const BitInFormat& detectFormatFromSig( IInStream* stream );
     }
 }
@@ -48,7 +47,9 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
     return arc_object;
 }
 
-IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler, const tstring& name, IInStream* in_stream ) {
+IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
+                                                const tstring& name,
+                                                IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -86,7 +87,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( TSTRING("Cannot open archive '") + name + TSTRING("'"), ERROR_OPEN_FAILED );
+        throw BitException( TSTRING( "Cannot open archive '" ) + name + TSTRING( "'" ), ERROR_OPEN_FAILED );
     }
 
     return in_archive.Detach();
@@ -96,7 +97,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const tstrin
     fs::path in_file_path = in_file;
     CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file_path );
     if ( file_stream->fail() ) {
-        throw BitException( TSTRING("Cannot open archive file '") + in_file + TSTRING("'"), ERROR_OPEN_FAILED );
+        throw BitException( TSTRING( "Cannot open archive file '" ) + in_file + TSTRING( "'" ), ERROR_OPEN_FAILED );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
@@ -111,31 +112,31 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const tstrin
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
     CMyComPtr< IInStream > buf_stream = new CBufferInStream( in_buffer );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-    mInArchive = openArchiveStream( handler, TSTRING("."), buf_stream );
+    mInArchive = openArchiveStream( handler, TSTRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) {
     CMyComPtr< IInStream > std_stream = new CStdInStream( in_stream );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-    mInArchive = openArchiveStream( handler, TSTRING("."), std_stream );
+    mInArchive = openArchiveStream( handler, TSTRING( "." ), std_stream );
 }
 
 BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
-    BitPropVariant propvar;
-    HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &propvar );
+    BitPropVariant archive_property;
+    HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );
     if ( res != S_OK ) {
         throw BitException( "Could not retrieve archive property", res );
     }
-    return propvar;
+    return archive_property;
 }
 
 BitPropVariant BitInputArchive::getItemProperty( uint32_t index, BitProperty property ) const {
-    BitPropVariant propvar;
-    HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &propvar );
+    BitPropVariant item_property;
+    HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
     if ( res != S_OK ) {
-        throw BitException( TSTRING("Could not retrieve property for item at index ") + to_tstring( index ), res );
+        throw BitException( "Could not retrieve property for item at index " + std::to_string( index ), res );
     }
-    return propvar;
+    return item_property;
 }
 
 uint32_t BitInputArchive::itemsCount() const {
@@ -148,13 +149,13 @@ uint32_t BitInputArchive::itemsCount() const {
 }
 
 bool BitInputArchive::isItemFolder( uint32_t index ) const {
-    BitPropVariant prop = getItemProperty( index, BitProperty::IsDir );
-    return !prop.isEmpty() && prop.getBool();
+    BitPropVariant is_item_folder = getItemProperty( index, BitProperty::IsDir );
+    return !is_item_folder.isEmpty() && is_item_folder.getBool();
 }
 
 bool BitInputArchive::isItemEncrypted( uint32_t index ) const {
-    BitPropVariant propvar = getItemProperty( index, BitProperty::Encrypted );
-    return propvar.isBool() && propvar.getBool();
+    BitPropVariant is_item_encrypted = getItemProperty( index, BitProperty::Encrypted );
+    return is_item_encrypted.isBool() && is_item_encrypted.getBool();
 }
 
 HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
@@ -172,7 +173,10 @@ void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallbac
 }
 
 void BitInputArchive::test( ExtractCallback* extract_callback ) const {
-    HRESULT res = mInArchive->Extract( nullptr, static_cast< uint32_t >( -1 ), NExtract::NAskMode::kTest, extract_callback );
+    HRESULT res = mInArchive->Extract( nullptr,
+                                       static_cast< uint32_t >( -1 ),
+                                       NExtract::NAskMode::kTest,
+                                       extract_callback );
     if ( res != S_OK ) {
         throw BitException( extract_callback->getErrorMessage(), res );
     }

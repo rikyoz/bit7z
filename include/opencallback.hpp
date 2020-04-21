@@ -40,7 +40,7 @@ namespace bit7z {
                          public ICryptoGetTextPassword,
                          public Callback {
         public:
-            explicit OpenCallback( const BitArchiveHandler& handler, const tstring& filename = TSTRING(".") );
+            explicit OpenCallback( const BitArchiveHandler& handler, const tstring& filename = TSTRING( "." ) );
 
             ~OpenCallback() override = default;
 
@@ -48,10 +48,12 @@ namespace bit7z {
 
             //IArchiveOpenCallback
             STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes ) override;
+
             STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes ) override;
 
             //IArchiveOpenVolumeCallback
             STDMETHOD( GetProperty )( PROPID propID, PROPVARIANT* value ) override;
+
             STDMETHOD( GetStream )( const wchar_t* name, IInStream** inStream ) override;
 
             //IArchiveOpenSetSubArchiveName
@@ -62,7 +64,7 @@ namespace bit7z {
 
         private:
             bool mSubArchiveMode;
-            tstring mSubArchiveName;
+            std::wstring mSubArchiveName;
             FSItem mFileItem;
     };
 }

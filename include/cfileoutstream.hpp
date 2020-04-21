@@ -9,6 +9,7 @@ namespace bit7z {
     class CFileOutStream : public CStdOutStream {
         public:
             explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
+
             void open( const fs::path& filePath, bool createAlways = false );
 
             bool fail();

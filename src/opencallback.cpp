@@ -48,11 +48,9 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
     if ( mSubArchiveMode ) {
-        switch ( propID ) {
-            case kpidName:
-                prop = fs::path( mSubArchiveName ).wstring();
-                break;
-                // case kpidSize:  prop = _subArchiveSize; break; // we don't use it now
+        if ( propID == kpidName ) {
+            prop = mSubArchiveName;
+            // case kpidSize:  prop = _subArchiveSize; break; // we don't use it for now
         }
     } else {
         switch ( propID ) {
@@ -96,7 +94,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         auto stream_path = mFileItem.path();
         if ( name != nullptr ) {
             stream_path = stream_path.parent_path();
-            stream_path.append(name); 
+            stream_path.append( name );
             auto stream_status = fs::status( stream_path );
             if ( !fs::exists( stream_status ) || fs::is_directory( stream_status ) ) {  // avoid exceptions using status
                 return S_FALSE;
@@ -115,11 +113,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
 
 STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
     mSubArchiveMode = true;
-#ifdef _WIN32
     mSubArchiveName = name;
-#else
-    mSubArchiveName = fs::path( name ).string();
-#endif
     return S_OK;
 }
 

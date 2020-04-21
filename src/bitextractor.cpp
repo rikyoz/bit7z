@@ -22,6 +22,7 @@
 #include "../include/bitextractor.hpp"
 
 #include <algorithm>
+
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
 #endif
@@ -54,10 +55,11 @@ void BitExtractor::extractMatching( const tstring& in_file, const tstring& item_
 
     extractMatchingFilter( in_file, out_dir, [ &item_filter ]( const tstring& item_path ) -> bool {
         return fsutil::wildcardMatch( item_filter, item_path );
-    });
+    } );
 }
 
 #ifdef BIT7Z_REGEX_MATCHING
+
 void BitExtractor::extractMatchingRegex( const tstring& in_file, const tstring& regex, const tstring& out_dir ) const {
     if ( regex.empty() ) {
         throw BitException( "Empty regex filter", E_INVALIDARG );
@@ -66,8 +68,9 @@ void BitExtractor::extractMatchingRegex( const tstring& in_file, const tstring& 
     const tregex regex_filter( regex, std::regex::ECMAScript | std::regex::optimize );
     extractMatchingFilter( in_file, out_dir, [ &regex_filter ]( const tstring& item_path ) -> bool {
         return std::regex_match( item_path, regex_filter );
-    });
+    } );
 }
+
 #endif
 
 void BitExtractor::extractMatchingFilter( const tstring& in_file,
@@ -103,9 +106,9 @@ void BitExtractor::extractItems( const tstring& in_file,
     uint32_t n_items = in_archive.itemsCount();
     const auto find_res = std::find_if( indices.cbegin(), indices.cend(), [ &n_items ]( uint32_t index ) -> bool {
         return index >= n_items;
-    });
+    } );
     if ( find_res != indices.cend() ) {
-        throw BitException( TSTRING("Index ") + to_tstring( *find_res ) + TSTRING(" is not valid"), E_INVALIDARG );
+        throw BitException( "Index " + std::to_string( *find_res ) + " is not valid", E_INVALIDARG );
     }
 
     extractToFileSystem( in_archive, in_file, out_dir, indices );

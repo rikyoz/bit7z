@@ -20,7 +20,7 @@ string bit7z::narrow( const wchar_t* wideString, size_t size ) {
     string result;
     if ( narrowSize > 0 ) {
         result.resize( static_cast< size_t >( narrowSize ) );
-        WideCharToMultiByte( CP_UTF8, 0, wideString, wideSize, &result[0], narrowSize, nullptr, nullptr );
+        WideCharToMultiByte( CP_UTF8, 0, wideString, wideSize, &result[ 0 ], narrowSize, nullptr, nullptr );
     }
     return result;
 #else
@@ -37,11 +37,11 @@ string bit7z::narrow( const wchar_t* wideString, size_t size ) {
 wstring bit7z::widen( const string& narrowString ) {
 #ifdef _WIN32
     int narrowSize = static_cast< int >( narrowString.size() );
-    int wideSize = MultiByteToWideChar( CP_UTF8, 0, &narrowString[0], narrowSize, nullptr, 0 );
+    int wideSize = MultiByteToWideChar( CP_UTF8, 0, &narrowString[ 0 ], narrowSize, nullptr, 0 );
     wstring result;
     if ( wideSize > 0 ) {
         result.resize( static_cast< size_t >( wideSize ) );
-        MultiByteToWideChar( CP_UTF8, 0, &narrowString[0], narrowSize, &result[0], wideSize );
+        MultiByteToWideChar( CP_UTF8, 0, &narrowString[ 0 ], narrowSize, &result[ 0 ], wideSize );
     }
     return result;
 #else

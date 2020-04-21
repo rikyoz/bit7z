@@ -25,7 +25,6 @@
 #ifdef _WIN32
 #include <Windows.h>
 #else
-
 #include <myWindows/StdAfx.h>
 #endif
 
@@ -74,6 +73,7 @@ namespace bit7z {
             BitException( const std::string& message, DWORD code );
 
 #ifdef _WIN32
+
             /**
              * @brief Constructs a BitException object with the given message.
              *
@@ -97,6 +97,7 @@ namespace bit7z {
              * @param code      the Win32 error code associated with the exception object.
              */
             BitException( const std::wstring& message, DWORD code );
+
 #endif
 
             /**

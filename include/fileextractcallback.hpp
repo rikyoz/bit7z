@@ -33,12 +33,13 @@ namespace bit7z {
             FileExtractCallback( const BitArchiveHandler& handler,
                                  const BitInputArchive& inputArchive,
                                  fs::path inFilePath,
-                                 fs::path directoryPath);
+                                 fs::path directoryPath );
 
             ~FileExtractCallback() override = default;
 
             // IArchiveExtractCallback
             STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
+
             STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
 
         private:

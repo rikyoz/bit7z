@@ -194,8 +194,11 @@ namespace bit7z {
                                                        unique_ptr< BitInputArchive >& old_arc ) const;
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
+
             void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
+
             void compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const;
+
             void compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const;
 
         private:

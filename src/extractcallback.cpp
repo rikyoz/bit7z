@@ -41,7 +41,7 @@ STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        return mHandler.progressCallback()(*completeValue) ? S_OK : E_ABORT;
+        return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
     return S_OK;
 }

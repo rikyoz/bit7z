@@ -37,6 +37,7 @@ namespace bit7z {
     class Callback : protected CMyUnknownImp {
         public:
             virtual ~Callback() = default;
+
             virtual std::string getErrorMessage() const;
 
         protected:

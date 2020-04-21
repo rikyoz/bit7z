@@ -32,7 +32,7 @@ using namespace bit7z::filesystem;
 FSIndexer::FSIndexer( const fs::path& directory, tstring filter )
     : mDirItem( directory ), mFilter( std::move( filter ) ) {
     if ( !mDirItem.isDir() ) {
-        throw BitException( TSTRING("'") + mDirItem.name() + TSTRING("' is not a directory!"), ERROR_DIRECTORY );
+        throw BitException( TSTRING( "'" ) + mDirItem.name() + TSTRING( "' is not a directory!" ), ERROR_DIRECTORY );
     }
 }
 
@@ -59,7 +59,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             //currentItem is a directory and we must list it only if:
             // > indexing is done recursively
             // > indexing is not recursive but the directory name matched the filter
-            fs::path next_dir = prefix.empty() ? fs::path(current_item.name()) : prefix / current_item.name();
+            fs::path next_dir = prefix.empty() ? fs::path( current_item.name() ) : prefix / current_item.name();
             listDirectoryItems( result, true, next_dir );
         }
     }

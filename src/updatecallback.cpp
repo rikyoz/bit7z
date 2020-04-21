@@ -33,7 +33,7 @@ UpdateCallback::UpdateCallback( const BitArchiveCreator& creator )
       mNeedBeClosed( false ) {}
 
 UpdateCallback::~UpdateCallback() {
-    Finilize();
+    Finalize();
 }
 
 void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
@@ -43,7 +43,7 @@ void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
     }
 }
 
-HRESULT UpdateCallback::Finilize() {
+HRESULT UpdateCallback::Finalize() {
     if ( mNeedBeClosed ) {
         mNeedBeClosed = false;
     }
@@ -60,7 +60,7 @@ STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        return mHandler.progressCallback()(*completeValue) ? S_OK : E_ABORT;
+        return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
     return S_OK;
 }

@@ -57,7 +57,7 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            const tstring& out_file,
-                           const tstring& in_buffer_name = TSTRING("") ) const;
+                           const tstring& in_buffer_name = TSTRING( "" ) ) const;
 
             /**
              * @brief Compresses the given input buffer to the output buffer.
@@ -70,7 +70,7 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            vector< byte_t >& out_buffer,
-                           const tstring& in_buffer_name = TSTRING("") ) const;
+                           const tstring& in_buffer_name = TSTRING( "" ) ) const;
 
             /**
              * @brief Compresses the given input buffer to the output standard stream.
@@ -83,7 +83,7 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            ostream& out_stream,
-                           const tstring& in_buffer_name = TSTRING("") ) const;
+                           const tstring& in_buffer_name = TSTRING( "" ) ) const;
     };
 }
 #endif // BITMEMCOMPRESSOR_HPP

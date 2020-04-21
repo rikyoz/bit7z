@@ -30,13 +30,22 @@
 
 using namespace bit7z;
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const tstring& in_file, const BitInFormat& format, const tstring& password )
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
+                                const tstring& in_file,
+                                const BitInFormat& format,
+                                const tstring& password )
     : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_file ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >& in_buffer, const BitInFormat& format, const tstring& password )
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
+                                const vector< byte_t >& in_buffer,
+                                const BitInFormat& format,
+                                const tstring& password )
     : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_buffer ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, std::istream& in_stream, const BitInFormat& format, const tstring& password )
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
+                                std::istream& in_stream,
+                                const BitInFormat& format,
+                                const tstring& password )
     : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
 
 map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
@@ -70,7 +79,7 @@ vector< BitArchiveItemInfo > BitArchiveInfo::items() const {
 }
 
 uint32_t BitArchiveInfo::foldersCount() const {
-    return std::count_if( cbegin(), cend(), []( const BitArchiveItem & item ) {
+    return std::count_if( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return item.isDir();
     } );
 }
@@ -80,13 +89,13 @@ uint32_t BitArchiveInfo::filesCount() const {
 }
 
 uint64_t BitArchiveInfo::size() const {
-    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem & item ) {
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.size();
     } );
 }
 
 uint64_t BitArchiveInfo::packSize() const {
-    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem & item ) {
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.packSize();
     } );
 }
@@ -94,7 +103,7 @@ uint64_t BitArchiveInfo::packSize() const {
 bool BitArchiveInfo::hasEncryptedItems() const {
     /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
-    return std::any_of( cbegin(), cend(), []( const BitArchiveItem & item ) {
+    return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return !item.isDir() && item.isEncrypted();
     } );
 }

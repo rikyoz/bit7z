@@ -227,7 +227,7 @@ bool fsutil::getFileTimes( const fs::path& filePath,
 #ifdef _WIN32
     bool res = false;
     HANDLE hFile = CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
-                              OPEN_EXISTING, 0, nullptr );
+                               OPEN_EXISTING, 0, nullptr );
     if ( hFile != INVALID_HANDLE_VALUE ) {
         res = ::GetFileTime( hFile, &creationTime, &accessTime, &writeTime ) != FALSE;
         CloseHandle( hFile );

@@ -43,6 +43,7 @@ namespace bit7z {
 
             // IProgress from IArchiveExtractCallback
             STDMETHOD( SetTotal )( UInt64 size ) override;
+
             STDMETHOD( SetCompleted )( const UInt64* completeValue ) override;
 
             // ICompressProgressInfo
@@ -56,7 +57,7 @@ namespace bit7z {
 
         protected:
             ExtractCallback( const BitArchiveHandler& handler,
-                             const BitInputArchive& inputArchive);
+                             const BitInputArchive& inputArchive );
 
             const BitInputArchive& mInputArchive;
 

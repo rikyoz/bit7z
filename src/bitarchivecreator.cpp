@@ -192,8 +192,8 @@ void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
         throw BitException( "Invalid dictionary size for the chosen compression method", E_INVALIDARG );
     }
     if ( mCompressionMethod != BitCompressionMethod::Copy &&
-            mCompressionMethod != BitCompressionMethod::Deflate &&
-            mCompressionMethod != BitCompressionMethod::Deflate64 ) {
+         mCompressionMethod != BitCompressionMethod::Deflate &&
+         mCompressionMethod != BitCompressionMethod::Deflate64 ) {
         //ignoring setting dictionary size for copy method and for methods having fixed dictionary size (deflate family)
         mDictionarySize = dictionary_size;
     }
@@ -211,7 +211,7 @@ void BitArchiveCreator::setVolumeSize( uint64_t size ) {
     mVolumeSize = size;
 }
 
-CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
+CMyComPtr< IOutArchive > BitArchiveCreator::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     const GUID format_GUID = mFormat.guid();
     mLibrary.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
@@ -234,11 +234,13 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out
             throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
         }
 
-        auto* file_out_stream = new CFileOutStream( out_archive + TSTRING(".tmp"), true );
+        auto* file_out_stream = new CFileOutStream( out_archive + TSTRING( ".tmp" ), true );
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //could not create temporary file
-            throw BitException( TSTRING("Could not create temp archive file for updating '") + out_archive + TSTRING("'") );
+            throw BitException( TSTRING( "Could not create temp archive file for updating '" ) +
+                                out_archive +
+                                TSTRING( "'" ) );
         }
 
         old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
@@ -249,7 +251,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //Unknown error!
-            throw BitException( TSTRING("Cannot create output archive file '") + out_archive + TSTRING("'") );
+            throw BitException( TSTRING( "Cannot create output archive file '" ) + out_archive + TSTRING( "'" ) );
         }
     }
     return out_stream;
@@ -269,9 +271,10 @@ void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback*
 
         //remove old file and rename tmp file (move file with overwriting)
         std::error_code error;
-        fs::rename( out_file + TSTRING(".tmp"), out_file, error );
+        fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
         if ( error ) {
-            throw BitException( TSTRING("Cannot rename temp archive file to  '") + out_file + TSTRING("'"), GetLastError() );
+            throw BitException( TSTRING( "Cannot rename temp archive file to  '" ) + out_file + TSTRING( "'" ),
+                                GetLastError() );
         }
     }
 }

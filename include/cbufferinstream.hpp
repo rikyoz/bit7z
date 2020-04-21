@@ -18,6 +18,7 @@ namespace bit7z {
             MY_UNKNOWN_IMP1( IInStream )
 
             STDMETHOD( Read )( void* data, UInt32 size, UInt32* processedSize );
+
             STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         private:

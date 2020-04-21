@@ -91,7 +91,7 @@ uint32_t StreamUpdateCallback::itemsCount() const {
 }
 
 HRESULT StreamUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finilize() );
+    RINOK( Finalize() )
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
         return S_OK;

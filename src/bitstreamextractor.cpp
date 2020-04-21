@@ -32,7 +32,7 @@ BitStreamExtractor::BitStreamExtractor( const Bit7zLibrary& lib, const BitInForm
 
 void BitStreamExtractor::extract( istream& in_stream, const tstring& out_dir ) const {
     BitInputArchive in_archive( *this, in_stream );
-    extractToFileSystem( in_archive, TSTRING(""), out_dir, vector< uint32_t >() );
+    extractToFileSystem( in_archive, TSTRING( "" ), out_dir, vector< uint32_t >() );
 }
 
 void BitStreamExtractor::extract( istream& in_stream, vector< byte_t >& out_buffer, unsigned int index ) const {

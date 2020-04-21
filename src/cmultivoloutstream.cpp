@@ -20,6 +20,7 @@
  */
 
 #define NOMINMAX
+
 #include "../include/cmultivoloutstream.hpp"
 
 #include <string>
@@ -39,7 +40,7 @@ using namespace bit7z;
 
 CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const tstring& archiveName ) :
     mVolSize( volSize ),
-    mVolPrefix( archiveName + TSTRING(".") ),
+    mVolPrefix( archiveName + TSTRING( "." ) ),
     mStreamIndex( 0 ),
     mOffsetPos( 0 ),
     mAbsPos( 0 ),
