@@ -41,7 +41,7 @@ namespace bit7z {
 
             // CompressCallback
             uint32_t itemsCount() const override;
-            tstring getErrorMessage() const override;
+            std::string getErrorMessage() const override;
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
@@ -55,7 +55,7 @@ namespace bit7z {
             uint64_t mVolSize;
             tstring mVolName; //TODO: Check whether this is necessary...
 
-            vector< pair< tstring, HRESULT > > mFailedFiles;
+            vector< pair< std::string, HRESULT > > mFailedFiles;
     };
 }
 #endif // UPDATECALLBACK_HPP

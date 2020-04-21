@@ -43,8 +43,8 @@ void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* 
     }
 
     if ( result != S_OK ) {
-        tstring error_message = update_callback->getErrorMessage();
-        throw BitException( error_message.empty() ? TSTRING("Failed operation (unkwown error)!") : error_message, result );
+        std::string error_message = update_callback->getErrorMessage();
+        throw BitException( error_message.empty() ? "Failed operation (unknown error)!" : error_message, result );
     }
 }
 

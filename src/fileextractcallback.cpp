@@ -118,13 +118,13 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
         fs::create_directories( mDiskFilePath.parent_path(), ec );
 
         if ( fs::exists( mDiskFilePath, ec ) && !fs::remove( mDiskFilePath, ec ) ) {
-            mErrorMessage = TSTRING("Cannot delete output file ") + mDiskFilePath.native();
+            mErrorMessage = "Cannot delete output file " + mDiskFilePath.string();
             return E_ABORT;
         }
 
         CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( mDiskFilePath, true );
         if ( outStreamLoc->fail() ) {
-            mErrorMessage = TSTRING("Cannot open output file ") + mDiskFilePath.native();
+            mErrorMessage = "Cannot open output file " + mDiskFilePath.string();
             return E_ABORT;
         }
 

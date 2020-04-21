@@ -71,7 +71,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         }
 
         if ( pass.empty() ) {
-            mErrorMessage = TSTRING("Password is not defined");
+            mErrorMessage = "Password is not defined";
             return E_FAIL;
         }
     } else {

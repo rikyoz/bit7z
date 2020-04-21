@@ -128,7 +128,7 @@ HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStr
     if ( inStreamLoc->fail() ) {
         std::error_code ec;
         HRESULT error = HRESULT_FROM_WIN32( !fs::exists( path, ec ) ? ERROR_FILE_NOT_FOUND : ERROR_ACCESS_DENIED );
-        mFailedFiles.emplace_back( path.native(), error );
+        mFailedFiles.emplace_back( path.string(), error );
         return S_FALSE;
     }
 
@@ -161,14 +161,13 @@ HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream*
     return S_OK;
 }
 
-tstring FileUpdateCallback::getErrorMessage() const {
+std::string FileUpdateCallback::getErrorMessage() const {
     if ( !mFailedFiles.empty() ) {
-        tstringstream sstream;
-        sstream << TSTRING("Error for files: ") << std::endl;
+        std::string errorMessage = "Error for files: \n";
         for ( const auto& failed_file : mFailedFiles ) {
-            sstream << failed_file.first << TSTRING(" (error code: ") << failed_file.second << TSTRING(")") << std::endl;
+            errorMessage += failed_file.first + " (error code: " + std::to_string( failed_file.second ) + ")\n";
         }
-        return sstream.str();
+        return errorMessage;
     }
     return Callback::getErrorMessage();
 }

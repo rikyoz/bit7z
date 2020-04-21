@@ -25,10 +25,10 @@
 
 #include "../include/bitarchivehandler.hpp"
 
-CONSTEXPR auto kUnsupportedMethod = TSTRING("Unsupported Method");
-CONSTEXPR auto kCRCFailed         = TSTRING("CRC Failed");
-CONSTEXPR auto kDataError         = TSTRING("Data Error");
-CONSTEXPR auto kUnknownError      = TSTRING("Unknown Error");
+CONSTEXPR auto kUnsupportedMethod = "Unsupported Method";
+CONSTEXPR auto kCRCFailed         = "CRC Failed";
+CONSTEXPR auto kDataError         = "Data Error";
+CONSTEXPR auto kUnknownError      = "Unknown Error";
 CONSTEXPR auto kEmptyFileAlias    = TSTRING("[Content]");
 
 namespace bit7z {
@@ -37,13 +37,13 @@ namespace bit7z {
     class Callback : protected CMyUnknownImp {
         public:
             virtual ~Callback() = default;
-            virtual tstring getErrorMessage() const;
+            virtual std::string getErrorMessage() const;
 
         protected:
             explicit Callback( const BitArchiveHandler& handler ); // Protected constructor => Abstract class
 
             const BitArchiveHandler& mHandler;
-            tstring mErrorMessage;
+            std::string mErrorMessage;
 
     };
 }
