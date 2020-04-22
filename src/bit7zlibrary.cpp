@@ -60,7 +60,10 @@ void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* inter
 void Bit7zLibrary::setLargePageMode() {
     auto pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode" ) );
     if ( pSetLargePageMode == nullptr ) {
-        throw BitException( "Cannot set large page mode", GetLastError() );
+        throw BitException( "Cannot get SetLargePageMode function", GetLastError() );
     }
-    pSetLargePageMode();
+    HRESULT res = pSetLargePageMode();
+    if ( res != S_OK ) {
+        throw BitException( "Cannot set large page mode", res );
+    }
 }
