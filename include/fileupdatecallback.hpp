@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef UPDATECALLBACK_HPP
-#define UPDATECALLBACK_HPP
+#ifndef FILEUPDATECALLBACK_HPP
+#define FILEUPDATECALLBACK_HPP
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveiteminfo.hpp"
@@ -62,4 +62,4 @@ namespace bit7z {
             vector< pair< std::string, HRESULT > > mFailedFiles;
     };
 }
-#endif // UPDATECALLBACK_HPP
+#endif // FILEUPDATECALLBACK_HPP

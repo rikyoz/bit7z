@@ -16,15 +16,15 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef CBUFOUTSTREAM_HPP
-#define CBUFOUTSTREAM_HPP
+#ifndef CBUFFEROUTSTREAM_HPP
+#define CBUFFEROUTSTREAM_HPP
 
 #include <vector>
 
 #include "../include/bittypes.hpp"
 
-#include "7zip/IStream.h"
-#include "Common/MyCom.h"
+#include <7zip/IStream.h>
+#include <Common/MyCom.h>
 
 namespace bit7z {
     using std::vector;
@@ -49,4 +49,4 @@ namespace bit7z {
             size_t mCurrentPosition;
     };
 }
-#endif // CBUFOUTSTREAM_HPP
+#endif // CBUFFEROUTSTREAM_HPP

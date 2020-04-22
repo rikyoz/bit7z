@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef COMPRESSCALLBACK_HPP
-#define COMPRESSCALLBACK_HPP
+#ifndef UPDATECALLBACK_HPP
+#define UPDATECALLBACK_HPP
 
 #ifndef _WIN32
 #include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
@@ -81,4 +81,4 @@ namespace bit7z {
     };
 }
 
-#endif // COMPRESSCALLBACK_HPP
+#endif // UPDATECALLBACK_HPP

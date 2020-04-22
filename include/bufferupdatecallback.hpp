@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef MEMUPDATECALLBACK_HPP
-#define MEMUPDATECALLBACK_HPP
+#ifndef BUFFERUPDATECALLBACK_HPP
+#define BUFFERUPDATECALLBACK_HPP
 
 #include "../include/bitarchivecreator.hpp"
 #include "../include/bitinputarchive.hpp"
@@ -54,4 +54,4 @@ namespace bit7z {
             const fs::path mBufferName;
     };
 }
-#endif // MEMUPDATECALLBACK_HPP
+#endif // BUFFERUPDATECALLBACK_HPP

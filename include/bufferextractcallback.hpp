@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef MEMEXTRACTCALLBACK_HPP
-#define MEMEXTRACTCALLBACK_HPP
+#ifndef BUFFEREXTRACTCALLBACK_HPP
+#define BUFFEREXTRACTCALLBACK_HPP
 
 #include <vector>
 #include <map>
@@ -47,4 +47,4 @@ namespace bit7z {
             CMyComPtr< ISequentialOutStream > mOutMemStream;
     };
 }
-#endif // MEMEXTRACTCALLBACK_HPP
+#endif // BUFFEREXTRACTCALLBACK_HPP
