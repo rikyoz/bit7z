@@ -68,7 +68,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
 
             altStream.pos = 0;
             altStream.realSize = 0;
-            altStream.name = name;
+            altStream.name = std::move( name );
             mVolStreams.push_back( altStream );
             continue;
         }

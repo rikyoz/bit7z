@@ -174,7 +174,6 @@ STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
 
     if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
         filesystem::fsutil::setFileAttributes( mDiskFilePath, mProcessedFileInfo.Attrib );
-        //NFile::NDir::SetFileAttrib( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
     }
 
     if ( mNumErrors > 0 ) {

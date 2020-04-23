@@ -21,6 +21,7 @@
 
 #include "../include/bitarchiveinfo.hpp"
 
+#include <algorithm>
 #include <numeric>
 
 #include <7zip/PropID.h>

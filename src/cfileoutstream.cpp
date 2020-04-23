@@ -34,7 +34,7 @@ void CFileOutStream::open( const fs::path& filePath, bool createAlways ) {
     if ( !createAlways && fs::exists( filePath, ec ) ) {
         throw BitException( "File already exists", filePath.native(), ERROR_FILE_EXISTS );
     }
-    mFileStream.open( filePath, std::ios::out | std::ios::binary | std::ios::trunc );
+    mFileStream.open( filePath, std::ios::binary | std::ios::trunc );
 }
 
 bool CFileOutStream::fail() {

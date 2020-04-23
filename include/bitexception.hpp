@@ -19,6 +19,7 @@
 #ifndef BITEXCEPTION_HPP
 #define BITEXCEPTION_HPP
 
+#include <vector>
 #include <stdexcept>
 
 #ifdef _WIN32
@@ -30,10 +31,8 @@
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-    using std::vector;
-    using std::pair;
     using std::runtime_error;
-    using FailedFiles = vector< pair< tstring, HRESULT > >;
+    using FailedFiles = std::vector< std::pair< tstring, HRESULT > >;
 
     /**
      * @brief The BitException class represents a generic exception thrown from the bit7z classes.

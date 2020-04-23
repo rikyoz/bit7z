@@ -227,9 +227,9 @@ BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() {
 }
 
 BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) {
-    const_iterator retval = *this;
+    const_iterator incremented = *this;
     ++( *this );
-    return retval;
+    return incremented;
 }
 
 bool BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const {

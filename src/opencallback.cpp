@@ -35,7 +35,7 @@ using namespace bit7z::filesystem;
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
 OpenCallback::OpenCallback( const BitArchiveHandler& handler, const tstring& filename )
-    : Callback( handler ), mSubArchiveMode( false ), mSubArchiveName(), mFileItem( filename ) {}
+    : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
 
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
