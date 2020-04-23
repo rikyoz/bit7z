@@ -19,7 +19,6 @@
 #ifndef BITEXCEPTION_HPP
 #define BITEXCEPTION_HPP
 
-#include <string>
 #include <stdexcept>
 
 #ifdef _WIN32
@@ -28,8 +27,13 @@
 #include <myWindows/StdAfx.h>
 #endif
 
+#include "../include/bittypes.hpp"
+
 namespace bit7z {
+    using std::vector;
+    using std::pair;
     using std::runtime_error;
+    using FailedFiles = vector< pair< tstring, HRESULT > >;
 
     /**
      * @brief The BitException class represents a generic exception thrown from the bit7z classes.
@@ -42,7 +46,26 @@ namespace bit7z {
              * @param message   the message associated with the exception object.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const char* message, HRESULT code = E_FAIL );
+            explicit BitException( const char* const message, HRESULT code = E_FAIL );
+
+            /**
+             * @brief Constructs a BitException object with the given message and the specific files that failed.
+             *
+             * @param message   the message associated with the exception object.
+             * @param files     the vector of files that failed, with the corresponding error codes.
+             * @param code      the HRESULT code associated with the exception object.
+             */
+            BitException( const char* const message, FailedFiles&& files, HRESULT code = E_FAIL );
+
+
+            /**
+             * @brief Constructs a BitException object with the given message and the specific file that failed.
+             *
+             * @param message   the message associated with the exception object.
+             * @param file      the file that failed during the operation.
+             * @param code      the HRESULT code associated with the exception object.
+             */
+            BitException( const char* const message, const tstring& file, HRESULT code = E_FAIL );
 
             /**
              * @brief Constructs a BitException object with the given message.
@@ -63,50 +86,15 @@ namespace bit7z {
             BitException( const char* message, DWORD code );
 
             /**
-             * @brief Constructs a BitException object with the given message.
-             *
-             * @note The Win32 error code is converted to a HRESULT code through HRESULT_FROM_WIN32 macro.
-             *
-             * @param message   the message associated with the exception object.
-             * @param code      the Win32 error code associated with the exception object.
-             */
-            BitException( const std::string& message, DWORD code );
-
-#ifdef _WIN32
-
-            /**
-             * @brief Constructs a BitException object with the given message.
-             *
-             * @note The wstring argument is converted into a string and then passed to the base
-             * class constructor.
-             *
-             * @param message   the message associated with the exception object.
-             * @param code      the HRESULT code associated with the exception object.
-             */
-            explicit BitException( const std::wstring& message, HRESULT code = E_FAIL );
-
-            /**
-             * @brief Constructs a BitException object with the given message.
-             *
-             * @note The wstring argument is converted into a string and then passed to the base
-             * class constructor.
-             *
-             * @note The Win32 error code is converted to a HRESULT code through HRESULT_FROM_WIN32 macro.
-             *
-             * @param message   the message associated with the exception object.
-             * @param code      the Win32 error code associated with the exception object.
-             */
-            BitException( const std::wstring& message, DWORD code );
-
-#endif
-
-            /**
              * @return the HRESULT code associated with the exception object.
              */
             HRESULT getErrorCode() const;
 
+            const FailedFiles& getFailedFiles() const;
+
         private:
             HRESULT mErrorCode;
+            FailedFiles mFailedFiles;
     };
 }
 #endif // BITEXCEPTION_HPP

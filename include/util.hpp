@@ -5,6 +5,9 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+#ifdef _WIN32
+#define WIDEN( tstr ) tstr
+#else
 #include <string>
 
 namespace bit7z {
@@ -12,13 +15,9 @@ namespace bit7z {
     using std::wstring;
 
     string narrow( const wchar_t* wideString, size_t size );
-
     wstring widen( const string& narrowString );
 }
 
-#ifdef _WIN32
-#define WIDEN( tstr ) tstr
-#else
 #define WIDEN( tstr ) bit7z::widen(tstr)
 #endif
 

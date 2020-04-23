@@ -87,7 +87,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( TSTRING( "Cannot open archive '" ) + name + TSTRING( "'" ), ERROR_OPEN_FAILED );
+        throw BitException( "Cannot open archive", name, ERROR_OPEN_FAILED );
     }
 
     return in_archive.Detach();
@@ -97,7 +97,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const tstrin
     fs::path in_file_path = in_file;
     CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file_path );
     if ( file_stream->fail() ) {
-        throw BitException( TSTRING( "Cannot open archive file '" ) + in_file + TSTRING( "'" ), ERROR_OPEN_FAILED );
+        throw BitException( "Cannot open archive file", in_file, ERROR_OPEN_FAILED );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
@@ -168,7 +168,7 @@ void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallbac
 
     HRESULT res = mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback->getErrorMessage(), res );
+        extract_callback->throwException( res );
     }
 }
 
@@ -178,7 +178,7 @@ void BitInputArchive::test( ExtractCallback* extract_callback ) const {
                                        NExtract::NAskMode::kTest,
                                        extract_callback );
     if ( res != S_OK ) {
-        throw BitException( extract_callback->getErrorMessage(), res );
+        extract_callback->throwException( res );
     }
 }
 

@@ -21,34 +21,28 @@
 
 #include "../include/bitexception.hpp"
 
-#ifdef _WIN32
-#include "../include/util.hpp"
-#endif
-
 using std::string;
 using namespace bit7z;
 
-BitException::BitException( const char* const message, HRESULT code ) : runtime_error( message ), mErrorCode( code ) {}
+BitException::BitException( const char* const message, HRESULT code ) : BitException( message, FailedFiles{}, code ) {}
+
+BitException::BitException( const char* const message, FailedFiles&& files, HRESULT code )
+    : runtime_error( message ), mErrorCode( code ), mFailedFiles{ files } { files.clear(); }
+
+BitException::BitException( const char* const message, const tstring& file, HRESULT code )
+    : BitException( message, { std::make_pair<>( file, code ) }, code ) {}
 
 BitException::BitException( const char* const message, DWORD code )
-    : runtime_error( message ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
+    : BitException( message, FailedFiles{}, HRESULT_FROM_WIN32( code ) ) {}
 
 BitException::BitException( const std::string& message, HRESULT code )
-    : runtime_error( message ), mErrorCode( code ) {}
-
-BitException::BitException( const std::string& message, DWORD code )
-    : runtime_error( message ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
-
-#ifdef _WIN32
-
-BitException::BitException( const std::wstring& message, HRESULT code )
-    : runtime_error( bit7z::narrow( message.c_str(), message.size() ) ), mErrorCode( code ) {}
-
-BitException::BitException( const std::wstring& message, DWORD code )
-    : runtime_error( bit7z::narrow( message.c_str(), message.size() ) ), mErrorCode( HRESULT_FROM_WIN32( code ) ) {}
-
-#endif
+    : BitException( message.c_str(), FailedFiles{}, code ) {}
 
 HRESULT BitException::getErrorCode() const {
     return mErrorCode;
 }
+
+const FailedFiles& BitException::getFailedFiles() const {
+    return mFailedFiles;
+}
+

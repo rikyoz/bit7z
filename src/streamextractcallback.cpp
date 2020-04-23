@@ -34,11 +34,11 @@ StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
     : ExtractCallback( handler, inputArchive ),
       mOutputStream( outputStream ) {}
 
-std::string StreamExtractCallback::getErrorMessage() const {
+void StreamExtractCallback::throwException( HRESULT error ) {
     if ( !mOutputStream ) {
-        return "Stream error (errno: " + std::to_string( errno ) + ")";
+        throw BitException( "Stream error (errno: " + std::to_string( errno ) + ")" );
     }
-    return Callback::getErrorMessage();
+    Callback::throwException( error );
 }
 
 STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index,

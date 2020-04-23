@@ -37,8 +37,7 @@ void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* 
     }
 
     if ( result != S_OK ) {
-        std::string error_message = update_callback->getErrorMessage();
-        throw BitException( error_message.empty() ? "Failed operation (unknown error)!" : error_message, result );
+        update_callback->throwException( result );
     }
 }
 
@@ -232,9 +231,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //could not create temporary file
-            throw BitException( TSTRING( "Could not create temp archive file for updating '" ) +
-                                out_archive +
-                                TSTRING( "'" ) );
+            throw BitException( "Could not create temp archive file for updating", out_archive, GetLastError() );
         }
 
         old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
@@ -245,7 +242,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //Unknown error!
-            throw BitException( TSTRING( "Cannot create output archive file '" ) + out_archive + TSTRING( "'" ) );
+            throw BitException( "Cannot create output archive file", out_archive, GetLastError() );
         }
     }
     return out_stream;
@@ -267,8 +264,7 @@ void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback*
         std::error_code error;
         fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
         if ( error ) {
-            throw BitException( TSTRING( "Cannot rename temp archive file to  '" ) + out_file + TSTRING( "'" ),
-                                GetLastError() );
+            throw BitException( "Cannot rename temp archive file", out_file, GetLastError() );
         }
     }
 }

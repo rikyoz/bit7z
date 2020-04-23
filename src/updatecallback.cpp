@@ -103,7 +103,7 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
             // PasswordIsDefined = true;
-            mErrorMessage = "Password is not defined";
+            mErrorMessage = kPasswordNotDefined;
             return E_ABORT;
         }
     }

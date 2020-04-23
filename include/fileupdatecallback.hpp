@@ -24,6 +24,7 @@
 #include "../include/updatecallback.hpp"
 #include "../include/fsitem.hpp"
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bitexception.hpp"
 
 #include <vector>
 
@@ -42,7 +43,7 @@ namespace bit7z {
             // CompressCallback
             uint32_t itemsCount() const override;
 
-            std::string getErrorMessage() const override;
+            void throwException( HRESULT error ) override;
 
             // IArchiveUpdateCallback2
             STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
@@ -59,7 +60,7 @@ namespace bit7z {
             uint64_t mVolSize;
             tstring mVolName; //TODO: Check whether this is necessary...
 
-            vector< pair< std::string, HRESULT > > mFailedFiles;
+            FailedFiles mFailedFiles;
     };
 }
 #endif // FILEUPDATECALLBACK_HPP

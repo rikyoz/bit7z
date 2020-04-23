@@ -120,13 +120,13 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
         fs::create_directories( mDiskFilePath.parent_path(), ec );
 
         if ( fs::exists( mDiskFilePath, ec ) && !fs::remove( mDiskFilePath, ec ) ) {
-            mErrorMessage = "Cannot delete output file " + mDiskFilePath.string();
+            mErrorMessage = kCannotDeleteOutput;
             return E_ABORT;
         }
 
         CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( mDiskFilePath, true );
         if ( outStreamLoc->fail() ) {
-            mErrorMessage = "Cannot open output file " + mDiskFilePath.string();
+            mErrorMessage = kCannotOpenOutput;
             return E_ABORT;
         }
 
@@ -140,29 +140,24 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
 }
 
 STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
-    switch ( operationResult ) {
-        case NArchive::NExtract::NOperationResult::kOK:
-            break;
+    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+        mNumErrors++;
 
-        default: {
-            mNumErrors++;
+        switch ( operationResult ) {
+            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+                mErrorMessage = kUnsupportedMethod;
+                break;
 
-            switch ( operationResult ) {
-                case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
-                    mErrorMessage = kUnsupportedMethod;
-                    break;
+            case NArchive::NExtract::NOperationResult::kCRCError:
+                mErrorMessage = kCRCFailed;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kCRCError:
-                    mErrorMessage = kCRCFailed;
-                    break;
+            case NArchive::NExtract::NOperationResult::kDataError:
+                mErrorMessage = kDataError;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kDataError:
-                    mErrorMessage = kDataError;
-                    break;
-
-                default:
-                    mErrorMessage = kUnknownError;
-            }
+            default:
+                mErrorMessage = kUnknownError;
         }
     }
 
@@ -187,4 +182,11 @@ STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
     }
 
     return S_OK;
+}
+
+void FileExtractCallback::throwException( HRESULT error ) {
+    if ( mErrorMessage != nullptr ) {
+        throw BitException( mErrorMessage, mDiskFilePath.native(), error );
+    }
+    Callback::throwException( error );
 }
