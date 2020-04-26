@@ -25,7 +25,6 @@
 #include "../include/fsitem.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/fsutil.hpp"
 
 using namespace bit7z::filesystem;
 
@@ -41,23 +40,26 @@ using namespace bit7z::filesystem;
  *    (see inArchivePath() method). */
 
 FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
-    : mCreationTime(), mLastAccessTime(), mLastWriteTime(),
-      mSearchPath(), mInArchivePath( std::move( inArchivePath ) ) {
+    : mFileAttributeData(), mSearchPath(), mInArchivePath( std::move( inArchivePath ) ) {
     std::error_code ec;
     mFileEntry.assign( itemPath, ec );
     if ( !mFileEntry.exists() ) { // NOLINT
         //TODO: use error_code instead of WinAPI error codes or HRESULT
-        throw BitException( "Invalid path '" + itemPath.string() + "'!", ERROR_FILE_NOT_FOUND );
+        throw BitException( "Invalid path", itemPath.native(), HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) );
     }
-    fsutil::getFileTimes( mFileEntry.path(), mCreationTime, mLastAccessTime, mLastWriteTime );
-    mAttributes = fsutil::getFileAttributes( mFileEntry.path() );
+    initAttributes( itemPath );
 }
 
 FSItem::FSItem( fs::directory_entry entry, fs::path searchPath )
-    : mFileEntry( std::move( entry ) ), mCreationTime(), mLastAccessTime(), mLastWriteTime(),
-      mSearchPath( std::move( searchPath ) ) {
-    fsutil::getFileTimes( mFileEntry.path(), mCreationTime, mLastAccessTime, mLastWriteTime );
-    mAttributes = fsutil::getFileAttributes( mFileEntry.path() );
+    : mFileEntry( std::move( entry ) ), mFileAttributeData(), mSearchPath( std::move( searchPath ) ) {
+    initAttributes( mFileEntry.path() );
+}
+
+void FSItem::initAttributes( const fs::path& itemPath ) {
+    if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
+        //should not happen, but anyway...
+        throw BitException( "Could not retrieve file attributes", itemPath.native(), HRESULT_FROM_WIN32( GetLastError() ) );
+    }
 }
 
 bool FSItem::isDots() const {
@@ -78,15 +80,15 @@ uint64_t FSItem::size() const {
 }
 
 FILETIME FSItem::creationTime() const {
-    return mCreationTime;
+    return mFileAttributeData.ftCreationTime;
 }
 
 FILETIME FSItem::lastAccessTime() const {
-    return mLastAccessTime;
+    return mFileAttributeData.ftLastAccessTime;
 }
 
 FILETIME FSItem::lastWriteTime() const {
-    return mLastWriteTime;
+    return mFileAttributeData.ftLastWriteTime;
 }
 
 bit7z::tstring FSItem::name() const {
@@ -146,5 +148,5 @@ fs::path FSItem::inArchivePath() const {
 }
 
 uint32_t FSItem::attributes() const {
-    return mAttributes;
+    return mFileAttributeData.dwFileAttributes;
 }

@@ -48,44 +48,6 @@ tstring fsutil::extension( const tstring& path ) {
     return last_dot != tstring::npos ? name.substr( last_dot + 1 ) : TSTRING( "" );
 }
 
-#ifndef _WIN32
-// filetime_duration has the same layout as FILETIME; 100ns intervals
-using filetime_duration = chrono::duration< int64_t, ratio< 1, 10'000'000 > >;
-// January 1, 1601 (NT epoch) - January 1, 1970 (Unix epoch):
-constexpr chrono::seconds nt_to_unix_epoch{ -11644473600 };
-
-fs::file_time_type FILETIME_to_fs_time( FILETIME fileTime ) {
-    const filetime_duration asDuration{
-            static_cast<int64_t>( ( static_cast<uint64_t>(fileTime.dwHighDateTime) << 32u ) | fileTime.dwLowDateTime)
-    };
-    const auto withUnixEpoch = asDuration + nt_to_unix_epoch;
-    return fs::file_time_type{ chrono::duration_cast< chrono::system_clock::duration >( withUnixEpoch ) };
-}
-
-#endif
-
-bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ft_modified ) {
-#ifdef _WIN32
-    if ( filePath.empty() ) {
-        return false;
-    }
-
-    bool res = false;
-    HANDLE hFile = CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
-                               OPEN_EXISTING, 0, nullptr );
-    if ( hFile != INVALID_HANDLE_VALUE ) {
-        res = SetFileTime( hFile, nullptr, nullptr, &ft_modified ) != FALSE;
-        CloseHandle( hFile );
-    }
-    return res;
-#else
-    std::error_code ec;
-    auto ft = FILETIME_to_fs_time( ft_modified );
-    fs::last_write_time( filePath, ft, ec );
-    return !ec;
-#endif
-}
-
 // Modified version of code found here: https://stackoverflow.com/a/3300547
 bool w_match( const tchar* needle, const tchar* haystack, size_t max ) {
     for ( ; *needle != TSTRING( '\0' ); ++needle ) {
@@ -121,29 +83,7 @@ bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) {
     return w_match( pattern.empty() ? TSTRING( "*" ) : pattern.c_str(), str.c_str(), str.size() );
 }
 
-uint32_t fsutil::getFileAttributes( const fs::path& filePath ) {
-#ifdef _WIN32
-    return ::GetFileAttributes( filePath.c_str() );
-#else
-    struct stat stat_info{};
-    if ( lstat( filePath.c_str(), &stat_info ) != 0 ) {
-        return 0;
-    }
-
-    uint32_t attributes = 0;
-    attributes = S_ISDIR( stat_info.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
-
-    if ( !( stat_info.st_mode & S_IWUSR ) ) {
-        attributes |= FILE_ATTRIBUTE_READONLY;
-    }
-
-    attributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( stat_info.st_mode & 0xFFFF ) << 16 );
-    return  attributes;
-#endif
-}
-
 #ifndef _WIN32 //code from p7zip
-
 static int convert_to_symlink( const tstring& name ) {
     FILE* file = fopen( name.c_str(), "rb" );
     if ( file ) {
@@ -176,7 +116,7 @@ class Umask {
 static Umask gbl_umask;
 #endif
 
-bool fsutil::setFileAttributes( const fs::path& filePath, uint32_t attributes ) {
+bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) {
 #ifdef _WIN32
     return ::SetFileAttributes( filePath.c_str(), attributes ) != FALSE;
 #else
@@ -186,7 +126,7 @@ bool fsutil::setFileAttributes( const fs::path& filePath, uint32_t attributes ) 
     }
 
     if ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        stat_info.st_mode = attributes >> 16;
+        stat_info.st_mode = attributes >> 16u;
         if ( S_ISLNK( stat_info.st_mode ) ) {
             if ( convert_to_symlink( filePath ) != 0 ) {
                 return false;
@@ -207,39 +147,69 @@ bool fsutil::setFileAttributes( const fs::path& filePath, uint32_t attributes ) 
 }
 
 #ifndef _WIN32
+// filetime_duration has the same layout as FILETIME; 100ns intervals
+using filetime_duration = chrono::duration< int64_t, ratio< 1, 10'000'000 > >;
 // January 1, 1601 (NT epoch) - January 1, 1970 (Unix epoch):
-constexpr chrono::seconds unix_to_nt_epoch = -nt_to_unix_epoch;
+constexpr chrono::seconds nt_to_unix_epoch{ -11644473600 };
 
-void time_to_FILETIME( time_t time, FILETIME& fileTime ) {
-    uint64_t secs = ( time * 10000000ull ) + 116444736000000000;
-    fileTime.dwLowDateTime = static_cast< DWORD >( secs );
-    fileTime.dwHighDateTime = static_cast< DWORD >( secs >> 32 );
+fs::file_time_type FILETIME_to_file_time_type( FILETIME const& fileTime ) {
+    const filetime_duration asDuration{
+        static_cast< int64_t >( ( static_cast< uint64_t >( fileTime.dwHighDateTime ) << 32u ) | fileTime.dwLowDateTime )
+    };
+    const auto withUnixEpoch = asDuration + nt_to_unix_epoch;
+    return fs::file_time_type{ chrono::duration_cast< chrono::system_clock::duration >( withUnixEpoch ) };
 }
-
 #endif
 
-bool fsutil::getFileTimes( const fs::path& filePath,
-                           FILETIME& creationTime,
-                           FILETIME& accessTime,
-                           FILETIME& writeTime ) {
+bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) {
+    if ( filePath.empty() ) {
+        return false;
+    }
+
 #ifdef _WIN32
     bool res = false;
-    HANDLE hFile = CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
+    HANDLE hFile = ::CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
                                OPEN_EXISTING, 0, nullptr );
     if ( hFile != INVALID_HANDLE_VALUE ) {
-        res = ::GetFileTime( hFile, &creationTime, &accessTime, &writeTime ) != FALSE;
+        res = ::SetFileTime( hFile, nullptr, nullptr, &ftModified ) != FALSE;
         CloseHandle( hFile );
     }
     return res;
+#else
+    std::error_code ec;
+    auto ft = FILETIME_to_file_time_type( ftModified );
+    fs::last_write_time( filePath, ft, ec );
+    return !ec;
+#endif
+}
+
+#ifndef _WIN32
+FILETIME time_to_FILETIME( std::time_t time ) {
+    uint64_t secs = ( time * 10000000ull ) + 116444736000000000;
+    FILETIME fileTime;
+    fileTime.dwLowDateTime = static_cast< DWORD >( secs );
+    fileTime.dwHighDateTime = static_cast< DWORD >( secs >> 32 );
+    return fileTime;
+}
+#endif
+
+bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) {
+#ifdef _WIN32
+    return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &mFileAttributeData ) != FALSE;
 #else
     struct stat stat_info{};
     if ( lstat( filePath.c_str(), &stat_info ) != 0 ) {
         return false;
     }
+    fileInfo.dwFileAttributes = S_ISDIR( stat_info.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
+    if ( !( stat_info.st_mode & S_IWUSR ) ) {
+        fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
+    }
+    fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( stat_info.st_mode & 0xFFFF ) << 16 );
 
-    time_to_FILETIME( stat_info.st_ctime, creationTime );
-    time_to_FILETIME( stat_info.st_atime, accessTime );
-    time_to_FILETIME( stat_info.st_mtime, writeTime );
+    fileInfo.ftCreationTime = time_to_FILETIME( stat_info.st_ctime );
+    fileInfo.ftLastAccessTime = time_to_FILETIME( stat_info.st_atime );
+    fileInfo.ftLastWriteTime = time_to_FILETIME( stat_info.st_mtime );
     return true;
 #endif
 }

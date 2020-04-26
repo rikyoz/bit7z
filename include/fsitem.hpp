@@ -25,6 +25,7 @@
 
 #ifndef _WIN32
 #include <myWindows/StdAfx.h>
+#include "../include/fsutil.hpp"
 #endif
 
 #include <windows.h>
@@ -61,12 +62,11 @@ namespace bit7z {
 
             private:
                 fs::directory_entry mFileEntry;
-                FILETIME mCreationTime;
-                FILETIME mLastAccessTime;
-                FILETIME mLastWriteTime;
-                uint32_t mAttributes;
+                WIN32_FILE_ATTRIBUTE_DATA mFileAttributeData;
                 fs::path mSearchPath;
                 fs::path mInArchivePath;
+
+                void initAttributes( const fs::path& itemPath );
         };
     }
 }

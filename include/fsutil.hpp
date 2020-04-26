@@ -27,6 +27,18 @@
 
 #include "fs.hpp"
 
+#ifndef _WIN32
+typedef struct _WIN32_FILE_ATTRIBUTE_DATA {
+    DWORD    dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    // not needed fields
+    // DWORD    nFileSizeHigh;
+    // DWORD    nFileSizeLow;
+} WIN32_FILE_ATTRIBUTE_DATA;
+#endif
+
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
@@ -34,18 +46,13 @@ namespace bit7z {
 
             tstring extension( const tstring& path );
 
-            bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ft_modified );
-
             bool wildcardMatch( const tstring& pattern, const tstring& str );
 
-            uint32_t getFileAttributes( const fs::path& filePath );
+            bool getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo );
 
-            bool setFileAttributes( const fs::path& filePath, uint32_t attributes );
+            bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified );
 
-            bool getFileTimes( const fs::path& filePath,
-                               FILETIME& creationTime,
-                               FILETIME& accessTime,
-                               FILETIME& writeTime );
+            bool setFileAttributes( const fs::path& filePath, DWORD attributes );
         }
     }
 }
