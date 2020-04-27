@@ -80,13 +80,13 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
             continue;
         }
         if ( mOffsetPos != altStream.pos ) {
-            RINOK( altStream.stream->Seek( static_cast< int64_t >( mOffsetPos ), STREAM_SEEK_SET, nullptr ) );
+            RINOK( altStream.stream->Seek( static_cast< int64_t >( mOffsetPos ), STREAM_SEEK_SET, nullptr ) )
             altStream.pos = mOffsetPos;
         }
 
         auto curSize = static_cast< uint32_t >( std::min( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
         UInt32 realProcessed;
-        RINOK( altStream.stream->Write( data, curSize, &realProcessed ) );
+        RINOK( altStream.stream->Write( data, curSize, &realProcessed ) )
         altStream.pos += realProcessed;
         mOffsetPos += realProcessed;
         mAbsPos += realProcessed;
@@ -138,7 +138,7 @@ STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
     while ( i < mVolStreams.size() ) {
         CAltStreamInfo& altStream = mVolStreams[ i++ ];
         if ( newSize < altStream.realSize ) {
-            RINOK( altStream.stream->SetSize( newSize ) );
+            RINOK( altStream.stream->SetSize( newSize ) )
             altStream.realSize = newSize;
             break;
         }

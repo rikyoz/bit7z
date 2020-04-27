@@ -26,34 +26,36 @@
 #endif
 
 namespace bit7z {
+    extern "C" {
 #if !defined(_WIN32)
-    extern "C" const GUID IID_IUnknown;
+        extern const GUID IID_IUnknown;
 #endif
 
-    // IStream.h
-    extern "C" const GUID IID_ISequentialInStream;
-    extern "C" const GUID IID_ISequentialOutStream;
-    extern "C" const GUID IID_IInStream;
-    extern "C" const GUID IID_IOutStream;
-    extern "C" const GUID IID_IStreamGetSize;
-    extern "C" const GUID IID_IStreamGetProps;
-    extern "C" const GUID IID_IStreamGetProps2;
+        // IStream.h
+        extern const GUID IID_ISequentialInStream;
+        extern const GUID IID_ISequentialOutStream;
+        extern const GUID IID_IInStream;
+        extern const GUID IID_IOutStream;
+        extern const GUID IID_IStreamGetSize;
+        extern const GUID IID_IStreamGetProps;
+        extern const GUID IID_IStreamGetProps2;
 
-    // ICoder.h
-    extern "C" const GUID IID_ICompressProgressInfo;
+        // ICoder.h
+        extern const GUID IID_ICompressProgressInfo;
 
-    // IPassword.h
-    extern "C" const GUID IID_ICryptoGetTextPassword;
-    extern "C" const GUID IID_ICryptoGetTextPassword2;
+        // IPassword.h
+        extern const GUID IID_ICryptoGetTextPassword;
+        extern const GUID IID_ICryptoGetTextPassword2;
 
-    // IArchive.h
-    extern "C" const GUID IID_ISetProperties;
-    extern "C" const GUID IID_IInArchive;
-    extern "C" const GUID IID_IOutArchive;
-    extern "C" const GUID IID_IArchiveExtractCallback;
-    extern "C" const GUID IID_IArchiveOpenVolumeCallback;
-    extern "C" const GUID IID_IArchiveOpenSetSubArchiveName;
-    extern "C" const GUID IID_IArchiveUpdateCallback;
-    extern "C" const GUID IID_IArchiveUpdateCallback2;
+        // IArchive.h
+        extern const GUID IID_ISetProperties;
+        extern const GUID IID_IInArchive;
+        extern const GUID IID_IOutArchive;
+        extern const GUID IID_IArchiveExtractCallback;
+        extern const GUID IID_IArchiveOpenVolumeCallback;
+        extern const GUID IID_IArchiveOpenSetSubArchiveName;
+        extern const GUID IID_IArchiveUpdateCallback;
+        extern const GUID IID_IArchiveUpdateCallback2;
+    }
 }
 #endif // BITGUIDS_HPP

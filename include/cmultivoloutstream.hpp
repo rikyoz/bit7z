@@ -23,8 +23,8 @@
 #include <string>
 #include <cstdint>
 
-#include "7zip/IStream.h"
-#include "Common/MyCom.h"
+#include <7zip/IStream.h>
+#include <Common/MyCom.h>
 
 #include "../include/cfileoutstream.hpp"
 
