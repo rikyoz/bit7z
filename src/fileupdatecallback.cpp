@@ -21,11 +21,6 @@
 
 #include "../include/fileupdatecallback.hpp"
 
-//debug includes:
-//#include <sstream>
-//#include <iomanip>
-//end of debug includes
-
 #include "../include/cfileinstream.hpp"
 #include "../include/cfileoutstream.hpp"
 
@@ -44,19 +39,6 @@ FileUpdateCallback::FileUpdateCallback( const BitArchiveCreator& creator,
     : UpdateCallback( creator ),
       mNewItems( new_items ),
       mVolSize( 0 ) {}
-
-// debug purposes
-/*wstring to_string( FILETIME ftime ) {// ISO format, time zone designator Z == zero (UTC)
-    SYSTEMTIME utc ;
-    ::FileTimeToSystemTime( std::addressof(ftime), std::addressof(utc) );
-
-    std::wostringstream stm;
-    const auto w2 = std::setw(2);
-    stm << std::setfill(L'0') << std::setw(4) << utc.wYear << L'-' << w2 << utc.wMonth
-        << L'-' << w2 << utc.wDay << L' ' << w2 << utc.wYear << L' ' << w2 << utc.wHour
-        << L':' << w2 << utc.wMinute << L':' << w2 << utc.wSecond << L'Z' ;
-    return stm.str();
-}*/
 
 HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
@@ -84,8 +66,6 @@ HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIAN
                 break;
             case kpidATime:
                 prop = new_item.lastAccessTime();
-                /*wcout << L"dirItem " << dirItem.name()
-                      << " last access time: " << to_string( dirItem.lastAccessTime() ) << endl;*/
                 break;
             case kpidMTime:
                 prop = new_item.lastWriteTime();

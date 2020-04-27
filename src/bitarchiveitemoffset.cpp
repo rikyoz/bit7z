@@ -34,9 +34,9 @@ BitArchiveItemOffset& BitArchiveItemOffset::operator++() {
 }
 
 BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) {
-    BitArchiveItemOffset retval = *this;
+    BitArchiveItemOffset old_value = *this;
     ++( *this );
-    return retval;
+    return old_value;
 }
 
 bool BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const {

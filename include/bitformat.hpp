@@ -112,7 +112,7 @@ namespace bit7z {
                             const FeaturesSet& features ) noexcept;
 
             /**
-             * @return the default file estension of the archive format
+             * @return the default file extension of the archive format
              */
             const tstring& extension() const;
 

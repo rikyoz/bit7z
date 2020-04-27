@@ -417,7 +417,7 @@ namespace bit7z {
 
             /**
              * @return the boolean value of this variant
-             * (it throws an expcetion if the variant is not a boolean).
+             * (it throws an exception if the variant is not a boolean).
              */
             bool getBool() const;
 

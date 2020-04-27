@@ -112,7 +112,7 @@ namespace bit7z {
              * When setting a password, the produced archive will be encrypted using the default
              * cryptographic method of the output format. If the format is 7z and the option
              * "crypt_headers" is set to true, also the headers of the archive will be encrypted,
-             * resulting in a password request everytime the output file will be opened.
+             * resulting in a password request every time the output file will be opened.
              *
              * @note Calling setPassword when the output format doesn't support archive encryption
              * (e.g. GZip, BZip2, etc...) does not have any effects (in other words, it doesn't

@@ -50,7 +50,7 @@ namespace bit7z {
             explicit BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format DEFAULT_FORMAT );
 
             /**
-             * @brief Extracts the given archive into the choosen directory.
+             * @brief Extracts the given archive into the chosen directory.
              *
              * @param in_file       the input archive file.
              * @param out_dir       the output directory where extracted files will be put.
@@ -58,7 +58,7 @@ namespace bit7z {
             void extract( const tstring& in_file, const tstring& out_dir = TSTRING( "" ) ) const;
 
             /**
-             * @brief Extracts the wildcard matching files in the given archive into the choosen directory.
+             * @brief Extracts the wildcard matching files in the given archive into the chosen directory.
              *
              * @param in_file       the input archive file.
              * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
@@ -71,7 +71,7 @@ namespace bit7z {
 #ifdef BIT7Z_REGEX_MATCHING
 
             /**
-             * @brief Extracts the regex matching files in the given archive into the choosen directory.
+             * @brief Extracts the regex matching files in the given archive into the chosen directory.
              *
              * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
              *
@@ -84,7 +84,7 @@ namespace bit7z {
 #endif
 
             /**
-             * @brief Extracts the specified items in the given archive into the choosen directory.
+             * @brief Extracts the specified items in the given archive into the chosen directory.
              *
              * @param in_file   the input archive file.
              * @param out_dir   the output directory where extracted files will be put.

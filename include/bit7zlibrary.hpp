@@ -74,7 +74,7 @@ namespace bit7z {
              *
              * @param format_ID     GUID of the archive format (see BitInFormat's guid() method)
              * @param interface_ID  ID of the archive interface to be requested (IID_IInArchive or IID_IOutArchive)
-             * @param out_object    Pointer to a CMyComPtr of an object wich implements the interface requested
+             * @param out_object    Pointer to a CMyComPtr of an object which implements the interface requested
              */
             void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
 

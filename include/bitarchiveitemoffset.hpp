@@ -39,7 +39,8 @@ namespace bit7z {
             BitPropVariant getProperty( BitProperty property ) const override;
 
         private:
-            //Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator, to be CopyConstructible so that stl algorithms can be used with const_iterator!
+            /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,
+             * to be CopyConstructible so that stl algorithms can be used with const_iterator! */
             const BitInputArchive* mArc;
     };
 }

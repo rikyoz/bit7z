@@ -29,7 +29,7 @@ using namespace bit7z;
 
 /* This class is a modified version of COutMultiVolStream you can find in 7zSDK/CPP/7zip/UI/Common/Update.cpp
  * Main changes made:
- *  + Volumes have all the same size, except the last one (original code allowed volumes of differents sizes)
+ *  + Volumes have all the same size, except the last one (original code allowed volumes of different sizes)
  *  + Use of vector instead of CObjectVector
  *  + Use of tstring instead of FString
  *  + Use of uint64_t instead of UInt64

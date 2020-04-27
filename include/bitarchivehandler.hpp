@@ -145,7 +145,7 @@ namespace bit7z {
             /**
              * @brief Sets the callback to be called when the processed size of the ongoing operation is updated.
              *
-             * @note The percentage of completition of the current operation can be obtained by calculating
+             * @note The completion percentage of the current operation can be obtained by calculating
              * static_cast<int>( ( 100.0 * processed_size ) / total_size ).
              *
              * @param callback  the progress callback to be used.
