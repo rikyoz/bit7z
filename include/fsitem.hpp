@@ -22,10 +22,10 @@
 #include <cstdint>
 
 #include "../include/bittypes.hpp"
+#include "../include/fsutil.hpp"
 
 #ifndef _WIN32
 #include <myWindows/StdAfx.h>
-#include "../include/fsutil.hpp"
 #endif
 
 #include <windows.h>

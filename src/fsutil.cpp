@@ -24,10 +24,8 @@
 #ifndef _WIN32
 #include <chrono>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <cstdio>
 #include <unistd.h>
-#include <utime.h>
 #include <myWindows/StdAfx.h>
 #endif
 
@@ -147,13 +145,15 @@ bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) {
 }
 
 #ifndef _WIN32
-// filetime_duration has the same layout as FILETIME; 100ns intervals
-using filetime_duration = chrono::duration< int64_t, ratio< 1, 10'000'000 > >;
+// 100ns intervals
+using FileTimeTickRate = std::ratio<1, 10'000'000>;
+// FileTimeDuration has the same layout as FILETIME;
+using FileTimeDuration = chrono::duration< int64_t, FileTimeTickRate >;
 // January 1, 1601 (NT epoch) - January 1, 1970 (Unix epoch):
 constexpr chrono::seconds nt_to_unix_epoch{ -11644473600 };
 
-fs::file_time_type FILETIME_to_file_time_type( FILETIME const& fileTime ) {
-    const filetime_duration asDuration{
+fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime ) {
+    const FileTimeDuration asDuration{
         static_cast< int64_t >( ( static_cast< uint64_t >( fileTime.dwHighDateTime ) << 32u ) | fileTime.dwLowDateTime )
     };
     const auto withUnixEpoch = asDuration + nt_to_unix_epoch;
@@ -184,7 +184,7 @@ bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftMo
 }
 
 #ifndef _WIN32
-FILETIME time_to_FILETIME( std::time_t time ) {
+FILETIME time_to_FILETIME( const std::time_t& time ) {
     uint64_t secs = ( time * 10000000ull ) + 116444736000000000;
     FILETIME fileTime;
     fileTime.dwLowDateTime = static_cast< DWORD >( secs );
@@ -195,7 +195,7 @@ FILETIME time_to_FILETIME( std::time_t time ) {
 
 bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) {
 #ifdef _WIN32
-    return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &mFileAttributeData ) != FALSE;
+    return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileInfo ) != FALSE;
 #else
     struct stat stat_info{};
     if ( lstat( filePath.c_str(), &stat_info ) != 0 ) {
