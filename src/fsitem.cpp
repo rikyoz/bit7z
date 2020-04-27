@@ -20,18 +20,18 @@
  */
 
 #include <utility>
+#include <system_error>
 
 #include "../include/fsitem.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/fsutil.hpp"
 
 using namespace bit7z::filesystem;
 
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what
  *    the user passes as path parameter in the constructor. If it is a directory, it doesn't contain a trailing / or \
- *    character, in order to use the method FindFirstFile without problems (as requested by that winapi function).
+ *    character, in order to use the method FindFirstFile without problems (as requested by that WinAPI function).
  * 2) mSearchPath contains the search path in which the item was found (e.g. if FSIndexer is searching items in
  *    "foo/bar/", each FSItem created for the elements it found will have mSearchPath == "foo/bar").
  *    As in mPath, mSearchPath does not contain trailing / or \! *
@@ -39,67 +39,65 @@ using namespace bit7z::filesystem;
  *    the path of the file in the archive), the path in the archive is calculated form mPath and mSearchPath
  *    (see inArchivePath() method). */
 
-FSItem::FSItem( wstring path, wstring in_archive_path )
-    : mPath( std::move( path ) ), mFileData(), mSearchPath( L"" ), mInArchivePath( std::move( in_archive_path ) ) {
-    bool is_dir = fsutil::isDirectory( mPath );
-    if ( is_dir && !mPath.empty() ) {
-        // The FSItem is a directory!
-        // If the path ends with a / or a \, it's removed, since FindFirstFile doesn't want it!
-        if ( mPath.back() == L'/' || mPath.back() == L'\\' ) {
-            mPath.pop_back();
-        }
+FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
+    : mFileAttributeData(), mSearchPath(), mInArchivePath( std::move( inArchivePath ) ) {
+    std::error_code ec;
+    mFileEntry.assign( itemPath, ec );
+    if ( !mFileEntry.exists() ) { // NOLINT
+        //TODO: use error_code instead of WinAPI error codes or HRESULT
+        throw BitException( "Invalid path", itemPath.native(), HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) );
     }
-    HANDLE find_handle = FindFirstFile( mPath.c_str(), &mFileData );
-    if ( find_handle == INVALID_HANDLE_VALUE ) { // NOLINT
-        throw BitException( L"Invalid path '" + mPath + L"'!", GetLastError() );
-    }
-    FindClose( find_handle );
+    initAttributes( itemPath );
 }
 
-FSItem::FSItem( wstring dir, FSItemInfo data, wstring search_path )
-    : mPath( std::move( dir ) ), mFileData( data ), mSearchPath( std::move( search_path ) ) {
-    /* Now mPath is the path without the filename, since dir is the path containing the file 'data'!
-     * So we must add the filename! */
-    if ( mPath.back() == L'/' || mPath.back() == L'\\' ) {
-        mPath += name();
-    } else {
-        mPath += L"\\" + name();
+FSItem::FSItem( fs::directory_entry entry, fs::path searchPath )
+    : mFileEntry( std::move( entry ) ), mFileAttributeData(), mSearchPath( std::move( searchPath ) ) {
+    initAttributes( mFileEntry.path() );
+}
+
+void FSItem::initAttributes( const fs::path& itemPath ) {
+    if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
+        //should not happen, but anyway...
+        throw BitException( "Could not retrieve file attributes", itemPath.native(), HRESULT_FROM_WIN32( GetLastError() ) );
     }
 }
 
 bool FSItem::isDots() const {
-    return ( name() == L"." || name() == L".." );
+    const auto filename = mFileEntry.path().filename();
+    return ( filename == "." || filename == ".." );
 }
 
 bool FSItem::isDir() const {
-    return ( mFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY ) != 0;
+    std::error_code ec;
+    bool res = mFileEntry.is_directory( ec );
+    return !ec ? res : false;
 }
 
 uint64_t FSItem::size() const {
-    ULARGE_INTEGER size;
-    size.LowPart = mFileData.nFileSizeLow;
-    size.HighPart = mFileData.nFileSizeHigh;
-    return size.QuadPart;
+    std::error_code ec;
+    auto res = mFileEntry.file_size( ec );
+    return !ec ? res : 0;
 }
 
 FILETIME FSItem::creationTime() const {
-    return mFileData.ftCreationTime;
+    return mFileAttributeData.ftCreationTime;
 }
 
 FILETIME FSItem::lastAccessTime() const {
-    return mFileData.ftLastAccessTime;
+    return mFileAttributeData.ftLastAccessTime;
 }
 
 FILETIME FSItem::lastWriteTime() const {
-    return mFileData.ftLastWriteTime;
+    return mFileAttributeData.ftLastWriteTime;
 }
 
-wstring FSItem::name() const {
-    return static_cast< const wchar_t* >( mFileData.cFileName );
+bit7z::tstring FSItem::name() const {
+    [[maybe_unused]] std::error_code ec;
+    return canonical( mFileEntry.path(), ec ).filename();
 }
 
-wstring FSItem::path() const {
-    return mPath;
+fs::path FSItem::path() const {
+    return mFileEntry.path();
 }
 
 /* NOTE:
@@ -120,28 +118,35 @@ wstring FSItem::path() const {
  *   the file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
  *
  * If the mInArchivePath is already given (i.e. the user wants a custom mapping of files), this one is returned.*/
-wstring FSItem::inArchivePath() const {
+fs::path FSItem::inArchivePath() const {
     using namespace fsutil;
 
     if ( !mInArchivePath.empty() ) {
         return mInArchivePath;
     }
 
-    if ( !isRelativePath( mPath ) ||
-            mPath.find( L"./" ) != wstring::npos || mPath.find( L".\\" ) != wstring::npos ) {
-        // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
-        // the interal structure of that folder (mSearchPath), otherwise we use only the file name.
-        return mSearchPath.empty() ? name() : mSearchPath + L"\\" + name();
+    const auto& path = mFileEntry.path();
+    const auto& filename = path.lexically_normal().filename();
+    if ( filename == "." || filename == ".." ) {
+        return TSTRING( "" );
     }
 
-    if ( mPath == L"." || mPath == L".." ) {
-        return L"";
+    const auto& native_path = path.native();
+    if ( path.is_absolute() ||
+         native_path.find( TSTRING( "./" ) ) != bit7z::tstring::npos ||
+         native_path.find( TSTRING( ".\\" ) ) != bit7z::tstring::npos ) {
+        // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
+        // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
+        if ( mSearchPath.empty() ) {
+            return name();
+        }
+        return mSearchPath / name();
     }
 
     //path is relative and without ./ or ../ => e.g. foo/bar/test.txt
-    return mPath;
+    return path;
 }
 
 uint32_t FSItem::attributes() const {
-    return mFileData.dwFileAttributes;
+    return mFileAttributeData.dwFileAttributes;
 }

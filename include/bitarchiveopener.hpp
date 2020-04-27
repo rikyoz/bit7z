@@ -52,13 +52,15 @@ namespace bit7z {
         protected:
             const BitInFormat& mFormat;
 
-            BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format );
+            BitArchiveOpener( const Bit7zLibrary& lib,
+                              const BitInFormat& format,
+                              const tstring& password = TSTRING( "" ) );
 
             ~BitArchiveOpener() override = default;
 
             void extractToFileSystem( const BitInputArchive& in_archive,
-                                      const wstring& in_file,
-                                      const wstring& out_dir,
+                                      const tstring& in_file,
+                                      const tstring& out_dir,
                                       const vector< uint32_t >& indices ) const;
 
             void extractToBuffer( const BitInputArchive& in_archive,
@@ -70,7 +72,7 @@ namespace bit7z {
                                   unsigned int index ) const;
 
             void extractToBufferMap( const BitInputArchive& in_archive,
-                                     map< wstring, vector< byte_t > >& out_map ) const;
+                                     map< tstring, vector< byte_t > >& out_map ) const;
     };
 }
 

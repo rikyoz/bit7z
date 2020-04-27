@@ -21,11 +21,16 @@
 
 #include "../include/callback.hpp"
 
+#include "../include/bitexception.hpp"
+
 using namespace bit7z;
 
-Callback::Callback( const BitArchiveHandler &handler ) : mHandler( handler ), mErrorMessage( L"" ) {}
+Callback::Callback( const BitArchiveHandler& handler ) : mHandler( handler ), mErrorMessage( nullptr ) {}
 
-wstring Callback::getErrorMessage() const {
-    return mErrorMessage;
+void Callback::throwException( HRESULT error ) {
+    if ( mErrorMessage != nullptr ) {
+        throw BitException( mErrorMessage, error );
+    }
+    throw BitException( "Failed operation (unknown error)!", error );
 }
 

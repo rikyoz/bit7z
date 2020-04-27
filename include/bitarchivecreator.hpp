@@ -31,7 +31,6 @@ struct IOutStream;
 struct ISequentialOutStream;
 
 namespace bit7z {
-    using std::wstring;
     using std::unique_ptr;
     using std::ostream;
 
@@ -93,7 +92,7 @@ namespace bit7z {
              *
              * When setting a password, the produced archive will be encrypted using the default
              * cryptographic method of the output format. The option "crypt headers" remains unchanged,
-             * in contrast with what happens when calling the setPassword(wstring, bool) method.
+             * in contrast with what happens when calling the setPassword(tstring, bool) method.
              *
              * @note Calling setPassword when the output format doesn't support archive encryption
              * (e.g. GZip, BZip2, etc...) does not have any effects (in other words, it doesn't
@@ -105,7 +104,7 @@ namespace bit7z {
              *
              * @param password
              */
-            void setPassword( const wstring& password ) override;
+            void setPassword( const tstring& password ) override;
 
             /**
              * @brief Sets up a password for the output archive.
@@ -130,7 +129,7 @@ namespace bit7z {
              * @param crypt_headers     if true, the headers of the output archive will be encrypted
              *                          (valid only with 7z format).
              */
-            void setPassword( const wstring& password, bool crypt_headers );
+            void setPassword( const tstring& password, bool crypt_headers );
 
             /**
              * @brief Sets the compression level to be used when creating an archive.
@@ -190,13 +189,16 @@ namespace bit7z {
 
             CMyComPtr< IOutArchive > initOutArchive() const;
 
-            CMyComPtr< IOutStream > initOutFileStream( const wstring& out_archive,
+            CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive,
                                                        CMyComPtr< IOutArchive >& new_arc,
                                                        unique_ptr< BitInputArchive >& old_arc ) const;
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
-            void compressToFile( const wstring& out_file, UpdateCallback* update_callback ) const;
+
+            void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
+
             void compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const;
+
             void compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const;
 
         private:

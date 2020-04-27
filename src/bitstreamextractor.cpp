@@ -22,7 +22,6 @@
 #include "../include/bitstreamextractor.hpp"
 
 #include "../include/bitinputarchive.hpp"
-#include "../include/bitexception.hpp"
 #include "../include/bufferextractcallback.hpp"
 
 using namespace bit7z;
@@ -30,9 +29,9 @@ using namespace bit7z;
 BitStreamExtractor::BitStreamExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {}
 
-void BitStreamExtractor::extract( istream& in_stream, const wstring& out_dir ) const {
+void BitStreamExtractor::extract( istream& in_stream, const tstring& out_dir ) const {
     BitInputArchive in_archive( *this, in_stream );
-    extractToFileSystem( in_archive, L"", out_dir, vector< uint32_t >() );
+    extractToFileSystem( in_archive, TSTRING( "" ), out_dir, vector< uint32_t >() );
 }
 
 void BitStreamExtractor::extract( istream& in_stream, vector< byte_t >& out_buffer, unsigned int index ) const {
@@ -45,7 +44,7 @@ void BitStreamExtractor::extract( istream& in_stream, std::ostream& out_stream, 
     extractToStream( in_archive, out_stream, index );
 }
 
-void BitStreamExtractor::extract( istream& in_stream, map< wstring, vector< byte_t > >& out_map ) const {
+void BitStreamExtractor::extract( istream& in_stream, map< tstring, vector< byte_t > >& out_map ) const {
     BitInputArchive in_archive( *this, in_stream );
     extractToBufferMap( in_archive, out_map );
 }
@@ -53,7 +52,7 @@ void BitStreamExtractor::extract( istream& in_stream, map< wstring, vector< byte
 void BitStreamExtractor::test( istream& in_stream ) const {
     BitInputArchive in_archive( *this, in_stream );
 
-    map< wstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
     CMyComPtr< ExtractCallback > extract_callback_spec = new BufferExtractCallback( *this, in_archive, dummy_map );
     in_archive.test( extract_callback_spec );
 }

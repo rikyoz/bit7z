@@ -26,7 +26,6 @@
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-    using std::wstring;
     using std::vector;
 
     /**
@@ -57,8 +56,8 @@ namespace bit7z {
              * @param in_buffer_name    (optional) the buffer name used to give a name to the content of the archive.
              */
             void compress( const vector< byte_t >& in_buffer,
-                           const wstring& out_file,
-                           const wstring& in_buffer_name = L"" ) const;
+                           const tstring& out_file,
+                           const tstring& in_buffer_name = TSTRING( "" ) ) const;
 
             /**
              * @brief Compresses the given input buffer to the output buffer.
@@ -71,7 +70,7 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            vector< byte_t >& out_buffer,
-                           const wstring& in_buffer_name = L"" ) const;
+                           const tstring& in_buffer_name = TSTRING( "" ) ) const;
 
             /**
              * @brief Compresses the given input buffer to the output standard stream.
@@ -84,7 +83,7 @@ namespace bit7z {
              */
             void compress( const vector< byte_t >& in_buffer,
                            ostream& out_stream,
-                           const wstring& in_buffer_name = L"" ) const;
+                           const tstring& in_buffer_name = TSTRING( "" ) ) const;
     };
 }
 #endif // BITMEMCOMPRESSOR_HPP

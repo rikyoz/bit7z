@@ -24,21 +24,27 @@
 #include <algorithm>
 #include <numeric>
 
-#include "Common/MyCom.h"
-#include "7zip/PropID.h"
-
-#include "../include/bitexception.hpp"
+#include <7zip/PropID.h>
 
 using namespace bit7z;
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const wstring& in_file, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_file ) {}
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
+                                const tstring& in_file,
+                                const BitInFormat& format,
+                                const tstring& password )
+    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_file ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, const vector< byte_t >& in_buffer, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_buffer ) {}
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
+                                const vector< byte_t >& in_buffer,
+                                const BitInFormat& format,
+                                const tstring& password )
+    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_buffer ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib, std::istream& in_stream, const BitInFormat& format )
-    : BitArchiveOpener( lib, format ), BitInputArchive( *this, in_stream ) {}
+BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
+                                std::istream& in_stream,
+                                const BitInFormat& format,
+                                const tstring& password )
+    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
 
 map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
@@ -71,7 +77,7 @@ vector< BitArchiveItemInfo > BitArchiveInfo::items() const {
 }
 
 uint32_t BitArchiveInfo::foldersCount() const {
-    return std::count_if( cbegin(), cend(), []( const BitArchiveItem & item ) {
+    return std::count_if( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return item.isDir();
     } );
 }
@@ -81,13 +87,13 @@ uint32_t BitArchiveInfo::filesCount() const {
 }
 
 uint64_t BitArchiveInfo::size() const {
-    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem & item ) {
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.size();
     } );
 }
 
 uint64_t BitArchiveInfo::packSize() const {
-    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem & item ) {
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.packSize();
     } );
 }
@@ -95,7 +101,7 @@ uint64_t BitArchiveInfo::packSize() const {
 bool BitArchiveInfo::hasEncryptedItems() const {
     /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
-    return std::any_of( cbegin(), cend(), []( const BitArchiveItem & item ) {
+    return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return !item.isDir() && item.isEncrypted();
     } );
 }
@@ -104,16 +110,16 @@ bool BitArchiveInfo::isMultiVolume() const {
     if ( mFormat == BitFormat::Split ) {
         return true;
     }
-    BitPropVariant propvar = getArchiveProperty( BitProperty::IsVolume );
-    return propvar.isBool() && propvar.getBool();
+    BitPropVariant is_multi_volume = getArchiveProperty( BitProperty::IsVolume );
+    return is_multi_volume.isBool() && is_multi_volume.getBool();
 }
 
 bool BitArchiveInfo::isSolid() const {
-    BitPropVariant propvar = getArchiveProperty( BitProperty::Solid );
-    return propvar.isBool() && propvar.getBool();
+    BitPropVariant is_solid = getArchiveProperty( BitProperty::Solid );
+    return is_solid.isBool() && is_solid.getBool();
 }
 
 uint32_t BitArchiveInfo::volumesCount() const {
-    BitPropVariant propvar = getArchiveProperty( BitProperty::NumVolumes );
-    return propvar.isEmpty() ? 1 : propvar.getUInt32();
+    BitPropVariant volumes_count = getArchiveProperty( BitProperty::NumVolumes );
+    return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
 }

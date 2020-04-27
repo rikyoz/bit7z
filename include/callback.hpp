@@ -21,21 +21,18 @@
 
 #include <string>
 
-#include "Common/MyCom.h"
+#include <Common/MyCom.h>
 
 #include "../include/bitarchivehandler.hpp"
 
-#if ( _MSC_VER <= 1800 )
-#define CONSTEXPR const
-#else
-#define CONSTEXPR constexpr
-#endif
-
-CONSTEXPR auto kUnsupportedMethod = L"Unsupported Method";
-CONSTEXPR auto kCRCFailed         = L"CRC Failed";
-CONSTEXPR auto kDataError         = L"Data Error";
-CONSTEXPR auto kUnknownError      = L"Unknown Error";
-CONSTEXPR auto kEmptyFileAlias    = L"[Content]";
+CONSTEXPR auto kUnsupportedMethod  = "Unsupported Method";
+CONSTEXPR auto kCRCFailed          = "CRC Failed";
+CONSTEXPR auto kDataError          = "Data Error";
+CONSTEXPR auto kUnknownError       = "Unknown Error";
+CONSTEXPR auto kCannotOpenOutput   = "Cannot open output file";
+CONSTEXPR auto kCannotDeleteOutput = "Cannot delete output file";
+CONSTEXPR auto kPasswordNotDefined = "Password is not defined";
+CONSTEXPR auto kEmptyFileAlias     = TSTRING("[Content]");
 
 namespace bit7z {
     using std::wstring;
@@ -43,13 +40,14 @@ namespace bit7z {
     class Callback : protected CMyUnknownImp {
         public:
             virtual ~Callback() = default;
-            virtual wstring getErrorMessage() const;
+
+            virtual void throwException( HRESULT error );
 
         protected:
             explicit Callback( const BitArchiveHandler& handler ); // Protected constructor => Abstract class
 
             const BitArchiveHandler& mHandler;
-            wstring mErrorMessage;
+            const char* mErrorMessage;
 
     };
 }

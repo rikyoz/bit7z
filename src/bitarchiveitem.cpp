@@ -33,47 +33,47 @@ uint32_t BitArchiveItem::index() const {
 }
 
 bool BitArchiveItem::isDir() const {
-    BitPropVariant propvar = getProperty( BitProperty::IsDir );
-    return !propvar.isEmpty() && propvar.getBool();
+    BitPropVariant is_dir = getProperty( BitProperty::IsDir );
+    return !is_dir.isEmpty() && is_dir.getBool();
 }
 
-wstring BitArchiveItem::name() const {
-    BitPropVariant propvar = getProperty( BitProperty::Name );
-    if ( propvar.isEmpty() ) {
-        propvar = getProperty( BitProperty::Path );
-        return propvar.isEmpty() ? L"" : fsutil::filename( propvar.getString(), true );
+tstring BitArchiveItem::name() const {
+    BitPropVariant name = getProperty( BitProperty::Name );
+    if ( name.isEmpty() ) {
+        name = getProperty( BitProperty::Path );
+        return name.isEmpty() ? TSTRING( "" ) : fsutil::filename( name.getString(), true );
     }
-    return propvar.getString();
+    return name.getString();
 }
 
-wstring BitArchiveItem::extension() const {
+tstring BitArchiveItem::extension() const {
     if ( isDir() ) {
-        return L"";
+        return TSTRING( "" );
     }
-    BitPropVariant propvar = getProperty( BitProperty::Extension );
-    return propvar.isEmpty() ? fsutil::extension( name() ) : propvar.getString();
+    BitPropVariant extension = getProperty( BitProperty::Extension );
+    return extension.isEmpty() ? fsutil::extension( name() ) : extension.getString();
 }
 
-wstring BitArchiveItem::path() const {
-    BitPropVariant propvar = getProperty( BitProperty::Path );
-    if ( propvar.isEmpty() ) {
-        propvar = getProperty( BitProperty::Name );
-        return propvar.isEmpty() ? L"" : propvar.getString();
+tstring BitArchiveItem::path() const {
+    BitPropVariant path = getProperty( BitProperty::Path );
+    if ( path.isEmpty() ) {
+        path = getProperty( BitProperty::Name );
+        return path.isEmpty() ? TSTRING( "" ) : path.getString();
     }
-    return propvar.getString();
+    return path.getString();
 }
 
 uint64_t BitArchiveItem::size() const {
-    BitPropVariant propvar = getProperty( BitProperty::Size );
-    return propvar.isEmpty() ? 0 : propvar.getUInt64();
+    BitPropVariant size = getProperty( BitProperty::Size );
+    return size.isEmpty() ? 0 : size.getUInt64();
 }
 
 uint64_t BitArchiveItem::packSize() const {
-    BitPropVariant propvar = getProperty( BitProperty::PackSize );
-    return propvar.isEmpty() ? 0 : propvar.getUInt64();
+    BitPropVariant pack_size = getProperty( BitProperty::PackSize );
+    return pack_size.isEmpty() ? 0 : pack_size.getUInt64();
 }
 
 bool BitArchiveItem::isEncrypted() const {
-    BitPropVariant propvar = getProperty( BitProperty::Encrypted );
-    return propvar.isBool() && propvar.getBool();
+    BitPropVariant is_encrypted = getProperty( BitProperty::Encrypted );
+    return is_encrypted.isBool() && is_encrypted.getBool();
 }

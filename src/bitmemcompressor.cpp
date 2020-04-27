@@ -21,22 +21,20 @@
 
 #include "../include/bitmemcompressor.hpp"
 
-#include "../include/bitexception.hpp"
 #include "../include/bufferupdatecallback.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
-using std::wstring;
 using std::vector;
 
 BitMemCompressor::BitMemCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitArchiveCreator( lib, format ) {}
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
-                                 const wstring& out_file,
-                                 const wstring& in_buffer_name ) const {
-    const wstring& name = in_buffer_name.empty() ? fsutil::filename( out_file ) : in_buffer_name;
+                                 const tstring& out_file,
+                                 const tstring& in_buffer_name ) const {
+    const tstring& name = in_buffer_name.empty() ? fsutil::filename( out_file ) : in_buffer_name;
 
     CMyComPtr< UpdateCallback > update_callback = new BufferUpdateCallback( *this, in_buffer, name );
     BitArchiveCreator::compressToFile( out_file, update_callback );
@@ -44,14 +42,14 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  vector< byte_t >& out_buffer,
-                                 const wstring& in_buffer_name ) const {
+                                 const tstring& in_buffer_name ) const {
     CMyComPtr< UpdateCallback > update_callback = new BufferUpdateCallback( *this, in_buffer, in_buffer_name );
     BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  std::ostream& out_stream,
-                                 const std::wstring& in_buffer_name ) const {
+                                 const tstring& in_buffer_name ) const {
     CMyComPtr< UpdateCallback > update_callback = new BufferUpdateCallback( *this, in_buffer, in_buffer_name );
     BitArchiveCreator::compressToStream( out_stream, update_callback );
 }

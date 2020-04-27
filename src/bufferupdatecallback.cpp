@@ -21,7 +21,6 @@
 
 #include "../include/bufferupdatecallback.hpp"
 
-#include "../include/bitpropvariant.hpp"
 #include "../include/cbufferinstream.hpp"
 
 using namespace std;
@@ -30,17 +29,17 @@ using namespace bit7z;
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of std::wstring instead of UString (see Callback base interface)
+ *  + Use of tstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback)
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
 BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
                                             const vector< byte_t >& in_buffer,
-                                            const wstring& in_buffer_name )
+                                            const tstring& in_buffer_name )
     : UpdateCallback( creator ),
       mBuffer( in_buffer ),
-      mBufferName( in_buffer_name ) {}
+      mBufferName( in_buffer_name.empty() ? kEmptyFileAlias : in_buffer_name ) {}
 
 HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
@@ -52,7 +51,7 @@ HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
     } else {
         switch ( propID ) {
             case kpidPath:
-                prop = ( mBufferName.empty() ) ? kEmptyFileAlias : mBufferName;
+                prop = mBufferName.wstring();
                 break;
             case kpidIsDir:
                 prop = false;
@@ -78,6 +77,7 @@ HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
     }
 
     *value = prop;
+    prop.bstrVal = nullptr;
     return S_OK;
 }
 
@@ -86,7 +86,7 @@ uint32_t BufferUpdateCallback::itemsCount() const {
 }
 
 HRESULT BufferUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finilize() );
+    RINOK( Finalize() );
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
         return S_OK;

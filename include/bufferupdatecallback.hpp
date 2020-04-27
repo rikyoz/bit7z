@@ -16,39 +16,42 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef MEMUPDATECALLBACK_HPP
-#define MEMUPDATECALLBACK_HPP
+#ifndef BUFFERUPDATECALLBACK_HPP
+#define BUFFERUPDATECALLBACK_HPP
 
 #include "../include/bitarchivecreator.hpp"
 #include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
 #include "../include/updatecallback.hpp"
+#include "../include/fs.hpp"
 
 #include <vector>
 
 namespace bit7z {
     using std::vector;
-    using std::wstring;
 
     class BufferUpdateCallback : public UpdateCallback {
         public:
             BufferUpdateCallback( const BitArchiveCreator& creator,
                                   const vector< byte_t >& in_buffer,
-                                  const wstring& in_buffer_name );
+                                  const tstring& in_buffer_name );
 
             ~BufferUpdateCallback() override = default;
 
             // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
+            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+
+            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+
+            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
 
             uint32_t itemsCount() const override;
 
         private:
             const vector< byte_t >& mBuffer;
-            const wstring& mBufferName;
+            const fs::path mBufferName;
     };
 }
-#endif // MEMUPDATECALLBACK_HPP
+#endif // BUFFERUPDATECALLBACK_HPP

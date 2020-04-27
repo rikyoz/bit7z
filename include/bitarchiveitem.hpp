@@ -21,6 +21,8 @@
 
 #include "../include/bitpropvariant.hpp"
 
+#include "../include/bittypes.hpp"
+
 namespace bit7z {
 
     class BitArchiveItem {
@@ -43,19 +45,19 @@ namespace bit7z {
             /**
              * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
              */
-            wstring name() const;
+            tstring name() const;
 
             /**
              * @return the extension of the item, if available or inferable from the name, or an empty string otherwise
              * (e.g. when the item is a folder).
              */
-            wstring extension() const;
+            tstring extension() const;
 
             /**
              * @return the path of the item in the archive, if available or inferable from the name, or an empty string
              * otherwise.
              */
-            wstring path() const;
+            tstring path() const;
 
             /**
              * @return the uncompressed size of the item.

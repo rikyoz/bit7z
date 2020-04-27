@@ -21,32 +21,38 @@
 
 #include <string>
 
-#include <Windows.h>
+#include "../include/bittypes.hpp"
+
+#include <windows.h>
+
+#include "fs.hpp"
+
+#ifndef _WIN32
+typedef struct _WIN32_FILE_ATTRIBUTE_DATA {
+    DWORD    dwFileAttributes;
+    FILETIME ftCreationTime;
+    FILETIME ftLastAccessTime;
+    FILETIME ftLastWriteTime;
+    // not needed fields
+    // DWORD    nFileSizeHigh;
+    // DWORD    nFileSizeLow;
+} WIN32_FILE_ATTRIBUTE_DATA;
+#endif
 
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
-            using std::wstring;
+            tstring filename( const tstring& path, bool ext = false );
 
-            bool isRelativePath( const wstring& path );
+            tstring extension( const tstring& path );
 
-            bool isDirectory( const wstring& path );
+            bool wildcardMatch( const tstring& pattern, const tstring& str );
 
-            bool pathExists( const wstring& path );
+            bool getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo );
 
-            bool renameFile( const wstring& old_name, const wstring& new_name );
+            bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified );
 
-            void normalizePath( wstring& path );
-
-            wstring dirname( const wstring& path );
-
-            wstring filename( const wstring& path, bool ext = false );
-
-            wstring extension( const wstring& path );
-
-            bool setFileModifiedTime( const wstring& name, const FILETIME& ft_modified );
-
-            bool wildcardMatch( const wstring& pattern, const wstring& str );
+            bool setFileAttributes( const fs::path& filePath, DWORD attributes );
         }
     }
 }

@@ -16,14 +16,15 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef UPDATECALLBACK_HPP
-#define UPDATECALLBACK_HPP
+#ifndef FILEUPDATECALLBACK_HPP
+#define FILEUPDATECALLBACK_HPP
 
 #include "../include/bitinputarchive.hpp"
 #include "../include/bitarchiveiteminfo.hpp"
 #include "../include/updatecallback.hpp"
 #include "../include/fsitem.hpp"
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bitexception.hpp"
 
 #include <vector>
 
@@ -41,21 +42,25 @@ namespace bit7z {
 
             // CompressCallback
             uint32_t itemsCount() const override;
-            wstring getErrorMessage() const override;
+
+            void throwException( HRESULT error ) override;
 
             // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
+            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+
+            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+
+            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
 
         private:
             const vector< FSItem >& mNewItems;
 
             uint64_t mVolSize;
-            wstring mVolName;
+            tstring mVolName; //TODO: Check whether this is necessary...
 
-            vector< pair< wstring, HRESULT > > mFailedFiles;
+            FailedFiles mFailedFiles;
     };
 }
-#endif // UPDATECALLBACK_HPP
+#endif // FILEUPDATECALLBACK_HPP

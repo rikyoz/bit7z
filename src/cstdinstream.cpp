@@ -21,11 +21,16 @@
 
 #include "../include/cstdinstream.hpp"
 
+#ifndef _WIN32
+#include <myWindows/StdAfx.h>
+#include "../include/bittypes.hpp"  //for error codes
+#endif
+
 using namespace bit7z;
 
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
 
-STDMETHODIMP CStdInStream::Read( void* data, uint32_t size, uint32_t* processedSize ) {
+STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
     mInputStream.clear();
 
     if ( processedSize != nullptr ) {
@@ -45,7 +50,7 @@ STDMETHODIMP CStdInStream::Read( void* data, uint32_t size, uint32_t* processedS
     return mInputStream.bad() ? HRESULT_FROM_WIN32( ERROR_READ_FAULT ) : S_OK;
 }
 
-STDMETHODIMP CStdInStream::Seek( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition ) {
+STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     mInputStream.clear();
 
     std::ios_base::seekdir way;

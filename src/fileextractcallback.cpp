@@ -22,14 +22,10 @@
 #include <utility>
 
 #include "../include/fileextractcallback.hpp"
-
-#include "Windows/FileDir.h"
-#include "Windows/FileFind.h"
-
-#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/cstdoutstream.hpp"
 #include "../include/fsutil.hpp"
+
+#include <iostream>
 
 using namespace std;
 using namespace NWindows;
@@ -45,27 +41,27 @@ using namespace bit7z;
 
 FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
                                           const BitInputArchive& inputArchive,
-                                          wstring inFilePath,
-                                          wstring directoryPath )
+                                          fs::path inFilePath,
+                                          fs::path directoryPath )
     : ExtractCallback( handler, inputArchive ),
       mInFilePath( std::move( inFilePath ) ),
       mDirectoryPath( std::move( directoryPath ) ),
-      mProcessedFileInfo() {
-    //NFile::NName::NormalizeDirPathPrefix( mDirectoryPath );
-    filesystem::fsutil::normalizePath( mDirectoryPath );
-}
+      mProcessedFileInfo() {}
 
 //TODO: clean and optimize!
-STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
+                                             ISequentialOutStream** outStream,
+                                             Int32 askExtractMode ) try {
     *outStream = nullptr;
     mFileOutStream.Release();
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
 
+    fs::path filePath;
     if ( prop.isEmpty() ) {
-        mFilePath = !mInFilePath.empty() ? filesystem::fsutil::filename( mInFilePath ) : kEmptyFileAlias;
+        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
     } else if ( prop.isString() ) {
-        mFilePath = prop.getString();
+        filePath = fs::path( prop.getString() );
     } else {
         return E_FAIL;
     }
@@ -110,35 +106,27 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
             return E_FAIL;
     }
 
-    // Create folders for file
-    size_t slashPos = mFilePath.rfind( WCHAR_PATH_SEPARATOR );
-
-    if ( slashPos != wstring::npos ) {
-        NFile::NDir::CreateComplexDir( ( mDirectoryPath + mFilePath.substr( 0, slashPos ) ).c_str() );
-    }
-    wstring fullProcessedPath = mDirectoryPath + mFilePath;
-    mDiskFilePath = fullProcessedPath;
+    mDiskFilePath = mDirectoryPath / filePath;
 
     if ( mProcessedFileInfo.isDir ) {
-        NFile::NDir::CreateComplexDir( fullProcessedPath.c_str() );
+        error_code ec;
+        fs::create_directories( mDiskFilePath, ec );
     } else {
-        NFile::NFind::CFileInfo fi;
-
         if ( mHandler.fileCallback() ) {
-            wstring filename = filesystem::fsutil::filename( fullProcessedPath, true );
-            mHandler.fileCallback()( filename );
+            mHandler.fileCallback()( mDiskFilePath.filename() );
         }
 
-        if ( fi.Find( fullProcessedPath.c_str() ) ) {
-            if ( !NFile::NDir::DeleteFileAlways( fullProcessedPath.c_str() ) ) {
-                mErrorMessage = L"Cannot delete output file " + fullProcessedPath;
-                return E_ABORT;
-            }
+        std::error_code ec;
+        fs::create_directories( mDiskFilePath.parent_path(), ec );
+
+        if ( fs::exists( mDiskFilePath, ec ) && !fs::remove( mDiskFilePath, ec ) ) {
+            mErrorMessage = kCannotDeleteOutput;
+            return E_ABORT;
         }
 
-        CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( fullProcessedPath, true );
+        CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( mDiskFilePath, true );
         if ( outStreamLoc->fail() ) {
-            mErrorMessage = L"Cannot open output file " + fullProcessedPath;
+            mErrorMessage = kCannotOpenOutput;
             return E_ABORT;
         }
 
@@ -152,29 +140,24 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index, ISequentialOutStream*
 }
 
 STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
-    switch ( operationResult ) {
-        case NArchive::NExtract::NOperationResult::kOK:
-            break;
+    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+        mNumErrors++;
 
-        default: {
-            mNumErrors++;
+        switch ( operationResult ) {
+            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+                mErrorMessage = kUnsupportedMethod;
+                break;
 
-            switch ( operationResult ) {
-                case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
-                    mErrorMessage = kUnsupportedMethod;
-                    break;
+            case NArchive::NExtract::NOperationResult::kCRCError:
+                mErrorMessage = kCRCFailed;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kCRCError:
-                    mErrorMessage = kCRCFailed;
-                    break;
+            case NArchive::NExtract::NOperationResult::kDataError:
+                mErrorMessage = kDataError;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kDataError:
-                    mErrorMessage = kDataError;
-                    break;
-
-                default:
-                    mErrorMessage = kUnknownError;
-            }
+            default:
+                mErrorMessage = kUnknownError;
         }
     }
 
@@ -190,7 +173,7 @@ STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
     }
 
     if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
-        NFile::NDir::SetFileAttrib( mDiskFilePath.c_str(), mProcessedFileInfo.Attrib );
+        filesystem::fsutil::setFileAttributes( mDiskFilePath, mProcessedFileInfo.Attrib );
     }
 
     if ( mNumErrors > 0 ) {
@@ -198,4 +181,11 @@ STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
     }
 
     return S_OK;
+}
+
+void FileExtractCallback::throwException( HRESULT error ) {
+    if ( mErrorMessage != nullptr ) {
+        throw BitException( mErrorMessage, mDiskFilePath.native(), error );
+    }
+    Callback::throwException( error );
 }

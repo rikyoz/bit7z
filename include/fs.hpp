@@ -16,36 +16,31 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef CSTDOUTSTREAM_HPP
-#define CSTDOUTSTREAM_HPP
+#ifndef FS_HPP
+#define FS_HPP
 
-#include <ostream>
-#include <cstdint>
+#if defined(__cpp_lib_filesystem) || \
+    ( defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>) )
 
-#include <7zip/IStream.h>
-#include <Common/MyCom.h>
+#include <fstream>
+#include <filesystem>
 
-namespace bit7z {
-    using std::ostream;
-
-    class CStdOutStream : public IOutStream, public CMyUnknownImp {
-        public:
-            explicit CStdOutStream( std::ostream& outputStream );
-
-            virtual ~CStdOutStream() = default;
-
-            MY_UNKNOWN_IMP1( IOutStream )
-
-            // IOutStream
-            STDMETHOD( Write )( void const* data, UInt32 size, UInt32* processedSize );
-
-            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
-
-            STDMETHOD( SetSize )( UInt64 newSize );
-
-        private:
-            ostream& mOutputStream;
-    };
+namespace fs {
+    using namespace std::filesystem;
+    using ifstream = std::ifstream;
+    using ofstream = std::ofstream;
+    using fstream = std::fstream;
 }
+#else
+#define GHC_WIN_WSTRING_STRING_TYPE
+#include "ghc/filesystem.hpp"
 
-#endif // CSTDOUTSTREAM_HPP
+namespace fs {
+    using namespace ghc::filesystem;
+    using ifstream = ghc::filesystem::ifstream;
+    using ofstream = ghc::filesystem::ofstream;
+    using fstream = ghc::filesystem::fstream;
+}
+#endif
+
+#endif // FS_HPP

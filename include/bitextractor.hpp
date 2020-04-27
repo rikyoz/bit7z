@@ -55,7 +55,7 @@ namespace bit7z {
              * @param in_file       the input archive file.
              * @param out_dir       the output directory where extracted files will be put.
              */
-            void extract( const wstring& in_file, const wstring& out_dir = L"" ) const;
+            void extract( const tstring& in_file, const tstring& out_dir = TSTRING( "" ) ) const;
 
             /**
              * @brief Extracts the wildcard matching files in the given archive into the choosen directory.
@@ -64,11 +64,12 @@ namespace bit7z {
              * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.
              */
-            void extractMatching( const wstring& in_file,
-                                  const wstring& item_filter,
-                                  const wstring& out_dir = L"" ) const;
+            void extractMatching( const tstring& in_file,
+                                  const tstring& item_filter,
+                                  const tstring& out_dir = TSTRING( "" ) ) const;
 
 #ifdef BIT7Z_REGEX_MATCHING
+
             /**
              * @brief Extracts the regex matching files in the given archive into the choosen directory.
              *
@@ -78,7 +79,8 @@ namespace bit7z {
              * @param regex         the regex used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.
              */
-            void extractMatchingRegex( const wstring& in_file, const wstring& regex, const wstring& out_dir ) const;
+            void extractMatchingRegex( const tstring& in_file, const tstring& regex, const tstring& out_dir ) const;
+
 #endif
 
             /**
@@ -88,9 +90,9 @@ namespace bit7z {
              * @param out_dir   the output directory where extracted files will be put.
              * @param indices   the array of indices of the files in the archive that must be extracted.
              */
-            void extractItems( const wstring& in_file,
+            void extractItems( const tstring& in_file,
                                const vector< uint32_t >& indices,
-                               const wstring& out_dir = L"" ) const;
+                               const tstring& out_dir = TSTRING( "" ) ) const;
 
             /**
              * @brief Extracts a file from the given archive into the output buffer.
@@ -99,7 +101,7 @@ namespace bit7z {
              * @param out_buffer   the output buffer where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_file.
              */
-            void extract( const wstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 ) const;
+            void extract( const tstring& in_file, vector< byte_t >& out_buffer, unsigned int index = 0 ) const;
 
 
             /**
@@ -109,7 +111,7 @@ namespace bit7z {
              * @param out_stream   the (binary) stream where the content of the archive will be put.
              * @param index        the index of the file to be extracted from in_file.
              */
-            void extract( const wstring& in_file, ostream& out_stream, unsigned int index = 0 ) const;
+            void extract( const tstring& in_file, ostream& out_stream, unsigned int index = 0 ) const;
 
             /**
              * @brief Extracts the content of the given archive into a map of memory buffers, where keys are the paths
@@ -118,7 +120,7 @@ namespace bit7z {
              * @param in_file   the input archive file.
              * @param out_map   the output map.
              */
-            void extract( const wstring& in_file, map< wstring, vector< byte_t > >& out_map ) const;
+            void extract( const tstring& in_file, map< tstring, vector< byte_t > >& out_map ) const;
 
             /**
              * @brief Tests the given archive without extracting its content.
@@ -127,12 +129,12 @@ namespace bit7z {
              *
              * @param in_file   the input archive file to be tested.
              */
-            void test( const wstring& in_file ) const;
+            void test( const tstring& in_file ) const;
 
         private:
-            void extractMatchingFilter( const wstring& in_file,
-                                        const wstring& out_dir,
-                                        const function< bool( const wstring& ) >& filter ) const;
+            void extractMatchingFilter( const tstring& in_file,
+                                        const tstring& out_dir,
+                                        const function< bool( const tstring& ) >& filter ) const;
     };
 }
 #endif // BITEXTRACTOR_HPP

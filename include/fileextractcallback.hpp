@@ -32,20 +32,22 @@ namespace bit7z {
         public:
             FileExtractCallback( const BitArchiveHandler& handler,
                                  const BitInputArchive& inputArchive,
-                                 wstring inFilePath,
-                                 wstring directoryPath);
+                                 fs::path inFilePath,
+                                 fs::path directoryPath );
 
             ~FileExtractCallback() override = default;
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
+
+            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
+
+            void throwException( HRESULT error ) override;
 
         private:
-            wstring mInFilePath;     // Input file path
-            wstring mDirectoryPath;  // Output directory
-            wstring mFilePath;       // name inside archive
-            wstring mDiskFilePath;   // full path to file on disk
+            fs::path mInFilePath;     // Input file path
+            fs::path mDirectoryPath;  // Output directory
+            fs::path mDiskFilePath;   // full path to file on disk
 
             struct CProcessedFileInfo {
                 FILETIME MTime;

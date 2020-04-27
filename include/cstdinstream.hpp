@@ -22,8 +22,8 @@
 #include <cstdint>
 #include <istream>
 
-#include "7zip/IStream.h"
-#include "Common/MyCom.h"
+#include <7zip/IStream.h>
+#include <Common/MyCom.h>
 
 namespace bit7z {
     using std::istream;
@@ -37,8 +37,9 @@ namespace bit7z {
             MY_UNKNOWN_IMP1( IInStream )
 
             // IInStream
-            STDMETHOD( Read )( void* data, uint32_t size, uint32_t* processedSize );
-            STDMETHOD( Seek )( int64_t offset, uint32_t seekOrigin, uint64_t* newPosition );
+            STDMETHOD( Read )( void* data, UInt32 size, UInt32* processedSize );
+
+            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         private:
             istream& mInputStream;

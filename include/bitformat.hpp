@@ -20,15 +20,14 @@
 #define BITFORMAT_HPP
 
 #include <bitset>
-#include <string>
 
 #include "../include/bitguids.hpp"
 #include "../include/bitcompressionmethod.hpp"
+#include "../include/bittypes.hpp"
 
 #define FEATURES_COUNT 6
 
 namespace bit7z {
-    using std::wstring;
     using FeaturesSet = std::bitset< FEATURES_COUNT >;
 
     /**
@@ -63,7 +62,7 @@ namespace bit7z {
              * @brief Constructs a BitInFormat object with the id value used by the 7z SDK.
              * @param value  the value of the format in the 7z SDK.
              */
-            explicit BitInFormat( unsigned char value );
+            explicit BitInFormat( unsigned char value ) noexcept;
 
             /**
              * @return the value of the format in the 7z SDK.
@@ -108,14 +107,14 @@ namespace bit7z {
              * @param features      the set of features supported by the archive format
              */
             BitInOutFormat( unsigned char value,
-                            const wchar_t* ext,
+                            const tchar* ext,
                             BitCompressionMethod defaultMethod,
-                            FeaturesSet features );
+                            const FeaturesSet& features ) noexcept;
 
             /**
              * @return the default file estension of the archive format
              */
-            const wstring& extension() const;
+            const tstring& extension() const;
 
             /**
              * @return the bitset of the features supported by the format
@@ -135,7 +134,7 @@ namespace bit7z {
             BitCompressionMethod defaultMethod() const;
 
         private:
-            const wstring mExtension;
+            const tstring mExtension;
             const BitCompressionMethod mDefaultMethod;
             const FeaturesSet mFeatures;
     };

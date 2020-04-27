@@ -19,11 +19,13 @@
 #ifndef OPENCALLBACK_HPP
 #define OPENCALLBACK_HPP
 
-#include <string>
+#ifndef _WIN32
+#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
+#endif
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/IPassword.h"
-#include "Common/MyCom.h"
+#include <7zip/Archive/IArchive.h>
+#include <7zip/IPassword.h>
+#include <Common/MyCom.h>
 
 #include "../include/callback.hpp"
 #include "../include/fsitem.hpp"
@@ -38,29 +40,31 @@ namespace bit7z {
                          public ICryptoGetTextPassword,
                          public Callback {
         public:
-            explicit OpenCallback( const BitArchiveHandler& handler, const std::wstring& filename = L"." );
+            explicit OpenCallback( const BitArchiveHandler& handler, const tstring& filename = TSTRING( "." ) );
 
             ~OpenCallback() override = default;
 
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
 
             //IArchiveOpenCallback
-            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes );
-            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes );
+            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes ) override;
+
+            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes ) override;
 
             //IArchiveOpenVolumeCallback
-            STDMETHOD( GetProperty )( PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( const wchar_t* name, IInStream** inStream );
+            STDMETHOD( GetProperty )( PROPID propID, PROPVARIANT* value ) override;
+
+            STDMETHOD( GetStream )( const wchar_t* name, IInStream** inStream ) override;
 
             //IArchiveOpenSetSubArchiveName
-            STDMETHOD( SetSubArchiveName )( const wchar_t* name );
+            STDMETHOD( SetSubArchiveName )( const wchar_t* name ) override;
 
             //ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR* password );
+            STDMETHOD( CryptoGetTextPassword )( BSTR* password ) override;
 
         private:
             bool mSubArchiveMode;
-            wstring mSubArchiveName;
+            std::wstring mSubArchiveName;
             FSItem mFileItem;
     };
 }

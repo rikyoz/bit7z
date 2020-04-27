@@ -26,19 +26,15 @@
 //#include <iomanip>
 //end of debug includes
 
-#include "../include/bitpropvariant.hpp"
 #include "../include/cfileinstream.hpp"
 #include "../include/cfileoutstream.hpp"
-#include "../include/fsutil.hpp"
-
-#include <sstream>
 
 using namespace bit7z;
 
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of std::wstring instead of UString (see Callback base interface)
+ *  + Use of tstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback)
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
@@ -72,7 +68,7 @@ HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIAN
         const FSItem& new_item = mNewItems[ index - mOldArcItemsCount ];
         switch ( propID ) {
             case kpidPath:
-                prop = new_item.inArchivePath();
+                prop = new_item.inArchivePath().wstring();
                 break;
             case kpidIsDir:
                 prop = new_item.isDir();
@@ -98,6 +94,7 @@ HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIAN
     }
 
     *value = prop;
+    prop.bstrVal = nullptr;
     return S_OK;
 }
 
@@ -106,7 +103,7 @@ uint32_t FileUpdateCallback::itemsCount() const {
 }
 
 HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finilize() );
+    RINOK( Finalize() );
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
         return S_OK;
@@ -122,12 +119,13 @@ HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStr
         return S_OK;
     }
 
-    wstring path = new_item.path();
+    auto path = new_item.path();
     CMyComPtr< CFileInStream > inStreamLoc = new CFileInStream( path );
 
     if ( inStreamLoc->fail() ) {
-        HRESULT error = HRESULT_FROM_WIN32( !fsutil::pathExists( path ) ? ERROR_FILE_NOT_FOUND : ERROR_ACCESS_DENIED );
-        mFailedFiles.emplace_back( path, error );
+        std::error_code ec;
+        HRESULT error = HRESULT_FROM_WIN32( !fs::exists( path, ec ) ? ERROR_FILE_NOT_FOUND : ERROR_ACCESS_DENIED );
+        mFailedFiles.emplace_back( path.native(), error );
         return S_FALSE;
     }
 
@@ -143,13 +141,13 @@ HRESULT FileUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
 }
 
 HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
-    wstring res = std::to_wstring( index + 1 );
+    tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
         //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)
-        res.insert( res.begin(), 3 - res.length(), L'0' );
+        res.insert( res.begin(), 3 - res.length(), TSTRING( '0' ) );
     }
 
-    wstring fileName = mVolName + L'.' + res;// + mVolExt;
+    tstring fileName = mVolName + TSTRING( '.' ) + res;// + mVolExt;
     CMyComPtr< CFileOutStream > stream = new CFileOutStream( fileName );
 
     if ( stream->fail() ) {
@@ -160,14 +158,9 @@ HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream*
     return S_OK;
 }
 
-wstring FileUpdateCallback::getErrorMessage() const {
+void FileUpdateCallback::throwException( HRESULT error ) {
     if ( !mFailedFiles.empty() ) {
-        std::wstringstream wsstream;
-        wsstream << L"Error for files: " << std::endl;
-        for ( const auto& failed_file : mFailedFiles ) {
-            wsstream << failed_file.first << L" (error code: " << failed_file.second << L")" << std::endl;
-        }
-        return wsstream.str();
+        throw BitException( "Error compressing files", std::move( mFailedFiles ), error );
     }
-    return Callback::getErrorMessage();
+    Callback::throwException( error );
 }

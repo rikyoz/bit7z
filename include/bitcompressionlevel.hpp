@@ -25,12 +25,12 @@ namespace bit7z {
      * @note It uses the same values as in the 7z SDK (https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
      */
     enum class BitCompressionLevel {
-        NONE = 0,    ///< Copy mode (no compression)
-        FASTEST = 1, ///< Fastest compressing
-        FAST = 3,    ///< Fast compressing
-        NORMAL = 5,  ///< Normal compressing
-        MAX = 7,     ///< Maximum compressing
-        ULTRA = 9    ///< Ultra compressing
+            NONE = 0,    ///< Copy mode (no compression)
+            FASTEST = 1, ///< Fastest compressing
+            FAST = 3,    ///< Fast compressing
+            NORMAL = 5,  ///< Normal compressing
+            MAX = 7,     ///< Maximum compressing
+            ULTRA = 9    ///< Ultra compressing
     };
 }
 

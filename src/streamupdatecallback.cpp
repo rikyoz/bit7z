@@ -22,7 +22,6 @@
 #include "../include/streamupdatecallback.hpp"
 
 #include "../include/cstdinstream.hpp"
-#include "../include/bitpropvariant.hpp"
 
 using namespace std;
 using namespace bit7z;
@@ -30,17 +29,17 @@ using namespace bit7z;
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of std::wstring instead of UString (see Callback base interface)
+ *  + Use of tstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback)
  *  + The work performed originally by the Init method is now performed by the class constructor
  *  + FSItem class is used instead of CDirItem struct */
 
 StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
                                             istream& in_stream,
-                                            const wstring& in_stream_name )
+                                            const tstring& in_stream_name )
     : UpdateCallback( creator ),
       mStream( in_stream ),
-      mStreamName( in_stream_name ) {}
+      mStreamName( in_stream_name.empty() ? kEmptyFileAlias : in_stream_name ) {}
 
 HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
@@ -52,7 +51,7 @@ HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
     } else {
         switch ( propID ) {
             case kpidPath:
-                prop = ( mStreamName.empty() ) ? kEmptyFileAlias : mStreamName;
+                prop = mStreamName.wstring();
                 break;
             case kpidIsDir:
                 prop = false;
@@ -82,6 +81,7 @@ HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
     }
 
     *value = prop;
+    prop.bstrVal = nullptr;
     return S_OK;
 }
 
@@ -90,7 +90,7 @@ uint32_t StreamUpdateCallback::itemsCount() const {
 }
 
 HRESULT StreamUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finilize() );
+    RINOK( Finalize() )
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
         return S_OK;

@@ -22,7 +22,6 @@
 #include "../include/bitmemextractor.hpp"
 
 #include "../include/bitinputarchive.hpp"
-#include "../include/bitexception.hpp"
 #include "../include/bufferextractcallback.hpp"
 
 using namespace bit7z;
@@ -30,9 +29,9 @@ using namespace bit7z;
 BitMemExtractor::BitMemExtractor( const Bit7zLibrary& lib, const BitInFormat& format )
     : BitArchiveOpener( lib, format ) {}
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const wstring& out_dir ) const {
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, const tstring& out_dir ) const {
     BitInputArchive in_archive( *this, in_buffer );
-    extractToFileSystem( in_archive, L"", out_dir, vector< uint32_t >() );
+    extractToFileSystem( in_archive, TSTRING( "" ), out_dir, vector< uint32_t >() );
 }
 
 void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
@@ -42,12 +41,12 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer,
     extractToBuffer( in_archive, out_buffer, index );
 }
 
-void BitMemExtractor::extract( const vector<byte_t>& in_buffer, std::ostream& out_stream, unsigned int index ) const {
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, std::ostream& out_stream, unsigned int index ) const {
     BitInputArchive in_archive( *this, in_buffer );
     extractToStream( in_archive, out_stream, index );
 }
 
-void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, vector< byte_t > >& out_map ) const {
+void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< tstring, vector< byte_t > >& out_map ) const {
     BitInputArchive in_archive( *this, in_buffer );
     extractToBufferMap( in_archive, out_map );
 }
@@ -55,7 +54,7 @@ void BitMemExtractor::extract( const vector< byte_t >& in_buffer, map< wstring, 
 void BitMemExtractor::test( const vector< byte_t >& in_buffer ) const {
     BitInputArchive in_archive( *this, in_buffer );
 
-    map< wstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
     CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, dummy_map );
     in_archive.test( extract_callback );
 }

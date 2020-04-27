@@ -16,12 +16,16 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef COMPRESSCALLBACK_HPP
-#define COMPRESSCALLBACK_HPP
+#ifndef UPDATECALLBACK_HPP
+#define UPDATECALLBACK_HPP
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/ICoder.h"
-#include "7zip/IPassword.h"
+#ifndef _WIN32
+#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
+#endif
+
+#include <7zip/Archive/IArchive.h>
+#include <7zip/ICoder.h>
+#include <7zip/IPassword.h>
 
 #include "../include/callback.hpp"
 #include "../include/bitarchivecreator.hpp"
@@ -38,31 +42,33 @@ namespace bit7z {
                            protected ICryptoGetTextPassword2 {
         public:
             ~UpdateCallback() override;
+
             virtual uint32_t itemsCount() const = 0;
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
             void setOldArc( const BitInputArchive* old_arc );
 
-            HRESULT Finilize();
+            HRESULT Finalize();
 
             // IProgress from IArchiveUpdateCallback2
-            STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+            STDMETHOD( SetTotal )( UInt64 size ) override;
+
+            STDMETHOD( SetCompleted )( const UInt64* completeValue ) override;
 
             // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
+            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize ) override;
 
             // IArchiveUpdateCallback2
-            STDMETHOD( EnumProperties )( IEnumSTATPROPSTG** enumerator );
             STDMETHOD( GetUpdateItemInfo )( UInt32 index,
                                             Int32* newData,
                                             Int32* newProperties,
-                                            UInt32* indexInArchive );
-            STDMETHOD( SetOperationResult )( Int32 operationResult );
+                                            UInt32* indexInArchive ) override;
+
+            STDMETHOD( SetOperationResult )( Int32 operationResult ) override;
 
             //ICryptoGetTextPassword2
-            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password );
+            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password ) override;
 
         protected:
             const BitInputArchive* mOldArc;
@@ -75,4 +81,4 @@ namespace bit7z {
     };
 }
 
-#endif // COMPRESSCALLBACK_HPP
+#endif // UPDATECALLBACK_HPP

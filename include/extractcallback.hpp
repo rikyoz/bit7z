@@ -19,9 +19,13 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#include "7zip/Archive/IArchive.h"
-#include "7zip/ICoder.h"
-#include "7zip/IPassword.h"
+#ifndef _WIN32
+#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
+#endif
+
+#include <7zip/Archive/IArchive.h>
+#include <7zip/ICoder.h>
+#include <7zip/IPassword.h>
 
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitinputarchive.hpp"
@@ -38,21 +42,22 @@ namespace bit7z {
             MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 
             // IProgress from IArchiveExtractCallback
-            STDMETHOD( SetTotal )( UInt64 size );
-            STDMETHOD( SetCompleted )( const UInt64* completeValue );
+            STDMETHOD( SetTotal )( UInt64 size ) override;
+
+            STDMETHOD( SetCompleted )( const UInt64* completeValue ) override;
 
             // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize );
+            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize ) override;
 
             // IArchiveExtractCallback
-            STDMETHOD( PrepareOperation )( Int32 askExtractMode );
+            STDMETHOD( PrepareOperation )( Int32 askExtractMode ) override;
 
             // ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword );
+            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword ) override;
 
         protected:
             ExtractCallback( const BitArchiveHandler& handler,
-                             const BitInputArchive& inputArchive);
+                             const BitInputArchive& inputArchive );
 
             const BitInputArchive& mInputArchive;
 

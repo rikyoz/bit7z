@@ -27,15 +27,13 @@
 #include "../include/bufferextractcallback.hpp"
 #include "../include/streamextractcallback.hpp"
 
-#include <map>
-
 using std::map;
 using namespace bit7z;
 
 CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
 
-BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format )
-    : BitArchiveHandler( lib ), mFormat( format ) {}
+BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
+    : BitArchiveHandler( lib, password ), mFormat( format ) {}
 
 const BitInFormat& BitArchiveOpener::format() const {
     return mFormat;
@@ -46,8 +44,8 @@ const BitInFormat& BitArchiveOpener::extractionFormat() const {
 }
 
 void BitArchiveOpener::extractToFileSystem( const BitInputArchive& in_archive,
-                                            const wstring& in_file,
-                                            const wstring& out_dir,
+                                            const tstring& in_file,
+                                            const tstring& out_dir,
                                             const vector< uint32_t >& indices ) const {
     CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this, in_archive, in_file, out_dir );
     in_archive.extract( indices, extract_callback );
@@ -58,7 +56,7 @@ void BitArchiveOpener::extractToStream( const BitInputArchive& in_archive,
                                         unsigned int index ) const {
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
+        throw BitException( "Index " + std::to_string( index ) + " is out of range", E_INVALIDARG );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
@@ -75,7 +73,7 @@ void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
                                         unsigned int index ) const {
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( L"Index " + std::to_wstring( index ) + L" is out of range", E_INVALIDARG );
+        throw BitException( "Index " + std::to_string( index ) + " is out of range", E_INVALIDARG );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
@@ -83,14 +81,14 @@ void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
     }
 
     const vector< uint32_t > indices( 1, index );
-    map< wstring, vector< byte_t > > buffers_map;
+    map< tstring, vector< byte_t > > buffers_map;
     CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, buffers_map );
     in_archive.extract( indices, extract_callback );
     out_buffer = std::move( buffers_map.begin()->second );
 }
 
 void BitArchiveOpener::extractToBufferMap( const BitInputArchive& in_archive,
-                                           map< wstring, vector< byte_t > >& out_map ) const {
+                                           map< tstring, vector< byte_t > >& out_map ) const {
     uint32_t number_items = in_archive.itemsCount();
     vector< uint32_t > files_indices;
     for ( uint32_t i = 0; i < number_items; ++i ) {

@@ -22,9 +22,7 @@
 #include "../include/streamextractcallback.hpp"
 
 #include "../include/cstdoutstream.hpp"
-#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
-#include "../include/fsutil.hpp"
 
 using namespace std;
 using namespace NWindows;
@@ -36,14 +34,16 @@ StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
     : ExtractCallback( handler, inputArchive ),
       mOutputStream( outputStream ) {}
 
-wstring StreamExtractCallback::getErrorMessage() const {
+void StreamExtractCallback::throwException( HRESULT error ) {
     if ( !mOutputStream ) {
-        return L"Stream error (errno: " + std::to_wstring( errno ) + L")";
+        throw BitException( "Stream error (errno: " + std::to_string( errno ) + ")" );
     }
-    return Callback::getErrorMessage();
+    Callback::throwException( error );
 }
 
-STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index,
+                                               ISequentialOutStream** outStream,
+                                               Int32 askExtractMode ) try {
     *outStream = nullptr;
     mStdOutStream.Release();
 
@@ -64,29 +64,24 @@ STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index, ISequentialOutStrea
 }
 
 STDMETHODIMP StreamExtractCallback::SetOperationResult( Int32 operationResult ) {
-    switch ( operationResult ) {
-        case NArchive::NExtract::NOperationResult::kOK:
-            break;
+    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+        mNumErrors++;
 
-        default: {
-            mNumErrors++;
+        switch ( operationResult ) {
+            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+                mErrorMessage = kUnsupportedMethod;
+                break;
 
-            switch ( operationResult ) {
-                case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
-                    mErrorMessage = kUnsupportedMethod;
-                    break;
+            case NArchive::NExtract::NOperationResult::kCRCError:
+                mErrorMessage = kCRCFailed;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kCRCError:
-                    mErrorMessage = kCRCFailed;
-                    break;
+            case NArchive::NExtract::NOperationResult::kDataError:
+                mErrorMessage = kDataError;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kDataError:
-                    mErrorMessage = kDataError;
-                    break;
-
-                default:
-                    mErrorMessage = kUnknownError;
-            }
+            default:
+                mErrorMessage = kUnknownError;
         }
     }
 

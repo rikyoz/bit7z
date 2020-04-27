@@ -25,7 +25,6 @@
 #include "../include/bit7zlibrary.hpp"
 
 namespace bit7z {
-    using std::wstring;
     using std::function;
 
     class BitInFormat;
@@ -33,28 +32,28 @@ namespace bit7z {
     /**
      * @brief A std::function whose argument is the total size of the ongoing operation.
      */
-    using TotalCallback = function< void ( uint64_t ) >;
+    using TotalCallback = function< void( uint64_t ) >;
 
     /**
      * @brief A std::function whose argument is the current processed size of the ongoing operation.
      */
-    using ProgressCallback = function< void ( uint64_t ) >;
+    using ProgressCallback = function< bool( uint64_t ) >;
 
     /**
      * @brief A std::function whose arguments are the current processed input size and the current output size of the
      * ongoing operation.
      */
-    using RatioCallback = function< void ( uint64_t, uint64_t ) >;
+    using RatioCallback = function< void( uint64_t, uint64_t ) >;
 
     /**
      * @brief A std::function whose argument is the name of the file currently being processed by the ongoing operation.
      */
-    using FileCallback = function< void ( wstring ) >;
+    using FileCallback = function< void( tstring ) >;
 
     /**
      * @brief A std::function which returns the password to be used in order to handle an archive.
      */
-    using PasswordCallback = function< wstring () >;
+    using PasswordCallback = function< tstring() >;
 
     /**
      * @brief Abstract class representing a generic archive handler.
@@ -74,7 +73,7 @@ namespace bit7z {
             /**
              * @return the password used to open, extract or encrypt the archive.
              */
-            wstring password() const;
+            tstring password() const;
 
             /**
              * @return true if a password is defined, false otherwise.
@@ -125,7 +124,7 @@ namespace bit7z {
              *
              * @param password  the password to be used.
              */
-            virtual void setPassword( const wstring& password );
+            virtual void setPassword( const tstring& password );
 
             /**
              * @brief Clear the current password used by the handler.
@@ -180,9 +179,9 @@ namespace bit7z {
 
         protected:
             const Bit7zLibrary& mLibrary;
-            wstring mPassword;
+            tstring mPassword;
 
-            explicit BitArchiveHandler( const Bit7zLibrary& lib );
+            explicit BitArchiveHandler( const Bit7zLibrary& lib, tstring password = TSTRING( "" ) );
 
             virtual ~BitArchiveHandler() = default;
 

@@ -33,7 +33,7 @@ BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& for
 
 /* from filesystem to filesystem */
 
-void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& out_file ) const {
+void BitCompressor::compress( const vector< tstring >& in_paths, const tstring& out_file ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
@@ -41,7 +41,7 @@ void BitCompressor::compress( const vector< wstring >& in_paths, const wstring& 
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compress( const map< wstring, wstring >& in_paths, const wstring& out_file ) const {
+void BitCompressor::compress( const map< tstring, tstring >& in_paths, const tstring& out_file ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
@@ -49,7 +49,7 @@ void BitCompressor::compress( const map< wstring, wstring >& in_paths, const wst
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFile( const wstring& in_file, const wstring& out_file ) const {
+void BitCompressor::compressFile( const tstring& in_file, const tstring& out_file ) const {
     FSItem item( in_file );
     if ( item.isDir() ) {
         throw BitException( "Wrong argument: input path points to a directory, not a file!", E_INVALIDARG );
@@ -59,7 +59,7 @@ void BitCompressor::compressFile( const wstring& in_file, const wstring& out_fil
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstring& out_file ) const {
+void BitCompressor::compressFiles( const vector< tstring >& in_files, const tstring& out_file ) const {
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
@@ -67,8 +67,8 @@ void BitCompressor::compressFiles( const vector< wstring >& in_files, const wstr
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_file,
-                                   bool recursive, const wstring& filter ) const {
+void BitCompressor::compressFiles( const tstring& in_dir, const tstring& out_file,
+                                   bool recursive, const tstring& filter ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
@@ -76,13 +76,13 @@ void BitCompressor::compressFiles( const wstring& in_dir, const wstring& out_fil
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressDirectory( const wstring& in_dir, const wstring& out_file ) const {
-    compressFiles( in_dir, out_file, true, L"" );
+void BitCompressor::compressDirectory( const tstring& in_dir, const tstring& out_file ) const {
+    compressFiles( in_dir, out_file, true, TSTRING( "" ) );
 }
 
 /* from filesystem to memory buffer */
 
-void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_buffer ) const {
+void BitCompressor::compressFile( const tstring& in_file, vector< byte_t >& out_buffer ) const {
     FSItem item( in_file );
     if ( item.isDir() ) {
         throw BitException( "Cannot compress a directory into a memory buffer!", E_INVALIDARG );
@@ -97,7 +97,7 @@ void BitCompressor::compressFile( const wstring& in_file, vector< byte_t >& out_
 
 /* from filesystem to stream */
 
-void BitCompressor::compress( const vector< wstring >& in_paths, ostream& out_stream ) const {
+void BitCompressor::compress( const vector< tstring >& in_paths, ostream& out_stream ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
@@ -105,7 +105,7 @@ void BitCompressor::compress( const vector< wstring >& in_paths, ostream& out_st
     compressOut( fs_items, out_stream );
 }
 
-void BitCompressor::compress( const map< wstring, wstring >& in_paths, ostream& out_stream ) const {
+void BitCompressor::compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
     }
@@ -113,7 +113,7 @@ void BitCompressor::compress( const map< wstring, wstring >& in_paths, ostream& 
     compressOut( fs_items, out_stream );
 }
 
-void BitCompressor::compressOut( const vector< FSItem >& in_items, const wstring& out_file ) const {
+void BitCompressor::compressOut( const vector< FSItem >& in_items, const tstring& out_file ) const {
     CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, in_items );
     BitArchiveCreator::compressToFile( out_file, update_callback );
 }

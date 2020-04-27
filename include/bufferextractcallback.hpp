@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef MEMEXTRACTCALLBACK_HPP
-#define MEMEXTRACTCALLBACK_HPP
+#ifndef BUFFEREXTRACTCALLBACK_HPP
+#define BUFFEREXTRACTCALLBACK_HPP
 
 #include <vector>
 #include <map>
@@ -33,17 +33,18 @@ namespace bit7z {
         public:
             BufferExtractCallback( const BitArchiveHandler& handler,
                                    const BitInputArchive& inputArchive,
-                                   map< wstring, vector< byte_t > >& buffersMap );
+                                   map< tstring, vector< byte_t > >& buffersMap );
 
             ~BufferExtractCallback() override = default;
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult );
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
+
+            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
 
         private:
-            map< wstring, vector< byte_t > >& mBuffersMap;
+            map< tstring, vector< byte_t > >& mBuffersMap;
             CMyComPtr< ISequentialOutStream > mOutMemStream;
     };
 }
-#endif // MEMEXTRACTCALLBACK_HPP
+#endif // BUFFEREXTRACTCALLBACK_HPP

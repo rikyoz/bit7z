@@ -22,16 +22,37 @@
 #include "../include/bitformat.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
+
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
 #include <unordered_map>
-#include <algorithm>
 #include <cwctype>
-#include <cstdint>
 
-#include "7zip/IStream.h"
+#include <7zip/IStream.h>
+
+#if defined(_WIN32)
+#define bswap64 _byteswap_uint64
+#elif defined(__GNUC__) || defined(__clang__)
+//Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
+//      for checking compiler version or using _has_builtin macro!
+#define bswap64 __builtin_bswap64
+#else
+static inline uint64_t bswap64 (uint64_t x) {
+    return  ((x << 56) & 0xff00000000000000ULL) |
+            ((x << 40) & 0x00ff000000000000ULL) |
+            ((x << 24) & 0x0000ff0000000000ULL) |
+            ((x << 8)  & 0x000000ff00000000ULL) |
+            ((x >> 8)  & 0x00000000ff000000ULL) |
+            ((x >> 24) & 0x0000000000ff0000ULL) |
+            ((x >> 40) & 0x000000000000ff00ULL) |
+            ((x >> 56) & 0x00000000000000ffULL);
+}
 #endif
+
+#endif
+
+
 
 using namespace std;
 
@@ -40,21 +61,21 @@ namespace bit7z {
 #ifdef BIT7Z_AUTO_FORMAT
         const BitInFormat        Auto( 0x00 );
 #endif
-        const BitInOutFormat      Zip( 0x01, L".zip", BitCompressionMethod::Deflate,
+        const BitInOutFormat      Zip( 0x01, TSTRING(".zip"), BitCompressionMethod::Deflate,
                                        MULTIPLE_FILES | COMPRESSION_LEVEL | ENCRYPTION | MULTIPLE_METHODS );
-        const BitInOutFormat    BZip2( 0x02, L".bz2", BitCompressionMethod::BZip2, COMPRESSION_LEVEL );
+        const BitInOutFormat    BZip2( 0x02, TSTRING(".bz2"), BitCompressionMethod::BZip2, COMPRESSION_LEVEL );
         const BitInFormat         Rar( 0x03 );
         const BitInFormat         Arj( 0x04 ); //-V112
         const BitInFormat           Z( 0x05 );
         const BitInFormat         Lzh( 0x06 );
-        const BitInOutFormat SevenZip( 0x07, L".7z", BitCompressionMethod::Lzma2,
+        const BitInOutFormat SevenZip( 0x07, TSTRING(".7z"), BitCompressionMethod::Lzma2,
                                        MULTIPLE_FILES | SOLID_ARCHIVE | COMPRESSION_LEVEL |
                                        ENCRYPTION | HEADER_ENCRYPTION | MULTIPLE_METHODS );
         const BitInFormat         Cab( 0x08 );
         const BitInFormat        Nsis( 0x09 );
         const BitInFormat        Lzma( 0x0A );
         const BitInFormat      Lzma86( 0x0B );
-        const BitInOutFormat       Xz( 0x0C, L".xz", BitCompressionMethod::Lzma2,
+        const BitInOutFormat       Xz( 0x0C, TSTRING(".xz"), BitCompressionMethod::Lzma2,
                                        COMPRESSION_LEVEL | ENCRYPTION | HEADER_ENCRYPTION);
         const BitInFormat        Ppmd( 0x0D );
         const BitInFormat        COFF( 0xC6 );
@@ -89,99 +110,99 @@ namespace bit7z {
         const BitInFormat         Hfs( 0xE3 );
         const BitInFormat         Dmg( 0xE4 );
         const BitInFormat    Compound( 0xE5 );
-        const BitInOutFormat      Wim( 0xE6, L".wim", BitCompressionMethod::Copy, MULTIPLE_FILES );
+        const BitInOutFormat      Wim( 0xE6, TSTRING(".wim"), BitCompressionMethod::Copy, MULTIPLE_FILES );
         const BitInFormat         Iso( 0xE7 );
         const BitInFormat         Chm( 0xE9 );
         const BitInFormat       Split( 0xEA );
         const BitInFormat         Rpm( 0xEB );
         const BitInFormat         Deb( 0xEC );
         const BitInFormat        Cpio( 0xED );
-        const BitInOutFormat      Tar( 0xEE, L".tar", BitCompressionMethod::Copy, MULTIPLE_FILES );
-        const BitInOutFormat     GZip( 0xEF, L".gz", BitCompressionMethod::Deflate, COMPRESSION_LEVEL );
+        const BitInOutFormat      Tar( 0xEE, TSTRING(".tar"), BitCompressionMethod::Copy, MULTIPLE_FILES );
+        const BitInOutFormat     GZip( 0xEF, TSTRING(".gz"), BitCompressionMethod::Deflate, COMPRESSION_LEVEL );
 
 #ifdef BIT7Z_AUTO_FORMAT
-                const unordered_map< wstring, const BitInFormat& > common_extensions = {
-                        { L"7z", SevenZip },
-                        { L"bzip2", BZip2 },
-                        { L"bz2", BZip2 },
-                        { L"tbz2", BZip2 },
-                        { L"tbz", BZip2 },
-                        { L"gz", GZip },
-                        { L"gzip", GZip },
-                        { L"tgz", GZip },
-                        { L"tar", Tar },
-                        { L"wim", Wim },
-                        { L"swm", Wim },
-                        { L"xz", Xz },
-                        { L"txz", Xz },
-                        { L"zip", Zip },
-                        { L"zipx", Zip },
-                        { L"jar", Zip },
-                        { L"xpi", Zip },
-                        { L"odt", Zip },
-                        { L"ods", Zip },
-                        { L"odp", Zip },
-                        { L"docx", Zip },
-                        { L"xlsx", Zip },
-                        { L"pptx", Zip },
-                        { L"epub", Zip },
-                        { L"001", Split },
-                        { L"ar", Deb },
-                        { L"apm", APM },
-                        { L"arj", Arj },
-                        { L"cab", Cab },
-                        { L"chm", Chm },
-                        { L"chi", Chm },
-                        { L"msi", Compound },
-                        { L"doc", Compound },
-                        { L"xls", Compound },
-                        { L"ppt", Compound },
-                        { L"msg", Compound },
-                        { L"obj", COFF },
-                        { L"cpio", Cpio },
-                        { L"cramfs", CramFS },
-                        { L"deb", Deb },
-                        { L"dmg", Dmg },
-                        { L"dll", Pe },
-                        { L"dylib", Macho },
-                        { L"exe", Pe }, //note: we do not distinguish 7z SFX exe at the moment!
-                        { L"ext", Ext },
-                        { L"ext2", Ext },
-                        { L"ext3", Ext },
-                        { L"ext4", Ext },
-                        { L"fat", Fat },
-                        { L"flv", Flv },
-                        { L"gpt", GPT },
-                        { L"hfs", Hfs },
-                        { L"hfsx", Hfs },
-                        { L"hxs", Hxs },
-                        { L"ihex", IHex },
-                        { L"lzh", Lzh },
-                        { L"lha", Lzh },
-                        { L"lzma", Lzma },
-                        { L"lzma86", Lzma86 },
-                        { L"mbr", Mbr },
-                        { L"mslz", Mslz },
-                        { L"mub", Mub },
-                        { L"nsis", Nsis },
-                        { L"ntfs", Ntfs },
-                        { L"pmd", Ppmd },
-                        { L"qcow", QCow },
-                        { L"qcow2", QCow },
-                        { L"qcow2c", QCow },
-                        { L"rpm", Rpm },
-                        { L"squashfs", SquashFS },
-                        { L"te", TE },
-                        { L"udf", Udf },
-                        { L"scap", UEFIc },
-                        { L"uefif", UEFIs },
-                        { L"vmdk", VMDK },
-                        { L"vdi", VDI },
-                        { L"vhd", Vhd },
-                        { L"xar", Xar },
-                        { L"pkg", Xar },
-                        { L"z", Z },
-                        { L"taz", Z }
+                const unordered_map< tstring, const BitInFormat& > common_extensions = {
+                        { TSTRING("7z"), SevenZip },
+                        { TSTRING("bzip2"), BZip2 },
+                        { TSTRING("bz2"), BZip2 },
+                        { TSTRING("tbz2"), BZip2 },
+                        { TSTRING("tbz"), BZip2 },
+                        { TSTRING("gz"), GZip },
+                        { TSTRING("gzip"), GZip },
+                        { TSTRING("tgz"), GZip },
+                        { TSTRING("tar"), Tar },
+                        { TSTRING("wim"), Wim },
+                        { TSTRING("swm"), Wim },
+                        { TSTRING("xz"), Xz },
+                        { TSTRING("txz"), Xz },
+                        { TSTRING("zip"), Zip },
+                        { TSTRING("zipx"), Zip },
+                        { TSTRING("jar"), Zip },
+                        { TSTRING("xpi"), Zip },
+                        { TSTRING("odt"), Zip },
+                        { TSTRING("ods"), Zip },
+                        { TSTRING("odp"), Zip },
+                        { TSTRING("docx"), Zip },
+                        { TSTRING("xlsx"), Zip },
+                        { TSTRING("pptx"), Zip },
+                        { TSTRING("epub"), Zip },
+                        { TSTRING("001"), Split },
+                        { TSTRING("ar"), Deb },
+                        { TSTRING("apm"), APM },
+                        { TSTRING("arj"), Arj },
+                        { TSTRING("cab"), Cab },
+                        { TSTRING("chm"), Chm },
+                        { TSTRING("chi"), Chm },
+                        { TSTRING("msi"), Compound },
+                        { TSTRING("doc"), Compound },
+                        { TSTRING("xls"), Compound },
+                        { TSTRING("ppt"), Compound },
+                        { TSTRING("msg"), Compound },
+                        { TSTRING("obj"), COFF },
+                        { TSTRING("cpio"), Cpio },
+                        { TSTRING("cramfs"), CramFS },
+                        { TSTRING("deb"), Deb },
+                        { TSTRING("dmg"), Dmg },
+                        { TSTRING("dll"), Pe },
+                        { TSTRING("dylib"), Macho },
+                        { TSTRING("exe"), Pe }, //note: we do not distinguish 7z SFX exe at the moment!
+                        { TSTRING("ext"), Ext },
+                        { TSTRING("ext2"), Ext },
+                        { TSTRING("ext3"), Ext },
+                        { TSTRING("ext4"), Ext },
+                        { TSTRING("fat"), Fat },
+                        { TSTRING("flv"), Flv },
+                        { TSTRING("gpt"), GPT },
+                        { TSTRING("hfs"), Hfs },
+                        { TSTRING("hfsx"), Hfs },
+                        { TSTRING("hxs"), Hxs },
+                        { TSTRING("ihex"), IHex },
+                        { TSTRING("lzh"), Lzh },
+                        { TSTRING("lha"), Lzh },
+                        { TSTRING("lzma"), Lzma },
+                        { TSTRING("lzma86"), Lzma86 },
+                        { TSTRING("mbr"), Mbr },
+                        { TSTRING("mslz"), Mslz },
+                        { TSTRING("mub"), Mub },
+                        { TSTRING("nsis"), Nsis },
+                        { TSTRING("ntfs"), Ntfs },
+                        { TSTRING("pmd"), Ppmd },
+                        { TSTRING("qcow"), QCow },
+                        { TSTRING("qcow2"), QCow },
+                        { TSTRING("qcow2c"), QCow },
+                        { TSTRING("rpm"), Rpm },
+                        { TSTRING("squashfs"), SquashFS },
+                        { TSTRING("te"), TE },
+                        { TSTRING("udf"), Udf },
+                        { TSTRING("scap"), UEFIc },
+                        { TSTRING("uefif"), UEFIs },
+                        { TSTRING("vmdk"), VMDK },
+                        { TSTRING("vdi"), VDI },
+                        { TSTRING("vhd"), Vhd },
+                        { TSTRING("xar"), Xar },
+                        { TSTRING("pkg"), Xar },
+                        { TSTRING("z"), Z },
+                        { TSTRING("taz"), Z }
                 };
 
                 /* NOTE: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0 */
@@ -261,14 +282,8 @@ namespace bit7z {
         uint64_t readSignature( IInStream* stream, uint32_t size ) {
             uint64_t signature = 0;
             stream->Read( &signature, size, nullptr );
-            return _byteswap_uint64( signature );
+            return bswap64( signature );
         }
-
-#if ( _MSC_VER <= 1800 )
-#define CONSTEXPR const
-#else
-#define CONSTEXPR constexpr
-#endif
 
         const BitInFormat& detectFormatFromSig( IInStream* stream ) {
             CONSTEXPR auto SIGNATURE_SIZE = 8u;
@@ -328,8 +343,8 @@ namespace bit7z {
             throw BitException( "Cannot detect the format of the file" );
         }
 
-        const BitInFormat& detectFormatFromExt( const wstring& in_file ) {
-            wstring ext = filesystem::fsutil::extension( in_file );
+        const BitInFormat& detectFormatFromExt( const tstring& in_file ) {
+            tstring ext = filesystem::fsutil::extension( in_file );
             if ( ext.empty() ) {
                 throw BitException( "Cannot detect the archive format from the extension" );
             }
@@ -341,9 +356,9 @@ namespace bit7z {
                 return it->second;
             }
 
-            // Detecting multivolume archives extension
+            // Detecting multi-volume archives extension
             if ( ( ext[ 0 ] == L'r' || ext[ 0 ] == L'z' ) &&
-                    ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
+                 ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
                 // Extension follows the format zXX or rXX, where X is a number in range [0-9]
                 return ext[ 0 ] == L'r' ? Rar : Zip;
             }
@@ -353,6 +368,7 @@ namespace bit7z {
             // The extension did not match any known format extension, delegating the decision to the client
             return Auto;
         }
+
 #endif
 
     }
@@ -361,7 +377,7 @@ namespace bit7z {
 
 using namespace bit7z;
 
-BitInFormat::BitInFormat( unsigned char value ) : mValue( value ) {}
+BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
 
 int BitInFormat::value() const {
     return mValue;
@@ -380,12 +396,12 @@ GUID BitInFormat::guid() const {
 }
 
 BitInOutFormat::BitInOutFormat( unsigned char value,
-                                const wchar_t* ext,
+                                const tchar* ext,
                                 BitCompressionMethod defaultMethod,
-                                FeaturesSet features )
+                                const FeaturesSet& features ) noexcept
     : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
-const wstring& BitInOutFormat::extension() const {
+const tstring& BitInOutFormat::extension() const {
     return mExtension;
 }
 

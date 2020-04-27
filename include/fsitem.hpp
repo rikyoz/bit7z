@@ -19,22 +19,26 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
-#include <string>
 #include <cstdint>
 
-#include <Windows.h>
+#include "../include/bittypes.hpp"
+#include "../include/fsutil.hpp"
+
+#ifndef _WIN32
+#include <myWindows/StdAfx.h>
+#endif
+
+#include <windows.h>
+
+#include "../include/fs.hpp"
 
 namespace bit7z {
     namespace filesystem {
-        using FSItemInfo = WIN32_FIND_DATA;
-
-        using std::wstring;
-
         class FSItem {
             public:
-                explicit FSItem( wstring path, wstring in_archive_path = L"" );
+                explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
 
-                explicit FSItem( wstring dir, FSItemInfo data, wstring search_path );
+                explicit FSItem( fs::directory_entry entry, fs::path searchPath );
 
                 bool isDots() const;
 
@@ -48,19 +52,21 @@ namespace bit7z {
 
                 FILETIME lastWriteTime() const;
 
-                wstring name() const;
+                tstring name() const;
 
-                wstring path() const;
+                fs::path path() const;
 
-                wstring inArchivePath() const;
+                fs::path inArchivePath() const;
 
                 uint32_t attributes() const;
 
             private:
-                wstring mPath;
-                FSItemInfo mFileData;
-                wstring mSearchPath;
-                wstring mInArchivePath;
+                fs::directory_entry mFileEntry;
+                WIN32_FILE_ATTRIBUTE_DATA mFileAttributeData;
+                fs::path mSearchPath;
+                fs::path mInArchivePath;
+
+                void initAttributes( const fs::path& itemPath );
         };
     }
 }

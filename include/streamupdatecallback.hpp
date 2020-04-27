@@ -23,33 +23,36 @@
 #include "../include/bitinputarchive.hpp"
 #include "../include/bittypes.hpp"
 #include "../include/updatecallback.hpp"
+#include "../include/fs.hpp"
 
 #include <vector>
 
 namespace bit7z {
     using std::vector;
-    using std::wstring;
     using std::istream;
 
     class StreamUpdateCallback : public UpdateCallback {
         public:
             StreamUpdateCallback( const BitArchiveCreator& creator,
                                   istream& in_stream,
-                                  const wstring& in_stream_name );
+                                  const tstring& in_stream_name );
 
             ~StreamUpdateCallback() override = default;
 
             // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value );
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream );
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size );
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream );
+            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+
+            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+
+            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
 
             uint32_t itemsCount() const override;
 
         private:
             istream& mStream;
-            const wstring& mStreamName;
+            const fs::path mStreamName;
     };
 }
 #endif // STREAMUPDATECALLBACK_HPP

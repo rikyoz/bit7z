@@ -23,19 +23,18 @@
 
 #include "../include/bitexception.hpp"
 
-#include "../include/fsutil.hpp"
-
 using namespace bit7z;
 
-CFileOutStream::CFileOutStream( const wstring& filePath, bool createAlways ) : CStdOutStream( mFileStream ) {
+CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways ) : CStdOutStream( mFileStream ) {
     open( filePath, createAlways );
 }
 
-void CFileOutStream::open( const wstring& filePath, bool createAlways ) {
-    if ( !createAlways && filesystem::fsutil::pathExists( filePath ) ) {
-        throw BitException( L"File '" + filePath + L"' already exists", ERROR_FILE_EXISTS );
+void CFileOutStream::open( const fs::path& filePath, bool createAlways ) {
+    std::error_code ec;
+    if ( !createAlways && fs::exists( filePath, ec ) ) {
+        throw BitException( "File already exists", filePath.native(), ERROR_FILE_EXISTS );
     }
-    mFileStream.open( filePath, std::ios::out | std::ios::binary | std::ios::trunc );
+    mFileStream.open( filePath, std::ios::binary | std::ios::trunc );
 }
 
 bool CFileOutStream::fail() {

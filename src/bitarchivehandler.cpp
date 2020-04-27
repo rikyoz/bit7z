@@ -22,15 +22,15 @@
 #include "../include/bitarchivehandler.hpp"
 
 using namespace bit7z;
-using std::wstring;
 
-BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib ) : mLibrary( lib ), mPassword( L"" ) {}
+BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib, tstring password )
+    : mLibrary( lib ), mPassword( std::move( password ) ) {}
 
 const Bit7zLibrary& BitArchiveHandler::library() const {
     return mLibrary;
 }
 
-wstring BitArchiveHandler::password() const {
+tstring BitArchiveHandler::password() const {
     return mPassword;
 }
 
@@ -58,12 +58,12 @@ PasswordCallback BitArchiveHandler::passwordCallback() const {
     return mPasswordCallback;
 }
 
-void BitArchiveHandler::setPassword( const wstring& password ) {
+void BitArchiveHandler::setPassword( const tstring& password ) {
     mPassword = password;
 }
 
 void BitArchiveHandler::clearPassword() {
-    setPassword( L"" );
+    mPassword.clear();
 }
 
 void BitArchiveHandler::setTotalCallback( const TotalCallback& callback ) {

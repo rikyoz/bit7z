@@ -24,26 +24,26 @@
 #include "../include/streamupdatecallback.hpp"
 #include "../include/fsutil.hpp"
 
-#include "../include/bitexception.hpp"
-
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
 BitStreamCompressor::BitStreamCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitArchiveCreator( lib, format ) {}
 
-void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, const wstring& in_stream_name ) const {
+void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, const tstring& in_stream_name ) const {
     CMyComPtr< UpdateCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
     BitArchiveCreator::compressToStream( out_stream, update_callback );
 }
 
-void BitStreamCompressor::compress( istream& in_stream, vector< byte_t >& out_buffer, const wstring& in_stream_name ) const {
+void BitStreamCompressor::compress( istream& in_stream,
+                                    vector< byte_t >& out_buffer,
+                                    const tstring& in_stream_name ) const {
     CMyComPtr< UpdateCallback > update_callback = new StreamUpdateCallback( *this, in_stream, in_stream_name );
     BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
 }
 
-void BitStreamCompressor::compress( istream& in_stream, const wstring& out_file, const wstring& in_stream_name ) const {
-    const wstring& name = in_stream_name.empty() ? fsutil::filename( out_file ) : in_stream_name;
+void BitStreamCompressor::compress( istream& in_stream, const tstring& out_file, const tstring& in_stream_name ) const {
+    const tstring& name = in_stream_name.empty() ? fsutil::filename( out_file ) : in_stream_name;
 
     CMyComPtr< UpdateCallback > update_callback = new StreamUpdateCallback( *this, in_stream, name );
     BitArchiveCreator::compressToFile( out_file, update_callback );

@@ -21,6 +21,8 @@
 
 #include "../include/updatecallback.hpp"
 
+#include "../include/util.hpp"
+
 using namespace bit7z;
 
 UpdateCallback::UpdateCallback( const BitArchiveCreator& creator )
@@ -31,7 +33,7 @@ UpdateCallback::UpdateCallback( const BitArchiveCreator& creator )
       mNeedBeClosed( false ) {}
 
 UpdateCallback::~UpdateCallback() {
-    Finilize();
+    Finalize();
 }
 
 void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
@@ -41,7 +43,7 @@ void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
     }
 }
 
-HRESULT UpdateCallback::Finilize() {
+HRESULT UpdateCallback::Finalize() {
     if ( mNeedBeClosed ) {
         mNeedBeClosed = false;
     }
@@ -58,7 +60,7 @@ STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        mHandler.progressCallback()( *completeValue );
+        return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
     return S_OK;
 }
@@ -68,10 +70,6 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
         mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
-}
-
-HRESULT UpdateCallback::EnumProperties( IEnumSTATPROPSTG** /* enumerator */ ) {
-    return E_NOTIMPL;
 }
 
 HRESULT UpdateCallback::GetUpdateItemInfo( UInt32 index,
@@ -105,11 +103,11 @@ HRESULT UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* 
             // You can ask real password here from user
             // Password = GetPassword(OutStream);
             // PasswordIsDefined = true;
-            mErrorMessage = L"Password is not defined";
+            mErrorMessage = kPasswordNotDefined;
             return E_ABORT;
         }
     }
 
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
-    return StringToBstr( mHandler.password().c_str(), password );
+    return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
 }

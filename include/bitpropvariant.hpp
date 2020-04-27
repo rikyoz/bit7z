@@ -20,12 +20,17 @@
 #define BITPROPVARIANT_HPP
 
 #include <cstdint>
-#include <string>
+
+#include "../include/bittypes.hpp"
 //#include <array>
 
+#ifdef _WIN32
 #include <Propidl.h>
+#else
+#include <Common/MyWindows.h>
+#endif
 
-#if _MSC_VER <= 1800
+#if defined(_MSC_VER) && _MSC_VER <= 1800
 #define NOEXCEPT
 #else
 #define NOEXCEPT noexcept
@@ -34,105 +39,104 @@
 namespace bit7z {
 
     enum class BitProperty : PROPID {
-        NoProperty = 0,         ///<
-        MainSubfile,            ///<
-        HandlerItemIndex,       ///<
-        Path,                   ///<
-        Name,                   ///<
-        Extension,              ///<
-        IsDir,                  ///<
-        Size,                   ///<
-        PackSize,               ///<
-        Attrib,                 ///<
-        CTime,                  ///<
-        ATime,                  ///<
-        MTime,                  ///<
-        Solid,                  ///<
-        Commented,              ///<
-        Encrypted,              ///<
-        SplitBefore,            ///<
-        SplitAfter,             ///<
-        DictionarySize,         ///<
-        CRC,                    ///<
-        Type,                   ///<
-        IsAnti,                 ///<
-        Method,                 ///<
-        HostOS,                 ///<
-        FileSystem,             ///<
-        User,                   ///<
-        Group,                  ///<
-        Block,                  ///<
-        Comment,                ///<
-        Position,               ///<
-        Prefix,                 ///<
-        NumSubDirs,             ///<
-        NumSubFiles,            ///<
-        UnpackVer,              ///<
-        Volume,                 ///<
-        IsVolume,               ///<
-        Offset,                 ///<
-        Links,                  ///<
-        NumBlocks,              ///<
-        NumVolumes,             ///<
-        TimeType,               ///<
-        Bit64,                  ///<
-        BigEndian,              ///<
-        Cpu,                    ///<
-        PhySize,                ///<
-        HeadersSize,            ///<
-        Checksum,               ///<
-        Characts,               ///<
-        Va,                     ///<
-        Id,                     ///<
-        ShortName,              ///<
-        CreatorApp,             ///<
-        SectorSize,             ///<
-        PosixAttrib,            ///<
-        SymLink,                ///<
-        Error,                  ///<
-        TotalSize,              ///<
-        FreeSpace,              ///<
-        ClusterSize,            ///<
-        VolumeName,             ///<
-        LocalName,              ///<
-        Provider,               ///<
-        NtSecure,               ///<
-        IsAltStream,            ///<
-        IsAux,                  ///<
-        IsDeleted,              ///<
-        IsTree,                 ///<
-        Sha1,                   ///<
-        Sha256,                 ///<
-        ErrorType,              ///<
-        NumErrors,              ///<
-        ErrorFlags,             ///<
-        WarningFlags,           ///<
-        Warning,                ///<
-        NumStreams,             ///<
-        NumAltStreams,          ///<
-        AltStreamsSize,         ///<
-        VirtualSize,            ///<
-        UnpackSize,             ///<
-        TotalPhySize,           ///<
-        VolumeIndex,            ///<
-        SubType,                ///<
-        ShortComment,           ///<
-        CodePage,               ///<
-        IsNotArcType,           ///<
-        PhySizeCantBeDetected,  ///<
-        ZerosTailIsAllowed,     ///<
-        TailSize,               ///<
-        EmbeddedStubSize,       ///<
-        NtReparse,              ///<
-        HardLink,               ///<
-        INode,                  ///<
-        StreamId,               ///<
-        ReadOnly,               ///<
-        OutName,                ///<
-        CopyLink                ///<
+            NoProperty = 0,         ///<
+            MainSubfile,            ///<
+            HandlerItemIndex,       ///<
+            Path,                   ///<
+            Name,                   ///<
+            Extension,              ///<
+            IsDir,                  ///<
+            Size,                   ///<
+            PackSize,               ///<
+            Attrib,                 ///<
+            CTime,                  ///<
+            ATime,                  ///<
+            MTime,                  ///<
+            Solid,                  ///<
+            Commented,              ///<
+            Encrypted,              ///<
+            SplitBefore,            ///<
+            SplitAfter,             ///<
+            DictionarySize,         ///<
+            CRC,                    ///<
+            Type,                   ///<
+            IsAnti,                 ///<
+            Method,                 ///<
+            HostOS,                 ///<
+            FileSystem,             ///<
+            User,                   ///<
+            Group,                  ///<
+            Block,                  ///<
+            Comment,                ///<
+            Position,               ///<
+            Prefix,                 ///<
+            NumSubDirs,             ///<
+            NumSubFiles,            ///<
+            UnpackVer,              ///<
+            Volume,                 ///<
+            IsVolume,               ///<
+            Offset,                 ///<
+            Links,                  ///<
+            NumBlocks,              ///<
+            NumVolumes,             ///<
+            TimeType,               ///<
+            Bit64,                  ///<
+            BigEndian,              ///<
+            Cpu,                    ///<
+            PhySize,                ///<
+            HeadersSize,            ///<
+            Checksum,               ///<
+            Characts,               ///<
+            Va,                     ///<
+            Id,                     ///<
+            ShortName,              ///<
+            CreatorApp,             ///<
+            SectorSize,             ///<
+            PosixAttrib,            ///<
+            SymLink,                ///<
+            Error,                  ///<
+            TotalSize,              ///<
+            FreeSpace,              ///<
+            ClusterSize,            ///<
+            VolumeName,             ///<
+            LocalName,              ///<
+            Provider,               ///<
+            NtSecure,               ///<
+            IsAltStream,            ///<
+            IsAux,                  ///<
+            IsDeleted,              ///<
+            IsTree,                 ///<
+            Sha1,                   ///<
+            Sha256,                 ///<
+            ErrorType,              ///<
+            NumErrors,              ///<
+            ErrorFlags,             ///<
+            WarningFlags,           ///<
+            Warning,                ///<
+            NumStreams,             ///<
+            NumAltStreams,          ///<
+            AltStreamsSize,         ///<
+            VirtualSize,            ///<
+            UnpackSize,             ///<
+            TotalPhySize,           ///<
+            VolumeIndex,            ///<
+            SubType,                ///<
+            ShortComment,           ///<
+            CodePage,               ///<
+            IsNotArcType,           ///<
+            PhySizeCantBeDetected,  ///<
+            ZerosTailIsAllowed,     ///<
+            TailSize,               ///<
+            EmbeddedStubSize,       ///<
+            NtReparse,              ///<
+            HardLink,               ///<
+            INode,                  ///<
+            StreamId,               ///<
+            ReadOnly,               ///<
+            OutName,                ///<
+            CopyLink                ///<
     };
 
-    using std::wstring;
     //using std::array;
 
     /*static const array < wstring, static_cast< int >( BitProperty::CopyLink ) + 1 > propertyNames = {
@@ -235,18 +239,18 @@ namespace bit7z {
     };*/
 
     enum class BitPropVariantType : uint32_t {
-        Empty,      ///< Empty BitPropVariant type
-        Bool,       ///< Boolean BitPropVariant type
-        String,     ///< String BitPropVariant type
-        UInt8,      ///< 8-bit unsigned int BitPropVariant type
-        UInt16,     ///< 16-bit unsigned int BitPropVariant type
-        UInt32,     ///< 32-bit unsigned int BitPropVariant type
-        UInt64,     ///< 64-bit unsigned int BitPropVariant type
-        Int8,       ///< 8-bit signed int BitPropVariant type
-        Int16,      ///< 16-bit signed int BitPropVariant type
-        Int32,      ///< 32-bit signed int BitPropVariant type
-        Int64,      ///< 64-bit signed int BitPropVariant type
-        Filetime    ///< FILETIME BitPropVariant type
+            Empty,      ///< Empty BitPropVariant type
+            Bool,       ///< Boolean BitPropVariant type
+            String,     ///< String BitPropVariant type
+            UInt8,      ///< 8-bit unsigned int BitPropVariant type
+            UInt16,     ///< 16-bit unsigned int BitPropVariant type
+            UInt32,     ///< 32-bit unsigned int BitPropVariant type
+            UInt64,     ///< 64-bit unsigned int BitPropVariant type
+            Int8,       ///< 8-bit signed int BitPropVariant type
+            Int16,      ///< 16-bit signed int BitPropVariant type
+            Int32,      ///< 32-bit signed int BitPropVariant type
+            Int64,      ///< 64-bit signed int BitPropVariant type
+            Filetime    ///< FILETIME BitPropVariant type
     };
 
     /*static const array < wstring, static_cast< uint32_t >( BitPropVariantType::Filetime ) + 1 > typeNames = {
@@ -306,7 +310,7 @@ namespace bit7z {
              *
              * @param value the wstring value of the BitPropVariant
              */
-            explicit BitPropVariant( const wstring& value );
+            explicit BitPropVariant( const std::wstring& value );
 
             /**
              * @brief Constructs a 8-bit unsigned integer BitPropVariant
@@ -405,7 +409,7 @@ namespace bit7z {
              *
              * @return a reference to *this object having the value as new variant value
              */
-            template<typename T>
+            template< typename T >
             BitPropVariant& operator=( const T& value ) {
                 *this = BitPropVariant( value );
                 return *this;
@@ -421,7 +425,7 @@ namespace bit7z {
              * @return the string value of this variant
              * (it throws an exception if the variant is not a string).
              */
-            wstring getString() const;
+            tstring getString() const;
 
             /**
              * @return the 8-bit unsigned integer value of this variant
@@ -480,7 +484,7 @@ namespace bit7z {
             /**
              * @return the the value of this variant converted from any supported type to std::wstring.
              */
-            wstring toString() const;
+            tstring toString() const;
 
             /**
              * @return true if this variant is empty, false otherwise.
@@ -555,9 +559,14 @@ namespace bit7z {
         private:
             void internalClear();
 
-            friend bool operator ==( const BitPropVariant& a, const BitPropVariant& b );
-            friend bool operator !=( const BitPropVariant& a, const BitPropVariant& b );
+            friend bool operator==( const BitPropVariant& a, const BitPropVariant& b );
+
+            friend bool operator!=( const BitPropVariant& a, const BitPropVariant& b );
     };
+
+    bool operator==( const BitPropVariant& a, const BitPropVariant& b );
+
+    bool operator!=( const BitPropVariant& a, const BitPropVariant& b );
 }
 
 #endif // BITPROPVARIANT_HPP

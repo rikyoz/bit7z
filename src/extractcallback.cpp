@@ -21,6 +21,8 @@
 
 #include "../include/extractcallback.hpp"
 
+#include "../include/util.hpp"
+
 using namespace bit7z;
 
 ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
@@ -39,7 +41,7 @@ STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
 
 STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
-        mHandler.progressCallback()( *completeValue );
+        return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
     return S_OK;
 }
@@ -52,21 +54,9 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 }
 
 STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
-    mExtractMode = false;
-
-    // in future we might use this switch to handle an event like onOperationStart(Operation o)
+    // in future we might use a switch to handle an event like onOperationStart(Operation o)
     // with enum Operation{Extract, Test, Skip}
-
-    switch ( askExtractMode ) {
-    case NArchive::NExtract::NAskMode::kExtract:
-        mExtractMode = true;
-        break;
-
-    case NArchive::NExtract::NAskMode::kTest:
-        mExtractMode = false;
-        break;
-    }
-
+    mExtractMode = ( askExtractMode == NArchive::NExtract::NAskMode::kExtract );
     return S_OK;
 }
 
@@ -77,15 +67,15 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
         if ( mHandler.passwordCallback() ) {
-            pass = mHandler.passwordCallback()();
+            pass = WIDEN( mHandler.passwordCallback()() );
         }
 
         if ( pass.empty() ) {
-            mErrorMessage = L"Password is not defined";
+            mErrorMessage = kPasswordNotDefined;
             return E_FAIL;
         }
     } else {
-        pass = mHandler.password();
+        pass = WIDEN( mHandler.password() );
     }
 
     return StringToBstr( pass.c_str(), password );

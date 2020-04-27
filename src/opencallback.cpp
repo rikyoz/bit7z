@@ -24,6 +24,7 @@
 #include "../include/bitpropvariant.hpp"
 #include "../include/cfileinstream.hpp"
 #include "../include/fsutil.hpp"
+#include "../include/util.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
@@ -33,8 +34,8 @@ using namespace bit7z::filesystem;
  *  + Use of wstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
-OpenCallback::OpenCallback( const BitArchiveHandler& handler, const wstring& filename )
-    : Callback( handler ), mSubArchiveMode( false ), mSubArchiveName( L"" ), mFileItem( filename ) {}
+OpenCallback::OpenCallback( const BitArchiveHandler& handler, const tstring& filename )
+    : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
 
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
@@ -47,16 +48,14 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
     if ( mSubArchiveMode ) {
-        switch ( propID ) {
-            case kpidName:
-                prop = mSubArchiveName;
-                break;
-                // case kpidSize:  prop = _subArchiveSize; break; // we don't use it now
+        if ( propID == kpidName ) {
+            prop = mSubArchiveName;
+            // case kpidSize:  prop = _subArchiveSize; break; // we don't use it for now
         }
     } else {
         switch ( propID ) {
             case kpidName:
-                prop = mFileItem.name();
+                prop = fs::path( mFileItem.name() ).wstring();
                 break;
             case kpidIsDir:
                 prop = mFileItem.isDir();
@@ -79,6 +78,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
         }
     }
     *value = prop;
+    prop.bstrVal = nullptr;
     return S_OK;
 }
 
@@ -91,10 +91,12 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
-        wstring stream_path = mFileItem.path();
+        auto stream_path = mFileItem.path();
         if ( name != nullptr ) {
-            stream_path = fsutil::dirname( stream_path ) + WCHAR_PATH_SEPARATOR + name;
-            if ( !fsutil::pathExists( stream_path ) || fsutil::isDirectory( stream_path ) ) {
+            stream_path = stream_path.parent_path();
+            stream_path.append( name );
+            auto stream_status = fs::status( stream_path );
+            if ( !fs::exists( stream_status ) || fs::is_directory( stream_status ) ) {  // avoid exceptions using status
                 return S_FALSE;
             }
         }
@@ -122,15 +124,15 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
         // Password = GetPassword(OutStream);
         // PasswordIsDefined = true;
         if ( mHandler.passwordCallback() ) {
-            pass = mHandler.passwordCallback()();
+            pass = WIDEN( mHandler.passwordCallback()() );
         }
 
         if ( pass.empty() ) {
-            mErrorMessage = L"Password is not defined";
+            mErrorMessage = kPasswordNotDefined;
             return E_ABORT;
         }
     } else {
-        pass = mHandler.password();
+        pass = WIDEN( mHandler.password() );
     }
 
     return StringToBstr( pass.c_str(), password );

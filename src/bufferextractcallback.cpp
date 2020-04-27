@@ -22,7 +22,6 @@
 #include "../include/bufferextractcallback.hpp"
 
 #include "../include/cbufferoutstream.hpp"
-#include "../include/bitpropvariant.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
@@ -32,20 +31,22 @@ using namespace bit7z;
 
 BufferExtractCallback::BufferExtractCallback( const BitArchiveHandler& handler,
                                               const BitInputArchive& inputArchive,
-                                              map< wstring, vector< byte_t > >& buffersMap )
-    : ExtractCallback ( handler, inputArchive ),
+                                              map< tstring, vector< byte_t > >& buffersMap )
+    : ExtractCallback( handler, inputArchive ),
       mBuffersMap( buffersMap ) {}
 
-STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index,
+                                               ISequentialOutStream** outStream,
+                                               Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutMemStream.Release();
 
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
-    wstring fullPath;
+    tstring fullPath;
 
     if ( prop.isEmpty() ) {
-        fullPath = kEmptyFileAlias;
+        fullPath = fs::path( kEmptyFileAlias ).native();
     } else if ( prop.isString() ) {
         fullPath = prop.getString();
     } else {
@@ -69,29 +70,24 @@ STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index, ISequentialOutStrea
 }
 
 STDMETHODIMP BufferExtractCallback::SetOperationResult( Int32 operationResult ) {
-    switch ( operationResult ) {
-        case NArchive::NExtract::NOperationResult::kOK:
-            break;
+    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+        mNumErrors++;
 
-        default: {
-            mNumErrors++;
+        switch ( operationResult ) {
+            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+                mErrorMessage = kUnsupportedMethod;
+                break;
 
-            switch ( operationResult ) {
-                case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
-                    mErrorMessage = kUnsupportedMethod;
-                    break;
+            case NArchive::NExtract::NOperationResult::kCRCError:
+                mErrorMessage = kCRCFailed;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kCRCError:
-                    mErrorMessage = kCRCFailed;
-                    break;
+            case NArchive::NExtract::NOperationResult::kDataError:
+                mErrorMessage = kDataError;
+                break;
 
-                case NArchive::NExtract::NOperationResult::kDataError:
-                    mErrorMessage = kDataError;
-                    break;
-
-                default:
-                    mErrorMessage = kUnknownError;
-            }
+            default:
+                mErrorMessage = kUnknownError;
         }
     }
 

@@ -22,21 +22,12 @@
 #include "../include/bitarchivecreator.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/cstdoutstream.hpp"
+#include "../include/cfileoutstream.hpp"
 #include "../include/cmultivoloutstream.hpp"
 #include "../include/cbufferoutstream.hpp"
 #include "../include/updatecallback.hpp"
-#include "../include/fsutil.hpp"
 
-#include <vector>
-
-#include "7zip/Archive/IArchive.h"
-#include "Common/MyCom.h"
-
-using std::wstring;
-using std::vector;
 using namespace bit7z;
-using namespace bit7z::filesystem;
 
 void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
@@ -46,8 +37,7 @@ void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* 
     }
 
     if ( result != S_OK ) {
-        wstring error_message = update_callback->getErrorMessage();
-        throw BitException( error_message.empty() ? L"Failed operation (unkwown error)!" : error_message, result );
+        update_callback->throwException( result );
     }
 }
 
@@ -164,11 +154,11 @@ uint64_t BitArchiveCreator::volumeSize() const {
     return mVolumeSize;
 }
 
-void BitArchiveCreator::setPassword( const wstring& password ) {
+void BitArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders );
 }
 
-void BitArchiveCreator::setPassword( const wstring& password, bool crypt_headers ) {
+void BitArchiveCreator::setPassword( const tstring& password, bool crypt_headers ) {
     mPassword = password;
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
@@ -195,8 +185,8 @@ void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
         throw BitException( "Invalid dictionary size for the chosen compression method", E_INVALIDARG );
     }
     if ( mCompressionMethod != BitCompressionMethod::Copy &&
-            mCompressionMethod != BitCompressionMethod::Deflate &&
-            mCompressionMethod != BitCompressionMethod::Deflate64 ) {
+         mCompressionMethod != BitCompressionMethod::Deflate &&
+         mCompressionMethod != BitCompressionMethod::Deflate64 ) {
         //ignoring setting dictionary size for copy method and for methods having fixed dictionary size (deflate family)
         mDictionarySize = dictionary_size;
     }
@@ -214,7 +204,7 @@ void BitArchiveCreator::setVolumeSize( uint64_t size ) {
     mVolumeSize = size;
 }
 
-CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
+CMyComPtr< IOutArchive > BitArchiveCreator::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     const GUID format_GUID = mFormat.guid();
     mLibrary.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
@@ -222,7 +212,7 @@ CMyComPtr<IOutArchive> BitArchiveCreator::initOutArchive() const {
     return new_arc;
 }
 
-CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out_archive,
+CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out_archive,
                                                               CMyComPtr< IOutArchive >& new_arc,
                                                               unique_ptr< BitInputArchive >& old_arc ) const {
     if ( mVolumeSize > 0 ) {
@@ -230,17 +220,18 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
     }
 
     CMyComPtr< IOutStream > out_stream;
-    if ( mUpdateMode && filesystem::fsutil::pathExists( out_archive ) ) {
+    std::error_code ec;
+    if ( mUpdateMode && fs::exists( out_archive, ec ) ) {
         if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
             //Update mode is set but format does not support adding more files
             throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
         }
 
-        auto* file_out_stream = new CFileOutStream( out_archive + L".tmp", true );
+        auto* file_out_stream = new CFileOutStream( out_archive + TSTRING( ".tmp" ), true );
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //could not create temporary file
-            throw BitException( L"Could not create temp archive file for updating '" + out_archive + L"'" );
+            throw BitException( "Could not create temp archive file for updating", out_archive, GetLastError() );
         }
 
         old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
@@ -251,13 +242,13 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const wstring& out
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //Unknown error!
-            throw BitException( L"Cannot create output archive file '" + out_archive + L"'" );
+            throw BitException( "Cannot create output archive file", out_archive, GetLastError() );
         }
     }
     return out_stream;
 }
 
-void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback* update_callback ) const {
+void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const {
     unique_ptr< BitInputArchive > old_arc = nullptr;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, new_arc, old_arc );
@@ -270,9 +261,10 @@ void BitArchiveCreator::compressToFile( const wstring& out_file, UpdateCallback*
         out_stream.Release(); //Releasing the output stream so that we can remove the original file
 
         //remove old file and rename tmp file (move file with overwriting)
-        bool renamed = fsutil::renameFile( out_file + L".tmp", out_file );
-        if ( !renamed ) {
-            throw BitException( L"Cannot rename temp archive file to  '" + out_file + L"'", GetLastError() );
+        std::error_code error;
+        fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
+        if ( error ) {
+            throw BitException( "Cannot rename temp archive file", out_file, GetLastError() );
         }
     }
 }
@@ -312,10 +304,20 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
     if ( mFormat.hasFeature( SOLID_ARCHIVE ) ) {
         names.push_back( L"s" );
         values.emplace_back( mSolidMode );
+#ifndef _WIN32
+        if ( mSolidMode ) {
+            /* NOTE: Apparently, p7zip requires the filters to be set off for the solid compression to work.
+               The most strange thing is... according to my tests this happens only in WSL!
+               I've tested the same code on a Linux VM and it works without disabling the filters! */
+            // TODO: So, for now I disable them, but this will need further investigation!
+            names.push_back( L"f" );
+            values.emplace_back( false );
+        }
+#endif
     }
     if ( mDictionarySize != 0 ) {
         const wchar_t* prop_name;
-        //cannot optimize the following if-else, if we use wstring we have invalid pointers in names!
+        //cannot optimize the following if-else, if we use tstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
         } else {

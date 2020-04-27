@@ -45,10 +45,12 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param in_file   the input archive file path.
              * @param format    the input archive format.
+             * @param password  the password needed to open the input archive.
              */
             BitArchiveInfo( const Bit7zLibrary& lib,
-                            const wstring& in_file,
-                            const BitInFormat& format DEFAULT_FORMAT );
+                            const tstring& in_file,
+                            const BitInFormat& format DEFAULT_FORMAT,
+                            const tstring& password = TSTRING( "" ) );
 
             /**
              * @brief Constructs a BitArchiveInfo object, opening the archive in the input buffer.
@@ -61,10 +63,12 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param in_buffer the input buffer containing the archive.
              * @param format    the input archive format.
+             * @param password  the password needed to open the input archive.
              */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             const vector< byte_t >& in_buffer,
-                            const BitInFormat& format DEFAULT_FORMAT );
+                            const BitInFormat& format DEFAULT_FORMAT,
+                            const tstring& password = TSTRING( "" ) );
 
             /**
              * @brief Constructs a BitArchiveInfo object, opening the archive from the standard input stream.
@@ -77,10 +81,12 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param in_stream the standard input stream of the archive.
              * @param format    the input archive format.
+             * @param password  the password needed to open the input archive.
              */
             BitArchiveInfo( const Bit7zLibrary& lib,
                             std::istream& in_stream,
-                            const BitInFormat& format DEFAULT_FORMAT );
+                            const BitInFormat& format DEFAULT_FORMAT,
+                            const tstring& password = TSTRING( "" ) );
 
             /**
              * @brief BitArchiveInfo destructor.

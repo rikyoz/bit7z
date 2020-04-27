@@ -23,11 +23,11 @@
 
 using namespace bit7z;
 
-CFileInStream::CFileInStream( const std::wstring& filePath ) : CStdInStream( mFileStream ) {
+CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ) {
     open( filePath );
 }
 
-void CFileInStream::open( const std::wstring& filePath ) {
+void CFileInStream::open( const fs::path& filePath ) {
     mFileStream.open( filePath, std::ios::in | std::ios::binary );
 }
 

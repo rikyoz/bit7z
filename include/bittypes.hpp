@@ -19,10 +19,48 @@
 #ifndef BITTYPES_HPP
 #define BITTYPES_HPP
 
+#include <string>
+
+#ifdef BIT7Z_AUTO_FORMAT
+#include <regex>
+#endif
+
+#if defined( _MSCV_VER ) && ( _MSC_VER <= 1800 )
+#define CONSTEXPR const
+#else
+#define CONSTEXPR constexpr
+#endif
+
 namespace bit7z {
     /**
      * @brief A type representing a byte (equivalent to an unsigned char).
      */
     using byte_t = unsigned char;
+
+#ifdef _WIN32 // Windows
+    using tchar = wchar_t;
+    using tstring = std::wstring;
+#ifdef BIT7Z_AUTO_FORMAT
+    using tregex = std::wregex;
+#endif
+#define TSTRING( str ) L##str
+#define to_tstring std::to_wstring
+#else // Unix
+    using tchar = char;
+    using tstring = std::string;
+#ifdef BIT7Z_AUTO_FORMAT
+    using tregex = std::regex;
+#endif
+#define TSTRING( str ) str
+#define to_tstring std::to_string
+
+    CONSTEXPR auto ERROR_OPEN_FAILED = EIO;
+    CONSTEXPR auto ERROR_FILE_NOT_FOUND = ENOENT;
+    CONSTEXPR auto ERROR_ACCESS_DENIED = EACCES;
+    CONSTEXPR auto ERROR_NOT_SUPPORTED = ENOTSUP;
+    CONSTEXPR auto ERROR_SEEK = EIO;
+    CONSTEXPR auto ERROR_READ_FAULT = EIO;
+    CONSTEXPR auto ERROR_WRITE_FAULT = EIO;
+#endif
 }
 #endif // BITTYPES_HPP
