@@ -21,6 +21,8 @@
 
 #include "../include/cbufferinstream.hpp"
 
+#include <algorithm>
+
 #ifndef _WIN32
 #include <myWindows/StdAfx.h>
 #endif
