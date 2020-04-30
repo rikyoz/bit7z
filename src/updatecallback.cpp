@@ -59,14 +59,14 @@ STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
 }
 
 STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
-    if ( mHandler.progressCallback() && completeValue != nullptr ) {
+    if ( completeValue != nullptr && mHandler.progressCallback() ) {
         return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
     return S_OK;
 }
 
 STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
-    if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
+    if ( inSize != nullptr && outSize != nullptr && mHandler.ratioCallback() ) {
         mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
