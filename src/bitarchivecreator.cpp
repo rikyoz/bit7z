@@ -154,6 +154,10 @@ uint64_t BitArchiveCreator::volumeSize() const {
     return mVolumeSize;
 }
 
+uint32_t BitArchiveCreator::threadsCount() const {
+    return mThreadsCount;
+}
+
 void BitArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders );
 }
@@ -202,6 +206,10 @@ void BitArchiveCreator::setUpdateMode( bool update_mode ) {
 
 void BitArchiveCreator::setVolumeSize( uint64_t size ) {
     mVolumeSize = size;
+}
+
+void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) {
+    mThreadsCount = threads_count;
 }
 
 CMyComPtr< IOutArchive > BitArchiveCreator::initOutArchive() const {
@@ -314,6 +322,10 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
             values.emplace_back( false );
         }
 #endif
+    }
+    if ( mThreadsCount != 0 ) {
+        names.push_back( L"mt" );
+        values.emplace_back( mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
         const wchar_t* prop_name;

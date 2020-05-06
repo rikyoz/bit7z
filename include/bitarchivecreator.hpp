@@ -87,6 +87,8 @@ namespace bit7z {
              */
             uint64_t volumeSize() const;
 
+            uint32_t threadsCount() const;
+
             /**
              * @brief Sets up a password for the output archive.
              *
@@ -180,6 +182,8 @@ namespace bit7z {
              */
             void setVolumeSize( uint64_t size );
 
+            void setThreadsCount( uint32_t threads_count );
+
         protected:
             const BitInOutFormat& mFormat;
 
@@ -209,6 +213,7 @@ namespace bit7z {
             bool mSolidMode;
             bool mUpdateMode;
             uint64_t mVolumeSize;
+            uint32_t mThreadsCount;
     };
 }
 
