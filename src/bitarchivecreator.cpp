@@ -116,7 +116,8 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFor
     mCryptHeaders( false ),
     mSolidMode( false ),
     mUpdateMode( false ),
-    mVolumeSize( 0 ) {}
+    mVolumeSize( 0 ),
+    mThreadsCount( 0 ) {}
 
 const BitInFormat& BitArchiveCreator::format() const {
     return mFormat;
