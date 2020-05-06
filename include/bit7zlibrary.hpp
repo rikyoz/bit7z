@@ -33,7 +33,7 @@ using HMODULE = void*;
 #ifdef _WIN32
 #define DEFAULT_DLL L"7z.dll"
 #else
-#define DEFAULT_DLL "./7z.so"
+#define DEFAULT_DLL "/usr/lib/p7zip/7z.so" //default installation path of p7zip shared library
 #endif
 
 struct IInArchive;
