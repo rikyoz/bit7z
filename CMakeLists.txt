@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.8.2)
 project(bit7z)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
