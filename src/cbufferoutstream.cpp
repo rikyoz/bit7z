@@ -77,7 +77,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
     }
 
     const auto* byte_data = static_cast< const byte_t* >( data );
-    std::copy( byte_data, byte_data + size, mBuffer.begin() + mCurrentPosition );
+    std::copy_n( byte_data, size, mBuffer.begin() + mCurrentPosition );
     mCurrentPosition = new_pos;
 
     if ( processedSize != nullptr ) {

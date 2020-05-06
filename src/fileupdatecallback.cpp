@@ -47,7 +47,7 @@ HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIAN
     } else if ( index < mOldArcItemsCount ) {
         prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
     } else {
-        const FSItem& new_item = mNewItems[ index - mOldArcItemsCount ];
+        const FSItem& new_item = mNewItems[ static_cast< size_t >( index - mOldArcItemsCount ) ];
         switch ( propID ) {
             case kpidPath:
                 prop = new_item.inArchivePath().wstring();
@@ -89,7 +89,7 @@ HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStr
         return S_OK;
     }
 
-    const FSItem& new_item = mNewItems[ index - mOldArcItemsCount ];
+    const FSItem& new_item = mNewItems[ static_cast< size_t >( index - mOldArcItemsCount ) ];
 
     if ( mHandler.fileCallback() ) {
         mHandler.fileCallback()( new_item.name() );
