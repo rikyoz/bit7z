@@ -42,10 +42,12 @@ using namespace bit7z;
 FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
                                           const BitInputArchive& inputArchive,
                                           fs::path inFilePath,
-                                          fs::path directoryPath )
+                                          fs::path directoryPath,
+                                          bool retainDirectories )
     : ExtractCallback( handler, inputArchive ),
       mInFilePath( std::move( inFilePath ) ),
       mDirectoryPath( std::move( directoryPath ) ),
+      mRetainDirectories( retainDirectories ),
       mProcessedFileInfo() {}
 
 //TODO: clean and optimize!
@@ -62,6 +64,9 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
         filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
     } else if ( prop.isString() ) {
         filePath = fs::path( prop.getString() );
+        if ( !mRetainDirectories ) {
+            filePath = filePath.filename();
+        }
     } else {
         return E_FAIL;
     }
@@ -108,10 +113,7 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
 
     mDiskFilePath = mDirectoryPath / filePath;
 
-    if ( mProcessedFileInfo.isDir ) {
-        error_code ec;
-        fs::create_directories( mDiskFilePath, ec );
-    } else {
+    if ( !mProcessedFileInfo.isDir ) { // File
         if ( mHandler.fileCallback() ) {
             mHandler.fileCallback()( mDiskFilePath.filename() );
         }
@@ -132,9 +134,12 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
 
         mFileOutStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
+    } else if ( mRetainDirectories ) { // Directory, and we must retain it
+        error_code ec;
+        fs::create_directories( mDiskFilePath, ec );
     }
 
-    return S_OK;
+        return S_OK;
 } catch ( const BitException& ) {
     return E_OUTOFMEMORY;
 }

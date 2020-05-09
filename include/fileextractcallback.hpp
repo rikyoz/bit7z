@@ -33,7 +33,8 @@ namespace bit7z {
             FileExtractCallback( const BitArchiveHandler& handler,
                                  const BitInputArchive& inputArchive,
                                  fs::path inFilePath,
-                                 fs::path directoryPath );
+                                 fs::path directoryPath,
+                                 bool retainDirectories );
 
             ~FileExtractCallback() override = default;
 
@@ -48,6 +49,7 @@ namespace bit7z {
             fs::path mInFilePath;     // Input file path
             fs::path mDirectoryPath;  // Output directory
             fs::path mDiskFilePath;   // full path to file on disk
+            bool mRetainDirectories;
 
             struct CProcessedFileInfo {
                 FILETIME MTime;

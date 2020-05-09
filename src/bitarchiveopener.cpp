@@ -33,7 +33,7 @@ using namespace bit7z;
 CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
 
 BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
-    : BitArchiveHandler( lib, password ), mFormat( format ) {}
+    : BitArchiveHandler( lib, password ), mFormat( format ), mRetainDirectories( true ) {}
 
 const BitInFormat& BitArchiveOpener::format() const {
     return mFormat;
@@ -47,7 +47,11 @@ void BitArchiveOpener::extractToFileSystem( const BitInputArchive& in_archive,
                                             const tstring& in_file,
                                             const tstring& out_dir,
                                             const vector< uint32_t >& indices ) const {
-    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this, in_archive, in_file, out_dir );
+    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this,
+                                                                             in_archive,
+                                                                             in_file,
+                                                                             out_dir,
+                                                                             mRetainDirectories );
     in_archive.extract( indices, extract_callback );
 }
 
@@ -100,4 +104,12 @@ void BitArchiveOpener::extractToBufferMap( const BitInputArchive& in_archive,
     CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, out_map );
     in_archive.extract( files_indices, extract_callback );
 
+}
+
+bool BitArchiveOpener::retainDirectories() const {
+    return mRetainDirectories;
+}
+
+void BitArchiveOpener::setRetainDirectories( bool retain ) {
+    mRetainDirectories = retain;
 }

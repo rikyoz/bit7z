@@ -126,6 +126,6 @@ void BitExtractor::extract( const tstring& in_file, map< tstring, vector< byte_t
 void BitExtractor::test( const tstring& in_file ) const {
     BitInputArchive in_archive( *this, in_file );
 
-    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this, in_archive, in_file, L"" );
+    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this, in_archive, in_file, L"", true );
     in_archive.test( extract_callback );
 }

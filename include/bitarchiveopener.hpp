@@ -49,8 +49,13 @@ namespace bit7z {
              */
             const BitInFormat& extractionFormat() const;
 
+            bool retainDirectories() const;
+
+            void setRetainDirectories( bool retain );
+
         protected:
             const BitInFormat& mFormat;
+            bool mRetainDirectories;
 
             BitArchiveOpener( const Bit7zLibrary& lib,
                               const BitInFormat& format,
