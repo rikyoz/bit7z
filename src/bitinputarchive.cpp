@@ -87,7 +87,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( "Cannot open archive", name, ERROR_OPEN_FAILED );
+        throw BitException( "Cannot open archive", name, HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) );
     }
 
     return in_archive.Detach();
@@ -97,7 +97,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const tstrin
     fs::path in_file_path = in_file;
     CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file_path );
     if ( file_stream->fail() ) {
-        throw BitException( "Cannot open archive file", in_file, ERROR_OPEN_FAILED );
+        throw BitException( "Cannot open archive file", in_file, HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format

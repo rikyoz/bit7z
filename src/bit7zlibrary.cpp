@@ -35,14 +35,14 @@ using namespace bit7z;
 
 Bit7zLibrary::Bit7zLibrary( const tstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
     if ( mLibrary == nullptr ) {
-        throw BitException( "Cannot load 7-zip library", GetLastError() );
+        throw BitException( "Cannot load 7-zip library", HRESULT_FROM_WIN32(  GetLastError() ) );
     }
 
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
 
     if ( mCreateObjectFunc == nullptr ) {
         FreeLibrary( mLibrary );
-        throw BitException( "Cannot get CreateObject function", GetLastError() );
+        throw BitException( "Cannot get CreateObject function", HRESULT_FROM_WIN32( GetLastError() ) );
     }
 }
 
@@ -60,7 +60,7 @@ void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* inter
 void Bit7zLibrary::setLargePageMode() {
     auto pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode" ) );
     if ( pSetLargePageMode == nullptr ) {
-        throw BitException( "Cannot get SetLargePageMode function", GetLastError() );
+        throw BitException( "Cannot get SetLargePageMode function", HRESULT_FROM_WIN32( GetLastError() ) );
     }
     HRESULT res = pSetLargePageMode();
     if ( res != S_OK ) {

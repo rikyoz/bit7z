@@ -32,9 +32,6 @@ BitException::BitException( const char* const message, FailedFiles&& files, HRES
 BitException::BitException( const char* const message, const tstring& file, HRESULT code )
     : BitException( message, { std::make_pair<>( file, code ) }, code ) {}
 
-BitException::BitException( const char* const message, DWORD code )
-    : BitException( message, FailedFiles{}, HRESULT_FROM_WIN32( code ) ) {}
-
 BitException::BitException( const std::string& message, HRESULT code )
     : BitException( message.c_str(), FailedFiles{}, code ) {}
 

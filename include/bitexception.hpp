@@ -75,16 +75,6 @@ namespace bit7z {
             explicit BitException( const std::string& message, HRESULT code = E_FAIL );
 
             /**
-             * @brief Constructs a BitException object with the given message.
-             *
-             * @note The Win32 error code is converted to a HRESULT code through HRESULT_FROM_WIN32 macro.
-             *
-             * @param message   the message associated with the exception object.
-             * @param code      the Win32 error code associated with the exception object.
-             */
-            BitException( const char* message, DWORD code );
-
-            /**
              * @return the HRESULT code associated with the exception object.
              */
             HRESULT getErrorCode() const;

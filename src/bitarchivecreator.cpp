@@ -33,7 +33,7 @@ void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* 
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
-        throw BitException( kUnsupportedOperation, ERROR_NOT_SUPPORTED );
+        throw BitException( kUnsupportedOperation, HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ) );
     }
 
     if ( result != S_OK ) {
@@ -251,7 +251,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //Unknown error!
-            throw BitException( "Cannot create output archive file", out_archive, GetLastError() );
+            throw BitException( "Cannot create output archive file", out_archive, HRESULT_FROM_WIN32( GetLastError() ) );
         }
     }
     return out_stream;
@@ -273,7 +273,7 @@ void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback*
         std::error_code error;
         fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
         if ( error ) {
-            throw BitException( "Cannot rename temp archive file", out_file, GetLastError() );
+            throw BitException( "Cannot rename temp archive file", out_file, HRESULT_FROM_WIN32( GetLastError() ) );
         }
     }
 }
@@ -344,7 +344,7 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         CMyComPtr< ISetProperties > set_properties;
         if ( out_archive->QueryInterface( ::IID_ISetProperties,
                                           reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
-            throw BitException( "ISetProperties unsupported", ERROR_NOT_SUPPORTED );
+            throw BitException( "ISetProperties unsupported", HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ) );
         }
         if ( set_properties->SetProperties( names.data(), values.data(),
                                             static_cast< uint32_t >( names.size() ) ) != S_OK ) {

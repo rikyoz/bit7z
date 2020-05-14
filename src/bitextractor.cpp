@@ -83,7 +83,7 @@ void BitExtractor::extractMatchingFilter( const tstring& in_file,
     }
 
     if ( matched_indices.empty() ) {
-        throw BitException( kNoMatchingFile, ERROR_FILE_NOT_FOUND );
+        throw BitException( kNoMatchingFile, HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) );
     }
 
     extractToFileSystem( in_archive, in_file, out_dir, matched_indices );

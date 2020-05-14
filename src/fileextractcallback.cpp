@@ -138,8 +138,7 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
         error_code ec;
         fs::create_directories( mDiskFilePath, ec );
     }
-
-        return S_OK;
+    return S_OK;
 } catch ( const BitException& ) {
     return E_OUTOFMEMORY;
 }
