@@ -18,6 +18,12 @@
  * You should have received a copy of the GNU General Public License
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
+#ifdef WIN32
+ // Disable warning
+ //    C4996: '...': Function call with parameters that may be unsafe
+ // This is due to the call to std::copy_n with a raw buffer pointer as destination.
+#pragma warning(disable:4996)
+#endif
 
 #include "../include/cbufferinstream.hpp"
 
