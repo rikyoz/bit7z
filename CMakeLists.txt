@@ -239,3 +239,7 @@ if(MSVC)
         endforeach()
     endif()
 endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(${TARGET_NAME} PRIVATE -Wno-inconsistent-missing-override)
+endif()
