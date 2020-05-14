@@ -151,13 +151,13 @@ namespace bit7z {
                     friend class BitInputArchive;
             };
 
-            const_iterator begin() const NOEXCEPT;
+            const_iterator begin() const noexcept;
 
-            const_iterator end() const NOEXCEPT;
+            const_iterator end() const noexcept;
 
-            const_iterator cbegin() const NOEXCEPT;
+            const_iterator cbegin() const noexcept;
 
-            const_iterator cend() const NOEXCEPT;
+            const_iterator cend() const noexcept;
     };
 }
 

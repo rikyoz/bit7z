@@ -27,7 +27,7 @@ using namespace bit7z;
 BitException::BitException( const char* const message, HRESULT code ) : BitException( message, FailedFiles{}, code ) {}
 
 BitException::BitException( const char* const message, FailedFiles&& files, HRESULT code )
-    : runtime_error( message ), mErrorCode( code ), mFailedFiles{ files } { files.clear(); }
+    : runtime_error( message ), mErrorCode( code ), mFailedFiles( files ) { files.clear(); }
 
 BitException::BitException( const char* const message, const tstring& file, HRESULT code )
     : BitException( message, { std::make_pair<>( file, code ) }, code ) {}

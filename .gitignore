@@ -45,3 +45,6 @@ CMakeSettings.json
 .vscode/
 
 *.code-workspace
+*.suo
+*.db
+*.opendb

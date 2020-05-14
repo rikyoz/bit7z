@@ -22,6 +22,7 @@
 #include "../include/cbufferinstream.hpp"
 
 #include <algorithm>
+#include <cstdint>
 
 #ifndef _WIN32
 #include <myWindows/StdAfx.h>

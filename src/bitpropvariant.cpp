@@ -84,7 +84,7 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
     }
 }
 
-BitPropVariant::BitPropVariant( BitPropVariant&& other ) NOEXCEPT: PROPVARIANT( other ) {
+BitPropVariant::BitPropVariant( BitPropVariant&& other ) noexcept: PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) {
         /* this and other share the pointer to the same string, but now the string belongs to this!
          * Hence, if we set the other.bstrVal to nullptr, we prevent the bstrVal from being destroyed when
@@ -179,13 +179,13 @@ BitPropVariant::~BitPropVariant() {
     internalClear();
 }
 
-BitPropVariant& BitPropVariant::operator=( const BitPropVariant& other ) NOEXCEPT {
+BitPropVariant& BitPropVariant::operator=( const BitPropVariant& other ) noexcept {
     BitPropVariant tmp( other ); //copy construct a tmp variable
     *this = std::move( tmp ); //move assign to this
     return *this;
 }
 
-BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) NOEXCEPT {
+BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
     if ( this != &other ) {
         internalClear();
         vt = other.vt;

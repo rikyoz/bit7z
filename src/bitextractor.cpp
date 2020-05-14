@@ -33,7 +33,7 @@ using namespace bit7z::filesystem;
 using std::wregex;
 #endif
 
-CONSTEXPR auto kNoMatchingFile = "No matching file was found in the archive";
+constexpr auto kNoMatchingFile = "No matching file was found in the archive";
 
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
 

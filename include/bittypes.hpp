@@ -25,12 +25,6 @@
 #include <regex>
 #endif
 
-#if defined( _MSCV_VER ) && ( _MSC_VER <= 1800 )
-#define CONSTEXPR const
-#else
-#define CONSTEXPR constexpr
-#endif
-
 namespace bit7z {
     /**
      * @brief A type representing a byte (equivalent to an unsigned char).
@@ -54,13 +48,13 @@ namespace bit7z {
 #define TSTRING( str ) str
 #define to_tstring std::to_string
 
-    CONSTEXPR auto ERROR_OPEN_FAILED = EIO;
-    CONSTEXPR auto ERROR_FILE_NOT_FOUND = ENOENT;
-    CONSTEXPR auto ERROR_ACCESS_DENIED = EACCES;
-    CONSTEXPR auto ERROR_NOT_SUPPORTED = ENOTSUP;
-    CONSTEXPR auto ERROR_SEEK = EIO;
-    CONSTEXPR auto ERROR_READ_FAULT = EIO;
-    CONSTEXPR auto ERROR_WRITE_FAULT = EIO;
+    constexpr auto ERROR_OPEN_FAILED = EIO;
+    constexpr auto ERROR_FILE_NOT_FOUND = ENOENT;
+    constexpr auto ERROR_ACCESS_DENIED = EACCES;
+    constexpr auto ERROR_NOT_SUPPORTED = ENOTSUP;
+    constexpr auto ERROR_SEEK = EIO;
+    constexpr auto ERROR_READ_FAULT = EIO;
+    constexpr auto ERROR_WRITE_FAULT = EIO;
 #endif
 }
 #endif // BITTYPES_HPP

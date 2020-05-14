@@ -25,14 +25,14 @@
 
 #include "../include/bitarchivehandler.hpp"
 
-CONSTEXPR auto kUnsupportedMethod  = "Unsupported Method";
-CONSTEXPR auto kCRCFailed          = "CRC Failed";
-CONSTEXPR auto kDataError          = "Data Error";
-CONSTEXPR auto kUnknownError       = "Unknown Error";
-CONSTEXPR auto kCannotOpenOutput   = "Cannot open output file";
-CONSTEXPR auto kCannotDeleteOutput = "Cannot delete output file";
-CONSTEXPR auto kPasswordNotDefined = "Password is not defined";
-CONSTEXPR auto kEmptyFileAlias     = TSTRING("[Content]");
+constexpr auto kUnsupportedMethod  = "Unsupported Method";
+constexpr auto kCRCFailed          = "CRC Failed";
+constexpr auto kDataError          = "Data Error";
+constexpr auto kUnknownError       = "Unknown Error";
+constexpr auto kCannotOpenOutput   = "Cannot open output file";
+constexpr auto kCannotDeleteOutput = "Cannot delete output file";
+constexpr auto kPasswordNotDefined = "Password is not defined";
+constexpr auto kEmptyFileAlias     = TSTRING("[Content]");
 
 namespace bit7z {
     using std::wstring;

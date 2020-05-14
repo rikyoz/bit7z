@@ -286,9 +286,9 @@ namespace bit7z {
         }
 
         const BitInFormat& detectFormatFromSig( IInStream* stream ) {
-            CONSTEXPR auto SIGNATURE_SIZE = 8u;
-            CONSTEXPR auto BASE_SIGNATURE_MASK = 0xFFFFFFFFFFFFFFFFull;
-            CONSTEXPR auto BYTE_SHIFT = 8ull;
+            constexpr auto SIGNATURE_SIZE = 8u;
+            constexpr auto BASE_SIGNATURE_MASK = 0xFFFFFFFFFFFFFFFFull;
+            constexpr auto BYTE_SHIFT = 8ull;
 
             uint64_t file_signature = readSignature( stream, SIGNATURE_SIZE );
             uint64_t signature_mask = BASE_SIGNATURE_MASK;
@@ -312,19 +312,19 @@ namespace bit7z {
             }
 
             // Detecting ISO/UDF
-            CONSTEXPR auto ISO_SIGNATURE              = 0x4344303031000000; //CD001
-            CONSTEXPR auto ISO_SIGNATURE_SIZE         = 5ull;
-            CONSTEXPR auto ISO_SIGNATURE_OFFSET       = 0x8001;
+            constexpr auto ISO_SIGNATURE              = 0x4344303031000000; //CD001
+            constexpr auto ISO_SIGNATURE_SIZE         = 5ull;
+            constexpr auto ISO_SIGNATURE_OFFSET       = 0x8001;
 
             // Checking for ISO signature
             stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
             file_signature = readSignature( stream, ISO_SIGNATURE_SIZE );
             if ( file_signature == ISO_SIGNATURE ) {
-                CONSTEXPR auto MAX_VOLUME_DESCRIPTORS     = 16;
-                CONSTEXPR auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
+                constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
+                constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
 
-                CONSTEXPR auto UDF_SIGNATURE          = 0x4E53523000000000; //NSR0
-                CONSTEXPR auto UDF_SIGNATURE_SIZE     = 4u;
+                constexpr auto UDF_SIGNATURE          = 0x4E53523000000000; //NSR0
+                constexpr auto UDF_SIGNATURE_SIZE     = 4u;
 
                 // The file is ISO, checking if it is also UDF!
                 for ( auto descriptor_index = 1ull; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {

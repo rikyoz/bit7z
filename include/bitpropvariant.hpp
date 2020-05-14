@@ -30,12 +30,6 @@
 #include <Common/MyWindows.h>
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER <= 1800
-#define NOEXCEPT
-#else
-#define NOEXCEPT noexcept
-#endif
-
 namespace bit7z {
 
     enum class BitProperty : PROPID {
@@ -289,7 +283,7 @@ namespace bit7z {
              *
              * @param other the variant to be moved.
              */
-            BitPropVariant( BitPropVariant&& other ) NOEXCEPT;
+            BitPropVariant( BitPropVariant&& other ) noexcept;
 
             /**
              * @brief Constructs a boolean BitPropVariant
@@ -389,7 +383,7 @@ namespace bit7z {
              *
              * @return a reference to *this object (with the copied values from other).
              */
-            BitPropVariant& operator=( const BitPropVariant& other ) NOEXCEPT;
+            BitPropVariant& operator=( const BitPropVariant& other ) noexcept;
 
             /**
              * @brief Move assignment operator.
@@ -398,7 +392,7 @@ namespace bit7z {
              *
              * @return a reference to *this object (with the moved values from other).
              */
-            BitPropVariant& operator=( BitPropVariant&& other ) NOEXCEPT;
+            BitPropVariant& operator=( BitPropVariant&& other ) noexcept;
 
             /**
              * @brief Assignment operator

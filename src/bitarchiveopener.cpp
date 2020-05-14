@@ -30,7 +30,7 @@
 using std::map;
 using namespace bit7z;
 
-CONSTEXPR auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
+constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
 
 BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
     : BitArchiveHandler( lib, password ), mFormat( format ), mRetainDirectories( true ) {}

@@ -21,6 +21,8 @@
 
 #include "../include/cbufferoutstream.hpp"
 
+#include <cstdint>
+
 using namespace bit7z;
 
 CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ), mCurrentPosition( 0 ) {}

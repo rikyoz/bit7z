@@ -186,22 +186,22 @@ HRESULT BitInputArchive::close() const {
     return mInArchive->Close();
 }
 
-BitInputArchive::const_iterator BitInputArchive::begin() const NOEXCEPT {
+BitInputArchive::const_iterator BitInputArchive::begin() const noexcept {
     return const_iterator{ 0, *this };
 }
 
-BitInputArchive::const_iterator BitInputArchive::end() const NOEXCEPT {
+BitInputArchive::const_iterator BitInputArchive::end() const noexcept {
     //Note: we do not use itemsCount() since it can throw an exception and end() is marked as noexcept!
     uint32_t items_count = 0;
     mInArchive->GetNumberOfItems( &items_count );
     return const_iterator{ items_count, *this };
 }
 
-BitInputArchive::const_iterator BitInputArchive::cbegin() const NOEXCEPT {
+BitInputArchive::const_iterator BitInputArchive::cbegin() const noexcept {
     return begin();
 }
 
-BitInputArchive::const_iterator BitInputArchive::cend() const NOEXCEPT {
+BitInputArchive::const_iterator BitInputArchive::cend() const noexcept {
     return end();
 }
 

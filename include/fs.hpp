@@ -19,17 +19,23 @@
 #ifndef FS_HPP
 #define FS_HPP
 
-#if defined(__cpp_lib_filesystem) || \
-    ( defined(__cplusplus) && __cplusplus >= 201703L && defined(__has_include) && __has_include(<filesystem>) )
+#if defined( __cpp_lib_filesystem )
+#define USE_STANDARD_FILESYSTEM
+#elif defined( __cplusplus ) && __cplusplus >= 201703L && defined( __has_include )
+#if __has_include( <filesystem> )
+#define USE_STANDARD_FILESYSTEM
+#endif
+#endif
 
-#include <fstream>
+#ifdef USE_STANDARD_FILESYSTEM
 #include <filesystem>
+#include <fstream>
 
 namespace fs {
-    using namespace std::filesystem;
-    using ifstream = std::ifstream;
-    using ofstream = std::ofstream;
-    using fstream = std::fstream;
+	using namespace std::filesystem;
+	using ifstream = std::ifstream;
+	using ofstream = std::ofstream;
+	using fstream = std::fstream;
 }
 #else
 #define GHC_WIN_WSTRING_STRING_TYPE
