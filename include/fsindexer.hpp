@@ -46,7 +46,7 @@ namespace bit7z {
                 FSItem mDirItem;
                 wstring mFilter;
 
-                explicit FSIndexer( const wstring& directory, const wstring& filter = L"" );
+                explicit FSIndexer( const FSItem& directory, const wstring& filter = L"" );
 
                 void listDirectoryItems( vector< FSItem >& result, bool recursive, const wstring& prefix = L"" );
 

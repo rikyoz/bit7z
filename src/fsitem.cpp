@@ -24,6 +24,8 @@
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
+#include <algorithm>
+
 using namespace bit7z::filesystem;
 
 /* NOTES:
@@ -100,6 +102,14 @@ wstring FSItem::path() const {
     return mPath;
 }
 
+bool contains_dot_references( const wstring& path ) {
+    /* Note: here we are supposing that path does not contain file names with a final dot (e.g., "foo.").
+             This must be true on Windows, but not on Unix systems! */
+    return std::adjacent_find( path.begin(), path.end(), []( wchar_t a, wchar_t b ) {
+               return a == L'.' && ( b == L'/' || b == L'\\' );
+           } ) != path.end();
+}
+
 /* NOTE:
  * inArchivePath() returns the path that should be used inside the archive when compressing the item, i.e. the path
  * relative to the 'root' of the archive.
@@ -125,8 +135,7 @@ wstring FSItem::inArchivePath() const {
         return mInArchivePath;
     }
 
-    if ( !isRelativePath( mPath ) ||
-            mPath.find( L"./" ) != wstring::npos || mPath.find( L".\\" ) != wstring::npos ) {
+    if ( !isRelativePath( mPath ) || contains_dot_references( mPath ) ) {
         // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
         // the interal structure of that folder (mSearchPath), otherwise we use only the file name.
         return mSearchPath.empty() ? name() : mSearchPath + L"\\" + name();
@@ -137,6 +146,11 @@ wstring FSItem::inArchivePath() const {
     }
 
     //path is relative and without ./ or ../ => e.g. foo/bar/test.txt
+
+    if ( !mSearchPath.empty() ) {
+        // The item was found while indexing a directory
+        return mSearchPath + L"\\" + name();
+    }
     return mPath;
 }
 

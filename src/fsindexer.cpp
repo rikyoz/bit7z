@@ -26,7 +26,7 @@
 
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( const wstring& directory, const wstring& filter ) : mDirItem( directory ), mFilter( filter ) {
+FSIndexer::FSIndexer( const FSItem& directory, const wstring& filter ) : mDirItem( directory ), mFilter( filter ) {
     if ( !mDirItem.isDir() ) {
         throw BitException( L"'" + mDirItem.name() + L"' is not a directory!", ERROR_DIRECTORY );
     }
@@ -47,9 +47,13 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
         throw BitException( L"Invalid path '" + filtered_path + L"'", GetLastError() );
     }
 
+    bool include_root_path = mFilter.empty() ||
+                             fsutil::dirname( mDirItem.path() ).empty() ||
+                             fsutil::filename( mDirItem.inArchivePath() ) != mDirItem.name();
+
     do {
         wstring ndir = mDirItem.path();
-        wstring search_path = !mFilter.empty() ? L"" : mDirItem.inArchivePath();
+        wstring search_path = include_root_path ? mDirItem.inArchivePath() : L"";
         if ( !prefix.empty() ) {
             ndir += L"\\" + prefix;
             search_path += search_path.empty() ? prefix : L"\\" + prefix;
@@ -84,7 +88,7 @@ void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem 
         if ( !item.inArchivePath().empty() ) {
             result.push_back( item );
         }
-        FSIndexer indexer( item.path() );
+        FSIndexer indexer( item );
         indexer.listDirectoryItems( result, true );
     }
 }
@@ -95,7 +99,7 @@ vector< FSItem > FSIndexer::indexDirectory( const wstring& in_dir, const wstring
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
         result.push_back( dir_item );
     }
-    FSIndexer indexer( in_dir, filter );
+    FSIndexer indexer( dir_item, filter );
     indexer.listDirectoryItems( result, recursive );
     return result;
 }
