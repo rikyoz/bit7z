@@ -46,6 +46,46 @@ tstring fsutil::extension( const tstring& path ) {
     return last_dot != tstring::npos ? name.substr( last_dot + 1 ) : TSTRING( "" );
 }
 
+bool contains_dot_references( const fs::path& path ) {
+    /* Note: here we are supposing that path does not contain file names with a final dot (e.g., "foo.").
+             This must be true on Windows, but not on Unix systems! */
+    const auto& native_path = path.native();
+    return std::adjacent_find( native_path.begin(), native_path.end(), []( tchar a, tchar b ) {
+        return a == TSTRING('.') && ( b == TSTRING('/') || b == TSTRING('\\') );
+    } ) != native_path.end();
+}
+
+fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& search_path ) {
+    /* Note: the following algorithm tries to emulate the behavior of 7-zip when dealing with
+             paths of items in archives. */
+
+    const auto& normal_path = file_path.lexically_normal();
+
+    auto filename = normal_path.filename();
+    if ( filename == "." || filename == ".." ) {
+        return fs::path();
+    } else if ( filename.empty() ) {
+        filename = normal_path.parent_path().filename();
+    }
+
+    if ( file_path.is_absolute() || contains_dot_references( file_path ) ) {
+        // Note: in this case if the file was found while indexing a directory passed by the user, we need to retain
+        // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
+        if ( search_path.empty() ) {
+            return filename;
+        }
+        return search_path / filename;
+    }
+
+    // Here, path is relative and without ./ or ../ => e.g. foo/bar/test.txt
+
+    if ( !search_path.empty() && search_path != file_path.parent_path() ) {
+        // The item was found while indexing a directory and the user wants a custom path for it in the archive.
+        return search_path / filename;
+    }
+    return file_path;
+}
+
 // Modified version of code found here: https://stackoverflow.com/a/3300547
 bool w_match( const tchar* needle, const tchar* haystack, size_t max ) {
     for ( ; *needle != TSTRING( '\0' ); ++needle ) {

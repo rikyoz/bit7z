@@ -53,6 +53,8 @@ namespace bit7z {
             bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified );
 
             bool setFileAttributes( const fs::path& filePath, DWORD attributes );
+
+            fs::path inArchivePath( const fs::path& file_path, const fs::path& search_path = fs::path() );
         }
     }
 }

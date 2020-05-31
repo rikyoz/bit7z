@@ -40,7 +40,7 @@ using namespace bit7z::filesystem;
  *    (see inArchivePath() method). */
 
 FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
-    : mFileAttributeData(), mSearchPath(), mInArchivePath( std::move( inArchivePath ) ) {
+    : mFileAttributeData(), mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
     std::error_code ec;
     mFileEntry.assign( itemPath, ec );
     if ( !mFileEntry.exists() ) { // NOLINT
@@ -51,7 +51,7 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
 }
 
 FSItem::FSItem( fs::directory_entry entry, fs::path searchPath )
-    : mFileEntry( std::move( entry ) ), mFileAttributeData(), mSearchPath( std::move( searchPath ) ) {
+    : mFileEntry( std::move( entry ) ), mFileAttributeData(), mInArchivePath( fsutil::inArchivePath( mFileEntry.path(), searchPath ) ) {
     initAttributes( mFileEntry.path() );
 }
 
@@ -125,32 +125,7 @@ fs::path FSItem::path() const {
  *
  * If the mInArchivePath is already given (i.e. the user wants a custom mapping of files), this one is returned.*/
 fs::path FSItem::inArchivePath() const {
-    using namespace fsutil;
-
-    if ( !mInArchivePath.empty() ) {
-        return mInArchivePath;
-    }
-
-    const auto& path = mFileEntry.path();
-    const auto& filename = path.lexically_normal().filename();
-    if ( filename == "." || filename == ".." ) {
-        return TSTRING( "" );
-    }
-
-    const auto& native_path = path.native();
-    if ( path.is_absolute() ||
-         native_path.find( TSTRING( "./" ) ) != bit7z::tstring::npos ||
-         native_path.find( TSTRING( ".\\" ) ) != bit7z::tstring::npos ) {
-        // Note: in this case if the file was found while searching in a directory passed by the user, we need to retain
-        // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
-        if ( mSearchPath.empty() ) {
-            return name();
-        }
-        return mSearchPath / name();
-    }
-
-    //path is relative and without ./ or ../ => e.g. foo/bar/test.txt
-    return path;
+    return mInArchivePath;
 }
 
 uint32_t FSItem::attributes() const {

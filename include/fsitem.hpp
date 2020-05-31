@@ -63,7 +63,6 @@ namespace bit7z {
             private:
                 fs::directory_entry mFileEntry;
                 WIN32_FILE_ATTRIBUTE_DATA mFileAttributeData;
-                fs::path mSearchPath;
                 fs::path mInArchivePath;
 
                 void initAttributes( const fs::path& itemPath );
