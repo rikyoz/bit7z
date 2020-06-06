@@ -2,11 +2,12 @@ cmake_minimum_required(VERSION 3.8.2)
 project(bit7z)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
+set(EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/libs)
 
 if(WIN32)
-    set(7Z_SOURCE_DIR libs/7-zip)
+    set(7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip)
 else()
-    set(7Z_SOURCE_DIR libs/p7zip)
+    set(7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/p7zip)
 endif()
 
 # headers
@@ -100,7 +101,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/updatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/util.cpp )
 if(UNIX)
-    set( SOURCES ${SOURCES} ${PROJECT_SOURCE_DIR}/${7Z_SOURCE_DIR}/CPP/myWindows/wine_date_and_time.cpp)
+    set( SOURCES ${SOURCES} ${7ZIP_SOURCE_DIR}/CPP/myWindows/wine_date_and_time.cpp)
 endif()
 
 # enable only debug/release configurations for generated VS project file
@@ -195,15 +196,15 @@ endif()
 # includes
 target_include_directories(${TARGET_NAME} PRIVATE 
     ${PROJECT_SOURCE_DIR}/include/
-    ${PROJECT_SOURCE_DIR}/libs/
-    ${PROJECT_SOURCE_DIR}/${7Z_SOURCE_DIR}/CPP/
+    ${EXTERNAL_LIBS_DIR}
+    ${7ZIP_SOURCE_DIR}/CPP/
 )
 
 if(UNIX)
     target_include_directories(${TARGET_NAME} PRIVATE
-                               ${PROJECT_SOURCE_DIR}/${7Z_SOURCE_DIR}/CPP/7zip
-                               ${PROJECT_SOURCE_DIR}/${7Z_SOURCE_DIR}/CPP/myWindows
-                               ${PROJECT_SOURCE_DIR}/${7Z_SOURCE_DIR}/CPP/include_windows/)
+                               ${7ZIP_SOURCE_DIR}/CPP/7zip
+                               ${7ZIP_SOURCE_DIR}/CPP/myWindows
+                               ${7ZIP_SOURCE_DIR}/CPP/include_windows/)
     target_compile_definitions(${TARGET_NAME} PUBLIC EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT ENV_UNIX BREAK_HANDLER USE_WIN_FILE)
     target_link_libraries(${TARGET_NAME} ${CMAKE_DL_LIBS} )
 endif()
