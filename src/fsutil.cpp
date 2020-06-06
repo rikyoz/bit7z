@@ -79,8 +79,8 @@ fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& searc
 
     // Here, path is relative and without ./ or ../ => e.g. foo/bar/test.txt
 
-    if ( !search_path.empty() && search_path != file_path.parent_path() ) {
-        // The item was found while indexing a directory and the user wants a custom path for it in the archive.
+    if ( !search_path.empty() ) {
+        // The item was found while indexing a directory
         return search_path / filename;
     }
     return file_path;
