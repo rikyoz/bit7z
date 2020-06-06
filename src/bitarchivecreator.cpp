@@ -62,13 +62,13 @@ bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
     }
 }
 
-constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
-constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
-constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
-constexpr auto DEFLATE64_DICTIONARY_SIZE = ( 1 << 16 );       // equal to 64 KiB, i.e. 2^16 bytes
-constexpr auto DEFLATE_DICTIONARY_SIZE = ( 1 << 15 );         // equal to 32 KiB, i.e. 2^15 bytes
-
 bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) {
+    static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
+    static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
+    static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
+    // static constexpr auto DEFLATE64_DICTIONARY_SIZE = ( 1 << 16 );       // equal to 64 KiB, i.e. 2^16 bytes
+    // static constexpr auto DEFLATE_DICTIONARY_SIZE = ( 1 << 15 );         // equal to 32 KiB, i.e. 2^15 bytes
+
     switch ( method ) {
         case BitCompressionMethod::Lzma:
         case BitCompressionMethod::Lzma2:
@@ -77,12 +77,38 @@ bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_siz
             return dictionary_size <= MAX_PPMD_DICTIONARY_SIZE;
         case BitCompressionMethod::BZip2:
             return dictionary_size <= MAX_BZIP2_DICTIONARY_SIZE;
-        case BitCompressionMethod::Deflate64:
-            return dictionary_size == DEFLATE64_DICTIONARY_SIZE;
-        case BitCompressionMethod::Deflate:
-            return dictionary_size == DEFLATE_DICTIONARY_SIZE;
         default:
-            return true; //copy
+            return false;
+    }
+}
+
+bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method, uint32_t word_size ) {
+    static constexpr auto MIN_LZMA_WORD_SIZE = 5u;
+    static constexpr auto MAX_LZMA_WORD_SIZE = 273u;
+    static constexpr auto MIN_PPMD_WORD_SIZE = 2u;
+    static constexpr auto MAX_ZIP_PPMD_WORD_SIZE = 16u;
+    static constexpr auto MAX_7Z_PPMD_WORD_SIZE = 32u;
+    static constexpr auto MIN_DEFLATE_WORD_SIZE = 3u;
+    static constexpr auto MAX_DEFLATE_WORD_SIZE = 258u;
+    static constexpr auto MAX_DEFLATE64_WORD_SIZE = MAX_DEFLATE_WORD_SIZE - 1;
+
+    if ( word_size == 0 ) {
+        return true; // reset to default value
+    }
+
+    switch ( method ) {
+        case BitCompressionMethod::Lzma:
+        case BitCompressionMethod::Lzma2:
+            return word_size >= MIN_LZMA_WORD_SIZE && word_size <= MAX_LZMA_WORD_SIZE;
+        case BitCompressionMethod::Ppmd:
+            return word_size >= MIN_PPMD_WORD_SIZE && word_size <=
+                   ( format == BitFormat::Zip ? MAX_ZIP_PPMD_WORD_SIZE : MAX_7Z_PPMD_WORD_SIZE );
+        case BitCompressionMethod::Deflate64:
+            return word_size >= MIN_DEFLATE_WORD_SIZE && word_size <= MAX_DEFLATE64_WORD_SIZE;
+        case BitCompressionMethod::Deflate:
+            return word_size >= MIN_DEFLATE_WORD_SIZE && word_size <= MAX_DEFLATE_WORD_SIZE;
+        default:
+            return false;
     }
 }
 
@@ -113,6 +139,7 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFor
     mCompressionLevel( BitCompressionLevel::NORMAL ),
     mCompressionMethod( format.defaultMethod() ),
     mDictionarySize( 0 ),
+    mWordSize( 0 ),
     mCryptHeaders( false ),
     mSolidMode( false ),
     mUpdateMode( false ),
@@ -143,6 +170,10 @@ uint32_t BitArchiveCreator::dictionarySize() const {
     return mDictionarySize;
 }
 
+uint32_t BitArchiveCreator::wordSize() const {
+    return mWordSize;
+}
+
 bool BitArchiveCreator::solidMode() const {
     return mSolidMode;
 }
@@ -171,6 +202,7 @@ void BitArchiveCreator::setPassword( const tstring& password, bool crypt_headers
 void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_level ) {
     mCompressionLevel = compression_level;
     mDictionarySize = 0; //reset dictionary size to default for the compression level
+    mWordSize = 0; //reset word size to default for the compression level
 }
 
 void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_method ) {
@@ -179,22 +211,35 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_m
     }
     if ( mFormat.hasFeature( MULTIPLE_METHODS ) ) {
         /* even though the compression method is valid, we set it only if the format supports
-         * different methods than the default one */
+         * different methods than the default one (i.e., setting BitCompressionMethod::BZip2
+         * of a BitFormat::BZip2 archive does nothing!) */
         mCompressionMethod = compression_method;
-        mDictionarySize = 0; //reset dictionary size to default for the method
+        mDictionarySize = 0; //reset dictionary size to default value for the method
+        mWordSize = 0; //reset word size to default value for the method
     }
 }
 
 void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
+    if ( mCompressionMethod == BitCompressionMethod::Copy ||
+         mCompressionMethod == BitCompressionMethod::Deflate ||
+         mCompressionMethod == BitCompressionMethod::Deflate64 ) {
+        //ignoring setting dictionary size for copy method and for methods having fixed dictionary size (deflate family)
+        return;
+    }
     if ( !isValidDictionarySize( mCompressionMethod, dictionary_size ) ) {
         throw BitException( "Invalid dictionary size for the chosen compression method", E_INVALIDARG );
     }
-    if ( mCompressionMethod != BitCompressionMethod::Copy &&
-         mCompressionMethod != BitCompressionMethod::Deflate &&
-         mCompressionMethod != BitCompressionMethod::Deflate64 ) {
-        //ignoring setting dictionary size for copy method and for methods having fixed dictionary size (deflate family)
-        mDictionarySize = dictionary_size;
+    mDictionarySize = dictionary_size;
+}
+
+void BitArchiveCreator::setWordSize( uint32_t word_size ) {
+    if ( mCompressionMethod == BitCompressionMethod::Copy || mCompressionMethod == BitCompressionMethod::BZip2 ) {
+        return;
     }
+    if ( !isValidWordSize( mFormat, mCompressionMethod, word_size ) ) {
+        throw BitException( "Invalid word size for the chosen compression method", E_INVALIDARG );
+    }
+    mWordSize = word_size;
 }
 
 void BitArchiveCreator::setSolidMode( bool solid_mode ) {
@@ -330,7 +375,7 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
     }
     if ( mDictionarySize != 0 ) {
         const wchar_t* prop_name;
-        //cannot optimize the following if-else, if we use tstring we have invalid pointers in names!
+        //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
         } else {
@@ -338,6 +383,17 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         }
         names.push_back( prop_name );
         values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
+    }
+    if ( mWordSize != 0 ) {
+        const wchar_t* prop_name;
+        //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
+        if ( mFormat == BitFormat::SevenZip ) {
+            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0o" : L"0fb" );
+        } else {
+            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"o" : L"fb" );
+        }
+        names.push_back( prop_name );
+        values.emplace_back( mWordSize );
     }
 
     if ( !names.empty() ) {
