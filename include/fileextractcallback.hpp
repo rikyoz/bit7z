@@ -32,8 +32,8 @@ namespace bit7z {
         public:
             FileExtractCallback( const BitArchiveHandler& handler,
                                  const BitInputArchive& inputArchive,
-                                 fs::path inFilePath,
-                                 fs::path directoryPath,
+                                 const tstring& inFilePath,
+                                 const tstring& directoryPath,
                                  bool retainDirectories );
 
             ~FileExtractCallback() override = default;

@@ -41,12 +41,12 @@ using namespace bit7z;
 
 FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
                                           const BitInputArchive& inputArchive,
-                                          fs::path inFilePath,
-                                          fs::path directoryPath,
+                                          const tstring& inFilePath,
+                                          const tstring& directoryPath,
                                           bool retainDirectories )
     : ExtractCallback( handler, inputArchive ),
-      mInFilePath( std::move( inFilePath ) ),
-      mDirectoryPath( std::move( directoryPath ) ),
+      mInFilePath( inFilePath ),
+      mDirectoryPath( directoryPath ),
       mRetainDirectories( retainDirectories ),
       mProcessedFileInfo() {}
 
