@@ -26,7 +26,6 @@
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
-#include <unordered_map>
 #include <cwctype>
 
 #include <7zip/IStream.h>
@@ -51,7 +50,6 @@ static inline uint64_t bswap64 (uint64_t x) {
 #endif
 
 #endif
-
 
 
 using namespace std;
@@ -121,140 +119,343 @@ namespace bit7z {
         const BitInOutFormat     GZip( 0xEF, TSTRING(".gz"), BitCompressionMethod::Deflate, COMPRESSION_LEVEL );
 
 #ifdef BIT7Z_AUTO_FORMAT
-                const unordered_map< tstring, const BitInFormat& > common_extensions = {
-                        { TSTRING("7z"), SevenZip },
-                        { TSTRING("bzip2"), BZip2 },
-                        { TSTRING("bz2"), BZip2 },
-                        { TSTRING("tbz2"), BZip2 },
-                        { TSTRING("tbz"), BZip2 },
-                        { TSTRING("gz"), GZip },
-                        { TSTRING("gzip"), GZip },
-                        { TSTRING("tgz"), GZip },
-                        { TSTRING("tar"), Tar },
-                        { TSTRING("wim"), Wim },
-                        { TSTRING("swm"), Wim },
-                        { TSTRING("xz"), Xz },
-                        { TSTRING("txz"), Xz },
-                        { TSTRING("zip"), Zip },
-                        { TSTRING("zipx"), Zip },
-                        { TSTRING("jar"), Zip },
-                        { TSTRING("xpi"), Zip },
-                        { TSTRING("odt"), Zip },
-                        { TSTRING("ods"), Zip },
-                        { TSTRING("odp"), Zip },
-                        { TSTRING("docx"), Zip },
-                        { TSTRING("xlsx"), Zip },
-                        { TSTRING("pptx"), Zip },
-                        { TSTRING("epub"), Zip },
-                        { TSTRING("001"), Split },
-                        { TSTRING("ar"), Deb },
-                        { TSTRING("apm"), APM },
-                        { TSTRING("arj"), Arj },
-                        { TSTRING("cab"), Cab },
-                        { TSTRING("chm"), Chm },
-                        { TSTRING("chi"), Chm },
-                        { TSTRING("msi"), Compound },
-                        { TSTRING("doc"), Compound },
-                        { TSTRING("xls"), Compound },
-                        { TSTRING("ppt"), Compound },
-                        { TSTRING("msg"), Compound },
-                        { TSTRING("obj"), COFF },
-                        { TSTRING("cpio"), Cpio },
-                        { TSTRING("cramfs"), CramFS },
-                        { TSTRING("deb"), Deb },
-                        { TSTRING("dmg"), Dmg },
-                        { TSTRING("dll"), Pe },
-                        { TSTRING("dylib"), Macho },
-                        { TSTRING("exe"), Pe }, //note: we do not distinguish 7z SFX exe at the moment!
-                        { TSTRING("ext"), Ext },
-                        { TSTRING("ext2"), Ext },
-                        { TSTRING("ext3"), Ext },
-                        { TSTRING("ext4"), Ext },
-                        { TSTRING("fat"), Fat },
-                        { TSTRING("flv"), Flv },
-                        { TSTRING("gpt"), GPT },
-                        { TSTRING("hfs"), Hfs },
-                        { TSTRING("hfsx"), Hfs },
-                        { TSTRING("hxs"), Hxs },
-                        { TSTRING("ihex"), IHex },
-                        { TSTRING("lzh"), Lzh },
-                        { TSTRING("lha"), Lzh },
-                        { TSTRING("lzma"), Lzma },
-                        { TSTRING("lzma86"), Lzma86 },
-                        { TSTRING("mbr"), Mbr },
-                        { TSTRING("mslz"), Mslz },
-                        { TSTRING("mub"), Mub },
-                        { TSTRING("nsis"), Nsis },
-                        { TSTRING("ntfs"), Ntfs },
-                        { TSTRING("pmd"), Ppmd },
-                        { TSTRING("qcow"), QCow },
-                        { TSTRING("qcow2"), QCow },
-                        { TSTRING("qcow2c"), QCow },
-                        { TSTRING("rpm"), Rpm },
-                        { TSTRING("squashfs"), SquashFS },
-                        { TSTRING("te"), TE },
-                        { TSTRING("udf"), Udf },
-                        { TSTRING("scap"), UEFIc },
-                        { TSTRING("uefif"), UEFIs },
-                        { TSTRING("vmdk"), VMDK },
-                        { TSTRING("vdi"), VDI },
-                        { TSTRING("vhd"), Vhd },
-                        { TSTRING("xar"), Xar },
-                        { TSTRING("pkg"), Xar },
-                        { TSTRING("z"), Z },
-                        { TSTRING("taz"), Z }
-                };
+        bool findFormatByExtension( const tstring& ext, const BitInFormat** format ) {
+            if ( ext == TSTRING( "7z" ) ) {
+                *format = &SevenZip;
+                return true;
+            }
+            if ( ext == TSTRING( "bzip2" ) || ext == TSTRING( "bz2" ) ||
+                 ext == TSTRING( "tbz2" ) || ext == TSTRING( "tbz" ) ) {
+                *format = &BZip2;
+                return true;
+            }
+            if ( ext == TSTRING( "gz" ) || ext == TSTRING( "gzip" ) || ext == TSTRING( "tgz" ) ) {
+                *format = &GZip;
+                return true;
+            }
+            if ( ext == TSTRING( "tar" ) ) {
+                *format = &Tar;
+                return true;
+            }
+            if ( ext == TSTRING( "wim" ) || ext == TSTRING( "swm" ) ) {
+                *format = &Wim;
+                return true;
+            }
+            if ( ext == TSTRING( "xz" ) || ext == TSTRING( "txz" ) ) {
+                *format = &Xz;
+                return true;
+            }
+            if ( ext == TSTRING( "zip" ) || ext == TSTRING( "zipx" ) || ext == TSTRING( "jar" ) ||
+                 ext == TSTRING( "xpi" ) || ext == TSTRING( "odt" ) || ext == TSTRING( "ods" ) ||
+                 ext == TSTRING( "odp" ) || ext == TSTRING( "docx" ) || ext == TSTRING( "xlsx" ) ||
+                 ext == TSTRING( "pptx" ) || ext == TSTRING( "epub" ) ) {
+                *format = &Zip;
+                return true;
+            }
+            if ( ext == TSTRING( "001" ) ) {
+                *format = &Split;
+                return true;
+            }
+            if ( ext == TSTRING( "ar" ) ) {
+                *format = &Deb;
+                return true;
+            }
+            if ( ext == TSTRING( "apm" ) ) {
+                *format = &APM;
+                return true;
+            }
+            if ( ext == TSTRING( "arj" ) ) {
+                *format = &Arj;
+                return true;
+            }
+            if ( ext == TSTRING( "cab" ) ) {
+                *format = &Cab;
+                return true;
+            }
+            if ( ext == TSTRING( "chm" ) || ext == TSTRING( "chi" ) ) {
+                *format = &Chm;
+                return true;
+            }
+            if ( ext == TSTRING( "msi" ) || ext == TSTRING( "doc" ) || ext == TSTRING( "xls" ) ||
+                 ext == TSTRING( "ppt" ) || ext == TSTRING( "msg" ) ) {
+                *format = &Compound;
+                return true;
+            }
+            if ( ext == TSTRING( "obj" ) ) {
+                *format = &COFF;
+                return true;
+            }
+            if ( ext == TSTRING( "cpio" ) ) {
+                *format = &Cpio;
+                return true;
+            }
+            if ( ext == TSTRING( "cramfs" ) ) {
+                *format = &CramFS;
+                return true;
+            }
+            if ( ext == TSTRING( "deb" ) ) {
+                *format = &Deb;
+                return true;
+            }
+            if ( ext == TSTRING( "dmg" ) ) {
+                *format = &Dmg;
+                return true;
+            }
+            if ( ext == TSTRING( "dll" ) || ext == TSTRING( "exe" ) ) {
+                //note: we do not distinguish 7z SFX exe at the moment!
+                *format = &Pe;
+                return true;
+            }
+            if ( ext == TSTRING( "dylib" ) ) {
+                *format = &Macho;
+                return true;
+            }
+            if ( ext == TSTRING( "ext" ) || ext == TSTRING( "ext2" ) || ext == TSTRING( "ext3" ) ||
+                 ext == TSTRING( "ext4" ) ) {
+                *format = &Ext;
+                return true;
+            }
+            if ( ext == TSTRING( "fat" ) ) {
+                *format = &Fat;
+                return true;
+            }
+            if ( ext == TSTRING( "flv" ) ) {
+                *format = &Flv;
+                return true;
+            }
+            if ( ext == TSTRING( "gpt" ) ) {
+                *format = &GPT;
+                return true;
+            }
+            if ( ext == TSTRING( "hfs" ) || ext == TSTRING( "hfsx" ) ) {
+                *format = &Hfs;
+                return true;
+            }
+            if ( ext == TSTRING( "hxs" ) ) {
+                *format = &Hxs;
+                return true;
+            }
+            if ( ext == TSTRING( "ihex" ) ) {
+                *format = &IHex;
+                return true;
+            }
+            if ( ext == TSTRING( "lzh" ) || ext == TSTRING( "lha" ) ) {
+                *format = &Lzh;
+                return true;
+            }
+            if ( ext == TSTRING( "lzma" ) ) {
+                *format = &Lzma;
+                return true;
+            }
+            if ( ext == TSTRING( "lzma86" ) ) {
+                *format = &Lzma86;
+                return true;
+            }
+            if ( ext == TSTRING( "mbr" ) ) {
+                *format = &Mbr;
+                return true;
+            }
+            if ( ext == TSTRING( "mslz" ) ) {
+                *format = &Mslz;
+                return true;
+            }
+            if ( ext == TSTRING( "mub" ) ) {
+                *format = &Mub;
+                return true;
+            }
+            if ( ext == TSTRING( "nsis" ) ) {
+                *format = &Nsis;
+                return true;
+            }
+            if ( ext == TSTRING( "ntfs" ) ) {
+                *format = &Ntfs;
+                return true;
+            }
+            if ( ext == TSTRING( "pmd" ) ) {
+                *format = &Ppmd;
+                return true;
+            }
+            if ( ext == TSTRING( "qcow" ) || ext == TSTRING( "qcow2" ) || ext == TSTRING( "qcow2c" ) ) {
+                *format = &QCow;
+                return true;
+            }
+            if ( ext == TSTRING( "rpm" ) ) {
+                *format = &Rpm;
+                return true;
+            }
+            if ( ext == TSTRING( "squashfs" ) ) {
+                *format = &SquashFS;
+                return true;
+            }
+            if ( ext == TSTRING( "te" ) ) {
+                *format = &TE;
+                return true;
+            }
+            if ( ext == TSTRING( "udf" ) ) {
+                *format = &Udf;
+                return true;
+            }
+            if ( ext == TSTRING( "scap" ) ) {
+                *format = &UEFIc;
+                return true;
+            }
+            if ( ext == TSTRING( "uefif" ) ) {
+                *format = &UEFIs;
+                return true;
+            }
+            if ( ext == TSTRING( "vmdk" ) ) {
+                *format = &VMDK;
+                return true;
+            }
+            if ( ext == TSTRING( "vdi" ) ) {
+                *format = &VDI;
+                return true;
+            }
+            if ( ext == TSTRING( "vhd" ) ) {
+                *format = &Vhd;
+                return true;
+            }
+            if ( ext == TSTRING( "xar" ) || ext == TSTRING( "pkg" ) ) {
+                *format = &Xar;
+                return true;
+            }
+            if ( ext == TSTRING( "z" ) || ext == TSTRING( "taz" ) ) {
+                *format = &Z;
+                return true;
+            }
+            return false;
+        }
 
-                /* NOTE: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0 */
-                const unordered_map< uint64_t, const BitInFormat& > common_signatures = {
-                        { 0x526172211A070000, Rar },      // R  a  r  !  1A 07 00
-                        { 0x526172211A070100, Rar5 },     // R  a  r  !  1A 07 01 00
-                        { 0x377ABCAF271C0000, SevenZip }, // 7  z  BC AF 27 1C
-                        { 0x425A680000000000, BZip2 },    // B  Z  h
-                        { 0x1F8B080000000000, GZip },     // 1F 8B 08
-                        { 0x4D5357494D000000, Wim },      // M  S  W  I  M  00 00 00
-                        { 0xFD377A585A000000, Xz },       // FD 7  z  X  Z  00
-                        { 0x504B000000000000, Zip },      // P  K
-                        { 0x4552000000000000, APM },      // E  R
-                        { 0x60EA000000000000, Arj },      // `  EA
-                        { 0x4D53434600000000, Cab },      // M  S  C  F  00 00 00 00
-                        { 0x4954534603000000, Chm },      // I  T  S  F  03
-                        { 0xD0CF11E0A1B11AE1, Compound }, // D0 CF 11 E0 A1 B1 1A E1
-                        { 0xC771000000000000, Cpio },     // C7 q
-                        { 0x71C7000000000000, Cpio },     // q  C7
-                        { 0x3037303730000000, Cpio },     // 0  7  0  7  0
-                        { 0x213C617263683E00, Deb },      // !  <  a  r  c  h  >  0A
-                        //{ 0x7801730D62626000, Dmg }, // DMG signature detection is not this simple
-                        { 0x7F454C4600000000, Elf },      // 7F E  L  F
-                        { 0x4D5A000000000000, Pe },       // M  Z
-                        { 0x464C560100000000, Flv },      // F  L  V  01
-                        { 0x5D00000000000000, Lzma },     //
-                        { 0x015D000000000000, Lzma86 },   //
-                        { 0xCEFAEDFE00000000, Macho },    // CE FA ED FE
-                        { 0xCFFAEDFE00000000, Macho },    // CF FA ED FE
-                        { 0xFEEDFACE00000000, Macho },    // FE ED FA CE
-                        { 0xFEEDFACF00000000, Macho },    // FE ED FA CF
-                        { 0xCAFEBABE00000000, Mub },      // CA FE BA BE 00 00 00
-                        { 0xB9FAF10E00000000, Mub },      // B9 FA F1 0E
-                        { 0x535A444488F02733, Mslz },     // S  Z  D  D  88 F0 '  3
-                        { 0x8FAFAC8400000000, Ppmd },     // 8F AF AC 84
-                        { 0x514649FB00000000, QCow },     // Q  F  I  FB 00 00 00
-                        { 0xEDABEEDB00000000, Rpm },      // ED AB EE DB
-                        { 0x7371736800000000, SquashFS }, // s  q  s  h
-                        { 0x6873717300000000, SquashFS }, // h  s  q  s
-                        { 0x7368737100000000, SquashFS }, // s  h  s  q
-                        { 0x7173687300000000, SquashFS }, // q  s  h  s
-                        { 0x4657530000000000, Swf },      // F  W  S
-                        { 0x4357530000000000, Swfc },     // C  W  S
-                        { 0x5A57530000000000, Swfc },     // Z  W  S
-                        { 0x565A000000000000, TE },       // V  Z
-                        { 0x4B444D0000000000, VMDK },     // K  D  M  V
-                        { 0x3C3C3C2000000000, VDI },      // Alternatively 0x7F10DABE at offset 0x40)
-                        { 0x636F6E6563746978, Vhd },      // c  o  n  e  c  t  i  x
-                        { 0x78617221001C0000, Xar },      // x  a  r  !  00 1C
-                        { 0x1F9D000000000000, Z },        // 1F 9D
-                        { 0x1FA0000000000000, Z }        //
-                };
+        /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
+         * NOTE 2: Until v3, I've used a std::unordered_map for mapping the signatures and the corresponding
+         *         format, however the switch case is fastest and has less memory footprint. */
+        bool findFormatBySignature( uint64_t signature, const BitInFormat** format ) {
+            switch ( signature ) {
+                case 0x526172211A070000: // R  a  r  !  1A 07 00
+                    *format = &Rar;
+                    return true;
+                case 0x526172211A070100: // R  a  r  !  1A 07 01 00
+                    *format = &Rar5;
+                    return true;
+                case 0x377ABCAF271C0000: // 7  z  BC AF 27 1C
+                    *format = &SevenZip;
+                    return true;
+                case 0x425A680000000000: // B  Z  h
+                    *format = &BZip2;
+                    return true;
+                case 0x1F8B080000000000: // 1F 8B 08
+                    *format = &GZip;
+                    return true;
+                case 0x4D5357494D000000: // M  S  W  I  M  00 00 00
+                    *format = &Wim;
+                    return true;
+                case 0xFD377A585A000000: // FD 7  z  X  Z  00
+                    *format = &Xz;
+                    return true;
+                case 0x504B000000000000: // P  K
+                    *format = &Zip;
+                    return true;
+                case 0x4552000000000000: // E  R
+                    *format = &APM;
+                    return true;
+                case 0x60EA000000000000: // `  EA
+                    *format = &Arj;
+                    return true;
+                case 0x4D53434600000000: // M  S  C  F  00 00 00 00
+                    *format = &Cab;
+                    return true;
+                case 0x4954534603000000: // I  T  S  F  03
+                    *format = &Chm;
+                    return true;
+                case 0xD0CF11E0A1B11AE1: // D0 CF 11 E0 A1 B1 1A E1
+                    *format = &Compound;
+                    return true;
+                case 0xC771000000000000: // C7 q
+                case 0x71C7000000000000: // q  C7
+                case 0x3037303730000000: // 0  7  0  7  0
+                    *format = &Cpio;
+                    return true;
+                case 0x213C617263683E00: // !  <  a  r  c  h  >  0A
+                    *format = &Deb;
+                    return true;
+                    /* DMG signature detection is not this simple
+                    case 0x7801730D62626000:
+                        *format = &Dmg;
+                        return true;
+                    */
+                case 0x7F454C4600000000: // 7F E  L  F
+                    *format = &Elf;
+                    return true;
+                case 0x4D5A000000000000: // M  Z
+                    *format = &Pe;
+                    return true;
+                case 0x464C560100000000: // F  L  V  01
+                    *format = &Flv;
+                    return true;
+                case 0x5D00000000000000: //
+                    *format = &Lzma;
+                    return true;
+                case 0x015D000000000000: //
+                    *format = &Lzma86;
+                    return true;
+                case 0xCEFAEDFE00000000: // CE FA ED FE
+                case 0xCFFAEDFE00000000: // CF FA ED FE
+                case 0xFEEDFACE00000000: // FE ED FA CE
+                case 0xFEEDFACF00000000: // FE ED FA CF
+                    *format = &Macho;
+                    return true;
+                case 0xCAFEBABE00000000: // CA FE BA BE 00 00 00
+                case 0xB9FAF10E00000000: // B9 FA F1 0E
+                    *format = &Mub;
+                    return true;
+                case 0x535A444488F02733: // S  Z  D  D  88 F0 '  3
+                    *format = &Mslz;
+                    return true;
+                case 0x8FAFAC8400000000: // 8F AF AC 84
+                    *format = &Ppmd;
+                    return true;
+                case 0x514649FB00000000: // Q  F  I  FB 00 00 00
+                    *format = &QCow;
+                    return true;
+                case 0xEDABEEDB00000000: // ED AB EE DB
+                    *format = &Rpm;
+                    return true;
+                case 0x7371736800000000: // s  q  s  h
+                case 0x6873717300000000: // h  s  q  s
+                case 0x7368737100000000: // s  h  s  q
+                case 0x7173687300000000: // q  s  h  s
+                    *format = &SquashFS;
+                    return true;
+                case 0x4657530000000000: // F  W  S
+                    *format = &Swf;
+                    return true;
+                case 0x4357530000000000: // C  W  S
+                case 0x5A57530000000000: // Z  W  S
+                    *format = &Swfc;
+                    return true;
+                case 0x565A000000000000: // V  Z
+                    *format = &TE;
+                    return true;
+                case 0x4B444D0000000000: // K  D  M  V
+                    *format = &VMDK;
+                    return true;
+                case 0x3C3C3C2000000000: // Alternatively 0x7F10DABE at offset 0x40)
+                    *format = &VDI;
+                    return true;
+                case 0x636F6E6563746978: // c  o  n  e  c  t  i  x
+                    *format = &Vhd;
+                    return true;
+                case 0x78617221001C0000: // x  a  r  !  00 1C
+                    *format = &Xar;
+                    return true;
+                case 0x1F9D000000000000: // 1F 9D
+                case 0x1FA0000000000000: // 1F A0
+                    *format = &Z;
+                    return true;
+                default:
+                    return false;
+            }
+        }
 
         struct OffsetSignature {
             uint64_t signature;
@@ -293,10 +494,10 @@ namespace bit7z {
             uint64_t file_signature = readSignature( stream, SIGNATURE_SIZE );
             uint64_t signature_mask = BASE_SIGNATURE_MASK;
             for ( auto i = 0u; i < SIGNATURE_SIZE - 1; ++i ) {
-                auto it = common_signatures.find( file_signature );
-                if ( it != common_signatures.end() ) {
+                const BitInFormat* format = nullptr;
+                if ( findFormatBySignature( file_signature, &format ) ) {
                     stream->Seek( 0, 0, nullptr );
-                    return it->second;
+                    return *format;
                 }
                 signature_mask <<= BYTE_SHIFT;    // left shifting the mask of 1 byte, so that
                 file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
@@ -312,19 +513,19 @@ namespace bit7z {
             }
 
             // Detecting ISO/UDF
-            constexpr auto ISO_SIGNATURE              = 0x4344303031000000; //CD001
-            constexpr auto ISO_SIGNATURE_SIZE         = 5ull;
-            constexpr auto ISO_SIGNATURE_OFFSET       = 0x8001;
+            constexpr auto ISO_SIGNATURE = 0x4344303031000000; //CD001
+            constexpr auto ISO_SIGNATURE_SIZE = 5ull;
+            constexpr auto ISO_SIGNATURE_OFFSET = 0x8001;
 
             // Checking for ISO signature
             stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
             file_signature = readSignature( stream, ISO_SIGNATURE_SIZE );
             if ( file_signature == ISO_SIGNATURE ) {
-                constexpr auto MAX_VOLUME_DESCRIPTORS     = 16;
+                constexpr auto MAX_VOLUME_DESCRIPTORS = 16;
                 constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
 
-                constexpr auto UDF_SIGNATURE          = 0x4E53523000000000; //NSR0
-                constexpr auto UDF_SIGNATURE_SIZE     = 4u;
+                constexpr auto UDF_SIGNATURE = 0x4E53523000000000; //NSR0
+                constexpr auto UDF_SIGNATURE_SIZE = 4u;
 
                 // The file is ISO, checking if it is also UDF!
                 for ( auto descriptor_index = 1ull; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
@@ -351,9 +552,9 @@ namespace bit7z {
             std::transform( ext.cbegin(), ext.cend(), ext.begin(), std::towlower );
 
             // Detecting archives with common file extensions
-            auto it = common_extensions.find( ext );
-            if ( it != common_extensions.end() ) { //extension found in map
-                return it->second;
+            const BitInFormat* format = nullptr;
+            if ( findFormatByExtension( ext, &format ) ) { //extension found in map
+                return *format;
             }
 
             // Detecting multi-volume archives extension
