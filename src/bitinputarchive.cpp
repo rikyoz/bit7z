@@ -87,7 +87,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( "Cannot open archive", name, HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) );
+        throw BitException( "Cannot open archive", make_hresult_code( res ), name );
     }
 
     return in_archive.Detach();
@@ -97,7 +97,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const tstrin
     fs::path in_file_path = in_file;
     CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file_path );
     if ( file_stream->fail() ) {
-        throw BitException( "Cannot open archive file", in_file, HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) );
+        throw BitException( "Cannot open archive file", std::make_error_code( std::errc::io_error ), in_file );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
@@ -125,7 +125,7 @@ BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const
     BitPropVariant archive_property;
     HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve archive property", res );
+        throw BitException( "Could not retrieve archive property", make_hresult_code( res ) );
     }
     return archive_property;
 }
@@ -134,7 +134,8 @@ BitPropVariant BitInputArchive::getItemProperty( uint32_t index, BitProperty pro
     BitPropVariant item_property;
     HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve property for item at index " + std::to_string( index ), res );
+        throw BitException( "Could not retrieve property for item at index " + std::to_string( index ),
+                            make_hresult_code( res ) );
     }
     return item_property;
 }
@@ -143,7 +144,7 @@ uint32_t BitInputArchive::itemsCount() const {
     uint32_t items_count;
     HRESULT res = mInArchive->GetNumberOfItems( &items_count );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve the number of items in the archive", res );
+        throw BitException( "Could not retrieve the number of items in the archive", make_hresult_code( res ) );
     }
     return items_count;
 }

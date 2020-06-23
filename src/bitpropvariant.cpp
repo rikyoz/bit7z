@@ -63,7 +63,7 @@ BitPropVariantType lookupType( VARTYPE type ) {
         default:
             // this is very unlikely to happen:
             // properties types used in archives are the ones supported by PropertyType enum class
-            throw BitException( "Property type not supported", E_INVALIDARG );
+            throw BitException(  "Property type not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
 }
 
@@ -79,7 +79,7 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
         if ( bstrVal == nullptr ) {
-            throw BitException( "Could not allocate memory for BitPropVariant string" );
+            throw BitException(  kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
         }
     }
 }
@@ -105,7 +105,7 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
     if ( value != nullptr ) {
         bstrVal = ::SysAllocString( value );
         if ( bstrVal == nullptr ) {
-            throw BitException( "Could not allocate memory for BitPropVariant string" );
+            throw BitException(  kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
         }
     } else {
         bstrVal = nullptr;
@@ -117,7 +117,7 @@ BitPropVariant::BitPropVariant( const std::wstring& value ) : PROPVARIANT() {
     wReserved1 = 0;
     bstrVal = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );
     if ( bstrVal == nullptr ) {
-        throw BitException( "Could not allocate memory for BitPropVariant string" );
+        throw BitException(  kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
     }
 }
 
@@ -354,7 +354,7 @@ int64_t BitPropVariant::getInt64() const {
     }
 }
 
-FILETIME BitPropVariant::getFiletime() const {
+FILETIME BitPropVariant::getFileTime() const {
     if ( vt != VT_FILETIME ) {
         throw BitException( "BitPropVariant is not a FILETIME" );
     }
@@ -437,7 +437,7 @@ bool BitPropVariant::isInt64() const {
     return vt == VT_I8 || vt == VT_I4 || vt == VT_INT || vt == VT_I2 || vt == VT_I1;
 }
 
-bool BitPropVariant::isFiletime() const {
+bool BitPropVariant::isFileTime() const {
     return vt == VT_FILETIME;
 }
 

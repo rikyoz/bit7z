@@ -32,7 +32,7 @@ CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways ) : 
 void CFileOutStream::open( const fs::path& filePath, bool createAlways ) {
     std::error_code ec;
     if ( !createAlways && fs::exists( filePath, ec ) ) {
-        throw BitException( "File already exists", filePath.native(), HRESULT_FROM_WIN32( ERROR_FILE_EXISTS ) );
+        throw BitException( "Cannot create output file", std::make_error_code( std::errc::file_exists ), filePath.native() );
     }
     mFileStream.open( filePath, std::ios::binary | std::ios::trunc );
 }

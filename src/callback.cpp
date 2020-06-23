@@ -29,8 +29,8 @@ Callback::Callback( const BitArchiveHandler& handler ) : mHandler( handler ), mE
 
 void Callback::throwException( HRESULT error ) {
     if ( mErrorMessage != nullptr ) {
-        throw BitException( mErrorMessage, error );
+        throw BitException( mErrorMessage, make_hresult_code( error ) );
     }
-    throw BitException( "Failed operation (unknown error)!", error );
+    throw BitException( "Failed operation", make_hresult_code( error ) );
 }
 

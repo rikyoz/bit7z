@@ -60,11 +60,11 @@ void BitArchiveOpener::extractToStream( const BitInputArchive& in_archive,
                                         unsigned int index ) const {
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range", E_INVALIDARG );
+        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
+        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
     }
 
     const vector< uint32_t > indices( 1, index );
@@ -77,11 +77,11 @@ void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
                                         unsigned int index ) const {
     uint32_t number_items = in_archive.itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range", E_INVALIDARG );
+        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
     }
 
     if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, E_INVALIDARG );
+        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
     }
 
     const vector< uint32_t > indices( 1, index );

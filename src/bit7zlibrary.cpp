@@ -35,14 +35,26 @@ using namespace bit7z;
 
 Bit7zLibrary::Bit7zLibrary( const tstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
     if ( mLibrary == nullptr ) {
-        throw BitException( "Cannot load 7-zip library", HRESULT_FROM_WIN32(  GetLastError() ) );
+        throw BitException( "Cannot load 7-zip library",
+#ifdef _WIN32
+                            last_error_code()
+#else
+                            std::make_error_code( std::errc::bad_file_descriptor ) //same behavior as boost::shared_library
+#endif
+        );
     }
 
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
 
     if ( mCreateObjectFunc == nullptr ) {
         FreeLibrary( mLibrary );
-        throw BitException( "Cannot get CreateObject function", HRESULT_FROM_WIN32( GetLastError() ) );
+        throw BitException( "Cannot get CreateObject function",
+#ifdef _WIN32
+                            last_error_code()
+#else
+                            std::make_error_code( std::errc::invalid_seek ) //same behavior as boost::shared_library
+#endif
+        );
     }
 }
 
@@ -53,17 +65,23 @@ Bit7zLibrary::~Bit7zLibrary() {
 void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const {
     HRESULT res = mCreateObjectFunc( format_ID, interface_ID, out_object );
     if ( res != S_OK ) {
-        throw BitException( "Cannot get class object", res );
+        throw BitException( "Cannot get class object", make_hresult_code( res ) );
     }
 }
 
 void Bit7zLibrary::setLargePageMode() {
     auto pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode" ) );
     if ( pSetLargePageMode == nullptr ) {
-        throw BitException( "Cannot get SetLargePageMode function", HRESULT_FROM_WIN32( GetLastError() ) );
+        throw BitException( "Cannot get SetLargePageMode function",
+#ifdef _WIN32
+                            last_error_code()
+#else
+                            std::make_error_code( std::errc::invalid_seek ) //same behavior as boost::shared_library
+#endif
+        );
     }
     HRESULT res = pSetLargePageMode();
     if ( res != S_OK ) {
-        throw BitException( "Cannot set large page mode", res );
+        throw BitException( "Cannot set large page mode", make_hresult_code( res ) );
     }
 }

@@ -36,7 +36,7 @@ StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
 
 void StreamExtractCallback::throwException( HRESULT error ) {
     if ( !mOutputStream ) {
-        throw BitException( "Stream error (errno: " + std::to_string( errno ) + ")" );
+        throw BitException( "Stream error", std::error_code( errno, std::generic_category() ) );
     }
     Callback::throwException( error );
 }

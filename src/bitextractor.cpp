@@ -44,7 +44,7 @@ void BitExtractor::extract( const tstring& in_file, const tstring& out_dir ) con
 
 void BitExtractor::extractMatching( const tstring& in_file, const tstring& item_filter, const tstring& out_dir ) const {
     if ( item_filter.empty() ) {
-        throw BitException( "Empty wildcard filter", E_INVALIDARG );
+        throw BitException(  "Empty wildcard filter", std::make_error_code( std::errc::invalid_argument  ) );
     }
 
     extractMatchingFilter( in_file, out_dir, [ &item_filter ]( const tstring& item_path ) -> bool {
@@ -56,7 +56,7 @@ void BitExtractor::extractMatching( const tstring& in_file, const tstring& item_
 
 void BitExtractor::extractMatchingRegex( const tstring& in_file, const tstring& regex, const tstring& out_dir ) const {
     if ( regex.empty() ) {
-        throw BitException( "Empty regex filter", E_INVALIDARG );
+        throw BitException(  "Empty regex filter", std::make_error_code( std::errc::invalid_argument ) );
     }
 
     const tregex regex_filter( regex, std::regex::ECMAScript | std::regex::optimize );
@@ -83,7 +83,7 @@ void BitExtractor::extractMatchingFilter( const tstring& in_file,
     }
 
     if ( matched_indices.empty() ) {
-        throw BitException( kNoMatchingFile, HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) );
+        throw BitException(  kNoMatchingFile, std::make_error_code( std::errc::no_such_file_or_directory ) );
     }
 
     extractToFileSystem( in_archive, in_file, out_dir, matched_indices );
@@ -93,7 +93,7 @@ void BitExtractor::extractItems( const tstring& in_file,
                                  const vector< uint32_t >& indices,
                                  const tstring& out_dir ) const {
     if ( indices.empty() ) {
-        throw BitException( "Empty indices vector", E_INVALIDARG );
+        throw BitException(  "Empty indices vector", std::make_error_code( std::errc::invalid_argument ) );
     }
 
     BitInputArchive in_archive( *this, in_file );
@@ -102,7 +102,7 @@ void BitExtractor::extractItems( const tstring& in_file,
         return index >= n_items;
     } );
     if ( find_res != indices.cend() ) {
-        throw BitException( "Index " + std::to_string( *find_res ) + " is not valid", E_INVALIDARG );
+        throw BitException(  "Index " + std::to_string( *find_res ) + " is not valid", std::make_error_code( std::errc::invalid_argument ) );
     }
 
     extractToFileSystem( in_archive, in_file, out_dir, indices );

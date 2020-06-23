@@ -44,8 +44,7 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     std::error_code ec;
     mFileEntry.assign( itemPath, ec );
     if ( !mFileEntry.exists() ) { // NOLINT
-        //TODO: use error_code instead of WinAPI error codes or HRESULT
-        throw BitException( "Invalid path", itemPath.native(), HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) );
+        throw BitException(  "Invalid path", std::make_error_code( std::errc::no_such_file_or_directory ), itemPath.native() );
     }
     initAttributes( itemPath );
 }
@@ -58,7 +57,7 @@ FSItem::FSItem( fs::directory_entry entry, fs::path searchPath )
 void FSItem::initAttributes( const fs::path& itemPath ) {
     if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
         //should not happen, but anyway...
-        throw BitException( "Could not retrieve file attributes", itemPath.native(), HRESULT_FROM_WIN32( GetLastError() ) );
+        throw BitException( "Could not retrieve file attributes", last_error_code(), itemPath.native() );
     }
 }
 

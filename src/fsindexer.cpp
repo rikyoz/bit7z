@@ -32,7 +32,7 @@ using namespace bit7z::filesystem;
 FSIndexer::FSIndexer( const FSItem& directory, tstring filter )
     : mDirItem( directory ), mFilter( std::move( filter ) ) {
     if ( !mDirItem.isDir() ) {
-        throw BitException( "Path is not a directory!", mDirItem.name(), HRESULT_FROM_WIN32( ERROR_DIRECTORY ) );
+        throw BitException( "Invalid path", std::make_error_code( std::errc::not_a_directory ), mDirItem.name() );
     }
 }
 

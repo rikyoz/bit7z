@@ -20,7 +20,7 @@
 #define BITEXCEPTION_HPP
 
 #include <vector>
-#include <stdexcept>
+#include <system_error>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -31,21 +31,25 @@
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-    using std::runtime_error;
-    using FailedFiles = std::vector< std::pair< tstring, HRESULT > >;
+    using std::system_error;
+    using FailedFiles = std::vector< std::pair< tstring, std::error_code > >;
+
+    std::error_code make_hresult_code( HRESULT res ) noexcept;
+
+    inline std::error_code last_error_code() noexcept {
+        return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
+    }
 
     /**
      * @brief The BitException class represents a generic exception thrown from the bit7z classes.
      */
-    class BitException : public runtime_error {
+    class BitException : public system_error {
         public:
-            /**
-             * @brief Constructs a BitException object with the given message.
-             *
-             * @param message   the message associated with the exception object.
-             * @param code      the HRESULT code associated with the exception object.
-             */
-            explicit BitException( const char* const message, HRESULT code = E_FAIL );
+#ifdef _WIN32
+            using native_code_type = HRESULT;
+#else
+            using native_code_type = int;
+#endif
 
             /**
              * @brief Constructs a BitException object with the given message and the specific files that failed.
@@ -54,8 +58,9 @@ namespace bit7z {
              * @param files     the vector of files that failed, with the corresponding error codes.
              * @param code      the HRESULT code associated with the exception object.
              */
-            BitException( const char* const message, FailedFiles&& files, HRESULT code = E_FAIL );
-
+            explicit BitException( const char* const message,
+                                   std::error_code code = make_hresult_code( E_FAIL ),
+                                   FailedFiles&& files = {} );
 
             /**
              * @brief Constructs a BitException object with the given message and the specific file that failed.
@@ -64,25 +69,22 @@ namespace bit7z {
              * @param file      the file that failed during the operation.
              * @param code      the HRESULT code associated with the exception object.
              */
-            BitException( const char* const message, const tstring& file, HRESULT code = E_FAIL );
+            BitException( const char* const message, std::error_code code, const tstring& file );
 
             /**
-             * @brief Constructs a BitException object with the given message.
+             * @brief Constructs a BitException object with the given message
              *
              * @param message   the message associated with the exception object.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const std::string& message, HRESULT code = E_FAIL );
+            explicit BitException( const std::string& message, std::error_code code = make_hresult_code( E_FAIL ) );
 
-            /**
-             * @return the HRESULT code associated with the exception object.
-             */
-            HRESULT getErrorCode() const;
+            native_code_type nativeCode() const;
 
-            const FailedFiles& getFailedFiles() const;
+            const FailedFiles& failedFiles() const;
 
         private:
-            HRESULT mErrorCode;
+            //HRESULT mErrorCode;
             FailedFiles mFailedFiles;
     };
 }

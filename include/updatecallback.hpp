@@ -32,8 +32,8 @@
 #include "../include/bitinputarchive.hpp"
 
 namespace bit7z {
-    constexpr auto kUnsupportedOperation = "Unsupported operation!";
-    constexpr auto kUnsupportedInMemoryFormat = "Unsupported format for in-memory compression!";
+    constexpr auto kUnsupportedOperation = "Unsupported operation";
+    constexpr auto kUnsupportedInMemoryFormat = "Unsupported format for in-memory compression";
     constexpr auto kCannotOverwriteBuffer = "Cannot overwrite or update a non empty buffer";
 
     class UpdateCallback : public Callback,

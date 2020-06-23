@@ -33,7 +33,7 @@ void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* 
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
-        throw BitException( kUnsupportedOperation, HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ) );
+        throw BitException( kUnsupportedOperation, make_hresult_code( result ) );
     }
 
     if ( result != S_OK ) {
@@ -102,7 +102,8 @@ bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method,
             return word_size >= MIN_LZMA_WORD_SIZE && word_size <= MAX_LZMA_WORD_SIZE;
         case BitCompressionMethod::Ppmd:
             return word_size >= MIN_PPMD_WORD_SIZE && word_size <=
-                   ( format == BitFormat::Zip ? MAX_ZIP_PPMD_WORD_SIZE : MAX_7Z_PPMD_WORD_SIZE );
+                                                      ( format == BitFormat::Zip ? MAX_ZIP_PPMD_WORD_SIZE
+                                                                                 : MAX_7Z_PPMD_WORD_SIZE );
         case BitCompressionMethod::Deflate64:
             return word_size >= MIN_DEFLATE_WORD_SIZE && word_size <= MAX_DEFLATE64_WORD_SIZE;
         case BitCompressionMethod::Deflate:
@@ -207,7 +208,8 @@ void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_lev
 
 void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_method ) {
     if ( !isValidCompressionMethod( mFormat, compression_method ) ) {
-        throw BitException( "Invalid compression method for the chosen archive format", E_INVALIDARG );
+        throw BitException( "Invalid compression method for the chosen archive format",
+                            std::make_error_code( std::errc::invalid_argument ) );
     }
     if ( mFormat.hasFeature( MULTIPLE_METHODS ) ) {
         /* even though the compression method is valid, we set it only if the format supports
@@ -227,7 +229,8 @@ void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
         return;
     }
     if ( !isValidDictionarySize( mCompressionMethod, dictionary_size ) ) {
-        throw BitException( "Invalid dictionary size for the chosen compression method", E_INVALIDARG );
+        throw BitException( "Invalid dictionary size for the chosen compression method",
+                            std::make_error_code( std::errc::invalid_argument ) );
     }
     mDictionarySize = dictionary_size;
 }
@@ -237,7 +240,8 @@ void BitArchiveCreator::setWordSize( uint32_t word_size ) {
         return;
     }
     if ( !isValidWordSize( mFormat, mCompressionMethod, word_size ) ) {
-        throw BitException( "Invalid word size for the chosen compression method", E_INVALIDARG );
+        throw BitException( "Invalid word size for the chosen compression method",
+                            std::make_error_code( std::errc::invalid_argument ) );
     }
     mWordSize = word_size;
 }
@@ -278,14 +282,15 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out
     if ( mUpdateMode && fs::exists( out_archive, ec ) ) {
         if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
             //Update mode is set but format does not support adding more files
-            throw BitException( "Format does not support updating existing archive files", E_INVALIDARG );
+            throw BitException( "Format does not support updating existing archive files",
+                                std::make_error_code( std::errc::invalid_argument ) );
         }
 
         auto* file_out_stream = new CFileOutStream( out_archive + TSTRING( ".tmp" ), true );
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //could not create temporary file
-            throw BitException( "Could not create temp archive file for updating", out_archive, GetLastError() );
+            throw BitException( "Could not create temp archive file for updating", last_error_code(), out_archive );
         }
 
         old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
@@ -296,7 +301,7 @@ CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out
         out_stream = file_out_stream;
         if ( file_out_stream->fail() ) {
             //Unknown error!
-            throw BitException( "Cannot create output archive file", out_archive, HRESULT_FROM_WIN32( GetLastError() ) );
+            throw BitException( "Cannot create output archive file", last_error_code(), out_archive );
         }
     }
     return out_stream;
@@ -318,14 +323,14 @@ void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback*
         std::error_code error;
         fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
         if ( error ) {
-            throw BitException( "Cannot rename temp archive file", out_file, HRESULT_FROM_WIN32( GetLastError() ) );
+            throw BitException( "Cannot rename temp archive file", error, out_file );
         }
     }
 }
 
 void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const {
     if ( !out_buffer.empty() ) {
-        throw BitException( kCannotOverwriteBuffer, E_INVALIDARG );
+        throw BitException( kCannotOverwriteBuffer, std::make_error_code( std::errc::invalid_argument ) );
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
@@ -400,11 +405,12 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         CMyComPtr< ISetProperties > set_properties;
         if ( out_archive->QueryInterface( ::IID_ISetProperties,
                                           reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
-            throw BitException( "ISetProperties unsupported", HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ) );
+            throw BitException( "ISetProperties unsupported", std::make_error_code( std::errc::not_supported ) );
         }
         if ( set_properties->SetProperties( names.data(), values.data(),
                                             static_cast< uint32_t >( names.size() ) ) != S_OK ) {
-            throw BitException( "Cannot set properties of the archive", E_INVALIDARG );
+            throw BitException( "Cannot set properties of the archive",
+                                std::make_error_code( std::errc::invalid_argument ) );
         }
     }
 }

@@ -103,7 +103,7 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
             break;
 
         case BitPropVariantType::Filetime:
-            mProcessedFileInfo.MTime = prop3.getFiletime();
+            mProcessedFileInfo.MTime = prop3.getFileTime();
             mProcessedFileInfo.MTimeDefined = true;
             break;
 
@@ -189,7 +189,7 @@ STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 void FileExtractCallback::throwException( HRESULT error ) {
     if ( mErrorMessage != nullptr ) {
-        throw BitException( mErrorMessage, mDiskFilePath.native(), error );
+        throw BitException( mErrorMessage, make_hresult_code( error ), mDiskFilePath.native() );
     }
     Callback::throwException( error );
 }

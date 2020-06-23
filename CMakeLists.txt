@@ -52,6 +52,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/fsitem.hpp
      ${PROJECT_SOURCE_DIR}/include/fsutil.hpp
      ${PROJECT_SOURCE_DIR}/include/fs.hpp
+     ${PROJECT_SOURCE_DIR}/include/hresultcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/opencallback.hpp
      ${PROJECT_SOURCE_DIR}/include/streamextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/streamupdatecallback.hpp
@@ -95,6 +96,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/fsindexer.cpp
      ${PROJECT_SOURCE_DIR}/src/fsitem.cpp
      ${PROJECT_SOURCE_DIR}/src/fsutil.cpp
+     ${PROJECT_SOURCE_DIR}/src/hresultcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/opencallback.cpp
      ${PROJECT_SOURCE_DIR}/src/streamextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/streamupdatecallback.cpp

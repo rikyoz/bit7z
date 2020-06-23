@@ -49,12 +49,13 @@ namespace bit7z {
 #define to_tstring std::to_string
 
     constexpr auto ERROR_OPEN_FAILED = EIO;
-    constexpr auto ERROR_FILE_NOT_FOUND = ENOENT;
-    constexpr auto ERROR_ACCESS_DENIED = EACCES;
-    constexpr auto ERROR_NOT_SUPPORTED = ENOTSUP;
     constexpr auto ERROR_SEEK = EIO;
     constexpr auto ERROR_READ_FAULT = EIO;
     constexpr auto ERROR_WRITE_FAULT = EIO;
+
+//Macros not defined by p7zip
+#define HRESULT_FACILITY(hr)  (((hr) >> 16) & 0x1fff)
+#define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
 #endif
 }
 #endif // BITTYPES_HPP

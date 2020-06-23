@@ -31,6 +31,7 @@
 #endif
 
 namespace bit7z {
+    static const char* const kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
 
     enum class BitProperty : PROPID {
             NoProperty = 0,         ///<
@@ -473,7 +474,7 @@ namespace bit7z {
              * @return the FILETIME value of this variant
              * (it throws an exception if the variant is not a filetime).
              */
-            FILETIME getFiletime() const;
+            FILETIME getFileTime() const;
 
             /**
              * @return the the value of this variant converted from any supported type to std::wstring.
@@ -538,7 +539,7 @@ namespace bit7z {
             /**
              * @return true if this variant is a FILETIME structure, false otherwise.
              */
-            bool isFiletime() const;
+            bool isFileTime() const;
 
             /**
              * @return the BitPropVariantType of this variant.
