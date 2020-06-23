@@ -319,6 +319,16 @@ void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback*
          *       IOutStream have a Release() method, so we need to call only the one of CMyComPtr! */
         out_stream.Release(); //Releasing the output stream so that we can remove the original file
 
+#if defined( __MINGW32__ ) && defined( USE_STANDARD_FILESYSTEM )
+        /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
+         * existing destination file (as it should). So we explicitly remove it before! */
+        std::error_code ec;
+        fs::remove( out_file, ec );
+        if ( ec ) {
+            throw BitException( "Cannot remove old archive file", ec, out_file );
+        }
+#endif
+
         //remove old file and rename tmp file (move file with overwriting)
         std::error_code error;
         fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
