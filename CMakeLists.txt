@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8.2)
 project(bit7z)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
+cmake_policy(SET CMP0022 NEW)
 set(EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/libs)
 
 if(WIN32)
@@ -147,8 +148,6 @@ foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
 endforeach()
 
-set(TARGET_NAME bit7z${ARCH_POSTFIX})
-
 message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
 
@@ -177,6 +176,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message(STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}")
 
+set(TARGET_NAME bit7z${ARCH_POSTFIX})
 add_library(${TARGET_NAME} STATIC ${SOURCES} ${HEADERS})
 
 # macros
