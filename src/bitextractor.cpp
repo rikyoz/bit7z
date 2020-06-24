@@ -29,10 +29,6 @@
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-#ifdef BIT7Z_REGEX_MATCHING
-using std::wregex;
-#endif
-
 constexpr auto kNoMatchingFile = "No matching file was found in the archive";
 
 BitExtractor::BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format ) : BitArchiveOpener( lib, format ) {}
@@ -59,7 +55,7 @@ void BitExtractor::extractMatchingRegex( const tstring& in_file, const tstring& 
         throw BitException(  "Empty regex filter", std::make_error_code( std::errc::invalid_argument ) );
     }
 
-    const tregex regex_filter( regex, std::regex::ECMAScript | std::regex::optimize );
+    const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
     extractMatchingFilter( in_file, out_dir, [ &regex_filter ]( const tstring& item_path ) -> bool {
         return std::regex_match( item_path, regex_filter );
     } );

@@ -34,7 +34,7 @@ namespace bit7z {
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
     using tstring = std::wstring;
-#ifdef BIT7Z_AUTO_FORMAT
+#ifdef BIT7Z_REGEX_MATCHING
     using tregex = std::wregex;
 #endif
 #define TSTRING( str ) L##str
@@ -42,7 +42,7 @@ namespace bit7z {
 #else // Unix
     using tchar = char;
     using tstring = std::string;
-#ifdef BIT7Z_AUTO_FORMAT
+#ifdef BIT7Z_REGEX_MATCHING
     using tregex = std::regex;
 #endif
 #define TSTRING( str ) str

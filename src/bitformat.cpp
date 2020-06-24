@@ -119,6 +119,9 @@ namespace bit7z {
         const BitInOutFormat     GZip( 0xEF, TSTRING(".gz"), BitCompressionMethod::Deflate, COMPRESSION_LEVEL );
 
 #ifdef BIT7Z_AUTO_FORMAT
+        /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
+         *       format, however the ifs are faster and have less memory footprint.
+         * TODO: Cleanup and improve */
         bool findFormatByExtension( const tstring& ext, const BitInFormat** format ) {
             if ( ext == TSTRING( "7z" ) ) {
                 *format = &SevenZip;
@@ -327,8 +330,8 @@ namespace bit7z {
         }
 
         /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
-         * NOTE 2: Until v3, I've used a std::unordered_map for mapping the signatures and the corresponding
-         *         format, however the switch case is fastest and has less memory footprint. */
+         * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
+         *         format, however the switch case is faster and has less memory footprint. */
         bool findFormatBySignature( uint64_t signature, const BitInFormat** format ) {
             switch ( signature ) {
                 case 0x526172211A070000: // R  a  r  !  1A 07 00
