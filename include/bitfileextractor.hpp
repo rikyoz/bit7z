@@ -16,20 +16,17 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITSTREAMEXTRACTOR_HPP
-#define BITSTREAMEXTRACTOR_HPP
+#ifndef BITFILEEXTRACTOR_HPP
+#define BITFILEEXTRACTOR_HPP
 
 #include "../include/bitextractor.hpp"
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
-    using std::istream;
-
     /**
-     * @brief The BitStreamExtractor class allows to extract the content of in-memory archives.
+     * @brief The BitFileExtractor class allows to extract the content of file archives.
      */
-    template class BitExtractor< istream& >;
-    using BitStreamExtractor = BitExtractor< istream& >;
+    template class BitExtractor< const tstring& >;
+    using BitFileExtractor = BitExtractor< const tstring& >;
 }
-
-#endif // BITSTREAMEXTRACTOR_HPP
+#endif // BITFILEEXTRACTOR_HPP

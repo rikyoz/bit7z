@@ -27,6 +27,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitcompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitexception.hpp
      ${PROJECT_SOURCE_DIR}/include/bitextractor.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitfileextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitformat.hpp
      ${PROJECT_SOURCE_DIR}/include/bitguids.hpp
      ${PROJECT_SOURCE_DIR}/include/bitinputarchive.hpp
@@ -72,15 +73,12 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitarchiveopener.cpp
      ${PROJECT_SOURCE_DIR}/src/bitcompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitexception.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitextractor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
      ${PROJECT_SOURCE_DIR}/src/bitguids.cpp
      ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp
      ${PROJECT_SOURCE_DIR}/src/bitmemcompressor.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitmemextractor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitpropvariant.cpp
      ${PROJECT_SOURCE_DIR}/src/bitstreamcompressor.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitstreamextractor.cpp
      ${PROJECT_SOURCE_DIR}/src/bufferextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/bufferupdatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/callback.cpp
@@ -102,7 +100,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/streamextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/streamupdatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/updatecallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/util.cpp )
+     ${PROJECT_SOURCE_DIR}/src/util.cpp)
 if(UNIX)
     set( SOURCES ${SOURCES} ${7ZIP_SOURCE_DIR}/CPP/myWindows/wine_date_and_time.cpp)
 endif()

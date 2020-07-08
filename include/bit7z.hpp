@@ -23,7 +23,7 @@
 #include "bitcompressor.hpp"
 #include "bitmemcompressor.hpp"
 #include "bitstreamcompressor.hpp"
-#include "bitextractor.hpp"
+#include "bitfileextractor.hpp"
 #include "bitmemextractor.hpp"
 #include "bitstreamextractor.hpp"
 #include "bitexception.hpp"

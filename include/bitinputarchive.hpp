@@ -42,7 +42,7 @@ namespace bit7z {
 
     class BitInputArchive {
         public:
-            BitInputArchive( const BitArchiveHandler& handler, const tstring& in_file );
+            BitInputArchive( const BitArchiveHandler& handler, tstring in_file );
 
             BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer );
 
@@ -94,6 +94,8 @@ namespace bit7z {
              */
             bool isItemEncrypted( uint32_t index ) const;
 
+            const tstring& getArchivePath() const;
+
         protected:
             IInArchive* openArchiveStream( const BitArchiveHandler& handler,
                                            const tstring& name,
@@ -109,17 +111,12 @@ namespace bit7z {
 
             friend class BitArchiveOpener;
 
-            friend class BitExtractor;
-
-            friend class BitMemExtractor;
-
-            friend class BitStreamExtractor;
-
             friend class BitArchiveCreator;
 
         private:
             IInArchive* mInArchive;
             const BitInFormat* mDetectedFormat;
+            const tstring mArchivePath;
 
         public:
             class const_iterator {

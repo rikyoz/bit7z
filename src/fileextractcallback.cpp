@@ -19,13 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include <utility>
-
 #include "../include/fileextractcallback.hpp"
 #include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
-
-#include <iostream>
 
 using namespace std;
 using namespace NWindows;
@@ -34,18 +30,17 @@ using namespace bit7z;
 /* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of wstring instead of UString
- *  + Error messages are not showed. Instead, they are memorized into a wstring and used by BitExtractor to throw
+ *  + Error messages are not showed. Instead, they are memorized into a wstring and used by BitFileExtractor to throw
  *    exceptions (see also Callback interface). Note that this class doesn't throw exceptions, as other classes in bit7,
  *    because it must implement interfaces with nothrow methods.
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
 FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
                                           const BitInputArchive& inputArchive,
-                                          const tstring& inFilePath,
                                           const tstring& directoryPath,
                                           bool retainDirectories )
     : ExtractCallback( handler, inputArchive ),
-      mInFilePath( inFilePath ),
+      mInFilePath( inputArchive.getArchivePath() ),
       mDirectoryPath( directoryPath ),
       mRetainDirectories( retainDirectories ),
       mProcessedFileInfo() {}

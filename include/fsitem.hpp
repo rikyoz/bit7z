@@ -38,7 +38,7 @@ namespace bit7z {
             public:
                 explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
 
-                explicit FSItem( fs::directory_entry entry, fs::path searchPath );
+                explicit FSItem( fs::directory_entry entry, const fs::path& searchPath );
 
                 bool isDots() const;
 

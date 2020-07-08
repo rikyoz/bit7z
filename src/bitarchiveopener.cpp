@@ -44,12 +44,10 @@ const BitInFormat& BitArchiveOpener::extractionFormat() const {
 }
 
 void BitArchiveOpener::extractToFileSystem( const BitInputArchive& in_archive,
-                                            const tstring& in_file,
                                             const tstring& out_dir,
                                             const vector< uint32_t >& indices ) const {
     CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this,
                                                                              in_archive,
-                                                                             in_file,
                                                                              out_dir,
                                                                              mRetainDirectories );
     in_archive.extract( indices, extract_callback );
@@ -112,4 +110,10 @@ bool BitArchiveOpener::retainDirectories() const {
 
 void BitArchiveOpener::setRetainDirectories( bool retain ) {
     mRetainDirectories = retain;
+}
+
+void BitArchiveOpener::test( const BitInputArchive& in_archive ) const {
+    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, dummy_map );
+    in_archive.test( extract_callback );
 }

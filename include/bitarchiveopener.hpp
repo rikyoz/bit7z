@@ -64,7 +64,6 @@ namespace bit7z {
             ~BitArchiveOpener() override = default;
 
             void extractToFileSystem( const BitInputArchive& in_archive,
-                                      const tstring& in_file,
                                       const tstring& out_dir,
                                       const vector< uint32_t >& indices ) const;
 
@@ -78,6 +77,8 @@ namespace bit7z {
 
             void extractToBufferMap( const BitInputArchive& in_archive,
                                      map< tstring, vector< byte_t > >& out_map ) const;
+
+            void test( const BitInputArchive& in_archive ) const;
     };
 }
 

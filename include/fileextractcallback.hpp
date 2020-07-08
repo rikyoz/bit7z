@@ -32,7 +32,6 @@ namespace bit7z {
         public:
             FileExtractCallback( const BitArchiveHandler& handler,
                                  const BitInputArchive& inputArchive,
-                                 const tstring& inFilePath,
                                  const tstring& directoryPath,
                                  bool retainDirectories );
 

@@ -67,7 +67,7 @@ using namespace  bit7z;
 
 try {
     Bit7zLibrary lib{ L"7za.dll" };
-    BitExtractor extractor{ lib, BitFormat::SevenZip };
+    BitFileExtractor extractor{ lib, BitFormat::SevenZip };
 
     extractor.extract( L"path/to/archive.7z", L"out/dir/" ); //extracting a simple archive
 

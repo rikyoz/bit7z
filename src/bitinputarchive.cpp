@@ -93,20 +93,20 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     return in_archive.Detach();
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const tstring& in_file ) {
-    fs::path in_file_path = in_file;
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_file ) : mArchivePath{ std::move( in_file ) } {
+    fs::path in_file_path = mArchivePath;
     CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file_path );
     if ( file_stream->fail() ) {
-        throw BitException( "Cannot open archive file", std::make_error_code( std::errc::io_error ), in_file );
+        throw BitException( "Cannot open archive file", std::make_error_code( std::errc::io_error ), mArchivePath );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
     mDetectedFormat = ( handler.format() == BitFormat::Auto ?
-                        &BitFormat::detectFormatFromExt( in_file ) : &handler.format() );
+                        &BitFormat::detectFormatFromExt( mArchivePath ) : &handler.format() );
 #else
     mDetectedFormat = &handler.format();
 #endif
-    mInArchive = openArchiveStream( handler, in_file, file_stream );
+    mInArchive = openArchiveStream( handler, mArchivePath, file_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
@@ -183,8 +183,28 @@ void BitInputArchive::test( ExtractCallback* extract_callback ) const {
     }
 }
 
+const BitInFormat& BitInputArchive::detectedFormat() const {
+#ifdef BIT7Z_AUTO_FORMAT
+    // Defensive programming: for how the archive format is detected,
+    // a correct BitInputArchive instance should have a non null mDetectedFormat!
+    return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
+#else
+    return *mDetectedFormat;
+#endif
+}
+
+const tstring& BitInputArchive::getArchivePath() const {
+    return mArchivePath;
+}
+
 HRESULT BitInputArchive::close() const {
     return mInArchive->Close();
+}
+
+BitInputArchive::~BitInputArchive() {
+    if ( mInArchive != nullptr ) {
+        mInArchive->Release();
+    }
 }
 
 BitInputArchive::const_iterator BitInputArchive::begin() const noexcept {
@@ -204,22 +224,6 @@ BitInputArchive::const_iterator BitInputArchive::cbegin() const noexcept {
 
 BitInputArchive::const_iterator BitInputArchive::cend() const noexcept {
     return end();
-}
-
-BitInputArchive::~BitInputArchive() {
-    if ( mInArchive != nullptr ) {
-        mInArchive->Release();
-    }
-}
-
-const BitInFormat& BitInputArchive::detectedFormat() const {
-#ifdef BIT7Z_AUTO_FORMAT
-    // Defensive programming: for how the archive format is detected,
-    // a correct BitInputArchive instance should have a non null mDetectedFormat!
-    return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
-#else
-    return *mDetectedFormat;
-#endif
 }
 
 BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() {
