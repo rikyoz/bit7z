@@ -49,7 +49,7 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     initAttributes( itemPath );
 }
 
-FSItem::FSItem( fs::directory_entry entry, fs::path searchPath )
+FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
     : mFileEntry( std::move( entry ) ), mFileAttributeData(), mInArchivePath( fsutil::inArchivePath( mFileEntry.path(), searchPath ) ) {
     initAttributes( mFileEntry.path() );
 }

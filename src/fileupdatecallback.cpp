@@ -70,6 +70,8 @@ HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIAN
             case kpidMTime:
                 prop = new_item.lastWriteTime();
                 break;
+            default: //empty prop
+                break;
         }
     }
 

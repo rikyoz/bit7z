@@ -230,6 +230,8 @@ BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
             case VT_FILETIME:
                 filetime = other.filetime;
                 break;
+            default:
+                break;
         }
     }
     return *this;
@@ -389,8 +391,11 @@ tstring BitPropVariant::toString() const {
             return to_tstring( hVal.QuadPart );
         case VT_FILETIME:
             return to_tstring( filetime.dwHighDateTime ) + TSTRING( ", " ) + to_tstring( filetime.dwLowDateTime );
+        case VT_EMPTY:
+            return TSTRING( "" );
+        default:
+            throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")" );
     }
-    throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")" );
 }
 
 bool BitPropVariant::isEmpty() const {

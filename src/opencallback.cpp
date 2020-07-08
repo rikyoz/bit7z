@@ -75,6 +75,8 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
             case kpidMTime:
                 prop = mFileItem.lastWriteTime();
                 break;
+            default: //prop is empty
+                break;
         }
     }
     *value = prop;

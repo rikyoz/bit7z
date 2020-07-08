@@ -64,7 +64,8 @@ fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& searc
     auto filename = normal_path.filename();
     if ( filename == "." || filename == ".." ) {
         return fs::path();
-    } else if ( filename.empty() ) {
+    }
+    if ( filename.empty() ) {
         filename = normal_path.parent_path().filename();
     }
 
@@ -209,7 +210,7 @@ bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftMo
 #ifdef _WIN32
     bool res = false;
     HANDLE hFile = ::CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
-                               OPEN_EXISTING, 0, nullptr );
+                                 OPEN_EXISTING, 0, nullptr );
     if ( hFile != INVALID_HANDLE_VALUE ) {
         res = ::SetFileTime( hFile, nullptr, nullptr, &ftModified ) != FALSE;
         CloseHandle( hFile );

@@ -333,52 +333,99 @@ namespace bit7z {
          * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
          *         format, however the switch case is faster and has less memory footprint. */
         bool findFormatBySignature( uint64_t signature, const BitInFormat** format ) {
+            constexpr auto       RarSignature = 0x526172211A070000ull; // R  a  r  !  1A 07 00
+            constexpr auto      Rar5Signature = 0x526172211A070100ull; // R  a  r  !  1A 07 01 00
+            constexpr auto  SevenZipSignature = 0x377ABCAF271C0000ull; // 7  z  BC AF 27 1C
+            constexpr auto     BZip2Signature = 0x425A680000000000ull; // B  Z  h
+            constexpr auto      GZipSignature = 0x1F8B080000000000ull; // 1F 8B 08
+            constexpr auto       WimSignature = 0x4D5357494D000000ull; // M  S  W  I  M  00 00 00
+            constexpr auto        XzSignature = 0xFD377A585A000000ull; // FD 7  z  X  Z  00
+            constexpr auto       ZipSignature = 0x504B000000000000ull; // P  K
+            constexpr auto       APMSignature = 0x4552000000000000ull; // E  R
+            constexpr auto       ArjSignature = 0x60EA000000000000ull; // `  EA
+            constexpr auto       CabSignature = 0x4D53434600000000ull; // M  S  C  F  00 00 00 00
+            constexpr auto       ChmSignature = 0x4954534603000000ull; // I  T  S  F  03
+            constexpr auto  CompoundSignature = 0xD0CF11E0A1B11AE1ull; // D0 CF 11 E0 A1 B1 1A E1
+            constexpr auto     CpioSignature1 = 0xC771000000000000ull; // C7 q
+            constexpr auto     CpioSignature2 = 0x71C7000000000000ull; // q  C7
+            constexpr auto     CpioSignature3 = 0x3037303730000000ull; // 0  7  0  7  0
+            constexpr auto       DebSignature = 0x213C617263683E00ull; // !  <  a  r  c  h  >  0A
+            constexpr auto       ElfSignature = 0x7F454C4600000000ull; // 7F E  L  F
+            constexpr auto        PeSignature = 0x4D5A000000000000ull; // M  Z
+            constexpr auto       FlvSignature = 0x464C560100000000ull; // F  L  V  01
+            constexpr auto      LzmaSignature = 0x5D00000000000000ull; //
+            constexpr auto    Lzma86Signature = 0x015D000000000000ull; //
+            constexpr auto    MachoSignature1 = 0xCEFAEDFE00000000ull; // CE FA ED FE
+            constexpr auto    MachoSignature2 = 0xCFFAEDFE00000000ull; // CF FA ED FE
+            constexpr auto    MachoSignature3 = 0xFEEDFACE00000000ull; // FE ED FA CE
+            constexpr auto    MachoSignature4 = 0xFEEDFACF00000000ull; // FE ED FA CF
+            constexpr auto      MubSignature1 = 0xCAFEBABE00000000ull; // CA FE BA BE 00 00 00
+            constexpr auto      MubSignature2 = 0xB9FAF10E00000000ull; // B9 FA F1 0E
+            constexpr auto      MslzSignature = 0x535A444488F02733ull; // S  Z  D  D  88 F0 '  3
+            constexpr auto      PpmdSignature = 0x8FAFAC8400000000ull; // 8F AF AC 84
+            constexpr auto      QCowSignature = 0x514649FB00000000ull; // Q  F  I  FB 00 00 00
+            constexpr auto       RpmSignature = 0xEDABEEDB00000000ull; // ED AB EE DB
+            constexpr auto SquashFSSignature1 = 0x7371736800000000ull; // s  q  s  h
+            constexpr auto SquashFSSignature2 = 0x6873717300000000ull; // h  s  q  s
+            constexpr auto SquashFSSignature3 = 0x7368737100000000ull; // s  h  s  q
+            constexpr auto SquashFSSignature4 = 0x7173687300000000ull; // q  s  h  s
+            constexpr auto       SwfSignature = 0x4657530000000000ull; // F  W  S
+            constexpr auto     SwfcSignature1 = 0x4357530000000000ull; // C  W  S
+            constexpr auto     SwfcSignature2 = 0x5A57530000000000ull; // Z  W  S
+            constexpr auto        TESignature = 0x565A000000000000ull; // V  Z
+            constexpr auto      VMDKSignature = 0x4B444D0000000000ull; // K  D  M  V
+            constexpr auto       VDISignature = 0x3C3C3C2000000000ull; // Alternatively 0x7F10DABE at offset 0x40)
+            constexpr auto       VhdSignature = 0x636F6E6563746978ull; // c  o  n  e  c  t  i  x
+            constexpr auto       XarSignature = 0x78617221001C0000ull; // x  a  r  !  00 1C
+            constexpr auto        ZSignature1 = 0x1F9D000000000000ull; // 1F 9D
+            constexpr auto        ZSignature2 = 0x1FA0000000000000ull; // 1F A0
+
             switch ( signature ) {
-                case 0x526172211A070000: // R  a  r  !  1A 07 00
+                case RarSignature:
                     *format = &Rar;
                     return true;
-                case 0x526172211A070100: // R  a  r  !  1A 07 01 00
+                case Rar5Signature:
                     *format = &Rar5;
                     return true;
-                case 0x377ABCAF271C0000: // 7  z  BC AF 27 1C
+                case SevenZipSignature:
                     *format = &SevenZip;
                     return true;
-                case 0x425A680000000000: // B  Z  h
+                case BZip2Signature:
                     *format = &BZip2;
                     return true;
-                case 0x1F8B080000000000: // 1F 8B 08
+                case GZipSignature:
                     *format = &GZip;
                     return true;
-                case 0x4D5357494D000000: // M  S  W  I  M  00 00 00
+                case WimSignature:
                     *format = &Wim;
                     return true;
-                case 0xFD377A585A000000: // FD 7  z  X  Z  00
+                case XzSignature:
                     *format = &Xz;
                     return true;
-                case 0x504B000000000000: // P  K
+                case ZipSignature:
                     *format = &Zip;
                     return true;
-                case 0x4552000000000000: // E  R
+                case APMSignature:
                     *format = &APM;
                     return true;
-                case 0x60EA000000000000: // `  EA
+                case ArjSignature:
                     *format = &Arj;
                     return true;
-                case 0x4D53434600000000: // M  S  C  F  00 00 00 00
+                case CabSignature:
                     *format = &Cab;
                     return true;
-                case 0x4954534603000000: // I  T  S  F  03
+                case ChmSignature:
                     *format = &Chm;
                     return true;
-                case 0xD0CF11E0A1B11AE1: // D0 CF 11 E0 A1 B1 1A E1
+                case CompoundSignature:
                     *format = &Compound;
                     return true;
-                case 0xC771000000000000: // C7 q
-                case 0x71C7000000000000: // q  C7
-                case 0x3037303730000000: // 0  7  0  7  0
+                case CpioSignature1:
+                case CpioSignature2:
+                case CpioSignature3:
                     *format = &Cpio;
                     return true;
-                case 0x213C617263683E00: // !  <  a  r  c  h  >  0A
+                case DebSignature:
                     *format = &Deb;
                     return true;
                     /* DMG signature detection is not this simple
@@ -386,73 +433,73 @@ namespace bit7z {
                         *format = &Dmg;
                         return true;
                     */
-                case 0x7F454C4600000000: // 7F E  L  F
+                case ElfSignature:
                     *format = &Elf;
                     return true;
-                case 0x4D5A000000000000: // M  Z
+                case PeSignature:
                     *format = &Pe;
                     return true;
-                case 0x464C560100000000: // F  L  V  01
+                case FlvSignature:
                     *format = &Flv;
                     return true;
-                case 0x5D00000000000000: //
+                case LzmaSignature:
                     *format = &Lzma;
                     return true;
-                case 0x015D000000000000: //
+                case Lzma86Signature:
                     *format = &Lzma86;
                     return true;
-                case 0xCEFAEDFE00000000: // CE FA ED FE
-                case 0xCFFAEDFE00000000: // CF FA ED FE
-                case 0xFEEDFACE00000000: // FE ED FA CE
-                case 0xFEEDFACF00000000: // FE ED FA CF
+                case MachoSignature1:
+                case MachoSignature2:
+                case MachoSignature3:
+                case MachoSignature4:
                     *format = &Macho;
                     return true;
-                case 0xCAFEBABE00000000: // CA FE BA BE 00 00 00
-                case 0xB9FAF10E00000000: // B9 FA F1 0E
+                case MubSignature1:
+                case MubSignature2:
                     *format = &Mub;
                     return true;
-                case 0x535A444488F02733: // S  Z  D  D  88 F0 '  3
+                case MslzSignature:
                     *format = &Mslz;
                     return true;
-                case 0x8FAFAC8400000000: // 8F AF AC 84
+                case PpmdSignature:
                     *format = &Ppmd;
                     return true;
-                case 0x514649FB00000000: // Q  F  I  FB 00 00 00
+                case QCowSignature:
                     *format = &QCow;
                     return true;
-                case 0xEDABEEDB00000000: // ED AB EE DB
+                case RpmSignature:
                     *format = &Rpm;
                     return true;
-                case 0x7371736800000000: // s  q  s  h
-                case 0x6873717300000000: // h  s  q  s
-                case 0x7368737100000000: // s  h  s  q
-                case 0x7173687300000000: // q  s  h  s
+                case SquashFSSignature1:
+                case SquashFSSignature2:
+                case SquashFSSignature3:
+                case SquashFSSignature4:
                     *format = &SquashFS;
                     return true;
-                case 0x4657530000000000: // F  W  S
+                case SwfSignature:
                     *format = &Swf;
                     return true;
-                case 0x4357530000000000: // C  W  S
-                case 0x5A57530000000000: // Z  W  S
+                case SwfcSignature1:
+                case SwfcSignature2:
                     *format = &Swfc;
                     return true;
-                case 0x565A000000000000: // V  Z
+                case TESignature:
                     *format = &TE;
                     return true;
-                case 0x4B444D0000000000: // K  D  M  V
+                case VMDKSignature: // K  D  M  V
                     *format = &VMDK;
                     return true;
-                case 0x3C3C3C2000000000: // Alternatively 0x7F10DABE at offset 0x40)
+                case VDISignature: // Alternatively 0x7F10DABE at offset 0x40)
                     *format = &VDI;
                     return true;
-                case 0x636F6E6563746978: // c  o  n  e  c  t  i  x
+                case VhdSignature: // c  o  n  e  c  t  i  x
                     *format = &Vhd;
                     return true;
-                case 0x78617221001C0000: // x  a  r  !  00 1C
+                case XarSignature: // x  a  r  !  00 1C
                     *format = &Xar;
                     return true;
-                case 0x1F9D000000000000: // 1F 9D
-                case 0x1FA0000000000000: // 1F A0
+                case ZSignature1: // 1F 9D
+                case ZSignature2: // 1F A0
                     *format = &Z;
                     return true;
                 default:
@@ -577,46 +624,45 @@ namespace bit7z {
 
     }
 
+    BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
+
+    int BitInFormat::value() const {
+        return mValue;
+    }
+
+    bool BitInFormat::operator==( const BitInFormat& other ) const {
+        return mValue == other.value();
+    }
+
+    bool BitInFormat::operator!=( const BitInFormat& other ) const {
+        return !( *this == other );
+    }
+
+    GUID BitInFormat::guid() const {
+        return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } }; // NOLINT
+    }
+
+    BitInOutFormat::BitInOutFormat( unsigned char value,
+                                    const tchar* ext,
+                                    BitCompressionMethod defaultMethod,
+                                    const FeaturesSet& features ) noexcept
+        : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
+
+    const tstring& BitInOutFormat::extension() const {
+        return mExtension;
+    }
+
+    FeaturesSet BitInOutFormat::features() const {
+        return mFeatures;
+    }
+
+    bool BitInOutFormat::hasFeature( FormatFeatures feature ) const {
+        return ( mFeatures & FeaturesSet( feature ) ) != 0;
+    }
+
+    BitCompressionMethod BitInOutFormat::defaultMethod() const {
+        return mDefaultMethod;
+    }
+
 }
 
-using namespace bit7z;
-
-BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
-
-int BitInFormat::value() const {
-    return mValue;
-}
-
-bool BitInFormat::operator==( const BitInFormat& other ) const {
-    return mValue == other.value();
-}
-
-bool BitInFormat::operator!=( const BitInFormat& other ) const {
-    return !( *this == other );
-}
-
-GUID BitInFormat::guid() const {
-    return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } }; // NOLINT
-}
-
-BitInOutFormat::BitInOutFormat( unsigned char value,
-                                const tchar* ext,
-                                BitCompressionMethod defaultMethod,
-                                const FeaturesSet& features ) noexcept
-    : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
-
-const tstring& BitInOutFormat::extension() const {
-    return mExtension;
-}
-
-FeaturesSet BitInOutFormat::features() const {
-    return mFeatures;
-}
-
-bool BitInOutFormat::hasFeature( FormatFeatures feature ) const {
-    return ( mFeatures & FeaturesSet( feature ) ) != 0;
-}
-
-BitCompressionMethod BitInOutFormat::defaultMethod() const {
-    return mDefaultMethod;
-}

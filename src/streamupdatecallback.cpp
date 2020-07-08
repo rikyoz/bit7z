@@ -77,6 +77,8 @@ HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
                 prop = ft;
                 break;
             }
+            default: //empty prop
+                break;
         }
     }
 

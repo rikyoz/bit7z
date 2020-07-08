@@ -317,7 +317,7 @@ void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback*
         old_arc->close();
         /* NOTE: In the following instruction, we use . (dot) not -> (arrow) operator: in fact, both CMyComPtr and
          *       IOutStream have a Release() method, so we need to call only the one of CMyComPtr! */
-        out_stream.Release(); //Releasing the output stream so that we can remove the original file
+        out_stream.Release(); //Releasing the output stream so that we can rename it as the original file
 
 #if defined( __MINGW32__ ) && defined( USE_STANDARD_FILESYSTEM )
         /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already

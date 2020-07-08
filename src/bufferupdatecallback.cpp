@@ -73,6 +73,8 @@ HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
                 prop = ft;
                 break;
             }
+            default: //empty prop
+                break;
         }
     }
 
