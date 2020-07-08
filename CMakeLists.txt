@@ -215,17 +215,18 @@ if(MSVC)
     set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_PDB_NAME_DEBUG ${TARGET_NAME}${CMAKE_DEBUG_POSTFIX})
     # release builds should be optimized also for size
     target_compile_options(${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/Os>")
+    target_compile_options(${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/analyze>")
+    target_compile_options(${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/GS>")
     # remove default warning level
     string (REGEX REPLACE "/W[0-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
     string (REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string (REGEX REPLACE "/GR" "/GR-" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+    string (REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
     # warning level
     target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
     # standard conformance options of MSVC
-    target_compile_options(${TARGET_NAME} PRIVATE /Zc:rvalueCast /Zc:inline)
-    # standard conformance options for MSVC > 2013 (i.e. >= 2015)
-    if(MSVC_VERSION GREATER 1800) 
-        target_compile_options(${TARGET_NAME} PRIVATE /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding)
-    endif()
+    target_compile_options(${TARGET_NAME} PRIVATE /Zc:rvalueCast /Zc:inline /Zc:forScope
+                                                  /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding)
     # static runtime option
     if(STATIC_RUNTIME)
         set(CompilerFlags
