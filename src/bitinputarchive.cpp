@@ -32,13 +32,7 @@ using namespace NWindows;
 using namespace NArchive;
 
 #ifdef BIT7Z_AUTO_FORMAT
-namespace bit7z {
-    namespace BitFormat {
-        const BitInFormat& detectFormatFromExt( const tstring& in_file );
-
-        const BitInFormat& detectFormatFromSig( IInStream* stream );
-    }
-}
+#include "../include/formatdetect.hpp"
 #endif
 
 CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
@@ -54,7 +48,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
         // Detecting format of the input file
-        mDetectedFormat = &( BitFormat::detectFormatFromSig( in_stream ) );
+        mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         detected_by_signature = true;
     }
     GUID format_GUID = mDetectedFormat->guid();
@@ -79,7 +73,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
          *       and an exception is thrown (next if)!
          * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected a
          *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
-        mDetectedFormat = &( BitFormat::detectFormatFromSig( in_stream ) );
+        mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         format_GUID = mDetectedFormat->guid();
         in_archive = initArchiveObject( handler.library(), &format_GUID );
         res = in_archive->Open( in_stream, nullptr, open_callback );
@@ -101,8 +95,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_f
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
-    mDetectedFormat = ( handler.format() == BitFormat::Auto ?
-                        &BitFormat::detectFormatFromExt( mArchivePath ) : &handler.format() );
+    mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath ) : &handler.format() );
 #endif
     mInArchive = openArchiveStream( handler, mArchivePath, file_stream );
 }

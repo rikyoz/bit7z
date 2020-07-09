@@ -50,6 +50,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/extractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/fileextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/fileupdatecallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/formatdetect.hpp
      ${PROJECT_SOURCE_DIR}/include/fsindexer.hpp
      ${PROJECT_SOURCE_DIR}/include/fsitem.hpp
      ${PROJECT_SOURCE_DIR}/include/fsutil.hpp
@@ -92,6 +93,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/extractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/fileextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/fileupdatecallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/formatdetect.cpp
      ${PROJECT_SOURCE_DIR}/src/fsindexer.cpp
      ${PROJECT_SOURCE_DIR}/src/fsitem.cpp
      ${PROJECT_SOURCE_DIR}/src/fsutil.cpp
