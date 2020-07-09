@@ -122,211 +122,195 @@ namespace bit7z {
         /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
          *       format, however the ifs are faster and have less memory footprint.
          * TODO: Cleanup and improve */
+        unsigned constexpr str_hash( tchar const* input ) {
+            return *input ? static_cast< unsigned int >( *input ) + 33 * str_hash( input + 1 ) : 5381;
+        }
+
         bool findFormatByExtension( const tstring& ext, const BitInFormat** format ) {
-            if ( ext == TSTRING( "7z" ) ) {
-                *format = &SevenZip;
-                return true;
+            switch ( str_hash( ext.c_str() ) ) {
+                case str_hash( TSTRING( "7z" ) ):
+                    *format = &SevenZip;
+                    return true;
+                case str_hash( TSTRING( "bzip2" ) ):
+                case str_hash( TSTRING( "bz2" ) ):
+                case str_hash( TSTRING( "tbz2" ) ):
+                case str_hash( TSTRING( "tbz" ) ):
+                    *format = &BZip2;
+                    return true;
+                case str_hash( TSTRING( "gz" ) ):
+                case str_hash( TSTRING( "gzip" ) ):
+                case str_hash( TSTRING( "tgz" ) ):
+                    *format = &GZip;
+                    return true;
+                case str_hash( TSTRING( "tar" ) ):
+                    *format = &Tar;
+                    return true;
+                case str_hash( TSTRING( "wim" ) ):
+                case str_hash( TSTRING( "swm" ) ):
+                    *format = &Wim;
+                    return true;
+                case str_hash( TSTRING( "xz" ) ):
+                case str_hash( TSTRING( "txz" ) ):
+                    *format = &Xz;
+                    return true;
+                case str_hash( TSTRING( "zip" ) ):
+                case str_hash( TSTRING( "zipx" ) ):
+                case str_hash( TSTRING( "jar" ) ):
+                case str_hash( TSTRING( "xpi" ) ):
+                case str_hash( TSTRING( "odt" ) ):
+                case str_hash( TSTRING( "ods" ) ):
+                case str_hash( TSTRING( "odp" ) ):
+                case str_hash( TSTRING( "docx" ) ):
+                case str_hash( TSTRING( "xlsx" ) ):
+                case str_hash( TSTRING( "pptx" ) ):
+                case str_hash( TSTRING( "epub" ) ):
+                    *format = &Zip;
+                    return true;
+                case str_hash( TSTRING( "001" ) ):
+                    *format = &Split;
+                    return true;
+                case str_hash( TSTRING( "ar" ) ):
+                    *format = &Deb;
+                    return true;
+                case str_hash( TSTRING( "apm" ) ):
+                    *format = &APM;
+                    return true;
+                case str_hash( TSTRING( "arj" ) ):
+                    *format = &Arj;
+                    return true;
+                case str_hash( TSTRING( "cab" ) ):
+                    *format = &Cab;
+                    return true;
+                case str_hash( TSTRING( "chm" ) ):
+                case str_hash( TSTRING( "chi" ) ):
+                    *format = &Chm;
+                    return true;
+                case str_hash( TSTRING( "msi" ) ):
+                case str_hash( TSTRING( "doc" ) ):
+                case str_hash( TSTRING( "xls" ) ):
+                case str_hash( TSTRING( "ppt" ) ):
+                case str_hash( TSTRING( "msg" ) ):
+                    *format = &Compound;
+                    return true;
+                case str_hash( TSTRING( "obj" ) ):
+                    *format = &COFF;
+                    return true;
+                case str_hash( TSTRING( "cpio" ) ):
+                    *format = &Cpio;
+                    return true;
+                case str_hash( TSTRING( "cramfs" ) ):
+                    *format = &CramFS;
+                    return true;
+                case str_hash( TSTRING( "deb" ) ):
+                    *format = &Deb;
+                    return true;
+                case str_hash( TSTRING( "dmg" ) ):
+                    *format = &Dmg;
+                    return true;
+                case str_hash( TSTRING( "dll" ) ):
+                case str_hash( TSTRING( "exe" ) ):
+                    //note: we do not distinguish 7z SFX exe at the moment!
+                    *format = &Pe;
+                    return true;
+                case str_hash( TSTRING( "dylib" ) ):
+                    *format = &Macho;
+                    return true;
+                case str_hash( TSTRING( "ext" ) ):
+                case str_hash( TSTRING( "ext2" ) ):
+                case str_hash( TSTRING( "ext3" ) ):
+                case str_hash( TSTRING( "ext4" ) ):
+                    *format = &Ext;
+                    return true;
+                case str_hash( TSTRING( "fat" ) ):
+                    *format = &Fat;
+                    return true;
+                case str_hash( TSTRING( "flv" ) ):
+                    *format = &Flv;
+                    return true;
+                case str_hash( TSTRING( "gpt" ) ):
+                    *format = &GPT;
+                    return true;
+                case str_hash( TSTRING( "hfs" ) ):
+                case str_hash( TSTRING( "hfsx" ) ):
+                    *format = &Hfs;
+                    return true;
+                case str_hash( TSTRING( "hxs" ) ):
+                    *format = &Hxs;
+                    return true;
+                case str_hash( TSTRING( "ihex" ) ):
+                    *format = &IHex;
+                    return true;
+                case str_hash( TSTRING( "lzh" ) ):
+                case str_hash( TSTRING( "lha" ) ):
+                    *format = &Lzh;
+                    return true;
+                case str_hash( TSTRING( "lzma" ) ):
+                    *format = &Lzma;
+                    return true;
+                case str_hash( TSTRING( "lzma86" ) ):
+                    *format = &Lzma86;
+                    return true;
+                case str_hash( TSTRING( "mbr" ) ):
+                    *format = &Mbr;
+                    return true;
+                case str_hash( TSTRING( "mslz" ) ):
+                    *format = &Mslz;
+                    return true;
+                case str_hash( TSTRING( "mub" ) ):
+                    *format = &Mub;
+                    return true;
+                case str_hash( TSTRING( "nsis" ) ):
+                    *format = &Nsis;
+                    return true;
+                case str_hash( TSTRING( "ntfs" ) ):
+                    *format = &Ntfs;
+                    return true;
+                case str_hash( TSTRING( "pmd" ) ):
+                    *format = &Ppmd;
+                    return true;
+                case str_hash( TSTRING( "qcow" ) ):
+                case str_hash( TSTRING( "qcow2" ) ):
+                case str_hash( TSTRING( "qcow2c" ) ):
+                    *format = &QCow;
+                    return true;
+                case str_hash( TSTRING( "rpm" ) ):
+                    *format = &Rpm;
+                    return true;
+                case str_hash( TSTRING( "squashfs" ) ):
+                    *format = &SquashFS;
+                    return true;
+                case str_hash( TSTRING( "te" ) ):
+                    *format = &TE;
+                    return true;
+                case str_hash( TSTRING( "udf" ) ):
+                    *format = &Udf;
+                    return true;
+                case str_hash( TSTRING( "scap" ) ):
+                    *format = &UEFIc;
+                    return true;
+                case str_hash( TSTRING( "uefif" ) ):
+                    *format = &UEFIs;
+                    return true;
+                case str_hash( TSTRING( "vmdk" ) ):
+                    *format = &VMDK;
+                    return true;
+                case str_hash( TSTRING( "vdi" ) ):
+                    *format = &VDI;
+                    return true;
+                case str_hash( TSTRING( "vhd" ) ):
+                    *format = &Vhd;
+                    return true;
+                case str_hash( TSTRING( "xar" ) ):
+                case str_hash( TSTRING( "pkg" ) ):
+                    *format = &Xar;
+                    return true;
+                case str_hash( TSTRING( "z" ) ):
+                case str_hash( TSTRING( "taz" ) ):
+                    *format = &Z;
+                    return true;
+                default:
+                    return false;
             }
-            if ( ext == TSTRING( "bzip2" ) || ext == TSTRING( "bz2" ) ||
-                 ext == TSTRING( "tbz2" ) || ext == TSTRING( "tbz" ) ) {
-                *format = &BZip2;
-                return true;
-            }
-            if ( ext == TSTRING( "gz" ) || ext == TSTRING( "gzip" ) || ext == TSTRING( "tgz" ) ) {
-                *format = &GZip;
-                return true;
-            }
-            if ( ext == TSTRING( "tar" ) ) {
-                *format = &Tar;
-                return true;
-            }
-            if ( ext == TSTRING( "wim" ) || ext == TSTRING( "swm" ) ) {
-                *format = &Wim;
-                return true;
-            }
-            if ( ext == TSTRING( "xz" ) || ext == TSTRING( "txz" ) ) {
-                *format = &Xz;
-                return true;
-            }
-            if ( ext == TSTRING( "zip" ) || ext == TSTRING( "zipx" ) || ext == TSTRING( "jar" ) ||
-                 ext == TSTRING( "xpi" ) || ext == TSTRING( "odt" ) || ext == TSTRING( "ods" ) ||
-                 ext == TSTRING( "odp" ) || ext == TSTRING( "docx" ) || ext == TSTRING( "xlsx" ) ||
-                 ext == TSTRING( "pptx" ) || ext == TSTRING( "epub" ) ) {
-                *format = &Zip;
-                return true;
-            }
-            if ( ext == TSTRING( "001" ) ) {
-                *format = &Split;
-                return true;
-            }
-            if ( ext == TSTRING( "ar" ) ) {
-                *format = &Deb;
-                return true;
-            }
-            if ( ext == TSTRING( "apm" ) ) {
-                *format = &APM;
-                return true;
-            }
-            if ( ext == TSTRING( "arj" ) ) {
-                *format = &Arj;
-                return true;
-            }
-            if ( ext == TSTRING( "cab" ) ) {
-                *format = &Cab;
-                return true;
-            }
-            if ( ext == TSTRING( "chm" ) || ext == TSTRING( "chi" ) ) {
-                *format = &Chm;
-                return true;
-            }
-            if ( ext == TSTRING( "msi" ) || ext == TSTRING( "doc" ) || ext == TSTRING( "xls" ) ||
-                 ext == TSTRING( "ppt" ) || ext == TSTRING( "msg" ) ) {
-                *format = &Compound;
-                return true;
-            }
-            if ( ext == TSTRING( "obj" ) ) {
-                *format = &COFF;
-                return true;
-            }
-            if ( ext == TSTRING( "cpio" ) ) {
-                *format = &Cpio;
-                return true;
-            }
-            if ( ext == TSTRING( "cramfs" ) ) {
-                *format = &CramFS;
-                return true;
-            }
-            if ( ext == TSTRING( "deb" ) ) {
-                *format = &Deb;
-                return true;
-            }
-            if ( ext == TSTRING( "dmg" ) ) {
-                *format = &Dmg;
-                return true;
-            }
-            if ( ext == TSTRING( "dll" ) || ext == TSTRING( "exe" ) ) {
-                //note: we do not distinguish 7z SFX exe at the moment!
-                *format = &Pe;
-                return true;
-            }
-            if ( ext == TSTRING( "dylib" ) ) {
-                *format = &Macho;
-                return true;
-            }
-            if ( ext == TSTRING( "ext" ) || ext == TSTRING( "ext2" ) || ext == TSTRING( "ext3" ) ||
-                 ext == TSTRING( "ext4" ) ) {
-                *format = &Ext;
-                return true;
-            }
-            if ( ext == TSTRING( "fat" ) ) {
-                *format = &Fat;
-                return true;
-            }
-            if ( ext == TSTRING( "flv" ) ) {
-                *format = &Flv;
-                return true;
-            }
-            if ( ext == TSTRING( "gpt" ) ) {
-                *format = &GPT;
-                return true;
-            }
-            if ( ext == TSTRING( "hfs" ) || ext == TSTRING( "hfsx" ) ) {
-                *format = &Hfs;
-                return true;
-            }
-            if ( ext == TSTRING( "hxs" ) ) {
-                *format = &Hxs;
-                return true;
-            }
-            if ( ext == TSTRING( "ihex" ) ) {
-                *format = &IHex;
-                return true;
-            }
-            if ( ext == TSTRING( "lzh" ) || ext == TSTRING( "lha" ) ) {
-                *format = &Lzh;
-                return true;
-            }
-            if ( ext == TSTRING( "lzma" ) ) {
-                *format = &Lzma;
-                return true;
-            }
-            if ( ext == TSTRING( "lzma86" ) ) {
-                *format = &Lzma86;
-                return true;
-            }
-            if ( ext == TSTRING( "mbr" ) ) {
-                *format = &Mbr;
-                return true;
-            }
-            if ( ext == TSTRING( "mslz" ) ) {
-                *format = &Mslz;
-                return true;
-            }
-            if ( ext == TSTRING( "mub" ) ) {
-                *format = &Mub;
-                return true;
-            }
-            if ( ext == TSTRING( "nsis" ) ) {
-                *format = &Nsis;
-                return true;
-            }
-            if ( ext == TSTRING( "ntfs" ) ) {
-                *format = &Ntfs;
-                return true;
-            }
-            if ( ext == TSTRING( "pmd" ) ) {
-                *format = &Ppmd;
-                return true;
-            }
-            if ( ext == TSTRING( "qcow" ) || ext == TSTRING( "qcow2" ) || ext == TSTRING( "qcow2c" ) ) {
-                *format = &QCow;
-                return true;
-            }
-            if ( ext == TSTRING( "rpm" ) ) {
-                *format = &Rpm;
-                return true;
-            }
-            if ( ext == TSTRING( "squashfs" ) ) {
-                *format = &SquashFS;
-                return true;
-            }
-            if ( ext == TSTRING( "te" ) ) {
-                *format = &TE;
-                return true;
-            }
-            if ( ext == TSTRING( "udf" ) ) {
-                *format = &Udf;
-                return true;
-            }
-            if ( ext == TSTRING( "scap" ) ) {
-                *format = &UEFIc;
-                return true;
-            }
-            if ( ext == TSTRING( "uefif" ) ) {
-                *format = &UEFIs;
-                return true;
-            }
-            if ( ext == TSTRING( "vmdk" ) ) {
-                *format = &VMDK;
-                return true;
-            }
-            if ( ext == TSTRING( "vdi" ) ) {
-                *format = &VDI;
-                return true;
-            }
-            if ( ext == TSTRING( "vhd" ) ) {
-                *format = &Vhd;
-                return true;
-            }
-            if ( ext == TSTRING( "xar" ) || ext == TSTRING( "pkg" ) ) {
-                *format = &Xar;
-                return true;
-            }
-            if ( ext == TSTRING( "z" ) || ext == TSTRING( "taz" ) ) {
-                *format = &Z;
-                return true;
-            }
-            return false;
         }
 
         /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
