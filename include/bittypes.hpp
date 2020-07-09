@@ -21,7 +21,7 @@
 
 #include <string>
 
-#ifdef BIT7Z_AUTO_FORMAT
+#ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
 #endif
 
