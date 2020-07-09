@@ -103,21 +103,23 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_f
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
     mDetectedFormat = ( handler.format() == BitFormat::Auto ?
                         &BitFormat::detectFormatFromExt( mArchivePath ) : &handler.format() );
-#else
-    mDetectedFormat = &handler.format();
 #endif
     mInArchive = openArchiveStream( handler, mArchivePath, file_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
     CMyComPtr< IInStream > buf_stream = new CBufferInStream( in_buffer );
+#ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
+#endif
     mInArchive = openArchiveStream( handler, TSTRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) {
     CMyComPtr< IInStream > std_stream = new CStdInStream( in_stream );
+#ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
+#endif
     mInArchive = openArchiveStream( handler, TSTRING( "." ), std_stream );
 }
 
@@ -183,15 +185,13 @@ void BitInputArchive::test( ExtractCallback* extract_callback ) const {
     }
 }
 
-const BitInFormat& BitInputArchive::detectedFormat() const {
 #ifdef BIT7Z_AUTO_FORMAT
+const BitInFormat& BitInputArchive::detectedFormat() const {
     // Defensive programming: for how the archive format is detected,
     // a correct BitInputArchive instance should have a non null mDetectedFormat!
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
-#else
-    return *mDetectedFormat;
-#endif
 }
+#endif
 
 const tstring& BitInputArchive::getArchivePath() const {
     return mArchivePath;
