@@ -29,11 +29,11 @@ static inline uint64_t bswap64 (uint64_t x) {
 }
 #endif
 
-namespace bit7z {
-    unsigned constexpr str_hash( tchar const* input ) {
-        return *input ? static_cast< unsigned int >( *input ) + 33 * str_hash( input + 1 ) : 5381;
-    }
+unsigned constexpr str_hash( bit7z::tchar const* input ) {
+    return *input ? static_cast< unsigned int >( *input ) + 33 * str_hash( input + 1 ) : 5381;
+}
 
+namespace bit7z {
     /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
      *       format, however the ifs are faster and have less memory footprint. */
     bool findFormatByExtension( const tstring& ext, const BitInFormat** format ) {

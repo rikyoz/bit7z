@@ -98,7 +98,7 @@ FILETIME FSItem::lastWriteTime() const {
 
 bit7z::tstring FSItem::name() const {
     MAYBE_UNUSED std::error_code ec;
-    return canonical( mFileEntry.path(), ec ).filename();
+    return fs::canonical( mFileEntry.path(), ec ).filename();
 }
 
 fs::path FSItem::path() const {
