@@ -33,6 +33,8 @@ namespace bit7z {
         public:
             explicit CBufferInStream( const vector< byte_t >& in_buffer );
 
+            virtual ~CBufferInStream() = default;
+
             MY_UNKNOWN_IMP1( IInStream )
 
             STDMETHOD( Read )( void* data, UInt32 size, UInt32* processedSize );

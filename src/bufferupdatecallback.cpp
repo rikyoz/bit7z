@@ -41,7 +41,7 @@ BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
       mBuffer( in_buffer ),
       mBufferName( in_buffer_name.empty() ? kEmptyFileAlias : in_buffer_name ) {}
 
-HRESULT BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
@@ -87,7 +87,7 @@ uint32_t BufferUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
 
-HRESULT BufferUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP BufferUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finalize() )
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
@@ -101,10 +101,11 @@ HRESULT BufferUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inS
 
 /* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
    this class and UpdateCallback! */
-HRESULT BufferUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP BufferUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
     return S_OK;
 }
 
-HRESULT BufferUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP BufferUpdateCallback::GetVolumeStream( UInt32 /*index*/,
+                                                                         ISequentialOutStream** /*volumeStream*/ ) {
     return S_OK;
 }

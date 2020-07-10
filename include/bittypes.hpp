@@ -56,6 +56,7 @@ namespace bit7z {
 //Macros not defined by p7zip
 #define HRESULT_FACILITY(hr)  (((hr) >> 16) & 0x1fff)
 #define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
+#define COM_DECLSPEC_NOTHROW
 #endif
 }
 #endif // BITTYPES_HPP

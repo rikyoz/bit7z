@@ -46,9 +46,9 @@ FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
       mProcessedFileInfo() {}
 
 //TODO: clean and optimize!
-STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
-                                             ISequentialOutStream** outStream,
-                                             Int32 askExtractMode ) try {
+COM_DECLSPEC_NOTHROW STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
+                                                                  ISequentialOutStream** outStream,
+                                                                  Int32 askExtractMode ) try {
     *outStream = nullptr;
     mFileOutStream.Release();
     // Get Name
@@ -138,7 +138,7 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
     return E_OUTOFMEMORY;
 }
 
-STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
     if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
         mNumErrors++;
 

@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITINPUTARCHIVE_H
-#define BITINPUTARCHIVE_H
+#ifndef BITINPUTARCHIVE_HPP
+#define BITINPUTARCHIVE_HPP
 
 #include "../include/bitarchivehandler.hpp"
 #include "../include/bitarchiveiteminfo.hpp"
@@ -162,4 +162,4 @@ namespace bit7z {
     };
 }
 
-#endif //BITINPUTARCHIVE_H
+#endif //BITINPUTARCHIVE_HPP

@@ -18,7 +18,7 @@
  * You should have received a copy of the GNU General Public License
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
-#ifdef WIN32
+#ifdef _MSC_VER
  // Disable warning
  //    C4996: '...': Function call with parameters that may be unsafe
  // This is due to the call to std::copy_n with a raw buffer pointer as destination.
@@ -38,7 +38,7 @@ using namespace bit7z;
 
 CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer ) : mBuffer( in_buffer ), mCurrentPosition( 0 ) {}
 
-STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -62,7 +62,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     return S_OK;
 }
 
-STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     int64_t new_pos;
 
     switch ( seekOrigin ) {

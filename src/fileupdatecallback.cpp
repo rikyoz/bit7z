@@ -40,7 +40,7 @@ FileUpdateCallback::FileUpdateCallback( const BitArchiveCreator& creator,
       mNewItems( new_items ),
       mVolSize( 0 ) {}
 
-HRESULT FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
     if ( propID == kpidIsAnti ) {
         prop = false;
@@ -84,7 +84,7 @@ uint32_t FileUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + static_cast< uint32_t >( mNewItems.size() );
 }
 
-HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finalize() )
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
@@ -117,14 +117,14 @@ HRESULT FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStr
     return S_OK;
 }
 
-HRESULT FileUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP FileUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
     if ( mVolSize == 0 ) { return S_FALSE; }
 
     *size = mVolSize;
     return S_OK;
 }
 
-HRESULT FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
     tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
         //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)

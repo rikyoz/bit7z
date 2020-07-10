@@ -32,35 +32,35 @@ ExtractCallback::ExtractCallback( const BitArchiveHandler& handler,
       mExtractMode( true ),
       mNumErrors( 0 ) {}
 
-STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );
     }
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
         return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
     if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
         mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     // in future we might use a switch to handle an event like onOperationStart(Operation o)
     // with enum Operation{Extract, Test, Skip}
     mExtractMode = ( askExtractMode == NArchive::NExtract::NAskMode::kExtract );
     return S_OK;
 }
 
-STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user
