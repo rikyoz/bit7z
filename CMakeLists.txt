@@ -24,9 +24,9 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitarchiveopener.hpp
      ${PROJECT_SOURCE_DIR}/include/bitcompressionlevel.hpp
      ${PROJECT_SOURCE_DIR}/include/bitcompressionmethod.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitcompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitexception.hpp
      ${PROJECT_SOURCE_DIR}/include/bitextractor.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitfilecompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitfileextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitformat.hpp
      ${PROJECT_SOURCE_DIR}/include/bitguids.hpp
@@ -72,8 +72,8 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitarchiveiteminfo.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveitemoffset.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveopener.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitcompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitexception.cpp
+     ${PROJECT_SOURCE_DIR}/src/bitfilecompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
      ${PROJECT_SOURCE_DIR}/src/bitguids.cpp
      ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp

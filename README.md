@@ -94,7 +94,7 @@ using namespace bit7z;
 
 try {
     Bit7zLibrary lib{ L"7z.dll" };
-    BitCompressor compressor{ lib, BitFormat::Zip };
+    BitFileCompressor compressor{ lib, BitFormat::Zip };
 
     std::vector< std::wstring > files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
 
@@ -117,7 +117,7 @@ try {
 
     //compressing a single file into a buffer
     std::vector< byte_t > buffer;
-    BitCompressor compressor2{ lib, BitFormat::BZip2 };
+    BitFileCompressor compressor2{ lib, BitFormat::BZip2 };
     compressor2.compressFile( files[0], buffer );
 } catch ( const BitException& ex ) {
     //do something with ex.what()...

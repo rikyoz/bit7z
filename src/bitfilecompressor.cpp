@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitcompressor.hpp"
+#include "../include/bitfilecompressor.hpp"
 
 #include "../include/bitexception.hpp"
 #include "../include/fsindexer.hpp"
@@ -28,12 +28,12 @@
 using namespace std;
 using namespace bit7z;
 
-BitCompressor::BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
+BitFileCompressor::BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitArchiveCreator( lib, format ) {}
 
 /* from filesystem to filesystem */
 
-void BitCompressor::compress( const vector< tstring >& in_paths, const tstring& out_file ) const {
+void BitFileCompressor::compress( const vector< tstring >& in_paths, const tstring& out_file ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, std::make_error_code( std::errc::function_not_supported ) );
     }
@@ -41,7 +41,7 @@ void BitCompressor::compress( const vector< tstring >& in_paths, const tstring& 
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compress( const map< tstring, tstring >& in_paths, const tstring& out_file ) const {
+void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, const tstring& out_file ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, std::make_error_code( std::errc::function_not_supported ) );
     }
@@ -49,7 +49,7 @@ void BitCompressor::compress( const map< tstring, tstring >& in_paths, const tst
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFile( const tstring& in_file, const tstring& out_file ) const {
+void BitFileCompressor::compressFile( const tstring& in_file, const tstring& out_file ) const {
     FSItem item( in_file );
     if ( item.isDir() ) {
         throw BitException( "Input path points to a directory, not a file",
@@ -60,7 +60,7 @@ void BitCompressor::compressFile( const tstring& in_file, const tstring& out_fil
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFiles( const vector< tstring >& in_files, const tstring& out_file ) const {
+void BitFileCompressor::compressFiles( const vector< tstring >& in_files, const tstring& out_file ) const {
     if ( in_files.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, std::make_error_code( std::errc::function_not_supported ) );
     }
@@ -68,8 +68,8 @@ void BitCompressor::compressFiles( const vector< tstring >& in_files, const tstr
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressFiles( const tstring& in_dir, const tstring& out_file,
-                                   bool recursive, const tstring& filter ) const {
+void BitFileCompressor::compressFiles( const tstring& in_dir, const tstring& out_file,
+                                       bool recursive, const tstring& filter ) const {
     if ( !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, std::make_error_code( std::errc::function_not_supported ) );
     }
@@ -77,13 +77,13 @@ void BitCompressor::compressFiles( const tstring& in_dir, const tstring& out_fil
     compressOut( fs_items, out_file );
 }
 
-void BitCompressor::compressDirectory( const tstring& in_dir, const tstring& out_file ) const {
+void BitFileCompressor::compressDirectory( const tstring& in_dir, const tstring& out_file ) const {
     compressFiles( in_dir, out_file, true, TSTRING( "" ) );
 }
 
 /* from filesystem to memory buffer */
 
-void BitCompressor::compressFile( const tstring& in_file, vector< byte_t >& out_buffer ) const {
+void BitFileCompressor::compressFile( const tstring& in_file, vector< byte_t >& out_buffer ) const {
     FSItem item( in_file );
     if ( item.isDir() ) {
         throw BitException( "Cannot compress a directory into a memory buffer",
@@ -99,7 +99,7 @@ void BitCompressor::compressFile( const tstring& in_file, vector< byte_t >& out_
 
 /* from filesystem to stream */
 
-void BitCompressor::compress( const vector< tstring >& in_paths, ostream& out_stream ) const {
+void BitFileCompressor::compress( const vector< tstring >& in_paths, ostream& out_stream ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, std::make_error_code( std::errc::function_not_supported ) );
     }
@@ -107,7 +107,7 @@ void BitCompressor::compress( const vector< tstring >& in_paths, ostream& out_st
     compressOut( fs_items, out_stream );
 }
 
-void BitCompressor::compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const {
+void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const {
     if ( in_paths.size() > 1 && !mFormat.hasFeature( MULTIPLE_FILES ) ) {
         throw BitException( kUnsupportedOperation, std::make_error_code( std::errc::function_not_supported ) );
     }
@@ -115,12 +115,12 @@ void BitCompressor::compress( const map< tstring, tstring >& in_paths, ostream& 
     compressOut( fs_items, out_stream );
 }
 
-void BitCompressor::compressOut( const vector< FSItem >& in_items, const tstring& out_file ) const {
+void BitFileCompressor::compressOut( const vector< FSItem >& in_items, const tstring& out_file ) const {
     CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, in_items );
     BitArchiveCreator::compressToFile( out_file, update_callback );
 }
 
-void BitCompressor::compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const {
+void BitFileCompressor::compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const {
     CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, in_items );
     BitArchiveCreator::compressToStream( out_stream, update_callback );
 }

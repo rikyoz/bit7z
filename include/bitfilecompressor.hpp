@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITCOMPRESSOR_HPP
-#define BITCOMPRESSOR_HPP
+#ifndef BITFILECOMPRESSOR_HPP
+#define BITFILECOMPRESSOR_HPP
 
 #include <string>
 #include <vector>
@@ -39,15 +39,15 @@ namespace bit7z {
     using namespace filesystem;
 
     /**
-     * @brief The BitCompressor class allows to compress files and directories into file archives.
+     * @brief The BitFileCompressor class allows to compress files and directories into file archives.
      *
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.
      */
-    class BitCompressor : public BitArchiveCreator {
+    class BitFileCompressor : public BitArchiveCreator {
         public:
             /**
-             * @brief Constructs a BitCompressor object.
+             * @brief Constructs a BitFileCompressor object.
              *
              * The Bit7zLibrary parameter is needed in order to have access to the functionalities
              * of the 7z DLLs. On the other hand, the BitInOutFormat is required in order to know the
@@ -56,7 +56,7 @@ namespace bit7z {
              * @param lib       the 7z library used.
              * @param format    the output archive format.
              */
-            BitCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format );
+            BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format );
 
             /* Compression from file system to file system */
 
@@ -169,4 +169,4 @@ namespace bit7z {
             void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };
 }
-#endif // BITCOMPRESSOR_HPP
+#endif // BITFILECOMPRESSOR_HPP
