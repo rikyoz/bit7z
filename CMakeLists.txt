@@ -242,6 +242,8 @@ if(MSVC)
             message(STATUS "MSVC flags: ${CompilerFlag}:${${CompilerFlag}}")
         endforeach()
     endif()
+else()
+    target_compile_options(${TARGET_NAME} PRIVATE -Wall -Wextra -Werror)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
