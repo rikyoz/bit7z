@@ -4,7 +4,11 @@
 #include "../include/formatdetect.hpp"
 #include "../include/fsutil.hpp"
 
+#ifdef _WIN32
 #include <cwctype>
+#else
+#include <cctype>
+#endif
 
 #if defined(_WIN32)
 #define bswap64 _byteswap_uint64
@@ -484,12 +488,20 @@ namespace bit7z {
         throw BitException( "Cannot detect the format of the file" );
     }
 
+#ifdef _WIN32
+#define is_digit(ch) std::iswdigit(ch) != 0
+#define to_lower std::towlower
+#else
+#define is_digit(ch) std::isdigit(ch) != 0
+#define to_lower ::tolower  //Note: using std::tolower would be ambiguous (multiple definitions of std::tolower)
+#endif
+
     const BitInFormat& detectFormatFromExt( const tstring& in_file ) {
         tstring ext = filesystem::fsutil::extension( in_file );
         if ( ext.empty() ) {
             throw BitException( "Cannot detect the archive format from the extension" );
         }
-        std::transform( ext.cbegin(), ext.cend(), ext.begin(), std::towlower );
+        std::transform( ext.cbegin(), ext.cend(), ext.begin(), to_lower );
 
         // Detecting archives with common file extensions
         const BitInFormat* format = nullptr;
@@ -498,10 +510,10 @@ namespace bit7z {
         }
 
         // Detecting multi-volume archives extension
-        if ( ( ext[ 0 ] == L'r' || ext[ 0 ] == L'z' ) &&
-             ( ext.size() == 3 && iswdigit( ext[ 1 ] ) != 0 && iswdigit( ext[ 2 ] ) != 0 ) ) {
+        if ( ( ext[ 0 ] == TSTRING('r') || ext[ 0 ] == TSTRING('z') ) &&
+             ( ext.size() == 3 && is_digit( ext[ 1 ] ) && is_digit( ext[ 2 ] ) ) ) {
             // Extension follows the format zXX or rXX, where X is a number in range [0-9]
-            return ext[ 0 ] == L'r' ? BitFormat::Rar : BitFormat::Zip;
+            return ext[ 0 ] == TSTRING('r') ? BitFormat::Rar : BitFormat::Zip;
         }
 
         // Note: iso, img and ima extensions can be associated with different formats -> detect by signature
