@@ -24,6 +24,8 @@
 #include "../include/cfileinstream.hpp"
 #include "../include/cfileoutstream.hpp"
 
+#include <utility> // for std::move
+
 using namespace bit7z;
 
 /* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK

@@ -21,6 +21,8 @@
 
 #include "../include/bitarchivehandler.hpp"
 
+#include <utility> // for std::move
+
 using namespace bit7z;
 
 BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib, tstring password )

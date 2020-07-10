@@ -19,11 +19,11 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#define NOMINMAX
-
 #include "../include/cmultivoloutstream.hpp"
 
 #include "../include/bitexception.hpp"
+
+#include <utility> // for std::move
 
 using namespace bit7z;
 
@@ -45,11 +45,11 @@ CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const tstring& archive
 
 UInt64 CMultiVolOutStream::GetSize() const { return mLength; }
 
-STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
-    while ( size > 0 ) {
+    while ( size > 0 ) { //TODO: Refactor!
         if ( mStreamIndex >= mVolStreams.size() ) {
             tstring name = to_tstring( mStreamIndex + 1 );
             name.insert( 0, 3 - name.length(), L'0' );
@@ -84,7 +84,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
             altStream.pos = mOffsetPos;
         }
 
-        auto curSize = static_cast< uint32_t >( std::min( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
+        auto curSize = static_cast< uint32_t >( (std::min)( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
         UInt32 realProcessed;
         RINOK( altStream.stream->Write( data, curSize, &realProcessed ) )
         altStream.pos += realProcessed;
@@ -111,7 +111,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
     return S_OK;
 }
 
-STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             mAbsPos = static_cast< uint64_t >( offset );
@@ -133,7 +133,7 @@ STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* 
     return S_OK;
 }
 
-STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
+COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
     size_t i = 0;
     while ( i < mVolStreams.size() ) {
         CAltStreamInfo& altStream = mVolStreams[ i++ ];

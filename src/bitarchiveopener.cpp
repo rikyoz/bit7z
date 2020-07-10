@@ -27,6 +27,8 @@
 #include "../include/bufferextractcallback.hpp"
 #include "../include/streamextractcallback.hpp"
 
+#include <utility> // for std::move
+
 using std::map;
 using namespace bit7z;
 

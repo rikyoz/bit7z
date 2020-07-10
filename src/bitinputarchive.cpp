@@ -27,6 +27,8 @@
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
 
+#include <utility> // for std::move
+
 using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;

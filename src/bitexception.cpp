@@ -23,6 +23,8 @@
 
 #include "../include/hresultcategory.hpp"
 
+#include <utility> // for std::move
+
 using std::string;
 
 using namespace bit7z;
@@ -32,7 +34,7 @@ std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
 }
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
-    : system_error( code, message ), mFailedFiles( files ) { files.clear(); }
+    : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
 
 BitException::BitException( const char* const message, std::error_code code, const tstring& file )
     : system_error( code, message ), mFailedFiles( { std::make_pair<>( file, code ) } ) {}
