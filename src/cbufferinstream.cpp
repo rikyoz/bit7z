@@ -38,7 +38,8 @@ using namespace bit7z;
 
 CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer ) : mBuffer( in_buffer ), mCurrentPosition( 0 ) {}
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -62,7 +63,8 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     int64_t new_pos;
 
     switch ( seekOrigin ) {

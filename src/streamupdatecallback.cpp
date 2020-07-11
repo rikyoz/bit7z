@@ -41,7 +41,8 @@ StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
       mStream( in_stream ),
       mStreamName( in_stream_name.empty() ? kEmptyFileAlias : in_stream_name ) {}
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
 
     if ( propID == kpidIsAnti ) {
@@ -91,7 +92,8 @@ uint32_t StreamUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP StreamUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP StreamUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finalize() )
 
     if ( index < mOldArcItemsCount ) { //old item in the archive
@@ -107,11 +109,12 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP StreamUpdateCallback::GetStream( UInt32 index,
 
 /* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
    this class and UpdateCallback! */
-COM_DECLSPEC_NOTHROW STDMETHODIMP StreamUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP StreamUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP StreamUpdateCallback::GetVolumeStream( UInt32 /*index*/,
-                                                                         ISequentialOutStream** /*volumeStream*/ ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP StreamUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
     return S_OK;
 }

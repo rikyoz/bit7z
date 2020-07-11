@@ -43,7 +43,7 @@ void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
     }
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::Finalize() {
+HRESULT UpdateCallback::Finalize() {
     if ( mNeedBeClosed ) {
         mNeedBeClosed = false;
     }
@@ -51,31 +51,35 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::Finalize() {
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );
     }
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
     if ( completeValue != nullptr && mHandler.progressCallback() ) {
         return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
     if ( inSize != nullptr && outSize != nullptr && mHandler.ratioCallback() ) {
         mHandler.ratioCallback()( *inSize, *outSize );
     }
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
-                                                                     Int32* newData,
-                                                                     Int32* newProperties,
-                                                                     UInt32* indexInArchive ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
+                                                Int32* newData,
+                                                Int32* newProperties,
+                                                UInt32* indexInArchive ) {
 
     bool isOldItem = index < mOldArcItemsCount;
 
@@ -92,12 +96,14 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 inde
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
     mNeedBeClosed = true;
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
     if ( !mHandler.isPasswordDefined() ) {
         if ( mAskPassword ) {
             // You can ask real password here from user

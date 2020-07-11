@@ -45,7 +45,8 @@ CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const tstring& archive
 
 UInt64 CMultiVolOutStream::GetSize() const { return mLength; }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -111,7 +112,8 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::Write( const void* data, U
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             mAbsPos = static_cast< uint64_t >( offset );
@@ -133,7 +135,8 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32
     return S_OK;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
     size_t i = 0;
     while ( i < mVolStreams.size() ) {
         CAltStreamInfo& altStream = mVolStreams[ i++ ];

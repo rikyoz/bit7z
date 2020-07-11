@@ -30,6 +30,7 @@ using namespace bit7z;
 
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
     mInputStream.clear();
 
@@ -50,6 +51,7 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
     return mInputStream.bad() ? HRESULT_FROM_WIN32( ERROR_READ_FAULT ) : S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     mInputStream.clear();
 

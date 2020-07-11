@@ -37,14 +37,17 @@ using namespace bit7z::filesystem;
 OpenCallback::OpenCallback( const BitArchiveHandler& handler, const tstring& filename )
     : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64* /* bytes */ ) {
     return S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
     if ( mSubArchiveMode ) {
@@ -84,6 +87,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     return S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) {
     try {
         *inStream = nullptr;
@@ -113,12 +117,14 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
     }
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
     mSubArchiveMode = true;
     mSubArchiveName = name;
     return S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     wstring pass;
     if ( !mHandler.isPasswordDefined() ) {

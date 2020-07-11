@@ -35,9 +35,10 @@ BufferExtractCallback::BufferExtractCallback( const BitArchiveHandler& handler,
     : ExtractCallback( handler, inputArchive ),
       mBuffersMap( buffersMap ) {}
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index,
-                                                                    ISequentialOutStream** outStream,
-                                                                    Int32 askExtractMode ) try {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index,
+                                               ISequentialOutStream** outStream,
+                                               Int32 askExtractMode ) try {
     *outStream = nullptr;
     mOutMemStream.Release();
 
@@ -69,7 +70,8 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP BufferExtractCallback::GetStream( UInt32 index
     return E_OUTOFMEMORY;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP BufferExtractCallback::SetOperationResult( Int32 operationResult ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP BufferExtractCallback::SetOperationResult( Int32 operationResult ) {
     if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
         mNumErrors++;
 

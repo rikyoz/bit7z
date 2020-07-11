@@ -27,11 +27,13 @@ using namespace bit7z;
 
 CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ), mCurrentPosition( 0 ) {}
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {
     mBuffer.resize( static_cast< vector< byte_t >::size_type >( newSize ) );
     return S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     int64_t new_pos;
 
@@ -64,6 +66,7 @@ STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* ne
     return S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;

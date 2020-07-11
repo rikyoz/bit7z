@@ -41,9 +41,10 @@ void StreamExtractCallback::throwException( HRESULT error ) {
     Callback::throwException( error );
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index,
-                                                                    ISequentialOutStream** outStream,
-                                                                    Int32 askExtractMode ) try {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index,
+                                               ISequentialOutStream** outStream,
+                                               Int32 askExtractMode ) try {
     *outStream = nullptr;
     mStdOutStream.Release();
 
@@ -63,7 +64,8 @@ COM_DECLSPEC_NOTHROW STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index
     return E_OUTOFMEMORY;
 }
 
-COM_DECLSPEC_NOTHROW STDMETHODIMP StreamExtractCallback::SetOperationResult( Int32 operationResult ) {
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP StreamExtractCallback::SetOperationResult( Int32 operationResult ) {
     if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
         mNumErrors++;
 

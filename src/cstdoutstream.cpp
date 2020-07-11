@@ -32,6 +32,7 @@ using namespace bit7z;
 
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
@@ -52,6 +53,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
     return mOutputStream.bad() ? HRESULT_FROM_WIN32( ERROR_WRITE_FAULT ) : S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     std::ios_base::seekdir way;
     switch ( seekOrigin ) {
@@ -85,6 +87,7 @@ STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
     return S_OK;
 }
 
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) {
     const auto old_pos = mOutputStream.tellp();
     mOutputStream.seekp( 0, ostream::end );
