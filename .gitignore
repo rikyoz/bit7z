@@ -11,7 +11,7 @@
 *.vcxproj.user
 .qmake.stash
 *.a
-libs/
+third_party/
 build/
 out/
 test/files/

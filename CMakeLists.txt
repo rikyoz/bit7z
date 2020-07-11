@@ -3,7 +3,7 @@ project(bit7z)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
 cmake_policy(SET CMP0022 NEW)
-set(EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/libs)
+set(EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party)
 
 if(WIN32)
     set(7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip)
@@ -159,12 +159,12 @@ check_include_file_cxx("filesystem" USE_STANDARD_FILESYSTEM)
 if(NOT USE_STANDARD_FILESYSTEM)
     set(CMAKE_CXX_STANDARD 14) # if standard filesystem lib is not supported, revert to C++14 standard
 
-    if(NOT EXISTS ${PROJECT_SOURCE_DIR}/libs/ghc/filesystem.hpp)
+    if(NOT EXISTS ${EXTERNAL_LIBS_DIR}/ghc/filesystem.hpp)
         include(ExternalProject)
 
         file(DOWNLOAD
             https://raw.githubusercontent.com/gulrak/filesystem/master/include/ghc/filesystem.hpp
-            ${PROJECT_SOURCE_DIR}/libs/ghc/filesystem.hpp
+             ${EXTERNAL_LIBS_DIR}/ghc/filesystem.hpp
             SHOW_PROGRESS
         )
     endif()
