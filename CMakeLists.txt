@@ -121,35 +121,35 @@ if(NOT CMAKE_BUILD_TYPE)
     message(STATUS "Build type not specified: using Release by default.")
 endif()
 
-# debug library file name must end with "_d" (e.g. bit7z_d.lib)
-set(CMAKE_DEBUG_POSTFIX "_d")
-
 # per-architecture options
 if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-    message(STATUS "Architecture: x86")
     set(ARCH_POSTFIX "")
     set(ARCH_DIR "x86")
 else()
-    message(STATUS "Architecture: x64")
     set(ARCH_POSTFIX 64)
     set(ARCH_DIR "x64")
-    add_definitions(-DWIN64)
+    if(WIN32)
+        add_definitions(-DWIN64)
+    endif()
 endif()
 
-# forcing output directory to ${BIT7Z_DIR}/bin/${ARCH_DIR}/ (e.g. ./bin/x64/)
-set(OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin/${ARCH_DIR}/)
+# forcing output directory to ${BIT7Z_DIR}/lib/${ARCH_DIR}/ (e.g. ./lib/x64/)
+set(OUTPUT_DIR ${PROJECT_SOURCE_DIR}/lib/${ARCH_DIR}/)
+
+# Note: not applied in generated Visual Studio project files (e.g., .vcxproj)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})
-foreach(OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES})
-    string(TOUPPER ${OUTPUT_CONFIG} OUTPUT_CONFIG)
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
-endforeach()
+
+if(NOT CMAKE_GENERATOR MATCHES "Visual Studio")
+    # debug library file name must end with "_d" (e.g. bit7z_d.lib)
+    set(CMAKE_DEBUG_POSTFIX "_d")
+endif()
 
 message(STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}")
 message(STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}")
+message(STATUS "Architecture: ${ARCH_DIR}")
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
 
 # checking if compiler supports the standard filesystem library
 set(CMAKE_CXX_STANDARD 17)
@@ -208,7 +208,7 @@ if(UNIX)
                                ${7ZIP_SOURCE_DIR}/CPP/myWindows
                                ${7ZIP_SOURCE_DIR}/CPP/include_windows/)
     target_compile_definitions(${TARGET_NAME} PUBLIC EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT ENV_UNIX BREAK_HANDLER USE_WIN_FILE)
-    target_link_libraries(${TARGET_NAME} ${CMAKE_DL_LIBS} )
+    target_link_libraries(${TARGET_NAME} ${CMAKE_DL_LIBS})
 endif()
 
 # compiler options
