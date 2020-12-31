@@ -32,10 +32,10 @@
 #include <fstream>
 
 namespace fs {
-	using namespace std::filesystem;
-	using ifstream = std::ifstream;
-	using ofstream = std::ofstream;
-	using fstream = std::fstream;
+    using namespace std::filesystem;
+    using ifstream = std::ifstream;
+    using ofstream = std::ofstream;
+    using fstream = std::fstream;
 }
 #else
 #define GHC_WIN_WSTRING_STRING_TYPE
