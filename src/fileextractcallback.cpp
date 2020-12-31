@@ -35,23 +35,44 @@ using namespace bit7z;
  *    because it must implement interfaces with nothrow methods.
  *  + The work performed originally by the Init method is now performed by the class constructor */
 
-FileExtractCallback::FileExtractCallback( const BitArchiveHandler& handler,
-                                          const BitInputArchive& inputArchive,
-                                          const tstring& directoryPath,
-                                          bool retainDirectories )
-    : ExtractCallback( handler, inputArchive ),
+FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
+                                          const tstring& directoryPath )
+    : ExtractCallback( inputArchive ),
       mInFilePath( inputArchive.getArchivePath() ),
       mDirectoryPath( directoryPath ),
-      mRetainDirectories( retainDirectories ),
+      mRetainDirectories( inputArchive.getHandler().retainDirectories() ),
       mProcessedFileInfo() {}
 
-//TODO: clean and optimize!
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
-                                                                  ISequentialOutStream** outStream,
-                                                                  Int32 askExtractMode ) try {
-    *outStream = nullptr;
-    mFileOutStream.Release();
+void FileExtractCallback::releaseStream() {
+    mFileOutStream.Release(); // We need to release the file to change its modified time!
+}
+
+void FileExtractCallback::finishOperation() {
+    if ( mFileOutStream != nullptr ) {
+        if ( mFileOutStream->fail() ) {
+            ++mNumErrors; // SetOperationResult, which called releaseStream(), will return E_FAIL since mNumErrors > 0.
+            return;
+        }
+        mFileOutStream.Release(); // We need to release the file to change its modified time!
+
+        if ( mProcessedFileInfo.MTimeDefined ) {
+            filesystem::fsutil::setFileModifiedTime( mDiskFilePath, mProcessedFileInfo.MTime );
+        }
+    }
+
+    if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
+        filesystem::fsutil::setFileAttributes( mDiskFilePath, mProcessedFileInfo.Attrib );
+    }
+}
+
+void FileExtractCallback::throwException( HRESULT error ) {
+    if ( mErrorMessage != nullptr ) {
+        throw BitException( mErrorMessage, make_hresult_code( error ), mDiskFilePath.native() );
+    }
+    Callback::throwException( error );
+}
+
+HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
 
@@ -66,6 +87,7 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
     } else {
         return E_FAIL;
     }
+    mDiskFilePath = mDirectoryPath / filePath;
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
@@ -107,8 +129,6 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
             return E_FAIL;
     }
 
-    mDiskFilePath = mDirectoryPath / filePath;
-
     if ( !mProcessedFileInfo.isDir ) { // File
         if ( mHandler.fileCallback() ) {
             mHandler.fileCallback()( mDiskFilePath.filename() );
@@ -135,58 +155,4 @@ STDMETHODIMP FileExtractCallback::GetStream( UInt32 index,
         fs::create_directories( mDiskFilePath, ec );
     }
     return S_OK;
-} catch ( const BitException& ) {
-    return E_OUTOFMEMORY;
-}
-
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP FileExtractCallback::SetOperationResult( Int32 operationResult ) {
-    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
-        mNumErrors++;
-
-        switch ( operationResult ) {
-            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
-                mErrorMessage = kUnsupportedMethod;
-                break;
-
-            case NArchive::NExtract::NOperationResult::kCRCError:
-                mErrorMessage = kCRCFailed;
-                break;
-
-            case NArchive::NExtract::NOperationResult::kDataError:
-                mErrorMessage = kDataError;
-                break;
-
-            default:
-                mErrorMessage = kUnknownError;
-        }
-    }
-
-    if ( mFileOutStream != nullptr ) {
-        if ( mFileOutStream->fail() ) {
-            return E_FAIL;
-        }
-        mFileOutStream.Release(); // We need to release the file to change its modified time!
-
-        if ( mProcessedFileInfo.MTimeDefined ) {
-            filesystem::fsutil::setFileModifiedTime( mDiskFilePath, mProcessedFileInfo.MTime );
-        }
-    }
-
-    if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
-        filesystem::fsutil::setFileAttributes( mDiskFilePath, mProcessedFileInfo.Attrib );
-    }
-
-    if ( mNumErrors > 0 ) {
-        return E_FAIL;
-    }
-
-    return S_OK;
-}
-
-void FileExtractCallback::throwException( HRESULT error ) {
-    if ( mErrorMessage != nullptr ) {
-        throw BitException( mErrorMessage, make_hresult_code( error ), mDiskFilePath.native() );
-    }
-    Callback::throwException( error );
 }

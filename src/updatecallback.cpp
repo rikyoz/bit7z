@@ -76,6 +76,42 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
 }
 
 COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+    BitPropVariant prop;
+    if ( propID == kpidIsAnti ) {
+        prop = false;
+    } else if ( index < mOldArcItemsCount ) {
+            prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
+    } else {
+        prop = getNewItemProperty( index, propID );
+    }
+    *value = prop;
+    prop.bstrVal = nullptr;
+    return S_OK;
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+    RINOK( Finalize() )
+
+    if ( index < mOldArcItemsCount ) { //old item in the archive
+        return S_OK;
+    }
+
+    return getNewItemStream( index, inStream );
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
+    return S_OK;
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
+    return S_OK;
+}
+
+COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
                                                 Int32* newData,
                                                 Int32* newProperties,

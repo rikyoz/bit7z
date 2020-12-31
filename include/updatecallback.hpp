@@ -60,6 +60,14 @@ namespace bit7z {
             STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize ) override;
 
             // IArchiveUpdateCallback2
+            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+
+            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+
+            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+
+            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
+
             STDMETHOD( GetUpdateItemInfo )( UInt32 index,
                                             Int32* newData,
                                             Int32* newProperties,
@@ -78,6 +86,10 @@ namespace bit7z {
             bool mNeedBeClosed;
 
             explicit UpdateCallback( const BitArchiveCreator& creator );
+
+            virtual BitPropVariant getNewItemProperty( UInt32 index, PROPID id ) = 0;
+
+            virtual HRESULT getNewItemStream( uint32_t index, ISequentialInStream** inStream ) = 0;
     };
 }
 

@@ -38,16 +38,12 @@ namespace bit7z {
 
             ~BufferUpdateCallback() override = default;
 
-            // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
-
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
-
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
-
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
-
+            // CompressCallback
             uint32_t itemsCount() const override;
+
+            BitPropVariant getNewItemProperty( uint32_t index, PROPID propID ) override;
+
+            HRESULT getNewItemStream( uint32_t index, ISequentialInStream** inStream ) override;
 
         private:
             const vector< byte_t >& mBuffer;

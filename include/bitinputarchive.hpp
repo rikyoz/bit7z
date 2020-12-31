@@ -98,10 +98,20 @@ namespace bit7z {
 
             const tstring& getArchivePath() const;
 
+            const BitArchiveHandler& getHandler() const;
+
+            void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
+
+            void extract( vector< byte_t >& out_buffer, unsigned int index ) const;
+
+            void extract( std::ostream& out_stream, unsigned int index ) const;
+
+            void extract( map< tstring, vector< byte_t > >& out_map ) const;
+
+            void test() const;
+
         protected:
-            IInArchive* openArchiveStream( const BitArchiveHandler& handler,
-                                           const tstring& name,
-                                           IInStream* in_stream );
+            IInArchive* openArchiveStream( const tstring& name, IInStream* in_stream );
 
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
@@ -120,6 +130,7 @@ namespace bit7z {
 #ifdef BIT7Z_AUTO_FORMAT
             const BitInFormat* mDetectedFormat;
 #endif
+            const BitArchiveHandler& mArchiveHandler;
             const tstring mArchivePath;
 
         public:

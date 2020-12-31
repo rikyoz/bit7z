@@ -26,6 +26,9 @@
 #include "../include/cfileinstream.hpp"
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
+#include "../include/fileextractcallback.hpp"
+#include "../include/streamextractcallback.hpp"
+#include "../include/bufferextractcallback.hpp"
 
 #include <utility> // for std::move
 
@@ -37,15 +40,15 @@ using namespace NArchive;
 #include "../include/formatdetect.hpp"
 #endif
 
+constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
+
 CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
     CMyComPtr< IInArchive > arc_object;
     lib.createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &arc_object ) );
     return arc_object;
 }
 
-IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler,
-                                                const tstring& name,
-                                                IInStream* in_stream ) {
+IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -59,16 +62,16 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
 #endif
     // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically!
-    CMyComPtr< IInArchive > in_archive = initArchiveObject( handler.library(), &format_GUID );
+    CMyComPtr< IInArchive > in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
 
     // Creating open callback for the file
-    CMyComPtr< IArchiveOpenCallback > open_callback = new OpenCallback( handler, name );
+    CMyComPtr< IArchiveOpenCallback > open_callback = new OpenCallback( mArchiveHandler, name );
 
     // Trying to open the file with the detected format
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
 
 #ifdef BIT7Z_AUTO_FORMAT
-    if ( res != S_OK && handler.format() == BitFormat::Auto && !detected_by_signature ) {
+    if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detected_by_signature ) {
         /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
@@ -77,7 +80,7 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
          *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         format_GUID = mDetectedFormat->guid();
-        in_archive = initArchiveObject( handler.library(), &format_GUID );
+        in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
         res = in_archive->Open( in_stream, nullptr, open_callback );
     }
 #endif
@@ -89,33 +92,37 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     return in_archive.Detach();
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_file ) : mArchivePath{ std::move( in_file ) } {
-    fs::path in_file_path = mArchivePath;
-    CMyComPtr< CFileInStream > file_stream = new CFileInStream( in_file_path );
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_file )
+    : mArchiveHandler{ handler }, mArchivePath{ std::move( in_file ) } {
+
+    CMyComPtr< CFileInStream > file_stream = new CFileInStream( mArchivePath );
     if ( file_stream->fail() ) {
+        //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions
         throw BitException( "Cannot open archive file", std::make_error_code( std::errc::io_error ), mArchivePath );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
-    mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath ) : &handler.format() );
+    mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath )
+                                                            : &handler.format() );
 #endif
-    mInArchive = openArchiveStream( handler, mArchivePath, file_stream );
+    mInArchive = openArchiveStream( mArchivePath, file_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer )
+    : mArchiveHandler{ handler } {
     CMyComPtr< IInStream > buf_stream = new CBufferInStream( in_buffer );
 #ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
 #endif
-    mInArchive = openArchiveStream( handler, TSTRING( "." ), buf_stream );
+    mInArchive = openArchiveStream( TSTRING( "." ), buf_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) {
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) : mArchiveHandler{ handler } {
     CMyComPtr< IInStream > std_stream = new CStdInStream( in_stream );
 #ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
 #endif
-    mInArchive = openArchiveStream( handler, TSTRING( "." ), std_stream );
+    mInArchive = openArchiveStream( TSTRING( "." ), std_stream );
 }
 
 BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
@@ -181,15 +188,77 @@ void BitInputArchive::test( ExtractCallback* extract_callback ) const {
 }
 
 #ifdef BIT7Z_AUTO_FORMAT
+
 const BitInFormat& BitInputArchive::detectedFormat() const {
     // Defensive programming: for how the archive format is detected,
     // a correct BitInputArchive instance should have a non null mDetectedFormat!
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
 }
+
 #endif
 
 const tstring& BitInputArchive::getArchivePath() const {
     return mArchivePath;
+}
+
+const BitArchiveHandler& BitInputArchive::getHandler() const {
+    return mArchiveHandler;
+}
+
+void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >& indices ) const {
+    CMyComPtr< ExtractCallback > callback = new FileExtractCallback( *this, out_dir );
+    extract( indices, callback );
+}
+
+void BitInputArchive::extract( vector< byte_t >& out_buffer, unsigned int index ) const {
+    uint32_t number_items = itemsCount();
+    if ( index >= number_items ) {
+        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    if ( isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    const vector< uint32_t > indices( 1, index );
+    map< tstring, vector< byte_t > > buffers_map;
+    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, buffers_map );
+    extract( indices, extract_callback );
+    out_buffer = std::move( buffers_map.begin()->second );
+}
+
+void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
+    uint32_t number_items = itemsCount();
+    if ( index >= number_items ) {
+        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    if ( isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    const vector< uint32_t > indices( 1, index );
+    CMyComPtr< ExtractCallback > extract_callback = new StreamExtractCallback( *this, out_stream );
+    extract( indices, extract_callback );
+}
+
+void BitInputArchive::extract( map< tstring, vector< byte_t>>& out_map ) const {
+    uint32_t number_items = itemsCount();
+    vector< uint32_t > files_indices;
+    for ( uint32_t i = 0; i < number_items; ++i ) {
+        if ( !isItemFolder( i ) ) { //Consider only files, not folders
+            files_indices.push_back( i );
+        }
+    }
+
+    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, out_map );
+    extract( files_indices, extract_callback );
+}
+
+void BitInputArchive::test() const {
+    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, dummy_map );
+    test( extract_callback );
 }
 
 HRESULT BitInputArchive::close() const {
@@ -198,6 +267,7 @@ HRESULT BitInputArchive::close() const {
 
 BitInputArchive::~BitInputArchive() {
     if ( mInArchive != nullptr ) {
+        mInArchive->Close();
         mInArchive->Release();
     }
 }
