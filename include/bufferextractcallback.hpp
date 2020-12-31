@@ -31,20 +31,18 @@ namespace bit7z {
 
     class BufferExtractCallback : public ExtractCallback {
         public:
-            BufferExtractCallback( const BitArchiveHandler& handler,
-                                   const BitInputArchive& inputArchive,
+            BufferExtractCallback( const BitInputArchive& inputArchive,
                                    map< tstring, vector< byte_t > >& buffersMap );
 
             ~BufferExtractCallback() override = default;
 
-            // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
-
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
-
         private:
             map< tstring, vector< byte_t > >& mBuffersMap;
             CMyComPtr< ISequentialOutStream > mOutMemStream;
+
+            void releaseStream() override;
+
+            HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
     };
 }
 #endif // BUFFEREXTRACTCALLBACK_HPP

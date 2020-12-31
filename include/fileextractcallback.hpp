@@ -30,17 +30,10 @@ namespace bit7z {
 
     class FileExtractCallback : public ExtractCallback {
         public:
-            FileExtractCallback( const BitArchiveHandler& handler,
-                                 const BitInputArchive& inputArchive,
-                                 const tstring& directoryPath,
-                                 bool retainDirectories );
+            FileExtractCallback( const BitInputArchive& inputArchive,
+                                 const tstring& directoryPath );
 
             ~FileExtractCallback() override = default;
-
-            // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
-
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
 
             void throwException( HRESULT error ) override;
 
@@ -59,6 +52,12 @@ namespace bit7z {
             } mProcessedFileInfo;
 
             CMyComPtr< CFileOutStream > mFileOutStream;
+
+            void finishOperation() override;
+
+            void releaseStream() override;
+
+            HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
     };
 }
 #endif // FILEEXTRACTCALLBACK_HPP

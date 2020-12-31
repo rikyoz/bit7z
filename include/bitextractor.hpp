@@ -41,29 +41,29 @@ namespace bit7z {
 
             void extract( Input input, const tstring& out_dir = TSTRING( "" ) ) const {
                 BitInputArchive in_archive( *this, input );
-                extractToFileSystem( in_archive, out_dir, vector< uint32_t >() );
+                in_archive.extract( out_dir, vector< uint32_t >() );
             }
 
             void extract( Input input, vector< byte_t >& out_buffer, unsigned int index = 0 ) const {
                 BitInputArchive in_archive( *this, input );
-                extractToBuffer( in_archive, out_buffer, index );
+                in_archive.extract( out_buffer, index );
             }
 
             void extract( Input input, std::ostream& out_stream, unsigned int index = 0 ) const {
                 BitInputArchive in_archive( *this, input );
-                extractToStream( in_archive, out_stream, index );
+                in_archive.extract( out_stream, index );
             }
 
             void extract( Input input, map< tstring, vector< byte_t > >& out_map ) const {
                 BitInputArchive in_archive( *this, input );
-                extractToBufferMap( in_archive, out_map );
+                in_archive.extract( out_map );
             }
 
             void extractMatching( Input input, const tstring& item_filter, const tstring& out_dir ) const {
                 using namespace filesystem;
 
                 if ( item_filter.empty() ) {
-                    throw BitException( "Empty wildcard filter", std::make_error_code( std::errc::invalid_argument  ) );
+                    throw BitException( "Empty wildcard filter", std::make_error_code( std::errc::invalid_argument ) );
                 }
 
                 extractMatchingFilter( input, out_dir, [ &item_filter ]( const tstring& item_path ) -> bool {
@@ -73,19 +73,22 @@ namespace bit7z {
 
             void extractItems( Input input, const vector< uint32_t >& indices, const tstring& out_dir ) const {
                 if ( indices.empty() ) {
-                    throw BitException(  "Empty indices vector", std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Empty indices vector", std::make_error_code( std::errc::invalid_argument ) );
                 }
 
                 BitInputArchive in_archive( *this, input );
                 uint32_t n_items = in_archive.itemsCount();
-                const auto find_res = std::find_if( indices.cbegin(), indices.cend(), [ &n_items ]( uint32_t index ) -> bool {
-                    return index >= n_items;
-                } );
+                const auto find_res = std::find_if( indices.cbegin(),
+                                                    indices.cend(),
+                                                    [ &n_items ]( uint32_t index ) -> bool {
+                                                        return index >= n_items;
+                                                    } );
                 if ( find_res != indices.cend() ) {
-                    throw BitException(  "Index " + std::to_string( *find_res ) + " is not valid", std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Index " + std::to_string( *find_res ) + " is not valid",
+                                        std::make_error_code( std::errc::invalid_argument ) );
                 }
 
-                extractToFileSystem( in_archive, out_dir, indices );
+                in_archive.extract( out_dir, indices );
             }
 
 #ifdef BIT7Z_REGEX_MATCHING
@@ -112,7 +115,7 @@ namespace bit7z {
              */
             void test( Input input ) const {
                 BitInputArchive in_archive( *this, input );
-                BitArchiveOpener::test( in_archive );
+                in_archive.test();
             }
 
         private:
@@ -134,7 +137,7 @@ namespace bit7z {
                     throw BitException( kNoMatchingFile, std::make_error_code( std::errc::no_such_file_or_directory ) );
                 }
 
-                extractToFileSystem( in_archive, out_dir, matched_indices );
+                in_archive.extract( out_dir, matched_indices );
             }
     };
 }

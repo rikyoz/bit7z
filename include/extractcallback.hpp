@@ -55,9 +55,19 @@ namespace bit7z {
             // ICryptoGetTextPassword
             STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword ) override;
 
+            // IArchiveExtractCallback
+            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
+
+            STDMETHOD( SetOperationResult )( Int32 operationResult ) override;
+
         protected:
-            ExtractCallback( const BitArchiveHandler& handler,
-                             const BitInputArchive& inputArchive );
+            explicit ExtractCallback( const BitInputArchive& inputArchive );
+
+            virtual void finishOperation();
+
+            virtual void releaseStream() = 0;
+
+            virtual HRESULT getOutStream( UInt32 index, ISequentialOutStream** outStream, int32_t askExtractMode ) = 0;
 
             const BitInputArchive& mInputArchive;
 

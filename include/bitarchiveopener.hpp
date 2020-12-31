@@ -49,13 +49,8 @@ namespace bit7z {
              */
             const BitInFormat& extractionFormat() const;
 
-            bool retainDirectories() const;
-
-            void setRetainDirectories( bool retain );
-
         protected:
             const BitInFormat& mFormat;
-            bool mRetainDirectories;
 
             BitArchiveOpener( const Bit7zLibrary& lib,
                               const BitInFormat& format,
@@ -63,22 +58,6 @@ namespace bit7z {
 
             ~BitArchiveOpener() override = default;
 
-            void extractToFileSystem( const BitInputArchive& in_archive,
-                                      const tstring& out_dir,
-                                      const vector< uint32_t >& indices ) const;
-
-            void extractToBuffer( const BitInputArchive& in_archive,
-                                  vector< byte_t >& out_buffer,
-                                  unsigned int index ) const;
-
-            void extractToStream( const BitInputArchive& in_archive,
-                                  ostream& out_stream,
-                                  unsigned int index ) const;
-
-            void extractToBufferMap( const BitInputArchive& in_archive,
-                                     map< tstring, vector< byte_t > >& out_map ) const;
-
-            void test( const BitInputArchive& in_archive ) const;
     };
 }
 

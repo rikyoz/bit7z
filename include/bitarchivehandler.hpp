@@ -75,6 +75,8 @@ namespace bit7z {
              */
             tstring password() const;
 
+            bool retainDirectories() const;
+
             /**
              * @return true if a password is defined, false otherwise.
              */
@@ -136,6 +138,13 @@ namespace bit7z {
             void clearPassword();
 
             /**
+             * @brief Sets whether methods output will preserve the input's directory structure or not.
+             *
+             * @param retain  the setting for preserving or not the input directory structure
+             */
+            void setRetainDirectories( bool retain );
+
+            /**
              * @brief Sets the callback to be called when the total size of an operation is available.
              *
              * @param callback  the total callback to be used.
@@ -180,6 +189,7 @@ namespace bit7z {
         protected:
             const Bit7zLibrary& mLibrary;
             tstring mPassword;
+            bool mRetainDirectories;
 
             explicit BitArchiveHandler( const Bit7zLibrary& lib, tstring password = TSTRING( "" ) );
 

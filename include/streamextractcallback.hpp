@@ -32,22 +32,19 @@ namespace bit7z {
 
     class StreamExtractCallback : public ExtractCallback {
         public:
-            StreamExtractCallback( const BitArchiveHandler& handler,
-                                   const BitInputArchive& inputArchive,
-                                   ostream& outputStream );
+            StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream );
 
             ~StreamExtractCallback() override = default;
 
             void throwException( HRESULT error ) override;
 
-            // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
-
-            STDMETHOD( SetOperationResult )( Int32 resultEOperationResult ) override;
-
         private:
             ostream& mOutputStream;
             CMyComPtr< IOutStream > mStdOutStream;
+
+            void releaseStream() override;
+
+            HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
     };
 }
 #endif // STREAMEXTRACTCALLBACK_HPP

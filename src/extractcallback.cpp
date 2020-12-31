@@ -21,15 +21,20 @@
 
 #include "../include/extractcallback.hpp"
 
+#include "../include/bitexception.hpp"
 #include "../include/util.hpp"
 
 using namespace bit7z;
 
-ExtractCallback::ExtractCallback( const BitArchiveHandler& handler, const BitInputArchive& inputArchive )
-    : Callback( handler ),
+ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
+    : Callback( inputArchive.getHandler() ),
       mInputArchive( inputArchive ),
       mExtractMode( true ),
       mNumErrors( 0 ) {}
+
+void ExtractCallback::finishOperation() {
+    releaseStream();
+}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
@@ -61,6 +66,44 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
     // with enum Operation{Extract, Test, Skip}
     mExtractMode = ( askExtractMode == NArchive::NExtract::NAskMode::kExtract );
     return S_OK;
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+    *outStream = nullptr;
+    releaseStream();
+
+    return getOutStream( index, outStream, askExtractMode );
+} catch ( const BitException& ) {
+    return E_OUTOFMEMORY;
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
+    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+        mNumErrors++;
+
+        switch ( operationResult ) {
+            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+                mErrorMessage = kUnsupportedMethod;
+                break;
+
+            case NArchive::NExtract::NOperationResult::kCRCError:
+                mErrorMessage = kCRCFailed;
+                break;
+
+            case NArchive::NExtract::NOperationResult::kDataError:
+                mErrorMessage = kDataError;
+                break;
+
+            default:
+                mErrorMessage = kUnknownError;
+        }
+    }
+
+    finishOperation();
+
+    return mNumErrors > 0 ? E_FAIL : S_OK;
 }
 
 COM_DECLSPEC_NOTHROW

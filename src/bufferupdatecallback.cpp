@@ -41,74 +41,45 @@ BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
       mBuffer( in_buffer ),
       mBufferName( in_buffer_name.empty() ? kEmptyFileAlias : in_buffer_name ) {}
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP BufferUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
-    BitPropVariant prop;
-
-    if ( propID == kpidIsAnti ) {
-        prop = false;
-    } else if ( index < mOldArcItemsCount ) {
-        prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
-    } else {
-        switch ( propID ) {
-            case kpidPath:
-                prop = mBufferName.wstring();
-                break;
-            case kpidIsDir:
-                prop = false;
-                break;
-            case kpidSize:
-                prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
-                break;
-            case kpidAttrib:
-                prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
-                break;
-            case kpidCTime:
-            case kpidATime:
-            case kpidMTime: {
-                FILETIME ft;
-                SYSTEMTIME st;
-
-                GetSystemTime( &st ); // gets current time
-                SystemTimeToFileTime( &st, &ft ); // converts to file time format
-                prop = ft;
-                break;
-            }
-            default: //empty prop
-                break;
-        }
-    }
-
-    *value = prop;
-    prop.bstrVal = nullptr;
-    return S_OK;
-}
-
 uint32_t BufferUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP BufferUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finalize() )
+BitPropVariant BufferUpdateCallback::getNewItemProperty( uint32_t /*index*/, PROPID propID ) {
+    BitPropVariant prop;
+    switch ( propID ) {
+        case kpidPath:
+            prop = mBufferName.wstring();
+            break;
+        case kpidIsDir:
+            prop = false;
+            break;
+        case kpidSize:
+            prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
+            break;
+        case kpidAttrib:
+            prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
+            break;
+        case kpidCTime:
+        case kpidATime:
+        case kpidMTime: {
+            FILETIME ft;
+            SYSTEMTIME st;
 
-    if ( index < mOldArcItemsCount ) { //old item in the archive
-        return S_OK;
+            GetSystemTime( &st ); // gets current time
+            SystemTimeToFileTime( &st, &ft ); // converts to file time format
+            prop = ft;
+            break;
+        }
+        default: //empty prop
+            break;
     }
+    return prop;
+}
 
+HRESULT BufferUpdateCallback::getNewItemStream( uint32_t /*index*/, ISequentialInStream** inStream ) {
+    //Note: CMyComPtr is needed for correctly counting references inside CBufferInStream
     CMyComPtr< ISequentialInStream > inStreamLoc = new CBufferInStream( mBuffer );
     *inStream = inStreamLoc.Detach();
-    return S_OK;
-}
-
-/* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
-   this class and UpdateCallback! */
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP BufferUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
-    return S_OK;
-}
-
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP BufferUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
     return S_OK;
 }

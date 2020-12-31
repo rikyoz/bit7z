@@ -35,8 +35,6 @@ constexpr auto kPasswordNotDefined = "Password is not defined";
 constexpr auto kEmptyFileAlias     = TSTRING("[Content]");
 
 namespace bit7z {
-    using std::wstring;
-
     class Callback : protected CMyUnknownImp {
         public:
             virtual ~Callback() = default;

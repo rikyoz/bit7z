@@ -29,13 +29,10 @@
 
 #include <utility> // for std::move
 
-using std::map;
 using namespace bit7z;
 
-constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
-
 BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
-    : BitArchiveHandler( lib, password ), mFormat( format ), mRetainDirectories( true ) {}
+    : BitArchiveHandler( lib, password ), mFormat( format ) {}
 
 const BitInFormat& BitArchiveOpener::format() const {
     return mFormat;
@@ -43,79 +40,4 @@ const BitInFormat& BitArchiveOpener::format() const {
 
 const BitInFormat& BitArchiveOpener::extractionFormat() const {
     return mFormat;
-}
-
-void BitArchiveOpener::extractToFileSystem( const BitInputArchive& in_archive,
-                                            const tstring& out_dir,
-                                            const vector< uint32_t >& indices ) const {
-    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this,
-                                                                             in_archive,
-                                                                             out_dir,
-                                                                             mRetainDirectories );
-    in_archive.extract( indices, extract_callback );
-}
-
-void BitArchiveOpener::extractToStream( const BitInputArchive& in_archive,
-                                        std::ostream& out_stream,
-                                        unsigned int index ) const {
-    uint32_t number_items = in_archive.itemsCount();
-    if ( index >= number_items ) {
-        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    const vector< uint32_t > indices( 1, index );
-    CMyComPtr< ExtractCallback > extract_callback = new StreamExtractCallback( *this, in_archive, out_stream );
-    in_archive.extract( indices, extract_callback );
-}
-
-void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
-                                        vector< byte_t >& out_buffer,
-                                        unsigned int index ) const {
-    uint32_t number_items = in_archive.itemsCount();
-    if ( index >= number_items ) {
-        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    const vector< uint32_t > indices( 1, index );
-    map< tstring, vector< byte_t > > buffers_map;
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, buffers_map );
-    in_archive.extract( indices, extract_callback );
-    out_buffer = std::move( buffers_map.begin()->second );
-}
-
-void BitArchiveOpener::extractToBufferMap( const BitInputArchive& in_archive,
-                                           map< tstring, vector< byte_t > >& out_map ) const {
-    uint32_t number_items = in_archive.itemsCount();
-    vector< uint32_t > files_indices;
-    for ( uint32_t i = 0; i < number_items; ++i ) {
-        if ( !in_archive.isItemFolder( i ) ) { //Consider only files, not folders
-            files_indices.push_back( i );
-        }
-    }
-
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, out_map );
-    in_archive.extract( files_indices, extract_callback );
-
-}
-
-bool BitArchiveOpener::retainDirectories() const {
-    return mRetainDirectories;
-}
-
-void BitArchiveOpener::setRetainDirectories( bool retain ) {
-    mRetainDirectories = retain;
-}
-
-void BitArchiveOpener::test( const BitInputArchive& in_archive ) const {
-    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, dummy_map );
-    in_archive.test( extract_callback );
 }

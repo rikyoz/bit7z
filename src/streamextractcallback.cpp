@@ -28,10 +28,8 @@ using namespace std;
 using namespace NWindows;
 using namespace bit7z;
 
-StreamExtractCallback::StreamExtractCallback( const BitArchiveHandler& handler,
-                                              const BitInputArchive& inputArchive,
-                                              ostream& outputStream )
-    : ExtractCallback( handler, inputArchive ),
+StreamExtractCallback::StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream )
+    : ExtractCallback( inputArchive ),
       mOutputStream( outputStream ) {}
 
 void StreamExtractCallback::throwException( HRESULT error ) {
@@ -41,13 +39,13 @@ void StreamExtractCallback::throwException( HRESULT error ) {
     Callback::throwException( error );
 }
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index,
-                                               ISequentialOutStream** outStream,
-                                               Int32 askExtractMode ) try {
-    *outStream = nullptr;
+void StreamExtractCallback::releaseStream() {
     mStdOutStream.Release();
+}
 
+HRESULT StreamExtractCallback::getOutStream( uint32_t index,
+                                             ISequentialOutStream** outStream,
+                                             int32_t askExtractMode ) {
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
     }
@@ -58,36 +56,5 @@ STDMETHODIMP StreamExtractCallback::GetStream( UInt32 index,
         mStdOutStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }
-
     return S_OK;
-} catch ( const BitException& ) {
-    return E_OUTOFMEMORY;
-}
-
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP StreamExtractCallback::SetOperationResult( Int32 operationResult ) {
-    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
-        mNumErrors++;
-
-        switch ( operationResult ) {
-            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
-                mErrorMessage = kUnsupportedMethod;
-                break;
-
-            case NArchive::NExtract::NOperationResult::kCRCError:
-                mErrorMessage = kCRCFailed;
-                break;
-
-            case NArchive::NExtract::NOperationResult::kDataError:
-                mErrorMessage = kDataError;
-                break;
-
-            default:
-                mErrorMessage = kUnknownError;
-        }
-    }
-
-    mStdOutStream.Release();
-
-    return mNumErrors > 0 ? E_FAIL : S_OK;
 }

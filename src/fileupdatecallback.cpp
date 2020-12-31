@@ -41,59 +41,49 @@ FileUpdateCallback::FileUpdateCallback( const BitArchiveCreator& creator, const 
       mNewItems( new_items ),
       mVolSize( 0 ) {}
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP FileUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
-    BitPropVariant prop;
-    if ( propID == kpidIsAnti ) {
-        prop = false;
-    } else if ( index < mOldArcItemsCount ) {
-        prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
-    } else {
-        const FSItem& new_item = mNewItems[ static_cast< size_t >( index - mOldArcItemsCount ) ];
-        switch ( propID ) {
-            case kpidPath:
-                prop = new_item.inArchivePath().wstring();
-                break;
-            case kpidIsDir:
-                prop = new_item.isDir();
-                break;
-            case kpidSize:
-                prop = new_item.size();
-                break;
-            case kpidAttrib:
-                prop = new_item.attributes();
-                break;
-            case kpidCTime:
-                prop = new_item.creationTime();
-                break;
-            case kpidATime:
-                prop = new_item.lastAccessTime();
-                break;
-            case kpidMTime:
-                prop = new_item.lastWriteTime();
-                break;
-            default: //empty prop
-                break;
-        }
-    }
-
-    *value = prop;
-    prop.bstrVal = nullptr;
-    return S_OK;
-}
-
 uint32_t FileUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + static_cast< uint32_t >( mNewItems.size() );
 }
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finalize() )
-
-    if ( index < mOldArcItemsCount ) { //old item in the archive
-        return S_OK;
+void FileUpdateCallback::throwException( HRESULT error ) {
+    if ( !mFailedFiles.empty() ) {
+        throw BitException( "Error compressing files", make_hresult_code( error ), std::move( mFailedFiles ) );
     }
+    Callback::throwException( error );
+}
 
+BitPropVariant FileUpdateCallback::getNewItemProperty( uint32_t index, PROPID propID ) {
+    BitPropVariant prop;
+    const FSItem& new_item = mNewItems[ static_cast< size_t >( index - mOldArcItemsCount ) ];
+    switch ( propID ) {
+        case kpidPath:
+            prop = new_item.inArchivePath().wstring();
+            break;
+        case kpidIsDir:
+            prop = new_item.isDir();
+            break;
+        case kpidSize:
+            prop = new_item.size();
+            break;
+        case kpidAttrib:
+            prop = new_item.attributes();
+            break;
+        case kpidCTime:
+            prop = new_item.creationTime();
+            break;
+        case kpidATime:
+            prop = new_item.lastAccessTime();
+            break;
+        case kpidMTime:
+            prop = new_item.lastWriteTime();
+            break;
+        default: //empty prop
+            break;
+    }
+    return prop;
+}
+
+HRESULT FileUpdateCallback::getNewItemStream( uint32_t index, ISequentialInStream** inStream ) {
     const FSItem& new_item = mNewItems[ static_cast< size_t >( index - mOldArcItemsCount ) ];
 
     if ( mHandler.fileCallback() ) {
@@ -105,7 +95,7 @@ STDMETHODIMP FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** 
     }
 
     auto path = new_item.path();
-    CMyComPtr< CFileInStream > inStreamLoc = new CFileInStream( path );
+    CMyComPtr< CFileInStream > inStreamLoc = new CFileInStream( path ); //CMyComPtr is necessary here for correct RAII
 
     if ( inStreamLoc->fail() ) {
         std::error_code ec;
@@ -115,7 +105,6 @@ STDMETHODIMP FileUpdateCallback::GetStream( UInt32 index, ISequentialInStream** 
         mFailedFiles.emplace_back( path.native(), ec );
         return S_FALSE;
     }
-
     *inStream = inStreamLoc.Detach();
     return S_OK;
 }
@@ -145,11 +134,4 @@ STDMETHODIMP FileUpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutSt
 
     *volumeStream = stream.Detach();
     return S_OK;
-}
-
-void FileUpdateCallback::throwException( HRESULT error ) {
-    if ( !mFailedFiles.empty() ) {
-        throw BitException( "Error compressing files", make_hresult_code( error ), std::move( mFailedFiles ) );
-    }
-    Callback::throwException( error );
 }

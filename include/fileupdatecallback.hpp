@@ -45,11 +45,11 @@ namespace bit7z {
 
             void throwException( HRESULT error ) override;
 
+            BitPropVariant getNewItemProperty( uint32_t index, PROPID propID ) override;
+
+            HRESULT getNewItemStream( uint32_t index, ISequentialInStream** inStream ) override;
+
             // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
-
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
-
             STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
 
             STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;

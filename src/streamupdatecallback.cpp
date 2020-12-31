@@ -41,80 +41,49 @@ StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
       mStream( in_stream ),
       mStreamName( in_stream_name.empty() ? kEmptyFileAlias : in_stream_name ) {}
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
-    BitPropVariant prop;
-
-    if ( propID == kpidIsAnti ) {
-        prop = false;
-    } else if ( index < mOldArcItemsCount ) {
-        prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
-    } else {
-        switch ( propID ) {
-            case kpidPath:
-                prop = mStreamName.wstring();
-                break;
-            case kpidIsDir:
-                prop = false;
-                break;
-            case kpidSize: {
-                auto original_pos = mStream.tellg();
-                mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
-                prop = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
-                mStream.seekg( original_pos ); // seeking back to the original position in the stream
-                break;
-            }
-            case kpidAttrib:
-                prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
-                break;
-            case kpidCTime:
-            case kpidATime:
-            case kpidMTime: {
-                FILETIME ft;
-                SYSTEMTIME st;
-
-                GetSystemTime( &st ); // gets current time
-                SystemTimeToFileTime( &st, &ft ); // converts to file time format
-                prop = ft;
-                break;
-            }
-            default: //empty prop
-                break;
-        }
-    }
-
-    *value = prop;
-    prop.bstrVal = nullptr;
-    return S_OK;
-}
-
 uint32_t StreamUpdateCallback::itemsCount() const {
     return mOldArcItemsCount + 1;
 }
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP StreamUpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
-    RINOK( Finalize() )
+BitPropVariant StreamUpdateCallback::getNewItemProperty( uint32_t /*index*/, PROPID propID ) {
+    BitPropVariant prop;
+    switch ( propID ) {
+        case kpidPath:
+            prop = mStreamName.wstring();
+            break;
+        case kpidIsDir:
+            prop = false;
+            break;
+        case kpidSize: {
+            auto original_pos = mStream.tellg();
+            mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
+            prop = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
+            mStream.seekg( original_pos ); // seeking back to the original position in the stream
+            break;
+        }
+        case kpidAttrib:
+            prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
+            break;
+        case kpidCTime:
+        case kpidATime:
+        case kpidMTime: {
+            FILETIME ft;
+            SYSTEMTIME st;
 
-    if ( index < mOldArcItemsCount ) { //old item in the archive
-        return S_OK;
+            GetSystemTime( &st ); // gets current time
+            SystemTimeToFileTime( &st, &ft ); // converts to file time format
+            prop = ft;
+            break;
+        }
+        default: //empty prop
+            break;
     }
-
-    auto* inStreamSpec = new CStdInStream( mStream );
-    CMyComPtr< ISequentialInStream > inStreamLoc( inStreamSpec );
-
-    *inStream = inStreamLoc.Detach();
-    return S_OK;
+    return prop;
 }
 
-/* IArchiveUpdateCallback2 specific methods are unnecessary, but we need a common interface (CompressCallback) for both
-   this class and UpdateCallback! */
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP StreamUpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
-    return S_OK;
-}
-
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP StreamUpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
+HRESULT StreamUpdateCallback::getNewItemStream( uint32_t /*index*/, ISequentialInStream** inStream ) {
+    //Note: CMyComPtr is needed for correctly counting references inside CBufferInStream
+    CMyComPtr< ISequentialInStream > inStreamLoc = new CStdInStream( mStream );
+    *inStream = inStreamLoc.Detach(); //Note: 7-zip will take care of freeing the memory!
     return S_OK;
 }
