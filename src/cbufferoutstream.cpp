@@ -29,8 +29,12 @@ CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer ) : mBuffer( ou
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {
-    mBuffer.resize( static_cast< vector< byte_t >::size_type >( newSize ) );
-    return S_OK;
+    try {
+        mBuffer.resize( static_cast< vector< byte_t >::size_type >( newSize ) );
+        return S_OK;
+    } catch ( ... ) {
+        return E_OUTOFMEMORY;
+    }
 }
 
 COM_DECLSPEC_NOTHROW
@@ -78,11 +82,19 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
 
     size_t new_pos = mCurrentPosition + static_cast< size_t >( size );
     if ( new_pos > mBuffer.size() ) {
-        mBuffer.resize( new_pos );
+        try {
+            mBuffer.resize( new_pos );
+        } catch ( ... ) {
+            return E_OUTOFMEMORY;
+        }
     }
 
     const auto* byte_data = static_cast< const byte_t* >( data );
-    std::copy_n( byte_data, size, mBuffer.begin() + mCurrentPosition );
+    try {
+        std::copy_n( byte_data, size, mBuffer.begin() + mCurrentPosition );
+    } catch ( ... ) {
+        return E_OUTOFMEMORY;
+    }
     mCurrentPosition = new_pos;
 
     if ( processedSize != nullptr ) {

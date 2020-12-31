@@ -148,16 +148,15 @@ STDMETHODIMP CMultiVolOutStream::SetSize( UInt64 newSize ) {
         newSize -= altStream.realSize;
     }
     while ( i < mVolStreams.size() ) {
-        /*{
-            CAltStreamInfo& altStream = mVolStreams.back();
-            altStream.stream.Release();
-            NWindows::NFile::NDir::DeleteFileAlways( altStream.name.c_str() );
-        }*/
-        tstring streamName = mVolStreams.back().name;
-        mVolStreams.pop_back();
-        //TODO: Remove read only attribute of as in DeleteFileAlways
-        fs::remove( streamName );
-        //NWindows::NFile::NDir::DeleteFileAlways( streamName.c_str() );
+        try {
+            tstring streamName = mVolStreams.back().name;
+            mVolStreams.pop_back();
+            //TODO: Remove read-only attribute of mVolStreams.back() as in DeleteFileAlways
+            fs::remove( streamName );
+            //NWindows::NFile::NDir::DeleteFileAlways( streamName.c_str() );
+        } catch ( ... ) {
+            return E_FAIL;
+        }
     }
     mOffsetPos = mAbsPos;
     mStreamIndex = 0;

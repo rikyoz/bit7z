@@ -120,7 +120,11 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
     mSubArchiveMode = true;
-    mSubArchiveName = name;
+    try {
+        mSubArchiveName = name;
+    } catch ( ... ) {
+        return E_OUTOFMEMORY;
+    }
     return S_OK;
 }
 
