@@ -124,4 +124,3 @@ void BitFileCompressor::compressOut( const vector< FSItem >& in_items, ostream& 
     CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, in_items );
     BitArchiveCreator::compressToStream( out_stream, update_callback );
 }
-

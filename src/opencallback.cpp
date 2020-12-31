@@ -126,7 +126,7 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
-    wstring pass;
+    std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);
