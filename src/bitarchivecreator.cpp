@@ -127,13 +127,13 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
                                       tstring password ) :
     BitArchiveHandler( lib, std::move( password ) ),
     mFormat( format ),
+    mUpdateMode( false ),
     mCompressionLevel( BitCompressionLevel::NORMAL ),
     mCompressionMethod( format.defaultMethod() ),
     mDictionarySize( 0 ),
     mWordSize( 0 ),
     mCryptHeaders( false ),
     mSolidMode( false ),
-    mUpdateMode( false ),
     mVolumeSize( 0 ),
     mThreadsCount( 0 ) {}
 

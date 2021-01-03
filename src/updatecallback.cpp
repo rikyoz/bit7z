@@ -26,11 +26,12 @@
 using namespace bit7z;
 
 UpdateCallback::UpdateCallback( const BitArchiveCreator& creator )
-    : Callback( creator ),
-      mOldArc( nullptr ),
-      mOldArcItemsCount( 0 ),
-      mAskPassword( false ),
-      mNeedBeClosed( false ) {}
+    : Callback{ creator },
+      mOldArc{ nullptr },
+      mOldArcItemsCount{ 0 },
+      mRenamedItems{ nullptr },
+      mAskPassword{ false },
+      mNeedBeClosed{ false } {}
 
 UpdateCallback::~UpdateCallback() {
     Finalize();
@@ -41,6 +42,10 @@ void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
         mOldArc = old_arc;
         mOldArcItemsCount = old_arc->itemsCount();
     }
+}
+
+void UpdateCallback::setRenamedItems( RenamedItems renamed_items ) {
+    mRenamedItems = std::make_unique< const RenamedItems >( std::move( renamed_items ) );
 }
 
 HRESULT UpdateCallback::Finalize() {
@@ -81,7 +86,15 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
     if ( propID == kpidIsAnti ) {
         prop = false;
     } else if ( index < mOldArcItemsCount ) {
+        if ( mRenamedItems != nullptr && propID == kpidPath ) {
+            auto res = mRenamedItems->find( index );
+            if ( res != mRenamedItems->end() ) {
+                prop = WIDEN( res->second );
+            }
+        }
+        if ( prop.isEmpty() ) { //Not renamed
             prop = mOldArc->getItemProperty( index, static_cast< BitProperty >( propID ) );
+        }
     } else {
         prop = getNewItemProperty( index, propID );
     }
@@ -118,12 +131,13 @@ STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
                                                 UInt32* indexInArchive ) {
 
     bool isOldItem = index < mOldArcItemsCount;
+    bool isRenamedItem = mRenamedItems != nullptr && mRenamedItems->find( index ) != mRenamedItems->end();
 
     if ( newData != nullptr ) {
         *newData = isOldItem ? 0 : 1; //= true;
     }
     if ( newProperties != nullptr ) {
-        *newProperties = isOldItem ? 0 : 1; //= true;
+        *newProperties = isOldItem && !isRenamedItem ? 0 : 1; //= true;
     }
     if ( indexInArchive != nullptr ) {
         *indexInArchive = isOldItem ? index : static_cast< uint32_t >( -1 );
