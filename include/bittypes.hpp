@@ -20,6 +20,7 @@
 #define BITTYPES_HPP
 
 #include <string>
+#include <unordered_map>
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
@@ -58,5 +59,7 @@ namespace bit7z {
 #define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
 #define COM_DECLSPEC_NOTHROW
 #endif
+
+    using RenamedItems = std::unordered_map< unsigned int, tstring >;
 }
 #endif // BITTYPES_HPP

@@ -16,6 +16,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bit7z.hpp
      ${PROJECT_SOURCE_DIR}/include/bit7zlibrary.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchivecreator.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitarchiveeditor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchivehandler.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchiveinfo.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchiveitem.hpp
@@ -66,6 +67,7 @@ set( HEADERS
 set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bit7zlibrary.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchivecreator.cpp
+     ${PROJECT_SOURCE_DIR}/src/bitarchiveeditor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchivehandler.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveinfo.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveitem.cpp

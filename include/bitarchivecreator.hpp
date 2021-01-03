@@ -190,6 +190,7 @@ namespace bit7z {
 
         protected:
             const BitInOutFormat& mFormat;
+            bool mUpdateMode;
 
             BitArchiveCreator( const Bit7zLibrary& lib,
                                const BitInOutFormat& format,
@@ -220,7 +221,6 @@ namespace bit7z {
             uint32_t mWordSize;
             bool mCryptHeaders;
             bool mSolidMode;
-            bool mUpdateMode;
             uint64_t mVolumeSize;
             uint32_t mThreadsCount;
     };
