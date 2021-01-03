@@ -29,18 +29,6 @@
 
 using namespace bit7z;
 
-void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {
-    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( kUnsupportedOperation, make_hresult_code( result ) );
-    }
-
-    if ( result != S_OK ) {
-        update_callback->throwException( result );
-    }
-}
-
 bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) {
     switch ( method ) {
         case BitCompressionMethod::Copy:
@@ -264,61 +252,81 @@ void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) {
     mThreadsCount = threads_count;
 }
 
-CMyComPtr< IOutArchive > BitArchiveCreator::initOutArchive() const {
+void BitArchiveCreator::compressOut( IOutArchive* out_arc,
+                                     IOutStream* out_stream,
+                                     UpdateCallback* update_callback ) const {
+    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
+
+    if ( result == E_NOTIMPL ) {
+        throw BitException( kUnsupportedOperation, make_hresult_code( result ) );
+    }
+
+    if ( result != S_OK ) {
+        update_callback->throwException( result );
+    }
+}
+
+CMyComPtr< IOutArchive > BitArchiveCreator::initOutArchive( BitInputArchive* old_arc ) const {
     CMyComPtr< IOutArchive > new_arc;
-    const GUID format_GUID = mFormat.guid();
-    mLibrary.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
+    if ( old_arc == nullptr ) {
+        const GUID format_GUID = mFormat.guid();
+        mLibrary.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
+    } else {
+        old_arc->initUpdatableArchive( &new_arc );
+    }
     setArchiveProperties( new_arc );
     return new_arc;
 }
 
 CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out_archive,
-                                                              CMyComPtr< IOutArchive >& new_arc,
-                                                              unique_ptr< BitInputArchive >& old_arc ) const {
+                                                              bool updating_archive ) const {
     if ( mVolumeSize > 0 ) {
         return new CMultiVolOutStream( mVolumeSize, out_archive );
     }
 
-    CMyComPtr< IOutStream > out_stream;
-    std::error_code ec;
-    if ( mUpdateMode && fs::exists( out_archive, ec ) ) {
-        if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
-            //Update mode is set but format does not support adding more files
-            throw BitException( "Format does not support updating existing archive files",
-                                std::make_error_code( std::errc::invalid_argument ) );
-        }
+    fs::path out_path = out_archive;
+    if ( updating_archive ) {
+        out_path += ".tmp";
+    }
 
-        auto* file_out_stream = new CFileOutStream( out_archive + TSTRING( ".tmp" ), true );
-        out_stream = file_out_stream;
-        if ( file_out_stream->fail() ) {
-            //could not create temporary file
-            throw BitException( "Could not create temp archive file for updating", last_error_code(), out_archive );
-        }
-
-        old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
-        old_arc->initUpdatableArchive( &new_arc );
-        setArchiveProperties( new_arc );
-    } else {
-        auto* file_out_stream = new CFileOutStream( out_archive );
-        out_stream = file_out_stream;
-        if ( file_out_stream->fail() ) {
-            //Unknown error!
-            throw BitException( "Cannot create output archive file", last_error_code(), out_archive );
-        }
+    auto* file_out_stream = new CFileOutStream( out_path, updating_archive );
+    CMyComPtr< IOutStream > out_stream = file_out_stream;
+    if ( file_out_stream->fail() ) {
+        //Unknown error!
+        throw BitException( "Cannot create output archive file", last_error_code(), out_path.native() );
     }
     return out_stream;
 }
 
 void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const {
     unique_ptr< BitInputArchive > old_arc = nullptr;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, new_arc, old_arc );
-    update_callback->setOldArc( old_arc.get() );
+    std::error_code ec;
+    bool updating_archive = mUpdateMode && fs::exists( out_file, ec );
+    if ( updating_archive ) {
+        if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+            //Update mode is set but format does not support adding more files
+            throw BitException( "Format does not support updating existing archive files",
+                                std::make_error_code( std::errc::invalid_argument ) );
+        }
+        old_arc = std::make_unique< BitInputArchive >( *this, out_file );
+    }
+
+    compressToFile( out_file, old_arc.get(), update_callback );
+}
+
+void BitArchiveCreator::compressToFile( const tstring& out_file, BitInputArchive* old_arc, UpdateCallback* update_callback ) const {
+    // Note: if old_arc != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
+    // (see initUpdatableArchive function of BitInputArchive)!
+    CMyComPtr< IOutArchive > new_arc = initOutArchive( old_arc );
+    CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, old_arc != nullptr );
+    update_callback->setOldArc( old_arc );
     compressOut( new_arc, out_stream, update_callback );
+
     if ( old_arc ) {
         old_arc->close();
-        /* NOTE: In the following instruction, we use . (dot) not -> (arrow) operator: in fact, both CMyComPtr and
-         *       IOutStream have a Release() method, so we need to call only the one of CMyComPtr! */
+        /* NOTE: In the following instruction, we use the . (dot) operator, not the -> (arrow) operator:
+         *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
+         *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
         out_stream.Release(); //Releasing the output stream so that we can rename it as the original file
 
 #if defined( __MINGW32__ ) && defined( USE_STANDARD_FILESYSTEM )
