@@ -197,15 +197,17 @@ namespace bit7z {
 
             ~BitArchiveCreator() override = default;
 
-            CMyComPtr< IOutArchive > initOutArchive() const;
+            CMyComPtr< IOutArchive > initOutArchive( BitInputArchive* old_arc = nullptr ) const;
 
-            CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive,
-                                                       CMyComPtr< IOutArchive >& new_arc,
-                                                       unique_ptr< BitInputArchive >& old_arc ) const;
+            CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive, bool updating_archive ) const;
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
 
+            void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) const;
+
             void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
+
+            void compressToFile( const tstring& out_file, BitInputArchive* old_arc, UpdateCallback* update_callback ) const;
 
             void compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const;
 
