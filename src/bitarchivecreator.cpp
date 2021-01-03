@@ -134,8 +134,10 @@ const wchar_t* methodName( BitCompressionMethod method ) {
     }
 }
 
-BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format ) :
-    BitArchiveHandler( lib ),
+BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
+                                      const BitInOutFormat& format,
+                                      tstring password ) :
+    BitArchiveHandler( lib, std::move( password ) ),
     mFormat( format ),
     mCompressionLevel( BitCompressionLevel::NORMAL ),
     mCompressionMethod( format.defaultMethod() ),

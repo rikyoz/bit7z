@@ -191,7 +191,9 @@ namespace bit7z {
         protected:
             const BitInOutFormat& mFormat;
 
-            BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format );
+            BitArchiveCreator( const Bit7zLibrary& lib,
+                               const BitInOutFormat& format,
+                               tstring password = TSTRING( "" ) );
 
             ~BitArchiveCreator() override = default;
 
