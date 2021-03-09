@@ -49,7 +49,7 @@ namespace bit7z {
 
             void setOldArc( const BitInputArchive* old_arc );
 
-            void setRenamedItems( RenamedItems renamed_items );
+            void setRenamedItems( const RenamedItems& renamed_items );
 
             HRESULT Finalize();
 
@@ -83,7 +83,7 @@ namespace bit7z {
         protected:
             const BitInputArchive* mOldArc;
             uint32_t mOldArcItemsCount;
-            unique_ptr< const RenamedItems > mRenamedItems;
+            const RenamedItems* mRenamedItems; //note: using non-owning pointer on purpose
 
             bool mAskPassword;
             bool mNeedBeClosed;
