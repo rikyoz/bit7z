@@ -44,8 +44,8 @@ void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
     }
 }
 
-void UpdateCallback::setRenamedItems( RenamedItems renamed_items ) {
-    mRenamedItems = std::make_unique< const RenamedItems >( std::move( renamed_items ) );
+void UpdateCallback::setRenamedItems( const RenamedItems& renamed_items ) {
+    mRenamedItems = &renamed_items;
 }
 
 HRESULT UpdateCallback::Finalize() {

@@ -56,7 +56,7 @@ void BitArchiveEditor::applyChanges() {
     auto archive_path = mInputArchive->getArchivePath();
     mInputArchive.reset();
     CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, {} );
-    update_callback->setRenamedItems( std::move( mRenameMap ) );
+    update_callback->setRenamedItems( mRenameMap );
     BitArchiveCreator::compressToFile( archive_path, update_callback );
     mRenameMap.clear();
     mInputArchive = std::make_unique<BitInputArchive>( *this, archive_path );
