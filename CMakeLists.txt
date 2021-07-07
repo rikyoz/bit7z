@@ -232,6 +232,9 @@ if( MSVC )
     # standard conformance options of MSVC
     target_compile_options( ${TARGET_NAME} PRIVATE /Zc:rvalueCast /Zc:inline /Zc:forScope
                             /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
+    # enabling multi-threaded compiling
+    set( MSVC_COMPILE_FLAGS "/MP" )
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )
     # static runtime option
     if( STATIC_RUNTIME )
         set( CompilerFlags
