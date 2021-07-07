@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2020  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,19 +16,37 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef FORMATDETECT_HPP
-#define FORMATDETECT_HPP
+#ifndef GENERICITEM_HPP
+#define GENERICITEM_HPP
 
-#ifdef BIT7Z_AUTO_FORMAT
+#include <cstdint>
+#include <windows.h>
 
-#include "../include/bitformat.hpp"
+#ifndef _WIN32
+#include <myWindows/StdAfx.h>
+#endif
 
 #include <7zip/IStream.h>
 
-namespace bit7z {
-    const BitInFormat& detectFormatFromExt( const tstring& in_file );
-    const BitInFormat& detectFormatFromSig( IInStream* stream );
-}
-#endif
+#include "../include/bittypes.hpp"
+#include "../include/bitpropvariant.hpp"
+#include "../include/fs.hpp"
 
-#endif
+namespace bit7z {
+    struct GenericItem {
+        virtual tstring name() const = 0;
+
+        virtual fs::path path() const = 0;
+
+        virtual fs::path inArchivePath() const = 0;
+
+        virtual BitPropVariant getProperty( PROPID propID ) const = 0;
+
+        virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
+
+        virtual ~GenericItem() = default;
+    };
+}
+
+
+#endif //GENERICITEM_HPP

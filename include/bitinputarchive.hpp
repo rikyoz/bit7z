@@ -15,7 +15,6 @@
  * You should have received a copy of the GNU General Public License
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
-
 #ifndef BITINPUTARCHIVE_HPP
 #define BITINPUTARCHIVE_HPP
 
@@ -124,6 +123,8 @@ namespace bit7z {
             friend class BitArchiveOpener;
 
             friend class BitArchiveCreator;
+
+            friend class BitOutputArchive;
 
         private:
             IInArchive* mInArchive;

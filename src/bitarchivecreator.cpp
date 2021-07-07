@@ -22,10 +22,6 @@
 #include "../include/bitarchivecreator.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/cfileoutstream.hpp"
-#include "../include/cmultivoloutstream.hpp"
-#include "../include/cbufferoutstream.hpp"
-#include "../include/updatecallback.hpp"
 
 using namespace bit7z;
 
@@ -124,10 +120,11 @@ const wchar_t* methodName( BitCompressionMethod method ) {
 
 BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
                                       const BitInOutFormat& format,
-                                      tstring password ) :
+                                      tstring password,
+                                      bool update_mode ) :
     BitArchiveHandler( lib, std::move( password ) ),
     mFormat( format ),
-    mUpdateMode( false ),
+    mUpdateMode( update_mode ),
     mCompressionLevel( BitCompressionLevel::NORMAL ),
     mCompressionMethod( format.defaultMethod() ),
     mDictionarySize( 0 ),
@@ -252,121 +249,10 @@ void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) {
     mThreadsCount = threads_count;
 }
 
-void BitArchiveCreator::compressOut( IOutArchive* out_arc,
-                                     IOutStream* out_stream,
-                                     UpdateCallback* update_callback ) const {
-    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( kUnsupportedOperation, make_hresult_code( result ) );
-    }
-
-    if ( result != S_OK ) {
-        update_callback->throwException( result );
-    }
-}
-
-CMyComPtr< IOutArchive > BitArchiveCreator::initOutArchive( BitInputArchive* old_arc ) const {
-    CMyComPtr< IOutArchive > new_arc;
-    if ( old_arc == nullptr ) {
-        const GUID format_GUID = mFormat.guid();
-        mLibrary.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
-    } else {
-        old_arc->initUpdatableArchive( &new_arc );
-    }
-    setArchiveProperties( new_arc );
-    return new_arc;
-}
-
-CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out_archive,
-                                                              bool updating_archive ) const {
-    if ( mVolumeSize > 0 ) {
-        return new CMultiVolOutStream( mVolumeSize, out_archive );
-    }
-
-    fs::path out_path = out_archive;
-    if ( updating_archive ) {
-        out_path += ".tmp";
-    }
-
-    auto* file_out_stream = new CFileOutStream( out_path, updating_archive );
-    CMyComPtr< IOutStream > out_stream = file_out_stream;
-    if ( file_out_stream->fail() ) {
-        //Unknown error!
-        throw BitException( "Cannot create output archive file", last_error_code(), out_path.native() );
-    }
-    return out_stream;
-}
-
-void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const {
-    unique_ptr< BitInputArchive > old_arc = nullptr;
-    std::error_code ec;
-    bool updating_archive = mUpdateMode && fs::exists( out_file, ec );
-    if ( updating_archive ) {
-        if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
-            //Update mode is set but format does not support adding more files
-            throw BitException( "Format does not support updating existing archive files",
-                                std::make_error_code( std::errc::invalid_argument ) );
-        }
-        old_arc = std::make_unique< BitInputArchive >( *this, out_file );
-    }
-
-    compressToFile( out_file, old_arc.get(), update_callback );
-}
-
-void BitArchiveCreator::compressToFile( const tstring& out_file, BitInputArchive* old_arc, UpdateCallback* update_callback ) const {
-    // Note: if old_arc != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
-    // (see initUpdatableArchive function of BitInputArchive)!
-    CMyComPtr< IOutArchive > new_arc = initOutArchive( old_arc );
-    CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, old_arc != nullptr );
-    update_callback->setOldArc( old_arc );
-    compressOut( new_arc, out_stream, update_callback );
-
-    if ( old_arc ) {
-        old_arc->close();
-        /* NOTE: In the following instruction, we use the . (dot) operator, not the -> (arrow) operator:
-         *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
-         *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
-        out_stream.Release(); //Releasing the output stream so that we can rename it as the original file
-
-#if defined( __MINGW32__ ) && defined( USE_STANDARD_FILESYSTEM )
-        /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
-         * existing destination file (as it should). So we explicitly remove it before! */
-        std::error_code ec;
-        fs::remove( out_file, ec );
-        if ( ec ) {
-            throw BitException( "Cannot remove old archive file", ec, out_file );
-        }
-#endif
-
-        //remove old file and rename tmp file (move file with overwriting)
-        std::error_code error;
-        fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
-        if ( error ) {
-            throw BitException( "Cannot rename temp archive file", error, out_file );
-        }
-    }
-}
-
-void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const {
-    if ( !out_buffer.empty() ) {
-        throw BitException( kCannotOverwriteBuffer, std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_mem_stream = new CBufferOutStream( out_buffer );
-    compressOut( new_arc, out_mem_stream, update_callback );
-}
-
-void BitArchiveCreator::compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
-    compressOut( new_arc, out_std_stream, update_callback );
-}
-
-void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
-    vector< const wchar_t* > names;
-    vector< BitPropVariant > values;
+ArchiveProperties BitArchiveCreator::getArchiveProperties() const {
+    ArchiveProperties properties = {};
+    vector< const wchar_t* >& names = properties.names;
+    vector< BitPropVariant >& values = properties.values;
     if ( mCryptHeaders && mFormat.hasFeature( HEADER_ENCRYPTION ) ) {
         names.push_back( L"he" );
         values.emplace_back( true );
@@ -420,17 +306,5 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         names.push_back( prop_name );
         values.emplace_back( mWordSize );
     }
-
-    if ( !names.empty() ) {
-        CMyComPtr< ISetProperties > set_properties;
-        if ( out_archive->QueryInterface( ::IID_ISetProperties,
-                                          reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
-            throw BitException( "ISetProperties unsupported", std::make_error_code( std::errc::not_supported ) );
-        }
-        if ( set_properties->SetProperties( names.data(), values.data(),
-                                            static_cast< uint32_t >( names.size() ) ) != S_OK ) {
-            throw BitException( "Cannot set properties of the archive",
-                                std::make_error_code( std::errc::invalid_argument ) );
-        }
-    }
+    return properties;
 }

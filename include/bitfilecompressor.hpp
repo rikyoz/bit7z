@@ -163,10 +163,6 @@ namespace bit7z {
              */
             void compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const;
 
-        private:
-            void compressOut( const vector< FSItem >& in_items, const tstring& out_file ) const;
-
-            void compressOut( const vector< FSItem >& in_items, ostream& out_stream ) const;
     };
 }
 #endif // BITFILECOMPRESSOR_HPP

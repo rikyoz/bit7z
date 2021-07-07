@@ -21,9 +21,7 @@
 
 #include "../include/opencallback.hpp"
 
-#include "../include/bitpropvariant.hpp"
 #include "../include/cfileinstream.hpp"
-#include "../include/fsutil.hpp"
 #include "../include/util.hpp"
 
 using namespace bit7z;

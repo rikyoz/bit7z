@@ -36,6 +36,11 @@ namespace bit7z {
 
     class UpdateCallback;
 
+    struct ArchiveProperties {
+        vector< const wchar_t* > names;
+        vector< BitPropVariant > values;
+    };
+
     /**
      * @brief Abstract class representing a generic archive creator.
      */
@@ -190,31 +195,20 @@ namespace bit7z {
 
         protected:
             const BitInOutFormat& mFormat;
-            bool mUpdateMode;
 
             BitArchiveCreator( const Bit7zLibrary& lib,
                                const BitInOutFormat& format,
-                               tstring password = TSTRING( "" ) );
+                               tstring password = TSTRING( "" ),
+                               bool update_mode = false );
 
             ~BitArchiveCreator() override = default;
 
-            CMyComPtr< IOutArchive > initOutArchive( BitInputArchive* old_arc = nullptr ) const;
+            ArchiveProperties getArchiveProperties() const;
 
-            CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive, bool updating_archive ) const;
-
-            void setArchiveProperties( IOutArchive* out_archive ) const;
-
-            void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) const;
-
-            void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
-
-            void compressToFile( const tstring& out_file, BitInputArchive* old_arc, UpdateCallback* update_callback ) const;
-
-            void compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const;
-
-            void compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const;
+            friend class BitOutputArchive;
 
         private:
+            bool mUpdateMode;
             BitCompressionLevel mCompressionLevel;
             BitCompressionMethod mCompressionMethod;
             uint32_t mDictionarySize;

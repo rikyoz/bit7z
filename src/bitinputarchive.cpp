@@ -58,7 +58,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
     }
     GUID format_GUID = mDetectedFormat->guid();
 #else
-    GUID format_GUID = handler.format().guid();
+    GUID format_GUID = mArchiveHandler.format().guid();
 #endif
     // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically!
@@ -242,7 +242,7 @@ void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
     extract( indices, extract_callback );
 }
 
-void BitInputArchive::extract( map< tstring, vector< byte_t>>& out_map ) const {
+void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const {
     uint32_t number_items = itemsCount();
     vector< uint32_t > files_indices;
     for ( uint32_t i = 0; i < number_items; ++i ) {

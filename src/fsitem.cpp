@@ -22,10 +22,14 @@
 #include <utility>
 #include <system_error>
 
+#include "../include/cfileinstream.hpp"
 #include "../include/fsitem.hpp"
-
 #include "../include/bitexception.hpp"
 
+#include <7zip/PropID.h>
+
+using bit7z::tstring;
+using bit7z::BitPropVariant;
 using namespace bit7z::filesystem;
 
 /* NOTES:
@@ -96,7 +100,7 @@ FILETIME FSItem::lastWriteTime() const {
 #define MAYBE_UNUSED [[maybe_unused]]
 #endif
 
-bit7z::tstring FSItem::name() const {
+tstring FSItem::name() const {
     MAYBE_UNUSED std::error_code ec;
     return fs::canonical( mFileEntry.path(), ec ).filename();
 }
@@ -129,4 +133,48 @@ fs::path FSItem::inArchivePath() const {
 
 uint32_t FSItem::attributes() const {
     return mFileAttributeData.dwFileAttributes;
+}
+
+BitPropVariant FSItem::getProperty( PROPID propID ) const {
+    BitPropVariant prop;
+    switch ( propID ) {
+        case kpidPath:
+            prop = inArchivePath().wstring();
+            break;
+        case kpidIsDir:
+            prop = isDir();
+            break;
+        case kpidSize:
+            prop = size();
+            break;
+        case kpidAttrib:
+            prop = attributes();
+            break;
+        case kpidCTime:
+            prop = creationTime();
+            break;
+        case kpidATime:
+            prop = lastAccessTime();
+            break;
+        case kpidMTime:
+            prop = lastWriteTime();
+            break;
+        default: //empty prop
+            break;
+    }
+    return prop;
+}
+
+HRESULT FSItem::getStream( ISequentialInStream** inStream ) const {
+    if ( isDir() ) {
+        return S_OK;
+    }
+
+    CMyComPtr< CFileInStream > inStreamLoc = new CFileInStream( path() ); //CMyComPtr is necessary here for correct RAII
+
+    if ( inStreamLoc->fail() ) {
+        return S_FALSE;
+    }
+    *inStream = inStreamLoc.Detach();
+    return S_OK;
 }

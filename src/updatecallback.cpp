@@ -21,12 +21,16 @@
 
 #include "../include/updatecallback.hpp"
 
+#include "../include/genericitem.hpp"
+#include "../include/cfileoutstream.hpp"
 #include "../include/util.hpp"
 
 using namespace bit7z;
 
-UpdateCallback::UpdateCallback( const BitArchiveCreator& creator )
+UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const ItemsIndex& new_items )
     : Callback{ creator },
+      mNewItems{ new_items },
+      mVolSize{ 0 },
       mOldArc{ nullptr },
       mOldArcItemsCount{ 0 },
       mRenamedItems{ nullptr },
@@ -46,6 +50,13 @@ void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
 
 void UpdateCallback::setRenamedItems( const RenamedItems& renamed_items ) {
     mRenamedItems = &renamed_items;
+}
+
+void UpdateCallback::throwException( HRESULT error ) {
+    if ( !mFailedFiles.empty() ) {
+        throw BitException( "Error compressing files", make_hresult_code( error ), std::move( mFailedFiles ) );
+    }
+    Callback::throwException( error );
 }
 
 HRESULT UpdateCallback::Finalize() {
@@ -115,12 +126,29 @@ STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inSt
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) {
+STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
+    if ( mVolSize == 0 ) { return S_FALSE; }
+
+    *size = mVolSize;
     return S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 /*index*/, ISequentialOutStream** /*volumeStream*/ ) {
+STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
+    tstring res = to_tstring( index + 1 );
+    if ( res.length() < 3 ) {
+        //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)
+        res.insert( res.begin(), 3 - res.length(), TSTRING( '0' ) );
+    }
+
+    tstring fileName = TSTRING( '.' ) + res;// + mVolExt;
+    CMyComPtr< CFileOutStream > stream = new CFileOutStream( fileName );
+
+    if ( stream->fail() ) {
+        return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
+    }
+
+    *volumeStream = stream.Detach();
     return S_OK;
 }
 
@@ -166,4 +194,32 @@ STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, B
 
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
+}
+
+uint32_t UpdateCallback::itemsCount() const {
+    return mOldArcItemsCount + static_cast< uint32_t >( mNewItems.size() );
+}
+
+BitPropVariant UpdateCallback::getNewItemProperty( UInt32 index, PROPID propID ) {
+    const GenericItem& new_item = mNewItems[ static_cast< size_t >( index - mOldArcItemsCount ) ];
+    return new_item.getProperty( propID );
+}
+
+HRESULT UpdateCallback::getNewItemStream( uint32_t index, ISequentialInStream** inStream ) {
+    const GenericItem& new_item = mNewItems[ static_cast< size_t >( index - mOldArcItemsCount ) ];
+
+    if ( mHandler.fileCallback() ) {
+        mHandler.fileCallback()( new_item.name() );
+    }
+
+    HRESULT res = new_item.getStream( inStream );
+    if ( FAILED(res) ) {
+        auto path = new_item.path();
+        std::error_code ec;
+        if ( fs::exists( path, ec ) ) {
+            ec = std::make_error_code( std::errc::file_exists );
+        }
+        mFailedFiles.emplace_back( path.native(), ec );
+    }
+    return res;
 }

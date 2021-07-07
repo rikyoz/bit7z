@@ -21,7 +21,8 @@
 
 #include "../include/bitmemcompressor.hpp"
 
-#include "../include/bufferupdatecallback.hpp"
+#include "../include/genericitem.hpp"
+#include "../include/bitoutputarchive.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace bit7z;
@@ -36,20 +37,23 @@ void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  const tstring& in_buffer_name ) const {
     const tstring& name = in_buffer_name.empty() ? fsutil::filename( out_file ) : in_buffer_name;
 
-    CMyComPtr< UpdateCallback > update_callback = new BufferUpdateCallback( *this, in_buffer, name );
-    BitArchiveCreator::compressToFile( out_file, update_callback );
+    BitOutputArchive output_archive{ *this, out_file };
+    output_archive.addFile( in_buffer, name );
+    output_archive.compressTo( out_file );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  vector< byte_t >& out_buffer,
                                  const tstring& in_buffer_name ) const {
-    CMyComPtr< UpdateCallback > update_callback = new BufferUpdateCallback( *this, in_buffer, in_buffer_name );
-    BitArchiveCreator::compressToBuffer( out_buffer, update_callback );
+    BitOutputArchive output_archive{ *this, out_buffer };
+    output_archive.addFile( in_buffer, in_buffer_name );
+    output_archive.compressTo( out_buffer );
 }
 
 void BitMemCompressor::compress( const vector< byte_t >& in_buffer,
                                  std::ostream& out_stream,
                                  const tstring& in_buffer_name ) const {
-    CMyComPtr< UpdateCallback > update_callback = new BufferUpdateCallback( *this, in_buffer, in_buffer_name );
-    BitArchiveCreator::compressToStream( out_stream, update_callback );
+    BitOutputArchive output_archive{ *this };
+    output_archive.addFile( in_buffer, in_buffer_name );
+    output_archive.compressTo( out_stream );
 }

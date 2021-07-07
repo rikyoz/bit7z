@@ -35,7 +35,9 @@ FSIndexer::FSIndexer( FSItem directory, tstring filter)
 }
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
-void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, const fs::path& prefix ) {
+void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericItem > >& result,
+                                    bool recursive,
+                                    const fs::path& prefix ) {
     auto path = mDirItem.path();
     if ( !prefix.empty() ) {
         path = path / prefix;
@@ -53,7 +55,7 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
         FSItem current_item{ current_entry, search_path };
         bool item_matches = fsutil::wildcardMatch( mFilter, current_item.name() );
         if ( item_matches ) {
-            result.push_back( current_item );
+            result.emplace_back( std::make_unique< FSItem >( current_item ) );
         }
 
         if ( current_item.isDir() && ( recursive || item_matches ) ) {
@@ -64,45 +66,4 @@ void FSIndexer::listDirectoryItems( vector< FSItem >& result, bool recursive, co
             listDirectoryItems( result, true, next_dir );
         }
     }
-}
-
-void FSIndexer::indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem >& result ) {
-    if ( !item.isDir() ) {
-        result.push_back( item );
-    } else if ( !ignore_dirs ) { //item is a directory
-        if ( !item.inArchivePath().empty() ) {
-            result.push_back( item );
-        }
-        FSIndexer indexer{ item };
-        indexer.listDirectoryItems( result, true );
-    }
-}
-
-vector< FSItem > FSIndexer::indexDirectory( const fs::path& in_dir, const tstring& filter, bool recursive ) {
-    vector< FSItem > result;
-    FSItem dir_item{ in_dir };
-    if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
-        result.push_back( dir_item );
-    }
-    FSIndexer indexer{ dir_item, filter };
-    indexer.listDirectoryItems( result, recursive );
-    return result;
-}
-
-vector< FSItem > FSIndexer::indexPaths( const vector< tstring >& in_paths, bool ignore_dirs ) {
-    vector< FSItem > out_files;
-    for ( const auto& file_path : in_paths ) {
-        FSItem item{ file_path };
-        indexItem( item, ignore_dirs, out_files );
-    }
-    return out_files;
-}
-
-vector< FSItem > FSIndexer::indexPathsMap( const map< tstring, tstring >& in_paths, bool ignore_dirs ) {
-    vector< FSItem > out_files;
-    for ( const auto& file_pair : in_paths ) {
-        FSItem item{ fs::path( file_pair.first ), fs::path( file_pair.second ) };
-        indexItem( item, ignore_dirs, out_files );
-    }
-    return out_files;
 }

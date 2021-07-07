@@ -28,8 +28,10 @@
 #include <7zip/IPassword.h>
 
 #include "../include/callback.hpp"
+#include "../include/itemsindex.hpp"
 #include "../include/bitarchivecreator.hpp"
 #include "../include/bitinputarchive.hpp"
+#include "../include/bitexception.hpp"
 
 namespace bit7z {
     constexpr auto kUnsupportedOperation = "Unsupported operation";
@@ -41,15 +43,23 @@ namespace bit7z {
                            public ICompressProgressInfo,
                            protected ICryptoGetTextPassword2 {
         public:
+            explicit UpdateCallback( const BitArchiveCreator& creator, const ItemsIndex& new_items );
+
             ~UpdateCallback() override;
 
-            virtual uint32_t itemsCount() const = 0;
-
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
+
+            uint32_t itemsCount() const;
 
             void setOldArc( const BitInputArchive* old_arc );
 
             void setRenamedItems( const RenamedItems& renamed_items );
+
+            BitPropVariant getNewItemProperty( UInt32 index, PROPID propID );
+
+            HRESULT getNewItemStream( uint32_t index, ISequentialInStream** inStream );
+
+            void throwException( HRESULT error ) override;
 
             HRESULT Finalize();
 
@@ -88,11 +98,10 @@ namespace bit7z {
             bool mAskPassword;
             bool mNeedBeClosed;
 
-            explicit UpdateCallback( const BitArchiveCreator& creator );
-
-            virtual BitPropVariant getNewItemProperty( UInt32 index, PROPID id ) = 0;
-
-            virtual HRESULT getNewItemStream( uint32_t index, ISequentialInStream** inStream ) = 0;
+        private:
+            const ItemsIndex& mNewItems;
+            uint64_t mVolSize;
+            FailedFiles mFailedFiles;
     };
 }
 

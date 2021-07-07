@@ -18,25 +18,26 @@
 
 #include "../include/bitexception.hpp"
 #include "../include/bitarchiveeditor.hpp"
-
-#include "../include/fileupdatecallback.hpp"
+#include "../include/updatecallback.hpp"
+#include "../include/genericitem.hpp"
 
 using bit7z::BitArchiveEditor;
 using bit7z::BitException;
 using bit7z::BitInFormat;
+using bit7z::UpdateCallback;
 
 BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& in_file,
                                     const BitInOutFormat& format,
                                     const tstring& password )
-                                    : BitArchiveCreator( lib, format, password ),
-                                      mInputArchive( std::make_unique<BitInputArchive>( *this, in_file ) ) {
-    mUpdateMode = true;
+    : BitArchiveCreator( lib, format, password, true ),
+      BitOutputArchive( *this, in_file ) {
 }
 
 void BitArchiveEditor::renameItem( unsigned index, const tstring& new_name ) {
     if ( index >= mInputArchive->itemsCount() ) {
-        throw BitException( "Invalid index " + std::to_string(index), std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Invalid index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
     }
     mRenameMap[ index ] = new_name;
 }
@@ -48,16 +49,19 @@ void BitArchiveEditor::renameItem( const tstring& old_name, const tstring& new_n
             return;
         }
     }
-    throw BitException("Could not find the file in the archive",
-                       std::make_error_code( std::errc::no_such_file_or_directory ), { old_name } );
+    throw BitException( "Could not find the file in the archive",
+                        std::make_error_code( std::errc::no_such_file_or_directory ), { old_name } );
 }
 
 void BitArchiveEditor::applyChanges() {
     auto archive_path = mInputArchive->getArchivePath();
-    mInputArchive.reset();
-    CMyComPtr< UpdateCallback > update_callback = new FileUpdateCallback( *this, {} );
-    update_callback->setRenamedItems( mRenameMap );
-    BitArchiveCreator::compressToFile( archive_path, update_callback );
+    compressTo( archive_path );
     mRenameMap.clear();
-    mInputArchive = std::make_unique<BitInputArchive>( *this, archive_path );
+    mInputArchive = std::make_unique< BitInputArchive >( *this, archive_path );
+}
+
+CMyComPtr< UpdateCallback > BitArchiveEditor::initUpdateCallback() const {
+    auto update_callback = BitOutputArchive::initUpdateCallback();
+    update_callback->setRenamedItems( mRenameMap );
+    return update_callback;
 }

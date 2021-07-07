@@ -23,12 +23,13 @@
 #define BITARCHIVEEDITOR_HPP
 
 #include "../include/bitarchivecreator.hpp"
+#include "../include/bitoutputarchive.hpp"
 #include "../include/bittypes.hpp"
 
 namespace bit7z {
     using std::vector;
 
-    class BitArchiveEditor : public BitArchiveCreator {
+    class BitArchiveEditor : public BitArchiveCreator, public BitOutputArchive {
         public:
             BitArchiveEditor( const Bit7zLibrary& lib,
                               const tstring& in_file,
@@ -42,8 +43,9 @@ namespace bit7z {
             void applyChanges();
 
         private:
-            unique_ptr< BitInputArchive > mInputArchive;
             RenamedItems mRenameMap;
+
+            CMyComPtr< UpdateCallback > initUpdateCallback() const override;
     };
 }
 
