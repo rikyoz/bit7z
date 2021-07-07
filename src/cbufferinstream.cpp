@@ -27,7 +27,7 @@
 
 #include "../include/cbufferinstream.hpp"
 
-#include <algorithm>
+#include <algorithm> //for std::copy_n
 #include <cstdint>
 
 #ifndef _WIN32
