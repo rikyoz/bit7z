@@ -37,7 +37,9 @@ BitException::BitException( const char* const message, std::error_code code, Fai
     : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
 
 BitException::BitException( const char* const message, std::error_code code, const tstring& file )
-    : system_error( code, message ), mFailedFiles( { std::make_pair<>( file, code ) } ) {}
+    : system_error( code, message ) {
+    mFailedFiles.emplace_back( file, code );
+}
 
 BitException::BitException( const std::string& message, std::error_code code )
     : system_error( code, message.c_str() ) {}

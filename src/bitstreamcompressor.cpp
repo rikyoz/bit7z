@@ -31,15 +31,14 @@ using namespace bit7z::filesystem;
 BitStreamCompressor::BitStreamCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitArchiveCreator( lib, format ) {}
 
-//-V669
-void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, const tstring& in_stream_name ) const {
+void BitStreamCompressor::compress( istream& in_stream, ostream& out_stream, const tstring& in_stream_name ) const { //-V669
     BitOutputArchive output_archive{ *this };
     output_archive.addFile( in_stream, in_stream_name );
     output_archive.compressTo( out_stream );
 }
 
-//-V669
-void BitStreamCompressor::compress( istream& in_stream,
+
+void BitStreamCompressor::compress( istream& in_stream, //-V669
                                     vector< byte_t >& out_buffer,
                                     const tstring& in_stream_name ) const {
     BitOutputArchive output_archive{ *this, out_buffer };
@@ -47,8 +46,9 @@ void BitStreamCompressor::compress( istream& in_stream,
     output_archive.compressTo( out_buffer );
 }
 
-//-V669
-void BitStreamCompressor::compress( istream& in_stream, const tstring& out_file, const tstring& in_stream_name ) const {
+void BitStreamCompressor::compress( istream& in_stream, //-V669
+                                    const tstring& out_file, 
+                                    const tstring& in_stream_name ) const {
     const tstring& name = in_stream_name.empty() ? fsutil::filename( out_file ) : in_stream_name;
 
     BitOutputArchive output_archive{ *this, out_file };
