@@ -22,7 +22,6 @@
 #include "../include/bufferextractcallback.hpp"
 
 #include "../include/cbufferoutstream.hpp"
-#include "../include/bitexception.hpp"
 #include "../include/fsutil.hpp"
 
 using namespace std;

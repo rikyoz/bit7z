@@ -29,29 +29,19 @@ namespace bit7z {
     namespace filesystem {
         using std::vector;
         using std::map;
+        using std::unique_ptr;
 
         class FSIndexer {
             public:
-                static vector< FSItem > indexDirectory( const fs::path& in_dir,
-                                                        const tstring& filter = TSTRING( "" ),
-                                                        bool recursive = true );
+                explicit FSIndexer( FSItem directory, tstring filter = TSTRING( "" ) );
 
-                static vector< FSItem > indexPaths( const vector< tstring >& in_paths, bool ignore_dirs = false );
-
-                static vector< FSItem > indexPathsMap( const map< tstring, tstring >& in_paths,
-                                                       bool ignore_dirs = false );
+                void listDirectoryItems( vector< unique_ptr< GenericItem > >& result,
+                                         bool recursive,
+                                         const fs::path& prefix = fs::path() );
 
             private:
                 FSItem mDirItem;
                 tstring mFilter;
-
-                explicit FSIndexer( FSItem directory, tstring filter = TSTRING( "" ) );
-
-                void listDirectoryItems( vector< FSItem >& result,
-                                         bool recursive,
-                                         const fs::path& prefix = fs::path() );
-
-                static void indexItem( const FSItem& item, bool ignore_dirs, vector< FSItem >& result );
         };
     }
 }

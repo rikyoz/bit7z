@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,33 +19,31 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bufferupdatecallback.hpp"
+#include "../include/bufferitem.hpp"
+
+#include <7zip/PropID.h>
 
 #include "../include/cbufferinstream.hpp"
 
-using namespace std;
-using namespace bit7z;
+using bit7z::BufferItem;
+using bit7z::BitPropVariant;
+using bit7z::tstring;
 
-/* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
- * Main changes made:
- *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of tstring instead of UString (see Callback base interface)
- *  + Error messages are not showed (see comments in ExtractCallback)
- *  + The work performed originally by the Init method is now performed by the class constructor
- *  + FSItem class is used instead of CDirItem struct */
+BufferItem::BufferItem( const vector <byte_t>& buffer, const tstring& name ) : mBuffer{ buffer }, mBufferName{ name } {}
 
-BufferUpdateCallback::BufferUpdateCallback( const BitArchiveCreator& creator,
-                                            const vector< byte_t >& in_buffer,
-                                            const tstring& in_buffer_name )
-    : UpdateCallback( creator ),
-      mBuffer( in_buffer ),
-      mBufferName( in_buffer_name.empty() ? kEmptyFileAlias : in_buffer_name ) {}
-
-uint32_t BufferUpdateCallback::itemsCount() const {
-    return mOldArcItemsCount + 1;
+tstring BufferItem::name() const {
+    return mBufferName.filename();
 }
 
-BitPropVariant BufferUpdateCallback::getNewItemProperty( uint32_t /*index*/, PROPID propID ) {
+fs::path BufferItem::path() const {
+    return mBufferName;
+}
+
+fs::path BufferItem::inArchivePath() const {
+    return mBufferName;
+}
+
+BitPropVariant BufferItem::getProperty( PROPID propID ) const {
     BitPropVariant prop;
     switch ( propID ) {
         case kpidPath:
@@ -77,8 +75,7 @@ BitPropVariant BufferUpdateCallback::getNewItemProperty( uint32_t /*index*/, PRO
     return prop;
 }
 
-HRESULT BufferUpdateCallback::getNewItemStream( uint32_t /*index*/, ISequentialInStream** inStream ) {
-    //Note: CMyComPtr is needed for correctly counting references inside CBufferInStream
+HRESULT BufferItem::getStream( ISequentialInStream** inStream ) const {
     CMyComPtr< ISequentialInStream > inStreamLoc = new CBufferInStream( mBuffer );
     *inStream = inStreamLoc.Detach();
     return S_OK;

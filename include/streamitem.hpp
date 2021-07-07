@@ -16,32 +16,32 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef HRESULTCATEGORY_HPP
-#define HRESULTCATEGORY_HPP
+#ifndef STREAMITEM_HPP
+#define STREAMITEM_HPP
 
-#include <system_error>
-#include <string>
-
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <myWindows/StdAfx.h>
-#endif
+#include "../include/genericitem.hpp"
 
 namespace bit7z {
-    struct hresult_category_t : public std::error_category {
-        static_assert( sizeof( int ) >= sizeof( HRESULT ), "HRESULT type must be at least the size of int" );
+    using std::istream;
 
-        explicit hresult_category_t() = default;
+    class StreamItem : public GenericItem {
+        public:
+            explicit StreamItem( istream& stream, const tstring& name );
 
-        const char* name() const noexcept override;
+            tstring name() const override;
 
-        std::string message( int ev ) const override;
+            fs::path path() const override;
 
-        std::error_condition default_error_condition( int ev ) const noexcept override;
+            fs::path inArchivePath() const override;
+
+            BitPropVariant getProperty( PROPID propID ) const override;
+
+            HRESULT getStream( ISequentialInStream** inStream ) const override;
+
+        private:
+            istream& mStream;
+            const fs::path mStreamName;
     };
-
-    std::error_category& hresult_category() noexcept;
 }
 
-#endif //HRESULTCATEGORY_HPP
+#endif //STREAMITEM_HPP

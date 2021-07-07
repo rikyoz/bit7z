@@ -16,32 +16,33 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef HRESULTCATEGORY_HPP
-#define HRESULTCATEGORY_HPP
+#ifndef BUFFERITEM_HPP
+#define BUFFERITEM_HPP
 
-#include <system_error>
 #include <string>
-
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <myWindows/StdAfx.h>
-#endif
+#include "../include/genericitem.hpp"
 
 namespace bit7z {
-    struct hresult_category_t : public std::error_category {
-        static_assert( sizeof( int ) >= sizeof( HRESULT ), "HRESULT type must be at least the size of int" );
+    using std::vector;
 
-        explicit hresult_category_t() = default;
+    class BufferItem : public GenericItem {
+        public:
+            explicit BufferItem( const vector <byte_t>& buffer, const tstring& name );
 
-        const char* name() const noexcept override;
+            tstring name() const override;
 
-        std::string message( int ev ) const override;
+            fs::path path() const override;
 
-        std::error_condition default_error_condition( int ev ) const noexcept override;
+            fs::path inArchivePath() const override;
+
+            BitPropVariant getProperty( PROPID propID ) const override;
+
+            HRESULT getStream( ISequentialInStream** inStream ) const override;
+
+        private:
+            const vector< byte_t >& mBuffer;
+            const fs::path mBufferName;
     };
-
-    std::error_category& hresult_category() noexcept;
 }
 
-#endif //HRESULTCATEGORY_HPP
+#endif //BUFFERITEM_HPP

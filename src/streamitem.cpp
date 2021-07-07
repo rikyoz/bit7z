@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,33 +19,31 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/streamupdatecallback.hpp"
+#include "../include/streamitem.hpp"
 
 #include "../include/cstdinstream.hpp"
 
-using namespace std;
-using namespace bit7z;
+#include <7zip/PropID.h>
 
-/* Most of this code is taken from the CUpdateCallback class in Client7z.cpp of the 7z SDK
- * Main changes made:
- *  + Use of std::vector instead of CRecordVector, CObjectVector and UStringVector
- *  + Use of tstring instead of UString (see Callback base interface)
- *  + Error messages are not showed (see comments in ExtractCallback)
- *  + The work performed originally by the Init method is now performed by the class constructor
- *  + FSItem class is used instead of CDirItem struct */
+using bit7z::StreamItem;
+using bit7z::BitPropVariant;
+using bit7z::tstring;
 
-StreamUpdateCallback::StreamUpdateCallback( const BitArchiveCreator& creator,
-                                            istream& in_stream,
-                                            const tstring& in_stream_name )
-    : UpdateCallback( creator ),
-      mStream( in_stream ),
-      mStreamName( in_stream_name.empty() ? kEmptyFileAlias : in_stream_name ) {}
+StreamItem::StreamItem( istream& stream, const tstring& name ) : mStream{ stream }, mStreamName{ name } {}
 
-uint32_t StreamUpdateCallback::itemsCount() const {
-    return mOldArcItemsCount + 1;
+tstring StreamItem::name() const {
+    return mStreamName.filename();
 }
 
-BitPropVariant StreamUpdateCallback::getNewItemProperty( uint32_t /*index*/, PROPID propID ) {
+fs::path StreamItem::path() const {
+    return mStreamName;
+}
+
+fs::path StreamItem::inArchivePath() const {
+    return mStreamName;
+}
+
+BitPropVariant StreamItem::getProperty( PROPID propID ) const {
     BitPropVariant prop;
     switch ( propID ) {
         case kpidPath:
@@ -81,8 +79,7 @@ BitPropVariant StreamUpdateCallback::getNewItemProperty( uint32_t /*index*/, PRO
     return prop;
 }
 
-HRESULT StreamUpdateCallback::getNewItemStream( uint32_t /*index*/, ISequentialInStream** inStream ) {
-    //Note: CMyComPtr is needed for correctly counting references inside CBufferInStream
+HRESULT StreamItem::getStream( ISequentialInStream** inStream ) const {
     CMyComPtr< ISequentialInStream > inStreamLoc = new CStdInStream( mStream );
     *inStream = inStreamLoc.Detach(); //Note: 7-zip will take care of freeing the memory!
     return S_OK;

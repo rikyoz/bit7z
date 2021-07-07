@@ -39,7 +39,6 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitstreamextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bittypes.hpp
      ${PROJECT_SOURCE_DIR}/include/bufferextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/bufferupdatecallback.hpp
      ${PROJECT_SOURCE_DIR}/include/callback.hpp
      ${PROJECT_SOURCE_DIR}/include/cbufferinstream.hpp
      ${PROJECT_SOURCE_DIR}/include/cbufferoutstream.hpp
@@ -50,18 +49,21 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/cstdoutstream.hpp
      ${PROJECT_SOURCE_DIR}/include/extractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/fileextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/fileupdatecallback.hpp
      ${PROJECT_SOURCE_DIR}/include/formatdetect.hpp
      ${PROJECT_SOURCE_DIR}/include/fsindexer.hpp
      ${PROJECT_SOURCE_DIR}/include/fsitem.hpp
      ${PROJECT_SOURCE_DIR}/include/fsutil.hpp
      ${PROJECT_SOURCE_DIR}/include/fs.hpp
+     ${PROJECT_SOURCE_DIR}/include/genericitem.hpp
      ${PROJECT_SOURCE_DIR}/include/hresultcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/opencallback.hpp
      ${PROJECT_SOURCE_DIR}/include/streamextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/streamupdatecallback.hpp
      ${PROJECT_SOURCE_DIR}/include/updatecallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/util.hpp )
+     ${PROJECT_SOURCE_DIR}/include/util.hpp
+     ${PROJECT_SOURCE_DIR}/include/bufferitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/streamitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitoutputarchive.hpp
+     ${PROJECT_SOURCE_DIR}/include/itemsindex.hpp )
 
 # sources
 set( SOURCES
@@ -83,7 +85,6 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitpropvariant.cpp
      ${PROJECT_SOURCE_DIR}/src/bitstreamcompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bufferextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/bufferupdatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/callback.cpp
      ${PROJECT_SOURCE_DIR}/src/cbufferinstream.cpp
      ${PROJECT_SOURCE_DIR}/src/cbufferoutstream.cpp
@@ -94,7 +95,6 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/cstdoutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/extractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/fileextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/fileupdatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/formatdetect.cpp
      ${PROJECT_SOURCE_DIR}/src/fsindexer.cpp
      ${PROJECT_SOURCE_DIR}/src/fsitem.cpp
@@ -102,13 +102,12 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/hresultcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/opencallback.cpp
      ${PROJECT_SOURCE_DIR}/src/streamextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/streamupdatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/updatecallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/util.cpp )
-
-if( UNIX )
-    set( SOURCES ${SOURCES} ${7ZIP_SOURCE_DIR}/CPP/myWindows/wine_date_and_time.cpp )
-endif()
+     ${PROJECT_SOURCE_DIR}/src/util.cpp
+     ${PROJECT_SOURCE_DIR}/src/bufferitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/streamitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/bitoutputarchive.cpp
+     ${PROJECT_SOURCE_DIR}/src/itemsindex.cpp )
 
 # enable only debug/release configurations for generated VS project file
 if( CMAKE_CONFIGURATION_TYPES )

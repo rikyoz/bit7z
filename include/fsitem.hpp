@@ -19,22 +19,12 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
-#include <cstdint>
-
-#include "../include/bittypes.hpp"
+#include "../include/genericitem.hpp"
 #include "../include/fsutil.hpp"
-
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#endif
-
-#include <windows.h>
-
-#include "../include/fs.hpp"
 
 namespace bit7z {
     namespace filesystem {
-        class FSItem {
+        class FSItem : public GenericItem {
             public:
                 explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
 
@@ -52,13 +42,17 @@ namespace bit7z {
 
                 FILETIME lastWriteTime() const;
 
-                tstring name() const;
+                tstring name() const override;
 
-                fs::path path() const;
+                fs::path path() const override;
 
-                fs::path inArchivePath() const;
+                fs::path inArchivePath() const override;
 
                 uint32_t attributes() const;
+
+                BitPropVariant getProperty( PROPID propID ) const override;
+
+                HRESULT getStream( ISequentialInStream** inStream ) const override;
 
             private:
                 fs::directory_entry mFileEntry;

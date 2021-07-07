@@ -22,10 +22,6 @@
 #include "../include/bitarchiveopener.hpp"
 
 #include "../include/bitexception.hpp"
-#include "../include/bitinputarchive.hpp"
-#include "../include/fileextractcallback.hpp"
-#include "../include/bufferextractcallback.hpp"
-#include "../include/streamextractcallback.hpp"
 
 #include <utility> // for std::move
 

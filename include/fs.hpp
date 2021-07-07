@@ -19,13 +19,7 @@
 #ifndef FS_HPP
 #define FS_HPP
 
-#if defined( __cpp_lib_filesystem )
-#define USE_STANDARD_FILESYSTEM
-#elif defined( __cplusplus ) && __cplusplus >= 201703L && defined( __has_include )
-#if __has_include( <filesystem> )
-#define USE_STANDARD_FILESYSTEM
-#endif
-#endif
+#include "../include/bittypes.hpp"
 
 #ifdef USE_STANDARD_FILESYSTEM
 #include <filesystem>

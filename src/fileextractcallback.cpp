@@ -108,7 +108,6 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
         mProcessedFileInfo.AttribDefined = true;
     }
 
-    //RINOK( IsArchiveItemFolder( mInputArchive, index, mProcessedFileInfo.isDir ) );
     mProcessedFileInfo.isDir = mInputArchive.isItemFolder( index );
 
     // Get Modified Time
@@ -117,7 +116,6 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
 
     switch ( prop3.type() ) {
         case BitPropVariantType::Empty:
-            // mProcessedFileInfo.MTime = _utcMTimeDefault;
             break;
 
         case BitPropVariantType::Filetime:
