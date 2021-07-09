@@ -21,7 +21,8 @@ A clear and concise description of what you expected to happen.
 - bit7z version:  
     - [ ] v2.0
     - [ ] v2.1
-    - [ ] v3.0 
+    - [ ] v3.0.x
+    - [ ] v3.1.x
 
 - 7-zip version:
     - [ ] v16.02
@@ -30,22 +31,23 @@ A clear and concise description of what you expected to happen.
     - [ ] v18.01
     - [ ] v18.03
     - [ ] v18.05
+    - [ ] v19.00
 
 - MSVC version:
     - [ ] 2012
     - [ ] 2013
     - [ ] 2015
     - [ ] 2017 
+    - [ ] 2019
 
 - Windows version: <!--- possibly also the Windows SDK version, if you're building the library -->
-    - [ ] Windows Vista
     - [ ] Windows 8
     - [ ] Windows 8.1
     - [ ] Windows 10
 
 - Architecture: 
-    - [ ] x86
     - [ ] x86_64
+    - [ ] x86
 
 **Additional context**
 Add any other context about the problem here.
