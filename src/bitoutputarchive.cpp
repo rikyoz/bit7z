@@ -55,7 +55,7 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in
             throw BitException( "Format does not support updating existing archive files",
                                 std::make_error_code( std::errc::invalid_argument ) );
         }
-        mInputArchive = std::make_unique< BitInputArchive >( creator, in_file );
+        mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
     }
 }
 

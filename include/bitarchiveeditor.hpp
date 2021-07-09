@@ -36,14 +36,34 @@ namespace bit7z {
                               const BitInOutFormat& format,
                               const tstring& password = TSTRING( "" ) );
 
+            virtual ~BitArchiveEditor();
+
             void renameItem( unsigned index, const tstring& new_name );
 
             void renameItem( const tstring& old_name, const tstring& new_name );
 
+            void updateItem( unsigned index, const tstring& in_file );
+
+            void updateItem( unsigned index, const vector< byte_t >& in_buffer );
+
+            void updateItem( unsigned index, istream& in_stream );
+
+            void updateItem( const tstring& old_name, const tstring& in_file );
+
+            void updateItem( const tstring& old_name, const vector< byte_t >& in_buffer );
+
+            void updateItem( const tstring& old_name, istream& in_stream );
+
+            void deleteItem( unsigned index );
+
+            void deleteItem( const tstring& name );
+
             void applyChanges();
 
         private:
-            RenamedItems mRenameMap;
+            RenamedItems mRenamedItems;
+            UpdatedItems mUpdatedItems;
+            DeletedItems mDeletedItems;
 
             CMyComPtr< UpdateCallback > initUpdateCallback() const override;
     };
