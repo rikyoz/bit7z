@@ -99,7 +99,7 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
     BitPropVariant prop;
     if ( propID == kpidIsAnti ) {
         prop = false;
-    } else if ( index < mOldArcItemsCount - mDeletedItemsCount ) {
+    } else if ( index + mDeletedItemsCount < mOldArcItemsCount  ) {
         if ( mDeletedItems != nullptr && mDeletedItems->find( index + mDeletedItemsCount ) == mDeletedItems->end() ) { // Not deleted
             if ( mRenamedItems != nullptr && propID == kpidPath ) { // Renamed by the user
                 auto res = mRenamedItems->find( index + mDeletedItemsCount );
@@ -179,7 +179,7 @@ STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
 
     if ( mDeletedItems != nullptr ) {
         for ( auto it = mDeletedItems->find( index + mDeletedItemsCount );
-              it != mDeletedItems->end();
+              it != mDeletedItems->end() && *it <= index + mDeletedItemsCount;
               ++it ) {
             ++mDeletedItemsCount;
         }

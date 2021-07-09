@@ -21,7 +21,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
@@ -73,6 +73,6 @@ namespace bit7z {
 
     using RenamedItems = std::unordered_map< unsigned int, tstring >;
     using UpdatedItems = std::unordered_map< unsigned int, std::unique_ptr< GenericItem > >;
-    using DeletedItems = std::unordered_set< unsigned int >;
+    using DeletedItems = std::set< unsigned int >;
 }
 #endif // BITTYPES_HPP
