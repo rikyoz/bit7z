@@ -33,7 +33,7 @@ namespace bit7z {
     /**
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.
      */
-    enum FormatFeatures : unsigned {
+    enum class FormatFeatures : unsigned {
         MULTIPLE_FILES    = 1 << 0,///< The format can compress/extract multiple files         (2^0 = 0000001)
         SOLID_ARCHIVE     = 1 << 1,///< The format supports solid archives                     (2^1 = 0000010)
         COMPRESSION_LEVEL = 1 << 2,///< The format is able to use different compression levels (2^2 = 0000100)
@@ -52,10 +52,12 @@ namespace bit7z {
         public:
             //non-copyable
             BitInFormat( const BitInFormat& other ) = delete;
+
             BitInFormat& operator=( const BitInFormat& other ) = delete;
 
             //non-movable
             BitInFormat( BitInFormat&& other ) = delete;
+
             BitInFormat& operator=( BitInFormat&& other ) = delete;
 
             /**
@@ -109,7 +111,7 @@ namespace bit7z {
             BitInOutFormat( unsigned char value,
                             const tchar* ext,
                             BitCompressionMethod defaultMethod,
-                            const FeaturesSet& features ) noexcept;
+                            FormatFeatures features ) noexcept;
 
             /**
              * @return the default file extension of the archive format

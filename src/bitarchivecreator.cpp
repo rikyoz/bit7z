@@ -198,7 +198,7 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_m
         throw BitException( "Invalid compression method for the chosen archive format",
                             std::make_error_code( std::errc::invalid_argument ) );
     }
-    if ( mFormat.hasFeature( MULTIPLE_METHODS ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::MULTIPLE_METHODS ) ) {
         /* even though the compression method is valid, we set it only if the format supports
          * different methods than the default one (i.e., setting BitCompressionMethod::BZip2
          * of a BitFormat::BZip2 archive does nothing!) */
@@ -253,20 +253,20 @@ ArchiveProperties BitArchiveCreator::getArchiveProperties() const {
     ArchiveProperties properties = {};
     vector< const wchar_t* >& names = properties.names;
     vector< BitPropVariant >& values = properties.values;
-    if ( mCryptHeaders && mFormat.hasFeature( HEADER_ENCRYPTION ) ) {
+    if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HEADER_ENCRYPTION ) ) {
         names.push_back( L"he" );
         values.emplace_back( true );
     }
-    if ( mFormat.hasFeature( COMPRESSION_LEVEL ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::COMPRESSION_LEVEL ) ) {
         names.push_back( L"x" );
         values.emplace_back( static_cast< uint32_t >( mCompressionLevel ) );
 
-        if ( mFormat.hasFeature( MULTIPLE_METHODS ) && mCompressionMethod != mFormat.defaultMethod() ) {
+        if ( mFormat.hasFeature( FormatFeatures::MULTIPLE_METHODS ) && mCompressionMethod != mFormat.defaultMethod() ) {
             names.push_back( mFormat == BitFormat::SevenZip ? L"0" : L"m" );
             values.emplace_back( methodName( mCompressionMethod ) );
         }
     }
-    if ( mFormat.hasFeature( SOLID_ARCHIVE ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::SOLID_ARCHIVE ) ) {
         names.push_back( L"s" );
         values.emplace_back( mSolidMode );
 #ifndef _WIN32
