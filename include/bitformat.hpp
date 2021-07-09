@@ -28,8 +28,6 @@
 #define FEATURES_COUNT 6
 
 namespace bit7z {
-    using FeaturesSet = std::bitset< FEATURES_COUNT >;
-
     /**
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.
      */
@@ -41,6 +39,9 @@ namespace bit7z {
         HEADER_ENCRYPTION = 1 << 4,///< The format can encrypt the file names                  (2^4 = 0010000)
         MULTIPLE_METHODS  = 1 << 5 ///< The format can use different compression methods       (2^6 = 0100000)
     };
+
+    constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept;
+    constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept;
 
     /**
      * @brief The BitInFormat class specifies an extractable archive format.
@@ -121,7 +122,7 @@ namespace bit7z {
             /**
              * @return the bitset of the features supported by the format
              */
-            FeaturesSet features() const;
+            FormatFeatures features() const;
 
             /**
              * @brief Checks if the format has a specific feature (see FormatFeatures enum)
@@ -138,7 +139,7 @@ namespace bit7z {
         private:
             const tstring mExtension;
             const BitCompressionMethod mDefaultMethod;
-            const FeaturesSet mFeatures;
+            const FormatFeatures mFeatures;
     };
 
     /**
