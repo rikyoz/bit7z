@@ -24,11 +24,17 @@
 using namespace std;
 
 namespace bit7z {
-    FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) {
-        return static_cast< FormatFeatures >(
-            static_cast< std::underlying_type< FormatFeatures >::type >( lhs ) |
-            static_cast< std::underlying_type< FormatFeatures >::type >( rhs )
-        );
+    template <typename E>
+    constexpr auto to_underlying(E e) noexcept {
+        return static_cast<std::underlying_type_t<E>>(e);
+    }
+
+    constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
+        return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
+    }
+
+    constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
+        return to_underlying( lhs ) & to_underlying( rhs );
     }
 
     namespace BitFormat {
@@ -102,7 +108,7 @@ namespace bit7z {
                                    FormatFeatures::COMPRESSION_LEVEL );
     }
 
-    BitInFormat::BitInFormat( unsigned char value ) noexcept: mValue( value ) {}
+    BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
 
     int BitInFormat::value() const {
         return mValue;
@@ -124,19 +130,18 @@ namespace bit7z {
                                     const tchar* ext,
                                     BitCompressionMethod defaultMethod,
                                     FormatFeatures features ) noexcept
-        : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ),
-          mFeatures( static_cast< std::underlying_type< FormatFeatures >::type >( features ) ) {}
+        : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
     const tstring& BitInOutFormat::extension() const {
         return mExtension;
     }
 
-    FeaturesSet BitInOutFormat::features() const {
+    FormatFeatures BitInOutFormat::features() const {
         return mFeatures;
     }
 
     bool BitInOutFormat::hasFeature( FormatFeatures feature ) const {
-        return ( mFeatures & FeaturesSet( static_cast< unsigned >( feature ) ) ) != 0;
+        return ( mFeatures & feature ) != 0;
     }
 
     BitCompressionMethod BitInOutFormat::defaultMethod() const {
