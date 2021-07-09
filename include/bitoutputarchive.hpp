@@ -30,7 +30,7 @@ namespace bit7z {
 
     class BitOutputArchive {
         public:
-            explicit BitOutputArchive( const BitArchiveCreator& creator, tstring in_file = TSTRING("") );
+            explicit BitOutputArchive( const BitArchiveCreator& creator, tstring in_file = TSTRING( "" ) );
 
             BitOutputArchive( const BitArchiveCreator& creator, const vector< byte_t >& in_buffer );
 
@@ -70,11 +70,15 @@ namespace bit7z {
             ItemsIndex mNewItemsIndex;
 
             CMyComPtr< IOutArchive > initOutArchive() const;
+
             CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive, bool updating_archive ) const;
-            void BitOutputArchive::compressOut( IOutArchive* out_arc,
-                                                IOutStream* out_stream,
-                                                UpdateCallback* update_callback ) const;
+
+            void compressOut( IOutArchive* out_arc,
+                              IOutStream* out_stream,
+                              UpdateCallback* update_callback ) const;
+
             void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
+
             void setArchiveProperties( IOutArchive* out_archive ) const;
     };
 }

@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
@@ -68,6 +69,10 @@ namespace bit7z {
 #define COM_DECLSPEC_NOTHROW
 #endif
 
+    struct GenericItem;
+
     using RenamedItems = std::unordered_map< unsigned int, tstring >;
+    using UpdatedItems = std::unordered_map< unsigned int, std::unique_ptr< GenericItem > >;
+    using DeletedItems = std::unordered_set< unsigned int >;
 }
 #endif // BITTYPES_HPP

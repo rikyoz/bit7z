@@ -57,8 +57,6 @@ namespace bit7z {
 
     using filesystem::FSItem;
 
-    struct GenericItem;
-
     class ItemsIndex {
         public:
             void indexDirectory( const fs::path& in_dir,

@@ -20,6 +20,9 @@
 #include "../include/bitarchiveeditor.hpp"
 #include "../include/updatecallback.hpp"
 #include "../include/genericitem.hpp"
+#include "../include/fsitem.hpp"
+#include "../include/bufferitem.hpp"
+#include "../include/streamitem.hpp"
 
 using bit7z::BitArchiveEditor;
 using bit7z::BitException;
@@ -31,21 +34,31 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitArchiveCreator( lib, format, password, true ),
-      BitOutputArchive( *this, in_file ) {
-}
+      BitOutputArchive( *this, in_file ) {}
+
+BitArchiveEditor::~BitArchiveEditor() = default;
 
 void BitArchiveEditor::renameItem( unsigned index, const tstring& new_name ) {
     if ( index >= mInputArchive->itemsCount() ) {
         throw BitException( "Invalid index " + std::to_string( index ),
                             std::make_error_code( std::errc::invalid_argument ) );
     }
-    mRenameMap[ index ] = new_name;
+    if ( mDeletedItems.find( index ) != mDeletedItems.end() ) {
+        throw BitException( "Cannot rename deleted item at index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    mRenamedItems[ index ] = new_name;
 }
 
 void BitArchiveEditor::renameItem( const tstring& old_name, const tstring& new_name ) {
     for ( const auto& archiveItem : *mInputArchive ) {
         if ( archiveItem.name() == old_name ) {
-            mRenameMap[ archiveItem.index() ] = new_name;
+            if ( mDeletedItems.find( archiveItem.index() ) != mDeletedItems.end() ) {
+                throw BitException( "Cannot rename deleted item",
+                                    std::make_error_code( std::errc::invalid_argument ),
+                                    old_name );
+            }
+            mRenamedItems[ archiveItem.index() ] = new_name;
             return;
         }
     }
@@ -56,12 +69,124 @@ void BitArchiveEditor::renameItem( const tstring& old_name, const tstring& new_n
 void BitArchiveEditor::applyChanges() {
     auto archive_path = mInputArchive->getArchivePath();
     compressTo( archive_path );
-    mRenameMap.clear();
+    mRenamedItems.clear();
     mInputArchive = std::make_unique< BitInputArchive >( *this, archive_path );
 }
 
 CMyComPtr< UpdateCallback > BitArchiveEditor::initUpdateCallback() const {
     auto update_callback = BitOutputArchive::initUpdateCallback();
-    update_callback->setRenamedItems( mRenameMap );
+    update_callback->setRenamedItems( mRenamedItems );
+    update_callback->setUpdatedItems( mUpdatedItems );
+    update_callback->setDeletedItems( mDeletedItems );
     return update_callback;
+}
+
+void BitArchiveEditor::updateItem( unsigned int index, const tstring& in_file ) {
+    if ( index >= mInputArchive->itemsCount() ) {
+        throw BitException( "Invalid index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    if ( mDeletedItems.find( index ) != mDeletedItems.end() ) {
+        throw BitException( "Cannot update deleted item at index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    auto item_name = mInputArchive->getItemProperty( index, BitProperty::Path );
+    mUpdatedItems[ index ] = std::make_unique< FSItem >( in_file, item_name.getString() );
+}
+
+void BitArchiveEditor::updateItem( unsigned int index, const std::vector< byte_t >& in_buffer ) {
+    if ( index >= mInputArchive->itemsCount() ) {
+        throw BitException( "Invalid index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    if ( mDeletedItems.find( index ) != mDeletedItems.end() ) {
+        throw BitException( "Cannot update deleted item at index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    auto item_name = mInputArchive->getItemProperty( index, BitProperty::Path );
+    mUpdatedItems[ index ] = std::make_unique< BufferItem >( in_buffer, item_name.getString() );
+}
+
+void BitArchiveEditor::updateItem( unsigned int index, istream& in_stream ) {
+    if ( index >= mInputArchive->itemsCount() ) {
+        throw BitException( "Invalid index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    if ( mDeletedItems.find( index ) != mDeletedItems.end() ) {
+        throw BitException( "Cannot update deleted item at index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    auto item_name = mInputArchive->getItemProperty( index, BitProperty::Path );
+    mUpdatedItems[ index ] = std::make_unique< StreamItem >( in_stream, item_name.getString() );
+}
+
+void BitArchiveEditor::updateItem( const tstring& old_name, const tstring& in_file ) {
+    for ( const auto& archiveItem : *mInputArchive ) {
+        if ( archiveItem.name() == old_name ) {
+            if ( mDeletedItems.find( archiveItem.index() ) != mDeletedItems.end() ) {
+                throw BitException( "Cannot update deleted item",
+                                    std::make_error_code( std::errc::invalid_argument ),
+                                    old_name );
+            }
+            mUpdatedItems[ archiveItem.index() ] = std::make_unique< FSItem >( in_file, old_name );
+            return;
+        }
+    }
+    throw BitException( "Could not find the file in the archive",
+                        std::make_error_code( std::errc::no_such_file_or_directory ), { old_name } );
+}
+
+void BitArchiveEditor::updateItem( const tstring& old_name, const std::vector< byte_t >& in_buffer ) {
+    for ( const auto& archiveItem : *mInputArchive ) {
+        if ( archiveItem.name() == old_name ) {
+            if ( mDeletedItems.find( archiveItem.index() ) != mDeletedItems.end() ) {
+                throw BitException( "Cannot update deleted item",
+                                    std::make_error_code( std::errc::invalid_argument ),
+                                    old_name );
+            }
+            mUpdatedItems[ archiveItem.index() ] = std::make_unique< BufferItem >( in_buffer, old_name );
+            return;
+        }
+    }
+    throw BitException( "Could not find the file in the archive",
+                        std::make_error_code( std::errc::no_such_file_or_directory ), { old_name } );
+}
+
+void BitArchiveEditor::updateItem( const tstring& old_name, std::istream& in_stream ) {
+    for ( const auto& archiveItem : *mInputArchive ) {
+        if ( archiveItem.name() == old_name ) {
+            if ( mDeletedItems.find( archiveItem.index() ) != mDeletedItems.end() ) {
+                throw BitException( "Cannot update deleted item",
+                                    std::make_error_code( std::errc::invalid_argument ),
+                                    old_name );
+            }
+            mUpdatedItems[ archiveItem.index() ] = std::make_unique< StreamItem >( in_stream, old_name );
+            return;
+        }
+    }
+    throw BitException( "Could not find the file in the archive",
+                        std::make_error_code( std::errc::no_such_file_or_directory ), { old_name } );
+}
+
+void BitArchiveEditor::deleteItem( unsigned int index ) {
+    if ( index >= mInputArchive->itemsCount() ) {
+        throw BitException( "Invalid index " + std::to_string( index ),
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    mRenamedItems.erase( index );
+    mUpdatedItems.erase( index );
+    mDeletedItems.insert( index );
+}
+
+void BitArchiveEditor::deleteItem( const tstring& name ) {
+    for ( const auto& archiveItem : *mInputArchive ) {
+        if ( archiveItem.name() == name ) {
+            mRenamedItems.erase( archiveItem.index() );
+            mUpdatedItems.erase( archiveItem.index() );
+            mDeletedItems.insert( archiveItem.index() );
+            return;
+        }
+    }
+    throw BitException( "Could not find the file in the archive",
+                        std::make_error_code( std::errc::no_such_file_or_directory ), { name } );
 }

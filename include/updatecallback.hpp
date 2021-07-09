@@ -55,9 +55,13 @@ namespace bit7z {
 
             void setRenamedItems( const RenamedItems& renamed_items );
 
-            BitPropVariant getNewItemProperty( UInt32 index, PROPID propID );
+            void setUpdatedItems( const UpdatedItems& updated_items );
 
-            HRESULT getNewItemStream( uint32_t index, ISequentialInStream** inStream );
+            void setDeletedItems( const DeletedItems& deleted_items );
+
+            BitPropVariant getNewItemProperty( UInt32 realIndex, PROPID propID );
+
+            HRESULT getNewItemStream( uint32_t realIndex, ISequentialInStream** inStream );
 
             void throwException( HRESULT error ) override;
 
@@ -90,17 +94,19 @@ namespace bit7z {
             //ICryptoGetTextPassword2
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password ) override;
 
-        protected:
-            const BitInputArchive* mOldArc;
-            uint32_t mOldArcItemsCount;
-            const RenamedItems* mRenamedItems; //note: using non-owning pointer on purpose
-
-            bool mAskPassword;
-            bool mNeedBeClosed;
-
         private:
             const ItemsIndex& mNewItems;
             uint64_t mVolSize;
+
+            const BitInputArchive* mOldArc;
+            uint32_t mOldArcItemsCount;
+            const RenamedItems* mRenamedItems; //note: using non-owning pointer on purpose
+            const UpdatedItems* mUpdatedItems;
+            const DeletedItems* mDeletedItems;
+            uint32_t mDeletedItemsCount; // Note: this is not equal to mDeletedItems.size()!
+
+            bool mAskPassword;
+            bool mNeedBeClosed;
             FailedFiles mFailedFiles;
     };
 }
