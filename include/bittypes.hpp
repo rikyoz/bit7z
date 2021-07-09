@@ -20,6 +20,7 @@
 #define BITTYPES_HPP
 
 #include <string>
+#include <memory>
 #include <unordered_map>
 #include <set>
 
