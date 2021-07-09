@@ -38,9 +38,9 @@ namespace bit7z {
 
             virtual ~BitArchiveEditor();
 
-            void renameItem( unsigned index, const tstring& new_name );
+            void renameItem( unsigned index, const tstring& new_path );
 
-            void renameItem( const tstring& old_name, const tstring& new_name );
+            void renameItem( const tstring& old_path, const tstring& new_path );
 
             void updateItem( unsigned index, const tstring& in_file );
 
@@ -48,15 +48,15 @@ namespace bit7z {
 
             void updateItem( unsigned index, istream& in_stream );
 
-            void updateItem( const tstring& old_name, const tstring& in_file );
+            void updateItem( const tstring& item_path, const tstring& in_file );
 
-            void updateItem( const tstring& old_name, const vector< byte_t >& in_buffer );
+            void updateItem( const tstring& item_path, const vector< byte_t >& in_buffer );
 
-            void updateItem( const tstring& old_name, istream& in_stream );
+            void updateItem( const tstring& item_path, istream& in_stream );
 
             void deleteItem( unsigned index );
 
-            void deleteItem( const tstring& name );
+            void deleteItem( const tstring& item_path );
 
             void applyChanges();
 

@@ -62,12 +62,12 @@ namespace bit7z {
 
         protected:
             unique_ptr< BitInputArchive > mInputArchive;
+            ItemsIndex mNewItemsIndex;
 
             virtual CMyComPtr< UpdateCallback > initUpdateCallback() const;
 
         private:
             const BitArchiveCreator& mArchiveCreator;
-            ItemsIndex mNewItemsIndex;
 
             CMyComPtr< IOutArchive > initOutArchive() const;
 
