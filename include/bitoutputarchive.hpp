@@ -73,10 +73,6 @@ namespace bit7z {
 
             CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive, bool updating_archive ) const;
 
-            void compressOut( IOutArchive* out_arc,
-                              IOutStream* out_stream,
-                              UpdateCallback* update_callback ) const;
-
             void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
 
             void setArchiveProperties( IOutArchive* out_archive ) const;

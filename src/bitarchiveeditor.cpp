@@ -33,8 +33,19 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& in_file,
                                     const BitInOutFormat& format,
                                     const tstring& password )
-    : BitArchiveCreator( lib, format, password, true ),
-      BitOutputArchive( *this, in_file ) {}
+    : BitArchiveCreator( lib, format, password, UpdateMode::APPEND ),
+      BitOutputArchive( *this, in_file ) {
+    if ( in_file.empty() ) {
+        throw BitException( "Invalid archive path", std::make_error_code( std::errc::invalid_argument ) );
+    }
+    std::error_code ec;
+    if ( !fs::exists( in_file, ec ) ) {
+        // Note: BitOutputArchive doesn't require an input file, but BitArchiveEditor does!
+        throw BitException( "Could not open archive",
+                            std::make_error_code( std::errc::no_such_file_or_directory ),
+                            in_file );
+    }
+}
 
 BitArchiveEditor::~BitArchiveEditor() = default;
 
@@ -67,7 +78,7 @@ void BitArchiveEditor::renameItem( const tstring& old_path, const tstring& new_p
 }
 
 void BitArchiveEditor::applyChanges() {
-    if ( mNewItemsIndex.size() == 0 && mRenamedItems.empty() && mUpdatedItems.empty() && mDeletedItems.empty() ){
+    if ( mNewItemsIndex.size() == 0 && mRenamedItems.empty() && mUpdatedItems.empty() && mDeletedItems.empty() ) {
         // Nothing to do here!
         return;
     }
