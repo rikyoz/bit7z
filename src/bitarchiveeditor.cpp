@@ -35,16 +35,22 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitArchiveCreator( lib, format, password, UpdateMode::APPEND ),
       BitOutputArchive( *this, in_file ) {
+    if ( mInputArchive != nullptr ) {
+        return; // Input file was correctly read by base class BitOutputArchive constructor
+    }
+
+    /* Note: BitOutputArchive doesn't require an input file, but BitArchiveEditor does! */
     if ( in_file.empty() ) {
         throw BitException( "Invalid archive path", std::make_error_code( std::errc::invalid_argument ) );
     }
-    std::error_code ec;
-    if ( !fs::exists( in_file, ec ) ) {
-        // Note: BitOutputArchive doesn't require an input file, but BitArchiveEditor does!
-        throw BitException( "Could not open archive",
-                            std::make_error_code( std::errc::no_such_file_or_directory ),
-                            in_file );
-    }
+
+    /* Note: if we are here, a non-empty in_file was specified, but BitOutputArchive constructor
+     *       left a nullptr mInputArchive.
+     *       This means that in_file doesn't exist (see BitOutputArchive's constructor).
+     *       There's no need to check again for its existence (e.g., using fs::exists). */
+    throw BitException( "Could not open archive",
+                        std::make_error_code( std::errc::no_such_file_or_directory ),
+                        in_file );
 }
 
 BitArchiveEditor::~BitArchiveEditor() = default;
