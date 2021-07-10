@@ -18,7 +18,7 @@ body:
     validations:
       required: true
   - type: textarea
-    id: steps-reproduce
+    id: steps
     attributes:
       label: Steps to reproduce
       description: Steps to reproduce the behavior
@@ -91,7 +91,7 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: msvc-version
+    id: architecture
     attributes:
       label: Architecture
       multiple: true
