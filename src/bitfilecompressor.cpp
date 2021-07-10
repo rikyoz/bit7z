@@ -53,7 +53,7 @@ void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, const
 
 void BitFileCompressor::compressFile( const tstring& in_file, const tstring& out_file ) const {
     BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addFile( in_file );
+    output_archive.addFile( in_file, TSTRING( "" ) );
     output_archive.compressTo( out_file );
 }
 
@@ -84,7 +84,7 @@ void BitFileCompressor::compressDirectory( const tstring& in_dir, const tstring&
 
 void BitFileCompressor::compressFile( const tstring& in_file, vector< byte_t >& out_buffer ) const {
     BitOutputArchive output_archive{ *this, out_buffer };
-    output_archive.addFile( in_file );
+    output_archive.addFile( in_file, TSTRING( "" ) );
     output_archive.compressTo( out_buffer );
 }
 

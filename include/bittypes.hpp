@@ -71,9 +71,11 @@ namespace bit7z {
 #endif
 
     struct GenericItem;
+    using GenericItemPtr = std::unique_ptr< GenericItem >;
+    using GenericItemVector = std::vector< GenericItemPtr >;
 
     using RenamedItems = std::unordered_map< unsigned int, tstring >;
-    using UpdatedItems = std::unordered_map< unsigned int, std::unique_ptr< GenericItem > >;
+    using UpdatedItems = std::unordered_map< unsigned int, GenericItemPtr >;
     using DeletedItems = std::set< unsigned int >;
 }
 #endif // BITTYPES_HPP

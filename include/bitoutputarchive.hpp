@@ -40,7 +40,7 @@ namespace bit7z {
 
             void addItems( const map< tstring, tstring >& in_paths );
 
-            void addFile( const tstring& in_file );
+            void addFile( const tstring& in_file, const tstring& name = TSTRING( "" ) );
 
             void addFile( const vector< byte_t >& in_buffer, const tstring& name );
 

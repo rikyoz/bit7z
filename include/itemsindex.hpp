@@ -67,7 +67,7 @@ namespace bit7z {
 
             void indexPathsMap( const map< tstring, tstring >& in_paths, bool ignore_dirs = false );
 
-            void indexFile( const tstring& in_file );
+            void indexFile( const tstring& in_file, const tstring& name = TSTRING( "" ) );
 
             void indexBuffer( const vector <byte_t>& in_buffer, const tstring& name );
 
@@ -77,10 +77,14 @@ namespace bit7z {
 
             const GenericItem& operator[](size_t index) const;
 
+            GenericItemVector::const_iterator cbegin() const;
+
+            GenericItemVector::const_iterator cend() const;
+
             virtual ~ItemsIndex();
 
         private:
-            vector< unique_ptr< GenericItem > > mItems;
+            GenericItemVector mItems;
 
             void indexItem( const FSItem& item, bool ignore_dirs );
     };

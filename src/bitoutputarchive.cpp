@@ -80,8 +80,8 @@ void BitOutputArchive::addItems( const std::map< tstring, tstring >& in_paths ) 
     mNewItemsIndex.indexPathsMap( in_paths );
 }
 
-void BitOutputArchive::addFile( const tstring& in_file ) {
-    mNewItemsIndex.indexFile( in_file );
+void BitOutputArchive::addFile( const tstring& in_file, const tstring& name ) {
+    mNewItemsIndex.indexFile( in_file, name );
 }
 
 void BitOutputArchive::addFile( const std::vector< byte_t >& in_buffer, const tstring& name ) {
