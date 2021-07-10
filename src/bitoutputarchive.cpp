@@ -143,13 +143,11 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
     return out_stream;
 }
 
-void BitOutputArchive::compressOut( IOutArchive* out_arc,
-                                    IOutStream* out_stream,
-                                    UpdateCallback* update_callback ) const {
+void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
-        throw BitException( kUnsupportedOperation, make_hresult_code( result ) );
+        throw BitException( bit7z::kUnsupportedOperation, bit7z::make_hresult_code( result ) );
     }
 
     if ( result != S_OK ) {
