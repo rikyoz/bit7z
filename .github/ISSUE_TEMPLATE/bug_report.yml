@@ -97,7 +97,6 @@ body:
       label: Code of Conduct
       options:
         - label: By submitting this issue, I agree to follow bit7z's [Code of Conduct](https://github.com/rikyoz/bit7z/blob/master/CODE_OF_CONDUCT.md)
-    validations:
       required: true
   - type: markdown
     attributes:
