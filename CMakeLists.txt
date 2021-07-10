@@ -109,10 +109,6 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitoutputarchive.cpp
      ${PROJECT_SOURCE_DIR}/src/itemsindex.cpp )
 
-if( UNIX )
-    set( SOURCES ${SOURCES} ${7ZIP_SOURCE_DIR}/CPP/myWindows/wine_date_and_time.cpp )
-endif()
-
 # enable only debug/release configurations for generated VS project file
 if( CMAKE_CONFIGURATION_TYPES )
     set( CMAKE_CONFIGURATION_TYPES Debug Release )
