@@ -83,10 +83,6 @@ body:
         - Windows 10
     validations:
       required: false
-  - type: markdown
-    attributes:
-      value: |
-        # Details
   - type: textarea
     id: description
     attributes:
