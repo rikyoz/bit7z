@@ -25,8 +25,6 @@
 #include "../include/bitcompressionmethod.hpp"
 #include "../include/bittypes.hpp"
 
-#define FEATURES_COUNT 6
-
 namespace bit7z {
     /**
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.

@@ -67,12 +67,12 @@ void ItemsIndex::indexItem( const FSItem& item, bool ignore_dirs ) {
     }
 }
 
-void ItemsIndex::indexFile( const tstring& in_file ) {
+void ItemsIndex::indexFile( const tstring& in_file, const tstring& name ) {
     if ( fs::is_directory( in_file ) ) {
         throw BitException( "Input path points to a directory, not a file",
                             std::make_error_code( std::errc::invalid_argument ), in_file );
     }
-    mItems.emplace_back( std::make_unique< FSItem >( in_file ) );
+    mItems.emplace_back( std::make_unique< FSItem >( in_file, name ) );
 }
 
 void ItemsIndex::indexBuffer( const vector< byte_t >& in_buffer, const tstring& name ) {
@@ -92,4 +92,12 @@ const GenericItem& ItemsIndex::operator[]( size_t index ) const {
     return *mItems[ index ];
 }
 
-ItemsIndex::~ItemsIndex() {}
+GenericItemVector::const_iterator ItemsIndex::cbegin() const {
+    return mItems.cbegin();
+}
+
+GenericItemVector::const_iterator ItemsIndex::cend() const {
+    return mItems.cend();
+}
+
+ItemsIndex::~ItemsIndex() = default;
