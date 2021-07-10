@@ -91,6 +91,14 @@ body:
         - Windows 10
     validations:
       required: false
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/rikyoz/bit7z/blob/master/CODE_OF_CONDUCT.mdv)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
   - type: markdown
     attributes:
       value: |
@@ -123,11 +131,3 @@ body:
       render: shell
     validations:
       required: false
-  - type: checkboxes
-    id: terms
-    attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/rikyoz/bit7z/blob/master/CODE_OF_CONDUCT.mdv)
-      options:
-        - label: I agree to follow this project's Code of Conduct
-          required: true
