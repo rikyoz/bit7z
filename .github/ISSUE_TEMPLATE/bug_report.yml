@@ -17,26 +17,6 @@ body:
       placeholder: Describe the bug...
     validations:
       required: true
-  - type: textarea
-    id: steps
-    attributes:
-      label: Steps to reproduce
-      description: Steps to reproduce the behavior
-      placeholder: |
-        1. Go to '...'
-        2. Click on '....'
-        3. Scroll down to '....'
-        4. See error
-    validations:
-      required: false
-  - type: textarea
-    id: expected-behavior
-    attributes:
-      label: Expected behavior
-      description: A clear and concise description of what you expected to happen.
-      placeholder: Describe the expected behavior
-    validations:
-      required: false
   - type: dropdown
     id: version
     attributes:
@@ -109,6 +89,30 @@ body:
         - Windows 8
         - Windows 8.1
         - Windows 10
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        # Details
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '....'
+        3. Scroll down to '....'
+        4. See error
+    validations:
+      required: false
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: A clear and concise description of what you expected to happen.
+      placeholder: Describe the expected behavior
     validations:
       required: false
   - type: textarea
