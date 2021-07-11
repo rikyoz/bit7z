@@ -1,7 +1,7 @@
 name: Bug Report
 description: Create a bug report to help us improve bit7z
 title: "[Bug]: "
-labels: [bug]
+labels: [🐞 bug]
 assignees:
   - rikyoz
 body:
