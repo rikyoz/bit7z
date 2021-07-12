@@ -211,3 +211,11 @@ void BitArchiveEditor::deleteItem( const tstring& item_path ) {
     throw BitException( "Could not find the file in the archive",
                         std::make_error_code( std::errc::no_such_file_or_directory ), { item_path } );
 }
+
+void bit7z::BitArchiveEditor::setUpdateMode( bit7z::UpdateMode update_mode ) {
+    if ( update_mode == UpdateMode::NONE ) {
+        throw BitException( "BitArchiveEditor doesn't support setting update mode to UpdateMode::NONE",
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+    BitArchiveCreator::setUpdateMode( update_mode );
+}

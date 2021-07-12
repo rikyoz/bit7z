@@ -38,6 +38,8 @@ namespace bit7z {
 
             virtual ~BitArchiveEditor();
 
+            void setUpdateMode( UpdateMode update_mode ) override;
+
             void renameItem( unsigned index, const tstring& new_path );
 
             void renameItem( const tstring& old_path, const tstring& new_path );

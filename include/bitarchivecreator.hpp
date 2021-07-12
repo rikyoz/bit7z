@@ -41,6 +41,12 @@ namespace bit7z {
         vector< BitPropVariant > values;
     };
 
+    enum class UpdateMode {
+        NONE,
+        APPEND,
+        OVERWRITE
+    };
+
     /**
      * @brief Abstract class representing a generic archive creator.
      */
@@ -86,7 +92,7 @@ namespace bit7z {
             /**
              * @return whether the archive creator is allowed to update existing archives or not.
              */
-            bool updateMode() const;
+            UpdateMode updateMode() const;
 
             /**
              * @return the size (in bytes) of the archive volume used by the creator
@@ -180,7 +186,7 @@ namespace bit7z {
              *
              * @param update_mode if true, compressing operations will update existing archives.
              */
-            void setUpdateMode( bool update_mode );
+            virtual void setUpdateMode( UpdateMode update_mode );
 
             /**
              * @brief Sets the size (in bytes) of the archive volumes.
@@ -199,7 +205,7 @@ namespace bit7z {
             BitArchiveCreator( const Bit7zLibrary& lib,
                                const BitInOutFormat& format,
                                tstring password = TSTRING( "" ),
-                               bool update_mode = false );
+                               UpdateMode update_mode = UpdateMode::NONE );
 
             ~BitArchiveCreator() override = default;
 
@@ -208,7 +214,7 @@ namespace bit7z {
             friend class BitOutputArchive;
 
         private:
-            bool mUpdateMode;
+            UpdateMode mUpdateMode;
             BitCompressionLevel mCompressionLevel;
             BitCompressionMethod mCompressionMethod;
             uint32_t mDictionarySize;
