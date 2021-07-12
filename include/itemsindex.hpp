@@ -77,9 +77,13 @@ namespace bit7z {
 
             const GenericItem& operator[](size_t index) const;
 
-            GenericItemVector::const_iterator cbegin() const;
+            GenericItemVector::const_iterator begin() const noexcept;
 
-            GenericItemVector::const_iterator cend() const;
+            GenericItemVector::const_iterator end() const noexcept;
+
+            GenericItemVector::const_iterator cbegin() const noexcept;
+
+            GenericItemVector::const_iterator cend() const noexcept;
 
             virtual ~ItemsIndex();
 

@@ -36,7 +36,6 @@ UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const ItemsInd
       mRenamedItems{ nullptr },
       mUpdatedItems{ nullptr },
       mDeletedItems{ nullptr },
-      mDeletedItemsCount{ 0 },
       mAskPassword{ false },
       mNeedBeClosed{ false } {}
 
@@ -97,28 +96,27 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
+    auto old_index = index + getItemOffset( index );
     if ( propID == kpidIsAnti ) {
         prop = false;
-    } else if ( index + mDeletedItemsCount < mOldArcItemsCount  ) {
-        if ( mDeletedItems != nullptr && mDeletedItems->find( index + mDeletedItemsCount ) == mDeletedItems->end() ) { // Not deleted
-            if ( mRenamedItems != nullptr && propID == kpidPath ) { // Renamed by the user
-                auto res = mRenamedItems->find( index + mDeletedItemsCount );
-                if ( res != mRenamedItems->end() ) {
-                    prop = WIDEN( res->second );
-                }
-            }
-            if ( prop.isEmpty() && mUpdatedItems != nullptr ) { // Updated by the user
-                auto res = mUpdatedItems->find( index + mDeletedItemsCount );
-                if ( res != mUpdatedItems->end() ) {
-                    prop = res->second->getProperty( propID );
-                }
-            }
-            if ( prop.isEmpty() ) { // Not renamed or updated by the user
-                prop = mOldArc->getItemProperty( index + mDeletedItemsCount, static_cast< BitProperty >( propID ) );
+    } else if ( old_index < mOldArcItemsCount  ) {
+        if ( mRenamedItems != nullptr && propID == kpidPath ) { // Renamed by the user
+            auto res = mRenamedItems->find( old_index );
+            if ( res != mRenamedItems->end() ) {
+                prop = WIDEN( res->second );
             }
         }
+        if ( prop.isEmpty() && mUpdatedItems != nullptr ) { // Updated by the user
+            auto res = mUpdatedItems->find( old_index );
+            if ( res != mUpdatedItems->end() ) {
+                prop = res->second->getProperty( propID );
+            }
+        }
+        if ( prop.isEmpty() ) { // Not renamed or updated by the user
+            prop = mOldArc->getItemProperty( old_index, static_cast< BitProperty >( propID ) );
+        }
     } else {
-        prop = getNewItemProperty( index + mDeletedItemsCount, propID );
+        prop = getNewItemProperty( old_index, propID );
     }
     *value = prop;
     prop.bstrVal = nullptr;
@@ -129,7 +127,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finalize() )
 
-    auto old_index = index + mDeletedItemsCount;
+    auto old_index = index + getItemOffset( index );
 
     if ( old_index < mOldArcItemsCount ) { //old item in the archive
         if ( mUpdatedItems != nullptr ) {
@@ -176,16 +174,7 @@ STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
                                                 Int32* newData,
                                                 Int32* newProperties,
                                                 UInt32* indexInArchive ) {
-
-    if ( mDeletedItems != nullptr ) {
-        for ( auto it = mDeletedItems->find( index + mDeletedItemsCount );
-              it != mDeletedItems->end() && *it <= index + mDeletedItemsCount;
-              ++it ) {
-            ++mDeletedItemsCount;
-        }
-    }
-
-    uint32_t old_index = index + mDeletedItemsCount;
+    uint32_t old_index = index + getItemOffset( index );
     bool isOldItem = old_index < mOldArcItemsCount;
     bool isRenamedItem = mRenamedItems != nullptr && mRenamedItems->find( old_index ) != mRenamedItems->end();
     bool isUpdatedItem = mUpdatedItems != nullptr && mUpdatedItems->find( old_index ) != mUpdatedItems->end();
@@ -263,5 +252,25 @@ void UpdateCallback::setUpdatedItems( const UpdatedItems& updated_items ) {
 
 void UpdateCallback::setDeletedItems( const DeletedItems& deleted_items ) {
     mDeletedItems = &deleted_items;
+    updateItemsOffsets();
+}
 
+uint32_t UpdateCallback::getItemOffset( uint32_t index ) {
+    return index < mItemsOffsets.size() ? mItemsOffsets[ index ] : 0;
+}
+
+void UpdateCallback::updateItemsOffsets() {
+    if ( mDeletedItems == nullptr || mDeletedItems->empty() ) {
+        return;
+    }
+
+    uint32_t offset = 0;
+    for ( uint32_t new_index = 0; new_index < itemsCount(); ++new_index ) {
+        for ( auto it = mDeletedItems->find( new_index + offset );
+              it != mDeletedItems->end() && *it <= new_index + offset;
+              ++it ) {
+            ++offset;
+        }
+        mItemsOffsets.push_back( offset );
+    }
 }

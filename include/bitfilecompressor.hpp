@@ -87,10 +87,11 @@ namespace bit7z {
             /**
              * @brief Compresses a single file.
              *
-             * @param in_file       the path (relative or absolute) to the input file.
+             * @param in_file    the path (relative or absolute) to the input file.
              * @param out_file   the path (relative or absolute) to the output archive file.
+             * @param name       (optional) custom name for the file inside the archive.
              */
-            void compressFile( const tstring& in_file, const tstring& out_file ) const;
+            void compressFile( const tstring& in_file, const tstring& out_file, const tstring& name = TSTRING( "" ) ) const;
 
             /**
              * @brief Compresses a group of files.

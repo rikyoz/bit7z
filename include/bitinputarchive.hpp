@@ -171,6 +171,10 @@ namespace bit7z {
             const_iterator cbegin() const noexcept;
 
             const_iterator cend() const noexcept;
+
+            const_iterator find( const tstring& path ) const noexcept;
+
+            bool contains( const tstring& path ) const noexcept;
     };
 }
 

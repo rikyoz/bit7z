@@ -52,17 +52,18 @@ namespace bit7z {
 
             void addDirectory( const tstring& in_dir );
 
-            void compressTo( const tstring& out_file ) const;
+            void compressTo( const tstring& out_file );
 
-            void compressTo( std::vector< byte_t >& out_buffer ) const;
+            void compressTo( std::vector< byte_t >& out_buffer );
 
-            void compressTo( ostream& out_stream ) const;
+            void compressTo( ostream& out_stream );
 
             virtual ~BitOutputArchive() = default;
 
         protected:
             unique_ptr< BitInputArchive > mInputArchive;
             ItemsIndex mNewItemsIndex;
+            DeletedItems mDeletedItems;
 
             virtual CMyComPtr< UpdateCallback > initUpdateCallback() const;
 
@@ -73,7 +74,11 @@ namespace bit7z {
 
             CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive, bool updating_archive ) const;
 
-            void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
+            void compressToFile( const tstring& out_file, UpdateCallback* update_callback );
+
+            void compressOut( IOutArchive* out_arc,
+                              IOutStream* out_stream,
+                              UpdateCallback* update_callback );
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
     };

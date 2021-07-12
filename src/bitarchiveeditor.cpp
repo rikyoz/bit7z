@@ -98,7 +98,6 @@ CMyComPtr< UpdateCallback > BitArchiveEditor::initUpdateCallback() const {
     auto update_callback = BitOutputArchive::initUpdateCallback();
     update_callback->setRenamedItems( mRenamedItems );
     update_callback->setUpdatedItems( mUpdatedItems );
-    update_callback->setDeletedItems( mDeletedItems );
     return update_callback;
 }
 

@@ -65,7 +65,6 @@ namespace bit7z {
         private:
             RenamedItems mRenamedItems;
             UpdatedItems mUpdatedItems;
-            DeletedItems mDeletedItems;
 
             CMyComPtr< UpdateCallback > initUpdateCallback() const override;
     };
