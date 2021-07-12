@@ -105,7 +105,7 @@ namespace bit7z {
             const RenamedItems* mRenamedItems; //note: using non-owning pointer on purpose
             const UpdatedItems* mUpdatedItems;
             const DeletedItems* mDeletedItems;
-            
+
             std::vector< uint32_t > mItemsOffsets;
 
             bool mAskPassword;

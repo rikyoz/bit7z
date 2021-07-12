@@ -267,7 +267,7 @@ void UpdateCallback::updateItemsOffsets() {
     uint32_t offset = 0;
     for ( uint32_t new_index = 0; new_index < itemsCount(); ++new_index ) {
         for ( auto it = mDeletedItems->find( new_index + offset );
-              it != mDeletedItems->end() && *it <= new_index + offset;
+              it != mDeletedItems->end() && *it == new_index + offset;
               ++it ) {
             ++offset;
         }
