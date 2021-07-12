@@ -121,7 +121,7 @@ const wchar_t* methodName( BitCompressionMethod method ) {
 BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
                                       const BitInOutFormat& format,
                                       tstring password,
-                                      bool update_mode ) :
+                                      UpdateMode update_mode ) :
     BitArchiveHandler( lib, std::move( password ) ),
     mFormat( format ),
     mUpdateMode( update_mode ),
@@ -166,7 +166,7 @@ bool BitArchiveCreator::solidMode() const {
     return mSolidMode;
 }
 
-bool BitArchiveCreator::updateMode() const {
+UpdateMode BitArchiveCreator::updateMode() const {
     return mUpdateMode;
 }
 
@@ -237,7 +237,7 @@ void BitArchiveCreator::setSolidMode( bool solid_mode ) {
     mSolidMode = solid_mode;
 }
 
-void BitArchiveCreator::setUpdateMode( bool update_mode ) {
+void BitArchiveCreator::setUpdateMode( UpdateMode update_mode ) {
     mUpdateMode = update_mode;
 }
 

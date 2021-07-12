@@ -46,7 +46,7 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in
     : mArchiveCreator{ creator } {
     std::error_code ec;
     if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
-        if ( !mArchiveCreator.updateMode() ) {
+        if ( mArchiveCreator.updateMode() == UpdateMode::NONE ) {
             throw BitException( "Archive creator cannot update archives",
                                 std::make_error_code( std::errc::invalid_argument ) );
         }
