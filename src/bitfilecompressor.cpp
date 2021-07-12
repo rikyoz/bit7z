@@ -51,9 +51,9 @@ void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, const
     output_archive.compressTo( out_file );
 }
 
-void BitFileCompressor::compressFile( const tstring& in_file, const tstring& out_file ) const {
+void BitFileCompressor::compressFile( const tstring& in_file, const tstring& out_file, const tstring& name ) const {
     BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addFile( in_file, TSTRING( "" ) );
+    output_archive.addFile( in_file, name );
     output_archive.compressTo( out_file );
 }
 
