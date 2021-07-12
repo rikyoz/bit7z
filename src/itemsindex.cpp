@@ -92,11 +92,19 @@ const GenericItem& ItemsIndex::operator[]( size_t index ) const {
     return *mItems[ index ];
 }
 
-GenericItemVector::const_iterator ItemsIndex::cbegin() const {
+GenericItemVector::const_iterator ItemsIndex::begin() const noexcept {
     return mItems.cbegin();
 }
 
-GenericItemVector::const_iterator ItemsIndex::cend() const {
+GenericItemVector::const_iterator ItemsIndex::end() const noexcept {
+    return mItems.cend();
+}
+
+GenericItemVector::const_iterator ItemsIndex::cbegin() const noexcept {
+    return mItems.cbegin();
+}
+
+GenericItemVector::const_iterator ItemsIndex::cend() const noexcept {
     return mItems.cend();
 }
 

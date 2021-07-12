@@ -291,6 +291,16 @@ BitInputArchive::const_iterator BitInputArchive::cend() const noexcept {
     return end();
 }
 
+BitInputArchive::const_iterator BitInputArchive::find( const tstring& path ) const noexcept {
+    return std::find_if( begin(), end(), [ &path ]( auto& old_item ) {
+        return old_item.path() == path;
+    } );
+}
+
+bool BitInputArchive::contains( const tstring& path ) const noexcept {
+    return find( path ) != end();
+}
+
 BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() {
     ++mItemOffset;
     return *this;

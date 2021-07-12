@@ -65,6 +65,8 @@ namespace bit7z {
 
             void throwException( HRESULT error ) override;
 
+            void updateItemsOffsets();
+
             HRESULT Finalize();
 
             // IProgress from IArchiveUpdateCallback2
@@ -103,11 +105,14 @@ namespace bit7z {
             const RenamedItems* mRenamedItems; //note: using non-owning pointer on purpose
             const UpdatedItems* mUpdatedItems;
             const DeletedItems* mDeletedItems;
-            uint32_t mDeletedItemsCount; // Note: this is not equal to mDeletedItems.size()!
+            
+            std::vector< uint32_t > mItemsOffsets;
 
             bool mAskPassword;
             bool mNeedBeClosed;
             FailedFiles mFailedFiles;
+
+            uint32_t getItemOffset( uint32_t index );
     };
 }
 

@@ -105,7 +105,7 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
     mNewItemsIndex.indexDirectory( in_dir );
 }
 
-void BitOutputArchive::compressTo( const tstring& out_file ) const {
+void BitOutputArchive::compressTo( const tstring& out_file ) {
     CMyComPtr< UpdateCallback > update_callback = initUpdateCallback();
     compressToFile( out_file, update_callback );
 }
@@ -143,7 +143,19 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
     return out_stream;
 }
 
-void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {
+void BitOutputArchive::compressOut( IOutArchive* out_arc,
+                                    IOutStream* out_stream,
+                                    UpdateCallback* update_callback ) {
+    if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::OVERWRITE ) {
+        for ( auto& new_item : mNewItemsIndex ) {
+            auto overwritten_item = mInputArchive->find( new_item->inArchivePath() );
+            if ( overwritten_item != mInputArchive->cend() ) {
+                mDeletedItems.insert( overwritten_item->index() );
+            }
+        }
+        update_callback->updateItemsOffsets();
+    }
+
     HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
@@ -155,7 +167,7 @@ void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* 
     }
 }
 
-void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const {
+void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) {
     // Note: if old_arc != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
     bool updating_archive = mInputArchive != nullptr && mInputArchive->getArchivePath() == out_file;
@@ -189,7 +201,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
     }
 }
 
-void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) const {
+void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     if ( !out_buffer.empty() ) {
         throw BitException( kCannotOverwriteBuffer, std::make_error_code( std::errc::invalid_argument ) );
     }
@@ -200,7 +212,7 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) const {
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
-void BitOutputArchive::compressTo( std::ostream& out_stream ) const {
+void BitOutputArchive::compressTo( std::ostream& out_stream ) {
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
     CMyComPtr< UpdateCallback > update_callback = initUpdateCallback();
@@ -226,5 +238,6 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
 CMyComPtr< UpdateCallback > BitOutputArchive::initUpdateCallback() const {
     CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( mArchiveCreator, mNewItemsIndex );
     update_callback->setOldArc( mInputArchive.get() );
+    update_callback->setDeletedItems( mDeletedItems );
     return update_callback;
 }
