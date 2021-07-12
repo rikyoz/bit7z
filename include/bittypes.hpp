@@ -74,8 +74,8 @@ namespace bit7z {
     using GenericItemPtr = std::unique_ptr< GenericItem >;
     using GenericItemVector = std::vector< GenericItemPtr >;
 
-    using RenamedItems = std::unordered_map< unsigned int, tstring >;
-    using UpdatedItems = std::unordered_map< unsigned int, GenericItemPtr >;
-    using DeletedItems = std::set< unsigned int >;
+    using RenamedItems = std::unordered_map< uint32_t, tstring >;
+    using UpdatedItems = std::unordered_map< uint32_t, GenericItemPtr >;
+    using DeletedItems = std::set< uint32_t >;
 }
 #endif // BITTYPES_HPP

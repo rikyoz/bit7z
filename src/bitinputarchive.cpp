@@ -117,7 +117,8 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector
     mInArchive = openArchiveStream( TSTRING( "." ), buf_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream ) : mArchiveHandler{ handler } {
+BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream )
+    : mArchiveHandler{ handler } {
     CMyComPtr< IInStream > std_stream = new CStdInStream( in_stream );
 #ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
@@ -213,11 +214,12 @@ void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >&
 void BitInputArchive::extract( vector< byte_t >& out_buffer, unsigned int index ) const {
     uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Index " + std::to_string( index ) + " is out of range",
+                            std::make_error_code( std::errc::invalid_argument ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
     }
 
     const vector< uint32_t > indices( 1, index );
@@ -230,11 +232,12 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, unsigned int index 
 void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
     uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Index " + std::to_string( index ) + " is out of range",
+                            std::make_error_code( std::errc::invalid_argument ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
     }
 
     const vector< uint32_t > indices( 1, index );
