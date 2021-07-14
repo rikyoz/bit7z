@@ -221,6 +221,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Lib>
       <OutputFile>$(OutDir)\$(TargetName).lib</OutputFile>
