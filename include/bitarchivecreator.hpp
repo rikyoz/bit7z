@@ -41,7 +41,7 @@ namespace bit7z {
         vector< BitPropVariant > values;
     };
 
-    enum class UpdateMode {
+    enum struct UpdateMode {
         NONE,
         APPEND,
         OVERWRITE
