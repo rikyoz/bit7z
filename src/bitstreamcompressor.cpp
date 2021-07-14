@@ -47,7 +47,7 @@ void BitStreamCompressor::compress( istream& in_stream, //-V669
 }
 
 void BitStreamCompressor::compress( istream& in_stream, //-V669
-                                    const tstring& out_file, 
+                                    const tstring& out_file,
                                     const tstring& in_stream_name ) const {
     const tstring& name = in_stream_name.empty() ? fsutil::filename( out_file ) : in_stream_name;
 
