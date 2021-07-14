@@ -27,9 +27,9 @@
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
 
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitinputarchive.hpp"
-#include "../include/callback.hpp"
+#include "bitarchivehandler.hpp"
+#include "bitinputarchive.hpp"
+#include "callback.hpp"
 
 namespace bit7z {
     class ExtractCallback : public Callback,

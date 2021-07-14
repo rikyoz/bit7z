@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchiveinfo.hpp"
+#include "bitarchiveinfo.hpp"
 
 #include <algorithm>
 #include <numeric>

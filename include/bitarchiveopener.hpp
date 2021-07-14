@@ -22,9 +22,9 @@
 #include <vector>
 #include <map>
 
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
+#include "bitarchivehandler.hpp"
+#include "bitformat.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     using std::vector;

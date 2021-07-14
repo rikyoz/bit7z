@@ -23,7 +23,7 @@
 #include <map>
 #include <memory>
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 
 /* Notes: we use these forward declarations to avoid including private headers (e.g. fs.hpp).
  *        Since some public API headers include itemsindex.hpp (e.g. "bitoutputarchive.hpp"),

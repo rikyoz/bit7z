@@ -19,11 +19,11 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/updatecallback.hpp"
+#include "updatecallback.hpp"
 
-#include "../include/genericitem.hpp"
-#include "../include/cfileoutstream.hpp"
-#include "../include/util.hpp"
+#include "genericitem.hpp"
+#include "cfileoutstream.hpp"
+#include "util.hpp"
 
 using namespace bit7z;
 

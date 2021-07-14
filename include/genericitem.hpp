@@ -28,9 +28,9 @@
 
 #include <7zip/IStream.h>
 
-#include "../include/bittypes.hpp"
-#include "../include/bitpropvariant.hpp"
-#include "../include/fs.hpp"
+#include "bittypes.hpp"
+#include "bitpropvariant.hpp"
+#include "fs.hpp"
 
 namespace bit7z {
     struct GenericItem {

@@ -23,7 +23,7 @@
 
 #include <Common/MyCom.h>
 
-#include "../include/bitarchivehandler.hpp"
+#include "bitarchivehandler.hpp"
 
 constexpr auto kUnsupportedMethod  = "Unsupported Method";
 constexpr auto kCRCFailed          = "CRC Failed";

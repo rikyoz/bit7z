@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 
 #ifdef _WIN32
 #include <Windows.h>

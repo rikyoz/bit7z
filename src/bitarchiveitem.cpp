@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchiveitem.hpp"
+#include "bitarchiveitem.hpp"
 
-#include "../include/fsutil.hpp"
+#include "fsutil.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;

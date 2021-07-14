@@ -21,8 +21,8 @@
 
 #include <utility>
 
-#include "../include/fsindexer.hpp"
-#include "../include/bitexception.hpp"
+#include "fsindexer.hpp"
+#include "bitexception.hpp"
 
 using bit7z::tstring;
 using namespace bit7z::filesystem;

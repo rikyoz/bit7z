@@ -19,14 +19,14 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/itemsindex.hpp"
+#include "itemsindex.hpp"
 
-#include "../include/fs.hpp"
-#include "../include/fsindexer.hpp"
-#include "../include/bufferitem.hpp"
-#include "../include/streamitem.hpp"
+#include "fs.hpp"
+#include "fsindexer.hpp"
+#include "bufferitem.hpp"
+#include "streamitem.hpp"
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
 
 using namespace bit7z;
 using filesystem::FSItem;

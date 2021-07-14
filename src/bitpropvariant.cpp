@@ -19,16 +19,16 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitpropvariant.hpp"
+#include "bitpropvariant.hpp"
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
 
 #include <utility> // for std::move
 
 #ifdef _WIN32
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
-#include "../include/util.hpp"
+#include "util.hpp"
 #define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
 #endif
 

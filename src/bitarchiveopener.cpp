@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchiveopener.hpp"
+#include "bitarchiveopener.hpp"
 
 #include <utility> // for std::move
 

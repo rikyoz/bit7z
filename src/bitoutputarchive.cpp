@@ -19,17 +19,17 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitoutputarchive.hpp"
+#include "bitoutputarchive.hpp"
 
-#include "../include/bitexception.hpp"
-#include "../include/fs.hpp"
-#include "../include/fsitem.hpp"
-#include "../include/fsindexer.hpp"
-#include "../include/bufferitem.hpp"
-#include "../include/streamitem.hpp"
-#include "../include/updatecallback.hpp"
-#include "../include/cmultivoloutstream.hpp"
-#include "../include/cbufferoutstream.hpp"
+#include "bitexception.hpp"
+#include "fs.hpp"
+#include "fsitem.hpp"
+#include "fsindexer.hpp"
+#include "bufferitem.hpp"
+#include "streamitem.hpp"
+#include "updatecallback.hpp"
+#include "cmultivoloutstream.hpp"
+#include "cbufferoutstream.hpp"
 
 using bit7z::BitException;
 using bit7z::BitOutputArchive;

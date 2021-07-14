@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/streamitem.hpp"
+#include "streamitem.hpp"
 
-#include "../include/cstdinstream.hpp"
+#include "cstdinstream.hpp"
 
 #include <7zip/PropID.h>
 

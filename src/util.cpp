@@ -20,7 +20,7 @@
  */
 
 #ifndef _WIN32
-#include "../include/util.hpp"
+#include "util.hpp"
 #include <sstream>
 
 using std::ostringstream;

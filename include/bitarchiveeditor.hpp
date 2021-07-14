@@ -22,9 +22,9 @@
 #ifndef BITARCHIVEEDITOR_HPP
 #define BITARCHIVEEDITOR_HPP
 
-#include "../include/bitarchivecreator.hpp"
-#include "../include/bitoutputarchive.hpp"
-#include "../include/bittypes.hpp"
+#include "bitarchivecreator.hpp"
+#include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     using std::vector;

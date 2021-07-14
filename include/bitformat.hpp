@@ -21,9 +21,9 @@
 
 #include <bitset>
 
-#include "../include/bitguids.hpp"
-#include "../include/bitcompressionmethod.hpp"
-#include "../include/bittypes.hpp"
+#include "bitguids.hpp"
+#include "bitcompressionmethod.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     /**

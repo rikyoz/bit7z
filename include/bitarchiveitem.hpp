@@ -19,9 +19,9 @@
 #ifndef BITARCHIVEITEM_HPP
 #define BITARCHIVEITEM_HPP
 
-#include "../include/bitpropvariant.hpp"
+#include "bitpropvariant.hpp"
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
 

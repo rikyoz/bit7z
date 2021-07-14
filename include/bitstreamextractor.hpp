@@ -19,8 +19,8 @@
 #ifndef BITSTREAMEXTRACTOR_HPP
 #define BITSTREAMEXTRACTOR_HPP
 
-#include "../include/bitextractor.hpp"
-#include "../include/bittypes.hpp"
+#include "bitextractor.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     using std::istream;

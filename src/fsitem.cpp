@@ -22,9 +22,9 @@
 #include <utility>
 #include <system_error>
 
-#include "../include/cfileinstream.hpp"
-#include "../include/fsitem.hpp"
-#include "../include/bitexception.hpp"
+#include "cfileinstream.hpp"
+#include "fsitem.hpp"
+#include "bitexception.hpp"
 
 #include <7zip/PropID.h>
 

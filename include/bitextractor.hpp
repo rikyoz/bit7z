@@ -19,10 +19,10 @@
 #ifndef BITEXTRACTOR_HPP
 #define BITEXTRACTOR_HPP
 
-#include "../include/bitarchiveopener.hpp"
-#include "../include/bitinputarchive.hpp"
-#include "../include/bitexception.hpp"
-#include "../include/bittypes.hpp"
+#include "bitarchiveopener.hpp"
+#include "bitinputarchive.hpp"
+#include "bitexception.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     constexpr auto kNoMatchingFile = "No matching file was found in the archive";

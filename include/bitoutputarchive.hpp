@@ -19,9 +19,9 @@
 #ifndef BITOUTPUTARCHIVE_HPP
 #define BITOUTPUTARCHIVE_HPP
 
-#include "../include/bitarchivecreator.hpp"
+#include "bitarchivecreator.hpp"
 
-#include "../include/itemsindex.hpp"
+#include "itemsindex.hpp"
 
 #include <istream>
 

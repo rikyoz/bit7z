@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/fileextractcallback.hpp"
-#include "../include/bitexception.hpp"
-#include "../include/fsutil.hpp"
+#include "fileextractcallback.hpp"
+#include "bitexception.hpp"
+#include "fsutil.hpp"
 
 using namespace std;
 using namespace NWindows;

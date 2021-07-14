@@ -25,7 +25,7 @@
 #pragma warning(disable:4996)
 #endif
 
-#include "../include/cbufferinstream.hpp"
+#include "cbufferinstream.hpp"
 
 #include <algorithm> //for std::copy_n
 #include <cstdint>

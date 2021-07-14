@@ -21,9 +21,9 @@
 
 #include <string>
 
-#include "../include/bitguids.hpp"
-#include "../include/cfileoutstream.hpp"
-#include "../include/extractcallback.hpp"
+#include "bitguids.hpp"
+#include "cfileoutstream.hpp"
+#include "extractcallback.hpp"
 
 namespace bit7z {
     using std::wstring;

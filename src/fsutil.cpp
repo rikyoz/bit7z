@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/fsutil.hpp"
+#include "fsutil.hpp"
 
 #ifndef _WIN32
 #include <chrono>

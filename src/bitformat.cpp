@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitformat.hpp"
+#include "bitformat.hpp"
 
 using namespace std;
 

@@ -27,11 +27,11 @@
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
 
-#include "../include/callback.hpp"
-#include "../include/itemsindex.hpp"
-#include "../include/bitarchivecreator.hpp"
-#include "../include/bitinputarchive.hpp"
-#include "../include/bitexception.hpp"
+#include "callback.hpp"
+#include "itemsindex.hpp"
+#include "bitarchivecreator.hpp"
+#include "bitinputarchive.hpp"
+#include "bitexception.hpp"
 
 namespace bit7z {
     constexpr auto kUnsupportedOperation = "Unsupported operation";

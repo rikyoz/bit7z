@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchiveitemoffset.hpp"
+#include "bitarchiveitemoffset.hpp"
 
-#include "../include/bitinputarchive.hpp"
+#include "bitinputarchive.hpp"
 
 using namespace bit7z;
 

@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
 
-#include "../include/hresultcategory.hpp"
+#include "hresultcategory.hpp"
 
 #include <utility> // for std::move
 

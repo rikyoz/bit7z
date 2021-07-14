@@ -23,7 +23,7 @@
 #include <vector>
 #include <map>
 
-#include "../include/fsitem.hpp"
+#include "fsitem.hpp"
 
 namespace bit7z {
     namespace filesystem {

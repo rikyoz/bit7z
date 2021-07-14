@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/cbufferoutstream.hpp"
+#include "cbufferoutstream.hpp"
 
 #include <cstdint>
 

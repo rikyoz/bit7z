@@ -22,7 +22,7 @@
 #include <cstdint>
 #include <functional>
 
-#include "../include/bit7zlibrary.hpp"
+#include "bit7zlibrary.hpp"
 
 namespace bit7z {
     using std::function;

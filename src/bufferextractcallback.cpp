@@ -19,10 +19,10 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bufferextractcallback.hpp"
+#include "bufferextractcallback.hpp"
 
-#include "../include/cbufferoutstream.hpp"
-#include "../include/fsutil.hpp"
+#include "cbufferoutstream.hpp"
+#include "fsutil.hpp"
 
 using namespace std;
 using namespace NWindows;

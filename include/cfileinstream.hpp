@@ -19,9 +19,9 @@
 #ifndef CFILEINSTREAM_HPP
 #define CFILEINSTREAM_HPP
 
-#include "../include/bittypes.hpp"
-#include "../include/cstdinstream.hpp"
-#include "../include/fs.hpp"
+#include "bittypes.hpp"
+#include "cstdinstream.hpp"
+#include "fs.hpp"
 
 namespace bit7z {
     class CFileInStream : public CStdInStream {

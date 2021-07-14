@@ -20,7 +20,7 @@
 #define BUFFERITEM_HPP
 
 #include <string>
-#include "../include/genericitem.hpp"
+#include "genericitem.hpp"
 
 namespace bit7z {
     using std::vector;

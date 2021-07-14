@@ -19,11 +19,11 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitfilecompressor.hpp"
+#include "bitfilecompressor.hpp"
 
-#include "../include/bitexception.hpp"
-#include "../include/updatecallback.hpp" //for exception strings
-#include "../include/bitoutputarchive.hpp"
+#include "bitexception.hpp"
+#include "updatecallback.hpp" //for exception strings
+#include "bitoutputarchive.hpp"
 
 using namespace std;
 using namespace bit7z;

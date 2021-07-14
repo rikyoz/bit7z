@@ -22,8 +22,8 @@
 #include <vector>
 #include <map>
 
-#include "../include/bittypes.hpp"
-#include "../include/extractcallback.hpp"
+#include "bittypes.hpp"
+#include "extractcallback.hpp"
 
 namespace bit7z {
     using std::vector;

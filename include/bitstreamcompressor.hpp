@@ -21,7 +21,7 @@
 
 #include <istream>
 
-#include "../include/bitarchivecreator.hpp"
+#include "bitarchivecreator.hpp"
 
 namespace bit7z {
     using std::istream;
