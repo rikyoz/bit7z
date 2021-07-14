@@ -112,7 +112,7 @@ namespace bit7z {
             bool mNeedBeClosed;
             FailedFiles mFailedFiles;
 
-            uint32_t getItemOffset( uint32_t index );
+            uint32_t getItemOldIndex( uint32_t new_index );
     };
 }
 
