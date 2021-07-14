@@ -96,7 +96,7 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
-    auto old_index = index + getItemOffset( index );
+    auto old_index = getItemOldIndex( index );
     if ( propID == kpidIsAnti ) {
         prop = false;
     } else if ( old_index < mOldArcItemsCount  ) {
@@ -127,7 +127,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finalize() )
 
-    auto old_index = index + getItemOffset( index );
+    auto old_index = getItemOldIndex( index );
 
     if ( old_index < mOldArcItemsCount ) { //old item in the archive
         if ( mUpdatedItems != nullptr ) {
@@ -174,7 +174,7 @@ STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
                                                 Int32* newData,
                                                 Int32* newProperties,
                                                 UInt32* indexInArchive ) {
-    uint32_t old_index = index + getItemOffset( index );
+    uint32_t old_index = getItemOldIndex( index );
     bool isOldItem = old_index < mOldArcItemsCount;
     bool isRenamedItem = mRenamedItems != nullptr && mRenamedItems->find( old_index ) != mRenamedItems->end();
     bool isUpdatedItem = mUpdatedItems != nullptr && mUpdatedItems->find( old_index ) != mUpdatedItems->end();
@@ -255,8 +255,12 @@ void UpdateCallback::setDeletedItems( const DeletedItems& deleted_items ) {
     updateItemsOffsets();
 }
 
-uint32_t UpdateCallback::getItemOffset( uint32_t index ) {
-    return index < mItemsOffsets.size() ? mItemsOffsets[ index ] : 0;
+uint32_t UpdateCallback::getItemOldIndex( uint32_t new_index ) {
+    auto offset_index = static_cast< decltype( mItemsOffsets )::size_type >( new_index );
+    if ( offset_index < mItemsOffsets.size() ) {
+        return new_index + mItemsOffsets[ offset_index ];
+    }
+    return new_index;
 }
 
 void UpdateCallback::updateItemsOffsets() {
