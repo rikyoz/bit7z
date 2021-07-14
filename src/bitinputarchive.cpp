@@ -19,16 +19,16 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitinputarchive.hpp"
+#include "bitinputarchive.hpp"
 
-#include "../include/bitexception.hpp"
-#include "../include/cbufferinstream.hpp"
-#include "../include/cfileinstream.hpp"
-#include "../include/opencallback.hpp"
-#include "../include/extractcallback.hpp"
-#include "../include/fileextractcallback.hpp"
-#include "../include/streamextractcallback.hpp"
-#include "../include/bufferextractcallback.hpp"
+#include "bitexception.hpp"
+#include "cbufferinstream.hpp"
+#include "cfileinstream.hpp"
+#include "opencallback.hpp"
+#include "extractcallback.hpp"
+#include "fileextractcallback.hpp"
+#include "streamextractcallback.hpp"
+#include "bufferextractcallback.hpp"
 
 #include <utility> // for std::move
 
@@ -37,7 +37,7 @@ using namespace NWindows;
 using namespace NArchive;
 
 #ifdef BIT7Z_AUTO_FORMAT
-#include "../include/formatdetect.hpp"
+#include "formatdetect.hpp"
 #endif
 
 constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";

@@ -21,7 +21,7 @@
 
 #include <cstdint>
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 //#include <array>
 
 #ifdef _WIN32

@@ -16,13 +16,13 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitexception.hpp"
-#include "../include/bitarchiveeditor.hpp"
-#include "../include/updatecallback.hpp"
-#include "../include/genericitem.hpp"
-#include "../include/fsitem.hpp"
-#include "../include/bufferitem.hpp"
-#include "../include/streamitem.hpp"
+#include "bitexception.hpp"
+#include "bitarchiveeditor.hpp"
+#include "updatecallback.hpp"
+#include "genericitem.hpp"
+#include "fsitem.hpp"
+#include "bufferitem.hpp"
+#include "streamitem.hpp"
 
 using bit7z::BitArchiveEditor;
 using bit7z::BitException;

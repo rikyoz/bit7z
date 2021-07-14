@@ -19,11 +19,11 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitstreamcompressor.hpp"
+#include "bitstreamcompressor.hpp"
 
-#include "../include/genericitem.hpp"
-#include "../include/bitoutputarchive.hpp"
-#include "../include/fsutil.hpp"
+#include "genericitem.hpp"
+#include "bitoutputarchive.hpp"
+#include "fsutil.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;

@@ -22,8 +22,8 @@
 #include <string>
 #include <vector>
 
-#include "../include/bitarchivecreator.hpp"
-#include "../include/bittypes.hpp"
+#include "bitarchivecreator.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     using std::vector;

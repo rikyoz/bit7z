@@ -19,11 +19,11 @@
 #ifndef BITARCHIVECREATOR_HPP
 #define BITARCHIVECREATOR_HPP
 
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitinputarchive.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bitcompressionlevel.hpp"
-#include "../include/bitcompressionmethod.hpp"
+#include "bitarchivehandler.hpp"
+#include "bitinputarchive.hpp"
+#include "bitformat.hpp"
+#include "bitcompressionlevel.hpp"
+#include "bitcompressionmethod.hpp"
 
 #include <memory>
 

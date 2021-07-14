@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/cfileinstream.hpp"
+#include "cfileinstream.hpp"
 
 using namespace bit7z;
 

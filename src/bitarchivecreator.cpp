@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchivecreator.hpp"
+#include "bitarchivecreator.hpp"
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
 
 using namespace bit7z;
 

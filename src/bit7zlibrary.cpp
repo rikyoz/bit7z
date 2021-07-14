@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bit7zlibrary.hpp"
+#include "bit7zlibrary.hpp"
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
 
 #ifndef _WIN32
 #include <dlfcn.h>

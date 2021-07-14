@@ -19,10 +19,10 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/opencallback.hpp"
+#include "opencallback.hpp"
 
-#include "../include/cfileinstream.hpp"
-#include "../include/util.hpp"
+#include "cfileinstream.hpp"
+#include "util.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;

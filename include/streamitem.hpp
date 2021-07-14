@@ -19,7 +19,7 @@
 #ifndef STREAMITEM_HPP
 #define STREAMITEM_HPP
 
-#include "../include/genericitem.hpp"
+#include "genericitem.hpp"
 
 namespace bit7z {
     using std::istream;

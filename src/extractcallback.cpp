@@ -19,10 +19,10 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/extractcallback.hpp"
+#include "extractcallback.hpp"
 
-#include "../include/bitexception.hpp"
-#include "../include/util.hpp"
+#include "bitexception.hpp"
+#include "util.hpp"
 
 using namespace bit7z;
 

@@ -27,9 +27,9 @@
 #include <7zip/IPassword.h>
 #include <Common/MyCom.h>
 
-#include "../include/callback.hpp"
-#include "../include/fsitem.hpp"
-#include "../include/bitarchivehandler.hpp"
+#include "callback.hpp"
+#include "fsitem.hpp"
+#include "bitarchivehandler.hpp"
 
 namespace bit7z {
     using filesystem::FSItem;

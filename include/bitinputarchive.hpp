@@ -18,12 +18,12 @@
 #ifndef BITINPUTARCHIVE_HPP
 #define BITINPUTARCHIVE_HPP
 
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitarchiveiteminfo.hpp"
-#include "../include/bitarchiveitemoffset.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bitpropvariant.hpp"
-#include "../include/bittypes.hpp"
+#include "bitarchivehandler.hpp"
+#include "bitarchiveiteminfo.hpp"
+#include "bitarchiveitemoffset.hpp"
+#include "bitformat.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 
 #include <vector>
 #include <string>

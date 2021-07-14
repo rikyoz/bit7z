@@ -19,13 +19,13 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/cstdoutstream.hpp"
+#include "cstdoutstream.hpp"
 
 #include <iterator>
 
 #ifndef _WIN32
 #include <myWindows/StdAfx.h>
-#include "../include/bittypes.hpp"  //for error codes
+#include "bittypes.hpp"  //for error codes
 #endif
 
 using namespace bit7z;

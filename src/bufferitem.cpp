@@ -19,11 +19,11 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bufferitem.hpp"
+#include "bufferitem.hpp"
 
 #include <7zip/PropID.h>
 
-#include "../include/cbufferinstream.hpp"
+#include "cbufferinstream.hpp"
 
 using bit7z::BufferItem;
 using bit7z::BitPropVariant;

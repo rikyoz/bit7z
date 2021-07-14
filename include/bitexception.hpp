@@ -28,7 +28,7 @@
 #include <myWindows/StdAfx.h>
 #endif
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     using std::system_error;

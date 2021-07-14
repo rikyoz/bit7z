@@ -21,7 +21,7 @@
 
 #ifdef BIT7Z_AUTO_FORMAT
 
-#include "../include/bitformat.hpp"
+#include "bitformat.hpp"
 
 #include <7zip/IStream.h>
 

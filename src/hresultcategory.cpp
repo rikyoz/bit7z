@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/hresultcategory.hpp"
+#include "hresultcategory.hpp"
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 
 using namespace bit7z;
 

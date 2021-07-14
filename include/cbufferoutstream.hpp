@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>

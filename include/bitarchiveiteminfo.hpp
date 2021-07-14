@@ -21,7 +21,7 @@
 
 #include <map>
 
-#include "../include/bitarchiveitem.hpp"
+#include "bitarchiveitem.hpp"
 
 namespace bit7z {
     using std::wstring;

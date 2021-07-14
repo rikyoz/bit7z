@@ -19,8 +19,8 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
-#include "../include/genericitem.hpp"
-#include "../include/fsutil.hpp"
+#include "genericitem.hpp"
+#include "fsutil.hpp"
 
 namespace bit7z {
     namespace filesystem {

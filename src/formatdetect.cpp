@@ -1,8 +1,8 @@
 #ifdef BIT7Z_AUTO_FORMAT
 
-#include "../include/bitexception.hpp"
-#include "../include/formatdetect.hpp"
-#include "../include/fsutil.hpp"
+#include "bitexception.hpp"
+#include "formatdetect.hpp"
+#include "fsutil.hpp"
 
 #ifdef _WIN32
 #include <cwctype>

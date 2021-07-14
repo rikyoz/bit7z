@@ -19,7 +19,7 @@
 #ifndef BITARCHIVEITEMOFFSET_HPP
 #define BITARCHIVEITEMOFFSET_HPP
 
-#include "../include/bitarchiveitem.hpp"
+#include "bitarchiveitem.hpp"
 
 namespace bit7z {
     class BitInputArchive;

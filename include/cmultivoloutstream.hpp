@@ -26,7 +26,7 @@
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>
 
-#include "../include/cfileoutstream.hpp"
+#include "cfileoutstream.hpp"
 
 using std::vector;
 using std::wstring;

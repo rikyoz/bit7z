@@ -19,9 +19,9 @@
 #ifndef CFILEOUTSTREAM_HPP
 #define CFILEOUTSTREAM_HPP
 
-#include "../include/bittypes.hpp"
-#include "../include/cstdoutstream.hpp"
-#include "../include/fs.hpp"
+#include "bittypes.hpp"
+#include "cstdoutstream.hpp"
+#include "fs.hpp"
 
 namespace bit7z {
     class CFileOutStream : public CStdOutStream {

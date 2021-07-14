@@ -19,8 +19,8 @@
 #ifndef BITMEMEXTRACTOR_HPP
 #define BITMEMEXTRACTOR_HPP
 
-#include "../include/bitextractor.hpp"
-#include "../include/bittypes.hpp"
+#include "bitextractor.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     /**

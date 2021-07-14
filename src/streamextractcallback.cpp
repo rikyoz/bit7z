@@ -19,10 +19,10 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/streamextractcallback.hpp"
+#include "streamextractcallback.hpp"
 
-#include "../include/cstdoutstream.hpp"
-#include "../include/bitexception.hpp"
+#include "cstdoutstream.hpp"
+#include "bitexception.hpp"
 
 using namespace std;
 using namespace NWindows;
