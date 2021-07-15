@@ -82,6 +82,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
         }
     }
     *value = prop;
+    prop.bstrVal = nullptr;
     return S_OK;
 }
 

@@ -84,6 +84,7 @@ HRESULT StreamUpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARI
     }
 
     *value = prop;
+    prop.bstrVal = nullptr;
     return S_OK;
 }
 
