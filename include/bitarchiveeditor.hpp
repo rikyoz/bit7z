@@ -67,6 +67,10 @@ namespace bit7z {
             UpdatedItems mUpdatedItems;
 
             CMyComPtr< UpdateCallback > initUpdateCallback() const override;
+
+            uint32_t findItem( const tstring& item_path );
+
+            void checkIndex( uint32_t index );
     };
 }
 
