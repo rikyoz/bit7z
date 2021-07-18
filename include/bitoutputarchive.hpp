@@ -73,6 +73,8 @@ namespace bit7z {
 
             uint32_t getIndexInArchive( uint32_t index ) const;
 
+            const BitArchiveCreator& getArchiveCreator() const;
+
             virtual ~BitOutputArchive() = default;
 
         protected:

@@ -27,8 +27,8 @@
 
 using namespace bit7z;
 
-UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const BitOutputArchive& output )
-    : Callback{ creator },
+UpdateCallback::UpdateCallback( const BitOutputArchive& output )
+    : Callback{ output.getArchiveCreator() },
       mOutputArchive{ output },
       mVolSize{ 0 },
       mAskPassword{ false },

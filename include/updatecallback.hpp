@@ -44,7 +44,7 @@ namespace bit7z {
                            public ICompressProgressInfo,
                            protected ICryptoGetTextPassword2 {
         public:
-            explicit UpdateCallback( const BitArchiveCreator& creator, const BitOutputArchive& output );
+            explicit UpdateCallback( const BitOutputArchive& output );
 
             ~UpdateCallback() override;
 
