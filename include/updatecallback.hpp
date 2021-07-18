@@ -30,6 +30,7 @@
 #include "callback.hpp"
 #include "itemsindex.hpp"
 #include "bitarchivecreator.hpp"
+#include "bitoutputarchive.hpp"
 #include "bitinputarchive.hpp"
 #include "bitexception.hpp"
 
@@ -43,29 +44,13 @@ namespace bit7z {
                            public ICompressProgressInfo,
                            protected ICryptoGetTextPassword2 {
         public:
-            explicit UpdateCallback( const BitArchiveCreator& creator, const ItemsIndex& new_items );
+            explicit UpdateCallback( const BitArchiveCreator& creator, const BitOutputArchive& output );
 
             ~UpdateCallback() override;
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
-            uint32_t itemsCount() const;
-
-            void setOldArc( const BitInputArchive* old_arc );
-
-            void setRenamedItems( const RenamedItems& renamed_items );
-
-            void setUpdatedItems( const UpdatedItems& updated_items );
-
-            void setDeletedItems( const DeletedItems& deleted_items );
-
-            BitPropVariant getNewItemProperty( UInt32 realIndex, PROPID propID );
-
-            HRESULT getNewItemStream( uint32_t realIndex, ISequentialInStream** inStream );
-
             void throwException( HRESULT error ) override;
-
-            void updateItemsOffsets();
 
             HRESULT Finalize();
 
@@ -97,22 +82,12 @@ namespace bit7z {
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password ) override;
 
         private:
-            const ItemsIndex& mNewItems;
+            const BitOutputArchive& mOutputArchive;
             uint64_t mVolSize;
-
-            const BitInputArchive* mOldArc;
-            uint32_t mOldArcItemsCount;
-            const RenamedItems* mRenamedItems; //note: using non-owning pointer on purpose
-            const UpdatedItems* mUpdatedItems;
-            const DeletedItems* mDeletedItems;
-
-            std::vector< uint32_t > mItemsOffsets;
 
             bool mAskPassword;
             bool mNeedBeClosed;
             FailedFiles mFailedFiles;
-
-            uint32_t getItemOldIndex( uint32_t new_index );
     };
 }
 
