@@ -34,6 +34,7 @@
 using bit7z::BitException;
 using bit7z::BitOutputArchive;
 using bit7z::BitArchiveCreator;
+using bit7z::BitPropVariant;
 using bit7z::filesystem::FSItem;
 using bit7z::BufferItem;
 using bit7z::StreamItem;
@@ -43,7 +44,7 @@ using bit7z::byte_t;
 using bit7z::tstring;
 
 BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in_file )
-    : mArchiveCreator{ creator } {
+    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     std::error_code ec;
     if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
         if ( mArchiveCreator.updateMode() == UpdateMode::NONE ) {
@@ -56,20 +57,23 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in
                                 std::make_error_code( std::errc::invalid_argument ) );
         }
         mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
+        mInputArchiveItemsCount = mInputArchive->itemsCount();
     }
 }
 
 BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator,
                                     const std::vector< bit7z::byte_t >& in_buffer )
-    : mArchiveCreator{ creator } {
+    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( !in_buffer.empty() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, in_buffer );
+        mInputArchiveItemsCount = mInputArchive->itemsCount();
     }
 }
 
 BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, std::istream& in_stream )
-    : mArchiveCreator{ creator } {
+    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
+    mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
 
 void BitOutputArchive::addItems( const std::vector< tstring >& in_paths ) {
@@ -106,7 +110,7 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
-    CMyComPtr< UpdateCallback > update_callback = initUpdateCallback();
+    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( mArchiveCreator, *this );
     compressToFile( out_file, update_callback );
 }
 
@@ -153,10 +157,10 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
                 mDeletedItems.insert( overwritten_item->index() );
             }
         }
-        update_callback->updateItemsOffsets();
     }
+    updateItemsOffsets();
 
-    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
+    HRESULT result = out_arc->UpdateItems( out_stream, itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
         throw BitException( bit7z::kUnsupportedOperation, bit7z::make_hresult_code( result ) );
@@ -208,14 +212,14 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_mem_stream = new CBufferOutStream( out_buffer );
-    CMyComPtr< UpdateCallback > update_callback = initUpdateCallback();
+    CMyComPtr< UpdateCallback > update_callback  = new UpdateCallback( mArchiveCreator, *this );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& out_stream ) {
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
-    CMyComPtr< UpdateCallback > update_callback = initUpdateCallback();
+    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( mArchiveCreator, *this );
     compressOut( new_arc, out_std_stream, update_callback );
 }
 
@@ -235,9 +239,78 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
     }
 }
 
-CMyComPtr< UpdateCallback > BitOutputArchive::initUpdateCallback() const {
-    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( mArchiveCreator, mNewItemsIndex );
-    update_callback->setOldArc( mInputArchive.get() );
-    update_callback->setDeletedItems( mDeletedItems );
-    return update_callback;
+BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, PROPID propID ) const {
+    auto old_index = getItemOldIndex( index );
+    return getItemProperty( old_index, propID );
+}
+
+HRESULT bit7z::BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
+    auto old_index = getItemOldIndex( index );
+    return getItemStream( old_index, inStream );
+}
+
+uint32_t BitOutputArchive::getItemOldIndex( uint32_t new_index ) const {
+    auto offset_index = static_cast< decltype( mItemsOffsets )::size_type >( new_index );
+    if ( offset_index < mItemsOffsets.size() ) {
+        return new_index + mItemsOffsets[ offset_index ];
+    }
+    return new_index;
+}
+
+void BitOutputArchive::updateItemsOffsets() {
+    if ( mDeletedItems.empty() ) {
+        return;
+    }
+
+    uint32_t offset = 0;
+    for ( uint32_t new_index = 0; new_index < itemsCount(); ++new_index ) {
+        for ( auto it = mDeletedItems.find( new_index + offset );
+              it != mDeletedItems.end() && *it == new_index + offset;
+              ++it ) {
+            ++offset;
+        }
+        mItemsOffsets.push_back( offset );
+    }
+}
+
+uint32_t BitOutputArchive::itemsCount() const {
+    auto result = static_cast< uint32_t >( mNewItemsIndex.size() );
+    if ( mInputArchive != nullptr ) {
+        result += mInputArchive->itemsCount() - static_cast< uint32_t >( mDeletedItems.size() );
+    }
+    return result;
+}
+
+BitPropVariant bit7z::BitOutputArchive::getItemProperty( uint32_t old_index, PROPID propID ) const {
+    const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
+    return new_item.getProperty( propID );
+}
+
+HRESULT bit7z::BitOutputArchive::getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const {
+    const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
+
+    HRESULT res = new_item.getStream( inStream );
+    if ( FAILED( res ) ) {
+        auto path = new_item.path();
+        std::error_code ec;
+        if ( fs::exists( path, ec ) ) {
+            ec = std::make_error_code( std::errc::file_exists );
+        }
+    }
+    return res;
+}
+
+bool BitOutputArchive::hasNewData( uint32_t index ) const {
+    uint32_t old_index = getItemOldIndex( index );
+    return old_index >= mInputArchiveItemsCount;
+}
+
+bool bit7z::BitOutputArchive::hasNewProperties( uint32_t index ) const {
+    uint32_t old_index = getItemOldIndex( index );
+    return old_index >= mInputArchiveItemsCount;
+}
+
+uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const {
+    uint32_t old_index = getItemOldIndex( index );
+    return old_index < mInputArchiveItemsCount ? old_index : static_cast< uint32_t >( -1 );
 }

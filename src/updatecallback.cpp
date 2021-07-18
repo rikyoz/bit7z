@@ -27,31 +27,15 @@
 
 using namespace bit7z;
 
-UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const ItemsIndex& new_items )
+UpdateCallback::UpdateCallback( const BitArchiveCreator& creator, const BitOutputArchive& output )
     : Callback{ creator },
-      mNewItems{ new_items },
+      mOutputArchive{ output },
       mVolSize{ 0 },
-      mOldArc{ nullptr },
-      mOldArcItemsCount{ 0 },
-      mRenamedItems{ nullptr },
-      mUpdatedItems{ nullptr },
-      mDeletedItems{ nullptr },
       mAskPassword{ false },
       mNeedBeClosed{ false } {}
 
 UpdateCallback::~UpdateCallback() {
     Finalize();
-}
-
-void UpdateCallback::setOldArc( const BitInputArchive* old_arc ) {
-    if ( old_arc != nullptr ) {
-        mOldArc = old_arc;
-        mOldArcItemsCount = old_arc->itemsCount();
-    }
-}
-
-void UpdateCallback::setRenamedItems( const RenamedItems& renamed_items ) {
-    mRenamedItems = &renamed_items;
 }
 
 void UpdateCallback::throwException( HRESULT error ) {
@@ -96,27 +80,10 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
     BitPropVariant prop;
-    auto old_index = getItemOldIndex( index );
     if ( propID == kpidIsAnti ) {
         prop = false;
-    } else if ( old_index < mOldArcItemsCount  ) {
-        if ( mRenamedItems != nullptr && propID == kpidPath ) { // Renamed by the user
-            auto res = mRenamedItems->find( old_index );
-            if ( res != mRenamedItems->end() ) {
-                prop = WIDEN( res->second );
-            }
-        }
-        if ( prop.isEmpty() && mUpdatedItems != nullptr ) { // Updated by the user
-            auto res = mUpdatedItems->find( old_index );
-            if ( res != mUpdatedItems->end() ) {
-                prop = res->second->getProperty( propID );
-            }
-        }
-        if ( prop.isEmpty() ) { // Not renamed or updated by the user
-            prop = mOldArc->getItemProperty( old_index, static_cast< BitProperty >( propID ) );
-        }
     } else {
-        prop = getNewItemProperty( old_index, propID );
+        prop = mOutputArchive.getOutputItemProperty( index, propID );
     }
     *value = prop;
     prop.bstrVal = nullptr;
@@ -127,19 +94,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finalize() )
 
-    auto old_index = getItemOldIndex( index );
-
-    if ( old_index < mOldArcItemsCount ) { //old item in the archive
-        if ( mUpdatedItems != nullptr ) {
-            auto res = mUpdatedItems->find( old_index );
-            if ( res != mUpdatedItems->end() ) { //user wants to update the old item in the archive
-                return res->second->getStream( inStream );
-            }
-        }
-        return S_OK;
-    }
-
-    return getNewItemStream( old_index, inStream );
+    return mOutputArchive.getOutputItemStream( index, inStream );
 }
 
 COM_DECLSPEC_NOTHROW
@@ -174,19 +129,14 @@ STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
                                                 Int32* newData,
                                                 Int32* newProperties,
                                                 UInt32* indexInArchive ) {
-    uint32_t old_index = getItemOldIndex( index );
-    bool isOldItem = old_index < mOldArcItemsCount;
-    bool isRenamedItem = mRenamedItems != nullptr && mRenamedItems->find( old_index ) != mRenamedItems->end();
-    bool isUpdatedItem = mUpdatedItems != nullptr && mUpdatedItems->find( old_index ) != mUpdatedItems->end();
-
     if ( newData != nullptr ) {
-        *newData = isOldItem && !isUpdatedItem ? 0 : 1; //= true;
+        *newData = static_cast< Int32 >( mOutputArchive.hasNewData( index ) ); //1 = true, 0 = false;
     }
     if ( newProperties != nullptr ) {
-        *newProperties = isOldItem && !isRenamedItem && !isUpdatedItem ? 0 : 1; //= true;
+        *newProperties = static_cast< Int32 >( mOutputArchive.hasNewProperties( index ) ); //1 = true, 0 = false;
     }
     if ( indexInArchive != nullptr ) {
-        *indexInArchive = isOldItem ? old_index : static_cast< uint32_t >( -1 );
+        *indexInArchive = mOutputArchive.getIndexInArchive( index );
     }
 
     return S_OK;
@@ -212,69 +162,4 @@ STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, B
 
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
-}
-
-uint32_t UpdateCallback::itemsCount() const {
-    auto result = mOldArcItemsCount + static_cast< uint32_t >( mNewItems.size() );
-    if ( mDeletedItems != nullptr ) {
-        result -= static_cast< uint32_t >( mDeletedItems->size() );
-    }
-    return result;
-}
-
-BitPropVariant UpdateCallback::getNewItemProperty( UInt32 realIndex, PROPID propID ) {
-    const GenericItem& new_item = mNewItems[ static_cast< size_t >( realIndex - mOldArcItemsCount ) ];
-    return new_item.getProperty( propID );
-}
-
-HRESULT UpdateCallback::getNewItemStream( uint32_t realIndex, ISequentialInStream** inStream ) {
-    const GenericItem& new_item = mNewItems[ static_cast< size_t >( realIndex - mOldArcItemsCount ) ];
-
-    if ( mHandler.fileCallback() ) {
-        mHandler.fileCallback()( new_item.name() );
-    }
-
-    HRESULT res = new_item.getStream( inStream );
-    if ( FAILED( res ) ) {
-        auto path = new_item.path();
-        std::error_code ec;
-        if ( fs::exists( path, ec ) ) {
-            ec = std::make_error_code( std::errc::file_exists );
-        }
-        mFailedFiles.emplace_back( path.native(), ec );
-    }
-    return res;
-}
-
-void UpdateCallback::setUpdatedItems( const UpdatedItems& updated_items ) {
-    mUpdatedItems = &updated_items;
-}
-
-void UpdateCallback::setDeletedItems( const DeletedItems& deleted_items ) {
-    mDeletedItems = &deleted_items;
-    updateItemsOffsets();
-}
-
-uint32_t UpdateCallback::getItemOldIndex( uint32_t new_index ) {
-    auto offset_index = static_cast< decltype( mItemsOffsets )::size_type >( new_index );
-    if ( offset_index < mItemsOffsets.size() ) {
-        return new_index + mItemsOffsets[ offset_index ];
-    }
-    return new_index;
-}
-
-void UpdateCallback::updateItemsOffsets() {
-    if ( mDeletedItems == nullptr || mDeletedItems->empty() ) {
-        return;
-    }
-
-    uint32_t offset = 0;
-    for ( uint32_t new_index = 0; new_index < itemsCount(); ++new_index ) {
-        for ( auto it = mDeletedItems->find( new_index + offset );
-              it != mDeletedItems->end() && *it == new_index + offset;
-              ++it ) {
-            ++offset;
-        }
-        mItemsOffsets.push_back( offset );
-    }
 }

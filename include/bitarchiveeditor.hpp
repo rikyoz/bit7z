@@ -62,15 +62,21 @@ namespace bit7z {
 
             void applyChanges();
 
+            bool hasNewData( uint32_t index ) const override;
+
+            bool hasNewProperties( uint32_t index ) const override;
+
         private:
             RenamedItems mRenamedItems;
             UpdatedItems mUpdatedItems;
 
-            CMyComPtr< UpdateCallback > initUpdateCallback() const override;
-
             uint32_t findItem( const tstring& item_path );
 
             void checkIndex( uint32_t index );
+
+            BitPropVariant getItemProperty( uint32_t old_index, PROPID propID ) const override;
+
+            HRESULT getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const override;
     };
 }
 

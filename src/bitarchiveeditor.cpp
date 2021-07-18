@@ -23,10 +23,12 @@
 #include "fsitem.hpp"
 #include "bufferitem.hpp"
 #include "streamitem.hpp"
+#include "util.hpp"
 
 using bit7z::BitArchiveEditor;
 using bit7z::BitException;
 using bit7z::BitInFormat;
+using bit7z::BitPropVariant;
 using bit7z::UpdateCallback;
 
 BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
@@ -136,13 +138,6 @@ void BitArchiveEditor::applyChanges() {
     mInputArchive = std::make_unique< BitInputArchive >( *this, archive_path );
 }
 
-CMyComPtr< UpdateCallback > BitArchiveEditor::initUpdateCallback() const {
-    auto update_callback = BitOutputArchive::initUpdateCallback();
-    update_callback->setRenamedItems( mRenamedItems );
-    update_callback->setUpdatedItems( mUpdatedItems );
-    return update_callback;
-}
-
 uint32_t BitArchiveEditor::findItem( const tstring& item_path ) {
     auto archiveItem = mInputArchive->find( item_path );
     if ( archiveItem == mInputArchive->cend() ) {
@@ -165,4 +160,44 @@ void BitArchiveEditor::checkIndex( uint32_t index ) {
         throw BitException( "Cannot edit deleted item at index " + std::to_string( index ),
                             std::make_error_code( std::errc::invalid_argument ) );
     }
+}
+
+BitPropVariant BitArchiveEditor::getItemProperty( uint32_t old_index, PROPID propID ) const {
+    if ( old_index < mInputArchiveItemsCount  ) {
+        if ( propID == kpidPath ) { // Renamed by the user
+            auto res = mRenamedItems.find( old_index );
+            if ( res != mRenamedItems.end() ) {
+                return BitPropVariant{ WIDEN( res->second ) };
+            }
+        }
+        auto res = mUpdatedItems.find( old_index );
+        if ( res != mUpdatedItems.end() ) {
+            return res->second->getProperty( propID );
+        }
+        return mInputArchive->getItemProperty( old_index, static_cast< BitProperty >( propID ) );
+    }
+    return BitOutputArchive::getItemProperty( old_index, propID );
+}
+
+HRESULT BitArchiveEditor::getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const {
+    if ( old_index < mInputArchiveItemsCount ) { //old item in the archive
+        auto res = mUpdatedItems.find( old_index );
+        if ( res != mUpdatedItems.end() ) { //user wants to update the old item in the archive
+            return res->second->getStream( inStream );
+        }
+        return S_OK;
+    }
+    return BitOutputArchive::getItemStream( old_index, inStream );
+}
+
+bool BitArchiveEditor::hasNewData( uint32_t index ) const {
+    uint32_t old_index = getItemOldIndex( index );
+    return old_index >= mInputArchiveItemsCount || mUpdatedItems.find( old_index ) != mUpdatedItems.end();
+}
+
+bool BitArchiveEditor::hasNewProperties( uint32_t index ) const {
+    uint32_t old_index = getItemOldIndex( index );
+    bool isRenamedItem = mRenamedItems.find( old_index ) != mRenamedItems.end();
+    bool isUpdatedItem = mUpdatedItems.find( old_index ) != mUpdatedItems.end();
+    return old_index >= mInputArchiveItemsCount || isRenamedItem || isUpdatedItem;
 }

@@ -21,9 +21,12 @@
 
 #include "bitarchivecreator.hpp"
 
+#include "bitpropvariant.hpp"
 #include "itemsindex.hpp"
 
 #include <istream>
+
+struct ISequentialInStream;
 
 namespace bit7z {
     using std::istream;
@@ -58,14 +61,33 @@ namespace bit7z {
 
             void compressTo( ostream& out_stream );
 
+            BitPropVariant getOutputItemProperty( uint32_t index, PROPID propID ) const;
+
+            HRESULT getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
+
+            uint32_t itemsCount() const;
+
+            virtual bool hasNewData( uint32_t index ) const;
+
+            virtual bool hasNewProperties( uint32_t index ) const;
+
+            uint32_t getIndexInArchive( uint32_t index ) const;
+
             virtual ~BitOutputArchive() = default;
 
         protected:
             unique_ptr< BitInputArchive > mInputArchive;
+            uint32_t mInputArchiveItemsCount;
+
             ItemsIndex mNewItemsIndex;
             DeletedItems mDeletedItems;
+            std::vector< uint32_t > mItemsOffsets;
 
-            virtual CMyComPtr< UpdateCallback > initUpdateCallback() const;
+            uint32_t getItemOldIndex( uint32_t new_index ) const;
+
+            virtual BitPropVariant getItemProperty( uint32_t old_index, PROPID propID ) const;
+
+            virtual HRESULT getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const;
 
         private:
             const BitArchiveCreator& mArchiveCreator;
@@ -81,6 +103,8 @@ namespace bit7z {
                               UpdateCallback* update_callback );
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
+
+            void updateItemsOffsets();
     };
 }
 
