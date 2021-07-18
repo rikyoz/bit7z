@@ -93,11 +93,11 @@ void BitArchiveEditor::updateItem( const tstring& item_path, const std::vector< 
 }
 
 void BitArchiveEditor::updateItem( const tstring& item_path, std::istream& in_stream ) {
-    mUpdatedItems[ findItem( item_path ) ] = std::make_unique< StreamItem >( in_stream, item_path );;
+    mUpdatedItems[ findItem( item_path ) ] = std::make_unique< StreamItem >( in_stream, item_path );
 }
 
 void BitArchiveEditor::deleteItem( unsigned int index ) {
-    if ( index >= mInputArchive->itemsCount() ) {
+    if ( index >= mInputArchiveItemsCount ) {
         throw BitException( "Invalid index " + std::to_string( index ),
                             std::make_error_code( std::errc::invalid_argument ) );
     }
@@ -152,7 +152,7 @@ uint32_t BitArchiveEditor::findItem( const tstring& item_path ) {
 }
 
 void BitArchiveEditor::checkIndex( uint32_t index ) {
-    if ( index >= mInputArchive->itemsCount() ) {
+    if ( index >= mInputArchiveItemsCount ) {
         throw BitException( "Invalid index " + std::to_string( index ),
                             std::make_error_code( std::errc::invalid_argument ) );
     }
@@ -163,7 +163,7 @@ void BitArchiveEditor::checkIndex( uint32_t index ) {
 }
 
 BitPropVariant BitArchiveEditor::getItemProperty( uint32_t old_index, PROPID propID ) const {
-    if ( old_index < mInputArchiveItemsCount  ) {
+    if ( old_index < mInputArchiveItemsCount ) {
         if ( propID == kpidPath ) { // Renamed by the user
             auto res = mRenamedItems.find( old_index );
             if ( res != mRenamedItems.end() ) {
