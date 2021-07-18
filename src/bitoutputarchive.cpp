@@ -110,7 +110,7 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
-    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( mArchiveCreator, *this );
+    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( *this );
     compressToFile( out_file, update_callback );
 }
 
@@ -212,14 +212,14 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_mem_stream = new CBufferOutStream( out_buffer );
-    CMyComPtr< UpdateCallback > update_callback  = new UpdateCallback( mArchiveCreator, *this );
+    CMyComPtr< UpdateCallback > update_callback  = new UpdateCallback( *this );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& out_stream ) {
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
-    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( mArchiveCreator, *this );
+    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( *this );
     compressOut( new_arc, out_std_stream, update_callback );
 }
 
@@ -313,4 +313,8 @@ bool bit7z::BitOutputArchive::hasNewProperties( uint32_t index ) const {
 uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const {
     uint32_t old_index = getItemOldIndex( index );
     return old_index < mInputArchiveItemsCount ? old_index : static_cast< uint32_t >( -1 );
+}
+
+const BitArchiveCreator& BitOutputArchive::getArchiveCreator() const {
+    return mArchiveCreator;
 }
