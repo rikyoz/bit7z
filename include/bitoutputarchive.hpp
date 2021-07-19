@@ -25,11 +25,14 @@
 #include "itemsindex.hpp"
 
 #include <istream>
+#include <set>
 
 struct ISequentialInStream;
 
 namespace bit7z {
     using std::istream;
+
+    using DeletedItems = std::set< uint32_t >;
 
     class BitOutputArchive {
         public:

@@ -57,6 +57,8 @@ namespace bit7z {
 
     using filesystem::FSItem;
 
+    using GenericItemVector = std::vector< GenericItemPtr >;
+
     class ItemsIndex {
         public:
             void indexDirectory( const fs::path& in_dir,
