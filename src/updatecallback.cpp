@@ -28,7 +28,7 @@
 using namespace bit7z;
 
 UpdateCallback::UpdateCallback( const BitOutputArchive& output )
-    : Callback{ output.getArchiveCreator() },
+    : Callback{ output.getHandler() },
       mOutputArchive{ output },
       mVolSize{ 0 },
       mAskPassword{ false },
@@ -36,13 +36,6 @@ UpdateCallback::UpdateCallback( const BitOutputArchive& output )
 
 UpdateCallback::~UpdateCallback() {
     Finalize();
-}
-
-void UpdateCallback::throwException( HRESULT error ) {
-    if ( !mFailedFiles.empty() ) {
-        throw BitException( "Error compressing files", make_hresult_code( error ), std::move( mFailedFiles ) );
-    }
-    Callback::throwException( error );
 }
 
 HRESULT UpdateCallback::Finalize() {

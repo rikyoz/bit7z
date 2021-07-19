@@ -22,6 +22,7 @@
 #include "bitarchivecreator.hpp"
 
 #include "bitpropvariant.hpp"
+#include "bitexception.hpp"
 #include "itemsindex.hpp"
 
 #include <istream>
@@ -76,7 +77,7 @@ namespace bit7z {
 
             uint32_t getIndexInArchive( uint32_t index ) const;
 
-            const BitArchiveCreator& getArchiveCreator() const;
+            const BitArchiveHandler& getHandler() const;
 
             virtual ~BitOutputArchive() = default;
 
@@ -87,6 +88,7 @@ namespace bit7z {
             ItemsIndex mNewItemsIndex;
             DeletedItems mDeletedItems;
             std::vector< uint32_t > mItemsOffsets;
+            mutable FailedFiles mFailedFiles;
 
             uint32_t getItemOldIndex( uint32_t new_index ) const;
 

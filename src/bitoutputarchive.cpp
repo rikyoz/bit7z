@@ -34,6 +34,7 @@
 using bit7z::BitException;
 using bit7z::BitOutputArchive;
 using bit7z::BitArchiveCreator;
+using bit7z::BitArchiveHandler;
 using bit7z::BitPropVariant;
 using bit7z::filesystem::FSItem;
 using bit7z::BufferItem;
@@ -167,7 +168,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
     }
 
     if ( result != S_OK ) {
-        update_callback->throwException( result );
+        throw BitException( "Error compressing files", make_hresult_code( result ), std::move( mFailedFiles ) );
     }
 }
 
@@ -212,7 +213,7 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_mem_stream = new CBufferOutStream( out_buffer );
-    CMyComPtr< UpdateCallback > update_callback  = new UpdateCallback( *this );
+    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( *this );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
@@ -296,6 +297,7 @@ HRESULT BitOutputArchive::getItemStream( uint32_t old_index, ISequentialInStream
         if ( fs::exists( path, ec ) ) {
             ec = std::make_error_code( std::errc::file_exists );
         }
+        mFailedFiles.emplace_back( path.native(), ec );
     }
     return res;
 }
@@ -316,6 +318,6 @@ uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const {
     return old_index < mInputArchiveItemsCount ? old_index : static_cast< uint32_t >( -1 );
 }
 
-const BitArchiveCreator& BitOutputArchive::getArchiveCreator() const {
+const BitArchiveHandler& BitOutputArchive::getHandler() const {
     return mArchiveCreator;
 }
