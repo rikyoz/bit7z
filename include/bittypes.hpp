@@ -21,8 +21,6 @@
 
 #include <string>
 #include <memory>
-#include <unordered_map>
-#include <set>
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
@@ -72,10 +70,5 @@ namespace bit7z {
 
     struct GenericItem;
     using GenericItemPtr = std::unique_ptr< GenericItem >;
-    using GenericItemVector = std::vector< GenericItemPtr >;
-
-    using RenamedItems = std::unordered_map< uint32_t, tstring >;
-    using UpdatedItems = std::unordered_map< uint32_t, GenericItemPtr >;
-    using DeletedItems = std::set< uint32_t >;
 }
 #endif // BITTYPES_HPP

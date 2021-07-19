@@ -26,8 +26,13 @@
 #include "bitoutputarchive.hpp"
 #include "bittypes.hpp"
 
+#include <unordered_map>
+
 namespace bit7z {
     using std::vector;
+
+    using RenamedItems = std::unordered_map< uint32_t, tstring >;
+    using UpdatedItems = std::unordered_map< uint32_t, GenericItemPtr >;
 
     class BitArchiveEditor : public BitArchiveCreator, public BitOutputArchive {
         public:
