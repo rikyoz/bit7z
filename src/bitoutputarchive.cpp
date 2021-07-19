@@ -244,7 +244,7 @@ BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, PROPID p
     return getItemProperty( old_index, propID );
 }
 
-HRESULT bit7z::BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
+HRESULT BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
     auto old_index = getItemOldIndex( index );
     return getItemStream( old_index, inStream );
 }
@@ -281,12 +281,12 @@ uint32_t BitOutputArchive::itemsCount() const {
     return result;
 }
 
-BitPropVariant bit7z::BitOutputArchive::getItemProperty( uint32_t old_index, PROPID propID ) const {
+BitPropVariant BitOutputArchive::getItemProperty( uint32_t old_index, PROPID propID ) const {
     const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
     return new_item.getProperty( propID );
 }
 
-HRESULT bit7z::BitOutputArchive::getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const {
+HRESULT BitOutputArchive::getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const {
     const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
 
     HRESULT res = new_item.getStream( inStream );
@@ -305,9 +305,10 @@ bool BitOutputArchive::hasNewData( uint32_t index ) const {
     return old_index >= mInputArchiveItemsCount;
 }
 
-bool bit7z::BitOutputArchive::hasNewProperties( uint32_t index ) const {
-    uint32_t old_index = getItemOldIndex( index );
-    return old_index >= mInputArchiveItemsCount;
+bool BitOutputArchive::hasNewProperties( uint32_t index ) const {
+    /* Note: in BitOutputArchive, you can only add new items or overwrite (delete + add) existing ones.
+     * So if we have new data, we also have new properties! This is not true for BitArchiveEditor! */
+    return hasNewData( index );
 }
 
 uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const {
