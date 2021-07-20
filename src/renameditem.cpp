@@ -39,7 +39,7 @@ fs::path RenamedItem::inArchivePath() const { return path(); }
 
 BitPropVariant RenamedItem::getProperty( BitProperty propID ) const {
     if ( propID == bit7z::BitProperty::Path ) {
-        return bit7z::BitPropVariant{ inArchivePath() };
+        return BitPropVariant{ inArchivePath().wstring() };
     }
     return mInputArchive.getItemProperty( mIndex, propID );
 }
