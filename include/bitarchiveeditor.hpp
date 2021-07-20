@@ -79,7 +79,7 @@ namespace bit7z {
 
             void checkIndex( uint32_t index );
 
-            BitPropVariant getItemProperty( input_index index, PROPID propID ) const override;
+            BitPropVariant getItemProperty( input_index index, BitProperty propID ) const override;
 
             HRESULT getItemStream( input_index index, ISequentialInStream** inStream ) const override;
     };

@@ -35,7 +35,7 @@ namespace bit7z {
 
             fs::path inArchivePath() const override;
 
-            BitPropVariant getProperty( PROPID propID ) const override;
+            BitPropVariant getProperty( BitProperty prop ) const override;
 
             HRESULT getStream( ISequentialInStream** inStream ) const override;
 

@@ -162,10 +162,10 @@ void BitArchiveEditor::checkIndex( uint32_t index ) {
     }
 }
 
-BitPropVariant BitArchiveEditor::getItemProperty( input_index index, PROPID propID ) const {
+BitPropVariant BitArchiveEditor::getItemProperty( input_index index, BitProperty propID ) const {
     auto mapped_index = static_cast< uint32_t >( index );
     if ( mapped_index < mInputArchiveItemsCount ) {
-        if ( propID == kpidPath ) { // Renamed by the user
+        if ( propID == BitProperty::Path ) { // Renamed by the user
             auto res = mRenamedItems.find( mapped_index );
             if ( res != mRenamedItems.end() ) {
                 return BitPropVariant{ WIDEN( res->second ) };

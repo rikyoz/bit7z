@@ -50,7 +50,7 @@ namespace bit7z {
 
                 uint32_t attributes() const;
 
-                BitPropVariant getProperty( PROPID propID ) const override;
+                BitPropVariant getProperty( BitProperty propID ) const override;
 
                 HRESULT getStream( ISequentialInStream** inStream ) const override;
 

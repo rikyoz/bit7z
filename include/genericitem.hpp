@@ -40,7 +40,7 @@ namespace bit7z {
 
         virtual fs::path inArchivePath() const = 0;
 
-        virtual BitPropVariant getProperty( PROPID propID ) const = 0;
+        virtual BitPropVariant getProperty( BitProperty propID ) const = 0;
 
         virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
 

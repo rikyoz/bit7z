@@ -241,7 +241,7 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
     }
 }
 
-BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, PROPID propID ) const {
+BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, BitProperty propID ) const {
     auto mapped_index = getItemInputIndex( index );
     return getItemProperty( mapped_index, propID );
 }
@@ -284,13 +284,15 @@ uint32_t BitOutputArchive::itemsCount() const {
     return result;
 }
 
-BitPropVariant BitOutputArchive::getItemProperty( input_index index, PROPID propID ) const {
-    const GenericItem& new_item = mNewItemsVector[ static_cast< size_t >( index ) - mInputArchiveItemsCount ];
+BitPropVariant BitOutputArchive::getItemProperty( input_index index, BitProperty propID ) const {
+    auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
+    const GenericItem& new_item = mNewItemsVector[ new_item_index ];
     return new_item.getProperty( propID );
 }
 
 HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream** inStream ) const {
-    const GenericItem& new_item = mNewItemsVector[ static_cast< size_t >( index ) - mInputArchiveItemsCount ];
+    auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
+    const GenericItem& new_item = mNewItemsVector[ new_item_index ];
 
     HRESULT res = new_item.getStream( inStream );
     if ( FAILED( res ) ) {

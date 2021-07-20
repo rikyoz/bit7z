@@ -43,28 +43,28 @@ fs::path StreamItem::inArchivePath() const {
     return mStreamName;
 }
 
-BitPropVariant StreamItem::getProperty( PROPID propID ) const {
+BitPropVariant StreamItem::getProperty( BitProperty propID ) const {
     BitPropVariant prop;
     switch ( propID ) {
-        case kpidPath:
+        case BitProperty::Path:
             prop = mStreamName.wstring();
             break;
-        case kpidIsDir:
+        case BitProperty::IsDir:
             prop = false;
             break;
-        case kpidSize: {
+        case BitProperty::Size: {
             auto original_pos = mStream.tellg();
             mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
             prop = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
             mStream.seekg( original_pos ); // seeking back to the original position in the stream
             break;
         }
-        case kpidAttrib:
+        case BitProperty::Attrib:
             prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
             break;
-        case kpidCTime:
-        case kpidATime:
-        case kpidMTime: {
+        case BitProperty::CTime:
+        case BitProperty::ATime:
+        case BitProperty::MTime: {
             FILETIME ft;
             SYSTEMTIME st;
 
