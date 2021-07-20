@@ -50,8 +50,6 @@ namespace bit7z {
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
-            void throwException( HRESULT error ) override;
-
             HRESULT Finalize();
 
             // IProgress from IArchiveUpdateCallback2
@@ -87,7 +85,6 @@ namespace bit7z {
 
             bool mAskPassword;
             bool mNeedBeClosed;
-            FailedFiles mFailedFiles;
     };
 }
 

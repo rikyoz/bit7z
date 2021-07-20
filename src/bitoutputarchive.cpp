@@ -43,6 +43,7 @@ using bit7z::filesystem::FSIndexer;
 using bit7z::UpdateCallback;
 using bit7z::byte_t;
 using bit7z::tstring;
+using bit7z::input_index;
 
 BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in_file )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
@@ -159,7 +160,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
             }
         }
     }
-    updateItemsOffsets();
+    updateInputIndices();
 
     HRESULT result = out_arc->UpdateItems( out_stream, itemsCount(), update_callback );
 
@@ -241,24 +242,25 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
 }
 
 BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, PROPID propID ) const {
-    auto old_index = getItemOldIndex( index );
-    return getItemProperty( old_index, propID );
+    auto mapped_index = getItemInputIndex( index );
+    return getItemProperty( mapped_index, propID );
 }
 
 HRESULT BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
-    auto old_index = getItemOldIndex( index );
-    return getItemStream( old_index, inStream );
+    auto mapped_index = getItemInputIndex( index );
+    return getItemStream( mapped_index, inStream );
 }
 
-uint32_t BitOutputArchive::getItemOldIndex( uint32_t new_index ) const {
-    auto offset_index = static_cast< decltype( mItemsOffsets )::size_type >( new_index );
-    if ( offset_index < mItemsOffsets.size() ) {
-        return new_index + mItemsOffsets[ offset_index ];
+input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const {
+    auto index = static_cast< decltype( mInputIndices )::size_type >( new_index );
+    if ( index < mInputIndices.size() ) {
+        return mInputIndices[ index ];
     }
-    return new_index;
+    // if we are here, the user didn't delete any item, so a input_index is essentially equivalent to new_index
+    return static_cast< input_index >( new_index );
 }
 
-void BitOutputArchive::updateItemsOffsets() {
+void BitOutputArchive::updateInputIndices() {
     if ( mDeletedItems.empty() ) {
         return;
     }
@@ -270,7 +272,7 @@ void BitOutputArchive::updateItemsOffsets() {
               ++it ) {
             ++offset;
         }
-        mItemsOffsets.push_back( offset );
+        mInputIndices.push_back( static_cast< input_index >( new_index + offset ) );
     }
 }
 
@@ -282,12 +284,12 @@ uint32_t BitOutputArchive::itemsCount() const {
     return result;
 }
 
-BitPropVariant BitOutputArchive::getItemProperty( uint32_t old_index, PROPID propID ) const {
+BitPropVariant BitOutputArchive::getItemProperty( input_index index, PROPID propID ) const {
     const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
     return new_item.getProperty( propID );
 }
 
-HRESULT BitOutputArchive::getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const {
+HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream** inStream ) const {
     const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
 
     HRESULT res = new_item.getStream( inStream );
@@ -303,8 +305,8 @@ HRESULT BitOutputArchive::getItemStream( uint32_t old_index, ISequentialInStream
 }
 
 bool BitOutputArchive::hasNewData( uint32_t index ) const {
-    uint32_t old_index = getItemOldIndex( index );
-    return old_index >= mInputArchiveItemsCount;
+    auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+    return original_index >= mInputArchiveItemsCount;
 }
 
 bool BitOutputArchive::hasNewProperties( uint32_t index ) const {
@@ -314,8 +316,8 @@ bool BitOutputArchive::hasNewProperties( uint32_t index ) const {
 }
 
 uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const {
-    uint32_t old_index = getItemOldIndex( index );
-    return old_index < mInputArchiveItemsCount ? old_index : static_cast< uint32_t >( -1 );
+    auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+    return original_index < mInputArchiveItemsCount ? original_index : static_cast< uint32_t >( -1 );
 }
 
 const BitArchiveHandler& BitOutputArchive::getHandler() const {

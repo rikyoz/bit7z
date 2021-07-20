@@ -162,42 +162,44 @@ void BitArchiveEditor::checkIndex( uint32_t index ) {
     }
 }
 
-BitPropVariant BitArchiveEditor::getItemProperty( uint32_t old_index, PROPID propID ) const {
-    if ( old_index < mInputArchiveItemsCount ) {
+BitPropVariant BitArchiveEditor::getItemProperty( input_index index, PROPID propID ) const {
+    auto mapped_index = static_cast< uint32_t >( index );
+    if ( mapped_index < mInputArchiveItemsCount ) {
         if ( propID == kpidPath ) { // Renamed by the user
-            auto res = mRenamedItems.find( old_index );
+            auto res = mRenamedItems.find( mapped_index );
             if ( res != mRenamedItems.end() ) {
                 return BitPropVariant{ WIDEN( res->second ) };
             }
         }
-        auto res = mUpdatedItems.find( old_index );
+        auto res = mUpdatedItems.find( mapped_index );
         if ( res != mUpdatedItems.end() ) {
             return res->second->getProperty( propID );
         }
-        return mInputArchive->getItemProperty( old_index, static_cast< BitProperty >( propID ) );
+        return mInputArchive->getItemProperty( mapped_index, static_cast< BitProperty >( propID ) );
     }
-    return BitOutputArchive::getItemProperty( old_index, propID );
+    return BitOutputArchive::getItemProperty( index, propID );
 }
 
-HRESULT BitArchiveEditor::getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const {
-    if ( old_index < mInputArchiveItemsCount ) { //old item in the archive
-        auto res = mUpdatedItems.find( old_index );
+HRESULT BitArchiveEditor::getItemStream( input_index index, ISequentialInStream** inStream ) const {
+    auto mapped_index = static_cast< uint32_t >( index );
+    if ( mapped_index < mInputArchiveItemsCount ) { //old item in the archive
+        auto res = mUpdatedItems.find( mapped_index );
         if ( res != mUpdatedItems.end() ) { //user wants to update the old item in the archive
             return res->second->getStream( inStream );
         }
         return S_OK;
     }
-    return BitOutputArchive::getItemStream( old_index, inStream );
+    return BitOutputArchive::getItemStream( index, inStream );
 }
 
 bool BitArchiveEditor::hasNewData( uint32_t index ) const {
-    uint32_t old_index = getItemOldIndex( index );
-    return old_index >= mInputArchiveItemsCount || mUpdatedItems.find( old_index ) != mUpdatedItems.end();
+    auto mapped_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+    return mapped_index >= mInputArchiveItemsCount || mUpdatedItems.find( mapped_index ) != mUpdatedItems.end();
 }
 
 bool BitArchiveEditor::hasNewProperties( uint32_t index ) const {
-    uint32_t old_index = getItemOldIndex( index );
-    bool isRenamedItem = mRenamedItems.find( old_index ) != mRenamedItems.end();
-    bool isUpdatedItem = mUpdatedItems.find( old_index ) != mUpdatedItems.end();
-    return old_index >= mInputArchiveItemsCount || isRenamedItem || isUpdatedItem;
+    auto mapped_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+    bool isRenamedItem = mRenamedItems.find( mapped_index ) != mRenamedItems.end();
+    bool isUpdatedItem = mUpdatedItems.find( mapped_index ) != mUpdatedItems.end();
+    return mapped_index >= mInputArchiveItemsCount || isRenamedItem || isUpdatedItem;
 }
