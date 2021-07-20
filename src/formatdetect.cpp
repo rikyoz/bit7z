@@ -101,6 +101,7 @@ namespace bit7z {
                 *format = &BitFormat::Split;
                 return true;
             case str_hash( TSTRING( "ar" ) ):
+            case str_hash( TSTRING( "deb" ) ):
                 *format = &BitFormat::Deb;
                 return true;
             case str_hash( TSTRING( "apm" ) ):
@@ -131,9 +132,6 @@ namespace bit7z {
                 return true;
             case str_hash( TSTRING( "cramfs" ) ):
                 *format = &BitFormat::CramFS;
-                return true;
-            case str_hash( TSTRING( "deb" ) ):
-                *format = &BitFormat::Deb;
                 return true;
             case str_hash( TSTRING( "dmg" ) ):
                 *format = &BitFormat::Dmg;
