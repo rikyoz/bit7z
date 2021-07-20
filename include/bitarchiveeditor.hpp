@@ -1,6 +1,3 @@
-// This is an open source non-commercial project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
  * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
@@ -25,14 +22,15 @@
 #include "bitarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
 #include "bittypes.hpp"
+#include "genericitem.hpp"
 
 #include <unordered_map>
+#include <utility>
 
 namespace bit7z {
     using std::vector;
 
-    using RenamedItems = std::unordered_map< uint32_t, tstring >;
-    using UpdatedItems = std::unordered_map< uint32_t, GenericItemPtr >;
+    using EditedItems = std::unordered_map< uint32_t, GenericItemPtr >;
 
     class BitArchiveEditor : public BitArchiveCreator, public BitOutputArchive {
         public:
@@ -72,8 +70,7 @@ namespace bit7z {
             bool hasNewProperties( uint32_t index ) const override;
 
         private:
-            RenamedItems mRenamedItems;
-            UpdatedItems mUpdatedItems;
+            EditedItems mEditedItems;
 
             uint32_t findItem( const tstring& item_path );
 

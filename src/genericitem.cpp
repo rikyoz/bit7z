@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
  * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
@@ -16,39 +19,10 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef GENERICITEM_HPP
-#define GENERICITEM_HPP
+#include "genericitem.hpp"
 
-#include <cstdint>
-#include <windows.h>
+using bit7z::GenericItem;
 
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#endif
-
-#include <7zip/IStream.h>
-
-#include "bittypes.hpp"
-#include "bitpropvariant.hpp"
-#include "fs.hpp"
-
-namespace bit7z {
-    struct GenericItem {
-        virtual tstring name() const = 0;
-
-        virtual fs::path path() const = 0;
-
-        virtual fs::path inArchivePath() const = 0;
-
-        virtual BitPropVariant getProperty( BitProperty propID ) const = 0;
-
-        virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
-
-        virtual bool hasNewData() const;
-
-        virtual ~GenericItem() = default;
-    };
+bool GenericItem::hasNewData() const {
+    return true;
 }
-
-
-#endif //GENERICITEM_HPP
