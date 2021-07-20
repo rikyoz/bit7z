@@ -86,7 +86,7 @@ namespace bit7z {
 
             void compressTo( ostream& out_stream );
 
-            BitPropVariant getOutputItemProperty( uint32_t index, PROPID propID ) const;
+            BitPropVariant getOutputItemProperty( uint32_t index, BitProperty propID ) const;
 
             HRESULT getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
 
@@ -126,7 +126,7 @@ namespace bit7z {
 
             input_index getItemInputIndex( uint32_t new_index ) const;
 
-            virtual BitPropVariant getItemProperty( input_index index, PROPID propID ) const;
+            virtual BitPropVariant getItemProperty( input_index index, BitProperty prop ) const;
 
             virtual HRESULT getItemStream( input_index index, ISequentialInStream** inStream ) const;
 

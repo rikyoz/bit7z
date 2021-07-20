@@ -43,24 +43,24 @@ fs::path BufferItem::inArchivePath() const {
     return mBufferName;
 }
 
-BitPropVariant BufferItem::getProperty( PROPID propID ) const {
+BitPropVariant BufferItem::getProperty( BitProperty propID ) const {
     BitPropVariant prop;
     switch ( propID ) {
-        case kpidPath:
+        case BitProperty::Path:
             prop = mBufferName.wstring();
             break;
-        case kpidIsDir:
+        case BitProperty::IsDir:
             prop = false;
             break;
-        case kpidSize:
+        case BitProperty::Size:
             prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
             break;
-        case kpidAttrib:
+        case BitProperty::Attrib:
             prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
             break;
-        case kpidCTime:
-        case kpidATime:
-        case kpidMTime: {
+        case BitProperty::CTime:
+        case BitProperty::ATime:
+        case BitProperty::MTime: {
             FILETIME ft;
             SYSTEMTIME st;
 
