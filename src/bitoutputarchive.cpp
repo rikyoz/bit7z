@@ -46,7 +46,7 @@ using bit7z::tstring;
 using bit7z::input_index;
 
 BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in_file )
-    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+    : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     std::error_code ec;
     if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
         if ( mArchiveCreator.updateMode() == UpdateMode::NONE ) {
@@ -65,7 +65,7 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in
 
 BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator,
                                     const std::vector< bit7z::byte_t >& in_buffer )
-    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+    :  mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     if ( !in_buffer.empty() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, in_buffer );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
@@ -73,7 +73,7 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator,
 }
 
 BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, std::istream& in_stream )
-    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+    : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
     mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
