@@ -212,7 +212,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_7Z_VOL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_7Z_VOL;BIT7Z_AUTO_FORMAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -300,11 +300,13 @@
     <ClCompile Include="src\cstdoutstream.cpp" />
     <ClCompile Include="src\extractcallback.cpp" />
     <ClCompile Include="src\fileextractcallback.cpp" />
+    <ClCompile Include="src\formatdetect.cpp" />
     <ClCompile Include="src\fsindexer.cpp" />
     <ClCompile Include="src\fsitem.cpp" />
     <ClCompile Include="src\fsutil.cpp" />
     <ClCompile Include="src\genericitem.cpp" />
     <ClCompile Include="src\hresultcategory.cpp" />
+    <ClInclude Include="include\formatdetect.hpp" />
     <ClInclude Include="include\renameditem.hpp" />
     <ClInclude Include="src\itemsvector.cpp" />
     <ClCompile Include="src\opencallback.cpp" />
