@@ -26,7 +26,7 @@
 namespace bit7z {
     class RenamedItem : public GenericItem {
         public:
-            explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_name );
+            explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path );
 
             tstring name() const override;
 
@@ -43,7 +43,7 @@ namespace bit7z {
         private:
             const BitInputArchive& mInputArchive;
             uint32_t mIndex;
-            tstring mNewName;
+            tstring mNewPath;
     };
 }
 #endif //RENAMEDITEM_HPP
