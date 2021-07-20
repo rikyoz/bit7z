@@ -20,7 +20,6 @@
 #define BITTYPES_HPP
 
 #include <string>
-#include <memory>
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
@@ -67,8 +66,5 @@ namespace bit7z {
 #define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
 #define COM_DECLSPEC_NOTHROW
 #endif
-
-    struct GenericItem;
-    using GenericItemPtr = std::unique_ptr< GenericItem >;
 }
 #endif // BITTYPES_HPP
