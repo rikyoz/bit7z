@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "itemsindex.hpp"
+#include "itemsvector.hpp"
 
 #include "fs.hpp"
 #include "fsindexer.hpp"
@@ -32,7 +32,7 @@ using namespace bit7z;
 using filesystem::FSItem;
 using filesystem::FSIndexer;
 
-void ItemsIndex::indexDirectory( const fs::path& in_dir, const tstring& filter, bool recursive ) {
+void ItemsVector::indexDirectory( const fs::path& in_dir, const tstring& filter, bool recursive ) {
     FSItem dir_item{ in_dir }; //Note: if in_dir is an invalid path, FSItem constructor throws a BitException!
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
         mItems.emplace_back( std::make_unique< FSItem >( dir_item ) );
@@ -41,21 +41,21 @@ void ItemsIndex::indexDirectory( const fs::path& in_dir, const tstring& filter, 
     indexer.listDirectoryItems( mItems, recursive );
 }
 
-void ItemsIndex::indexPaths( const vector< tstring >& in_paths, bool ignore_dirs ) {
+void ItemsVector::indexPaths( const vector< tstring >& in_paths, bool ignore_dirs ) {
     for ( const auto& file_path : in_paths ) {
         FSItem item{ file_path };
         indexItem( item, ignore_dirs );
     }
 }
 
-void ItemsIndex::indexPathsMap( const map< tstring, tstring >& in_paths, bool ignore_dirs ) {
+void ItemsVector::indexPathsMap( const map< tstring, tstring >& in_paths, bool ignore_dirs ) {
     for ( const auto& file_pair : in_paths ) {
         FSItem item{ fs::path( file_pair.first ), fs::path( file_pair.second ) };
         indexItem( item, ignore_dirs );
     }
 }
 
-void ItemsIndex::indexItem( const FSItem& item, bool ignore_dirs ) {
+void ItemsVector::indexItem( const FSItem& item, bool ignore_dirs ) {
     if ( !item.isDir() ) {
         mItems.emplace_back( std::make_unique< FSItem >( item ) );
     } else if ( !ignore_dirs ) { //item is a directory
@@ -67,7 +67,7 @@ void ItemsIndex::indexItem( const FSItem& item, bool ignore_dirs ) {
     }
 }
 
-void ItemsIndex::indexFile( const tstring& in_file, const tstring& name ) {
+void ItemsVector::indexFile( const tstring& in_file, const tstring& name ) {
     if ( fs::is_directory( in_file ) ) {
         throw BitException( "Input path points to a directory, not a file",
                             std::make_error_code( std::errc::invalid_argument ), in_file );
@@ -75,37 +75,37 @@ void ItemsIndex::indexFile( const tstring& in_file, const tstring& name ) {
     mItems.emplace_back( std::make_unique< FSItem >( in_file, name ) );
 }
 
-void ItemsIndex::indexBuffer( const vector< byte_t >& in_buffer, const tstring& name ) {
+void ItemsVector::indexBuffer( const vector< byte_t >& in_buffer, const tstring& name ) {
     mItems.emplace_back( std::make_unique< BufferItem >( in_buffer, name ) );
 }
 
-void ItemsIndex::indexStream( std::istream& in_stream, const tstring& name ) {
+void ItemsVector::indexStream( std::istream& in_stream, const tstring& name ) {
     mItems.emplace_back( std::make_unique< StreamItem >( in_stream, name ) );
 }
 
-size_t ItemsIndex::size() const {
+size_t ItemsVector::size() const {
     return mItems.size();
 }
 
-const GenericItem& ItemsIndex::operator[]( size_t index ) const {
+const GenericItem& ItemsVector::operator[]( size_t index ) const {
     // Note: here index is expected to be a correct one!
     return *mItems[ index ];
 }
 
-GenericItemVector::const_iterator ItemsIndex::begin() const noexcept {
+GenericItemVector::const_iterator ItemsVector::begin() const noexcept {
     return mItems.cbegin();
 }
 
-GenericItemVector::const_iterator ItemsIndex::end() const noexcept {
+GenericItemVector::const_iterator ItemsVector::end() const noexcept {
     return mItems.cend();
 }
 
-GenericItemVector::const_iterator ItemsIndex::cbegin() const noexcept {
+GenericItemVector::const_iterator ItemsVector::cbegin() const noexcept {
     return mItems.cbegin();
 }
 
-GenericItemVector::const_iterator ItemsIndex::cend() const noexcept {
+GenericItemVector::const_iterator ItemsVector::cend() const noexcept {
     return mItems.cend();
 }
 
-ItemsIndex::~ItemsIndex() = default;
+ItemsVector::~ItemsVector() = default;

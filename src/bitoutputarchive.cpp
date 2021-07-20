@@ -79,36 +79,36 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, std::istre
 }
 
 void BitOutputArchive::addItems( const std::vector< tstring >& in_paths ) {
-    mNewItemsIndex.indexPaths( in_paths );
+    mNewItemsVector.indexPaths( in_paths );
 }
 
 void BitOutputArchive::addItems( const std::map< tstring, tstring >& in_paths ) {
-    mNewItemsIndex.indexPathsMap( in_paths );
+    mNewItemsVector.indexPathsMap( in_paths );
 }
 
 void BitOutputArchive::addFile( const tstring& in_file, const tstring& name ) {
-    mNewItemsIndex.indexFile( in_file, name );
+    mNewItemsVector.indexFile( in_file, name );
 }
 
 void BitOutputArchive::addFile( const std::vector< byte_t >& in_buffer, const tstring& name ) {
-    mNewItemsIndex.indexBuffer( in_buffer, name );
+    mNewItemsVector.indexBuffer( in_buffer, name );
 }
 
 void BitOutputArchive::addFile( std::istream& in_stream, const tstring& name ) {
-    mNewItemsIndex.indexStream( in_stream, name );
+    mNewItemsVector.indexStream( in_stream, name );
 }
 
 void BitOutputArchive::addFiles( const std::vector< tstring >& in_files ) {
-    mNewItemsIndex.indexPaths( in_files, true );
+    mNewItemsVector.indexPaths( in_files, true );
 }
 
 
 void BitOutputArchive::addFiles( const tstring& in_dir, bool recursive, const tstring& filter ) {
-    mNewItemsIndex.indexDirectory( in_dir, filter, recursive );
+    mNewItemsVector.indexDirectory( in_dir, filter, recursive );
 }
 
 void BitOutputArchive::addDirectory( const tstring& in_dir ) {
-    mNewItemsIndex.indexDirectory( in_dir );
+    mNewItemsVector.indexDirectory( in_dir );
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
@@ -153,7 +153,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
                                     IOutStream* out_stream,
                                     UpdateCallback* update_callback ) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::OVERWRITE ) {
-        for ( auto& new_item : mNewItemsIndex ) {
+        for ( auto& new_item : mNewItemsVector ) {
             auto overwritten_item = mInputArchive->find( new_item->inArchivePath() );
             if ( overwritten_item != mInputArchive->cend() ) {
                 mDeletedItems.insert( overwritten_item->index() );
@@ -277,7 +277,7 @@ void BitOutputArchive::updateInputIndices() {
 }
 
 uint32_t BitOutputArchive::itemsCount() const {
-    auto result = static_cast< uint32_t >( mNewItemsIndex.size() );
+    auto result = static_cast< uint32_t >( mNewItemsVector.size() );
     if ( mInputArchive != nullptr ) {
         result += mInputArchive->itemsCount() - static_cast< uint32_t >( mDeletedItems.size() );
     }
@@ -285,12 +285,12 @@ uint32_t BitOutputArchive::itemsCount() const {
 }
 
 BitPropVariant BitOutputArchive::getItemProperty( input_index index, PROPID propID ) const {
-    const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
+    const GenericItem& new_item = mNewItemsVector[ static_cast< size_t >( index ) - mInputArchiveItemsCount ];
     return new_item.getProperty( propID );
 }
 
 HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream** inStream ) const {
-    const GenericItem& new_item = mNewItemsIndex[ static_cast< size_t >( old_index - mInputArchiveItemsCount ) ];
+    const GenericItem& new_item = mNewItemsVector[ static_cast< size_t >( index ) - mInputArchiveItemsCount ];
 
     HRESULT res = new_item.getStream( inStream );
     if ( FAILED( res ) ) {

@@ -63,7 +63,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bufferitem.hpp
      ${PROJECT_SOURCE_DIR}/include/streamitem.hpp
      ${PROJECT_SOURCE_DIR}/include/bitoutputarchive.hpp
-     ${PROJECT_SOURCE_DIR}/include/itemsindex.hpp )
+     ${PROJECT_SOURCE_DIR}/include/itemsvector.hpp )
 
 # sources
 set( SOURCES
@@ -107,7 +107,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bufferitem.cpp
      ${PROJECT_SOURCE_DIR}/src/streamitem.cpp
      ${PROJECT_SOURCE_DIR}/src/bitoutputarchive.cpp
-     ${PROJECT_SOURCE_DIR}/src/itemsindex.cpp )
+     ${PROJECT_SOURCE_DIR}/src/itemsvector.cpp )
 
 # enable only debug/release configurations for generated VS project file
 if( CMAKE_CONFIGURATION_TYPES )

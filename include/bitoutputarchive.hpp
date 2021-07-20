@@ -23,7 +23,7 @@
 
 #include "bitpropvariant.hpp"
 #include "bitexception.hpp"
-#include "itemsindex.hpp"
+#include "itemsvector.hpp"
 
 #include <istream>
 #include <set>
@@ -106,7 +106,7 @@ namespace bit7z {
             unique_ptr< BitInputArchive > mInputArchive;
             uint32_t mInputArchiveItemsCount;
 
-            ItemsIndex mNewItemsIndex;
+            ItemsVector mNewItemsVector;
             DeletedItems mDeletedItems;
 
             mutable FailedFiles mFailedFiles;
