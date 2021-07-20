@@ -35,6 +35,27 @@ namespace bit7z {
 
     using DeletedItems = std::set< uint32_t >;
 
+    /* General note: I tried my best to explain how indices work here, but it's a bit complex. */
+
+    /* We introduce a strong index type to differentiate between indices in the output
+     * archive (uint32_t, as used by the UpdateCallback) and the corresponding indexes
+     * in the input archive (input_index). In this way, we avoid implicit conversions
+     * between the two kinds of indices.
+     *
+     * UpdateCallback uses indices in the range [0, BitOutputArchive::itemsCount())
+     *
+     * Now, if the user doesn't delete any item in the input archive, itemsCount()
+     * is just equal to <n. of items in the input archive> + <n. of newly added items>.
+     * In this case, an input_index value is just equal to the index used by UpdateCallback.
+     *
+     * On the contrary, if the user wants to delete an item in the input archive, the value
+     * of a input_index may differ from the corresponding UpdateCallback's index.
+     *
+     * Note: given an input_index i:
+     *         if i <  mInputArchiveItemsCount, the item is old (old item in the input archive);
+     *         if i >= mInputArchiveItemsCount, the item is new (added by the user); */
+    enum class input_index : uint32_t {};
+
     class BitOutputArchive {
         public:
             explicit BitOutputArchive( const BitArchiveCreator& creator, tstring in_file = TSTRING( "" ) );
@@ -87,14 +108,27 @@ namespace bit7z {
 
             ItemsIndex mNewItemsIndex;
             DeletedItems mDeletedItems;
-            std::vector< uint32_t > mItemsOffsets;
+
             mutable FailedFiles mFailedFiles;
 
-            uint32_t getItemOldIndex( uint32_t new_index ) const;
+            /* mInputIndices:
+             *   Position i = index in range [0, itemsCount()) used by UpdateCallback.
+             *   Value at pos. i = corresponding index in the input archive (type input_index).
+             *
+             * if there are some deleted items, then i != mInputIndices[i]
+             * (at least for values of i greater than the index of the first deleted item).
+             *
+             * if there are no deleted items, mInputIndices is empty, and getItemInputIndex(i)
+             * will return input_index with value i.
+             *
+             * This vector is either empty or it has size equal to itemsCount() (thanks to updateInputIndices()). */
+            std::vector< input_index > mInputIndices;
 
-            virtual BitPropVariant getItemProperty( uint32_t old_index, PROPID propID ) const;
+            input_index getItemInputIndex( uint32_t new_index ) const;
 
-            virtual HRESULT getItemStream( uint32_t old_index, ISequentialInStream** inStream ) const;
+            virtual BitPropVariant getItemProperty( input_index index, PROPID propID ) const;
+
+            virtual HRESULT getItemStream( input_index index, ISequentialInStream** inStream ) const;
 
         private:
             const BitArchiveCreator& mArchiveCreator;
@@ -111,7 +145,7 @@ namespace bit7z {
 
             void setArchiveProperties( IOutArchive* out_archive ) const;
 
-            void updateItemsOffsets();
+            void updateInputIndices();
     };
 }
 
