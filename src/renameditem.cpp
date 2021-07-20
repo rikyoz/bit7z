@@ -21,22 +21,25 @@
 
 #include "renameditem.hpp"
 
+#include "fsutil.hpp"
+
 using bit7z::RenamedItem;
 using bit7z::tstring;
 using bit7z::BitPropVariant;
+using namespace bit7z::filesystem;
 
-RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_name )
-    : mInputArchive{ input_archive }, mIndex{ index }, mNewName{ std::move( new_name ) } {}
+RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path )
+    : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ std::move( new_path ) } {}
 
-tstring RenamedItem::name() const { return mNewName; }
+tstring RenamedItem::name() const { return fsutil::filename( mNewPath, true ); }
 
-fs::path RenamedItem::path() const { return name(); }
+fs::path RenamedItem::path() const { return mNewPath; }
 
 fs::path RenamedItem::inArchivePath() const { return path(); }
 
 BitPropVariant RenamedItem::getProperty( BitProperty propID ) const {
     if ( propID == bit7z::BitProperty::Path ) {
-        return bit7z::BitPropVariant{ name() };
+        return bit7z::BitPropVariant{ inArchivePath() };
     }
     return mInputArchive.getItemProperty( mIndex, propID );
 }
