@@ -16,39 +16,34 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef GENERICITEM_HPP
-#define GENERICITEM_HPP
+#ifndef RENAMEDITEM_HPP
+#define RENAMEDITEM_HPP
 
-#include <cstdint>
-#include <windows.h>
-
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#endif
-
-#include <7zip/IStream.h>
-
+#include "bitinputarchive.hpp"
 #include "bittypes.hpp"
-#include "bitpropvariant.hpp"
-#include "fs.hpp"
+#include "genericitem.hpp"
 
 namespace bit7z {
-    struct GenericItem {
-        virtual tstring name() const = 0;
+    class RenamedItem : public GenericItem {
+        public:
+            explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_name );
 
-        virtual fs::path path() const = 0;
+            tstring name() const override;
 
-        virtual fs::path inArchivePath() const = 0;
+            fs::path path() const override;
 
-        virtual BitPropVariant getProperty( BitProperty propID ) const = 0;
+            fs::path inArchivePath() const override;
 
-        virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
+            BitPropVariant getProperty( bit7z::BitProperty propID ) const override;
 
-        virtual bool hasNewData() const;
+            HRESULT getStream( ISequentialInStream** inStream ) const override;
 
-        virtual ~GenericItem() = default;
+            bool hasNewData() const override;
+
+        private:
+            const BitInputArchive& mInputArchive;
+            uint32_t mIndex;
+            tstring mNewName;
     };
 }
-
-
-#endif //GENERICITEM_HPP
+#endif //RENAMEDITEM_HPP

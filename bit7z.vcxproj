@@ -303,9 +303,12 @@
     <ClCompile Include="src\fsindexer.cpp" />
     <ClCompile Include="src\fsitem.cpp" />
     <ClCompile Include="src\fsutil.cpp" />
+    <ClCompile Include="src\genericitem.cpp" />
     <ClCompile Include="src\hresultcategory.cpp" />
+    <ClInclude Include="include\renameditem.hpp" />
     <ClInclude Include="src\itemsvector.cpp" />
     <ClCompile Include="src\opencallback.cpp" />
+    <ClCompile Include="src\renameditem.cpp" />
     <ClCompile Include="src\streamextractcallback.cpp" />
     <ClCompile Include="src\streamitem.cpp" />
     <ClCompile Include="src\updatecallback.cpp" />
