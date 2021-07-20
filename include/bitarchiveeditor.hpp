@@ -30,7 +30,7 @@
 namespace bit7z {
     using std::vector;
 
-    using EditedItems = std::unordered_map< uint32_t, GenericItemPtr >;
+    using EditedItems = std::unordered_map< uint32_t, ItemsVector::value_type >;
 
     class BitArchiveEditor : public BitArchiveCreator, public BitOutputArchive {
         public:

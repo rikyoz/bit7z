@@ -57,10 +57,14 @@ namespace bit7z {
 
     using filesystem::FSItem;
 
+    struct GenericItem;
+    using GenericItemPtr = std::unique_ptr< GenericItem >;
     using GenericItemVector = std::vector< GenericItemPtr >;
 
     class ItemsVector {
         public:
+            using value_type = GenericItemPtr;
+
             void indexDirectory( const fs::path& in_dir,
                                  const tstring& filter = TSTRING( "" ),
                                  bool recursive = true );
