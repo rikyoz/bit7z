@@ -58,7 +58,7 @@ namespace bit7z {
              * @param files     the vector of files that failed, with the corresponding error codes.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const char* const message,
+            explicit BitException( const char* message,
                                    std::error_code code = make_hresult_code( E_FAIL ),
                                    FailedFiles&& files = {} );
 
@@ -69,7 +69,7 @@ namespace bit7z {
              * @param file      the file that failed during the operation.
              * @param code      the HRESULT code associated with the exception object.
              */
-            BitException( const char* const message, std::error_code code, const tstring& file );
+            BitException( const char* message, std::error_code code, const tstring& file );
 
             /**
              * @brief Constructs a BitException object with the given message
