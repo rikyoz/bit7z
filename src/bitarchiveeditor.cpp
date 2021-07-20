@@ -128,7 +128,7 @@ void BitArchiveEditor::setUpdateMode( UpdateMode update_mode ) {
 }
 
 void BitArchiveEditor::applyChanges() {
-    if ( mNewItemsIndex.size() == 0 && mRenamedItems.empty() && mUpdatedItems.empty() && mDeletedItems.empty() ) {
+    if ( mNewItemsVector.size() == 0 && mRenamedItems.empty() && mUpdatedItems.empty() && mDeletedItems.empty() ) {
         // Nothing to do here!
         return;
     }

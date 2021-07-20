@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef ITEMSINDEX_HPP
-#define ITEMSINDEX_HPP
+#ifndef ITEMSVECTOR_HPP
+#define ITEMSVECTOR_HPP
 
 #include <vector>
 #include <map>
@@ -59,7 +59,7 @@ namespace bit7z {
 
     using GenericItemVector = std::vector< GenericItemPtr >;
 
-    class ItemsIndex {
+    class ItemsVector {
         public:
             void indexDirectory( const fs::path& in_dir,
                                  const tstring& filter = TSTRING( "" ),
@@ -87,7 +87,7 @@ namespace bit7z {
 
             GenericItemVector::const_iterator cend() const noexcept;
 
-            virtual ~ItemsIndex();
+            virtual ~ItemsVector();
 
         private:
             GenericItemVector mItems;
@@ -97,4 +97,4 @@ namespace bit7z {
 }
 
 
-#endif //ITEMSINDEX_HPP
+#endif //ITEMSVECTOR_HPP

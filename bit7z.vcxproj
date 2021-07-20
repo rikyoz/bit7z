@@ -304,7 +304,7 @@
     <ClCompile Include="src\fsitem.cpp" />
     <ClCompile Include="src\fsutil.cpp" />
     <ClCompile Include="src\hresultcategory.cpp" />
-    <ClInclude Include="src\itemsindex.cpp" />
+    <ClInclude Include="src\itemsvector.cpp" />
     <ClCompile Include="src\opencallback.cpp" />
     <ClCompile Include="src\streamextractcallback.cpp" />
     <ClCompile Include="src\streamitem.cpp" />
@@ -353,7 +353,7 @@
     <ClInclude Include="include\fsitem.hpp" />
     <ClInclude Include="include\fsutil.hpp" />
     <ClInclude Include="include\hresultcategory.hpp" />
-    <ClInclude Include="include\itemsindex.hpp" />
+    <ClInclude Include="include\itemsvector.hpp" />
     <ClInclude Include="include\opencallback.hpp" />
     <ClInclude Include="include\streamextractcallback.hpp" />
     <ClInclude Include="include\streamitem.hpp" />

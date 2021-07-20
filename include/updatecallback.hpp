@@ -28,7 +28,7 @@
 #include <7zip/IPassword.h>
 
 #include "callback.hpp"
-#include "itemsindex.hpp"
+#include "itemsvector.hpp"
 #include "bitarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
 #include "bitinputarchive.hpp"
