@@ -133,8 +133,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;third_party\7-zip\CPP;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding  -GR- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\vstudio\$(PlatformShortName)\release\.obj\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -204,7 +204,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;include;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding  -GR- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\vstudio\$(PlatformShortName)\debug\.obj\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>

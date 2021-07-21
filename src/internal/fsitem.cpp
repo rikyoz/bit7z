@@ -134,36 +134,6 @@ uint32_t FSItem::attributes() const {
     return mFileAttributeData.dwFileAttributes;
 }
 
-BitPropVariant FSItem::getProperty( BitProperty propID ) const {
-    BitPropVariant prop;
-    switch ( propID ) {
-        case BitProperty::Path:
-            prop = inArchivePath().wstring();
-            break;
-        case BitProperty::IsDir:
-            prop = isDir();
-            break;
-        case BitProperty::Size:
-            prop = size();
-            break;
-        case BitProperty::Attrib:
-            prop = attributes();
-            break;
-        case BitProperty::CTime:
-            prop = creationTime();
-            break;
-        case BitProperty::ATime:
-            prop = lastAccessTime();
-            break;
-        case BitProperty::MTime:
-            prop = lastWriteTime();
-            break;
-        default: //empty prop
-            break;
-    }
-    return prop;
-}
-
 HRESULT FSItem::getStream( ISequentialInStream** inStream ) const {
     if ( isDir() ) {
         return S_OK;

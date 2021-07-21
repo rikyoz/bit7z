@@ -22,7 +22,38 @@
 #include "internal/genericitem.hpp"
 
 using bit7z::GenericItem;
+using bit7z::BitPropVariant;
 
 bool GenericItem::hasNewData() const {
     return true;
+}
+
+BitPropVariant GenericItem::getProperty( BitProperty propID ) const {
+    BitPropVariant prop;
+    switch ( propID ) {
+        case BitProperty::Path:
+            prop = inArchivePath().wstring();
+            break;
+        case BitProperty::IsDir:
+            prop = isDir();
+            break;
+        case BitProperty::Size:
+            prop = size();
+            break;
+        case BitProperty::Attrib:
+            prop = attributes();
+            break;
+        case BitProperty::CTime:
+            prop = creationTime();
+            break;
+        case BitProperty::ATime:
+            prop = lastAccessTime();
+            break;
+        case BitProperty::MTime:
+            prop = lastWriteTime();
+            break;
+        default: //empty prop
+            break;
+    }
+    return prop;
 }

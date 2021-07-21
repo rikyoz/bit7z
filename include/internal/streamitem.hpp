@@ -26,21 +26,31 @@ namespace bit7z {
 
     class StreamItem : public GenericItem {
         public:
-            explicit StreamItem( istream& stream, const tstring& name );
+            explicit StreamItem( istream& stream, const tstring& path );
 
             tstring name() const override;
+
+            bool isDir() const override;
+
+            uint64_t size() const override;
+
+            FILETIME creationTime() const override;
+
+            FILETIME lastAccessTime() const override;
+
+            FILETIME lastWriteTime() const override;
+
+            uint32_t attributes() const override;
 
             fs::path path() const override;
 
             fs::path inArchivePath() const override;
 
-            BitPropVariant getProperty( BitProperty propID ) const override;
-
             HRESULT getStream( ISequentialInStream** inStream ) const override;
 
         private:
             istream& mStream;
-            const fs::path mStreamName;
+            const fs::path mStreamPath;
     };
 }
 

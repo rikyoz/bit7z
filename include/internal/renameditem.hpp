@@ -30,11 +30,21 @@ namespace bit7z {
 
             tstring name() const override;
 
+            bool isDir() const override;
+
+            uint64_t size() const override;
+
+            FILETIME creationTime() const override;
+
+            FILETIME lastAccessTime() const override;
+
+            FILETIME lastWriteTime() const override;
+
+            uint32_t attributes() const override;
+
             fs::path path() const override;
 
             fs::path inArchivePath() const override;
-
-            BitPropVariant getProperty( bit7z::BitProperty propID ) const override;
 
             HRESULT getStream( ISequentialInStream** inStream ) const override;
 
@@ -43,7 +53,7 @@ namespace bit7z {
         private:
             const BitInputArchive& mInputArchive;
             uint32_t mIndex;
-            tstring mNewPath;
+            const fs::path mNewPath;
     };
 }
 #endif //RENAMEDITEM_HPP

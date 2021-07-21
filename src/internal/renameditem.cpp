@@ -31,18 +31,11 @@ using namespace bit7z::filesystem;
 RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path )
     : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ std::move( new_path ) } {}
 
-tstring RenamedItem::name() const { return fsutil::filename( mNewPath, true ); }
+tstring RenamedItem::name() const { return mNewPath.filename(); }
 
 fs::path RenamedItem::path() const { return mNewPath; }
 
 fs::path RenamedItem::inArchivePath() const { return path(); }
-
-BitPropVariant RenamedItem::getProperty( BitProperty propID ) const {
-    if ( propID == bit7z::BitProperty::Path ) {
-        return BitPropVariant{ inArchivePath().wstring() };
-    }
-    return mInputArchive.getItemProperty( mIndex, propID );
-}
 
 HRESULT RenamedItem::getStream( ISequentialInStream** ) const {
     return S_OK;
@@ -50,4 +43,28 @@ HRESULT RenamedItem::getStream( ISequentialInStream** ) const {
 
 bool RenamedItem::hasNewData() const {
     return false; //just a new property (i.e., path/name), no new data!
+}
+
+bool RenamedItem::isDir() const {
+    return mInputArchive.getItemProperty( mIndex, BitProperty::IsDir ).getBool();
+}
+
+uint64_t RenamedItem::size() const {
+    return mInputArchive.getItemProperty( mIndex, BitProperty::Size ).getUInt64();
+}
+
+FILETIME RenamedItem::creationTime() const {
+    return mInputArchive.getItemProperty( mIndex, BitProperty::CTime ).getFileTime();
+}
+
+FILETIME RenamedItem::lastAccessTime() const {
+    return mInputArchive.getItemProperty( mIndex, BitProperty::ATime ).getFileTime();
+}
+
+FILETIME RenamedItem::lastWriteTime() const {
+    return mInputArchive.getItemProperty( mIndex, BitProperty::MTime ).getFileTime();
+}
+
+uint32_t bit7z::RenamedItem::attributes() const {
+    return mInputArchive.getItemProperty( mIndex, BitProperty::Attrib ).getUInt32();
 }

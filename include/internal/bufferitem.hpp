@@ -36,9 +36,19 @@ namespace bit7z {
 
             fs::path inArchivePath() const override;
 
-            BitPropVariant getProperty( BitProperty prop ) const override;
-
             HRESULT getStream( ISequentialInStream** inStream ) const override;
+
+            bool isDir() const override;
+
+            uint64_t size() const override;
+
+            FILETIME creationTime() const override;
+
+            FILETIME lastAccessTime() const override;
+
+            FILETIME lastWriteTime() const override;
+
+            uint32_t attributes() const override;
 
         private:
             const vector< byte_t >& mBuffer;

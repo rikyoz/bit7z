@@ -1,7 +1,7 @@
 cmake_minimum_required( VERSION 3.8.2 )
 project( bit7z )
 
-set( CMAKE_VERBOSE_MAKEFILE on )
+set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
 cmake_policy( SET CMP0022 NEW )
 set( EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party )
 

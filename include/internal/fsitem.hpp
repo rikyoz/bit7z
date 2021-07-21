@@ -32,15 +32,15 @@ namespace bit7z {
 
                 bool isDots() const;
 
-                bool isDir() const;
+                bool isDir() const override;
 
-                uint64_t size() const;
+                uint64_t size() const override;
 
-                FILETIME creationTime() const;
+                FILETIME creationTime() const override;
 
-                FILETIME lastAccessTime() const;
+                FILETIME lastAccessTime() const override;
 
-                FILETIME lastWriteTime() const;
+                FILETIME lastWriteTime() const override;
 
                 tstring name() const override;
 
@@ -48,9 +48,7 @@ namespace bit7z {
 
                 fs::path inArchivePath() const override;
 
-                uint32_t attributes() const;
-
-                BitPropVariant getProperty( BitProperty propID ) const override;
+                uint32_t attributes() const override;
 
                 HRESULT getStream( ISequentialInStream** inStream ) const override;
 

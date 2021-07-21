@@ -33,17 +33,29 @@
 
 namespace bit7z {
     struct GenericItem {
+        virtual bool isDir() const = 0;
+
+        virtual uint64_t size() const = 0;
+
+        virtual FILETIME creationTime() const = 0;
+
+        virtual FILETIME lastAccessTime() const = 0;
+
+        virtual FILETIME lastWriteTime() const = 0;
+
         virtual tstring name() const = 0;
 
         virtual fs::path path() const = 0;
 
         virtual fs::path inArchivePath() const = 0;
 
-        virtual BitPropVariant getProperty( BitProperty propID ) const = 0;
+        virtual uint32_t attributes() const = 0;
 
         virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
 
         virtual bool hasNewData() const;
+
+        BitPropVariant getProperty( BitProperty propID ) const;
 
         virtual ~GenericItem() = default;
     };

@@ -41,40 +41,37 @@ fs::path BufferItem::inArchivePath() const {
     return mBufferName;
 }
 
-BitPropVariant BufferItem::getProperty( BitProperty propID ) const {
-    BitPropVariant prop;
-    switch ( propID ) {
-        case BitProperty::Path:
-            prop = mBufferName.wstring();
-            break;
-        case BitProperty::IsDir:
-            prop = false;
-            break;
-        case BitProperty::Size:
-            prop = static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
-            break;
-        case BitProperty::Attrib:
-            prop = static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
-            break;
-        case BitProperty::CTime:
-        case BitProperty::ATime:
-        case BitProperty::MTime: {
-            FILETIME ft;
-            SYSTEMTIME st;
-
-            GetSystemTime( &st ); // gets current time
-            SystemTimeToFileTime( &st, &ft ); // converts to file time format
-            prop = ft;
-            break;
-        }
-        default: //empty prop
-            break;
-    }
-    return prop;
-}
-
 HRESULT BufferItem::getStream( ISequentialInStream** inStream ) const {
     CMyComPtr< ISequentialInStream > inStreamLoc = new CBufferInStream( mBuffer );
     *inStream = inStreamLoc.Detach();
     return S_OK;
+}
+
+bool BufferItem::isDir() const {
+    return false;
+}
+
+uint64_t BufferItem::size() const {
+    return static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
+}
+
+FILETIME BufferItem::creationTime() const { //-V524
+    return lastWriteTime();
+}
+
+FILETIME BufferItem::lastAccessTime() const { //-V524
+    return lastWriteTime();
+}
+
+FILETIME BufferItem::lastWriteTime() const {
+    FILETIME ft;
+    SYSTEMTIME st;
+
+    GetSystemTime( &st ); // gets current time
+    SystemTimeToFileTime( &st, &ft ); // converts to file time format
+    return ft;
+}
+
+uint32_t BufferItem::attributes() const {
+    return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
