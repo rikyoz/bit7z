@@ -20,8 +20,8 @@
 #define BITEXTRACTOR_HPP
 
 #include "bitarchiveopener.hpp"
-#include "bitinputarchive.hpp"
 #include "bitexception.hpp"
+#include "bitinputarchive.hpp"
 #include "bittypes.hpp"
 
 namespace bit7z {

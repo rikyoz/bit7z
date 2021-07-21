@@ -21,9 +21,9 @@
 
 #include "bitmemcompressor.hpp"
 
-#include "genericitem.hpp"
 #include "bitoutputarchive.hpp"
-#include "fsutil.hpp"
+#include "internal/fsutil.hpp"
+#include "internal/genericitem.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;

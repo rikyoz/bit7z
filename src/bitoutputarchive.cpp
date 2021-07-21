@@ -22,24 +22,16 @@
 #include "bitoutputarchive.hpp"
 
 #include "bitexception.hpp"
-#include "fs.hpp"
-#include "fsitem.hpp"
-#include "fsindexer.hpp"
-#include "bufferitem.hpp"
-#include "streamitem.hpp"
-#include "updatecallback.hpp"
-#include "cmultivoloutstream.hpp"
-#include "cbufferoutstream.hpp"
+#include "internal/cbufferoutstream.hpp"
+#include "internal/cmultivoloutstream.hpp"
+#include "internal/genericitem.hpp"
+#include "internal/updatecallback.hpp"
 
 using bit7z::BitException;
 using bit7z::BitOutputArchive;
 using bit7z::BitArchiveCreator;
 using bit7z::BitArchiveHandler;
 using bit7z::BitPropVariant;
-using bit7z::filesystem::FSItem;
-using bit7z::BufferItem;
-using bit7z::StreamItem;
-using bit7z::filesystem::FSIndexer;
 using bit7z::UpdateCallback;
 using bit7z::byte_t;
 using bit7z::tstring;

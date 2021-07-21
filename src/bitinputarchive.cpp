@@ -21,23 +21,23 @@
 
 #include "bitinputarchive.hpp"
 
-#include "bitexception.hpp"
-#include "cbufferinstream.hpp"
-#include "cfileinstream.hpp"
-#include "opencallback.hpp"
-#include "extractcallback.hpp"
-#include "fileextractcallback.hpp"
-#include "streamextractcallback.hpp"
-#include "bufferextractcallback.hpp"
-
 #include <utility> // for std::move
+
+#include "bitexception.hpp"
+#include "internal/bufferextractcallback.hpp"
+#include "internal/cbufferinstream.hpp"
+#include "internal/cfileinstream.hpp"
+#include "internal/extractcallback.hpp"
+#include "internal/fileextractcallback.hpp"
+#include "internal/streamextractcallback.hpp"
+#include "internal/opencallback.hpp"
 
 using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
 
 #ifdef BIT7Z_AUTO_FORMAT
-#include "formatdetect.hpp"
+#include "internal/formatdetect.hpp"
 #endif
 
 constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";

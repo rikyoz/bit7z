@@ -21,14 +21,14 @@
 
 #include "bitpropvariant.hpp"
 
-#include "bitexception.hpp"
-
 #include <utility> // for std::move
+
+#include "bitexception.hpp"
 
 #ifdef _WIN32
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
-#include "util.hpp"
+#include "internal/util.hpp"
 #define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
 #endif
 

@@ -20,13 +20,13 @@
 #define BIT7Z_HPP
 
 #include "bitarchiveinfo.hpp"
-#include "bitfilecompressor.hpp"
-#include "bitmemcompressor.hpp"
-#include "bitstreamcompressor.hpp"
-#include "bitfileextractor.hpp"
-#include "bitmemextractor.hpp"
-#include "bitstreamextractor.hpp"
 #include "bitexception.hpp"
+#include "bitfilecompressor.hpp"
+#include "bitfileextractor.hpp"
+#include "bitmemcompressor.hpp"
+#include "bitmemextractor.hpp"
+#include "bitstreamcompressor.hpp"
+#include "bitstreamextractor.hpp"
 
 #endif // BIT7Z_HPP
 

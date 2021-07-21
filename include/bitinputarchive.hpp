@@ -18,16 +18,16 @@
 #ifndef BITINPUTARCHIVE_HPP
 #define BITINPUTARCHIVE_HPP
 
+#include <vector>
+#include <string>
+#include <cstdint>
+
 #include "bitarchivehandler.hpp"
 #include "bitarchiveiteminfo.hpp"
 #include "bitarchiveitemoffset.hpp"
 #include "bitformat.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
-
-#include <vector>
-#include <string>
-#include <cstdint>
 
 struct IInStream;
 struct IInArchive;

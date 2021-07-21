@@ -19,13 +19,13 @@
 #ifndef BITARCHIVECREATOR_HPP
 #define BITARCHIVECREATOR_HPP
 
+#include <memory>
+
 #include "bitarchivehandler.hpp"
-#include "bitinputarchive.hpp"
-#include "bitformat.hpp"
 #include "bitcompressionlevel.hpp"
 #include "bitcompressionmethod.hpp"
-
-#include <memory>
+#include "bitformat.hpp"
+#include "bitinputarchive.hpp"
 
 struct IOutStream;
 struct ISequentialOutStream;

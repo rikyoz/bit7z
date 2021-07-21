@@ -20,7 +20,6 @@
 #define BITARCHIVEITEM_HPP
 
 #include "bitpropvariant.hpp"
-
 #include "bittypes.hpp"
 
 namespace bit7z {

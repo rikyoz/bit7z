@@ -19,9 +19,9 @@
 #ifndef BITARCHIVEINFO_HPP
 #define BITARCHIVEINFO_HPP
 
+#include "bitarchiveiteminfo.hpp"
 #include "bitarchiveopener.hpp"
 #include "bitinputarchive.hpp"
-#include "bitarchiveiteminfo.hpp"
 #include "bittypes.hpp"
 
 struct IInArchive;

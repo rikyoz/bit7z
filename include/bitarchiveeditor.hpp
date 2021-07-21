@@ -19,18 +19,16 @@
 #ifndef BITARCHIVEEDITOR_HPP
 #define BITARCHIVEEDITOR_HPP
 
+#include <unordered_map>
+
 #include "bitarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
 #include "bittypes.hpp"
-#include "genericitem.hpp"
-
-#include <unordered_map>
-#include <utility>
 
 namespace bit7z {
     using std::vector;
 
-    using EditedItems = std::unordered_map< uint32_t, ItemsVector::value_type >;
+    using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
 
     class BitArchiveEditor : public BitArchiveCreator, public BitOutputArchive {
         public:

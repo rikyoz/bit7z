@@ -30,8 +30,10 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitfilecompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitfileextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitformat.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitfs.hpp
      ${PROJECT_SOURCE_DIR}/include/bitguids.hpp
      ${PROJECT_SOURCE_DIR}/include/bitinputarchive.hpp
+     ${PROJECT_SOURCE_DIR}/include/bititemsvector.hpp
      ${PROJECT_SOURCE_DIR}/include/bitmemcompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitmemextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitoutputarchive.hpp
@@ -39,32 +41,31 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitstreamcompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitstreamextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bittypes.hpp
-     ${PROJECT_SOURCE_DIR}/include/bufferextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/bufferitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/callback.hpp
-     ${PROJECT_SOURCE_DIR}/include/cbufferinstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/cbufferoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/cfileinstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/cfileoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/cmultivoloutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/cstdinstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/cstdoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/extractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/fileextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/formatdetect.hpp
-     ${PROJECT_SOURCE_DIR}/include/fsindexer.hpp
-     ${PROJECT_SOURCE_DIR}/include/fsitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/fsutil.hpp
-     ${PROJECT_SOURCE_DIR}/include/fs.hpp
-     ${PROJECT_SOURCE_DIR}/include/genericitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/hresultcategory.hpp
-     ${PROJECT_SOURCE_DIR}/include/itemsvector.hpp
-     ${PROJECT_SOURCE_DIR}/include/opencallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/renameditem.hpp
-     ${PROJECT_SOURCE_DIR}/include/streamextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/streamitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/updatecallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/util.hpp )
+     ${PROJECT_SOURCE_DIR}/include/internal/bufferextractcallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/bufferitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/callback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cbufferinstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cbufferoutstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cfileinstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cfileoutstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cmultivoloutstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cstdinstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cstdoutstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/extractcallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/fileextractcallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/formatdetect.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/fsindexer.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/fsitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/fsutil.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/fs.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/genericitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/renameditem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/streamitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/updatecallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/util.hpp )
 
 # sources
 set( SOURCES
@@ -82,35 +83,35 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
      ${PROJECT_SOURCE_DIR}/src/bitguids.cpp
      ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp
+     ${PROJECT_SOURCE_DIR}/src/bititemsvector.cpp
      ${PROJECT_SOURCE_DIR}/src/bitmemcompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitoutputarchive.cpp
      ${PROJECT_SOURCE_DIR}/src/bitpropvariant.cpp
      ${PROJECT_SOURCE_DIR}/src/bitstreamcompressor.cpp
-     ${PROJECT_SOURCE_DIR}/src/bufferextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/bufferitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/callback.cpp
-     ${PROJECT_SOURCE_DIR}/src/cbufferinstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/cbufferoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/cfileinstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/cfileoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/cmultivoloutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/cstdinstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/cstdoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/extractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/fileextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/formatdetect.cpp
-     ${PROJECT_SOURCE_DIR}/src/fsindexer.cpp
-     ${PROJECT_SOURCE_DIR}/src/fsitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/fsutil.cpp
-     ${PROJECT_SOURCE_DIR}/src/genericitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/hresultcategory.cpp
-     ${PROJECT_SOURCE_DIR}/src/itemsvector.cpp
-     ${PROJECT_SOURCE_DIR}/src/opencallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/renameditem.cpp
-     ${PROJECT_SOURCE_DIR}/src/streamextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/streamitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/updatecallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/util.cpp )
+     ${PROJECT_SOURCE_DIR}/src/internal/bufferextractcallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/bufferitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/callback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cbufferinstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cbufferoutstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cfileinstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cfileoutstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cmultivoloutstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cstdinstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cstdoutstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/extractcallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/fileextractcallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/formatdetect.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/fsindexer.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/fsitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/fsutil.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/genericitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/hresultcategory.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/opencallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/renameditem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/streamitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
 
 # enable only debug/release configurations for generated VS project file
 if( CMAKE_CONFIGURATION_TYPES )

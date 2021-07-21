@@ -19,14 +19,13 @@
 #ifndef BITOUTPUTARCHIVE_HPP
 #define BITOUTPUTARCHIVE_HPP
 
-#include "bitarchivecreator.hpp"
-
-#include "bitpropvariant.hpp"
-#include "bitexception.hpp"
-#include "itemsvector.hpp"
-
 #include <istream>
 #include <set>
+
+#include "bitarchivecreator.hpp"
+#include "bitexception.hpp"
+#include "bititemsvector.hpp"
+#include "bitpropvariant.hpp"
 
 struct ISequentialInStream;
 
@@ -106,7 +105,7 @@ namespace bit7z {
             unique_ptr< BitInputArchive > mInputArchive;
             uint32_t mInputArchiveItemsCount;
 
-            ItemsVector mNewItemsVector;
+            BitItemsVector mNewItemsVector;
             DeletedItems mDeletedItems;
 
             mutable FailedFiles mFailedFiles;

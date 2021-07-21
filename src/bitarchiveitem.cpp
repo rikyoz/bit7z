@@ -21,7 +21,7 @@
 
 #include "bitarchiveitem.hpp"
 
-#include "fsutil.hpp"
+#include "internal/fsutil.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;

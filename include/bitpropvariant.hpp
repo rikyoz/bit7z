@@ -20,8 +20,6 @@
 #define BITPROPVARIANT_HPP
 
 #include <cstdint>
-
-#include "bittypes.hpp"
 //#include <array>
 
 #ifdef _WIN32
@@ -29,6 +27,8 @@
 #else
 #include <Common/MyWindows.h>
 #endif
+
+#include "bittypes.hpp"
 
 namespace bit7z {
     static const char* const kCannotAllocateString = "Could not allocate memory for BitPropVariant string";

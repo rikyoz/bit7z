@@ -22,8 +22,8 @@
 #include "bitfilecompressor.hpp"
 
 #include "bitexception.hpp"
-#include "updatecallback.hpp" //for exception strings
 #include "bitoutputarchive.hpp"
+#include "internal/updatecallback.hpp" //for exception strings
 
 using namespace std;
 using namespace bit7z;

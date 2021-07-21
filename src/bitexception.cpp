@@ -21,9 +21,9 @@
 
 #include "bitexception.hpp"
 
-#include "hresultcategory.hpp"
-
 #include <utility> // for std::move
+
+#include "internal/hresultcategory.hpp"
 
 using std::string;
 

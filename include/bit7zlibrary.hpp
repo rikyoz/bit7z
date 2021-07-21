@@ -21,14 +21,14 @@
 
 #include <string>
 
-#include "bittypes.hpp"
-
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <myWindows/StdAfx.h>
 using HMODULE = void*;
 #endif
+
+#include "bittypes.hpp"
 
 #ifdef _WIN32
 #define DEFAULT_DLL L"7z.dll"
