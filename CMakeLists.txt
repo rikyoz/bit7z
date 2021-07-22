@@ -223,11 +223,11 @@ if( MSVC )
     # setting pdb file name for debug builds (otherwise it is not generated!)
     set_target_properties( ${TARGET_NAME} PROPERTIES COMPILE_PDB_NAME_DEBUG ${TARGET_NAME}${CMAKE_DEBUG_POSTFIX} )
     # release builds should be optimized (e.g., for size)
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/Os>" )
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/Oi>" )
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/analyze>" )
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/GS>" )
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/Gy>" )
+    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Os>" )
+    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Oi>" )
+    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/analyze>" )
+    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/GS>" )
+    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Gy>" )
     # remove default warning level
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
@@ -236,11 +236,12 @@ if( MSVC )
     # warning level
     target_compile_options( ${TARGET_NAME} PRIVATE /W4 /WX )
     # standard conformance options of MSVC
-    target_compile_options( ${TARGET_NAME} PRIVATE /nologo /Zc:rvalueCast /Zc:inline /Zc:forScope
-                            /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
+    target_compile_options( ${TARGET_NAME} PRIVATE /nologo /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
+                            /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
     # enabling multi-threaded compiling
     set( MSVC_COMPILE_FLAGS "/MP" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )
+    set( CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /nologo" )
     # static runtime option
     if( STATIC_RUNTIME )
         set( CompilerFlags

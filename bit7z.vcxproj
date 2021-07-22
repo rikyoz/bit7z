@@ -273,6 +273,7 @@
   <ItemGroup>
     <ClCompile Include="src\bit7zlibrary.cpp" />
     <ClCompile Include="src\bitarchivecreator.cpp" />
+    <ClCompile Include="src\bitarchiveeditor.cpp" />
     <ClCompile Include="src\bitarchivehandler.cpp" />
     <ClCompile Include="src\bitarchiveinfo.cpp" />
     <ClCompile Include="src\bitarchiveitem.cpp" />
@@ -318,6 +319,7 @@
     <ClInclude Include="include\bit7z.hpp" />
     <ClInclude Include="include\bit7zlibrary.hpp" />
     <ClInclude Include="include\bitarchivecreator.hpp" />
+    <ClInclude Include="include\bitarchiveeditor.hpp" />
     <ClInclude Include="include\bitarchivehandler.hpp" />
     <ClInclude Include="include\bitarchiveinfo.hpp" />
     <ClInclude Include="include\bitarchiveitem.hpp" />
