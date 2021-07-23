@@ -37,7 +37,11 @@ namespace bit7z {
     /**
      * @brief A type representing a byte (equivalent to an unsigned char).
      */
-    using byte_t = unsigned char;
+#if __cpp_lib_byte
+    using byte_t = std::byte;
+#else
+    enum class byte_t : unsigned char {}; //same as std::byte_t
+#endif
 
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
