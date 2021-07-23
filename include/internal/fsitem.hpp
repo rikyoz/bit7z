@@ -24,7 +24,7 @@
 
 namespace bit7z {
     namespace filesystem {
-        class FSItem : public GenericItem {
+        class FSItem final : public GenericItem {
             public:
                 explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
 

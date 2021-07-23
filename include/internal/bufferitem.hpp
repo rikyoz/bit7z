@@ -26,7 +26,7 @@
 namespace bit7z {
     using std::vector;
 
-    class BufferItem : public GenericItem {
+    class BufferItem final : public GenericItem {
         public:
             explicit BufferItem( const vector <byte_t>& buffer, const tstring& name );
 

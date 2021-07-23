@@ -24,7 +24,7 @@
 namespace bit7z {
     using std::istream;
 
-    class StreamItem : public GenericItem {
+    class StreamItem final : public GenericItem {
         public:
             explicit StreamItem( istream& stream, const tstring& path );
 

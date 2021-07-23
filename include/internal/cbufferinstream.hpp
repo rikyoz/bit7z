@@ -29,7 +29,7 @@
 namespace bit7z {
     using std::vector;
 
-    class CBufferInStream : public IInStream, public CMyUnknownImp {
+    class CBufferInStream final : public IInStream, public CMyUnknownImp {
         public:
             explicit CBufferInStream( const vector< byte_t >& in_buffer );
 

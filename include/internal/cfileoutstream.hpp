@@ -24,7 +24,7 @@
 #include "internal/fs.hpp"
 
 namespace bit7z {
-    class CFileOutStream : public CStdOutStream {
+    class CFileOutStream final : public CStdOutStream {
         public:
             explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
 

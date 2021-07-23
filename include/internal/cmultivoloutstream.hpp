@@ -32,7 +32,7 @@ using std::vector;
 using std::wstring;
 
 namespace bit7z {
-    class CMultiVolOutStream : public IOutStream, public CMyUnknownImp {
+    class CMultiVolOutStream final : public IOutStream, public CMyUnknownImp {
 
             uint64_t mVolSize;
             tstring mVolPrefix;

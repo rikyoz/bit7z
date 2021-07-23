@@ -34,11 +34,11 @@
 namespace bit7z {
     using filesystem::FSItem;
 
-    class OpenCallback : public IArchiveOpenCallback,
-                         public IArchiveOpenVolumeCallback,
-                         public IArchiveOpenSetSubArchiveName,
-                         public ICryptoGetTextPassword,
-                         public Callback {
+    class OpenCallback final : public IArchiveOpenCallback,
+                               public IArchiveOpenVolumeCallback,
+                               public IArchiveOpenSetSubArchiveName,
+                               public ICryptoGetTextPassword,
+                               public Callback {
         public:
             explicit OpenCallback( const BitArchiveHandler& handler, const tstring& filename = TSTRING( "." ) );
 

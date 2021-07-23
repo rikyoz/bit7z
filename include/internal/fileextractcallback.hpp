@@ -28,7 +28,7 @@
 namespace bit7z {
     using std::wstring;
 
-    class FileExtractCallback : public ExtractCallback {
+    class FileExtractCallback final : public ExtractCallback {
         public:
             FileExtractCallback( const BitInputArchive& inputArchive,
                                  const tstring& directoryPath );

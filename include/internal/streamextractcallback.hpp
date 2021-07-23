@@ -30,7 +30,7 @@ namespace bit7z {
     using std::map;
     using std::ostream;
 
-    class StreamExtractCallback : public ExtractCallback {
+    class StreamExtractCallback final : public ExtractCallback {
         public:
             StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream );
 
