@@ -54,7 +54,7 @@ wstring bit7z::widen( const string& narrowString ) {
 }
 #endif
 
-bool check_overflow( int64_t position, int64_t offset ) {
+bool bit7z::check_overflow( int64_t position, int64_t offset ) {
     return ( offset > 0 && position > std::numeric_limits< int64_t >::max() - offset ) ||
            ( offset < 0 && position < std::numeric_limits< int64_t >::min() - offset );
 }
