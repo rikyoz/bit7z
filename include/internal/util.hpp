@@ -19,20 +19,26 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+#include <cstdint>
+
+#ifndef _WIN32
+#include <string>
+#endif
+
+namespace bit7z {
 #ifdef _WIN32
 #define WIDEN( tstr ) tstr
 #else
-#include <string>
-
-namespace bit7z {
     using std::string;
     using std::wstring;
 
     string narrow( const wchar_t* wideString, size_t size );
     wstring widen( const string& narrowString );
-}
 
 #define WIDEN( tstr ) bit7z::widen(tstr)
 #endif
+
+    bool check_overflow( int64_t position, int64_t offset );
+}
 
 #endif //UTIL_HPP

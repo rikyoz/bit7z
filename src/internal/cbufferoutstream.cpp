@@ -23,9 +23,16 @@
 
 #include <cstdint>
 
+#ifndef _WIN32
+#include <myWindows/StdAfx.h>
+#endif
+
+#include "internal/util.hpp"
+
 using namespace bit7z;
 
-CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer ) : mBuffer( out_buffer ), mCurrentPosition( 0 ) {}
+CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer )
+: mBuffer( out_buffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {
@@ -39,32 +46,48 @@ STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
-    int64_t new_pos;
-
+    int64_t current_index;
     switch ( seekOrigin ) {
-        case STREAM_SEEK_SET:
-            new_pos = offset;
+        case STREAM_SEEK_SET: {
+            current_index = 0;
             break;
+        }
         case STREAM_SEEK_CUR: {
-            new_pos = static_cast< int64_t >( mCurrentPosition ) + offset;
+            current_index = ( mCurrentPosition - mBuffer.begin() );
             break;
         }
         case STREAM_SEEK_END: {
-            new_pos = static_cast< int64_t >( mBuffer.size() ) + offset;
+            current_index = ( mBuffer.end() - mBuffer.begin() );
             break;
         }
         default:
             return STG_E_INVALIDFUNCTION;
     }
 
-    if ( new_pos < 0 ) {
-        return STG_E_INVALIDFUNCTION;
+    // Checking if the sum between current_index and offset would result in an integer overflow or underflow
+    if ( check_overflow( current_index, offset ) ) {
+        return E_INVALIDARG;
     }
 
-    mCurrentPosition = static_cast< size_t >( new_pos );
+    int64_t new_index = current_index + offset;
+
+    // Making sure that the new_index value is between 0 and mBuffer.size()
+    if ( new_index < 0 ) {
+        return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
+    }
+
+    /* Note: a std::vector's max size can be at most std::numeric_limits< std::ptrdiff_t >::max()
+     *       (see https://en.cppreference.com/w/cpp/container/vector/max_size).
+     *       Since index_t is just an alias for std::ptrdiff_t, the following cast is safe. */
+    if ( new_index > static_cast< index_t >( mBuffer.size() ) ) {
+        return E_INVALIDARG;
+    }
+
+    // Note: new_index can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
+    mCurrentPosition = mBuffer.begin() + static_cast< index_t >( new_index );
 
     if ( newPosition != nullptr ) {
-        *newPosition = mCurrentPosition;
+        *newPosition = new_index;
     }
 
     return S_OK;
@@ -80,22 +103,25 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         return E_FAIL;
     }
 
-    size_t new_pos = mCurrentPosition + static_cast< size_t >( size );
+    auto old_pos = ( mCurrentPosition - mBuffer.begin() );
+    size_t new_pos = old_pos + size;
     if ( new_pos > mBuffer.size() ) {
         try {
             mBuffer.resize( new_pos );
         } catch ( ... ) {
             return E_OUTOFMEMORY;
         }
+        mCurrentPosition = mBuffer.begin() + old_pos; //resize invalidated the old mCurrentPosition iterator
     }
 
     const auto* byte_data = static_cast< const byte_t* >( data );
     try {
-        std::copy_n( byte_data, size, mBuffer.begin() + mCurrentPosition );
+        std::copy_n( byte_data, size, mCurrentPosition );
     } catch ( ... ) {
         return E_OUTOFMEMORY;
     }
-    mCurrentPosition = new_pos;
+
+    std::advance( mCurrentPosition, size );
 
     if ( processedSize != nullptr ) {
         *processedSize = size;

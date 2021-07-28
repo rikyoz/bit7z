@@ -19,8 +19,6 @@
 #ifndef CBUFFEROUTSTREAM_HPP
 #define CBUFFEROUTSTREAM_HPP
 
-#include <vector>
-
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>
 
@@ -33,20 +31,20 @@ namespace bit7z {
         public:
             explicit CBufferOutStream( vector< byte_t >& out_buffer );
 
-            virtual ~CBufferOutStream() = default;
+            ~CBufferOutStream() = default;
 
-            MY_UNKNOWN_IMP1( IOutStream )
+            MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
             // IOutStream
-            STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize );
+            STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize ) override;
 
-            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) override;
 
-            STDMETHOD( SetSize )( UInt64 newSize );
+            STDMETHOD( SetSize )( UInt64 newSize ) override;
 
         private:
-            vector< byte_t >& mBuffer;
-            size_t mCurrentPosition;
+            buffer_t& mBuffer;
+            buffer_t::iterator mCurrentPosition;
     };
 }
 #endif // CBUFFEROUTSTREAM_HPP

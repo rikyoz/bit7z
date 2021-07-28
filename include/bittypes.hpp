@@ -20,6 +20,7 @@
 #define BITTYPES_HPP
 
 #include <string>
+#include <vector>
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
@@ -42,6 +43,8 @@ namespace bit7z {
 #else
     enum class byte_t : unsigned char {}; //same as std::byte_t
 #endif
+    using buffer_t = std::vector< byte_t >;
+    using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
 
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
