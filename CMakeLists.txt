@@ -190,11 +190,13 @@ target_compile_definitions( ${TARGET_NAME} PUBLIC UNICODE _UNICODE _7Z_VOL )
 if( WIN32 )
     target_compile_definitions( ${TARGET_NAME} PUBLIC _WINDOWS )
 endif()
+
 option( BIT7Z_AUTO_FORMAT "Enable or disable auto format detection" )
 message( STATUS "Auto format detection: ${BIT7Z_AUTO_FORMAT}" )
 if( BIT7Z_AUTO_FORMAT )
     target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_AUTO_FORMAT )
 endif()
+
 option( BIT7Z_REGEX_MATCHING "Enable or disable regex matching of archived files" )
 message( STATUS "Regex matching extraction: ${BIT7Z_REGEX_MATCHING}" )
 if( BIT7Z_REGEX_MATCHING )
