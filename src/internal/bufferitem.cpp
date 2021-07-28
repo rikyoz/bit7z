@@ -52,7 +52,7 @@ bool BufferItem::isDir() const {
 }
 
 uint64_t BufferItem::size() const {
-    return static_cast< uint64_t >( sizeof( byte_t ) * mBuffer.size() );
+    return sizeof( byte_t ) * static_cast< uint64_t >( mBuffer.size() );
 }
 
 FILETIME BufferItem::creationTime() const { //-V524

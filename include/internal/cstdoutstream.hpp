@@ -25,6 +25,8 @@
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>
 
+#include "bittypes.hpp"
+
 namespace bit7z {
     using std::ostream;
 
@@ -32,16 +34,16 @@ namespace bit7z {
         public:
             explicit CStdOutStream( std::ostream& outputStream );
 
-            virtual ~CStdOutStream() = default;
+            MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdOutStream() ) = default;
 
-            MY_UNKNOWN_IMP1( IOutStream )
+            MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
             // IOutStream
-            STDMETHOD( Write )( void const* data, UInt32 size, UInt32* processedSize );
+            STDMETHOD( Write )( void const* data, UInt32 size, UInt32* processedSize ) override;
 
-            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) override;
 
-            STDMETHOD( SetSize )( UInt64 newSize );
+            STDMETHOD( SetSize )( UInt64 newSize ) override;
 
         private:
             ostream& mOutputStream;

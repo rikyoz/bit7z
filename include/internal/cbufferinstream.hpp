@@ -31,7 +31,7 @@ namespace bit7z {
         public:
             explicit CBufferInStream( const vector< byte_t >& in_buffer );
 
-            ~CBufferInStream() = default;
+            MY_UNKNOWN_DESTRUCTOR( ~CBufferInStream() ) = default;
 
             MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
 

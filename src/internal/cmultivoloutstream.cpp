@@ -52,7 +52,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
     }
     while ( size > 0 ) { //TODO: Refactor!
         if ( mStreamIndex >= mVolStreams.size() ) {
-            tstring name = to_tstring( mStreamIndex + 1 );
+            tstring name = to_tstring( static_cast< uint64_t >( mStreamIndex ) + 1 );
             name.insert( 0, 3 - name.length(), L'0' );
             name.insert( 0, mVolPrefix );
 

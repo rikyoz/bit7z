@@ -31,7 +31,7 @@ namespace bit7z {
         public:
             explicit CBufferOutStream( vector< byte_t >& out_buffer );
 
-            ~CBufferOutStream() = default;
+            MY_UNKNOWN_DESTRUCTOR( ~CBufferOutStream() ) = default;
 
             MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
