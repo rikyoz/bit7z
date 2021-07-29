@@ -63,7 +63,7 @@ namespace bit7z {
             /**
              * @return the Bit7zLibrary object used by the handler.
              */
-            const Bit7zLibrary& library() const;
+            const Bit7zLibrary& library() const noexcept;
 
             /**
              * @return the format used by the handler for extracting or compressing.
@@ -75,12 +75,12 @@ namespace bit7z {
              */
             tstring password() const;
 
-            bool retainDirectories() const;
+            bool retainDirectories() const noexcept;
 
             /**
              * @return true if a password is defined, false otherwise.
              */
-            bool isPasswordDefined() const;
+            bool isPasswordDefined() const noexcept;
 
             /**
              * @return the current total callback.
@@ -135,14 +135,14 @@ namespace bit7z {
              *
              * @note This is equivalent to calling setPassword(L"").
              */
-            void clearPassword();
+            void clearPassword() noexcept;
 
             /**
              * @brief Sets whether methods output will preserve the input's directory structure or not.
              *
              * @param retain  the setting for preserving or not the input directory structure
              */
-            void setRetainDirectories( bool retain );
+            void setRetainDirectories( bool retain ) noexcept;
 
             /**
              * @brief Sets the callback to be called when the total size of an operation is available.

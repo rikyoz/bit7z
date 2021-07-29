@@ -175,7 +175,7 @@ namespace bit7z {
              *
              * @param value the bool value of the BitPropVariant
              */
-            explicit BitPropVariant( bool value );
+            explicit BitPropVariant( bool value ) noexcept;
 
             /**
              * @brief Constructs a string BitPropVariant from a null-terminated C wide string
@@ -196,63 +196,63 @@ namespace bit7z {
              *
              * @param value the uint8_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint8_t value );
+            explicit BitPropVariant( uint8_t value ) noexcept;
 
             /**
              * @brief Constructs a 16-bit unsigned integer BitPropVariant
              *
              * @param value the uint16_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint16_t value );
+            explicit BitPropVariant( uint16_t value ) noexcept;
 
             /**
              * @brief Constructs a 32-bit unsigned integer BitPropVariant
              *
              * @param value the uint32_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint32_t value );
+            explicit BitPropVariant( uint32_t value ) noexcept;
 
             /**
              * @brief Constructs a 64-bit unsigned integer BitPropVariant
              *
              * @param value the uint64_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint64_t value );
+            explicit BitPropVariant( uint64_t value ) noexcept;
 
             /**
              * @brief Constructs a 8-bit integer BitPropVariant
              *
              * @param value the int8_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int8_t value );
+            explicit BitPropVariant( int8_t value ) noexcept;
 
             /**
              * @brief Constructs a 16-bit integer BitPropVariant
              *
              * @param value the int16_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int16_t value );
+            explicit BitPropVariant( int16_t value ) noexcept;
 
             /**
              * @brief Constructs a 32-bit integer BitPropVariant
              *
              * @param value the int32_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int32_t value );
+            explicit BitPropVariant( int32_t value ) noexcept;
 
             /**
              * @brief Constructs a 64-bit integer BitPropVariant
              *
              * @param value the int64_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int64_t value );
+            explicit BitPropVariant( int64_t value ) noexcept;
 
             /**
              * @brief Constructs a FILETIME BitPropVariant
              *
              * @param value the FILETIME value of the BitPropVariant
              */
-            explicit BitPropVariant( const FILETIME& value );
+            explicit BitPropVariant( const FILETIME& value ) noexcept;
 
             /**
              * @brief BitPropVariant destructor.
@@ -268,7 +268,7 @@ namespace bit7z {
              *
              * @return a reference to *this object (with the copied values from other).
              */
-            BitPropVariant& operator=( const BitPropVariant& other ) noexcept;
+            BitPropVariant& operator=( const BitPropVariant& other );
 
             /**
              * @brief Move assignment operator.
@@ -289,7 +289,7 @@ namespace bit7z {
              * @return a reference to *this object having the value as new variant value
              */
             template< typename T >
-            BitPropVariant& operator=( const T& value ) {
+            BitPropVariant& operator=( const T& value ) noexcept(std::is_integral<T>::value) {
                 *this = BitPropVariant( value );
                 return *this;
             }
@@ -368,62 +368,62 @@ namespace bit7z {
             /**
              * @return true if this variant is empty, false otherwise.
              */
-            bool isEmpty() const;
+            bool isEmpty() const noexcept;
 
             /**
              * @return true if this variant is a boolean, false otherwise.
              */
-            bool isBool() const;
+            bool isBool() const noexcept;
 
             /**
              * @return true if this variant is a string, false otherwise.
              */
-            bool isString() const;
+            bool isString() const noexcept;
 
             /**
              * @return true if this variant is an 8-bit unsigned integer, false otherwise.
              */
-            bool isUInt8() const;
+            bool isUInt8() const noexcept;
 
             /**
              * @return true if this variant is an 8 or 16-bit unsigned integer, false otherwise.
              */
-            bool isUInt16() const;
+            bool isUInt16() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16 or 32-bit unsigned integer, false otherwise.
              */
-            bool isUInt32() const;
+            bool isUInt32() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16, 32 or 64-bit unsigned integer, false otherwise.
              */
-            bool isUInt64() const;
+            bool isUInt64() const noexcept;
 
             /**
              * @return true if this variant is an 8-bit integer, false otherwise.
              */
-            bool isInt8() const;
+            bool isInt8() const noexcept;
 
             /**
              * @return true if this variant is an 8 or 16-bit integer, false otherwise.
              */
-            bool isInt16() const;
+            bool isInt16() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16 or 32-bit integer, false otherwise.
              */
-            bool isInt32() const;
+            bool isInt32() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16, 32 or 64-bit integer, false otherwise.
              */
-            bool isInt64() const;
+            bool isInt64() const noexcept;
 
             /**
              * @return true if this variant is a FILETIME structure, false otherwise.
              */
-            bool isFileTime() const;
+            bool isFileTime() const noexcept;
 
             /**
              * @return the BitPropVariantType of this variant.
@@ -433,19 +433,19 @@ namespace bit7z {
             /**
              * @brief Clears the current value of the variant object
              */
-            void clear();
+            void clear() noexcept;
 
         private:
-            void internalClear();
+            void internalClear() noexcept;
 
-            friend bool operator==( const BitPropVariant& a, const BitPropVariant& b );
+            friend bool operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 
-            friend bool operator!=( const BitPropVariant& a, const BitPropVariant& b );
+            friend bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
     };
 
-    bool operator==( const BitPropVariant& a, const BitPropVariant& b );
+    bool operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 
-    bool operator!=( const BitPropVariant& a, const BitPropVariant& b );
+    bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 }
 
 #endif // BITPROPVARIANT_HPP

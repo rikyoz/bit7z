@@ -24,7 +24,7 @@
 using bit7z::GenericItem;
 using bit7z::BitPropVariant;
 
-bool GenericItem::hasNewData() const {
+bool GenericItem::hasNewData() const noexcept {
     return true;
 }
 

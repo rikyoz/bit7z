@@ -243,7 +243,7 @@ HRESULT BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStre
     return getItemStream( mapped_index, inStream );
 }
 
-input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const {
+input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const noexcept {
     auto index = static_cast< decltype( mInputIndices )::size_type >( new_index );
     if ( index < mInputIndices.size() ) {
         return mInputIndices[ index ];
@@ -298,22 +298,22 @@ HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream*
     return res;
 }
 
-bool BitOutputArchive::hasNewData( uint32_t index ) const {
+bool BitOutputArchive::hasNewData( uint32_t index ) const noexcept {
     auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
     return original_index >= mInputArchiveItemsCount;
 }
 
-bool BitOutputArchive::hasNewProperties( uint32_t index ) const {
+bool BitOutputArchive::hasNewProperties( uint32_t index ) const noexcept {
     /* Note: in BitOutputArchive, you can only add new items or overwrite (delete + add) existing ones.
      * So if we have new data, we also have new properties! This is not true for BitArchiveEditor! */
     return hasNewData( index );
 }
 
-uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const {
+uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const noexcept {
     auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
     return original_index < mInputArchiveItemsCount ? original_index : static_cast< uint32_t >( -1 );
 }
 
-const BitArchiveHandler& BitOutputArchive::getHandler() const {
+const BitArchiveHandler& BitOutputArchive::getHandler() const noexcept {
     return mArchiveCreator;
 }

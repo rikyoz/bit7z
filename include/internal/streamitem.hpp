@@ -30,17 +30,17 @@ namespace bit7z {
 
             tstring name() const override;
 
-            bool isDir() const override;
+            bool isDir() const noexcept override;
 
             uint64_t size() const override;
 
-            FILETIME creationTime() const override;
+            FILETIME creationTime() const noexcept override;
 
-            FILETIME lastAccessTime() const override;
+            FILETIME lastAccessTime() const noexcept override;
 
-            FILETIME lastWriteTime() const override;
+            FILETIME lastWriteTime() const noexcept override;
 
-            uint32_t attributes() const override;
+            uint32_t attributes() const noexcept override;
 
             fs::path path() const override;
 

@@ -91,13 +91,13 @@ namespace bit7z {
 
             uint32_t itemsCount() const;
 
-            virtual bool hasNewData( uint32_t index ) const;
+            virtual bool hasNewData( uint32_t index ) const noexcept;
 
-            virtual bool hasNewProperties( uint32_t index ) const;
+            virtual bool hasNewProperties( uint32_t index ) const noexcept;
 
-            uint32_t getIndexInArchive( uint32_t index ) const;
+            uint32_t getIndexInArchive( uint32_t index ) const noexcept;
 
-            const BitArchiveHandler& getHandler() const;
+            const BitArchiveHandler& getHandler() const noexcept;
 
             virtual ~BitOutputArchive() = default;
 

@@ -110,19 +110,19 @@ namespace bit7z {
 
     BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
 
-    int BitInFormat::value() const {
+    int BitInFormat::value() const noexcept {
         return mValue;
     }
 
-    bool BitInFormat::operator==( const BitInFormat& other ) const {
+    bool BitInFormat::operator==( const BitInFormat& other ) const noexcept {
         return mValue == other.value();
     }
 
-    bool BitInFormat::operator!=( const BitInFormat& other ) const {
+    bool BitInFormat::operator!=( const BitInFormat& other ) const noexcept {
         return !( *this == other );
     }
 
-    GUID BitInFormat::guid() const {
+    GUID BitInFormat::guid() const noexcept {
         return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } }; // NOLINT
     }
 
@@ -132,19 +132,19 @@ namespace bit7z {
                                     FormatFeatures features ) noexcept
         : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
-    const tstring& BitInOutFormat::extension() const {
+    const tchar* BitInOutFormat::extension() const noexcept {
         return mExtension;
     }
 
-    FormatFeatures BitInOutFormat::features() const {
+    FormatFeatures BitInOutFormat::features() const noexcept {
         return mFeatures;
     }
 
-    bool BitInOutFormat::hasFeature( FormatFeatures feature ) const {
+    bool BitInOutFormat::hasFeature( FormatFeatures feature ) const noexcept {
         return ( mFeatures & feature ) != 0;
     }
 
-    BitCompressionMethod BitInOutFormat::defaultMethod() const {
+    BitCompressionMethod BitInOutFormat::defaultMethod() const noexcept {
         return mDefaultMethod;
     }
 

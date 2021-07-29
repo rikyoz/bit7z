@@ -28,10 +28,10 @@ using namespace bit7z;
 BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
     : BitArchiveHandler( lib, password ), mFormat( format ) {}
 
-const BitInFormat& BitArchiveOpener::format() const {
+const BitInFormat& BitArchiveOpener::format() const noexcept {
     return mFormat;
 }
 
-const BitInFormat& BitArchiveOpener::extractionFormat() const {
+const BitInFormat& BitArchiveOpener::extractionFormat() const noexcept {
     return mFormat;
 }

@@ -69,27 +69,27 @@ bool FSItem::isDots() const {
     return ( filename == "." || filename == ".." );
 }
 
-bool FSItem::isDir() const {
+bool FSItem::isDir() const noexcept {
     std::error_code ec;
     bool res = mFileEntry.is_directory( ec );
     return !ec && res;
 }
 
-uint64_t FSItem::size() const {
+uint64_t FSItem::size() const noexcept {
     std::error_code ec;
     auto res = mFileEntry.file_size( ec );
     return !ec ? res : 0;
 }
 
-FILETIME FSItem::creationTime() const {
+FILETIME FSItem::creationTime() const noexcept {
     return mFileAttributeData.ftCreationTime;
 }
 
-FILETIME FSItem::lastAccessTime() const {
+FILETIME FSItem::lastAccessTime() const noexcept {
     return mFileAttributeData.ftLastAccessTime;
 }
 
-FILETIME FSItem::lastWriteTime() const {
+FILETIME FSItem::lastWriteTime() const noexcept {
     return mFileAttributeData.ftLastWriteTime;
 }
 
@@ -130,7 +130,7 @@ fs::path FSItem::inArchivePath() const {
     return mInArchivePath;
 }
 
-uint32_t FSItem::attributes() const {
+uint32_t FSItem::attributes() const noexcept {
     return mFileAttributeData.dwFileAttributes;
 }
 

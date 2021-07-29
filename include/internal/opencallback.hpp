@@ -47,9 +47,9 @@ namespace bit7z {
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
 
             //IArchiveOpenCallback
-            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes ) override;
+            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes ) noexcept override;
 
-            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes ) override;
+            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes ) noexcept override;
 
             //IArchiveOpenVolumeCallback
             STDMETHOD( GetProperty )( PROPID propID, PROPVARIANT* value ) override;

@@ -26,9 +26,9 @@
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-BitArchiveItem::BitArchiveItem( uint32_t item_index ) : mItemIndex( item_index ) {}
+BitArchiveItem::BitArchiveItem( uint32_t item_index ) noexcept : mItemIndex( item_index ) {}
 
-uint32_t BitArchiveItem::index() const {
+uint32_t BitArchiveItem::index() const noexcept {
     return mItemIndex;
 }
 

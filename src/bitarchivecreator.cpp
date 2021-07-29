@@ -25,7 +25,7 @@
 
 using namespace bit7z;
 
-bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) {
+bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) noexcept {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return format == BitFormat::SevenZip || format == BitFormat::Zip || format == BitFormat::Tar ||
@@ -46,7 +46,7 @@ bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
     }
 }
 
-bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) {
+bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) noexcept {
     static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
     static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
     static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
@@ -66,7 +66,7 @@ bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_siz
     }
 }
 
-bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method, uint32_t word_size ) {
+bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method, uint32_t word_size ) noexcept {
     static constexpr auto MIN_LZMA_WORD_SIZE = 5u;
     static constexpr auto MAX_LZMA_WORD_SIZE = 273u;
     static constexpr auto MIN_PPMD_WORD_SIZE = 2u;
@@ -97,7 +97,7 @@ bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method,
     }
 }
 
-const wchar_t* methodName( BitCompressionMethod method ) {
+const wchar_t* methodName( BitCompressionMethod method ) noexcept {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return L"Copy";
@@ -134,47 +134,47 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
     mVolumeSize( 0 ),
     mThreadsCount( 0 ) {}
 
-const BitInFormat& BitArchiveCreator::format() const {
+const BitInFormat& BitArchiveCreator::format() const noexcept {
     return mFormat;
 }
 
-const BitInOutFormat& BitArchiveCreator::compressionFormat() const {
+const BitInOutFormat& BitArchiveCreator::compressionFormat() const noexcept {
     return mFormat;
 }
 
-bool BitArchiveCreator::cryptHeaders() const {
+bool BitArchiveCreator::cryptHeaders() const noexcept {
     return mCryptHeaders;
 }
 
-BitCompressionLevel BitArchiveCreator::compressionLevel() const {
+BitCompressionLevel BitArchiveCreator::compressionLevel() const noexcept {
     return mCompressionLevel;
 }
 
-BitCompressionMethod BitArchiveCreator::compressionMethod() const {
+BitCompressionMethod BitArchiveCreator::compressionMethod() const noexcept {
     return mCompressionMethod;
 }
 
-uint32_t BitArchiveCreator::dictionarySize() const {
+uint32_t BitArchiveCreator::dictionarySize() const noexcept {
     return mDictionarySize;
 }
 
-uint32_t BitArchiveCreator::wordSize() const {
+uint32_t BitArchiveCreator::wordSize() const noexcept {
     return mWordSize;
 }
 
-bool BitArchiveCreator::solidMode() const {
+bool BitArchiveCreator::solidMode() const noexcept {
     return mSolidMode;
 }
 
-UpdateMode BitArchiveCreator::updateMode() const {
+UpdateMode BitArchiveCreator::updateMode() const noexcept {
     return mUpdateMode;
 }
 
-uint64_t BitArchiveCreator::volumeSize() const {
+uint64_t BitArchiveCreator::volumeSize() const noexcept {
     return mVolumeSize;
 }
 
-uint32_t BitArchiveCreator::threadsCount() const {
+uint32_t BitArchiveCreator::threadsCount() const noexcept {
     return mThreadsCount;
 }
 
@@ -187,7 +187,7 @@ void BitArchiveCreator::setPassword( const tstring& password, bool crypt_headers
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
 
-void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_level ) {
+void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_level ) noexcept {
     mCompressionLevel = compression_level;
     mDictionarySize = 0; //reset dictionary size to default for the compression level
     mWordSize = 0; //reset word size to default for the compression level
@@ -233,7 +233,7 @@ void BitArchiveCreator::setWordSize( uint32_t word_size ) {
     mWordSize = word_size;
 }
 
-void BitArchiveCreator::setSolidMode( bool solid_mode ) {
+void BitArchiveCreator::setSolidMode( bool solid_mode ) noexcept {
     mSolidMode = solid_mode;
 }
 
@@ -241,11 +241,11 @@ void BitArchiveCreator::setUpdateMode( UpdateMode update_mode ) {
     mUpdateMode = update_mode;
 }
 
-void BitArchiveCreator::setVolumeSize( uint64_t size ) {
+void BitArchiveCreator::setVolumeSize( uint64_t size ) noexcept {
     mVolumeSize = size;
 }
 
-void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) {
+void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) noexcept {
     mThreadsCount = threads_count;
 }
 

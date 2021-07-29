@@ -190,7 +190,7 @@ void BitInputArchive::test( ExtractCallback* extract_callback ) const {
 
 #ifdef BIT7Z_AUTO_FORMAT
 
-const BitInFormat& BitInputArchive::detectedFormat() const {
+const BitInFormat& BitInputArchive::detectedFormat() const noexcept {
     // Defensive programming: for how the archive format is detected,
     // a correct BitInputArchive instance should have a non null mDetectedFormat!
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
@@ -198,11 +198,11 @@ const BitInFormat& BitInputArchive::detectedFormat() const {
 
 #endif
 
-const tstring& BitInputArchive::getArchivePath() const {
+const tstring& BitInputArchive::getArchivePath() const noexcept {
     return mArchivePath;
 }
 
-const BitArchiveHandler& BitInputArchive::getHandler() const {
+const BitArchiveHandler& BitInputArchive::getHandler() const noexcept {
     return mArchiveHandler;
 }
 
@@ -264,7 +264,7 @@ void BitInputArchive::test() const {
     test( extract_callback );
 }
 
-HRESULT BitInputArchive::close() const {
+HRESULT BitInputArchive::close() const noexcept {
     return mInArchive->Close();
 }
 
@@ -304,32 +304,32 @@ bool BitInputArchive::contains( const tstring& path ) const noexcept {
     return find( path ) != end();
 }
 
-BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() {
+BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() noexcept {
     ++mItemOffset;
     return *this;
 }
 
-BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) {
+BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) noexcept {
     const_iterator incremented = *this;
     ++( *this );
     return incremented;
 }
 
-bool BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const {
+bool BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const noexcept {
     return mItemOffset == other.mItemOffset;
 }
 
-bool BitInputArchive::const_iterator::operator!=( const BitInputArchive::const_iterator& other ) const {
+bool BitInputArchive::const_iterator::operator!=( const BitInputArchive::const_iterator& other ) const noexcept {
     return !( *this == other );
 }
 
-BitInputArchive::const_iterator::reference BitInputArchive::const_iterator::operator*() {
+BitInputArchive::const_iterator::reference BitInputArchive::const_iterator::operator*() noexcept {
     return mItemOffset;
 }
 
-BitInputArchive::const_iterator::pointer BitInputArchive::const_iterator::operator->() {
+BitInputArchive::const_iterator::pointer BitInputArchive::const_iterator::operator->() noexcept {
     return &mItemOffset;
 }
 
-BitInputArchive::const_iterator::const_iterator( uint32_t item_index, const BitInputArchive& item_archive )
+BitInputArchive::const_iterator::const_iterator( uint32_t item_index, const BitInputArchive& item_archive ) noexcept
     : mItemOffset( item_index, item_archive ) {}

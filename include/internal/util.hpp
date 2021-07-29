@@ -20,6 +20,7 @@
 #define UTIL_HPP
 
 #include <cstdint>
+#include <limits>
 
 #ifndef _WIN32
 #include <string>
@@ -38,7 +39,11 @@ namespace bit7z {
 #define WIDEN( tstr ) bit7z::widen(tstr)
 #endif
 
-    bool check_overflow( int64_t position, int64_t offset );
+    constexpr bool check_overflow( int64_t position, int64_t offset ) noexcept {
+        return ( offset > 0 && position > (std::numeric_limits< int64_t >::max)() - offset ) ||
+               ( offset < 0 && position < (std::numeric_limits< int64_t >::min)() - offset );
+    }
+
 }
 
 #endif //UTIL_HPP

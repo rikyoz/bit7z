@@ -43,7 +43,7 @@ CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const tstring& archive
     mAbsPos( 0 ),
     mLength( 0 ) {}
 
-UInt64 CMultiVolOutStream::GetSize() const { return mLength; }
+UInt64 CMultiVolOutStream::GetSize() const noexcept { return mLength; }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
@@ -113,7 +113,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+STDMETHODIMP CMultiVolOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             mAbsPos = static_cast< uint64_t >( offset );

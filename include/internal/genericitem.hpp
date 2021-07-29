@@ -53,7 +53,7 @@ namespace bit7z {
 
         virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
 
-        virtual bool hasNewData() const;
+        virtual bool hasNewData() const noexcept;
 
         BitPropVariant getProperty( BitProperty propID ) const;
 

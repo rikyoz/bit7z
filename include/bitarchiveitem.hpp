@@ -34,7 +34,7 @@ namespace bit7z {
             /**
              * @return the index of the item in the archive.
              */
-            uint32_t index() const;
+            uint32_t index() const noexcept;
 
             /**
              * @return true if and only if the item is a directory (i.e. it has the property BitProperty::IsDir).
@@ -85,7 +85,7 @@ namespace bit7z {
         protected:
             uint32_t mItemIndex; //Note: it is not const since sub-class BitArchiveItemOffset can increment it!
 
-            explicit BitArchiveItem( uint32_t item_index );
+            explicit BitArchiveItem( uint32_t item_index ) noexcept;
     };
 
 }

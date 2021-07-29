@@ -61,7 +61,7 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) {
+STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) noexcept {
     // in future we might use a switch to handle an event like onOperationStart(Operation o)
     // with enum Operation{Extract, Test, Skip}
     mExtractMode = ( askExtractMode == NArchive::NExtract::NAskMode::kExtract );

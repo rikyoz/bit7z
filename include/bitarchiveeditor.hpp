@@ -63,9 +63,9 @@ namespace bit7z {
 
             void applyChanges();
 
-            bool hasNewData( uint32_t index ) const override;
+            bool hasNewData( uint32_t index ) const noexcept override;
 
-            bool hasNewProperties( uint32_t index ) const override;
+            bool hasNewProperties( uint32_t index ) const noexcept override;
 
         private:
             EditedItems mEditedItems;

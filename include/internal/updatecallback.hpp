@@ -50,7 +50,7 @@ namespace bit7z {
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
-            HRESULT Finalize();
+            HRESULT Finalize() noexcept;
 
             // IProgress from IArchiveUpdateCallback2
             STDMETHOD( SetTotal )( UInt64 size ) override;
@@ -65,16 +65,16 @@ namespace bit7z {
 
             STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
 
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) override;
+            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) noexcept override;
 
             STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
 
             STDMETHOD( GetUpdateItemInfo )( UInt32 index,
                                             Int32* newData,
                                             Int32* newProperties,
-                                            UInt32* indexInArchive ) override;
+                                            UInt32* indexInArchive ) noexcept override;
 
-            STDMETHOD( SetOperationResult )( Int32 operationResult ) override;
+            STDMETHOD( SetOperationResult )( Int32 operationResult ) noexcept override;
 
             //ICryptoGetTextPassword2
             STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password ) override;

@@ -55,52 +55,52 @@ namespace bit7z {
             /**
              * @return the format used by the archive creator.
              */
-            const BitInFormat& format() const override;
+            const BitInFormat& format() const noexcept override;
 
             /**
              * @return the format used by the archive creator.
              */
-            const BitInOutFormat& compressionFormat() const;
+            const BitInOutFormat& compressionFormat() const noexcept;
 
             /**
              * @return whether the creator crypts also the headers of archives or not
              */
-            bool cryptHeaders() const;
+            bool cryptHeaders() const noexcept;
 
             /**
              * @return the compression level used by the archive creator.
              */
-            BitCompressionLevel compressionLevel() const;
+            BitCompressionLevel compressionLevel() const noexcept;
 
             /**
              * @return the compression method used by the archive creator.
              */
-            BitCompressionMethod compressionMethod() const;
+            BitCompressionMethod compressionMethod() const noexcept;
 
             /**
              * @return the dictionary size used by the archive creator.
              */
-            uint32_t dictionarySize() const;
+            uint32_t dictionarySize() const noexcept;
 
-            uint32_t wordSize() const;
+            uint32_t wordSize() const noexcept;
 
             /**
              * @return whether the archive creator uses solid compression or not.
              */
-            bool solidMode() const;
+            bool solidMode() const noexcept;
 
             /**
              * @return whether the archive creator is allowed to update existing archives or not.
              */
-            UpdateMode updateMode() const;
+            UpdateMode updateMode() const noexcept;
 
             /**
              * @return the size (in bytes) of the archive volume used by the creator
              *         (a 0 value means that all files are going in a single archive).
              */
-            uint64_t volumeSize() const;
+            uint64_t volumeSize() const noexcept;
 
-            uint32_t threadsCount() const;
+            uint32_t threadsCount() const noexcept;
 
             /**
              * @brief Sets up a password for the output archive.
@@ -151,7 +151,7 @@ namespace bit7z {
              *
              * @param compression_level the compression level desired.
              */
-            void setCompressionLevel( BitCompressionLevel compression_level );
+            void setCompressionLevel( BitCompressionLevel compression_level ) noexcept;
 
             /**
              * @brief Sets the compression method to be used when creating an archive.
@@ -177,7 +177,7 @@ namespace bit7z {
              *
              * @param solid_mode    if true, it will be used the "solid compression" method.
              */
-            void setSolidMode( bool solid_mode );
+            void setSolidMode( bool solid_mode ) noexcept;
 
             /**
              * @brief Sets whether the creator can update existing archives or not.
@@ -195,9 +195,9 @@ namespace bit7z {
              *
              * @param size    The dimension of a volume.
              */
-            void setVolumeSize( uint64_t size );
+            void setVolumeSize( uint64_t size ) noexcept;
 
-            void setThreadsCount( uint32_t threads_count );
+            void setThreadsCount( uint32_t threads_count ) noexcept;
 
         protected:
             const BitInOutFormat& mFormat;

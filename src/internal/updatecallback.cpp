@@ -38,7 +38,7 @@ UpdateCallback::~UpdateCallback() {
     Finalize();
 }
 
-HRESULT UpdateCallback::Finalize() {
+HRESULT UpdateCallback::Finalize() noexcept {
     if ( mNeedBeClosed ) {
         mNeedBeClosed = false;
     }
@@ -91,7 +91,7 @@ STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inSt
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) {
+STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) noexcept {
     if ( mVolSize == 0 ) { return S_FALSE; }
 
     *size = mVolSize;
@@ -121,7 +121,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
                                                 Int32* newData,
                                                 Int32* newProperties,
-                                                UInt32* indexInArchive ) {
+                                                UInt32* indexInArchive ) noexcept {
     if ( newData != nullptr ) {
         *newData = static_cast< Int32 >( mOutputArchive.hasNewData( index ) ); //1 = true, 0 = false;
     }
@@ -136,7 +136,7 @@ STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) {
+STDMETHODIMP UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) noexcept {
     mNeedBeClosed = true;
     return S_OK;
 }

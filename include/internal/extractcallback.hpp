@@ -50,7 +50,7 @@ namespace bit7z {
             STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize ) override;
 
             // IArchiveExtractCallback
-            STDMETHOD( PrepareOperation )( Int32 askExtractMode ) override;
+            STDMETHOD( PrepareOperation )( Int32 askExtractMode ) noexcept override;
 
             // ICryptoGetTextPassword
             STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword ) override;

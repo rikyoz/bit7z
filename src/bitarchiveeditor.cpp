@@ -188,7 +188,7 @@ HRESULT BitArchiveEditor::getItemStream( input_index index, ISequentialInStream*
     return BitOutputArchive::getItemStream( index, inStream );
 }
 
-bool BitArchiveEditor::hasNewData( uint32_t index ) const {
+bool BitArchiveEditor::hasNewData( uint32_t index ) const noexcept {
     auto mapped_index = static_cast< uint32_t >( getItemInputIndex( index ) );
     if ( mapped_index >= mInputArchiveItemsCount ) {
         return true; //new item
@@ -200,7 +200,7 @@ bool BitArchiveEditor::hasNewData( uint32_t index ) const {
     return false;
 }
 
-bool BitArchiveEditor::hasNewProperties( uint32_t index ) const {
+bool BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept {
     auto mapped_index = static_cast< uint32_t >( getItemInputIndex( index ) );
     bool isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
     return mapped_index >= mInputArchiveItemsCount || isEditedItem;

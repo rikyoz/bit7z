@@ -25,25 +25,25 @@
 
 using namespace bit7z;
 
-BitArchiveItemOffset::BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc )
+BitArchiveItemOffset::BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept
     : BitArchiveItem( item_index ), mArc( &item_arc ) {}
 
-BitArchiveItemOffset& BitArchiveItemOffset::operator++() {
+BitArchiveItemOffset& BitArchiveItemOffset::operator++() noexcept {
     ++mItemIndex;
     return *this;
 }
 
-BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) {
+BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) noexcept {
     BitArchiveItemOffset old_value = *this;
     ++( *this );
     return old_value;
 }
 
-bool BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const {
+bool BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const noexcept {
     return mItemIndex == other.mItemIndex;
 }
 
-bool BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const {
+bool BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const noexcept {
     return !( *this == other );
 }
 

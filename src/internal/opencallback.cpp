@@ -36,12 +36,12 @@ OpenCallback::OpenCallback( const BitArchiveHandler& handler, const tstring& fil
     : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) {
+STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) noexcept {
     return S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64* /* bytes */ ) {
+STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64* /* bytes */ ) noexcept {
     return S_OK;
 }
 

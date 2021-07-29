@@ -19,11 +19,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "internal/util.hpp"
-
-#include <limits>
-
 #ifndef _WIN32
+#include "internal/util.hpp"
 #include <sstream>
 
 using std::ostringstream;
@@ -53,8 +50,3 @@ wstring bit7z::widen( const string& narrowString ) {
     return stream.str() ;
 }
 #endif
-
-bool bit7z::check_overflow( int64_t position, int64_t offset ) {
-    return ( offset > 0 && position > std::numeric_limits< int64_t >::max() - offset ) ||
-           ( offset < 0 && position < std::numeric_limits< int64_t >::min() - offset );
-}

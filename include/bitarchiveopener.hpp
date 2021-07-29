@@ -42,12 +42,12 @@ namespace bit7z {
             /**
              * @return the archive format used by the archive opener.
              */
-            const BitInFormat& format() const override;
+            const BitInFormat& format() const noexcept override;
 
             /**
              * @return the archive format used by the archive opener.
              */
-            const BitInFormat& extractionFormat() const;
+            const BitInFormat& extractionFormat() const noexcept;
 
         protected:
             const BitInFormat& mFormat;

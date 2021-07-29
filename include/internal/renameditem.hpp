@@ -46,9 +46,9 @@ namespace bit7z {
 
             fs::path inArchivePath() const override;
 
-            HRESULT getStream( ISequentialInStream** inStream ) const override;
+            HRESULT getStream( ISequentialInStream** inStream ) const noexcept override;
 
-            bool hasNewData() const override;
+            bool hasNewData() const noexcept override;
 
         private:
             const BitInputArchive& mInputArchive;

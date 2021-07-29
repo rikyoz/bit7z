@@ -53,7 +53,7 @@ namespace bit7z {
             /**
              * @return the detected format of the file.
              */
-            const BitInFormat& detectedFormat() const;
+            const BitInFormat& detectedFormat() const noexcept;
 #endif
 
             /**
@@ -95,9 +95,9 @@ namespace bit7z {
              */
             bool isItemEncrypted( uint32_t index ) const;
 
-            const tstring& getArchivePath() const;
+            const tstring& getArchivePath() const noexcept;
 
-            const BitArchiveHandler& getHandler() const;
+            const BitArchiveHandler& getHandler() const noexcept;
 
             void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
 
@@ -118,7 +118,7 @@ namespace bit7z {
 
             void test( ExtractCallback* extract_callback ) const;
 
-            HRESULT close() const;
+            HRESULT close() const noexcept;
 
             friend class BitArchiveOpener;
 
@@ -144,22 +144,22 @@ namespace bit7z {
                     using pointer = const BitArchiveItemOffset*;
                     using difference_type = uint32_t; //so that count_if returns a uint32_t
 
-                    const_iterator& operator++();
+                    const_iterator& operator++() noexcept;
 
-                    const_iterator operator++( int );
+                    const_iterator operator++( int ) noexcept;
 
-                    bool operator==( const const_iterator& other ) const;
+                    bool operator==( const const_iterator& other ) const noexcept;
 
-                    bool operator!=( const const_iterator& other ) const;
+                    bool operator!=( const const_iterator& other ) const noexcept;
 
-                    reference operator*();
+                    reference operator*() noexcept;
 
-                    pointer operator->();
+                    pointer operator->() noexcept;
 
                 private:
                     BitArchiveItemOffset mItemOffset;
 
-                    const_iterator( uint32_t item_index, const BitInputArchive& item_archive );
+                    const_iterator( uint32_t item_index, const BitInputArchive& item_archive ) noexcept;
 
                     friend class BitInputArchive;
             };

@@ -28,7 +28,7 @@ using namespace bit7z;
 BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib, tstring password )
     : mLibrary( lib ), mPassword( std::move( password ) ), mRetainDirectories( true ) {}
 
-const Bit7zLibrary& BitArchiveHandler::library() const {
+const Bit7zLibrary& BitArchiveHandler::library() const noexcept {
     return mLibrary;
 }
 
@@ -36,11 +36,11 @@ tstring BitArchiveHandler::password() const {
     return mPassword;
 }
 
-bool BitArchiveHandler::retainDirectories() const {
+bool BitArchiveHandler::retainDirectories() const noexcept {
     return mRetainDirectories;
 }
 
-bool BitArchiveHandler::isPasswordDefined() const {
+bool BitArchiveHandler::isPasswordDefined() const noexcept {
     return !mPassword.empty();
 }
 
@@ -68,11 +68,11 @@ void BitArchiveHandler::setPassword( const tstring& password ) {
     mPassword = password;
 }
 
-void BitArchiveHandler::clearPassword() {
+void BitArchiveHandler::clearPassword() noexcept {
     mPassword.clear();
 }
 
-void BitArchiveHandler::setRetainDirectories( bool retain ) {
+void BitArchiveHandler::setRetainDirectories( bool retain ) noexcept {
     mRetainDirectories = retain;
 }
 

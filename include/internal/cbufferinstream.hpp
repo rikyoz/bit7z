@@ -38,7 +38,7 @@ namespace bit7z {
             // IInStream
             STDMETHOD( Read )( void* data, UInt32 size, UInt32* processedSize ) override;
 
-            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) override;
+            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept override;
 
         private:
             const buffer_t& mBuffer;

@@ -47,11 +47,11 @@ namespace bit7z {
 
             bool wildcardMatch( const tstring& pattern, const tstring& str );
 
-            bool getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo );
+            bool getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) noexcept;
 
-            bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified );
+            bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept;
 
-            bool setFileAttributes( const fs::path& filePath, DWORD attributes );
+            bool setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept;
 
             fs::path inArchivePath( const fs::path& file_path, const fs::path& search_path = fs::path() );
         }

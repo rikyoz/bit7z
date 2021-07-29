@@ -37,11 +37,11 @@ fs::path RenamedItem::path() const { return mNewPath; }
 
 fs::path RenamedItem::inArchivePath() const { return path(); }
 
-HRESULT RenamedItem::getStream( ISequentialInStream** ) const {
+HRESULT RenamedItem::getStream( ISequentialInStream** ) const noexcept {
     return S_OK;
 }
 
-bool RenamedItem::hasNewData() const {
+bool RenamedItem::hasNewData() const noexcept {
     return false; //just a new property (i.e., path/name), no new data!
 }
 

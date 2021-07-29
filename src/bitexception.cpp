@@ -44,11 +44,11 @@ BitException::BitException( const char* const message, std::error_code code, con
 BitException::BitException( const std::string& message, std::error_code code )
     : system_error( code, message.c_str() ) {}
 
-const FailedFiles& BitException::failedFiles() const {
+const FailedFiles& BitException::failedFiles() const noexcept {
     return mFailedFiles;
 }
 
-BitException::native_code_type BitException::nativeCode() const {
+BitException::native_code_type BitException::nativeCode() const noexcept {
     auto error = code();
 #ifdef _WIN32
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value

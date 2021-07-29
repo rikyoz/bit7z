@@ -47,7 +47,7 @@ HRESULT StreamItem::getStream( ISequentialInStream** inStream ) const {
     return S_OK;
 }
 
-bool StreamItem::isDir() const {
+bool StreamItem::isDir() const noexcept {
     return false;
 }
 
@@ -59,15 +59,15 @@ uint64_t StreamItem::size() const {
     return result;
 }
 
-FILETIME StreamItem::creationTime() const { //-V524
+FILETIME StreamItem::creationTime() const noexcept { //-V524
     return lastWriteTime();
 }
 
-FILETIME StreamItem::lastAccessTime() const { //-V524
+FILETIME StreamItem::lastAccessTime() const noexcept { //-V524
     return lastWriteTime();
 }
 
-FILETIME StreamItem::lastWriteTime() const {
+FILETIME StreamItem::lastWriteTime() const noexcept {
     FILETIME ft;
     SYSTEMTIME st;
 
@@ -76,6 +76,6 @@ FILETIME StreamItem::lastWriteTime() const {
     return ft;
 }
 
-uint32_t StreamItem::attributes() const {
+uint32_t StreamItem::attributes() const noexcept {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }

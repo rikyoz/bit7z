@@ -38,7 +38,7 @@ namespace bit7z {
             // IOutStream
             STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize ) override;
 
-            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) override;
+            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept override;
 
             STDMETHOD( SetSize )( UInt64 newSize ) override;
 

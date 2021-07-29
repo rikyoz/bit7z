@@ -26,15 +26,15 @@ namespace bit7z {
 
     class BitArchiveItemOffset : public BitArchiveItem {
         public:
-            BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc );
+            BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
 
-            BitArchiveItemOffset& operator++();
+            BitArchiveItemOffset& operator++() noexcept;
 
-            BitArchiveItemOffset operator++( int );
+            BitArchiveItemOffset operator++( int ) noexcept;
 
-            bool operator==( const BitArchiveItemOffset& other ) const;
+            bool operator==( const BitArchiveItemOffset& other ) const noexcept;
 
-            bool operator!=( const BitArchiveItemOffset& other ) const;
+            bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
 
             BitPropVariant getProperty( BitProperty property ) const override;
 

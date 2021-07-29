@@ -68,24 +68,24 @@ namespace bit7z {
             /**
              * @return the value of the format in the 7z SDK.
              */
-            int value() const;
+            int value() const noexcept;
 
             /**
              * @return the GUID that identifies the file format in the 7z SDK.
              */
-            GUID guid() const;
+            GUID guid() const noexcept;
 
             /**
              * @param other  the target object to compare to.
              * @return true if this format is equal to "other".
              */
-            bool operator==( BitInFormat const& other ) const;
+            bool operator==( BitInFormat const& other ) const noexcept;
 
             /**
              * @param other  the target object to compare to.
              * @return true if this format is not equal to "other".
              */
-            bool operator!=( BitInFormat const& other ) const;
+            bool operator!=( BitInFormat const& other ) const noexcept;
 
         private:
             const unsigned char mValue;
@@ -125,24 +125,24 @@ namespace bit7z {
             /**
              * @return the default file extension of the archive format
              */
-            const tstring& extension() const;
+            const tchar* extension() const noexcept;
 
             /**
              * @return the bitset of the features supported by the format
              */
-            FormatFeatures features() const;
+            FormatFeatures features() const noexcept;
 
             /**
              * @brief Checks if the format has a specific feature (see FormatFeatures enum)
              * @param feature   feature to be checked
              * @return true if the format has the feature, false otherwise
              */
-            bool hasFeature( FormatFeatures feature ) const;
+            bool hasFeature( FormatFeatures feature ) const noexcept;
 
             /**
              * @return the default compression method of the archive format.
              */
-            BitCompressionMethod defaultMethod() const;
+            BitCompressionMethod defaultMethod() const noexcept;
 
         private:
             const tstring mExtension;

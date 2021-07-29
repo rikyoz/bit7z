@@ -155,7 +155,7 @@ class Umask {
 static Umask gbl_umask;
 #endif
 
-bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) {
+bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept {
 #ifdef _WIN32
     return ::SetFileAttributes( filePath.c_str(), attributes ) != FALSE;
 #else
@@ -202,7 +202,7 @@ fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime ) {
 }
 #endif
 
-bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) {
+bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept {
     if ( filePath.empty() ) {
         return false;
     }
@@ -234,7 +234,7 @@ FILETIME time_to_FILETIME( const std::time_t& time ) {
 }
 #endif
 
-bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) {
+bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) noexcept {
 #ifdef _WIN32
     return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileInfo ) != FALSE;
 #else
