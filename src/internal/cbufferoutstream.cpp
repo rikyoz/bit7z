@@ -87,7 +87,7 @@ STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* ne
     mCurrentPosition = mBuffer.begin() + static_cast< index_t >( new_index );
 
     if ( newPosition != nullptr ) {
-        *newPosition = new_index;
+        *newPosition = static_cast< UInt64 >( new_index );
     }
 
     return S_OK;

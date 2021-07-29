@@ -146,7 +146,7 @@ uint32_t BitArchiveEditor::findItem( const tstring& item_path ) {
         throw BitException( "Could not find the file in the archive",
                             std::make_error_code( std::errc::no_such_file_or_directory ), item_path );
     }
-    if ( mDeletedItems.find( archiveItem->index() ) != mDeletedItems.end() ) {
+    if ( mDeletedItems.find( archiveItem->index() ) != mDeletedItems.cend() ) {
         throw BitException( "Cannot edit deleted item",
                             std::make_error_code( std::errc::invalid_argument ), item_path );
     }
@@ -158,7 +158,7 @@ void BitArchiveEditor::checkIndex( uint32_t index ) {
         throw BitException( "Invalid index " + std::to_string( index ),
                             std::make_error_code( std::errc::invalid_argument ) );
     }
-    if ( mDeletedItems.find( index ) != mDeletedItems.end() ) {
+    if ( mDeletedItems.find( index ) != mDeletedItems.cend() ) {
         throw BitException( "Cannot edit deleted item at index " + std::to_string( index ),
                             std::make_error_code( std::errc::invalid_argument ) );
     }

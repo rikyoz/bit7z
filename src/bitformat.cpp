@@ -21,6 +21,8 @@
 
 #include "bitformat.hpp"
 
+#include <type_traits>
+
 using namespace std;
 
 namespace bit7z {

@@ -21,6 +21,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <type_traits>
 
 #ifndef _WIN32
 #include <string>
