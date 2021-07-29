@@ -88,38 +88,42 @@ fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& searc
 }
 
 // Modified version of code found here: https://stackoverflow.com/a/3300547
-bool w_match( const tchar* needle, const tchar* haystack, size_t max ) {
-    for ( ; *needle != TSTRING( '\0' ); ++needle ) {
-        switch ( *needle ) {
+bool w_match( tstring::const_iterator pattern_it, tstring::const_iterator pattern_end,
+              tstring::const_iterator str_it, tstring::const_iterator str_end ) {
+    for ( ; pattern_it != pattern_end; ++pattern_it ) {
+        switch ( *pattern_it ) {
             case TSTRING( '?' ):
-                if ( *haystack == TSTRING( '\0' ) ) {
+                if ( str_it == str_end ) {
                     return false;
                 }
-                ++haystack;
+                ++str_it;
                 break;
             case TSTRING( '*' ): {
-                if ( needle[ 1 ] == TSTRING( '\0' ) ) {
+                if ( pattern_it + 1 == pattern_end ) {
                     return true;
                 }
-                for ( size_t i = 0; i < max; i++ ) {
-                    if ( w_match( needle + 1, haystack + i, max - i ) ) {
+                for ( auto i = str_it; i != str_end; ++i ) {
+                    if ( w_match( pattern_it + 1, pattern_end, i, str_end ) ) {
                         return true;
                     }
                 }
                 return false;
             }
             default:
-                if ( *haystack != *needle ) {
+                if ( str_it == str_end || *str_it != *pattern_it ) {
                     return false;
                 }
-                ++haystack;
+                ++str_it;
         }
     }
-    return *haystack == TSTRING( '\0' );
+    return str_it == str_end;
 }
 
 bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) {
-    return w_match( pattern.empty() ? TSTRING( "*" ) : pattern.c_str(), str.c_str(), str.size() );
+    if ( pattern.empty() ) {
+        return wildcardMatch( TSTRING( "*" ), str );
+    }
+    return w_match( pattern.cbegin(), pattern.cend(), str.begin(), str.end() );
 }
 
 #ifndef _WIN32 //code from p7zip
