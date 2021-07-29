@@ -24,6 +24,7 @@
 #include <utility> // for std::move
 
 #include "bitexception.hpp"
+#include "internal/util.hpp"
 
 using namespace bit7z;
 

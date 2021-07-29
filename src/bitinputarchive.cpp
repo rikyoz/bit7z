@@ -31,6 +31,7 @@
 #include "internal/fileextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
+#include "internal/util.hpp"
 
 using namespace bit7z;
 using namespace NWindows;
@@ -65,7 +66,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
     CMyComPtr< IInArchive > in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
 
     // Creating open callback for the file
-    CMyComPtr< IArchiveOpenCallback > open_callback = new OpenCallback( mArchiveHandler, name );
+    auto open_callback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
 
     // Trying to open the file with the detected format
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
@@ -95,7 +96,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_file )
     : mArchiveHandler{ handler }, mArchivePath{ std::move( in_file ) } {
 
-    CMyComPtr< CFileInStream > file_stream = new CFileInStream( mArchivePath );
+    auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
     if ( file_stream->fail() ) {
         //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions
         throw BitException( "Cannot open archive file", std::make_error_code( std::errc::io_error ), mArchivePath );
@@ -110,7 +111,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_f
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer )
     : mArchiveHandler{ handler } {
-    CMyComPtr< IInStream > buf_stream = new CBufferInStream( in_buffer );
+    auto buf_stream = bit7z::make_com< CBufferInStream >( in_buffer );
 #ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
 #endif
@@ -119,7 +120,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream )
     : mArchiveHandler{ handler } {
-    CMyComPtr< IInStream > std_stream = new CStdInStream( in_stream );
+    auto std_stream = bit7z::make_com< CStdInStream >( in_stream );
 #ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
 #endif
@@ -207,7 +208,7 @@ const BitArchiveHandler& BitInputArchive::getHandler() const noexcept {
 }
 
 void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >& indices ) const {
-    CMyComPtr< ExtractCallback > callback = new FileExtractCallback( *this, out_dir );
+    auto callback = bit7z::make_com< FileExtractCallback >( *this, out_dir );
     extract( indices, callback );
 }
 
@@ -224,7 +225,7 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, unsigned int index 
 
     const vector< uint32_t > indices( 1, index );
     map< tstring, vector< byte_t > > buffers_map;
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, buffers_map );
+    auto extract_callback = bit7z::make_com< BufferExtractCallback >( *this, buffers_map );
     extract( indices, extract_callback );
     out_buffer = std::move( buffers_map.begin()->second );
 }
@@ -241,7 +242,7 @@ void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
     }
 
     const vector< uint32_t > indices( 1, index );
-    CMyComPtr< ExtractCallback > extract_callback = new StreamExtractCallback( *this, out_stream );
+    auto extract_callback = bit7z::make_com< StreamExtractCallback >( *this, out_stream );
     extract( indices, extract_callback );
 }
 
@@ -254,13 +255,13 @@ void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const
         }
     }
 
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, out_map );
+    auto extract_callback = bit7z::make_com< BufferExtractCallback >( *this, out_map );
     extract( files_indices, extract_callback );
 }
 
 void BitInputArchive::test() const {
     map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, dummy_map );
+    auto extract_callback = bit7z::make_com< BufferExtractCallback >( *this, dummy_map );
     test( extract_callback );
 }
 

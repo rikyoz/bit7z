@@ -22,6 +22,7 @@
 #include "internal/streamitem.hpp"
 
 #include "internal/cstdinstream.hpp"
+#include "internal/util.hpp"
 
 using bit7z::StreamItem;
 using bit7z::BitPropVariant;
@@ -42,7 +43,7 @@ fs::path StreamItem::inArchivePath() const {
 }
 
 HRESULT StreamItem::getStream( ISequentialInStream** inStream ) const {
-    CMyComPtr< ISequentialInStream > inStreamLoc = new CStdInStream( mStream );
+    auto inStreamLoc = bit7z::make_com< CStdInStream >( mStream );
     *inStream = inStreamLoc.Detach(); //Note: 7-zip will take care of freeing the memory!
     return S_OK;
 }

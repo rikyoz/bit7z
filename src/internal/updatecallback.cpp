@@ -107,7 +107,7 @@ STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream
     }
 
     tstring fileName = TSTRING( '.' ) + res;// + mVolExt;
-    CMyComPtr< CFileOutStream > stream = new CFileOutStream( fileName );
+    auto stream = bit7z::make_com< CFileOutStream >( fileName );
 
     if ( stream->fail() ) {
         return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );

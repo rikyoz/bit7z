@@ -26,6 +26,8 @@
 #include <string>
 #endif
 
+#include <Common/MyCom.h>
+
 namespace bit7z {
 #ifdef _WIN32
 #define WIDEN( tstr ) tstr
@@ -44,6 +46,10 @@ namespace bit7z {
                ( offset < 0 && position < (std::numeric_limits< int64_t >::min)() - offset );
     }
 
+    template<typename T, class... Args>
+    inline CMyComPtr<std::enable_if_t<std::is_base_of<CMyUnknownImp, T>::value, T>> make_com( Args&&... args ) {
+        return new T(std::forward<Args>(args)...);
+    }
 }
 
 #endif //UTIL_HPP

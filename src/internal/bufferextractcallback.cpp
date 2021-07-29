@@ -58,7 +58,7 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index,
 
     if ( !mInputArchive.isItemFolder( index ) ) {
         //Note: using [] operator it creates the buffer if it does not exists already!
-        CMyComPtr< ISequentialOutStream > outStreamLoc = new CBufferOutStream( mBuffersMap[ fullPath ] );
+        auto outStreamLoc = bit7z::make_com< CBufferOutStream >( mBuffersMap[ fullPath ] );
         mOutMemStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }

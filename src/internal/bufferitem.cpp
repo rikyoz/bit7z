@@ -22,6 +22,7 @@
 #include "internal/bufferitem.hpp"
 
 #include "internal/cbufferinstream.hpp"
+#include "internal/util.hpp"
 
 using bit7z::BufferItem;
 using bit7z::BitPropVariant;
@@ -42,7 +43,7 @@ fs::path BufferItem::inArchivePath() const {
 }
 
 HRESULT BufferItem::getStream( ISequentialInStream** inStream ) const {
-    CMyComPtr< ISequentialInStream > inStreamLoc = new CBufferInStream( mBuffer );
+    auto inStreamLoc = bit7z::make_com< CBufferInStream >( mBuffer );
     *inStream = inStreamLoc.Detach();
     return S_OK;
 }

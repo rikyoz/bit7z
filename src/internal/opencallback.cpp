@@ -104,7 +104,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
                 return S_FALSE;
             }
         }
-        CMyComPtr< CFileInStream > inStreamTemp = new CFileInStream( stream_path );
+        auto inStreamTemp = bit7z::make_com< CFileInStream >( stream_path );
         if ( inStreamTemp->fail() ) {
             return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
         }

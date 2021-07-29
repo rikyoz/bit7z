@@ -26,6 +26,7 @@
 #include "internal/cmultivoloutstream.hpp"
 #include "internal/genericitem.hpp"
 #include "internal/updatecallback.hpp"
+#include "internal/util.hpp"
 
 using bit7z::BitException;
 using bit7z::BitOutputArchive;
@@ -104,7 +105,7 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
-    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( *this );
+    auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressToFile( out_file, update_callback );
 }
 
@@ -205,15 +206,15 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_mem_stream = new CBufferOutStream( out_buffer );
-    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( *this );
+    auto out_mem_stream = bit7z::make_com< CBufferOutStream >( out_buffer );
+    auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& out_stream ) {
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
-    CMyComPtr< UpdateCallback > update_callback = new UpdateCallback( *this );
+    auto out_std_stream = bit7z::make_com< CStdOutStream >( out_stream );
+    auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_std_stream, update_callback );
 }
 

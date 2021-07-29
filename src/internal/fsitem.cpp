@@ -26,6 +26,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/util.hpp"
 
 using bit7z::tstring;
 using bit7z::BitPropVariant;
@@ -139,7 +140,7 @@ HRESULT FSItem::getStream( ISequentialInStream** inStream ) const {
         return S_OK;
     }
 
-    CMyComPtr< CFileInStream > inStreamLoc = new CFileInStream( path() ); //CMyComPtr is necessary here for correct RAII
+    auto inStreamLoc = bit7z::make_com< CFileInStream >( path() ); //CMyComPtr is necessary here for correct RAII
 
     if ( inStreamLoc->fail() ) {
         return S_FALSE;

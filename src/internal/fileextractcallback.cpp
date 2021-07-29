@@ -23,6 +23,7 @@
 
 #include "bitexception.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/util.hpp"
 
 using namespace std;
 using namespace NWindows;
@@ -141,7 +142,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
             return E_ABORT;
         }
 
-        CMyComPtr< CFileOutStream > outStreamLoc = new CFileOutStream( mDiskFilePath, true );
+        auto outStreamLoc = bit7z::make_com< CFileOutStream >( mDiskFilePath, true );
         if ( outStreamLoc->fail() ) {
             mErrorMessage = kCannotOpenOutput;
             return E_ABORT;
