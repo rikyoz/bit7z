@@ -63,7 +63,7 @@ namespace bit7z {
              * @brief Constructs a BitInFormat object with the id value used by the 7z SDK.
              * @param value  the value of the format in the 7z SDK.
              */
-            explicit BitInFormat( unsigned char value ) noexcept;
+            explicit constexpr BitInFormat( unsigned char value ) noexcept;
 
             /**
              * @return the value of the format in the 7z SDK.
@@ -107,10 +107,10 @@ namespace bit7z {
              * @param defaultMethod the default compression method of the archive format.
              * @param features      the set of features supported by the archive format
              */
-            BitInOutFormat( unsigned char value,
-                            const tchar* ext,
-                            BitCompressionMethod defaultMethod,
-                            FormatFeatures features ) noexcept;
+            constexpr BitInOutFormat( unsigned char value,
+                                      const tchar* ext,
+                                      BitCompressionMethod defaultMethod,
+                                      FormatFeatures features ) noexcept;
 
             //non-copyable
             BitInOutFormat( const BitInFormat& other ) = delete;
@@ -145,7 +145,7 @@ namespace bit7z {
             BitCompressionMethod defaultMethod() const noexcept;
 
         private:
-            const tstring mExtension;
+            const tchar* mExtension;
             const BitCompressionMethod mDefaultMethod;
             const FormatFeatures mFeatures;
     };

@@ -71,13 +71,13 @@ bool FSItem::isDots() const {
 
 bool FSItem::isDir() const noexcept {
     std::error_code ec;
-    bool res = mFileEntry.is_directory( ec );
+    const bool res = mFileEntry.is_directory( ec );
     return !ec && res;
 }
 
 uint64_t FSItem::size() const noexcept {
     std::error_code ec;
-    auto res = mFileEntry.file_size( ec );
+    const auto res = mFileEntry.file_size( ec );
     return !ec ? res : 0;
 }
 

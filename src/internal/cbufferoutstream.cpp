@@ -104,7 +104,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
     }
 
     auto old_pos = ( mCurrentPosition - mBuffer.begin() );
-    size_t new_pos = old_pos + size;
+    const size_t new_pos = old_pos + size;
     if ( new_pos > mBuffer.size() ) {
         try {
             mBuffer.resize( new_pos );

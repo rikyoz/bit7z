@@ -49,7 +49,7 @@ const FailedFiles& BitException::failedFiles() const noexcept {
 }
 
 BitException::native_code_type BitException::nativeCode() const noexcept {
-    auto error = code();
+    const auto error = code();
 #ifdef _WIN32
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
         return error.value();

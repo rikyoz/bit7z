@@ -85,7 +85,7 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
             altStream.pos = mOffsetPos;
         }
 
-        auto curSize = static_cast< uint32_t >( (std::min)( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
+        const auto curSize = static_cast< uint32_t >( (std::min)( static_cast< uint64_t >( size ), mVolSize - altStream.pos ) );
         UInt32 realProcessed;
         RINOK( altStream.stream->Write( data, curSize, &realProcessed ) )
         altStream.pos += realProcessed;

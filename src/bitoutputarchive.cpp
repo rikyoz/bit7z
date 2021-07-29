@@ -168,7 +168,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
 void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) {
     // Note: if old_arc != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
-    bool updating_archive = mInputArchive != nullptr && mInputArchive->getArchivePath() == out_file;
+    const bool updating_archive = mInputArchive != nullptr && mInputArchive->getArchivePath() == out_file;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, updating_archive );
     compressOut( new_arc, out_stream, update_callback );
@@ -234,17 +234,17 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
 }
 
 BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, BitProperty propID ) const {
-    auto mapped_index = getItemInputIndex( index );
+    const auto mapped_index = getItemInputIndex( index );
     return getItemProperty( mapped_index, propID );
 }
 
 HRESULT BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
-    auto mapped_index = getItemInputIndex( index );
+    const auto mapped_index = getItemInputIndex( index );
     return getItemStream( mapped_index, inStream );
 }
 
 input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const noexcept {
-    auto index = static_cast< decltype( mInputIndices )::size_type >( new_index );
+    const auto index = static_cast< decltype( mInputIndices )::size_type >( new_index );
     if ( index < mInputIndices.size() ) {
         return mInputIndices[ index ];
     }
@@ -277,16 +277,16 @@ uint32_t BitOutputArchive::itemsCount() const {
 }
 
 BitPropVariant BitOutputArchive::getItemProperty( input_index index, BitProperty propID ) const {
-    auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
+    const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
     const GenericItem& new_item = mNewItemsVector[ new_item_index ];
     return new_item.getProperty( propID );
 }
 
 HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream** inStream ) const {
-    auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
+    const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
     const GenericItem& new_item = mNewItemsVector[ new_item_index ];
 
-    HRESULT res = new_item.getStream( inStream );
+    const HRESULT res = new_item.getStream( inStream );
     if ( FAILED( res ) ) {
         auto path = new_item.path();
         std::error_code ec;
@@ -299,7 +299,7 @@ HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream*
 }
 
 bool BitOutputArchive::hasNewData( uint32_t index ) const noexcept {
-    auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+    const auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
     return original_index >= mInputArchiveItemsCount;
 }
 
@@ -310,7 +310,7 @@ bool BitOutputArchive::hasNewProperties( uint32_t index ) const noexcept {
 }
 
 uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const noexcept {
-    auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+    const auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
     return original_index < mInputArchiveItemsCount ? original_index : static_cast< uint32_t >( -1 );
 }
 

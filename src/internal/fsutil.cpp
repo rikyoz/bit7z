@@ -35,14 +35,14 @@ using namespace bit7z::filesystem;
 
 
 tstring fsutil::filename( const tstring& path, bool ext ) {
-    size_t start = path.find_last_of( TSTRING( "/\\" ) ) + 1;
-    size_t end = ext ? path.size() : path.find_last_of( TSTRING('.') );
+    const size_t start = path.find_last_of( TSTRING( "/\\" ) ) + 1;
+    const size_t end = ext ? path.size() : path.find_last_of( TSTRING('.') );
     return path.substr( start, end - start ); //RVO :)
 }
 
 tstring fsutil::extension( const tstring& path ) {
     tstring name = filename( path, true );
-    size_t last_dot = name.find_last_of( TSTRING('.') );
+    const size_t last_dot = name.find_last_of( TSTRING('.') );
     return last_dot != tstring::npos ? name.substr( last_dot + 1 ) : TSTRING( "" );
 }
 

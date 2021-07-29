@@ -128,7 +128,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream
 
 BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
     BitPropVariant archive_property;
-    HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );
+    const HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );
     if ( res != S_OK ) {
         throw BitException( "Could not retrieve archive property", make_hresult_code( res ) );
     }
@@ -137,7 +137,7 @@ BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const
 
 BitPropVariant BitInputArchive::getItemProperty( uint32_t index, BitProperty property ) const {
     BitPropVariant item_property;
-    HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
+    const HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
     if ( res != S_OK ) {
         throw BitException( "Could not retrieve property for item at index " + std::to_string( index ),
                             make_hresult_code( res ) );
@@ -147,7 +147,7 @@ BitPropVariant BitInputArchive::getItemProperty( uint32_t index, BitProperty pro
 
 uint32_t BitInputArchive::itemsCount() const {
     uint32_t items_count;
-    HRESULT res = mInArchive->GetNumberOfItems( &items_count );
+    const HRESULT res = mInArchive->GetNumberOfItems( &items_count );
     if ( res != S_OK ) {
         throw BitException( "Could not retrieve the number of items in the archive", make_hresult_code( res ) );
     }
@@ -170,7 +170,7 @@ HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
 
 void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
-    uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
+    const uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
 
     HRESULT res = mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
     if ( res != S_OK ) {
@@ -179,7 +179,7 @@ void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallbac
 }
 
 void BitInputArchive::test( ExtractCallback* extract_callback ) const {
-    HRESULT res = mInArchive->Extract( nullptr,
+    const HRESULT res = mInArchive->Extract( nullptr,
                                        static_cast< uint32_t >( -1 ),
                                        NExtract::NAskMode::kTest,
                                        extract_callback );
@@ -212,7 +212,7 @@ void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >&
 }
 
 void BitInputArchive::extract( vector< byte_t >& out_buffer, unsigned int index ) const {
-    uint32_t number_items = itemsCount();
+    const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Index " + std::to_string( index ) + " is out of range",
                             std::make_error_code( std::errc::invalid_argument ) );
@@ -230,7 +230,7 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, unsigned int index 
 }
 
 void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
-    uint32_t number_items = itemsCount();
+    const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Index " + std::to_string( index ) + " is out of range",
                             std::make_error_code( std::errc::invalid_argument ) );
@@ -246,7 +246,7 @@ void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
 }
 
 void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const {
-    uint32_t number_items = itemsCount();
+    const uint32_t number_items = itemsCount();
     vector< uint32_t > files_indices;
     for ( uint32_t i = 0; i < number_items; ++i ) {
         if ( !isItemFolder( i ) ) { //Consider only files, not folders

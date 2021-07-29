@@ -52,9 +52,9 @@ bool StreamItem::isDir() const noexcept {
 }
 
 uint64_t StreamItem::size() const {
-    auto original_pos = mStream.tellg();
+    const auto original_pos = mStream.tellg();
     mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
-    auto result = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
+    const auto result = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
     mStream.seekg( original_pos ); // seeking back to the original position in the stream
     return result;
 }

@@ -108,7 +108,7 @@ namespace bit7z {
                                    FormatFeatures::COMPRESSION_LEVEL );
     }
 
-    BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
+    constexpr BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
 
     int BitInFormat::value() const noexcept {
         return mValue;
@@ -126,10 +126,10 @@ namespace bit7z {
         return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } }; // NOLINT
     }
 
-    BitInOutFormat::BitInOutFormat( unsigned char value,
-                                    const tchar* ext,
-                                    BitCompressionMethod defaultMethod,
-                                    FormatFeatures features ) noexcept
+    constexpr BitInOutFormat::BitInOutFormat( unsigned char value,
+                                              const tchar* ext,
+                                              BitCompressionMethod defaultMethod,
+                                              FormatFeatures features ) noexcept
         : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
     const tchar* BitInOutFormat::extension() const noexcept {

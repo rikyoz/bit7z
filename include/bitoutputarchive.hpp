@@ -123,7 +123,7 @@ namespace bit7z {
              * This vector is either empty or it has size equal to itemsCount() (thanks to updateInputIndices()). */
             std::vector< input_index > mInputIndices;
 
-            input_index getItemInputIndex( uint32_t new_index ) const;
+            input_index getItemInputIndex( uint32_t new_index ) const noexcept;
 
             virtual BitPropVariant getItemProperty( input_index index, BitProperty prop ) const;
 
