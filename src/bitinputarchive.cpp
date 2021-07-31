@@ -27,19 +27,18 @@
 #include "internal/bufferextractcallback.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/cfileinstream.hpp"
-#include "internal/extractcallback.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/util.hpp"
 
-using namespace bit7z;
-using namespace NWindows;
-using namespace NArchive;
-
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"
 #endif
+
+using namespace bit7z;
+using namespace NWindows;
+using namespace NArchive;
 
 constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
 
