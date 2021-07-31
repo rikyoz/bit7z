@@ -41,15 +41,15 @@ namespace bit7z {
 
             void setUpdateMode( UpdateMode update_mode ) override;
 
-            void renameItem( unsigned index, const tstring& new_path );
+            void renameItem( uint32_t index, const tstring& new_path );
 
             void renameItem( const tstring& old_path, const tstring& new_path );
 
-            void updateItem( unsigned index, const tstring& in_file );
+            void updateItem( uint32_t index, const tstring& in_file );
 
-            void updateItem( unsigned index, const vector< byte_t >& in_buffer );
+            void updateItem( uint32_t index, const vector< byte_t >& in_buffer );
 
-            void updateItem( unsigned index, istream& in_stream );
+            void updateItem( uint32_t index, istream& in_stream );
 
             void updateItem( const tstring& item_path, const tstring& in_file );
 
@@ -57,7 +57,7 @@ namespace bit7z {
 
             void updateItem( const tstring& item_path, istream& in_stream );
 
-            void deleteItem( unsigned index );
+            void deleteItem( uint32_t index );
 
             void deleteItem( const tstring& item_path );
 

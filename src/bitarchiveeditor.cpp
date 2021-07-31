@@ -60,7 +60,7 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
 
 BitArchiveEditor::~BitArchiveEditor() = default;
 
-void BitArchiveEditor::renameItem( unsigned index, const tstring& new_path ) {
+void BitArchiveEditor::renameItem( uint32_t index, const tstring& new_path ) {
     checkIndex( index );
     mEditedItems[ index ] = std::make_unique< RenamedItem >( *mInputArchive, index, new_path );
 }
@@ -70,19 +70,19 @@ void BitArchiveEditor::renameItem( const tstring& old_path, const tstring& new_p
     mEditedItems[ index ] = std::make_unique< RenamedItem >( *mInputArchive, index, new_path );
 }
 
-void BitArchiveEditor::updateItem( unsigned int index, const tstring& in_file ) {
+void BitArchiveEditor::updateItem( uint32_t index, const tstring& in_file ) {
     checkIndex( index );
     auto item_name = mInputArchive->getItemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< FSItem >( in_file, item_name.getString() );
 }
 
-void BitArchiveEditor::updateItem( unsigned int index, const std::vector< byte_t >& in_buffer ) {
+void BitArchiveEditor::updateItem( uint32_t index, const std::vector< byte_t >& in_buffer ) {
     checkIndex( index );
     auto item_name = mInputArchive->getItemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< BufferItem >( in_buffer, item_name.getString() );
 }
 
-void BitArchiveEditor::updateItem( unsigned int index, istream& in_stream ) {
+void BitArchiveEditor::updateItem( uint32_t index, istream& in_stream ) {
     checkIndex( index );
     auto item_name = mInputArchive->getItemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< StdStreamItem >( in_stream, item_name.getString() );
@@ -100,7 +100,7 @@ void BitArchiveEditor::updateItem( const tstring& item_path, std::istream& in_st
     mEditedItems[ findItem( item_path ) ] = std::make_unique< StdStreamItem >( in_stream, item_path );
 }
 
-void BitArchiveEditor::deleteItem( unsigned int index ) {
+void BitArchiveEditor::deleteItem( uint32_t index ) {
     if ( index >= mInputArchiveItemsCount ) {
         throw BitException( "Invalid index " + std::to_string( index ),
                             std::make_error_code( std::errc::invalid_argument ) );
