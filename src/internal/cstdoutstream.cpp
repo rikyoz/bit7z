@@ -55,7 +55,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
-    std::ios_base::seekdir way;
+    std::ios_base::seekdir way{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             way = std::ios_base::beg;

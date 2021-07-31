@@ -154,7 +154,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
     }
     updateInputIndices();
 
-    HRESULT result = out_arc->UpdateItems( out_stream, itemsCount(), update_callback );
+    const HRESULT result = out_arc->UpdateItems( out_stream, itemsCount(), update_callback );
 
     if ( result == E_NOTIMPL ) {
         throw BitException( bit7z::kUnsupportedOperation, bit7z::make_hresult_code( result ) );

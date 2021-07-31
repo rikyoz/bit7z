@@ -172,7 +172,7 @@ void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallbac
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
     const uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
 
-    HRESULT res = mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
+    const HRESULT res = mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
     if ( res != S_OK ) {
         extract_callback->throwException( res );
     }

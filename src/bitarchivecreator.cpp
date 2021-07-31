@@ -285,7 +285,7 @@ ArchiveProperties BitArchiveCreator::getArchiveProperties() const {
         values.emplace_back( mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
-        const wchar_t* prop_name;
+        const wchar_t* prop_name = nullptr;
         //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
