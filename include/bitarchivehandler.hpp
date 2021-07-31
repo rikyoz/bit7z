@@ -60,6 +60,14 @@ namespace bit7z {
      */
     class BitArchiveHandler {
         public:
+            BitArchiveHandler( const BitArchiveHandler& ) = delete;
+
+            BitArchiveHandler( BitArchiveHandler&& ) = delete;
+
+            BitArchiveHandler& operator= ( const BitArchiveHandler& ) = delete;
+
+            BitArchiveHandler& operator= ( BitArchiveHandler&& ) = delete;
+
             /**
              * @return the Bit7zLibrary object used by the handler.
              */

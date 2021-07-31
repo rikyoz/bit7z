@@ -52,6 +52,14 @@ namespace bit7z {
      */
     class BitArchiveCreator : public BitArchiveHandler {
         public:
+            BitArchiveCreator( const BitArchiveCreator& ) = delete;
+
+            BitArchiveCreator( BitArchiveCreator&& ) = delete;
+
+            BitArchiveCreator& operator=( const BitArchiveCreator& ) = delete;
+
+            BitArchiveCreator& operator=( BitArchiveCreator&& ) = delete;
+
             /**
              * @return the format used by the archive creator.
              */

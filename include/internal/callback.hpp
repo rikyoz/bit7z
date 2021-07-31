@@ -37,6 +37,14 @@ constexpr auto kEmptyFileAlias     = TSTRING("[Content]");
 namespace bit7z {
     class Callback : protected CMyUnknownImp {
         public:
+            Callback( const Callback& ) = delete;
+
+            Callback( Callback&& ) = delete;
+
+            Callback& operator=( const Callback& ) = delete;
+
+            Callback& operator=( Callback&& ) = delete;
+
             virtual ~Callback() = default;
 
             virtual void throwException( HRESULT error );

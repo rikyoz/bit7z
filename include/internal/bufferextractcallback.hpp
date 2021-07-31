@@ -34,6 +34,14 @@ namespace bit7z {
             BufferExtractCallback( const BitInputArchive& inputArchive,
                                    map< tstring, vector< byte_t > >& buffersMap );
 
+            BufferExtractCallback( const BufferExtractCallback& ) = delete;
+
+            BufferExtractCallback( BufferExtractCallback&& ) = delete;
+
+            BufferExtractCallback& operator=( const BufferExtractCallback& ) = delete;
+
+            BufferExtractCallback& operator=( BufferExtractCallback&& ) = delete;
+
             ~BufferExtractCallback() override = default;
 
         private:

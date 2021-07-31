@@ -37,6 +37,14 @@ namespace bit7z {
                             public ICompressProgressInfo,
                             protected ICryptoGetTextPassword {
         public:
+            ExtractCallback( const ExtractCallback& ) = delete;
+
+            ExtractCallback( ExtractCallback&& ) = delete;
+
+            ExtractCallback& operator=( const ExtractCallback& ) = delete;
+
+            ExtractCallback& operator=( ExtractCallback&& ) = delete;
+
             ~ExtractCallback() override = default;
 
             MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )

@@ -51,7 +51,12 @@ namespace bit7z {
     class Bit7zLibrary {
         public:
             Bit7zLibrary( const Bit7zLibrary& ) = delete; // not copyable!
+
+            Bit7zLibrary( Bit7zLibrary&& ) = delete;
+
             Bit7zLibrary& operator=( const Bit7zLibrary& ) = delete; // not assignable!
+
+            Bit7zLibrary& operator=( Bit7zLibrary&& ) = delete;
 
             /**
              * @brief Constructs a Bit7zLibrary object using the path of the wanted 7zip DLL.

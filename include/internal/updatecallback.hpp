@@ -46,6 +46,14 @@ namespace bit7z {
         public:
             explicit UpdateCallback( const BitOutputArchive& output );
 
+            UpdateCallback( const UpdateCallback& ) = delete;
+
+            UpdateCallback( UpdateCallback&& ) = delete;
+
+            UpdateCallback& operator=( const UpdateCallback& ) = delete;
+
+            UpdateCallback& operator=( UpdateCallback&& ) = delete;
+
             ~UpdateCallback() override;
 
             MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )

@@ -63,6 +63,14 @@ namespace bit7z {
 
             BitOutputArchive( const BitArchiveCreator& creator, std::istream& in_stream );
 
+            BitOutputArchive( const BitOutputArchive& ) = delete;
+
+            BitOutputArchive( BitOutputArchive&& ) = delete;
+
+            BitOutputArchive& operator=( const BitOutputArchive& ) = delete;
+
+            BitOutputArchive& operator=( BitOutputArchive&& ) = delete;
+
             void addItems( const vector< tstring >& in_paths );
 
             void addItems( const map< tstring, tstring >& in_paths );

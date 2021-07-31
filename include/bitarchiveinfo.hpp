@@ -88,6 +88,14 @@ namespace bit7z {
                             const BitInFormat& format DEFAULT_FORMAT,
                             const tstring& password = TSTRING( "" ) );
 
+            BitArchiveInfo( const BitArchiveInfo& ) = delete;
+
+            BitArchiveInfo( BitArchiveInfo&& ) = delete;
+
+            BitArchiveInfo& operator=( const BitArchiveInfo& ) = delete;
+
+            BitArchiveInfo& operator=( BitArchiveInfo&& ) = delete;
+
             /**
              * @brief BitArchiveInfo destructor.
              *

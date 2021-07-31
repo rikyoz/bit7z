@@ -53,6 +53,14 @@ namespace bit7z {
         public:
             CMultiVolOutStream( uint64_t volSize, const tstring& archiveName );
 
+            CMultiVolOutStream( const CMultiVolOutStream& ) = delete;
+
+            CMultiVolOutStream( CMultiVolOutStream&& ) = delete;
+
+            CMultiVolOutStream& operator=( const CMultiVolOutStream& ) = delete;
+
+            CMultiVolOutStream& operator=( CMultiVolOutStream&& ) = delete;
+
             MY_UNKNOWN_DESTRUCTOR( ~CMultiVolOutStream() ) = default;
 
             UInt64 GetSize() const noexcept;

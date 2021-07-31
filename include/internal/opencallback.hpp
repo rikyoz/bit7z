@@ -42,6 +42,14 @@ namespace bit7z {
         public:
             explicit OpenCallback( const BitArchiveHandler& handler, const tstring& filename = TSTRING( "." ) );
 
+            OpenCallback( const OpenCallback& ) = delete;
+
+            OpenCallback( OpenCallback&& ) = delete;
+
+            OpenCallback& operator=( const OpenCallback& ) = delete;
+
+            OpenCallback& operator=( OpenCallback&& ) = delete;
+
             ~OpenCallback() override = default;
 
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )

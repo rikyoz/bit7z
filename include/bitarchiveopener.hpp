@@ -38,6 +38,13 @@ namespace bit7z {
      */
     class BitArchiveOpener : public BitArchiveHandler {
         public:
+            BitArchiveOpener( const BitArchiveOpener& ) = delete;
+
+            BitArchiveOpener( BitArchiveOpener&& ) = delete;
+
+            BitArchiveOpener& operator=( const BitArchiveOpener& ) = delete;
+
+            BitArchiveOpener& operator=( BitArchiveOpener&& ) = delete;
 
             /**
              * @return the archive format used by the archive opener.

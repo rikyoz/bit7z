@@ -34,6 +34,14 @@ namespace bit7z {
         public:
             StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream );
 
+            StreamExtractCallback( const StreamExtractCallback& ) = delete;
+
+            StreamExtractCallback( StreamExtractCallback&& ) = delete;
+
+            StreamExtractCallback& operator=( const StreamExtractCallback& ) = delete;
+
+            StreamExtractCallback& operator=( StreamExtractCallback&& ) = delete;
+
             ~StreamExtractCallback() override = default;
 
             void throwException( HRESULT error ) override;

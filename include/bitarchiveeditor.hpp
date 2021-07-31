@@ -37,6 +37,14 @@ namespace bit7z {
                               const BitInOutFormat& format,
                               const tstring& password = TSTRING( "" ) );
 
+            BitArchiveEditor( const BitArchiveEditor& ) = delete;
+
+            BitArchiveEditor( BitArchiveEditor&& ) = delete;
+
+            BitArchiveEditor& operator=( const BitArchiveEditor& ) = delete;
+
+            BitArchiveEditor& operator=( BitArchiveEditor&& ) = delete;
+
             ~BitArchiveEditor() override;
 
             void setUpdateMode( UpdateMode update_mode ) override;

@@ -33,6 +33,14 @@ namespace bit7z {
             FileExtractCallback( const BitInputArchive& inputArchive,
                                  const tstring& directoryPath );
 
+            FileExtractCallback( const FileExtractCallback& ) = delete;
+
+            FileExtractCallback( FileExtractCallback&& ) = delete;
+
+            FileExtractCallback& operator=( const FileExtractCallback& ) = delete;
+
+            FileExtractCallback& operator=( FileExtractCallback&& ) = delete;
+
             ~FileExtractCallback() override = default;
 
             void throwException( HRESULT error ) override;

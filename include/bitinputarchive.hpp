@@ -47,6 +47,14 @@ namespace bit7z {
 
             BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream );
 
+            BitInputArchive( const BitInputArchive& ) = delete;
+
+            BitInputArchive( BitInputArchive&& ) = delete;
+
+            BitInputArchive& operator=( const BitInputArchive& ) = delete;
+
+            BitInputArchive& operator=( BitInputArchive&& ) = delete;
+
             virtual ~BitInputArchive();
 
 #ifdef BIT7Z_AUTO_FORMAT

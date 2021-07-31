@@ -34,6 +34,14 @@ namespace bit7z {
         public:
             explicit CStdOutStream( std::ostream& outputStream );
 
+            CStdOutStream( const CStdOutStream& ) = delete;
+
+            CStdOutStream( CStdOutStream& ) = delete;
+
+            CStdOutStream& operator=( const CStdOutStream& ) = delete;
+
+            CStdOutStream& operator=( CStdOutStream&& ) = delete;
+
             MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdOutStream() ) = default;
 
             MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
