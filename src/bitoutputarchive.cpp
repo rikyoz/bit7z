@@ -125,7 +125,7 @@ CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
 CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_archive,
                                                              bool updating_archive ) const {
     if ( mArchiveCreator.volumeSize() > 0 ) {
-        return new CMultiVolOutStream( mArchiveCreator.volumeSize(), out_archive );
+        return bit7z::make_com< CMultiVolOutStream, IOutStream >( mArchiveCreator.volumeSize(), out_archive );
     }
 
     fs::path out_path = out_archive;
@@ -133,13 +133,12 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
         out_path += ".tmp";
     }
 
-    auto* file_out_stream = new CFileOutStream( out_path, updating_archive );
-    CMyComPtr< IOutStream > out_stream = file_out_stream;
+    auto file_out_stream = bit7z::make_com< CFileOutStream >( out_path, updating_archive );
     if ( file_out_stream->fail() ) {
         //Unknown error!
         throw BitException( "Cannot create output archive file", last_error_code(), out_path.native() );
     }
-    return out_stream;
+    return CMyComPtr< IOutStream >{ file_out_stream };
 }
 
 void BitOutputArchive::compressOut( IOutArchive* out_arc,
@@ -206,14 +205,14 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    auto out_mem_stream = bit7z::make_com< CBufferOutStream >( out_buffer );
+    auto out_mem_stream = bit7z::make_com< CBufferOutStream, IOutStream >( out_buffer );
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& out_stream ) {
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    auto out_std_stream = bit7z::make_com< CStdOutStream >( out_stream );
+    auto out_std_stream = bit7z::make_com< CStdOutStream, IOutStream >( out_stream );
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_std_stream, update_callback );
 }

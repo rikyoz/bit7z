@@ -43,7 +43,7 @@ fs::path StreamItem::inArchivePath() const {
 }
 
 HRESULT StreamItem::getStream( ISequentialInStream** inStream ) const {
-    auto inStreamLoc = bit7z::make_com< CStdInStream >( mStream );
+    auto inStreamLoc = bit7z::make_com< CStdInStream, ISequentialInStream >( mStream );
     *inStream = inStreamLoc.Detach(); //Note: 7-zip will take care of freeing the memory!
     return S_OK;
 }

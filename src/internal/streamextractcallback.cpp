@@ -23,6 +23,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cstdoutstream.hpp"
+#include "internal/util.hpp"
 
 using namespace std;
 using namespace NWindows;
@@ -51,8 +52,7 @@ HRESULT StreamExtractCallback::getOutStream( uint32_t index,
     }
 
     if ( !mInputArchive.isItemFolder( index ) ) {
-        auto* out_std_stream_spec = new CStdOutStream( mOutputStream );
-        CMyComPtr< IOutStream > outStreamLoc( out_std_stream_spec );
+        CMyComPtr< IOutStream > outStreamLoc = bit7z::make_com< CStdOutStream, IOutStream >( mOutputStream );
         mStdOutStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     }

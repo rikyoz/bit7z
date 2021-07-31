@@ -43,7 +43,7 @@ fs::path BufferItem::inArchivePath() const {
 }
 
 HRESULT BufferItem::getStream( ISequentialInStream** inStream ) const {
-    auto inStreamLoc = bit7z::make_com< CBufferInStream >( mBuffer );
+    auto inStreamLoc = bit7z::make_com< CBufferInStream, ISequentialInStream >( mBuffer );
     *inStream = inStreamLoc.Detach();
     return S_OK;
 }
