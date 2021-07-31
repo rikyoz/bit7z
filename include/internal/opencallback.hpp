@@ -47,20 +47,20 @@ namespace bit7z {
             MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
 
             //IArchiveOpenCallback
-            STDMETHOD( SetTotal )( const UInt64* files, const UInt64* bytes ) noexcept override;
+            STDMETHOD_NOEXCEPT_OVERRIDE( SetTotal, const UInt64* files, const UInt64* bytes );
 
-            STDMETHOD( SetCompleted )( const UInt64* files, const UInt64* bytes ) noexcept override;
+            STDMETHOD_NOEXCEPT_OVERRIDE( SetCompleted, const UInt64* files, const UInt64* bytes );
 
             //IArchiveOpenVolumeCallback
-            STDMETHOD( GetProperty )( PROPID propID, PROPVARIANT* value ) override;
+            STDMETHOD_OVERRIDE( GetProperty, PROPID propID, PROPVARIANT* value );
 
-            STDMETHOD( GetStream )( const wchar_t* name, IInStream** inStream ) override;
+            STDMETHOD_OVERRIDE( GetStream, const wchar_t* name, IInStream** inStream );
 
             //IArchiveOpenSetSubArchiveName
-            STDMETHOD( SetSubArchiveName )( const wchar_t* name ) override;
+            STDMETHOD_OVERRIDE( SetSubArchiveName, const wchar_t* name );
 
             //ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR* password ) override;
+            STDMETHOD_OVERRIDE( CryptoGetTextPassword, BSTR* password );
 
         private:
             bool mSubArchiveMode;

@@ -53,31 +53,31 @@ namespace bit7z {
             HRESULT Finalize() noexcept;
 
             // IProgress from IArchiveUpdateCallback2
-            STDMETHOD( SetTotal )( UInt64 size ) override;
+            STDMETHOD_OVERRIDE( SetTotal, UInt64 size );
 
-            STDMETHOD( SetCompleted )( const UInt64* completeValue ) override;
+            STDMETHOD_OVERRIDE( SetCompleted, const UInt64* completeValue );
 
             // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize ) override;
+            STDMETHOD_OVERRIDE( SetRatioInfo, const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveUpdateCallback2
-            STDMETHOD( GetProperty )( UInt32 index, PROPID propID, PROPVARIANT* value ) override;
+            STDMETHOD_OVERRIDE( GetProperty, UInt32 index, PROPID propID, PROPVARIANT* value );
 
-            STDMETHOD( GetStream )( UInt32 index, ISequentialInStream** inStream ) override;
+            STDMETHOD_OVERRIDE( GetStream, UInt32 index, ISequentialInStream** inStream );
 
-            STDMETHOD( GetVolumeSize )( UInt32 index, UInt64* size ) noexcept override;
+            STDMETHOD_NOEXCEPT_OVERRIDE( GetVolumeSize, UInt32 index, UInt64* size );
 
-            STDMETHOD( GetVolumeStream )( UInt32 index, ISequentialOutStream** volumeStream ) override;
+            STDMETHOD_OVERRIDE( GetVolumeStream, UInt32 index, ISequentialOutStream** volumeStream );
 
-            STDMETHOD( GetUpdateItemInfo )( UInt32 index,
-                                            Int32* newData,
-                                            Int32* newProperties,
-                                            UInt32* indexInArchive ) noexcept override;
+            STDMETHOD_NOEXCEPT_OVERRIDE( GetUpdateItemInfo, UInt32 index,
+                                         Int32* newData,
+                                         Int32* newProperties,
+                                         UInt32* indexInArchive );
 
-            STDMETHOD( SetOperationResult )( Int32 operationResult ) noexcept override;
+            STDMETHOD_NOEXCEPT_OVERRIDE( SetOperationResult, Int32 operationResult );
 
             //ICryptoGetTextPassword2
-            STDMETHOD( CryptoGetTextPassword2 )( Int32* passwordIsDefined, BSTR* password ) override;
+            STDMETHOD_OVERRIDE( CryptoGetTextPassword2, Int32* passwordIsDefined, BSTR* password );
 
         private:
             const BitOutputArchive& mOutputArchive;

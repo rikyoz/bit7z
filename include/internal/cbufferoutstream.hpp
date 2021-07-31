@@ -36,11 +36,11 @@ namespace bit7z {
             MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
             // IOutStream
-            STDMETHOD( Write )( const void* data, UInt32 size, UInt32* processedSize ) override;
+            STDMETHOD_OVERRIDE( Write, const void* data, UInt32 size, UInt32* processedSize );
 
-            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept override;
+            STDMETHOD_NOEXCEPT_OVERRIDE( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-            STDMETHOD( SetSize )( UInt64 newSize ) override;
+            STDMETHOD_OVERRIDE( SetSize, UInt64 newSize );
 
         private:
             buffer_t& mBuffer;

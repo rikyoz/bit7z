@@ -49,6 +49,10 @@
 #endif
 
 
+#define MY_STDMETHOD(method, ...) HRESULT STDMETHODCALLTYPE method ( __VA_ARGS__ )
+#define STDMETHOD_OVERRIDE(method, ...) COM_DECLSPEC_NOTHROW MY_STDMETHOD(method, __VA_ARGS__) override
+#define STDMETHOD_NOEXCEPT_OVERRIDE(method, ...) MY_STDMETHOD(method, __VA_ARGS__) noexcept override
+
 namespace bit7z {
     /**
      * @brief A type representing a byte (equivalent to an unsigned char).

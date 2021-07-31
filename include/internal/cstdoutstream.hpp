@@ -39,11 +39,11 @@ namespace bit7z {
             MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
             // IOutStream
-            STDMETHOD( Write )( void const* data, UInt32 size, UInt32* processedSize ) override;
+            STDMETHOD_OVERRIDE( Write, void const* data, UInt32 size, UInt32* processedSize );
 
-            STDMETHOD( Seek )( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) override;
+            STDMETHOD_OVERRIDE( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-            STDMETHOD( SetSize )( UInt64 newSize ) override;
+            STDMETHOD_OVERRIDE( SetSize, UInt64 newSize );
 
         private:
             ostream& mOutputStream;

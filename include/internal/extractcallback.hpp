@@ -42,23 +42,23 @@ namespace bit7z {
             MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 
             // IProgress from IArchiveExtractCallback
-            STDMETHOD( SetTotal )( UInt64 size ) override;
+            STDMETHOD_OVERRIDE( SetTotal, UInt64 size );
 
-            STDMETHOD( SetCompleted )( const UInt64* completeValue ) override;
+            STDMETHOD_OVERRIDE( SetCompleted, const UInt64* completeValue );
 
             // ICompressProgressInfo
-            STDMETHOD( SetRatioInfo )( const UInt64* inSize, const UInt64* outSize ) override;
+            STDMETHOD_OVERRIDE( SetRatioInfo, const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveExtractCallback
-            STDMETHOD( PrepareOperation )( Int32 askExtractMode ) noexcept override;
+            STDMETHOD_NOEXCEPT_OVERRIDE( PrepareOperation, Int32 askExtractMode );
 
             // ICryptoGetTextPassword
-            STDMETHOD( CryptoGetTextPassword )( BSTR* aPassword ) override;
+            STDMETHOD_OVERRIDE( CryptoGetTextPassword, BSTR* aPassword );
 
             // IArchiveExtractCallback
-            STDMETHOD( GetStream )( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) override;
+            STDMETHOD_OVERRIDE( GetStream, UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
 
-            STDMETHOD( SetOperationResult )( Int32 operationResult ) override;
+            STDMETHOD_OVERRIDE( SetOperationResult, Int32 operationResult );
 
         protected:
             explicit ExtractCallback( const BitInputArchive& inputArchive );
