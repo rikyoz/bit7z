@@ -48,3 +48,5 @@ CMakeSettings.json
 *.opendb
 
 *.cd
+
+*.ruleset
