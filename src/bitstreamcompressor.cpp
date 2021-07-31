@@ -23,7 +23,7 @@
 
 #include "bitoutputarchive.hpp"
 #include "internal/fsutil.hpp"
-#include "internal/genericitem.hpp"
+#include "internal/genericstreamitem.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;

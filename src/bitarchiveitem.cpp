@@ -77,3 +77,20 @@ bool BitArchiveItem::isEncrypted() const {
     BitPropVariant is_encrypted = getProperty( BitProperty::Encrypted );
     return is_encrypted.isBool() && is_encrypted.getBool();
 }
+
+FILETIME BitArchiveItem::creationTime() const {
+    return getProperty( BitProperty::CTime ).getFileTime();
+}
+
+FILETIME BitArchiveItem::lastAccessTime() const {
+    return getProperty( BitProperty::ATime ).getFileTime();
+}
+
+FILETIME BitArchiveItem::lastWriteTime() const {
+    return getProperty( BitProperty::MTime ).getFileTime();
+}
+
+uint32_t BitArchiveItem::attributes() const {
+    BitPropVariant attrib = getProperty( BitProperty::Attrib );
+    return attrib.isUInt32() ? attrib.getUInt32() : 0;
+}

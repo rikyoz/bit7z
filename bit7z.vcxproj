@@ -297,6 +297,7 @@
     <ClCompile Include="src\bitexception.cpp" />
     <ClCompile Include="src\bitfilecompressor.cpp" />
     <ClCompile Include="src\bitformat.cpp" />
+    <ClCompile Include="src\bitgenericitem.cpp" />
     <ClCompile Include="src\bitguids.cpp" />
     <ClCompile Include="src\bitinputarchive.cpp" />
     <ClInclude Include="src\bititemsvector.cpp" />
@@ -320,12 +321,12 @@
     <ClCompile Include="src\internal\fsindexer.cpp" />
     <ClCompile Include="src\internal\fsitem.cpp" />
     <ClCompile Include="src\internal\fsutil.cpp" />
-    <ClCompile Include="src\internal\genericitem.cpp" />
+    <ClCompile Include="src\internal\genericstreamitem.cpp" />
     <ClCompile Include="src\internal\hresultcategory.cpp" />
     <ClCompile Include="src\internal\opencallback.cpp" />
     <ClCompile Include="src\internal\renameditem.cpp" />
     <ClCompile Include="src\internal\streamextractcallback.cpp" />
-    <ClCompile Include="src\internal\streamitem.cpp" />
+    <ClCompile Include="src\internal\stdstreamitem.cpp" />
     <ClCompile Include="src\internal\updatecallback.cpp" />
     <ClCompile Include="src\internal\util.cpp" />
   </ItemGroup>
@@ -346,6 +347,7 @@
     <ClInclude Include="include\bitextractor.hpp" />
     <ClInclude Include="include\bitfilecompressor.hpp" />
     <ClInclude Include="include\bitformat.hpp" />
+    <ClInclude Include="include\bitgenericitem.hpp" />
     <ClInclude Include="include\bitguids.hpp" />
     <ClInclude Include="include\bitinputarchive.hpp" />
     <ClInclude Include="include\bititemsvector.hpp" />
@@ -373,13 +375,13 @@
     <ClInclude Include="include\internal\fsindexer.hpp" />
     <ClInclude Include="include\internal\fsitem.hpp" />
     <ClInclude Include="include\internal\fsutil.hpp" />
-    <ClInclude Include="include\internal\genericitem.hpp" />
+    <ClInclude Include="include\internal\genericstreamitem.hpp" />
     <ClInclude Include="include\internal\hresultcategory.hpp" />
     <ClInclude Include="include\internal\itemsvector.hpp" />
     <ClInclude Include="include\internal\opencallback.hpp" />
     <ClInclude Include="include\internal\renameditem.hpp" />
     <ClInclude Include="include\internal\streamextractcallback.hpp" />
-    <ClInclude Include="include\internal\streamitem.hpp" />
+    <ClInclude Include="include\internal\stdstreamitem.hpp" />
     <ClInclude Include="include\internal\updatecallback.hpp" />
     <ClInclude Include="include\internal\util.hpp" />
   </ItemGroup>

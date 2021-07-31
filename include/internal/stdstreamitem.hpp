@@ -16,17 +16,17 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef STREAMITEM_HPP
-#define STREAMITEM_HPP
+#ifndef STDSTREAMITEM_HPP
+#define STDSTREAMITEM_HPP
 
-#include "internal/genericitem.hpp"
+#include "internal/genericstreamitem.hpp"
 
 namespace bit7z {
     using std::istream;
 
-    class StreamItem final : public GenericItem {
+    class StdStreamItem final : public GenericStreamItem {
         public:
-            explicit StreamItem( istream& stream, const tstring& path );
+            explicit StdStreamItem( istream& stream, const tstring& path );
 
             tstring name() const override;
 
@@ -42,7 +42,7 @@ namespace bit7z {
 
             uint32_t attributes() const noexcept override;
 
-            fs::path path() const override;
+            tstring path() const override;
 
             fs::path inArchivePath() const override;
 
@@ -54,4 +54,4 @@ namespace bit7z {
     };
 }
 
-#endif //STREAMITEM_HPP
+#endif //STDSTREAMITEM_HPP

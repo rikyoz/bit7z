@@ -105,7 +105,7 @@ tstring FSItem::name() const {
     return fs::canonical( mFileEntry.path(), ec ).filename();
 }
 
-fs::path FSItem::path() const {
+tstring FSItem::path() const {
     return mFileEntry.path();
 }
 

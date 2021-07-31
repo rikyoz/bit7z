@@ -24,7 +24,7 @@
 #include "bitexception.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivoloutstream.hpp"
-#include "internal/genericitem.hpp"
+#include "internal/genericstreamitem.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
 
@@ -278,13 +278,13 @@ uint32_t BitOutputArchive::itemsCount() const {
 
 BitPropVariant BitOutputArchive::getItemProperty( input_index index, BitProperty propID ) const {
     const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
-    const GenericItem& new_item = mNewItemsVector[ new_item_index ];
+    const GenericStreamItem& new_item = mNewItemsVector[ new_item_index ];
     return new_item.getProperty( propID );
 }
 
 HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream** inStream ) const {
     const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
-    const GenericItem& new_item = mNewItemsVector[ new_item_index ];
+    const GenericStreamItem& new_item = mNewItemsVector[ new_item_index ];
 
     const HRESULT res = new_item.getStream( inStream );
     if ( FAILED( res ) ) {
@@ -293,7 +293,7 @@ HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream*
         if ( fs::exists( path, ec ) ) {
             ec = std::make_error_code( std::errc::file_exists );
         }
-        mFailedFiles.emplace_back( path.native(), ec );
+        mFailedFiles.emplace_back( path, ec );
     }
     return res;
 }

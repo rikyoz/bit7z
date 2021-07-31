@@ -16,33 +16,35 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef FSINDEXER_HPP
-#define FSINDEXER_HPP
+#ifndef GENERICSTREAMITEM_HPP
+#define GENERICSTREAMITEM_HPP
 
-#include <string>
-#include <vector>
-#include <map>
+#include <cstdint>
+#include <windows.h>
 
-#include "internal/fsitem.hpp"
+#ifndef _WIN32
+#include <myWindows/StdAfx.h>
+#endif
+
+#include <7zip/IStream.h>
+
+#include "bitpropvariant.hpp"
+#include "bitgenericitem.hpp"
+#include "fs.hpp"
 
 namespace bit7z {
-    namespace filesystem {
-        using std::vector;
-        using std::map;
-        using std::unique_ptr;
+    struct GenericStreamItem : public BitGenericItem {
+        virtual fs::path inArchivePath() const = 0;
 
-        class FSIndexer {
-            public:
-                explicit FSIndexer( FSItem directory, tstring filter = TSTRING( "" ) );
+        virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
 
-                void listDirectoryItems( vector< unique_ptr< GenericStreamItem > >& result,
-                                         bool recursive,
-                                         const fs::path& prefix = fs::path() );
+        virtual bool hasNewData() const noexcept;
 
-            private:
-                FSItem mDirItem;
-                tstring mFilter;
-        };
-    }
+        BitPropVariant getProperty( BitProperty propID ) const override;
+
+        ~GenericStreamItem() override = default;
+    };
 }
-#endif // FSINDEXER_HPP
+
+
+#endif //GENERICSTREAMITEM_HPP

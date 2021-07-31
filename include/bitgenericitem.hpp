@@ -16,11 +16,10 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef GENERICITEM_HPP
-#define GENERICITEM_HPP
+#ifndef BITGENERICITEM_HPP
+#define BITGENERICITEM_HPP
 
 #include <cstdint>
-#include <windows.h>
 
 #ifndef _WIN32
 #include <myWindows/StdAfx.h>
@@ -29,37 +28,37 @@
 #include <7zip/IStream.h>
 
 #include "bitpropvariant.hpp"
-#include "fs.hpp"
 
 namespace bit7z {
-    struct GenericItem {
-        virtual bool isDir() const = 0;
+    class BitGenericItem {
+        public:
+            virtual bool isDir() const = 0;
 
-        virtual uint64_t size() const = 0;
+            virtual uint64_t size() const = 0;
 
-        virtual FILETIME creationTime() const = 0;
+            virtual FILETIME creationTime() const = 0;
 
-        virtual FILETIME lastAccessTime() const = 0;
+            virtual FILETIME lastAccessTime() const = 0;
 
-        virtual FILETIME lastWriteTime() const = 0;
+            virtual FILETIME lastWriteTime() const = 0;
 
-        virtual tstring name() const = 0;
+            virtual tstring name() const = 0;
 
-        virtual fs::path path() const = 0;
+            virtual tstring path() const = 0;
 
-        virtual fs::path inArchivePath() const = 0;
+            virtual uint32_t attributes() const = 0;
 
-        virtual uint32_t attributes() const = 0;
+            /**
+             * @brief Gets the specified item property.
+             *
+             * @param property  the property to be retrieved.
+             *
+             * @return the value of the item property, if available, or an empty BitPropVariant.
+             */
+            virtual BitPropVariant getProperty( BitProperty property ) const = 0;
 
-        virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
-
-        virtual bool hasNewData() const noexcept;
-
-        BitPropVariant getProperty( BitProperty propID ) const;
-
-        virtual ~GenericItem() = default;
+            virtual ~BitGenericItem() = default;
     };
 }
 
-
-#endif //GENERICITEM_HPP
+#endif //BITGENERICITEM_HPP

@@ -33,7 +33,7 @@ RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, 
 
 tstring RenamedItem::name() const { return mNewPath.filename(); }
 
-fs::path RenamedItem::path() const { return mNewPath; }
+tstring RenamedItem::path() const { return mNewPath; }
 
 fs::path RenamedItem::inArchivePath() const { return path(); }
 

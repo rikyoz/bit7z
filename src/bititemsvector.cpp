@@ -25,7 +25,7 @@
 #include "internal/bufferitem.hpp"
 #include "internal/fs.hpp"
 #include "internal/fsindexer.hpp"
-#include "internal/streamitem.hpp"
+#include "internal/stdstreamitem.hpp"
 
 using namespace bit7z;
 using filesystem::FSItem;
@@ -79,31 +79,31 @@ void BitItemsVector::indexBuffer( const vector< byte_t >& in_buffer, const tstri
 }
 
 void BitItemsVector::indexStream( std::istream& in_stream, const tstring& name ) {
-    mItems.emplace_back( std::make_unique< StreamItem >( in_stream, name ) );
+    mItems.emplace_back( std::make_unique< StdStreamItem >( in_stream, name ) );
 }
 
 size_t BitItemsVector::size() const {
     return mItems.size();
 }
 
-const GenericItem& BitItemsVector::operator[]( size_t index ) const {
+const GenericStreamItem& BitItemsVector::operator[]( size_t index ) const {
     // Note: here index is expected to be a correct one!
     return *mItems[ index ];
 }
 
-GenericItemVector::const_iterator BitItemsVector::begin() const noexcept {
+GenericStreamItemVector::const_iterator BitItemsVector::begin() const noexcept {
     return mItems.cbegin();
 }
 
-GenericItemVector::const_iterator BitItemsVector::end() const noexcept {
+GenericStreamItemVector::const_iterator BitItemsVector::end() const noexcept {
     return mItems.cend();
 }
 
-GenericItemVector::const_iterator BitItemsVector::cbegin() const noexcept {
+GenericStreamItemVector::const_iterator BitItemsVector::cbegin() const noexcept {
     return mItems.cbegin();
 }
 
-GenericItemVector::const_iterator BitItemsVector::cend() const noexcept {
+GenericStreamItemVector::const_iterator BitItemsVector::cend() const noexcept {
     return mItems.cend();
 }
 

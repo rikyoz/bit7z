@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
  * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
@@ -16,33 +19,5 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef FSINDEXER_HPP
-#define FSINDEXER_HPP
+#include "bitgenericitem.hpp"
 
-#include <string>
-#include <vector>
-#include <map>
-
-#include "internal/fsitem.hpp"
-
-namespace bit7z {
-    namespace filesystem {
-        using std::vector;
-        using std::map;
-        using std::unique_ptr;
-
-        class FSIndexer {
-            public:
-                explicit FSIndexer( FSItem directory, tstring filter = TSTRING( "" ) );
-
-                void listDirectoryItems( vector< unique_ptr< GenericStreamItem > >& result,
-                                         bool recursive,
-                                         const fs::path& prefix = fs::path() );
-
-            private:
-                FSItem mDirItem;
-                tstring mFilter;
-        };
-    }
-}
-#endif // FSINDEXER_HPP

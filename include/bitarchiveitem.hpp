@@ -21,15 +21,16 @@
 
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
+#include "bitgenericitem.hpp"
 
 namespace bit7z {
 
-    class BitArchiveItem {
+    class BitArchiveItem : public BitGenericItem {
         public:
             /**
              * @brief BitArchiveItem destructor.
              */
-            virtual ~BitArchiveItem() = default;
+            ~BitArchiveItem() override = default;
 
             /**
              * @return the index of the item in the archive.
@@ -39,12 +40,12 @@ namespace bit7z {
             /**
              * @return true if and only if the item is a directory (i.e. it has the property BitProperty::IsDir).
              */
-            bool isDir() const;
+            bool isDir() const override;
 
             /**
              * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
              */
-            tstring name() const;
+            tstring name() const override;
 
             /**
              * @return the extension of the item, if available or inferable from the name, or an empty string otherwise
@@ -56,12 +57,20 @@ namespace bit7z {
              * @return the path of the item in the archive, if available or inferable from the name, or an empty string
              * otherwise.
              */
-            tstring path() const;
+            tstring path() const override;
 
             /**
              * @return the uncompressed size of the item.
              */
-            uint64_t size() const;
+            uint64_t size() const override;
+
+            FILETIME creationTime() const override;
+
+            FILETIME lastAccessTime() const override;
+
+            FILETIME lastWriteTime() const override;
+
+            uint32_t attributes() const override;
 
             /**
              * @return the compressed size of the item.
@@ -72,15 +81,6 @@ namespace bit7z {
              * @return true if and only if the item is encrypted.
              */
             bool isEncrypted() const;
-
-            /**
-             * @brief Gets the specified item property.
-             *
-             * @param property  the property to be retrieved.
-             *
-             * @return the value of the item property, if available, or an empty BitPropVariant.
-             */
-            virtual BitPropVariant getProperty( BitProperty property ) const = 0;
 
         protected:
             uint32_t mItemIndex; //Note: it is not const since sub-class BitArchiveItemOffset can increment it!

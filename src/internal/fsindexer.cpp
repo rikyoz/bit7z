@@ -36,7 +36,7 @@ FSIndexer::FSIndexer( FSItem directory, tstring filter)
 }
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
-void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericItem > >& result,
+void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericStreamItem > >& result,
                                     bool recursive,
                                     const fs::path& prefix ) {
     auto path = mDirItem.path();
@@ -44,7 +44,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericItem > >& result,
         path = path / prefix;
     }
     bool include_root_path = mFilter.empty() ||
-                             mDirItem.path().parent_path().empty() ||
+                             fs::path{ mDirItem.path() }.parent_path().empty() ||
                              mDirItem.inArchivePath().filename() != mDirItem.name();
     std::error_code ec;
     for ( auto& current_entry : fs::directory_iterator( path, ec ) ) {

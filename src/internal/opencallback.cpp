@@ -95,7 +95,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
-        auto stream_path = mFileItem.path();
+        auto stream_path = fs::path{ mFileItem.path() };
         if ( name != nullptr ) {
             stream_path = stream_path.parent_path();
             stream_path.append( name );

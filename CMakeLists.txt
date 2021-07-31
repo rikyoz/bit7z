@@ -31,6 +31,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitfileextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitformat.hpp
      ${PROJECT_SOURCE_DIR}/include/bitfs.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitgenericitem.hpp
      ${PROJECT_SOURCE_DIR}/include/bitguids.hpp
      ${PROJECT_SOURCE_DIR}/include/bitinputarchive.hpp
      ${PROJECT_SOURCE_DIR}/include/bititemsvector.hpp
@@ -58,12 +59,12 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/fsitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fsutil.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fs.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/genericitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/genericstreamitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/renameditem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/streamitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/stdstreamitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/updatecallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/util.hpp )
 
@@ -81,6 +82,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitexception.cpp
      ${PROJECT_SOURCE_DIR}/src/bitfilecompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
+     ${PROJECT_SOURCE_DIR}/src/bitgenericitem.cpp
      ${PROJECT_SOURCE_DIR}/src/bitguids.cpp
      ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp
      ${PROJECT_SOURCE_DIR}/src/bititemsvector.cpp
@@ -104,12 +106,12 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/fsindexer.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fsitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fsutil.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/genericitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/genericstreamitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/hresultcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/opencallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/renameditem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/streamitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/stdstreamitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
 

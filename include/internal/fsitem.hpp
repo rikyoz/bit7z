@@ -20,11 +20,11 @@
 #define FSITEM_HPP
 
 #include "internal/fsutil.hpp"
-#include "internal/genericitem.hpp"
+#include "internal/genericstreamitem.hpp"
 
 namespace bit7z {
     namespace filesystem {
-        class FSItem final : public GenericItem {
+        class FSItem final : public GenericStreamItem {
             public:
                 explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
 
@@ -44,7 +44,7 @@ namespace bit7z {
 
                 tstring name() const override;
 
-                fs::path path() const override;
+                tstring path() const override;
 
                 fs::path inArchivePath() const override;
 

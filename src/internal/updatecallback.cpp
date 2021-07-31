@@ -22,7 +22,7 @@
 #include "internal/updatecallback.hpp"
 
 #include "internal/cfileoutstream.hpp"
-#include "internal/genericitem.hpp"
+#include "internal/genericstreamitem.hpp"
 #include "internal/util.hpp"
 
 using namespace bit7z;

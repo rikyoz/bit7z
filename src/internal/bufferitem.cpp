@@ -34,7 +34,7 @@ tstring BufferItem::name() const {
     return mBufferName.filename();
 }
 
-fs::path BufferItem::path() const {
+tstring BufferItem::path() const {
     return mBufferName;
 }
 

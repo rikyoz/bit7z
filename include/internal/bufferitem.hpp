@@ -21,18 +21,18 @@
 
 #include <string>
 
-#include "internal/genericitem.hpp"
+#include "internal/genericstreamitem.hpp"
 
 namespace bit7z {
     using std::vector;
 
-    class BufferItem final : public GenericItem {
+    class BufferItem final : public GenericStreamItem {
         public:
             explicit BufferItem( const vector <byte_t>& buffer, const tstring& name );
 
             tstring name() const override;
 
-            fs::path path() const override;
+            tstring path() const override;
 
             fs::path inArchivePath() const override;
 
