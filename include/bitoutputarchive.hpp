@@ -93,17 +93,7 @@ namespace bit7z {
 
             void compressTo( ostream& out_stream );
 
-            BitPropVariant getOutputItemProperty( uint32_t index, BitProperty propID ) const;
-
-            HRESULT getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
-
             uint32_t itemsCount() const;
-
-            virtual bool hasNewData( uint32_t index ) const noexcept;
-
-            virtual bool hasNewProperties( uint32_t index ) const noexcept;
-
-            uint32_t getIndexInArchive( uint32_t index ) const noexcept;
 
             const BitArchiveHandler& getHandler() const noexcept;
 
@@ -131,11 +121,23 @@ namespace bit7z {
              * This vector is either empty or it has size equal to itemsCount() (thanks to updateInputIndices()). */
             std::vector< input_index > mInputIndices;
 
-            input_index getItemInputIndex( uint32_t new_index ) const noexcept;
-
             virtual BitPropVariant getItemProperty( input_index index, BitProperty prop ) const;
 
             virtual HRESULT getItemStream( input_index index, ISequentialInStream** inStream ) const;
+
+            virtual bool hasNewData( uint32_t index ) const noexcept;
+
+            virtual bool hasNewProperties( uint32_t index ) const noexcept;
+
+            input_index getItemInputIndex( uint32_t new_index ) const noexcept;
+
+            BitPropVariant getOutputItemProperty( uint32_t index, BitProperty propID ) const;
+
+            HRESULT getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
+
+            uint32_t getIndexInArchive( uint32_t index ) const noexcept;
+
+            friend class UpdateCallback;
 
         private:
             const BitArchiveCreator& mArchiveCreator;

@@ -233,25 +233,6 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
     }
 }
 
-BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, BitProperty propID ) const {
-    const auto mapped_index = getItemInputIndex( index );
-    return getItemProperty( mapped_index, propID );
-}
-
-HRESULT BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
-    const auto mapped_index = getItemInputIndex( index );
-    return getItemStream( mapped_index, inStream );
-}
-
-input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const noexcept {
-    const auto index = static_cast< decltype( mInputIndices )::size_type >( new_index );
-    if ( index < mInputIndices.size() ) {
-        return mInputIndices[ index ];
-    }
-    // if we are here, the user didn't delete any item, so a input_index is essentially equivalent to new_index
-    return static_cast< input_index >( new_index );
-}
-
 void BitOutputArchive::updateInputIndices() {
     if ( mDeletedItems.empty() ) {
         return;
@@ -307,6 +288,25 @@ bool BitOutputArchive::hasNewProperties( uint32_t index ) const noexcept {
     /* Note: in BitOutputArchive, you can only add new items or overwrite (delete + add) existing ones.
      * So if we have new data, we also have new properties! This is not true for BitArchiveEditor! */
     return hasNewData( index );
+}
+
+input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const noexcept {
+    const auto index = static_cast< decltype( mInputIndices )::size_type >( new_index );
+    if ( index < mInputIndices.size() ) {
+        return mInputIndices[ index ];
+    }
+    // if we are here, the user didn't delete any item, so a input_index is essentially equivalent to new_index
+    return static_cast< input_index >( new_index );
+}
+
+BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, BitProperty propID ) const {
+    const auto mapped_index = getItemInputIndex( index );
+    return getItemProperty( mapped_index, propID );
+}
+
+HRESULT BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
+    const auto mapped_index = getItemInputIndex( index );
+    return getItemStream( mapped_index, inStream );
 }
 
 uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const noexcept {

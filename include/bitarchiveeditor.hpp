@@ -71,10 +71,6 @@ namespace bit7z {
 
             void applyChanges();
 
-            bool hasNewData( uint32_t index ) const noexcept override;
-
-            bool hasNewProperties( uint32_t index ) const noexcept override;
-
         private:
             EditedItems mEditedItems;
 
@@ -85,6 +81,10 @@ namespace bit7z {
             BitPropVariant getItemProperty( input_index index, BitProperty propID ) const override;
 
             HRESULT getItemStream( input_index index, ISequentialInStream** inStream ) const override;
+
+            bool hasNewData( uint32_t index ) const noexcept override;
+
+            bool hasNewProperties( uint32_t index ) const noexcept override;
     };
 }
 
