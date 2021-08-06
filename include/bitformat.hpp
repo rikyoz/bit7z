@@ -40,19 +40,17 @@ namespace bit7z {
         MULTIPLE_METHODS  = 1 << 5 ///< The format can use different compression methods       (2^6 = 0100000)
     };
 
-    namespace { // Only elements in bit7z namespace can use the following functions
-        template< typename E >
-        constexpr auto to_underlying( E e ) noexcept {
-            return static_cast<std::underlying_type_t< E>>(e);
-        }
+    template< typename E >
+    inline constexpr auto to_underlying( E e ) noexcept {
+        return static_cast<std::underlying_type_t< E>>(e);
+    }
 
-        constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
-            return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
-        }
+    inline constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
+        return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
+    }
 
-        constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
-            return to_underlying( lhs ) & to_underlying( rhs );
-        }
+    inline constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
+        return to_underlying( lhs ) & to_underlying( rhs );
     }
 
     /**
@@ -179,10 +177,10 @@ namespace bit7z {
                                              FormatFeatures::ENCRYPTION | FormatFeatures::MULTIPLE_METHODS );
         inline constexpr BitInOutFormat BZip2( 0x02, TSTRING( ".bz2" ), BitCompressionMethod::BZip2,
                                                FormatFeatures::COMPRESSION_LEVEL );
-        inline constexpr BitInFormat Rar( 0x03 );
-        inline constexpr BitInFormat Arj( 0x04 );
-        inline constexpr BitInFormat Z( 0x05 );
-        inline constexpr BitInFormat Lzh( 0x06 );
+        inline constexpr BitInFormat    Rar( 0x03 );
+        inline constexpr BitInFormat    Arj( 0x04 ); //-V112
+        inline constexpr BitInFormat    Z( 0x05 );
+        inline constexpr BitInFormat    Lzh( 0x06 );
         inline constexpr BitInOutFormat SevenZip( 0x07, TSTRING( ".7z" ), BitCompressionMethod::Lzma2,
                                                   FormatFeatures::MULTIPLE_FILES |
                                                   FormatFeatures::SOLID_ARCHIVE |
@@ -190,54 +188,54 @@ namespace bit7z {
                                                   FormatFeatures::ENCRYPTION |
                                                   FormatFeatures::HEADER_ENCRYPTION |
                                                   FormatFeatures::MULTIPLE_METHODS );
-        inline constexpr BitInFormat Cab( 0x08 );
-        inline constexpr BitInFormat Nsis( 0x09 );
-        inline constexpr BitInFormat Lzma( 0x0A );
-        inline constexpr BitInFormat Lzma86( 0x0B );
+        inline constexpr BitInFormat    Cab( 0x08 );
+        inline constexpr BitInFormat    Nsis( 0x09 );
+        inline constexpr BitInFormat    Lzma( 0x0A );
+        inline constexpr BitInFormat    Lzma86( 0x0B );
         inline constexpr BitInOutFormat Xz( 0x0C, TSTRING( ".xz" ), BitCompressionMethod::Lzma2,
                                             FormatFeatures::COMPRESSION_LEVEL | FormatFeatures::ENCRYPTION |
                                             FormatFeatures::HEADER_ENCRYPTION );
-        inline constexpr BitInFormat Ppmd( 0x0D );
-        inline constexpr BitInFormat COFF( 0xC6 );
-        inline constexpr BitInFormat Ext( 0xC7 );
-        inline constexpr BitInFormat VMDK( 0xC8 );
-        inline constexpr BitInFormat VDI( 0xC9 );
-        inline constexpr BitInFormat QCow( 0xCA );
-        inline constexpr BitInFormat GPT( 0xCB );
-        inline constexpr BitInFormat Rar5( 0xCC );
-        inline constexpr BitInFormat IHex( 0xCD );
-        inline constexpr BitInFormat Hxs( 0xCE );
-        inline constexpr BitInFormat TE( 0xCF );
-        inline constexpr BitInFormat UEFIc( 0xD0 );
-        inline constexpr BitInFormat UEFIs( 0xD1 );
-        inline constexpr BitInFormat SquashFS( 0xD2 );
-        inline constexpr BitInFormat CramFS( 0xD3 );
-        inline constexpr BitInFormat APM( 0xD4 );
-        inline constexpr BitInFormat Mslz( 0xD5 );
-        inline constexpr BitInFormat Flv( 0xD6 );
-        inline constexpr BitInFormat Swf( 0xD7 );
-        inline constexpr BitInFormat Swfc( 0xD8 );
-        inline constexpr BitInFormat Ntfs( 0xD9 );
-        inline constexpr BitInFormat Fat( 0xDA );
-        inline constexpr BitInFormat Mbr( 0xDB );
-        inline constexpr BitInFormat Vhd( 0xDC );
-        inline constexpr BitInFormat Pe( 0xDD );
-        inline constexpr BitInFormat Elf( 0xDE );
-        inline constexpr BitInFormat Macho( 0xDF );
-        inline constexpr BitInFormat Udf( 0xE0 );
-        inline constexpr BitInFormat Xar( 0xE1 );
-        inline constexpr BitInFormat Mub( 0xE2 );
-        inline constexpr BitInFormat Hfs( 0xE3 );
-        inline constexpr BitInFormat Dmg( 0xE4 );
-        inline constexpr BitInFormat Compound( 0xE5 );
+        inline constexpr BitInFormat    Ppmd( 0x0D );
+        inline constexpr BitInFormat    COFF( 0xC6 );
+        inline constexpr BitInFormat    Ext( 0xC7 );
+        inline constexpr BitInFormat    VMDK( 0xC8 );
+        inline constexpr BitInFormat    VDI( 0xC9 );
+        inline constexpr BitInFormat    QCow( 0xCA );
+        inline constexpr BitInFormat    GPT( 0xCB );
+        inline constexpr BitInFormat    Rar5( 0xCC );
+        inline constexpr BitInFormat    IHex( 0xCD );
+        inline constexpr BitInFormat    Hxs( 0xCE );
+        inline constexpr BitInFormat    TE( 0xCF );
+        inline constexpr BitInFormat    UEFIc( 0xD0 );
+        inline constexpr BitInFormat    UEFIs( 0xD1 );
+        inline constexpr BitInFormat    SquashFS( 0xD2 );
+        inline constexpr BitInFormat    CramFS( 0xD3 );
+        inline constexpr BitInFormat    APM( 0xD4 );
+        inline constexpr BitInFormat    Mslz( 0xD5 );
+        inline constexpr BitInFormat    Flv( 0xD6 );
+        inline constexpr BitInFormat    Swf( 0xD7 );
+        inline constexpr BitInFormat    Swfc( 0xD8 );
+        inline constexpr BitInFormat    Ntfs( 0xD9 );
+        inline constexpr BitInFormat    Fat( 0xDA );
+        inline constexpr BitInFormat    Mbr( 0xDB );
+        inline constexpr BitInFormat    Vhd( 0xDC );
+        inline constexpr BitInFormat    Pe( 0xDD );
+        inline constexpr BitInFormat    Elf( 0xDE );
+        inline constexpr BitInFormat    Macho( 0xDF );
+        inline constexpr BitInFormat    Udf( 0xE0 );
+        inline constexpr BitInFormat    Xar( 0xE1 );
+        inline constexpr BitInFormat    Mub( 0xE2 );
+        inline constexpr BitInFormat    Hfs( 0xE3 );
+        inline constexpr BitInFormat    Dmg( 0xE4 );
+        inline constexpr BitInFormat    Compound( 0xE5 );
         inline constexpr BitInOutFormat Wim( 0xE6, TSTRING( ".wim" ), BitCompressionMethod::Copy,
                                              FormatFeatures::MULTIPLE_FILES );
-        inline constexpr BitInFormat Iso( 0xE7 );
-        inline constexpr BitInFormat Chm( 0xE9 );
-        inline constexpr BitInFormat Split( 0xEA );
-        inline constexpr BitInFormat Rpm( 0xEB );
-        inline constexpr BitInFormat Deb( 0xEC );
-        inline constexpr BitInFormat Cpio( 0xED );
+        inline constexpr BitInFormat    Iso( 0xE7 );
+        inline constexpr BitInFormat    Chm( 0xE9 );
+        inline constexpr BitInFormat    Split( 0xEA );
+        inline constexpr BitInFormat    Rpm( 0xEB );
+        inline constexpr BitInFormat    Deb( 0xEC );
+        inline constexpr BitInFormat    Cpio( 0xED );
         inline constexpr BitInOutFormat Tar( 0xEE, TSTRING( ".tar" ), BitCompressionMethod::Copy,
                                              FormatFeatures::MULTIPLE_FILES );
         inline constexpr BitInOutFormat GZip( 0xEF, TSTRING( ".gz" ), BitCompressionMethod::Deflate,
