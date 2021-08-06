@@ -288,7 +288,7 @@ namespace bit7z {
         constexpr auto SwfcSignature2 = 0x5A57530000000000ull; // Z  W  S
         constexpr auto TESignature = 0x565A000000000000ull; // V  Z
         constexpr auto VMDKSignature = 0x4B444D0000000000ull; // K  D  M  V
-        constexpr auto VDISignature = 0x3C3C3C2000000000ull; // Alternatively 0x7F10DABE at offset 0x40)
+        constexpr auto VDISignature = 0x3C3C3C2000000000ull; // Alternatively 0x7F10DABE at offset 0x40
         constexpr auto VhdSignature = 0x636F6E6563746978ull; // c  o  n  e  c  t  i  x
         constexpr auto XarSignature = 0x78617221001C0000ull; // x  a  r  !  00 1C
         constexpr auto ZSignature1 = 0x1F9D000000000000ull; // 1F 9D
@@ -403,7 +403,7 @@ namespace bit7z {
             case VMDKSignature: // K  D  M  V
                 *format = &BitFormat::VMDK;
                 return true;
-            case VDISignature: // Alternatively 0x7F10DABE at offset 0x40)
+            case VDISignature: // Alternatively 0x7F10DABE at offset 0x40
                 *format = &BitFormat::VDI;
                 return true;
             case VhdSignature: // c  o  n  e  c  t  i  x

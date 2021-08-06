@@ -140,7 +140,8 @@ HRESULT FSItem::getStream( ISequentialInStream** inStream ) const {
         return S_OK;
     }
 
-    auto inStreamLoc = bit7z::make_com< CFileInStream >( path() ); //CMyComPtr is necessary here for correct RAII
+    //CMyComPtr is necessary here for correct RAII
+    auto inStreamLoc = bit7z::make_com< CFileInStream >( path() );
 
     if ( inStreamLoc->fail() ) {
         return S_FALSE;

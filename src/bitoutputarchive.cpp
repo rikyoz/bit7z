@@ -166,7 +166,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
 }
 
 void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) {
-    // Note: if old_arc != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
+    // Note: if mInputArchive != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
     const bool updating_archive = mInputArchive != nullptr && mInputArchive->getArchivePath() == out_file;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
