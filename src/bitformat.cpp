@@ -21,24 +21,11 @@
 
 #include "bitformat.hpp"
 
-#include <type_traits>
-
 using namespace std;
 
 namespace bit7z {
-    template <typename E>
-    constexpr auto to_underlying(E e) noexcept {
-        return static_cast<std::underlying_type_t<E>>(e);
-    }
 
-    constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
-        return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
-    }
-
-    constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
-        return to_underlying( lhs ) & to_underlying( rhs );
-    }
-
+#ifndef __cpp_inline_variables
     namespace BitFormat {
 #ifdef BIT7Z_AUTO_FORMAT
         const BitInFormat Auto( 0x00 );
@@ -109,8 +96,7 @@ namespace bit7z {
         const BitInOutFormat GZip( 0xEF, TSTRING( ".gz" ), BitCompressionMethod::Deflate,
                                    FormatFeatures::COMPRESSION_LEVEL );
     }
-
-    constexpr BitInFormat::BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
+#endif
 
     int BitInFormat::value() const noexcept {
         return mValue;
@@ -127,12 +113,6 @@ namespace bit7z {
     GUID BitInFormat::guid() const noexcept {
         return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } }; // NOLINT
     }
-
-    constexpr BitInOutFormat::BitInOutFormat( unsigned char value,
-                                              const tchar* ext,
-                                              BitCompressionMethod defaultMethod,
-                                              FormatFeatures features ) noexcept
-        : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
     const tchar* BitInOutFormat::extension() const noexcept {
         return mExtension;
