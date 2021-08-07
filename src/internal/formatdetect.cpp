@@ -492,7 +492,7 @@ namespace bit7z {
             constexpr auto UDF_SIGNATURE_SIZE = 4u;
 
             // The file is ISO, checking if it is also UDF!
-            for ( auto descriptor_index = 1ull; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
+            for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
                 stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
                 file_signature = readSignature( stream, UDF_SIGNATURE_SIZE );
                 if ( file_signature == UDF_SIGNATURE ) {
