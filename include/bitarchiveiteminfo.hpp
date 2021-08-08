@@ -54,7 +54,7 @@ namespace bit7z {
 
             void setProperty( BitProperty property, const BitPropVariant& value );
 
-            friend class BitArchiveInfo;
+            friend class BitArchiveReader;
     };
 }
 

@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITARCHIVEINFO_HPP
-#define BITARCHIVEINFO_HPP
+#ifndef BITARCHIVEREADER_HPP
+#define BITARCHIVEREADER_HPP
 
 #include "bitarchiveiteminfo.hpp"
 #include "bitarchiveopener.hpp"
@@ -30,12 +30,12 @@ struct IArchiveExtractCallback;
 
 namespace bit7z {
     /**
-     * @brief The BitArchiveInfo class allows to retrieve metadata information of archives and their content.
+     * @brief The BitArchiveReader class allows to retrieve metadata information of archives and their content.
      */
-    class BitArchiveInfo : public BitArchiveOpener, public BitInputArchive {
+    class BitArchiveReader : public BitArchiveOpener, public BitInputArchive {
         public:
             /**
-             * @brief Constructs a BitArchiveInfo object, opening the input file archive.
+             * @brief Constructs a BitArchiveReader object, opening the input file archive.
              *
              * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
              * argument has default value BitFormat::Auto (automatic format detection of the input archive).
@@ -47,13 +47,13 @@ namespace bit7z {
              * @param format    the input archive format.
              * @param password  the password needed to open the input archive.
              */
-            BitArchiveInfo( const Bit7zLibrary& lib,
-                            const tstring& in_file,
-                            const BitInFormat& format DEFAULT_FORMAT,
-                            const tstring& password = TSTRING( "" ) );
+            BitArchiveReader( const Bit7zLibrary& lib,
+                              const tstring& in_file,
+                              const BitInFormat& format DEFAULT_FORMAT,
+                              const tstring& password = TSTRING( "" ) );
 
             /**
-             * @brief Constructs a BitArchiveInfo object, opening the archive in the input buffer.
+             * @brief Constructs a BitArchiveReader object, opening the archive in the input buffer.
              *
              * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
              * argument has default value BitFormat::Auto (automatic format detection of the input archive).
@@ -65,13 +65,13 @@ namespace bit7z {
              * @param format    the input archive format.
              * @param password  the password needed to open the input archive.
              */
-            BitArchiveInfo( const Bit7zLibrary& lib,
-                            const vector< byte_t >& in_buffer,
-                            const BitInFormat& format DEFAULT_FORMAT,
-                            const tstring& password = TSTRING( "" ) );
+            BitArchiveReader( const Bit7zLibrary& lib,
+                              const vector< byte_t >& in_buffer,
+                              const BitInFormat& format DEFAULT_FORMAT,
+                              const tstring& password = TSTRING( "" ) );
 
             /**
-             * @brief Constructs a BitArchiveInfo object, opening the archive from the standard input stream.
+             * @brief Constructs a BitArchiveReader object, opening the archive from the standard input stream.
              *
              * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
              * argument has default value BitFormat::Auto (automatic format detection of the input archive).
@@ -83,25 +83,25 @@ namespace bit7z {
              * @param format    the input archive format.
              * @param password  the password needed to open the input archive.
              */
-            BitArchiveInfo( const Bit7zLibrary& lib,
-                            std::istream& in_stream,
-                            const BitInFormat& format DEFAULT_FORMAT,
-                            const tstring& password = TSTRING( "" ) );
+            BitArchiveReader( const Bit7zLibrary& lib,
+                              std::istream& in_stream,
+                              const BitInFormat& format DEFAULT_FORMAT,
+                              const tstring& password = TSTRING( "" ) );
 
-            BitArchiveInfo( const BitArchiveInfo& ) = delete;
+            BitArchiveReader( const BitArchiveReader& ) = delete;
 
-            BitArchiveInfo( BitArchiveInfo&& ) = delete;
+            BitArchiveReader( BitArchiveReader&& ) = delete;
 
-            BitArchiveInfo& operator=( const BitArchiveInfo& ) = delete;
+            BitArchiveReader& operator=( const BitArchiveReader& ) = delete;
 
-            BitArchiveInfo& operator=( BitArchiveInfo&& ) = delete;
+            BitArchiveReader& operator=( BitArchiveReader&& ) = delete;
 
             /**
-             * @brief BitArchiveInfo destructor.
+             * @brief BitArchiveReader destructor.
              *
              * @note It releases the input archive file.
              */
-            ~BitArchiveInfo() override = default;
+            ~BitArchiveReader() override = default;
 
             /**
              * @return a map of all the available (i.e. non empty) archive properties and their respective values.
@@ -155,4 +155,4 @@ namespace bit7z {
     };
 }
 
-#endif // BITARCHIVEINFO_HPP
+#endif // BITARCHIVEREADER_HPP

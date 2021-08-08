@@ -289,11 +289,11 @@
     <ClCompile Include="src\bitarchivecreator.cpp" />
     <ClCompile Include="src\bitarchiveeditor.cpp" />
     <ClCompile Include="src\bitarchivehandler.cpp" />
-    <ClCompile Include="src\bitarchiveinfo.cpp" />
     <ClCompile Include="src\bitarchiveitem.cpp" />
     <ClCompile Include="src\bitarchiveiteminfo.cpp" />
     <ClCompile Include="src\bitarchiveitemoffset.cpp" />
     <ClCompile Include="src\bitarchiveopener.cpp" />
+    <ClCompile Include="src\bitarchivereader.cpp" />
     <ClCompile Include="src\bitarchivewriter.cpp" />
     <ClCompile Include="src\bitexception.cpp" />
     <ClCompile Include="src\bitfilecompressor.cpp" />
@@ -335,11 +335,11 @@
     <ClInclude Include="include\bitarchivecreator.hpp" />
     <ClInclude Include="include\bitarchiveeditor.hpp" />
     <ClInclude Include="include\bitarchivehandler.hpp" />
-    <ClInclude Include="include\bitarchiveinfo.hpp" />
     <ClInclude Include="include\bitarchiveitem.hpp" />
     <ClInclude Include="include\bitarchiveiteminfo.hpp" />
     <ClInclude Include="include\bitarchiveitemoffset.hpp" />
     <ClInclude Include="include\bitarchiveopener.hpp" />
+    <ClInclude Include="include\bitarchivereader.hpp" />
     <ClInclude Include="include\bitarchivewriter.hpp" />
     <ClInclude Include="include\bitcompressionlevel.hpp" />
     <ClInclude Include="include\bitcompressionmethod.hpp" />

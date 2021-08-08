@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "bitarchiveinfo.hpp"
+#include "bitarchivereader.hpp"
 
 #include <algorithm>
 #include <numeric>
@@ -28,25 +28,25 @@
 
 using namespace bit7z;
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
-                                const tstring& in_file,
-                                const BitInFormat& format,
-                                const tstring& password )
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const tstring& in_file,
+                                    const BitInFormat& format,
+                                    const tstring& password )
     : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_file ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
-                                const vector< byte_t >& in_buffer,
-                                const BitInFormat& format,
-                                const tstring& password )
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const vector< byte_t >& in_buffer,
+                                    const BitInFormat& format,
+                                    const tstring& password )
     : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_buffer ) {}
 
-BitArchiveInfo::BitArchiveInfo( const Bit7zLibrary& lib,
-                                std::istream& in_stream,
-                                const BitInFormat& format,
-                                const tstring& password )
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    std::istream& in_stream,
+                                    const BitInFormat& format,
+                                    const tstring& password )
     : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
 
-map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
+map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
         // Yeah, I know, I cast property twice (here and in getArchiveProperty), but the code is easier to read!
@@ -59,7 +59,7 @@ map< BitProperty, BitPropVariant > BitArchiveInfo::archiveProperties() const {
     return result;
 }
 
-vector< BitArchiveItemInfo > BitArchiveInfo::items() const {
+vector< BitArchiveItemInfo > BitArchiveReader::items() const {
     vector< BitArchiveItemInfo > result;
     for ( uint32_t i = 0; i < itemsCount(); ++i ) {
         BitArchiveItemInfo item( i );
@@ -76,29 +76,29 @@ vector< BitArchiveItemInfo > BitArchiveInfo::items() const {
     return result;
 }
 
-uint32_t BitArchiveInfo::foldersCount() const {
+uint32_t BitArchiveReader::foldersCount() const {
     return std::count_if( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return item.isDir();
     } );
 }
 
-uint32_t BitArchiveInfo::filesCount() const {
+uint32_t BitArchiveReader::filesCount() const {
     return itemsCount() - foldersCount(); //I'm lazy :)
 }
 
-uint64_t BitArchiveInfo::size() const {
+uint64_t BitArchiveReader::size() const {
     return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.size();
     } );
 }
 
-uint64_t BitArchiveInfo::packSize() const {
+uint64_t BitArchiveReader::packSize() const {
     return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.packSize();
     } );
 }
 
-bool BitArchiveInfo::hasEncryptedItems() const {
+bool BitArchiveReader::hasEncryptedItems() const {
     /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
     return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
@@ -106,7 +106,7 @@ bool BitArchiveInfo::hasEncryptedItems() const {
     } );
 }
 
-bool BitArchiveInfo::isMultiVolume() const {
+bool BitArchiveReader::isMultiVolume() const {
     if ( mFormat == BitFormat::Split ) {
         return true;
     }
@@ -114,12 +114,12 @@ bool BitArchiveInfo::isMultiVolume() const {
     return is_multi_volume.isBool() && is_multi_volume.getBool();
 }
 
-bool BitArchiveInfo::isSolid() const {
+bool BitArchiveReader::isSolid() const {
     BitPropVariant is_solid = getArchiveProperty( BitProperty::Solid );
     return is_solid.isBool() && is_solid.getBool();
 }
 
-uint32_t BitArchiveInfo::volumesCount() const {
+uint32_t BitArchiveReader::volumesCount() const {
     BitPropVariant volumes_count = getArchiveProperty( BitProperty::NumVolumes );
     return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
 }
