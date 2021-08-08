@@ -47,14 +47,28 @@ void StreamExtractCallback::releaseStream() {
 HRESULT StreamExtractCallback::getOutStream( uint32_t index,
                                              ISequentialOutStream** outStream,
                                              int32_t askExtractMode ) {
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
+    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
         return S_OK;
     }
 
-    if ( !mInputArchive.isItemFolder( index ) ) {
-        CMyComPtr< IOutStream > outStreamLoc = bit7z::make_com< CStdOutStream, IOutStream >( mOutputStream );
-        mStdOutStream = outStreamLoc;
-        *outStream = outStreamLoc.Detach();
+    // Get Name
+    BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
+    tstring fullPath;
+
+    if ( prop.isEmpty() ) {
+        fullPath = kEmptyFileAlias;
+    } else if ( prop.isString() ) {
+        fullPath = prop.getString();
+    } else {
+        return E_FAIL;
     }
+
+    if ( mHandler.fileCallback() ) {
+        mHandler.fileCallback()( fullPath );
+    }
+
+    CMyComPtr< IOutStream > outStreamLoc = bit7z::make_com< CStdOutStream, IOutStream >( mOutputStream );
+    mStdOutStream = outStreamLoc;
+    *outStream = outStreamLoc.Detach();
     return S_OK;
 }

@@ -41,6 +41,10 @@ void BufferExtractCallback::releaseStream() {
 HRESULT BufferExtractCallback::getOutStream( uint32_t index,
                                              ISequentialOutStream** outStream,
                                              int32_t askExtractMode ) {
+    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
+        return S_OK;
+    }
+
     // Get Name
     BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
     tstring fullPath;
@@ -53,16 +57,14 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index,
         return E_FAIL;
     }
 
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
-        return S_OK;
+    if ( mHandler.fileCallback() ) {
+        mHandler.fileCallback()( fullPath );
     }
 
-    if ( !mInputArchive.isItemFolder( index ) ) {
-        //Note: using [] operator it creates the buffer if it does not exists already!
-        auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( mBuffersMap[ fullPath ] );
-        mOutMemStream = outStreamLoc;
-        *outStream = outStreamLoc.Detach();
-    }
+    //Note: using [] operator it creates the buffer if it does not exist already!
+    auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( mBuffersMap[ fullPath ] );
+    mOutMemStream = outStreamLoc;
+    *outStream = outStreamLoc.Detach();
     return S_OK;
 }
 

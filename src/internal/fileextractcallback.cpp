@@ -131,7 +131,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
 
     if ( !mProcessedFileInfo.isDir ) { // File
         if ( mHandler.fileCallback() ) {
-            mHandler.fileCallback()( mDiskFilePath.filename() );
+            mHandler.fileCallback()( filePath );
         }
 
         std::error_code ec;
