@@ -300,11 +300,9 @@
     <ClCompile Include="src\bitgenericitem.cpp" />
     <ClCompile Include="src\bitguids.cpp" />
     <ClCompile Include="src\bitinputarchive.cpp" />
-    <ClInclude Include="src\bititemsvector.cpp" />
-    <ClCompile Include="src\bitmemcompressor.cpp" />
+    <ClCompile Include="src\bititemsvector.cpp" />
     <ClCompile Include="src\bitoutputarchive.cpp" />
     <ClCompile Include="src\bitpropvariant.cpp" />
-    <ClCompile Include="src\bitstreamcompressor.cpp" />
     <ClCompile Include="src\internal\bufferextractcallback.cpp" />
     <ClCompile Include="src\internal\bufferitem.cpp" />
     <ClCompile Include="src\internal\callback.cpp" />
@@ -343,6 +341,7 @@
     <ClInclude Include="include\bitarchiveopener.hpp" />
     <ClInclude Include="include\bitcompressionlevel.hpp" />
     <ClInclude Include="include\bitcompressionmethod.hpp" />
+    <ClInclude Include="include\bitcompressor.hpp" />
     <ClInclude Include="include\bitexception.hpp" />
     <ClInclude Include="include\bitextractor.hpp" />
     <ClInclude Include="include\bitfilecompressor.hpp" />

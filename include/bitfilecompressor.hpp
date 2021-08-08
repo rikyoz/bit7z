@@ -24,8 +24,7 @@
 #include <ostream>
 #include <map>
 
-#include "bitarchivecreator.hpp"
-#include "bittypes.hpp"
+#include "bitcompressor.hpp"
 
 namespace bit7z {
     using std::vector;
@@ -44,7 +43,7 @@ namespace bit7z {
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.
      */
-    class BitFileCompressor : public BitArchiveCreator {
+    class BitFileCompressor : public BitCompressor< const tstring > {
         public:
             /**
              * @brief Constructs a BitFileCompressor object.
@@ -85,15 +84,6 @@ namespace bit7z {
             void compress( const map< tstring, tstring >& in_paths, const tstring& out_file ) const;
 
             /**
-             * @brief Compresses a single file.
-             *
-             * @param in_file    the path (relative or absolute) to the input file.
-             * @param out_file   the path (relative or absolute) to the output archive file.
-             * @param name       (optional) custom name for the file inside the archive.
-             */
-            void compressFile( const tstring& in_file, const tstring& out_file, const tstring& name = TSTRING( "" ) ) const;
-
-            /**
              * @brief Compresses a group of files.
              *
              * @note Any path to a directory or to a not-existing file will be ignored!
@@ -125,18 +115,6 @@ namespace bit7z {
              * @param out_file   the path (relative or absolute) to the output archive file.
              */
             void compressDirectory( const tstring& in_dir, const tstring& out_file ) const;
-
-            /* Compression from file system to memory buffer */
-
-            /**
-             * @brief Compresses the input file to the output buffer.
-             *
-             * @note If the format of the output doesn't support in memory compression, a BitException is thrown.
-             *
-             * @param in_file           the file to be compressed.
-             * @param out_buffer        the buffer going to contain the output archive.
-             */
-            void compressFile( const tstring& in_file, vector< byte_t >& out_buffer ) const;
 
             /* Compression from file system to standard stream */
 

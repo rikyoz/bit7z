@@ -42,7 +42,7 @@ namespace bit7z {
 
     template< typename E >
     inline constexpr auto to_underlying( E e ) noexcept {
-        return static_cast<std::underlying_type_t< E>>(e);
+        return static_cast< std::underlying_type_t< E > >(e);
     }
 
     inline constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {

@@ -29,7 +29,7 @@ using namespace std;
 using namespace bit7z;
 
 BitFileCompressor::BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
-    : BitArchiveCreator( lib, format ) {}
+    : BitCompressor( lib, format ) {}
 
 /* from filesystem to filesystem */
 
@@ -48,12 +48,6 @@ void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, const
     }
     BitOutputArchive output_archive{ *this, out_file };
     output_archive.addItems( in_paths );
-    output_archive.compressTo( out_file );
-}
-
-void BitFileCompressor::compressFile( const tstring& in_file, const tstring& out_file, const tstring& name ) const {
-    BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addFile( in_file, name );
     output_archive.compressTo( out_file );
 }
 
@@ -79,16 +73,6 @@ void BitFileCompressor::compressFiles( const tstring& in_dir, const tstring& out
 void BitFileCompressor::compressDirectory( const tstring& in_dir, const tstring& out_file ) const {
     compressFiles( in_dir, out_file, true, TSTRING( "" ) );
 }
-
-/* from filesystem to memory buffer */
-
-void BitFileCompressor::compressFile( const tstring& in_file, vector< byte_t >& out_buffer ) const {
-    BitOutputArchive output_archive{ *this, out_buffer };
-    output_archive.addFile( in_file, TSTRING( "" ) );
-    output_archive.compressTo( out_buffer );
-}
-
-
 
 /* from filesystem to stream */
 
