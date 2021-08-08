@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2020  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,14 +20,14 @@
 #define BITCOMPRESSIONMETHOD_HPP
 
 namespace bit7z {
-    enum class BitCompressionMethod {
-            Copy,
-            Deflate,
-            Deflate64,
-            BZip2,
-            Lzma,
-            Lzma2,
-            Ppmd
+    enum struct BitCompressionMethod {
+        Copy,
+        Deflate,
+        Deflate64,
+        BZip2,
+        Lzma,
+        Lzma2,
+        Ppmd
     };
 }
 

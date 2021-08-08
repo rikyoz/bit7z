@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,14 +19,16 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchivehandler.hpp"
+#include "bitarchivehandler.hpp"
+
+#include <utility> // for std::move
 
 using namespace bit7z;
 
 BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib, tstring password )
-    : mLibrary( lib ), mPassword( std::move( password ) ) {}
+    : mLibrary( lib ), mPassword( std::move( password ) ), mRetainDirectories( true ) {}
 
-const Bit7zLibrary& BitArchiveHandler::library() const {
+const Bit7zLibrary& BitArchiveHandler::library() const noexcept {
     return mLibrary;
 }
 
@@ -34,7 +36,11 @@ tstring BitArchiveHandler::password() const {
     return mPassword;
 }
 
-bool BitArchiveHandler::isPasswordDefined() const {
+bool BitArchiveHandler::retainDirectories() const noexcept {
+    return mRetainDirectories;
+}
+
+bool BitArchiveHandler::isPasswordDefined() const noexcept {
     return !mPassword.empty();
 }
 
@@ -62,8 +68,12 @@ void BitArchiveHandler::setPassword( const tstring& password ) {
     mPassword = password;
 }
 
-void BitArchiveHandler::clearPassword() {
+void BitArchiveHandler::clearPassword() noexcept {
     mPassword.clear();
+}
+
+void BitArchiveHandler::setRetainDirectories( bool retain ) noexcept {
+    mRetainDirectories = retain;
 }
 
 void BitArchiveHandler::setTotalCallback( const TotalCallback& callback ) {

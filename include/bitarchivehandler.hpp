@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@
 #include <cstdint>
 #include <functional>
 
-#include "../include/bit7zlibrary.hpp"
+#include "bit7zlibrary.hpp"
 
 namespace bit7z {
     using std::function;
@@ -60,10 +60,18 @@ namespace bit7z {
      */
     class BitArchiveHandler {
         public:
+            BitArchiveHandler( const BitArchiveHandler& ) = delete;
+
+            BitArchiveHandler( BitArchiveHandler&& ) = delete;
+
+            BitArchiveHandler& operator= ( const BitArchiveHandler& ) = delete;
+
+            BitArchiveHandler& operator= ( BitArchiveHandler&& ) = delete;
+
             /**
              * @return the Bit7zLibrary object used by the handler.
              */
-            const Bit7zLibrary& library() const;
+            const Bit7zLibrary& library() const noexcept;
 
             /**
              * @return the format used by the handler for extracting or compressing.
@@ -75,10 +83,12 @@ namespace bit7z {
              */
             tstring password() const;
 
+            bool retainDirectories() const noexcept;
+
             /**
              * @return true if a password is defined, false otherwise.
              */
-            bool isPasswordDefined() const;
+            bool isPasswordDefined() const noexcept;
 
             /**
              * @return the current total callback.
@@ -133,7 +143,14 @@ namespace bit7z {
              *
              * @note This is equivalent to calling setPassword(L"").
              */
-            void clearPassword();
+            void clearPassword() noexcept;
+
+            /**
+             * @brief Sets whether methods output will preserve the input's directory structure or not.
+             *
+             * @param retain  the setting for preserving or not the input directory structure
+             */
+            void setRetainDirectories( bool retain ) noexcept;
 
             /**
              * @brief Sets the callback to be called when the total size of an operation is available.
@@ -180,6 +197,7 @@ namespace bit7z {
         protected:
             const Bit7zLibrary& mLibrary;
             tstring mPassword;
+            bool mRetainDirectories;
 
             explicit BitArchiveHandler( const Bit7zLibrary& lib, tstring password = TSTRING( "" ) );
 

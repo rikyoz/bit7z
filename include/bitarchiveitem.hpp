@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,33 +19,33 @@
 #ifndef BITARCHIVEITEM_HPP
 #define BITARCHIVEITEM_HPP
 
-#include "../include/bitpropvariant.hpp"
-
-#include "../include/bittypes.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+#include "bitgenericitem.hpp"
 
 namespace bit7z {
 
-    class BitArchiveItem {
+    class BitArchiveItem : public BitGenericItem {
         public:
             /**
              * @brief BitArchiveItem destructor.
              */
-            virtual ~BitArchiveItem() = default;
+            ~BitArchiveItem() override = default;
 
             /**
              * @return the index of the item in the archive.
              */
-            uint32_t index() const;
+            uint32_t index() const noexcept;
 
             /**
              * @return true if and only if the item is a directory (i.e. it has the property BitProperty::IsDir).
              */
-            bool isDir() const;
+            bool isDir() const override;
 
             /**
              * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
              */
-            tstring name() const;
+            tstring name() const override;
 
             /**
              * @return the extension of the item, if available or inferable from the name, or an empty string otherwise
@@ -57,12 +57,20 @@ namespace bit7z {
              * @return the path of the item in the archive, if available or inferable from the name, or an empty string
              * otherwise.
              */
-            tstring path() const;
+            tstring path() const override;
 
             /**
              * @return the uncompressed size of the item.
              */
-            uint64_t size() const;
+            uint64_t size() const override;
+
+            FILETIME creationTime() const override;
+
+            FILETIME lastAccessTime() const override;
+
+            FILETIME lastWriteTime() const override;
+
+            uint32_t attributes() const override;
 
             /**
              * @return the compressed size of the item.
@@ -74,19 +82,10 @@ namespace bit7z {
              */
             bool isEncrypted() const;
 
-            /**
-             * @brief Gets the specified item property.
-             *
-             * @param property  the property to be retrieved.
-             *
-             * @return the value of the item property, if available, or an empty BitPropVariant.
-             */
-            virtual BitPropVariant getProperty( BitProperty property ) const = 0;
-
         protected:
             uint32_t mItemIndex; //Note: it is not const since sub-class BitArchiveItemOffset can increment it!
 
-            explicit BitArchiveItem( uint32_t item_index );
+            explicit BitArchiveItem( uint32_t item_index ) noexcept;
     };
 
 }

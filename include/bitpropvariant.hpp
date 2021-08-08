@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,8 +20,6 @@
 #define BITPROPVARIANT_HPP
 
 #include <cstdint>
-
-#include "../include/bittypes.hpp"
 //#include <array>
 
 #ifdef _WIN32
@@ -30,238 +28,124 @@
 #include <Common/MyWindows.h>
 #endif
 
+#include "bittypes.hpp"
+
 namespace bit7z {
     static const char* const kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
 
-    enum class BitProperty : PROPID {
-            NoProperty = 0,         ///<
-            MainSubfile,            ///<
-            HandlerItemIndex,       ///<
-            Path,                   ///<
-            Name,                   ///<
-            Extension,              ///<
-            IsDir,                  ///<
-            Size,                   ///<
-            PackSize,               ///<
-            Attrib,                 ///<
-            CTime,                  ///<
-            ATime,                  ///<
-            MTime,                  ///<
-            Solid,                  ///<
-            Commented,              ///<
-            Encrypted,              ///<
-            SplitBefore,            ///<
-            SplitAfter,             ///<
-            DictionarySize,         ///<
-            CRC,                    ///<
-            Type,                   ///<
-            IsAnti,                 ///<
-            Method,                 ///<
-            HostOS,                 ///<
-            FileSystem,             ///<
-            User,                   ///<
-            Group,                  ///<
-            Block,                  ///<
-            Comment,                ///<
-            Position,               ///<
-            Prefix,                 ///<
-            NumSubDirs,             ///<
-            NumSubFiles,            ///<
-            UnpackVer,              ///<
-            Volume,                 ///<
-            IsVolume,               ///<
-            Offset,                 ///<
-            Links,                  ///<
-            NumBlocks,              ///<
-            NumVolumes,             ///<
-            TimeType,               ///<
-            Bit64,                  ///<
-            BigEndian,              ///<
-            Cpu,                    ///<
-            PhySize,                ///<
-            HeadersSize,            ///<
-            Checksum,               ///<
-            Characts,               ///<
-            Va,                     ///<
-            Id,                     ///<
-            ShortName,              ///<
-            CreatorApp,             ///<
-            SectorSize,             ///<
-            PosixAttrib,            ///<
-            SymLink,                ///<
-            Error,                  ///<
-            TotalSize,              ///<
-            FreeSpace,              ///<
-            ClusterSize,            ///<
-            VolumeName,             ///<
-            LocalName,              ///<
-            Provider,               ///<
-            NtSecure,               ///<
-            IsAltStream,            ///<
-            IsAux,                  ///<
-            IsDeleted,              ///<
-            IsTree,                 ///<
-            Sha1,                   ///<
-            Sha256,                 ///<
-            ErrorType,              ///<
-            NumErrors,              ///<
-            ErrorFlags,             ///<
-            WarningFlags,           ///<
-            Warning,                ///<
-            NumStreams,             ///<
-            NumAltStreams,          ///<
-            AltStreamsSize,         ///<
-            VirtualSize,            ///<
-            UnpackSize,             ///<
-            TotalPhySize,           ///<
-            VolumeIndex,            ///<
-            SubType,                ///<
-            ShortComment,           ///<
-            CodePage,               ///<
-            IsNotArcType,           ///<
-            PhySizeCantBeDetected,  ///<
-            ZerosTailIsAllowed,     ///<
-            TailSize,               ///<
-            EmbeddedStubSize,       ///<
-            NtReparse,              ///<
-            HardLink,               ///<
-            INode,                  ///<
-            StreamId,               ///<
-            ReadOnly,               ///<
-            OutName,                ///<
-            CopyLink                ///<
+    enum struct BitProperty : PROPID {
+        NoProperty = 0,         ///<
+        MainSubfile,            ///<
+        HandlerItemIndex,       ///<
+        Path,                   ///<
+        Name,                   ///<
+        Extension,              ///<
+        IsDir,                  ///<
+        Size,                   ///<
+        PackSize,               ///<
+        Attrib,                 ///<
+        CTime,                  ///<
+        ATime,                  ///<
+        MTime,                  ///<
+        Solid,                  ///<
+        Commented,              ///<
+        Encrypted,              ///<
+        SplitBefore,            ///<
+        SplitAfter,             ///<
+        DictionarySize,         ///<
+        CRC,                    ///<
+        Type,                   ///<
+        IsAnti,                 ///<
+        Method,                 ///<
+        HostOS,                 ///<
+        FileSystem,             ///<
+        User,                   ///<
+        Group,                  ///<
+        Block,                  ///<
+        Comment,                ///<
+        Position,               ///<
+        Prefix,                 ///<
+        NumSubDirs,             ///<
+        NumSubFiles,            ///<
+        UnpackVer,              ///<
+        Volume,                 ///<
+        IsVolume,               ///<
+        Offset,                 ///<
+        Links,                  ///<
+        NumBlocks,              ///<
+        NumVolumes,             ///<
+        TimeType,               ///<
+        Bit64,                  ///<
+        BigEndian,              ///<
+        Cpu,                    ///<
+        PhySize,                ///<
+        HeadersSize,            ///<
+        Checksum,               ///<
+        Characts,               ///<
+        Va,                     ///<
+        Id,                     ///<
+        ShortName,              ///<
+        CreatorApp,             ///<
+        SectorSize,             ///<
+        PosixAttrib,            ///<
+        SymLink,                ///<
+        Error,                  ///<
+        TotalSize,              ///<
+        FreeSpace,              ///<
+        ClusterSize,            ///<
+        VolumeName,             ///<
+        LocalName,              ///<
+        Provider,               ///<
+        NtSecure,               ///<
+        IsAltStream,            ///<
+        IsAux,                  ///<
+        IsDeleted,              ///<
+        IsTree,                 ///<
+        Sha1,                   ///<
+        Sha256,                 ///<
+        ErrorType,              ///<
+        NumErrors,              ///<
+        ErrorFlags,             ///<
+        WarningFlags,           ///<
+        Warning,                ///<
+        NumStreams,             ///<
+        NumAltStreams,          ///<
+        AltStreamsSize,         ///<
+        VirtualSize,            ///<
+        UnpackSize,             ///<
+        TotalPhySize,           ///<
+        VolumeIndex,            ///<
+        SubType,                ///<
+        ShortComment,           ///<
+        CodePage,               ///<
+        IsNotArcType,           ///<
+        PhySizeCantBeDetected,  ///<
+        ZerosTailIsAllowed,     ///<
+        TailSize,               ///<
+        EmbeddedStubSize,       ///<
+        NtReparse,              ///<
+        HardLink,               ///<
+        INode,                  ///<
+        StreamId,               ///<
+        ReadOnly,               ///<
+        OutName,                ///<
+        CopyLink                ///<
     };
 
-    //using std::array;
-
-    /*static const array < wstring, static_cast< int >( BitProperty::CopyLink ) + 1 > propertyNames = {
-        L"NoProperty",
-        L"MainSubfile",
-        L"HandlerItemIndex",
-        L"Path",
-        L"Name",
-        L"Extension",
-        L"IsDir",
-        L"Size",
-        L"PackSize",
-        L"Attrib",
-        L"CTime",
-        L"ATime",
-        L"MTime",
-        L"Solid",
-        L"Commented",
-        L"Encrypted",
-        L"SplitBefore",
-        L"SplitAfter",
-        L"DictionarySize",
-        L"CRC",
-        L"Type",
-        L"IsAnti",
-        L"Method",
-        L"HostOS",
-        L"FileSystem",
-        L"User",
-        L"Group",
-        L"Block",
-        L"Comment",
-        L"Position",
-        L"Prefix",
-        L"NumSubDirs",
-        L"NumSubFiles",
-        L"UnpackVer",
-        L"Volume",
-        L"IsVolume",
-        L"Offset",
-        L"Links",
-        L"NumBlocks",
-        L"NumVolumes",
-        L"TimeType",
-        L"Bit64",
-        L"BigEndian",
-        L"Cpu",
-        L"PhySize",
-        L"HeadersSize",
-        L"Checksum",
-        L"Characts",
-        L"Va",
-        L"Id",
-        L"ShortName",
-        L"CreatorApp",
-        L"SectorSize",
-        L"PosixAttrib",
-        L"SymLink",
-        L"Error",
-        L"TotalSize",
-        L"FreeSpace",
-        L"ClusterSize",
-        L"VolumeName",
-        L"LocalName",
-        L"Provider",
-        L"NtSecure",
-        L"IsAltStream",
-        L"IsAux",
-        L"IsDeleted",
-        L"IsTree",
-        L"Sha1",
-        L"Sha256",
-        L"ErrorType",
-        L"NumErrors",
-        L"ErrorFlags",
-        L"WarningFlags",
-        L"Warning",
-        L"NumStreams",
-        L"NumAltStreams",
-        L"AltStreamsSize",
-        L"VirtualSize",
-        L"UnpackSize",
-        L"TotalPhySize",
-        L"VolumeIndex",
-        L"SubType",
-        L"ShortComment",
-        L"CodePage",
-        L"IsNotArcType",
-        L"PhySizeCantBeDetected",
-        L"ZerosTailIsAllowed",
-        L"TailSize",
-        L"EmbeddedStubSize",
-        L"NtReparse",
-        L"HardLink",
-        L"INode",
-        L"StreamId",
-        L"ReadOnly",
-        L"OutName",
-        L"CopyLink"
-    };*/
-
-    enum class BitPropVariantType : uint32_t {
-            Empty,      ///< Empty BitPropVariant type
-            Bool,       ///< Boolean BitPropVariant type
-            String,     ///< String BitPropVariant type
-            UInt8,      ///< 8-bit unsigned int BitPropVariant type
-            UInt16,     ///< 16-bit unsigned int BitPropVariant type
-            UInt32,     ///< 32-bit unsigned int BitPropVariant type
-            UInt64,     ///< 64-bit unsigned int BitPropVariant type
-            Int8,       ///< 8-bit signed int BitPropVariant type
-            Int16,      ///< 16-bit signed int BitPropVariant type
-            Int32,      ///< 32-bit signed int BitPropVariant type
-            Int64,      ///< 64-bit signed int BitPropVariant type
-            Filetime    ///< FILETIME BitPropVariant type
+    enum struct BitPropVariantType : uint32_t {
+        Empty,      ///< Empty BitPropVariant type
+        Bool,       ///< Boolean BitPropVariant type
+        String,     ///< String BitPropVariant type
+        UInt8,      ///< 8-bit unsigned int BitPropVariant type
+        UInt16,     ///< 16-bit unsigned int BitPropVariant type
+        UInt32,     ///< 32-bit unsigned int BitPropVariant type
+        UInt64,     ///< 64-bit unsigned int BitPropVariant type
+        Int8,       ///< 8-bit signed int BitPropVariant type
+        Int16,      ///< 16-bit signed int BitPropVariant type
+        Int32,      ///< 32-bit signed int BitPropVariant type
+        Int64,      ///< 64-bit signed int BitPropVariant type
+        Filetime    ///< FILETIME BitPropVariant type
     };
-
-    /*static const array < wstring, static_cast< uint32_t >( BitPropVariantType::Filetime ) + 1 > typeNames = {
-        L"Empty",
-        L"Bool",
-        L"String",
-        L"UInt8",
-        L"UInt16",
-        L"UInt32",
-        L"UInt64",
-        L"Int8",
-        L"Int16",
-        L"Int32",
-        L"Int64",
-        L"Filetime"
-    };*/
 
     /**
      * @brief The BitPropVariant struct is a light extension to the WinAPI PROPVARIANT struct providing useful getters.
@@ -291,7 +175,7 @@ namespace bit7z {
              *
              * @param value the bool value of the BitPropVariant
              */
-            explicit BitPropVariant( bool value );
+            explicit BitPropVariant( bool value ) noexcept;
 
             /**
              * @brief Constructs a string BitPropVariant from a null-terminated C wide string
@@ -312,63 +196,63 @@ namespace bit7z {
              *
              * @param value the uint8_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint8_t value );
+            explicit BitPropVariant( uint8_t value ) noexcept;
 
             /**
              * @brief Constructs a 16-bit unsigned integer BitPropVariant
              *
              * @param value the uint16_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint16_t value );
+            explicit BitPropVariant( uint16_t value ) noexcept;
 
             /**
              * @brief Constructs a 32-bit unsigned integer BitPropVariant
              *
              * @param value the uint32_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint32_t value );
+            explicit BitPropVariant( uint32_t value ) noexcept;
 
             /**
              * @brief Constructs a 64-bit unsigned integer BitPropVariant
              *
              * @param value the uint64_t value of the BitPropVariant
              */
-            explicit BitPropVariant( uint64_t value );
+            explicit BitPropVariant( uint64_t value ) noexcept;
 
             /**
              * @brief Constructs a 8-bit integer BitPropVariant
              *
              * @param value the int8_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int8_t value );
+            explicit BitPropVariant( int8_t value ) noexcept;
 
             /**
              * @brief Constructs a 16-bit integer BitPropVariant
              *
              * @param value the int16_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int16_t value );
+            explicit BitPropVariant( int16_t value ) noexcept;
 
             /**
              * @brief Constructs a 32-bit integer BitPropVariant
              *
              * @param value the int32_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int32_t value );
+            explicit BitPropVariant( int32_t value ) noexcept;
 
             /**
              * @brief Constructs a 64-bit integer BitPropVariant
              *
              * @param value the int64_t value of the BitPropVariant
              */
-            explicit BitPropVariant( int64_t value );
+            explicit BitPropVariant( int64_t value ) noexcept;
 
             /**
              * @brief Constructs a FILETIME BitPropVariant
              *
              * @param value the FILETIME value of the BitPropVariant
              */
-            explicit BitPropVariant( const FILETIME& value );
+            explicit BitPropVariant( const FILETIME& value ) noexcept;
 
             /**
              * @brief BitPropVariant destructor.
@@ -384,7 +268,7 @@ namespace bit7z {
              *
              * @return a reference to *this object (with the copied values from other).
              */
-            BitPropVariant& operator=( const BitPropVariant& other ) noexcept;
+            BitPropVariant& operator=( const BitPropVariant& other );
 
             /**
              * @brief Move assignment operator.
@@ -405,7 +289,7 @@ namespace bit7z {
              * @return a reference to *this object having the value as new variant value
              */
             template< typename T >
-            BitPropVariant& operator=( const T& value ) {
+            BitPropVariant& operator=( const T& value ) noexcept(std::is_integral<T>::value) {
                 *this = BitPropVariant( value );
                 return *this;
             }
@@ -484,62 +368,62 @@ namespace bit7z {
             /**
              * @return true if this variant is empty, false otherwise.
              */
-            bool isEmpty() const;
+            bool isEmpty() const noexcept;
 
             /**
              * @return true if this variant is a boolean, false otherwise.
              */
-            bool isBool() const;
+            bool isBool() const noexcept;
 
             /**
              * @return true if this variant is a string, false otherwise.
              */
-            bool isString() const;
+            bool isString() const noexcept;
 
             /**
              * @return true if this variant is an 8-bit unsigned integer, false otherwise.
              */
-            bool isUInt8() const;
+            bool isUInt8() const noexcept;
 
             /**
              * @return true if this variant is an 8 or 16-bit unsigned integer, false otherwise.
              */
-            bool isUInt16() const;
+            bool isUInt16() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16 or 32-bit unsigned integer, false otherwise.
              */
-            bool isUInt32() const;
+            bool isUInt32() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16, 32 or 64-bit unsigned integer, false otherwise.
              */
-            bool isUInt64() const;
+            bool isUInt64() const noexcept;
 
             /**
              * @return true if this variant is an 8-bit integer, false otherwise.
              */
-            bool isInt8() const;
+            bool isInt8() const noexcept;
 
             /**
              * @return true if this variant is an 8 or 16-bit integer, false otherwise.
              */
-            bool isInt16() const;
+            bool isInt16() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16 or 32-bit integer, false otherwise.
              */
-            bool isInt32() const;
+            bool isInt32() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16, 32 or 64-bit integer, false otherwise.
              */
-            bool isInt64() const;
+            bool isInt64() const noexcept;
 
             /**
              * @return true if this variant is a FILETIME structure, false otherwise.
              */
-            bool isFileTime() const;
+            bool isFileTime() const noexcept;
 
             /**
              * @return the BitPropVariantType of this variant.
@@ -549,19 +433,19 @@ namespace bit7z {
             /**
              * @brief Clears the current value of the variant object
              */
-            void clear();
+            void clear() noexcept;
 
         private:
-            void internalClear();
+            void internalClear() noexcept;
 
-            friend bool operator==( const BitPropVariant& a, const BitPropVariant& b );
+            friend bool operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 
-            friend bool operator!=( const BitPropVariant& a, const BitPropVariant& b );
+            friend bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
     };
 
-    bool operator==( const BitPropVariant& a, const BitPropVariant& b );
+    bool operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 
-    bool operator!=( const BitPropVariant& a, const BitPropVariant& b );
+    bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 }
 
 #endif // BITPROPVARIANT_HPP

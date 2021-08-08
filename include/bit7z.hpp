@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,14 +19,14 @@
 #ifndef BIT7Z_HPP
 #define BIT7Z_HPP
 
-#include "bitarchiveinfo.hpp"
-#include "bitcompressor.hpp"
-#include "bitmemcompressor.hpp"
-#include "bitstreamcompressor.hpp"
-#include "bitextractor.hpp"
-#include "bitmemextractor.hpp"
-#include "bitstreamextractor.hpp"
+#include "bitarchivereader.hpp"
 #include "bitexception.hpp"
+#include "bitfilecompressor.hpp"
+#include "bitfileextractor.hpp"
+#include "bitmemcompressor.hpp"
+#include "bitmemextractor.hpp"
+#include "bitstreamcompressor.hpp"
+#include "bitstreamextractor.hpp"
 
 #endif // BIT7Z_HPP
 

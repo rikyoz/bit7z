@@ -11,7 +11,7 @@
 *.vcxproj.user
 .qmake.stash
 *.a
-libs/
+third_party/
 build/
 out/
 test/files/
@@ -36,8 +36,6 @@ bit7z.sln
 *.sdf
 *.TMP
 
-bit7z.vcxproj
-
 CMakeSettings.json
 
 *.kdbx
@@ -48,3 +46,7 @@ CMakeSettings.json
 *.suo
 *.db
 *.opendb
+
+*.cd
+
+*.ruleset

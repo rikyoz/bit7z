@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,29 +19,13 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchivecreator.hpp"
+#include "bitarchivecreator.hpp"
 
-#include "../include/bitexception.hpp"
-#include "../include/cfileoutstream.hpp"
-#include "../include/cmultivoloutstream.hpp"
-#include "../include/cbufferoutstream.hpp"
-#include "../include/updatecallback.hpp"
+#include "bitexception.hpp"
 
 using namespace bit7z;
 
-void compressOut( IOutArchive* out_arc, IOutStream* out_stream, UpdateCallback* update_callback ) {
-    HRESULT result = out_arc->UpdateItems( out_stream, update_callback->itemsCount(), update_callback );
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( kUnsupportedOperation, make_hresult_code( result ) );
-    }
-
-    if ( result != S_OK ) {
-        update_callback->throwException( result );
-    }
-}
-
-bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) {
+bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) noexcept {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return format == BitFormat::SevenZip || format == BitFormat::Zip || format == BitFormat::Tar ||
@@ -62,7 +46,7 @@ bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
     }
 }
 
-bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) {
+bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) noexcept {
     static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
     static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
     static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
@@ -82,7 +66,7 @@ bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_siz
     }
 }
 
-bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method, uint32_t word_size ) {
+bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method, uint32_t word_size ) noexcept {
     static constexpr auto MIN_LZMA_WORD_SIZE = 5u;
     static constexpr auto MAX_LZMA_WORD_SIZE = 273u;
     static constexpr auto MIN_PPMD_WORD_SIZE = 2u;
@@ -113,7 +97,7 @@ bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method,
     }
 }
 
-const wchar_t* methodName( BitCompressionMethod method ) {
+const wchar_t* methodName( BitCompressionMethod method ) noexcept {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return L"Copy";
@@ -134,60 +118,63 @@ const wchar_t* methodName( BitCompressionMethod method ) {
     }
 }
 
-BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format ) :
-    BitArchiveHandler( lib ),
+BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
+                                      const BitInOutFormat& format,
+                                      tstring password,
+                                      UpdateMode update_mode ) :
+    BitArchiveHandler( lib, std::move( password ) ),
     mFormat( format ),
+    mUpdateMode( update_mode ),
     mCompressionLevel( BitCompressionLevel::NORMAL ),
     mCompressionMethod( format.defaultMethod() ),
     mDictionarySize( 0 ),
     mWordSize( 0 ),
     mCryptHeaders( false ),
     mSolidMode( false ),
-    mUpdateMode( false ),
     mVolumeSize( 0 ),
     mThreadsCount( 0 ) {}
 
-const BitInFormat& BitArchiveCreator::format() const {
+const BitInFormat& BitArchiveCreator::format() const noexcept {
     return mFormat;
 }
 
-const BitInOutFormat& BitArchiveCreator::compressionFormat() const {
+const BitInOutFormat& BitArchiveCreator::compressionFormat() const noexcept {
     return mFormat;
 }
 
-bool BitArchiveCreator::cryptHeaders() const {
+bool BitArchiveCreator::cryptHeaders() const noexcept {
     return mCryptHeaders;
 }
 
-BitCompressionLevel BitArchiveCreator::compressionLevel() const {
+BitCompressionLevel BitArchiveCreator::compressionLevel() const noexcept {
     return mCompressionLevel;
 }
 
-BitCompressionMethod BitArchiveCreator::compressionMethod() const {
+BitCompressionMethod BitArchiveCreator::compressionMethod() const noexcept {
     return mCompressionMethod;
 }
 
-uint32_t BitArchiveCreator::dictionarySize() const {
+uint32_t BitArchiveCreator::dictionarySize() const noexcept {
     return mDictionarySize;
 }
 
-uint32_t BitArchiveCreator::wordSize() const {
+uint32_t BitArchiveCreator::wordSize() const noexcept {
     return mWordSize;
 }
 
-bool BitArchiveCreator::solidMode() const {
+bool BitArchiveCreator::solidMode() const noexcept {
     return mSolidMode;
 }
 
-bool BitArchiveCreator::updateMode() const {
+UpdateMode BitArchiveCreator::updateMode() const noexcept {
     return mUpdateMode;
 }
 
-uint64_t BitArchiveCreator::volumeSize() const {
+uint64_t BitArchiveCreator::volumeSize() const noexcept {
     return mVolumeSize;
 }
 
-uint32_t BitArchiveCreator::threadsCount() const {
+uint32_t BitArchiveCreator::threadsCount() const noexcept {
     return mThreadsCount;
 }
 
@@ -200,7 +187,7 @@ void BitArchiveCreator::setPassword( const tstring& password, bool crypt_headers
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
 
-void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_level ) {
+void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_level ) noexcept {
     mCompressionLevel = compression_level;
     mDictionarySize = 0; //reset dictionary size to default for the compression level
     mWordSize = 0; //reset word size to default for the compression level
@@ -211,7 +198,7 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_m
         throw BitException( "Invalid compression method for the chosen archive format",
                             std::make_error_code( std::errc::invalid_argument ) );
     }
-    if ( mFormat.hasFeature( MULTIPLE_METHODS ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::MULTIPLE_METHODS ) ) {
         /* even though the compression method is valid, we set it only if the format supports
          * different methods than the default one (i.e., setting BitCompressionMethod::BZip2
          * of a BitFormat::BZip2 archive does nothing!) */
@@ -246,131 +233,40 @@ void BitArchiveCreator::setWordSize( uint32_t word_size ) {
     mWordSize = word_size;
 }
 
-void BitArchiveCreator::setSolidMode( bool solid_mode ) {
+void BitArchiveCreator::setSolidMode( bool solid_mode ) noexcept {
     mSolidMode = solid_mode;
 }
 
-void BitArchiveCreator::setUpdateMode( bool update_mode ) {
+void BitArchiveCreator::setUpdateMode( UpdateMode update_mode ) {
     mUpdateMode = update_mode;
 }
 
-void BitArchiveCreator::setVolumeSize( uint64_t size ) {
+void BitArchiveCreator::setVolumeSize( uint64_t size ) noexcept {
     mVolumeSize = size;
 }
 
-void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) {
+void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) noexcept {
     mThreadsCount = threads_count;
 }
 
-CMyComPtr< IOutArchive > BitArchiveCreator::initOutArchive() const {
-    CMyComPtr< IOutArchive > new_arc;
-    const GUID format_GUID = mFormat.guid();
-    mLibrary.createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
-    setArchiveProperties( new_arc );
-    return new_arc;
-}
-
-CMyComPtr< IOutStream > BitArchiveCreator::initOutFileStream( const tstring& out_archive,
-                                                              CMyComPtr< IOutArchive >& new_arc,
-                                                              unique_ptr< BitInputArchive >& old_arc ) const {
-    if ( mVolumeSize > 0 ) {
-        return new CMultiVolOutStream( mVolumeSize, out_archive );
-    }
-
-    CMyComPtr< IOutStream > out_stream;
-    std::error_code ec;
-    if ( mUpdateMode && fs::exists( out_archive, ec ) ) {
-        if ( !mFormat.hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
-            //Update mode is set but format does not support adding more files
-            throw BitException( "Format does not support updating existing archive files",
-                                std::make_error_code( std::errc::invalid_argument ) );
-        }
-
-        auto* file_out_stream = new CFileOutStream( out_archive + TSTRING( ".tmp" ), true );
-        out_stream = file_out_stream;
-        if ( file_out_stream->fail() ) {
-            //could not create temporary file
-            throw BitException( "Could not create temp archive file for updating", last_error_code(), out_archive );
-        }
-
-        old_arc = std::make_unique< BitInputArchive >( *this, out_archive );
-        old_arc->initUpdatableArchive( &new_arc );
-        setArchiveProperties( new_arc );
-    } else {
-        auto* file_out_stream = new CFileOutStream( out_archive );
-        out_stream = file_out_stream;
-        if ( file_out_stream->fail() ) {
-            //Unknown error!
-            throw BitException( "Cannot create output archive file", last_error_code(), out_archive );
-        }
-    }
-    return out_stream;
-}
-
-void BitArchiveCreator::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const {
-    unique_ptr< BitInputArchive > old_arc = nullptr;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, new_arc, old_arc );
-    update_callback->setOldArc( old_arc.get() );
-    compressOut( new_arc, out_stream, update_callback );
-    if ( old_arc ) {
-        old_arc->close();
-        /* NOTE: In the following instruction, we use . (dot) not -> (arrow) operator: in fact, both CMyComPtr and
-         *       IOutStream have a Release() method, so we need to call only the one of CMyComPtr! */
-        out_stream.Release(); //Releasing the output stream so that we can remove the original file
-
-#if defined( __MINGW32__ ) && defined( USE_STANDARD_FILESYSTEM )
-        /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
-         * existing destination file (as it should). So we explicitly remove it before! */
-        std::error_code ec;
-        fs::remove( out_file, ec );
-        if ( ec ) {
-            throw BitException( "Cannot remove old archive file", ec, out_file );
-        }
-#endif
-
-        //remove old file and rename tmp file (move file with overwriting)
-        std::error_code error;
-        fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
-        if ( error ) {
-            throw BitException( "Cannot rename temp archive file", error, out_file );
-        }
-    }
-}
-
-void BitArchiveCreator::compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const {
-    if ( !out_buffer.empty() ) {
-        throw BitException( kCannotOverwriteBuffer, std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_mem_stream = new CBufferOutStream( out_buffer );
-    compressOut( new_arc, out_mem_stream, update_callback );
-}
-
-void BitArchiveCreator::compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
-    CMyComPtr< IOutStream > out_std_stream = new CStdOutStream( out_stream );
-    compressOut( new_arc, out_std_stream, update_callback );
-}
-
-void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
-    vector< const wchar_t* > names;
-    vector< BitPropVariant > values;
-    if ( mCryptHeaders && mFormat.hasFeature( HEADER_ENCRYPTION ) ) {
+ArchiveProperties BitArchiveCreator::getArchiveProperties() const {
+    ArchiveProperties properties = {};
+    vector< const wchar_t* >& names = properties.names;
+    vector< BitPropVariant >& values = properties.values;
+    if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HEADER_ENCRYPTION ) ) {
         names.push_back( L"he" );
         values.emplace_back( true );
     }
-    if ( mFormat.hasFeature( COMPRESSION_LEVEL ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::COMPRESSION_LEVEL ) ) {
         names.push_back( L"x" );
         values.emplace_back( static_cast< uint32_t >( mCompressionLevel ) );
 
-        if ( mFormat.hasFeature( MULTIPLE_METHODS ) && mCompressionMethod != mFormat.defaultMethod() ) {
+        if ( mFormat.hasFeature( FormatFeatures::MULTIPLE_METHODS ) && mCompressionMethod != mFormat.defaultMethod() ) {
             names.push_back( mFormat == BitFormat::SevenZip ? L"0" : L"m" );
             values.emplace_back( methodName( mCompressionMethod ) );
         }
     }
-    if ( mFormat.hasFeature( SOLID_ARCHIVE ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::SOLID_ARCHIVE ) ) {
         names.push_back( L"s" );
         values.emplace_back( mSolidMode );
 #ifndef _WIN32
@@ -389,7 +285,7 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         values.emplace_back( mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
-        const wchar_t* prop_name;
+        const wchar_t* prop_name = nullptr;
         //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
@@ -410,17 +306,5 @@ void BitArchiveCreator::setArchiveProperties( IOutArchive* out_archive ) const {
         names.push_back( prop_name );
         values.emplace_back( mWordSize );
     }
-
-    if ( !names.empty() ) {
-        CMyComPtr< ISetProperties > set_properties;
-        if ( out_archive->QueryInterface( ::IID_ISetProperties,
-                                          reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
-            throw BitException( "ISetProperties unsupported", std::make_error_code( std::errc::not_supported ) );
-        }
-        if ( set_properties->SetProperties( names.data(), values.data(),
-                                            static_cast< uint32_t >( names.size() ) ) != S_OK ) {
-            throw BitException( "Cannot set properties of the archive",
-                                std::make_error_code( std::errc::invalid_argument ) );
-        }
-    }
+    return properties;
 }

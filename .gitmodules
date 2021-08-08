@@ -1,6 +1,6 @@
-[submodule "libs/7-zip"]
-	path = libs/7-zip
+[submodule "7-zip"]
+	path = third_party/7-zip
 	url = https://github.com/rikyoz/7-Zip
-[submodule "libs/p7zip"]
-	path = libs/p7zip
+[submodule "p7zip"]
+	path = third_party/p7zip
 	url = https://github.com/rikyoz/p7zip

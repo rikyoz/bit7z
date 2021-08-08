@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +19,11 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
 
-#include "../include/hresultcategory.hpp"
+#include <utility> // for std::move
+
+#include "internal/hresultcategory.hpp"
 
 using std::string;
 
@@ -32,20 +34,22 @@ std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
 }
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
-    : system_error( code, message ), mFailedFiles( files ) { files.clear(); }
+    : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
 
 BitException::BitException( const char* const message, std::error_code code, const tstring& file )
-    : system_error( code, message ), mFailedFiles( { std::make_pair<>( file, code ) } ) {}
+    : system_error( code, message ) {
+    mFailedFiles.emplace_back( file, code );
+}
 
 BitException::BitException( const std::string& message, std::error_code code )
     : system_error( code, message.c_str() ) {}
 
-const FailedFiles& BitException::failedFiles() const {
+const FailedFiles& BitException::failedFiles() const noexcept {
     return mFailedFiles;
 }
 
-BitException::native_code_type BitException::nativeCode() const {
-    auto error = code();
+BitException::native_code_type BitException::nativeCode() const noexcept {
+    const auto error = code();
 #ifdef _WIN32
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
         return error.value();
@@ -53,27 +57,35 @@ BitException::native_code_type BitException::nativeCode() const {
 #ifdef _MSC_VER
     // Note: MinGW considers POSIX error codes in std::system_category, so this code is valid only for MSVC
     if ( error.category() == std::system_category() ) { // Win32 error code
-        return HRESULT_FROM_WIN32( error.value() );
+        return HRESULT_FROM_WIN32( static_cast< DWORD >( error.value() ) );
     }
 #endif
     // POSIX error code (generic_category)
     if ( error == std::errc::invalid_argument ) {
         return E_INVALIDARG;
-    } else if ( error == std::errc::not_a_directory ) {
+    }
+    if ( error == std::errc::not_a_directory ) {
         return HRESULT_FROM_WIN32( ERROR_DIRECTORY );
-    } else if ( error == std::errc::function_not_supported ) {
+    }
+    if ( error == std::errc::function_not_supported ) {
         return E_NOTIMPL;
-    } else if ( error == std::errc::no_such_file_or_directory ) {
+    }
+    if ( error == std::errc::no_such_file_or_directory ) {
         return HRESULT_FROM_WIN32( ERROR_PATH_NOT_FOUND );
-    } else if ( error == std::errc::not_enough_memory ) {
+    }
+    if ( error == std::errc::not_enough_memory ) {
         return E_OUTOFMEMORY;
-    } else if ( error == std::errc::not_supported ) {
+    }
+    if ( error == std::errc::not_supported ) {
         return E_NOINTERFACE;
-    } else if ( error == std::errc::file_exists ) {
+    }
+    if ( error == std::errc::file_exists ) {
         return HRESULT_FROM_WIN32( ERROR_FILE_EXISTS );
-    } else if ( error == std::errc::operation_canceled ) {
+    }
+    if ( error == std::errc::operation_canceled ) {
         return E_ABORT;
-    } else if ( error == std::errc::permission_denied ) {
+    }
+    if ( error == std::errc::permission_denied ) {
         return E_ACCESSDENIED;
     }
     return E_FAIL;

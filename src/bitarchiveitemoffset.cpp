@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,31 +19,31 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchiveitemoffset.hpp"
+#include "bitarchiveitemoffset.hpp"
 
-#include "../include/bitinputarchive.hpp"
+#include "bitinputarchive.hpp"
 
 using namespace bit7z;
 
-BitArchiveItemOffset::BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc )
+BitArchiveItemOffset::BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept
     : BitArchiveItem( item_index ), mArc( &item_arc ) {}
 
-BitArchiveItemOffset& BitArchiveItemOffset::operator++() {
+BitArchiveItemOffset& BitArchiveItemOffset::operator++() noexcept {
     ++mItemIndex;
     return *this;
 }
 
-BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) {
+BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) noexcept {
     BitArchiveItemOffset old_value = *this;
     ++( *this );
     return old_value;
 }
 
-bool BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const {
+bool BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const noexcept {
     return mItemIndex == other.mItemIndex;
 }
 
-bool BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const {
+bool BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const noexcept {
     return !( *this == other );
 }
 

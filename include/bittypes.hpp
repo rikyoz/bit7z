@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,16 +20,50 @@
 #define BITTYPES_HPP
 
 #include <string>
+#include <vector>
 
-#ifdef BIT7Z_AUTO_FORMAT
+#ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
 #endif
+
+#if defined( __cpp_lib_filesystem )
+#define USE_STANDARD_FILESYSTEM
+#elif defined( __cplusplus ) && __cplusplus >= 201703L && defined( __has_include )
+#if __has_include( <filesystem> )
+#define USE_STANDARD_FILESYSTEM
+#endif
+#endif
+
+//p7zip defines IUnknown with a virtual destructor, while Windows' IUnknown has a non-virtual destructor
+#ifdef _WIN32
+#define MY_UNKNOWN_DESTRUCTOR(x) x
+#else
+#define MY_UNKNOWN_DESTRUCTOR(x) x override
+#endif
+
+// Some stream classes are non-final (e.g., CStdOutStream), so on Windows they must have a virtual destructor
+#ifdef _WIN32
+#define MY_UNKNOWN_VIRTUAL_DESTRUCTOR(x) virtual x
+#else
+#define MY_UNKNOWN_VIRTUAL_DESTRUCTOR(x) MY_UNKNOWN_DESTRUCTOR(x)
+#endif
+
+
+#define MY_STDMETHOD(method, ...) HRESULT STDMETHODCALLTYPE method ( __VA_ARGS__ )
+#define STDMETHOD_OVERRIDE(method, ...) COM_DECLSPEC_NOTHROW MY_STDMETHOD(method, __VA_ARGS__) override
+#define STDMETHOD_NOEXCEPT_OVERRIDE(method, ...) MY_STDMETHOD(method, __VA_ARGS__) noexcept override
 
 namespace bit7z {
     /**
      * @brief A type representing a byte (equivalent to an unsigned char).
      */
-    using byte_t = unsigned char;
+#if __cpp_lib_byte
+    using byte_t = std::byte;
+#else
+    enum class byte_t : unsigned char {}; //same as std::byte_t
+#endif
+    using buffer_t = std::vector< byte_t >;
+    using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
 
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
@@ -56,6 +90,7 @@ namespace bit7z {
 //Macros not defined by p7zip
 #define HRESULT_FACILITY(hr)  (((hr) >> 16) & 0x1fff)
 #define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
+#define COM_DECLSPEC_NOTHROW
 #endif
 }
 #endif // BITTYPES_HPP

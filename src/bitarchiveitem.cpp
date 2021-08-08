@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,16 +19,16 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchiveitem.hpp"
+#include "bitarchiveitem.hpp"
 
-#include "../include/fsutil.hpp"
+#include "internal/fsutil.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-BitArchiveItem::BitArchiveItem( uint32_t item_index ) : mItemIndex( item_index ) {}
+BitArchiveItem::BitArchiveItem( uint32_t item_index ) noexcept : mItemIndex( item_index ) {}
 
-uint32_t BitArchiveItem::index() const {
+uint32_t BitArchiveItem::index() const noexcept {
     return mItemIndex;
 }
 
@@ -76,4 +76,21 @@ uint64_t BitArchiveItem::packSize() const {
 bool BitArchiveItem::isEncrypted() const {
     BitPropVariant is_encrypted = getProperty( BitProperty::Encrypted );
     return is_encrypted.isBool() && is_encrypted.getBool();
+}
+
+FILETIME BitArchiveItem::creationTime() const {
+    return getProperty( BitProperty::CTime ).getFileTime();
+}
+
+FILETIME BitArchiveItem::lastAccessTime() const {
+    return getProperty( BitProperty::ATime ).getFileTime();
+}
+
+FILETIME BitArchiveItem::lastWriteTime() const {
+    return getProperty( BitProperty::MTime ).getFileTime();
+}
+
+uint32_t BitArchiveItem::attributes() const {
+    BitPropVariant attrib = getProperty( BitProperty::Attrib );
+    return attrib.isUInt32() ? attrib.getUInt32() : 0;
 }

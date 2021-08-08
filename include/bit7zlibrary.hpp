@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,14 +21,14 @@
 
 #include <string>
 
-#include "../include/bittypes.hpp"
-
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <myWindows/StdAfx.h>
 using HMODULE = void*;
 #endif
+
+#include "bittypes.hpp"
 
 #ifdef _WIN32
 #define DEFAULT_DLL L"7z.dll"
@@ -51,7 +51,12 @@ namespace bit7z {
     class Bit7zLibrary {
         public:
             Bit7zLibrary( const Bit7zLibrary& ) = delete; // not copyable!
+
+            Bit7zLibrary( Bit7zLibrary&& ) = delete;
+
             Bit7zLibrary& operator=( const Bit7zLibrary& ) = delete; // not assignable!
+
+            Bit7zLibrary& operator=( Bit7zLibrary&& ) = delete;
 
             /**
              * @brief Constructs a Bit7zLibrary object using the path of the wanted 7zip DLL.

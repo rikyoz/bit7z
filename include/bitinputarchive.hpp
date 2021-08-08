@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2020  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,20 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
-
-#ifndef BITINPUTARCHIVE_H
-#define BITINPUTARCHIVE_H
-
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitarchiveiteminfo.hpp"
-#include "../include/bitarchiveitemoffset.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bitpropvariant.hpp"
-#include "../include/bittypes.hpp"
+#ifndef BITINPUTARCHIVE_HPP
+#define BITINPUTARCHIVE_HPP
 
 #include <vector>
 #include <string>
 #include <cstdint>
+
+#include "bitarchivehandler.hpp"
+#include "bitarchiveiteminfo.hpp"
+#include "bitarchiveitemoffset.hpp"
+#include "bitformat.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 
 struct IInStream;
 struct IInArchive;
@@ -42,18 +41,28 @@ namespace bit7z {
 
     class BitInputArchive {
         public:
-            BitInputArchive( const BitArchiveHandler& handler, const tstring& in_file );
+            BitInputArchive( const BitArchiveHandler& handler, tstring in_file );
 
             BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer );
 
             BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream );
 
+            BitInputArchive( const BitInputArchive& ) = delete;
+
+            BitInputArchive( BitInputArchive&& ) = delete;
+
+            BitInputArchive& operator=( const BitInputArchive& ) = delete;
+
+            BitInputArchive& operator=( BitInputArchive&& ) = delete;
+
             virtual ~BitInputArchive();
 
+#ifdef BIT7Z_AUTO_FORMAT
             /**
              * @return the detected format of the file.
              */
-            const BitInFormat& detectedFormat() const;
+            const BitInFormat& detectedFormat() const noexcept;
+#endif
 
             /**
              * @brief Gets the specified archive property.
@@ -94,10 +103,22 @@ namespace bit7z {
              */
             bool isItemEncrypted( uint32_t index ) const;
 
+            const tstring& getArchivePath() const noexcept;
+
+            const BitArchiveHandler& getHandler() const noexcept;
+
+            void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
+
+            void extract( vector< byte_t >& out_buffer, unsigned int index ) const;
+
+            void extract( std::ostream& out_stream, unsigned int index ) const;
+
+            void extract( map< tstring, vector< byte_t > >& out_map ) const;
+
+            void test() const;
+
         protected:
-            IInArchive* openArchiveStream( const BitArchiveHandler& handler,
-                                           const tstring& name,
-                                           IInStream* in_stream );
+            IInArchive* openArchiveStream( const tstring& name, IInStream* in_stream );
 
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
@@ -105,21 +126,21 @@ namespace bit7z {
 
             void test( ExtractCallback* extract_callback ) const;
 
-            HRESULT close() const;
+            HRESULT close() const noexcept;
 
             friend class BitArchiveOpener;
 
-            friend class BitExtractor;
-
-            friend class BitMemExtractor;
-
-            friend class BitStreamExtractor;
-
             friend class BitArchiveCreator;
+
+            friend class BitOutputArchive;
 
         private:
             IInArchive* mInArchive;
+#ifdef BIT7Z_AUTO_FORMAT
             const BitInFormat* mDetectedFormat;
+#endif
+            const BitArchiveHandler& mArchiveHandler;
+            const tstring mArchivePath;
 
         public:
             class const_iterator {
@@ -131,22 +152,22 @@ namespace bit7z {
                     using pointer = const BitArchiveItemOffset*;
                     using difference_type = uint32_t; //so that count_if returns a uint32_t
 
-                    const_iterator& operator++();
+                    const_iterator& operator++() noexcept;
 
-                    const_iterator operator++( int );
+                    const_iterator operator++( int ) noexcept;
 
-                    bool operator==( const const_iterator& other ) const;
+                    bool operator==( const const_iterator& other ) const noexcept;
 
-                    bool operator!=( const const_iterator& other ) const;
+                    bool operator!=( const const_iterator& other ) const noexcept;
 
-                    reference operator*();
+                    reference operator*() noexcept;
 
-                    pointer operator->();
+                    pointer operator->() noexcept;
 
                 private:
                     BitArchiveItemOffset mItemOffset;
 
-                    const_iterator( uint32_t item_index, const BitInputArchive& item_archive );
+                    const_iterator( uint32_t item_index, const BitInputArchive& item_archive ) noexcept;
 
                     friend class BitInputArchive;
             };
@@ -158,7 +179,11 @@ namespace bit7z {
             const_iterator cbegin() const noexcept;
 
             const_iterator cend() const noexcept;
+
+            const_iterator find( const tstring& path ) const noexcept;
+
+            bool contains( const tstring& path ) const noexcept;
     };
 }
 
-#endif //BITINPUTARCHIVE_H
+#endif //BITINPUTARCHIVE_HPP

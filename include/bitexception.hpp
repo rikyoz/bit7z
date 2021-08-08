@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@
 #include <myWindows/StdAfx.h>
 #endif
 
-#include "../include/bittypes.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     using std::system_error;
@@ -58,7 +58,7 @@ namespace bit7z {
              * @param files     the vector of files that failed, with the corresponding error codes.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const char* const message,
+            explicit BitException( const char* message,
                                    std::error_code code = make_hresult_code( E_FAIL ),
                                    FailedFiles&& files = {} );
 
@@ -69,7 +69,7 @@ namespace bit7z {
              * @param file      the file that failed during the operation.
              * @param code      the HRESULT code associated with the exception object.
              */
-            BitException( const char* const message, std::error_code code, const tstring& file );
+            BitException( const char* message, std::error_code code, const tstring& file );
 
             /**
              * @brief Constructs a BitException object with the given message
@@ -79,9 +79,9 @@ namespace bit7z {
              */
             explicit BitException( const std::string& message, std::error_code code = make_hresult_code( E_FAIL ) );
 
-            native_code_type nativeCode() const;
+            native_code_type nativeCode() const noexcept;
 
-            const FailedFiles& failedFiles() const;
+            const FailedFiles& failedFiles() const noexcept;
 
         private:
             //HRESULT mErrorCode;

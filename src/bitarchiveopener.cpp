@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,97 +19,19 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bitarchiveopener.hpp"
+#include "bitarchiveopener.hpp"
 
-#include "../include/bitexception.hpp"
-#include "../include/bitinputarchive.hpp"
-#include "../include/fileextractcallback.hpp"
-#include "../include/bufferextractcallback.hpp"
-#include "../include/streamextractcallback.hpp"
+#include <utility> // for std::move
 
-using std::map;
 using namespace bit7z;
 
-constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
-
 BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
-    : BitArchiveHandler( lib, password ), mFormat( format ), mRetainDirectories( true ) {}
+    : BitArchiveHandler( lib, password ), mFormat( format ) {}
 
-const BitInFormat& BitArchiveOpener::format() const {
+const BitInFormat& BitArchiveOpener::format() const noexcept {
     return mFormat;
 }
 
-const BitInFormat& BitArchiveOpener::extractionFormat() const {
+const BitInFormat& BitArchiveOpener::extractionFormat() const noexcept {
     return mFormat;
-}
-
-void BitArchiveOpener::extractToFileSystem( const BitInputArchive& in_archive,
-                                            const tstring& in_file,
-                                            const tstring& out_dir,
-                                            const vector< uint32_t >& indices ) const {
-    CMyComPtr< ExtractCallback > extract_callback = new FileExtractCallback( *this,
-                                                                             in_archive,
-                                                                             in_file,
-                                                                             out_dir,
-                                                                             mRetainDirectories );
-    in_archive.extract( indices, extract_callback );
-}
-
-void BitArchiveOpener::extractToStream( const BitInputArchive& in_archive,
-                                        std::ostream& out_stream,
-                                        unsigned int index ) const {
-    uint32_t number_items = in_archive.itemsCount();
-    if ( index >= number_items ) {
-        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    const vector< uint32_t > indices( 1, index );
-    CMyComPtr< ExtractCallback > extract_callback = new StreamExtractCallback( *this, in_archive, out_stream );
-    in_archive.extract( indices, extract_callback );
-}
-
-void BitArchiveOpener::extractToBuffer( const BitInputArchive& in_archive,
-                                        vector< byte_t >& out_buffer,
-                                        unsigned int index ) const {
-    uint32_t number_items = in_archive.itemsCount();
-    if ( index >= number_items ) {
-        throw BitException(  "Index " + std::to_string( index ) + " is out of range", std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    if ( in_archive.isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException(  kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    const vector< uint32_t > indices( 1, index );
-    map< tstring, vector< byte_t > > buffers_map;
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, buffers_map );
-    in_archive.extract( indices, extract_callback );
-    out_buffer = std::move( buffers_map.begin()->second );
-}
-
-void BitArchiveOpener::extractToBufferMap( const BitInputArchive& in_archive,
-                                           map< tstring, vector< byte_t > >& out_map ) const {
-    uint32_t number_items = in_archive.itemsCount();
-    vector< uint32_t > files_indices;
-    for ( uint32_t i = 0; i < number_items; ++i ) {
-        if ( !in_archive.isItemFolder( i ) ) { //Consider only files, not folders
-            files_indices.push_back( i );
-        }
-    }
-
-    CMyComPtr< ExtractCallback > extract_callback = new BufferExtractCallback( *this, in_archive, out_map );
-    in_archive.extract( files_indices, extract_callback );
-
-}
-
-bool BitArchiveOpener::retainDirectories() const {
-    return mRetainDirectories;
-}
-
-void BitArchiveOpener::setRetainDirectories( bool retain ) {
-    mRetainDirectories = retain;
 }

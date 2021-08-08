@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,9 +22,9 @@
 #include <vector>
 #include <map>
 
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bittypes.hpp"
+#include "bitarchivehandler.hpp"
+#include "bitformat.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
     using std::vector;
@@ -38,24 +38,26 @@ namespace bit7z {
      */
     class BitArchiveOpener : public BitArchiveHandler {
         public:
+            BitArchiveOpener( const BitArchiveOpener& ) = delete;
+
+            BitArchiveOpener( BitArchiveOpener&& ) = delete;
+
+            BitArchiveOpener& operator=( const BitArchiveOpener& ) = delete;
+
+            BitArchiveOpener& operator=( BitArchiveOpener&& ) = delete;
 
             /**
              * @return the archive format used by the archive opener.
              */
-            const BitInFormat& format() const override;
+            const BitInFormat& format() const noexcept override;
 
             /**
              * @return the archive format used by the archive opener.
              */
-            const BitInFormat& extractionFormat() const;
-
-            bool retainDirectories() const;
-
-            void setRetainDirectories( bool retain );
+            const BitInFormat& extractionFormat() const noexcept;
 
         protected:
             const BitInFormat& mFormat;
-            bool mRetainDirectories;
 
             BitArchiveOpener( const Bit7zLibrary& lib,
                               const BitInFormat& format,
@@ -63,21 +65,6 @@ namespace bit7z {
 
             ~BitArchiveOpener() override = default;
 
-            void extractToFileSystem( const BitInputArchive& in_archive,
-                                      const tstring& in_file,
-                                      const tstring& out_dir,
-                                      const vector< uint32_t >& indices ) const;
-
-            void extractToBuffer( const BitInputArchive& in_archive,
-                                  vector< byte_t >& out_buffer,
-                                  unsigned int index ) const;
-
-            void extractToStream( const BitInputArchive& in_archive,
-                                  ostream& out_stream,
-                                  unsigned int index ) const;
-
-            void extractToBufferMap( const BitInputArchive& in_archive,
-                                     map< tstring, vector< byte_t > >& out_map ) const;
     };
 }
 

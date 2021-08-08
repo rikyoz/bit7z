@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,13 +19,13 @@
 #ifndef BITARCHIVECREATOR_HPP
 #define BITARCHIVECREATOR_HPP
 
-#include "../include/bitarchivehandler.hpp"
-#include "../include/bitinputarchive.hpp"
-#include "../include/bitformat.hpp"
-#include "../include/bitcompressionlevel.hpp"
-#include "../include/bitcompressionmethod.hpp"
-
 #include <memory>
+
+#include "bitarchivehandler.hpp"
+#include "bitcompressionlevel.hpp"
+#include "bitcompressionmethod.hpp"
+#include "bitformat.hpp"
+#include "bitinputarchive.hpp"
 
 struct IOutStream;
 struct ISequentialOutStream;
@@ -36,60 +36,79 @@ namespace bit7z {
 
     class UpdateCallback;
 
+    struct ArchiveProperties {
+        vector< const wchar_t* > names;
+        vector< BitPropVariant > values;
+    };
+
+    enum struct UpdateMode {
+        NONE,
+        APPEND,
+        OVERWRITE
+    };
+
     /**
      * @brief Abstract class representing a generic archive creator.
      */
     class BitArchiveCreator : public BitArchiveHandler {
         public:
-            /**
-             * @return the format used by the archive creator.
-             */
-            const BitInFormat& format() const override;
+            BitArchiveCreator( const BitArchiveCreator& ) = delete;
+
+            BitArchiveCreator( BitArchiveCreator&& ) = delete;
+
+            BitArchiveCreator& operator=( const BitArchiveCreator& ) = delete;
+
+            BitArchiveCreator& operator=( BitArchiveCreator&& ) = delete;
 
             /**
              * @return the format used by the archive creator.
              */
-            const BitInOutFormat& compressionFormat() const;
+            const BitInFormat& format() const noexcept override;
+
+            /**
+             * @return the format used by the archive creator.
+             */
+            const BitInOutFormat& compressionFormat() const noexcept;
 
             /**
              * @return whether the creator crypts also the headers of archives or not
              */
-            bool cryptHeaders() const;
+            bool cryptHeaders() const noexcept;
 
             /**
              * @return the compression level used by the archive creator.
              */
-            BitCompressionLevel compressionLevel() const;
+            BitCompressionLevel compressionLevel() const noexcept;
 
             /**
              * @return the compression method used by the archive creator.
              */
-            BitCompressionMethod compressionMethod() const;
+            BitCompressionMethod compressionMethod() const noexcept;
 
             /**
              * @return the dictionary size used by the archive creator.
              */
-            uint32_t dictionarySize() const;
+            uint32_t dictionarySize() const noexcept;
 
-            uint32_t wordSize() const;
+            uint32_t wordSize() const noexcept;
 
             /**
              * @return whether the archive creator uses solid compression or not.
              */
-            bool solidMode() const;
+            bool solidMode() const noexcept;
 
             /**
              * @return whether the archive creator is allowed to update existing archives or not.
              */
-            bool updateMode() const;
+            UpdateMode updateMode() const noexcept;
 
             /**
              * @return the size (in bytes) of the archive volume used by the creator
              *         (a 0 value means that all files are going in a single archive).
              */
-            uint64_t volumeSize() const;
+            uint64_t volumeSize() const noexcept;
 
-            uint32_t threadsCount() const;
+            uint32_t threadsCount() const noexcept;
 
             /**
              * @brief Sets up a password for the output archive.
@@ -140,7 +159,7 @@ namespace bit7z {
              *
              * @param compression_level the compression level desired.
              */
-            void setCompressionLevel( BitCompressionLevel compression_level );
+            void setCompressionLevel( BitCompressionLevel compression_level ) noexcept;
 
             /**
              * @brief Sets the compression method to be used when creating an archive.
@@ -166,7 +185,7 @@ namespace bit7z {
              *
              * @param solid_mode    if true, it will be used the "solid compression" method.
              */
-            void setSolidMode( bool solid_mode );
+            void setSolidMode( bool solid_mode ) noexcept;
 
             /**
              * @brief Sets whether the creator can update existing archives or not.
@@ -175,7 +194,7 @@ namespace bit7z {
              *
              * @param update_mode if true, compressing operations will update existing archives.
              */
-            void setUpdateMode( bool update_mode );
+            virtual void setUpdateMode( UpdateMode update_mode );
 
             /**
              * @brief Sets the size (in bytes) of the archive volumes.
@@ -184,39 +203,32 @@ namespace bit7z {
              *
              * @param size    The dimension of a volume.
              */
-            void setVolumeSize( uint64_t size );
+            void setVolumeSize( uint64_t size ) noexcept;
 
-            void setThreadsCount( uint32_t threads_count );
+            void setThreadsCount( uint32_t threads_count ) noexcept;
 
         protected:
             const BitInOutFormat& mFormat;
 
-            BitArchiveCreator( const Bit7zLibrary& lib, const BitInOutFormat& format );
+            BitArchiveCreator( const Bit7zLibrary& lib,
+                               const BitInOutFormat& format,
+                               tstring password = TSTRING( "" ),
+                               UpdateMode update_mode = UpdateMode::NONE );
 
             ~BitArchiveCreator() override = default;
 
-            CMyComPtr< IOutArchive > initOutArchive() const;
+            ArchiveProperties getArchiveProperties() const;
 
-            CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive,
-                                                       CMyComPtr< IOutArchive >& new_arc,
-                                                       unique_ptr< BitInputArchive >& old_arc ) const;
-
-            void setArchiveProperties( IOutArchive* out_archive ) const;
-
-            void compressToFile( const tstring& out_file, UpdateCallback* update_callback ) const;
-
-            void compressToBuffer( vector< byte_t >& out_buffer, UpdateCallback* update_callback ) const;
-
-            void compressToStream( ostream& out_stream, UpdateCallback* update_callback ) const;
+            friend class BitOutputArchive;
 
         private:
+            UpdateMode mUpdateMode;
             BitCompressionLevel mCompressionLevel;
             BitCompressionMethod mCompressionMethod;
             uint32_t mDictionarySize;
             uint32_t mWordSize;
             bool mCryptHeaders;
             bool mSolidMode;
-            bool mUpdateMode;
             uint64_t mVolumeSize;
             uint32_t mThreadsCount;
     };

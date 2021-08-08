@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,22 +19,22 @@
 #ifndef BITARCHIVEITEMOFFSET_HPP
 #define BITARCHIVEITEMOFFSET_HPP
 
-#include "../include/bitarchiveitem.hpp"
+#include "bitarchiveitem.hpp"
 
 namespace bit7z {
     class BitInputArchive;
 
     class BitArchiveItemOffset : public BitArchiveItem {
         public:
-            BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc );
+            BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
 
-            BitArchiveItemOffset& operator++();
+            BitArchiveItemOffset& operator++() noexcept;
 
-            BitArchiveItemOffset operator++( int );
+            BitArchiveItemOffset operator++( int ) noexcept;
 
-            bool operator==( const BitArchiveItemOffset& other ) const;
+            bool operator==( const BitArchiveItemOffset& other ) const noexcept;
 
-            bool operator!=( const BitArchiveItemOffset& other ) const;
+            bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
 
             BitPropVariant getProperty( BitProperty property ) const override;
 

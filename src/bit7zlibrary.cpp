@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +19,9 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "../include/bit7zlibrary.hpp"
+#include "bit7zlibrary.hpp"
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
 
 #ifndef _WIN32
 #include <dlfcn.h>
@@ -63,7 +63,7 @@ Bit7zLibrary::~Bit7zLibrary() {
 }
 
 void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const {
-    HRESULT res = mCreateObjectFunc( format_ID, interface_ID, out_object );
+    const HRESULT res = mCreateObjectFunc( format_ID, interface_ID, out_object );
     if ( res != S_OK ) {
         throw BitException( "Cannot get class object", make_hresult_code( res ) );
     }
@@ -80,7 +80,7 @@ void Bit7zLibrary::setLargePageMode() {
 #endif
         );
     }
-    HRESULT res = pSetLargePageMode();
+    const HRESULT res = pSetLargePageMode();
     if ( res != S_OK ) {
         throw BitException( "Cannot set large page mode", make_hresult_code( res ) );
     }
