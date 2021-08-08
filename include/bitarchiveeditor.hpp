@@ -21,8 +21,7 @@
 
 #include <unordered_map>
 
-#include "bitarchivecreator.hpp"
-#include "bitoutputarchive.hpp"
+#include "bitarchivewriter.hpp"
 #include "bittypes.hpp"
 
 namespace bit7z {
@@ -30,7 +29,7 @@ namespace bit7z {
 
     using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
 
-    class BitArchiveEditor : public BitArchiveCreator, public BitOutputArchive {
+    class BitArchiveEditor : public BitArchiveWriter {
         public:
             BitArchiveEditor( const Bit7zLibrary& lib,
                               const tstring& in_file,

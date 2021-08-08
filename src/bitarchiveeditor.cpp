@@ -38,13 +38,12 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& in_file,
                                     const BitInOutFormat& format,
                                     const tstring& password )
-    : BitArchiveCreator( lib, format, password, UpdateMode::APPEND ),
-      BitOutputArchive( *this, in_file ) {
+    : BitArchiveWriter( lib, in_file, format, password ) {
     if ( mInputArchive != nullptr ) {
         return; // Input file was correctly read by base class BitOutputArchive constructor
     }
 
-    /* Note: BitOutputArchive doesn't require an input file, but BitArchiveEditor does! */
+    /* Note: BitArchiveWriter doesn't require an input file, but BitArchiveEditor does! */
     if ( in_file.empty() ) {
         throw BitException( "Invalid archive path", std::make_error_code( std::errc::invalid_argument ) );
     }
@@ -202,6 +201,6 @@ bool BitArchiveEditor::hasNewData( uint32_t index ) const noexcept {
 
 bool BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept {
     const auto mapped_index = static_cast< uint32_t >( getItemInputIndex( index ) );
-    bool isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
+    bool       isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
     return mapped_index >= mInputArchiveItemsCount || isEditedItem;
 }
