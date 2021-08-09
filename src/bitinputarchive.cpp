@@ -192,7 +192,7 @@ void BitInputArchive::test( ExtractCallback* extract_callback ) const {
 
 const BitInFormat& BitInputArchive::detectedFormat() const noexcept {
     // Defensive programming: for how the archive format is detected,
-    // a correct BitInputArchive instance should have a non null mDetectedFormat!
+    // a correct BitInputArchive instance should have a non-null mDetectedFormat!
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
 }
 
