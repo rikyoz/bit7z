@@ -28,7 +28,7 @@ using bit7z::BufferItem;
 using bit7z::BitPropVariant;
 using bit7z::tstring;
 
-BufferItem::BufferItem( const vector <byte_t>& buffer, const tstring& name ) : mBuffer{ buffer }, mBufferName{ name } {}
+BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name ) : mBuffer{ buffer }, mBufferName{ name } {}
 
 tstring BufferItem::name() const {
     return mBufferName.filename();
@@ -65,7 +65,7 @@ FILETIME BufferItem::lastAccessTime() const noexcept { //-V524
 }
 
 FILETIME BufferItem::lastWriteTime() const noexcept {
-    FILETIME ft;
+    FILETIME   ft;
     SYSTEMTIME st;
 
     GetSystemTime( &st ); // gets current time

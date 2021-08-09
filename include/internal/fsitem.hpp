@@ -20,11 +20,11 @@
 #define FSITEM_HPP
 
 #include "internal/fsutil.hpp"
-#include "internal/genericstreamitem.hpp"
+#include "internal/genericinputitem.hpp"
 
 namespace bit7z {
     namespace filesystem {
-        class FSItem final : public GenericStreamItem {
+        class FSItem final : public GenericInputItem {
             public:
                 explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
 

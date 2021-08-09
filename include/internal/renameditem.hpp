@@ -21,10 +21,10 @@
 
 #include "bitinputarchive.hpp"
 #include "bittypes.hpp"
-#include "internal/genericstreamitem.hpp"
+#include "internal/genericinputitem.hpp"
 
 namespace bit7z {
-    class RenamedItem final : public GenericStreamItem {
+    class RenamedItem final : public GenericInputItem {
         public:
             explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path );
 

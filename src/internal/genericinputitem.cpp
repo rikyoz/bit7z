@@ -19,16 +19,16 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "internal/genericstreamitem.hpp"
+#include "internal/genericinputitem.hpp"
 
-using bit7z::GenericStreamItem;
+using bit7z::GenericInputItem;
 using bit7z::BitPropVariant;
 
-bool GenericStreamItem::hasNewData() const noexcept {
+bool GenericInputItem::hasNewData() const noexcept {
     return true;
 }
 
-BitPropVariant GenericStreamItem::getProperty( BitProperty propID ) const {
+BitPropVariant GenericInputItem::getProperty( BitProperty propID ) const {
     BitPropVariant prop;
     switch ( propID ) {
         case BitProperty::Path:

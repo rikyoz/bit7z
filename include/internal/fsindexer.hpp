@@ -35,7 +35,7 @@ namespace bit7z {
             public:
                 explicit FSIndexer( FSItem directory, tstring filter = TSTRING( "" ) );
 
-                void listDirectoryItems( vector< unique_ptr< GenericStreamItem > >& result,
+                void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                          bool recursive,
                                          const fs::path& prefix = fs::path() );
 

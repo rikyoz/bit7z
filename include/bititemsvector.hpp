@@ -37,13 +37,13 @@ namespace bit7z {
 
     using filesystem::FSItem;
 
-    struct GenericStreamItem;
-    using GenericStreamItemPtr = std::unique_ptr< GenericStreamItem >;
-    using GenericStreamItemVector = std::vector< GenericStreamItemPtr >;
+    struct GenericInputItem;
+    using GenericInputItemPtr = std::unique_ptr< GenericInputItem >;
+    using GenericInputItemVector = std::vector< GenericInputItemPtr >;
 
     class BitItemsVector {
         public:
-            using value_type = GenericStreamItemPtr;
+            using value_type = GenericInputItemPtr;
 
             void indexDirectory( const fs::path& in_dir,
                                  const tstring& filter = TSTRING( "" ),
@@ -61,20 +61,20 @@ namespace bit7z {
 
             size_t size() const;
 
-            const GenericStreamItem& operator[]( size_t index) const;
+            const GenericInputItem& operator[]( size_t index) const;
 
-            GenericStreamItemVector::const_iterator begin() const noexcept;
+            GenericInputItemVector::const_iterator begin() const noexcept;
 
-            GenericStreamItemVector::const_iterator end() const noexcept;
+            GenericInputItemVector::const_iterator end() const noexcept;
 
-            GenericStreamItemVector::const_iterator cbegin() const noexcept;
+            GenericInputItemVector::const_iterator cbegin() const noexcept;
 
-            GenericStreamItemVector::const_iterator cend() const noexcept;
+            GenericInputItemVector::const_iterator cend() const noexcept;
 
             virtual ~BitItemsVector();
 
         private:
-            GenericStreamItemVector mItems;
+            GenericInputItemVector mItems;
 
             void indexItem( const FSItem& item, bool ignore_dirs );
     };

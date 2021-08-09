@@ -19,40 +19,40 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "internal/stdstreamitem.hpp"
+#include "internal/stdinputitem.hpp"
 
 #include "internal/cstdinstream.hpp"
 #include "internal/util.hpp"
 
-using bit7z::StdStreamItem;
+using bit7z::StdInputItem;
 using bit7z::BitPropVariant;
 using bit7z::tstring;
 
-StdStreamItem::StdStreamItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
+StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
 
-tstring StdStreamItem::name() const {
+tstring StdInputItem::name() const {
     return mStreamPath.filename();
 }
 
-tstring StdStreamItem::path() const {
+tstring StdInputItem::path() const {
     return mStreamPath;
 }
 
-fs::path StdStreamItem::inArchivePath() const {
+fs::path StdInputItem::inArchivePath() const {
     return mStreamPath;
 }
 
-HRESULT StdStreamItem::getStream( ISequentialInStream** inStream ) const {
+HRESULT StdInputItem::getStream( ISequentialInStream** inStream ) const {
     auto inStreamLoc = bit7z::make_com< CStdInStream, ISequentialInStream >( mStream );
     *inStream = inStreamLoc.Detach(); //Note: 7-zip will take care of freeing the memory!
     return S_OK;
 }
 
-bool StdStreamItem::isDir() const noexcept {
+bool StdInputItem::isDir() const noexcept {
     return false;
 }
 
-uint64_t StdStreamItem::size() const {
+uint64_t StdInputItem::size() const {
     const auto original_pos = mStream.tellg();
     mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
     const auto result = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
@@ -60,15 +60,15 @@ uint64_t StdStreamItem::size() const {
     return result;
 }
 
-FILETIME StdStreamItem::creationTime() const noexcept { //-V524
+FILETIME StdInputItem::creationTime() const noexcept { //-V524
     return lastWriteTime();
 }
 
-FILETIME StdStreamItem::lastAccessTime() const noexcept { //-V524
+FILETIME StdInputItem::lastAccessTime() const noexcept { //-V524
     return lastWriteTime();
 }
 
-FILETIME StdStreamItem::lastWriteTime() const noexcept {
+FILETIME StdInputItem::lastWriteTime() const noexcept {
     FILETIME ft;
     SYSTEMTIME st;
 
@@ -77,6 +77,6 @@ FILETIME StdStreamItem::lastWriteTime() const noexcept {
     return ft;
 }
 
-uint32_t StdStreamItem::attributes() const noexcept {
+uint32_t StdInputItem::attributes() const noexcept {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }

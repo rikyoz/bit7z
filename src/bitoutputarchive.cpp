@@ -24,7 +24,7 @@
 #include "bitexception.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivoloutstream.hpp"
-#include "internal/genericstreamitem.hpp"
+#include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
 
@@ -258,13 +258,13 @@ uint32_t BitOutputArchive::itemsCount() const {
 
 BitPropVariant BitOutputArchive::getItemProperty( input_index index, BitProperty propID ) const {
     const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
-    const GenericStreamItem& new_item = mNewItemsVector[ new_item_index ];
+    const GenericInputItem& new_item = mNewItemsVector[ new_item_index ];
     return new_item.getProperty( propID );
 }
 
 HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream** inStream ) const {
     const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
-    const GenericStreamItem& new_item = mNewItemsVector[ new_item_index ];
+    const GenericInputItem& new_item = mNewItemsVector[ new_item_index ];
 
     const HRESULT res = new_item.getStream( inStream );
     if ( FAILED( res ) ) {

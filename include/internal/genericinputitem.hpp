@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef GENERICSTREAMITEM_HPP
-#define GENERICSTREAMITEM_HPP
+#ifndef GENERICINPUTITEM_HPP
+#define GENERICINPUTITEM_HPP
 
 #include <cstdint>
 #include <windows.h>
@@ -33,7 +33,7 @@
 #include "fs.hpp"
 
 namespace bit7z {
-    struct GenericStreamItem : public BitGenericItem {
+    struct GenericInputItem : public BitGenericItem {
         virtual fs::path inArchivePath() const = 0;
 
         virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
@@ -42,9 +42,9 @@ namespace bit7z {
 
         BitPropVariant getProperty( BitProperty propID ) const override;
 
-        ~GenericStreamItem() override = default;
+        ~GenericInputItem() override = default;
     };
 }
 
 
-#endif //GENERICSTREAMITEM_HPP
+#endif //GENERICINPUTITEM_HPP

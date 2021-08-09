@@ -25,7 +25,7 @@
 #include "internal/bufferitem.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/renameditem.hpp"
-#include "internal/stdstreamitem.hpp"
+#include "internal/stdinputitem.hpp"
 #include "internal/updatecallback.hpp"
 
 using bit7z::BitArchiveEditor;
@@ -84,7 +84,7 @@ void BitArchiveEditor::updateItem( uint32_t index, const std::vector< byte_t >& 
 void BitArchiveEditor::updateItem( uint32_t index, istream& in_stream ) {
     checkIndex( index );
     auto item_name = mInputArchive->getItemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< StdStreamItem >( in_stream, item_name.getString() );
+    mEditedItems[ index ] = std::make_unique< StdInputItem >( in_stream, item_name.getString() );
 }
 
 void BitArchiveEditor::updateItem( const tstring& item_path, const tstring& in_file ) {
@@ -96,7 +96,7 @@ void BitArchiveEditor::updateItem( const tstring& item_path, const std::vector< 
 }
 
 void BitArchiveEditor::updateItem( const tstring& item_path, std::istream& in_stream ) {
-    mEditedItems[ findItem( item_path ) ] = std::make_unique< StdStreamItem >( in_stream, item_path );
+    mEditedItems[ findItem( item_path ) ] = std::make_unique< StdInputItem >( in_stream, item_path );
 }
 
 void BitArchiveEditor::deleteItem( uint32_t index ) {

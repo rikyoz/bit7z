@@ -21,12 +21,12 @@
 
 #include <string>
 
-#include "internal/genericstreamitem.hpp"
+#include "internal/genericinputitem.hpp"
 
 namespace bit7z {
     using std::vector;
 
-    class BufferItem final : public GenericStreamItem {
+    class BufferItem final : public GenericInputItem {
         public:
             explicit BufferItem( const vector <byte_t>& buffer, const tstring& name );
 

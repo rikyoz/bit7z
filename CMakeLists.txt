@@ -61,12 +61,12 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/fsitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fsutil.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fs.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/genericstreamitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/genericinputitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/renameditem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/stdstreamitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/stdinputitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/updatecallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/util.hpp )
 
@@ -107,12 +107,12 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/fsindexer.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fsitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fsutil.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/genericstreamitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/genericinputitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/hresultcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/opencallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/renameditem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/stdstreamitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/stdinputitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
 
