@@ -193,8 +193,7 @@ namespace bit7z {
         inline constexpr BitInFormat    Lzma( 0x0A );
         inline constexpr BitInFormat    Lzma86( 0x0B );
         inline constexpr BitInOutFormat Xz( 0x0C, TSTRING( ".xz" ), BitCompressionMethod::Lzma2,
-                                            FormatFeatures::COMPRESSION_LEVEL | FormatFeatures::ENCRYPTION |
-                                            FormatFeatures::HEADER_ENCRYPTION );
+                                            FormatFeatures::COMPRESSION_LEVEL );
         inline constexpr BitInFormat    Ppmd( 0x0D );
         inline constexpr BitInFormat    COFF( 0xC6 );
         inline constexpr BitInFormat    Ext( 0xC7 );

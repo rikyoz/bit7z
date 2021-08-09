@@ -48,8 +48,7 @@ namespace bit7z {
         const BitInFormat Lzma( 0x0A );
         const BitInFormat Lzma86( 0x0B );
         const BitInOutFormat Xz( 0x0C, TSTRING( ".xz" ), BitCompressionMethod::Lzma2,
-                                 FormatFeatures::COMPRESSION_LEVEL | FormatFeatures::ENCRYPTION |
-                                 FormatFeatures::HEADER_ENCRYPTION );
+                                 FormatFeatures::COMPRESSION_LEVEL );
         const BitInFormat Ppmd( 0x0D );
         const BitInFormat COFF( 0xC6 );
         const BitInFormat Ext( 0xC7 );
