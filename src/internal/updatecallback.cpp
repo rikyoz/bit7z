@@ -85,6 +85,13 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
     RINOK( Finalize() )
 
+    if ( mHandler.fileCallback() ) {
+        BitPropVariant filePath = mOutputArchive.getOutputItemProperty( index, BitProperty::Path );
+        if ( filePath.isString() ) {
+            mHandler.fileCallback()( filePath.getString() );
+        }
+    }
+
     return mOutputArchive.getOutputItemStream( index, inStream );
 }
 
