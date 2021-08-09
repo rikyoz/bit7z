@@ -89,9 +89,6 @@ namespace bit7z {
 
         private:
             const BitOutputArchive& mOutputArchive;
-            uint64_t mVolSize;
-
-            bool mAskPassword;
             bool mNeedBeClosed;
     };
 }

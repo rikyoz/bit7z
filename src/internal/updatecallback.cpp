@@ -30,8 +30,6 @@ using namespace bit7z;
 UpdateCallback::UpdateCallback( const BitOutputArchive& output )
     : Callback{ output.getHandler() },
       mOutputArchive{ output },
-      mVolSize{ 0 },
-      mAskPassword{ false },
       mNeedBeClosed{ false } {}
 
 UpdateCallback::~UpdateCallback() {
@@ -91,11 +89,8 @@ STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inSt
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* size ) noexcept {
-    if ( mVolSize == 0 ) { return S_FALSE; }
-
-    *size = mVolSize;
-    return S_OK;
+STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ ) noexcept {
+    return S_FALSE;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -143,16 +138,6 @@ STDMETHODIMP UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) n
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
-    if ( !mHandler.isPasswordDefined() ) {
-        if ( mAskPassword ) {
-            // You can ask real password here from user
-            // Password = GetPassword(OutStream);
-            // PasswordIsDefined = true;
-            mErrorMessage = kPasswordNotDefined;
-            return E_ABORT;
-        }
-    }
-
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
 }
