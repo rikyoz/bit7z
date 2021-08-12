@@ -109,7 +109,7 @@ namespace bit7z {
 
             void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
 
-            void extract( vector< byte_t >& out_buffer, unsigned int index ) const;
+            vector< byte_t > extract( unsigned int index ) const;
 
             void extract( std::ostream& out_stream, unsigned int index ) const;
 

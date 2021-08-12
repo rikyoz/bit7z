@@ -44,9 +44,9 @@ namespace bit7z {
                 in_archive.extract( out_dir, vector< uint32_t >() );
             }
 
-            void extract( Input input, vector< byte_t >& out_buffer, unsigned int index = 0 ) const {
+            vector< byte_t > extract( Input input, unsigned int index = 0 ) const {
                 BitInputArchive in_archive( *this, input );
-                in_archive.extract( out_buffer, index );
+                return in_archive.extract( index );
             }
 
             void extract( Input input, std::ostream& out_stream, unsigned int index = 0 ) const {
