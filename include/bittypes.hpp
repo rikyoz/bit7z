@@ -65,6 +65,29 @@ namespace bit7z {
     using buffer_t = std::vector< byte_t >;
     using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
 
+    namespace { //private
+        template<class Char>
+        struct string_traits;
+
+        template<>
+        struct string_traits<char> {
+            template<class T>
+            static std::string convert_to_string(T &&t) {
+                using std::to_string;
+                return to_string(std::forward<T>(t));
+            }
+        };
+
+        template<>
+        struct string_traits<wchar_t> {
+            template<class T>
+            static std::wstring convert_to_string(T &&t) {
+                using std::to_wstring;
+                return to_wstring(std::forward<T>(t));
+            }
+        };
+    }
+
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
     using tstring = std::wstring;
@@ -72,7 +95,6 @@ namespace bit7z {
     using tregex = std::wregex;
 #endif
 #define TSTRING( str ) L##str
-#define to_tstring std::to_wstring
 #else // Unix
     using tchar = char;
     using tstring = std::string;
@@ -80,7 +102,6 @@ namespace bit7z {
     using tregex = std::regex;
 #endif
 #define TSTRING( str ) str
-#define to_tstring std::to_string
 
     constexpr auto ERROR_OPEN_FAILED = EIO;
     constexpr auto ERROR_SEEK = EIO;
@@ -92,5 +113,10 @@ namespace bit7z {
 #define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
 #define COM_DECLSPEC_NOTHROW
 #endif
+
+    template <typename T>
+    inline std::basic_string<tchar> to_tstring(T&& Arg) {
+        return string_traits<tchar>::convert_to_string(std::forward<T>(Arg));
+    }
 }
 #endif // BITTYPES_HPP
