@@ -61,31 +61,31 @@ namespace bit7z {
             HRESULT Finalize() noexcept;
 
             // IProgress from IArchiveUpdateCallback2
-            STDMETHOD_OVERRIDE( SetTotal, UInt64 size );
+            BIT7Z_STDMETHOD( SetTotal, UInt64 size );
 
-            STDMETHOD_OVERRIDE( SetCompleted, const UInt64* completeValue );
+            BIT7Z_STDMETHOD( SetCompleted, const UInt64* completeValue );
 
             // ICompressProgressInfo
-            STDMETHOD_OVERRIDE( SetRatioInfo, const UInt64* inSize, const UInt64* outSize );
+            BIT7Z_STDMETHOD( SetRatioInfo, const UInt64* inSize, const UInt64* outSize );
 
             // IArchiveUpdateCallback2
-            STDMETHOD_OVERRIDE( GetProperty, UInt32 index, PROPID propID, PROPVARIANT* value );
+            BIT7Z_STDMETHOD( GetProperty, UInt32 index, PROPID propID, PROPVARIANT* value );
 
-            STDMETHOD_OVERRIDE( GetStream, UInt32 index, ISequentialInStream** inStream );
+            BIT7Z_STDMETHOD( GetStream, UInt32 index, ISequentialInStream** inStream );
 
-            STDMETHOD_NOEXCEPT_OVERRIDE( GetVolumeSize, UInt32 index, UInt64* size );
+            BIT7Z_STDMETHOD_NOEXCEPT( GetVolumeSize, UInt32 index, UInt64* size );
 
-            STDMETHOD_OVERRIDE( GetVolumeStream, UInt32 index, ISequentialOutStream** volumeStream );
+            BIT7Z_STDMETHOD( GetVolumeStream, UInt32 index, ISequentialOutStream** volumeStream );
 
-            STDMETHOD_NOEXCEPT_OVERRIDE( GetUpdateItemInfo, UInt32 index,
-                                         Int32* newData,
-                                         Int32* newProperties,
-                                         UInt32* indexInArchive );
+            BIT7Z_STDMETHOD_NOEXCEPT( GetUpdateItemInfo, UInt32 index,
+                                      Int32* newData,
+                                      Int32* newProperties,
+                                      UInt32* indexInArchive );
 
-            STDMETHOD_NOEXCEPT_OVERRIDE( SetOperationResult, Int32 operationResult );
+            BIT7Z_STDMETHOD_NOEXCEPT( SetOperationResult, Int32 operationResult );
 
             //ICryptoGetTextPassword2
-            STDMETHOD_OVERRIDE( CryptoGetTextPassword2, Int32* passwordIsDefined, BSTR* password );
+            BIT7Z_STDMETHOD( CryptoGetTextPassword2, Int32* passwordIsDefined, BSTR* password );
 
         private:
             const BitOutputArchive& mOutputArchive;
