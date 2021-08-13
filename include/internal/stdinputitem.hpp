@@ -28,25 +28,25 @@ namespace bit7z {
         public:
             explicit StdInputItem( istream& stream, const tstring& path );
 
-            tstring name() const override;
+            BIT7Z_NODISCARD tstring name() const override;
 
-            bool isDir() const noexcept override;
+            BIT7Z_NODISCARD bool isDir() const noexcept override;
 
-            uint64_t size() const override;
+            BIT7Z_NODISCARD uint64_t size() const override;
 
-            FILETIME creationTime() const noexcept override;
+            BIT7Z_NODISCARD FILETIME creationTime() const noexcept override;
 
-            FILETIME lastAccessTime() const noexcept override;
+            BIT7Z_NODISCARD FILETIME lastAccessTime() const noexcept override;
 
-            FILETIME lastWriteTime() const noexcept override;
+            BIT7Z_NODISCARD FILETIME lastWriteTime() const noexcept override;
 
-            uint32_t attributes() const noexcept override;
+            BIT7Z_NODISCARD uint32_t attributes() const noexcept override;
 
-            tstring path() const override;
+            BIT7Z_NODISCARD tstring path() const override;
 
-            fs::path inArchivePath() const override;
+            BIT7Z_NODISCARD fs::path inArchivePath() const override;
 
-            HRESULT getStream( ISequentialInStream** inStream ) const override;
+            BIT7Z_NODISCARD HRESULT getStream( ISequentialInStream** inStream ) const override;
 
         private:
             istream& mStream;

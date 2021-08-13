@@ -30,7 +30,7 @@ namespace bit7z {
 
             void open( const fs::path& filePath );
 
-            bool fail();
+            BIT7Z_NODISCARD bool fail();
 
         private:
             fs::ifstream mFileStream;

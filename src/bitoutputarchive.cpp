@@ -173,7 +173,11 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
     compressOut( new_arc, out_stream, update_callback );
 
     if ( updating_archive ) { //we updated the input archive
-        mInputArchive->close();
+        auto close_result = mInputArchive->close();
+        if ( close_result != S_OK ) {
+            throw BitException( "Could not close opened archive", make_hresult_code( close_result ),
+                                mInputArchive->getArchivePath() );
+        }
         /* NOTE: In the following instruction, we use the . (dot) operator, not the -> (arrow) operator:
          *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
          *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */

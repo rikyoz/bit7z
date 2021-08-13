@@ -298,137 +298,137 @@ namespace bit7z {
              * @return the boolean value of this variant
              * (it throws an exception if the variant is not a boolean).
              */
-            bool getBool() const;
+            BIT7Z_NODISCARD bool getBool() const;
 
             /**
              * @return the string value of this variant
              * (it throws an exception if the variant is not a string).
              */
-            tstring getString() const;
+            BIT7Z_NODISCARD tstring getString() const;
 
             /**
              * @return the 8-bit unsigned integer value of this variant
              * (it throws an exception if the variant is not an 8-bit unsigned integer).
              */
-            uint8_t getUInt8() const;
+            BIT7Z_NODISCARD uint8_t getUInt8() const;
 
             /**
              * @return the 16-bit unsigned integer value of this variant
              * (it throws an exception if the variant is not an 8 or 16-bit unsigned integer).
              */
-            uint16_t getUInt16() const;
+            BIT7Z_NODISCARD uint16_t getUInt16() const;
 
             /**
              * @return the 32-bit unsigned integer value of this variant
              * (it throws an exception if the variant is not an 8, 16 or 32-bit unsigned integer).
              */
-            uint32_t getUInt32() const;
+            BIT7Z_NODISCARD uint32_t getUInt32() const;
 
             /**
              * @return the 64-bit unsigned integer value of this variant
              * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit unsigned integer).
              */
-            uint64_t getUInt64() const;
+            BIT7Z_NODISCARD uint64_t getUInt64() const;
 
             /**
              * @return the 8-bit integer value of this variant
              * (it throws an exception if the variant is not an 8-bit integer).
              */
-            int8_t getInt8() const;
+            BIT7Z_NODISCARD int8_t getInt8() const;
 
             /**
              * @return the 16-bit integer value of this variant
              * (it throws an exception if the variant is not an 8 or 16-bit integer).
              */
-            int16_t getInt16() const;
+            BIT7Z_NODISCARD int16_t getInt16() const;
 
             /**
              * @return the 32-bit integer value of this variant
              * (it throws an exception if the variant is not an 8, 16 or 32-bit integer).
              */
-            int32_t getInt32() const;
+            BIT7Z_NODISCARD int32_t getInt32() const;
 
             /**
              * @return the 64-bit integer value of this variant
              * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit integer).
              */
-            int64_t getInt64() const;
+            BIT7Z_NODISCARD int64_t getInt64() const;
 
             /**
              * @return the FILETIME value of this variant
              * (it throws an exception if the variant is not a filetime).
              */
-            FILETIME getFileTime() const;
+            BIT7Z_NODISCARD FILETIME getFileTime() const;
 
             /**
              * @return the the value of this variant converted from any supported type to std::wstring.
              */
-            tstring toString() const;
+            BIT7Z_NODISCARD tstring toString() const;
 
             /**
              * @return true if this variant is empty, false otherwise.
              */
-            bool isEmpty() const noexcept;
+            BIT7Z_NODISCARD bool isEmpty() const noexcept;
 
             /**
              * @return true if this variant is a boolean, false otherwise.
              */
-            bool isBool() const noexcept;
+            BIT7Z_NODISCARD bool isBool() const noexcept;
 
             /**
              * @return true if this variant is a string, false otherwise.
              */
-            bool isString() const noexcept;
+            BIT7Z_NODISCARD bool isString() const noexcept;
 
             /**
              * @return true if this variant is an 8-bit unsigned integer, false otherwise.
              */
-            bool isUInt8() const noexcept;
+            BIT7Z_NODISCARD bool isUInt8() const noexcept;
 
             /**
              * @return true if this variant is an 8 or 16-bit unsigned integer, false otherwise.
              */
-            bool isUInt16() const noexcept;
+            BIT7Z_NODISCARD bool isUInt16() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16 or 32-bit unsigned integer, false otherwise.
              */
-            bool isUInt32() const noexcept;
+            BIT7Z_NODISCARD bool isUInt32() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16, 32 or 64-bit unsigned integer, false otherwise.
              */
-            bool isUInt64() const noexcept;
+            BIT7Z_NODISCARD bool isUInt64() const noexcept;
 
             /**
              * @return true if this variant is an 8-bit integer, false otherwise.
              */
-            bool isInt8() const noexcept;
+            BIT7Z_NODISCARD bool isInt8() const noexcept;
 
             /**
              * @return true if this variant is an 8 or 16-bit integer, false otherwise.
              */
-            bool isInt16() const noexcept;
+            BIT7Z_NODISCARD bool isInt16() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16 or 32-bit integer, false otherwise.
              */
-            bool isInt32() const noexcept;
+            BIT7Z_NODISCARD bool isInt32() const noexcept;
 
             /**
              * @return true if this variant is an 8, 16, 32 or 64-bit integer, false otherwise.
              */
-            bool isInt64() const noexcept;
+            BIT7Z_NODISCARD bool isInt64() const noexcept;
 
             /**
              * @return true if this variant is a FILETIME structure, false otherwise.
              */
-            bool isFileTime() const noexcept;
+            BIT7Z_NODISCARD bool isFileTime() const noexcept;
 
             /**
              * @return the BitPropVariantType of this variant.
              */
-            BitPropVariantType type() const;
+            BIT7Z_NODISCARD BitPropVariantType type() const;
 
             /**
              * @brief Clears the current value of the variant object

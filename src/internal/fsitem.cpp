@@ -94,14 +94,8 @@ FILETIME FSItem::lastWriteTime() const noexcept {
     return mFileAttributeData.ftLastWriteTime;
 }
 
-#if defined( _MSC_VER ) && ( _MSC_VER <= 1910 )
-#define MAYBE_UNUSED
-#else
-#define MAYBE_UNUSED [[maybe_unused]]
-#endif
-
 tstring FSItem::name() const {
-    MAYBE_UNUSED std::error_code ec;
+    BIT7Z_MAYBE_UNUSED std::error_code ec;
     return fs::canonical( mFileEntry.path(), ec ).filename();
 }
 

@@ -41,19 +41,19 @@ typedef struct _WIN32_FILE_ATTRIBUTE_DATA {
 namespace bit7z {
     namespace filesystem {
         namespace fsutil {
-            tstring filename( const tstring& path, bool ext = false );
+            BIT7Z_NODISCARD tstring filename( const tstring& path, bool ext = false );
 
-            tstring extension( const tstring& path );
+            BIT7Z_NODISCARD tstring extension( const tstring& path );
 
-            bool wildcardMatch( const tstring& pattern, const tstring& str );
+            BIT7Z_NODISCARD bool wildcardMatch( const tstring& pattern, const tstring& str );
 
-            bool getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) noexcept;
+            BIT7Z_NODISCARD bool getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) noexcept;
 
             bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept;
 
             bool setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept;
 
-            fs::path inArchivePath( const fs::path& file_path, const fs::path& search_path = fs::path() );
+            BIT7Z_NODISCARD fs::path inArchivePath( const fs::path& file_path, const fs::path& search_path = fs::path() );
         }
     }
 }

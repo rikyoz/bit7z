@@ -30,27 +30,27 @@ namespace bit7z {
 
                 explicit FSItem( fs::directory_entry entry, const fs::path& searchPath );
 
-                bool isDots() const;
+                BIT7Z_NODISCARD bool isDots() const;
 
-                bool isDir() const noexcept override;
+                BIT7Z_NODISCARD bool isDir() const noexcept override;
 
-                uint64_t size() const noexcept override;
+                BIT7Z_NODISCARD uint64_t size() const noexcept override;
 
-                FILETIME creationTime() const noexcept override;
+                BIT7Z_NODISCARD FILETIME creationTime() const noexcept override;
 
-                FILETIME lastAccessTime() const noexcept override;
+                BIT7Z_NODISCARD FILETIME lastAccessTime() const noexcept override;
 
-                FILETIME lastWriteTime() const noexcept override;
+                BIT7Z_NODISCARD FILETIME lastWriteTime() const noexcept override;
 
-                tstring name() const override;
+                BIT7Z_NODISCARD tstring name() const override;
 
-                tstring path() const override;
+                BIT7Z_NODISCARD tstring path() const override;
 
-                fs::path inArchivePath() const override;
+                BIT7Z_NODISCARD fs::path inArchivePath() const override;
 
-                uint32_t attributes() const noexcept override;
+                BIT7Z_NODISCARD uint32_t attributes() const noexcept override;
 
-                HRESULT getStream( ISequentialInStream** inStream ) const override;
+                BIT7Z_NODISCARD HRESULT getStream( ISequentialInStream** inStream ) const override;
 
             private:
                 fs::directory_entry mFileEntry;

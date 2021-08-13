@@ -35,52 +35,52 @@ namespace bit7z {
             /**
              * @return the index of the item in the archive.
              */
-            uint32_t index() const noexcept;
+            BIT7Z_NODISCARD uint32_t index() const noexcept;
 
             /**
              * @return true if and only if the item is a directory (i.e. it has the property BitProperty::IsDir).
              */
-            bool isDir() const override;
+            BIT7Z_NODISCARD bool isDir() const override;
 
             /**
              * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
              */
-            tstring name() const override;
+            BIT7Z_NODISCARD tstring name() const override;
 
             /**
              * @return the extension of the item, if available or inferable from the name, or an empty string otherwise
              * (e.g. when the item is a folder).
              */
-            tstring extension() const;
+            BIT7Z_NODISCARD tstring extension() const;
 
             /**
              * @return the path of the item in the archive, if available or inferable from the name, or an empty string
              * otherwise.
              */
-            tstring path() const override;
+            BIT7Z_NODISCARD tstring path() const override;
 
             /**
              * @return the uncompressed size of the item.
              */
-            uint64_t size() const override;
+            BIT7Z_NODISCARD uint64_t size() const override;
 
-            FILETIME creationTime() const override;
+            BIT7Z_NODISCARD FILETIME creationTime() const override;
 
-            FILETIME lastAccessTime() const override;
+            BIT7Z_NODISCARD FILETIME lastAccessTime() const override;
 
-            FILETIME lastWriteTime() const override;
+            BIT7Z_NODISCARD FILETIME lastWriteTime() const override;
 
-            uint32_t attributes() const override;
+            BIT7Z_NODISCARD uint32_t attributes() const override;
 
             /**
              * @return the compressed size of the item.
              */
-            uint64_t packSize() const;
+            BIT7Z_NODISCARD uint64_t packSize() const;
 
             /**
              * @return true if and only if the item is encrypted.
              */
-            bool isEncrypted() const;
+            BIT7Z_NODISCARD bool isEncrypted() const;
 
         protected:
             uint32_t mItemIndex; //Note: it is not const since sub-class BitArchiveItemOffset can increment it!

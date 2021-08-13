@@ -59,17 +59,17 @@ namespace bit7z {
 
             void indexStream( std::istream& in_stream, const tstring& name );
 
-            size_t size() const;
+            BIT7Z_NODISCARD size_t size() const;
 
             const GenericInputItem& operator[]( size_t index) const;
 
-            GenericInputItemVector::const_iterator begin() const noexcept;
+            BIT7Z_NODISCARD GenericInputItemVector::const_iterator begin() const noexcept;
 
-            GenericInputItemVector::const_iterator end() const noexcept;
+            BIT7Z_NODISCARD GenericInputItemVector::const_iterator end() const noexcept;
 
-            GenericInputItemVector::const_iterator cbegin() const noexcept;
+            BIT7Z_NODISCARD GenericInputItemVector::const_iterator cbegin() const noexcept;
 
-            GenericInputItemVector::const_iterator cend() const noexcept;
+            BIT7Z_NODISCARD GenericInputItemVector::const_iterator cend() const noexcept;
 
             virtual ~BitItemsVector();
 

@@ -34,6 +34,21 @@
 #endif
 #endif
 
+#if defined( __has_cpp_attribute )
+#if __has_cpp_attribute(nodiscard)
+#define BIT7Z_NODISCARD [[nodiscard]]
+#endif
+#if __has_cpp_attribute(maybe_unused)
+#define BIT7Z_MAYBE_UNUSED [[maybe_unused]]
+#endif
+#endif
+#ifndef BIT7Z_NODISCARD
+#define BIT7Z_NODISCARD
+#endif
+#ifndef BIT7Z_MAYBE_UNUSED
+#define BIT7Z_MAYBE_UNUSED
+#endif
+
 //p7zip defines IUnknown with a virtual destructor, while Windows' IUnknown has a non-virtual destructor
 #ifdef _WIN32
 #define MY_UNKNOWN_DESTRUCTOR(x) x
@@ -48,10 +63,9 @@
 #define MY_UNKNOWN_VIRTUAL_DESTRUCTOR(x) MY_UNKNOWN_DESTRUCTOR(x)
 #endif
 
-
 #define MY_STDMETHOD(method, ...) HRESULT STDMETHODCALLTYPE method ( __VA_ARGS__ )
-#define STDMETHOD_OVERRIDE(method, ...) COM_DECLSPEC_NOTHROW MY_STDMETHOD(method, __VA_ARGS__) override
-#define STDMETHOD_NOEXCEPT_OVERRIDE(method, ...) MY_STDMETHOD(method, __VA_ARGS__) noexcept override
+#define BIT7Z_STDMETHOD(method, ...) COM_DECLSPEC_NOTHROW MY_STDMETHOD(method, __VA_ARGS__) override
+#define BIT7Z_STDMETHOD_NOEXCEPT(method, ...) MY_STDMETHOD(method, __VA_ARGS__) noexcept override
 
 namespace bit7z {
     /**

@@ -79,9 +79,9 @@ namespace bit7z {
              */
             explicit BitException( const std::string& message, std::error_code code = make_hresult_code( E_FAIL ) );
 
-            native_code_type nativeCode() const noexcept;
+            BIT7Z_NODISCARD native_code_type nativeCode() const noexcept;
 
-            const FailedFiles& failedFiles() const noexcept;
+            BIT7Z_NODISCARD const FailedFiles& failedFiles() const noexcept;
 
         private:
             //HRESULT mErrorCode;

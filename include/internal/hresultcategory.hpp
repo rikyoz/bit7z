@@ -28,17 +28,19 @@
 #include <myWindows/StdAfx.h>
 #endif
 
+#include "bittypes.hpp"
+
 namespace bit7z {
     struct hresult_category_t : public std::error_category {
         static_assert( sizeof( int ) >= sizeof( HRESULT ), "HRESULT type must be at least the size of int" );
 
         explicit hresult_category_t() = default;
 
-        const char* name() const noexcept override;
+        BIT7Z_NODISCARD const char* name() const noexcept override;
 
-        std::string message( int ev ) const override;
+        BIT7Z_NODISCARD std::string message( int ev ) const override;
 
-        std::error_condition default_error_condition( int ev ) const noexcept override;
+        BIT7Z_NODISCARD std::error_condition default_error_condition( int ev ) const noexcept override;
     };
 
     std::error_category& hresult_category() noexcept;

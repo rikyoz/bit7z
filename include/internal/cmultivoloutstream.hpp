@@ -63,7 +63,7 @@ namespace bit7z {
 
             MY_UNKNOWN_DESTRUCTOR( ~CMultiVolOutStream() ) = default;
 
-            UInt64 GetSize() const noexcept;
+            BIT7Z_NODISCARD UInt64 GetSize() const noexcept;
 
             MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 

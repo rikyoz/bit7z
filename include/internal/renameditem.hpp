@@ -28,27 +28,27 @@ namespace bit7z {
         public:
             explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path );
 
-            tstring name() const override;
+            BIT7Z_NODISCARD tstring name() const override;
 
-            bool isDir() const override;
+            BIT7Z_NODISCARD bool isDir() const override;
 
-            uint64_t size() const override;
+            BIT7Z_NODISCARD uint64_t size() const override;
 
-            FILETIME creationTime() const override;
+            BIT7Z_NODISCARD FILETIME creationTime() const override;
 
-            FILETIME lastAccessTime() const override;
+            BIT7Z_NODISCARD FILETIME lastAccessTime() const override;
 
-            FILETIME lastWriteTime() const override;
+            BIT7Z_NODISCARD FILETIME lastWriteTime() const override;
 
-            uint32_t attributes() const override;
+            BIT7Z_NODISCARD uint32_t attributes() const override;
 
-            tstring path() const override;
+            BIT7Z_NODISCARD tstring path() const override;
 
-            fs::path inArchivePath() const override;
+            BIT7Z_NODISCARD fs::path inArchivePath() const override;
 
-            HRESULT getStream( ISequentialInStream** inStream ) const noexcept override;
+            BIT7Z_NODISCARD HRESULT getStream( ISequentialInStream** inStream ) const noexcept override;
 
-            bool hasNewData() const noexcept override;
+            BIT7Z_NODISCARD bool hasNewData() const noexcept override;
 
         private:
             const BitInputArchive& mInputArchive;

@@ -34,13 +34,13 @@
 
 namespace bit7z {
     struct GenericInputItem : public BitGenericItem {
-        virtual fs::path inArchivePath() const = 0;
+        BIT7Z_NODISCARD virtual fs::path inArchivePath() const = 0;
 
-        virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
+        BIT7Z_NODISCARD virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
 
-        virtual bool hasNewData() const noexcept;
+        BIT7Z_NODISCARD virtual bool hasNewData() const noexcept;
 
-        BitPropVariant getProperty( BitProperty propID ) const override;
+        BIT7Z_NODISCARD BitPropVariant getProperty( BitProperty propID ) const override;
 
         ~GenericInputItem() override = default;
     };

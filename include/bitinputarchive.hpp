@@ -61,7 +61,7 @@ namespace bit7z {
             /**
              * @return the detected format of the file.
              */
-            const BitInFormat& detectedFormat() const noexcept;
+            BIT7Z_NODISCARD const BitInFormat& detectedFormat() const noexcept;
 #endif
 
             /**
@@ -71,7 +71,7 @@ namespace bit7z {
              *
              * @return the current value of the archive property or an empty BitPropVariant if no value is specified.
              */
-            BitPropVariant getArchiveProperty( BitProperty property ) const;
+            BIT7Z_NODISCARD BitPropVariant getArchiveProperty(BitProperty property ) const;
 
             /**
              * @brief Gets the specified property of an item in the archive.
@@ -82,34 +82,34 @@ namespace bit7z {
              * @return the current value of the item property or an empty BitPropVariant if the item has no value for
              * the property.
              */
-            BitPropVariant getItemProperty( uint32_t index, BitProperty property ) const;
+            BIT7Z_NODISCARD BitPropVariant getItemProperty(uint32_t index, BitProperty property ) const;
 
             /**
              * @return the number of items contained in the archive.
              */
-            uint32_t itemsCount() const;
+            BIT7Z_NODISCARD uint32_t itemsCount() const;
 
             /**
              * @param index the index of an item in the archive.
              *
              * @return true if and only if the item at index is a folder.
              */
-            bool isItemFolder( uint32_t index ) const;
+            BIT7Z_NODISCARD bool isItemFolder(uint32_t index ) const;
 
             /**
              * @param index the index of an item in the archive.
              *
              * @return true if and only if the item at index is encrypted.
              */
-            bool isItemEncrypted( uint32_t index ) const;
+            BIT7Z_NODISCARD bool isItemEncrypted(uint32_t index ) const;
 
-            const tstring& getArchivePath() const noexcept;
+            BIT7Z_NODISCARD const tstring& getArchivePath() const noexcept;
 
-            const BitArchiveHandler& getHandler() const noexcept;
+            BIT7Z_NODISCARD const BitArchiveHandler& getHandler() const noexcept;
 
             void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
 
-            vector< byte_t > extract( unsigned int index ) const;
+            BIT7Z_NODISCARD vector< byte_t > extract(unsigned int index ) const;
 
             void extract( std::ostream& out_stream, unsigned int index ) const;
 
@@ -126,7 +126,7 @@ namespace bit7z {
 
             void test( ExtractCallback* extract_callback ) const;
 
-            HRESULT close() const noexcept;
+            BIT7Z_NODISCARD HRESULT close() const noexcept;
 
             friend class BitArchiveOpener;
 
@@ -172,15 +172,15 @@ namespace bit7z {
                     friend class BitInputArchive;
             };
 
-            const_iterator begin() const noexcept;
+            BIT7Z_NODISCARD const_iterator begin() const noexcept;
 
-            const_iterator end() const noexcept;
+            BIT7Z_NODISCARD const_iterator end() const noexcept;
 
-            const_iterator cbegin() const noexcept;
+            BIT7Z_NODISCARD const_iterator cbegin() const noexcept;
 
-            const_iterator cend() const noexcept;
+            BIT7Z_NODISCARD const_iterator cend() const noexcept;
 
-            const_iterator find( const tstring& path ) const noexcept;
+            BIT7Z_NODISCARD const_iterator find(const tstring& path ) const noexcept;
 
             bool contains( const tstring& path ) const noexcept;
     };

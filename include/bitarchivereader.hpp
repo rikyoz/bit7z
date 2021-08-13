@@ -106,52 +106,52 @@ namespace bit7z {
             /**
              * @return a map of all the available (i.e. non empty) archive properties and their respective values.
              */
-            map< BitProperty, BitPropVariant > archiveProperties() const;
+            BIT7Z_NODISCARD map< BitProperty, BitPropVariant > archiveProperties() const;
 
             /**
              * @return a vector of all the archive items as BitArchiveItem objects.
              */
-            vector< BitArchiveItemInfo > items() const;
+            BIT7Z_NODISCARD vector< BitArchiveItemInfo > items() const;
 
             /**
              * @return the number of folders contained in the archive.
              */
-            uint32_t foldersCount() const;
+            BIT7Z_NODISCARD uint32_t foldersCount() const;
 
             /**
              * @return the number of files contained in the archive.
              */
-            uint32_t filesCount() const;
+            BIT7Z_NODISCARD uint32_t filesCount() const;
 
             /**
              * @return the total uncompressed size of the archive content.
              */
-            uint64_t size() const;
+            BIT7Z_NODISCARD uint64_t size() const;
 
             /**
              * @return the total compressed size of the archive content.
              */
-            uint64_t packSize() const;
+            BIT7Z_NODISCARD uint64_t packSize() const;
 
             /**
              * @return true if and only if the archive has at least one encrypted item.
              */
-            bool hasEncryptedItems() const;
+            BIT7Z_NODISCARD bool hasEncryptedItems() const;
 
             /**
              * @return the number of volumes composing the archive.
              */
-            uint32_t volumesCount() const;
+            BIT7Z_NODISCARD uint32_t volumesCount() const;
 
             /**
              * @return true if and only if the archive is composed by multiple volumes.
              */
-            bool isMultiVolume() const;
+            BIT7Z_NODISCARD bool isMultiVolume() const;
 
             /**
              * @return true if and only if the archive was created using solid compression.
              */
-            bool isSolid() const;
+            BIT7Z_NODISCARD bool isSolid() const;
     };
 }
 

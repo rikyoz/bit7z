@@ -63,52 +63,52 @@ namespace bit7z {
             /**
              * @return the format used by the archive creator.
              */
-            const BitInFormat& format() const noexcept override;
+            BIT7Z_NODISCARD const BitInFormat& format() const noexcept override;
 
             /**
              * @return the format used by the archive creator.
              */
-            const BitInOutFormat& compressionFormat() const noexcept;
+            BIT7Z_NODISCARD const BitInOutFormat& compressionFormat() const noexcept;
 
             /**
              * @return whether the creator crypts also the headers of archives or not
              */
-            bool cryptHeaders() const noexcept;
+            BIT7Z_NODISCARD bool cryptHeaders() const noexcept;
 
             /**
              * @return the compression level used by the archive creator.
              */
-            BitCompressionLevel compressionLevel() const noexcept;
+            BIT7Z_NODISCARD BitCompressionLevel compressionLevel() const noexcept;
 
             /**
              * @return the compression method used by the archive creator.
              */
-            BitCompressionMethod compressionMethod() const noexcept;
+            BIT7Z_NODISCARD BitCompressionMethod compressionMethod() const noexcept;
 
             /**
              * @return the dictionary size used by the archive creator.
              */
-            uint32_t dictionarySize() const noexcept;
+            BIT7Z_NODISCARD uint32_t dictionarySize() const noexcept;
 
-            uint32_t wordSize() const noexcept;
+            BIT7Z_NODISCARD uint32_t wordSize() const noexcept;
 
             /**
              * @return whether the archive creator uses solid compression or not.
              */
-            bool solidMode() const noexcept;
+            BIT7Z_NODISCARD bool solidMode() const noexcept;
 
             /**
              * @return whether the archive creator is allowed to update existing archives or not.
              */
-            UpdateMode updateMode() const noexcept;
+            BIT7Z_NODISCARD UpdateMode updateMode() const noexcept;
 
             /**
              * @return the size (in bytes) of the archive volume used by the creator
              *         (a 0 value means that all files are going in a single archive).
              */
-            uint64_t volumeSize() const noexcept;
+            BIT7Z_NODISCARD uint64_t volumeSize() const noexcept;
 
-            uint32_t threadsCount() const noexcept;
+            BIT7Z_NODISCARD uint32_t threadsCount() const noexcept;
 
             /**
              * @brief Sets up a password for the output archive.
@@ -217,7 +217,7 @@ namespace bit7z {
 
             ~BitArchiveCreator() override = default;
 
-            ArchiveProperties getArchiveProperties() const;
+            BIT7Z_NODISCARD ArchiveProperties getArchiveProperties() const;
 
             friend class BitOutputArchive;
 

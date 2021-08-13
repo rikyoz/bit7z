@@ -81,39 +81,39 @@ namespace bit7z {
             /**
              * @return the password used to open, extract or encrypt the archive.
              */
-            tstring password() const;
+            BIT7Z_NODISCARD tstring password() const;
 
-            bool retainDirectories() const noexcept;
+            BIT7Z_NODISCARD bool retainDirectories() const noexcept;
 
             /**
              * @return true if a password is defined, false otherwise.
              */
-            bool isPasswordDefined() const noexcept;
+            BIT7Z_NODISCARD bool isPasswordDefined() const noexcept;
 
             /**
              * @return the current total callback.
              */
-            TotalCallback totalCallback() const;
+            BIT7Z_NODISCARD TotalCallback totalCallback() const;
 
             /**
              * @return the current progress callback.
              */
-            ProgressCallback progressCallback() const;
+            BIT7Z_NODISCARD ProgressCallback progressCallback() const;
 
             /**
              * @return the current ratio callback.
              */
-            RatioCallback ratioCallback() const;
+            BIT7Z_NODISCARD RatioCallback ratioCallback() const;
 
             /**
              * @return the current file callback.
              */
-            FileCallback fileCallback() const;
+            BIT7Z_NODISCARD FileCallback fileCallback() const;
 
             /**
              * @return the current password callback.
              */
-            PasswordCallback passwordCallback() const;
+            BIT7Z_NODISCARD PasswordCallback passwordCallback() const;
 
             /**
              * @brief Sets up a password to be used by the archive handler.
