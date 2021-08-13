@@ -122,10 +122,6 @@ namespace bit7z {
 
             HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 
-            void extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const;
-
-            void test( ExtractCallback* extract_callback ) const;
-
             BIT7Z_NODISCARD HRESULT close() const noexcept;
 
             friend class BitArchiveOpener;

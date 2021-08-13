@@ -48,6 +48,26 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
     return arc_object;
 }
 
+void extractArc( IInArchive* in_archive, const vector< uint32_t >& indices, ExtractCallback* extract_callback ) {
+    const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
+    const uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
+
+    const HRESULT res = in_archive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
+    if ( res != S_OK ) {
+        extract_callback->throwException( res );
+    }
+}
+
+void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
+    const HRESULT res = in_archive->Extract( nullptr,
+                                             static_cast< uint32_t >( -1 ),
+                                             NExtract::NAskMode::kTest,
+                                             extract_callback );
+    if ( res != S_OK ) {
+        extract_callback->throwException( res );
+    }
+}
+
 IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
@@ -72,11 +92,11 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 
 #ifdef BIT7Z_AUTO_FORMAT
     if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detected_by_signature ) {
-        /* User wanted auto detection of format, an extension was detected but opening failed, so we try a more
+        /* User wanted auto-detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
          *       and an exception is thrown (next if)!
-         * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected a
+         * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected
          *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         format_GUID = mDetectedFormat->guid();
@@ -168,26 +188,6 @@ HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
-void BitInputArchive::extract( const vector< uint32_t >& indices, ExtractCallback* extract_callback ) const {
-    const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
-    const uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
-
-    const HRESULT res = mInArchive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
-    if ( res != S_OK ) {
-        extract_callback->throwException( res );
-    }
-}
-
-void BitInputArchive::test( ExtractCallback* extract_callback ) const {
-    const HRESULT res = mInArchive->Extract( nullptr,
-                                       static_cast< uint32_t >( -1 ),
-                                       NExtract::NAskMode::kTest,
-                                       extract_callback );
-    if ( res != S_OK ) {
-        extract_callback->throwException( res );
-    }
-}
-
 #ifdef BIT7Z_AUTO_FORMAT
 
 const BitInFormat& BitInputArchive::detectedFormat() const noexcept {
@@ -208,7 +208,7 @@ const BitArchiveHandler& BitInputArchive::getHandler() const noexcept {
 
 void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >& indices ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, out_dir );
-    extract( indices, callback );
+    extractArc( mInArchive, indices, callback);
 }
 
 vector< byte_t > BitInputArchive::extract( unsigned int index ) const {
@@ -225,7 +225,7 @@ vector< byte_t > BitInputArchive::extract( unsigned int index ) const {
     const vector< uint32_t > indices( 1, index );
     map< tstring, vector< byte_t > > buffers_map;
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, buffers_map );
-    extract( indices, extract_callback );
+    extractArc( mInArchive, indices, extract_callback);
     return std::move( buffers_map.begin()->second );
 }
 
@@ -242,7 +242,7 @@ void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
 
     const vector< uint32_t > indices( 1, index );
     auto extract_callback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, out_stream );
-    extract( indices, extract_callback );
+    extractArc( mInArchive, indices, extract_callback);
 }
 
 void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const {
@@ -255,13 +255,13 @@ void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const
     }
 
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, out_map );
-    extract( files_indices, extract_callback );
+    extractArc( mInArchive, files_indices, extract_callback);
 }
 
 void BitInputArchive::test() const {
     map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummy_map );
-    test( extract_callback );
+    testArc( mInArchive, extract_callback );
 }
 
 HRESULT BitInputArchive::close() const noexcept {
