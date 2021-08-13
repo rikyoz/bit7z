@@ -33,6 +33,7 @@
 #include "bititemsvector.hpp"
 #include "bitoutputarchive.hpp"
 #include "internal/callback.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
     constexpr auto kUnsupportedOperation = "Unsupported operation";

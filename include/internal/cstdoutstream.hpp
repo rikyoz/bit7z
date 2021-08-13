@@ -26,6 +26,7 @@
 #include <Common/MyCom.h>
 
 #include "bittypes.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
     using std::ostream;

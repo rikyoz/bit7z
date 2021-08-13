@@ -30,6 +30,7 @@
 #include "bitarchivehandler.hpp"
 #include "bitinputarchive.hpp"
 #include "internal/callback.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
     class ExtractCallback : public Callback,

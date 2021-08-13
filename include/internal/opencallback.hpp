@@ -30,6 +30,7 @@
 #include "bitarchivehandler.hpp"
 #include "internal/callback.hpp"
 #include "internal/fsitem.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
     using filesystem::FSItem;
