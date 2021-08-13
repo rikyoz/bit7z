@@ -71,6 +71,18 @@ namespace bit7z {
                 } );
             }
 
+            vector< byte_t > extractMatching( Input input, const tstring& item_filter ) const {
+                using namespace filesystem;
+
+                if ( item_filter.empty() ) {
+                    throw BitException( "Empty wildcard filter", std::make_error_code( std::errc::invalid_argument ) );
+                }
+
+                return extractMatchingFilter( input, [ &item_filter ]( const tstring& item_path ) -> bool {
+                    return fsutil::wildcardMatch( item_filter, item_path );
+                } );
+            }
+
             void extractItems( Input input, const vector< uint32_t >& indices, const tstring& out_dir ) const {
                 if ( indices.empty() ) {
                     throw BitException( "Empty indices vector", std::make_error_code( std::errc::invalid_argument ) );
@@ -100,6 +112,17 @@ namespace bit7z {
 
                 const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
                 extractMatchingFilter( input, out_dir, [ &regex_filter ]( const tstring& item_path ) -> bool {
+                    return std::regex_match( item_path, regex_filter );
+                } );
+            }
+
+            vector< byte_t > extractMatchingRegex( Input input, const tstring& regex ) const {
+                if ( regex.empty() ) {
+                    throw BitException( "Empty regex filter", std::make_error_code( std::errc::invalid_argument ) );
+                }
+
+                const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
+                return extractMatchingFilter( input, [ &regex_filter ]( const tstring& item_path ) -> bool {
                     return std::regex_match( item_path, regex_filter );
                 } );
             }
@@ -138,6 +161,20 @@ namespace bit7z {
                 }
 
                 in_archive.extract( out_dir, matched_indices );
+            }
+
+            vector< byte_t > extractMatchingFilter( Input input,
+                                                    const function< bool( const tstring& ) >& filter ) const {
+                BitInputArchive in_archive( *this, input );
+
+                //Searching for files inside the archive that match the given regex filter
+                for ( auto& item : in_archive ) {
+                    if ( filter( item.path() ) ) {
+                        return in_archive.extract( index );
+                    }
+                }
+
+                throw BitException( kNoMatchingFile, std::make_error_code( std::errc::no_such_file_or_directory ) );
             }
     };
 }
