@@ -24,9 +24,9 @@
 
 /* Header for forward declaring fs namespace */
 
-#include "bittypes.hpp" /* it defines USE_STANDARD_FILESYSTEM */
+#include "bittypes.hpp" /* it defines BIT7Z_USE_STANDARD_FILESYSTEM */
 
-#ifdef USE_STANDARD_FILESYSTEM
+#ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 #include <filesystem>
 #else
 /* Notes: we use this forward declaration to avoid including private headers (e.g. fs.hpp).
@@ -40,7 +40,7 @@ namespace ghc {
 #endif
 
 namespace fs {
-#ifdef USE_STANDARD_FILESYSTEM
+#ifdef BIT7Z_USE_STANDARD_FILESYSTEM
     using namespace std::filesystem;
 #else
     using namespace ghc::filesystem;

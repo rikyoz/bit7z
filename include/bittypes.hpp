@@ -27,10 +27,10 @@
 #endif
 
 #if defined( __cpp_lib_filesystem )
-#   define USE_STANDARD_FILESYSTEM
+#   define BIT7Z_USE_STANDARD_FILESYSTEM
 #elif defined( __cplusplus ) && __cplusplus >= 201703L && defined( __has_include )
 #   if __has_include( <filesystem> )
-#       define USE_STANDARD_FILESYSTEM
+#       define BIT7Z_USE_STANDARD_FILESYSTEM
 #   endif
 #endif
 

@@ -183,7 +183,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
          *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
         out_stream.Release(); //Releasing the output stream so that we can rename it as the original file
 
-#if defined( __MINGW32__ ) && defined( USE_STANDARD_FILESYSTEM )
+#if defined( __MINGW32__ ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
         /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
          * existing destination file (as it should). So we explicitly remove it before! */
         std::error_code ec;

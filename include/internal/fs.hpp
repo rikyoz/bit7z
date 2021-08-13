@@ -21,7 +21,7 @@
 
 #include "bittypes.hpp"
 
-#ifdef USE_STANDARD_FILESYSTEM
+#ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 #include <filesystem>
 #include <fstream>
 
