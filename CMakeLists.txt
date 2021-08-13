@@ -242,7 +242,7 @@ if( MSVC )
     target_compile_options( ${TARGET_NAME} PRIVATE /W4 /WX )
     # standard conformance options of MSVC
     target_compile_options( ${TARGET_NAME} PRIVATE /nologo /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
-                            /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
+                            /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding /Zc:__cplusplus )
     # enabling multi-threaded compiling
     set( MSVC_COMPILE_FLAGS "/MP" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )

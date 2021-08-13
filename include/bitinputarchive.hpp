@@ -146,11 +146,11 @@ namespace bit7z {
             class const_iterator {
                 public:
                     // iterator traits
-                    using iterator_category = std::input_iterator_tag;
-                    using value_type = BitArchiveItemOffset;
+                    using iterator_category BIT7Z_MAYBE_UNUSED = std::input_iterator_tag;
+                    using value_type BIT7Z_MAYBE_UNUSED = BitArchiveItemOffset;
                     using reference = const BitArchiveItemOffset&;
                     using pointer = const BitArchiveItemOffset*;
-                    using difference_type = uint32_t; //so that count_if returns a uint32_t
+                    using difference_type BIT7Z_MAYBE_UNUSED = uint32_t; //so that count_if returns a uint32_t
 
                     const_iterator& operator++() noexcept;
 
@@ -182,7 +182,7 @@ namespace bit7z {
 
             BIT7Z_NODISCARD const_iterator find(const tstring& path ) const noexcept;
 
-            bool contains( const tstring& path ) const noexcept;
+            BIT7Z_NODISCARD bool contains( const tstring& path ) const noexcept;
     };
 }
 
