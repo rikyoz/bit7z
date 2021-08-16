@@ -28,7 +28,7 @@
 namespace bit7z {
     using std::vector;
 
-    class CFixedBufferOutStream final : /*public ISequentialOutStream,*/ public IOutStream, public CMyUnknownImp {
+    class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
         public:
             explicit CFixedBufferOutStream( byte_t* buffer, std::size_t size );
 
@@ -43,7 +43,6 @@ namespace bit7z {
             MY_UNKNOWN_DESTRUCTOR( ~CFixedBufferOutStream() ) = default;
 
             MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
-            //MY_UNKNOWN_IMP1( ISequentialOutStream ) // NOLINT(modernize-use-noexcept)
 
             // IOutStream
             BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
@@ -55,7 +54,7 @@ namespace bit7z {
         private:
             byte_t* mBuffer;
             size_t mBufferSize;
-            index_t mCurrentPosition;
+            int64_t mCurrentPosition;
     };
 }
 #endif // CFIXEDBUFFEROUTSTREAM_HPP
