@@ -124,6 +124,8 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_f
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
     mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath )
                                                             : &handler.format() );
+#else
+    mDetectedFormat = &handler.format();
 #endif
     mInArchive = openArchiveStream( mArchivePath, file_stream );
 }
@@ -131,18 +133,14 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_f
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer )
     : mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
-#ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-#endif
     mInArchive = openArchiveStream( TSTRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream )
     : mArchiveHandler{ handler } {
     auto std_stream = bit7z::make_com< CStdInStream, IInStream >( in_stream );
-#ifdef BIT7Z_AUTO_FORMAT
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-#endif
     mInArchive = openArchiveStream( TSTRING( "." ), std_stream );
 }
 
@@ -188,15 +186,15 @@ HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
-#ifdef BIT7Z_AUTO_FORMAT
-
 const BitInFormat& BitInputArchive::detectedFormat() const noexcept {
+#ifdef BIT7Z_AUTO_FORMAT
     // Defensive programming: for how the archive format is detected,
     // a correct BitInputArchive instance should have a non-null mDetectedFormat!
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
-}
-
+#else
+    return *mDetectedFormat;
 #endif
+}
 
 const tstring& BitInputArchive::getArchivePath() const noexcept {
     return mArchivePath;

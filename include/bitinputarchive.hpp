@@ -57,12 +57,10 @@ namespace bit7z {
 
             virtual ~BitInputArchive();
 
-#ifdef BIT7Z_AUTO_FORMAT
             /**
              * @return the detected format of the file.
              */
             BIT7Z_NODISCARD const BitInFormat& detectedFormat() const noexcept;
-#endif
 
             /**
              * @brief Gets the specified archive property.
@@ -132,9 +130,7 @@ namespace bit7z {
 
         private:
             IInArchive* mInArchive;
-#ifdef BIT7Z_AUTO_FORMAT
             const BitInFormat* mDetectedFormat;
-#endif
             const BitArchiveHandler& mArchiveHandler;
             const tstring mArchivePath;
 
