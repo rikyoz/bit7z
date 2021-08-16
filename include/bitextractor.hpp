@@ -170,7 +170,7 @@ namespace bit7z {
                 //Searching for files inside the archive that match the given regex filter
                 for ( auto& item : in_archive ) {
                     if ( filter( item.path() ) ) {
-                        return in_archive.extract( index );
+                        return in_archive.extract( item.index() );
                     }
                 }
 
