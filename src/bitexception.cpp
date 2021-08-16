@@ -89,7 +89,7 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
         return E_ACCESSDENIED;
     }
     return E_FAIL;
-#else
+#else //Unix
     if ( error.category() == bit7z::hresult_category() ) {
         return error.default_error_condition().value();
     }

@@ -84,7 +84,6 @@ namespace bit7z {
             BIT7Z_NODISCARD const FailedFiles& failedFiles() const noexcept;
 
         private:
-            //HRESULT mErrorCode;
             FailedFiles mFailedFiles;
     };
 }
