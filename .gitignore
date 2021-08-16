@@ -50,3 +50,5 @@ CMakeSettings.json
 *.cd
 
 *.ruleset
+
+bit7z-cppcheck-build-dir/
