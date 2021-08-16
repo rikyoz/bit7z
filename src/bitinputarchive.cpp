@@ -28,9 +28,9 @@
 #include "internal/cbufferinstream.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/fileextractcallback.hpp"
+#include "internal/fixedbufferextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
-#include "internal/util.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"
@@ -223,7 +223,7 @@ vector< byte_t > BitInputArchive::extract( unsigned int index ) const {
     const vector< uint32_t > indices( 1, index );
     map< tstring, vector< byte_t > > buffers_map;
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, buffers_map );
-    extractArc( mInArchive, indices, extract_callback);
+    extractArc( mInArchive, indices, extract_callback );
     return std::move( buffers_map.begin()->second );
 }
 
@@ -300,6 +300,28 @@ BitInputArchive::const_iterator BitInputArchive::find( const tstring& path ) con
 
 bool BitInputArchive::contains( const tstring& path ) const noexcept {
     return find( path ) != end();
+}
+
+
+void BitInputArchive::extract( byte_t* buffer, std::size_t size, unsigned int index ) const {
+    const uint32_t number_items = itemsCount();
+    if ( index >= number_items ) {
+        throw BitException( "Index " + std::to_string( index ) + " is out of range",
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    if ( isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException( kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    auto item_size = getItemProperty( index, BitProperty::Size ).getUInt64();
+    if ( size != item_size ) {
+        throw BitException( "Preallocated buffer size different from extracted item size" );
+    }
+
+    const vector< uint32_t > indices( 1, index );
+    auto extract_callback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >(*this, buffer, size);
+    extractArc( mInArchive, indices, extract_callback );
 }
 
 BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() noexcept {

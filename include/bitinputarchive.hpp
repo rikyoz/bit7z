@@ -21,10 +21,12 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <array>
 
 #include "bitarchivehandler.hpp"
 #include "bitarchiveiteminfo.hpp"
 #include "bitarchiveitemoffset.hpp"
+#include "bitexception.hpp"
 #include "bitformat.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
@@ -107,7 +109,19 @@ namespace bit7z {
 
             void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
 
-            BIT7Z_NODISCARD vector< byte_t > extract(unsigned int index ) const;
+            BIT7Z_NODISCARD vector< byte_t > extract( unsigned int index ) const;
+
+            template< std::size_t N >
+            void extract( std::array< byte_t, N >& buffer, unsigned int index ) const {
+                extract( buffer.data(), buffer.size() );
+            };
+
+            template< std::size_t N >
+            void extract( byte_t (&buffer)[ N ], unsigned int index ) const {
+                extract( buffer, N );
+            };
+
+            void extract( byte_t* buffer, std::size_t size, unsigned int index ) const;
 
             void extract( std::ostream& out_stream, unsigned int index ) const;
 

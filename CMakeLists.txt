@@ -51,6 +51,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/cbufferoutstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cfileinstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cfileoutstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/cfixedbufferoutstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cmultivoloutstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdinstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdoutstream.hpp
@@ -64,6 +65,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/genericinputitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/fixedbufferextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/renameditem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/stdinputitem.hpp
@@ -98,11 +100,13 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/cbufferoutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cfileinstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cfileoutstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/cfixedbufferoutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cmultivoloutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdinstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdoutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/extractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fileextractcallback.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/fixedbufferextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/formatdetect.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fsindexer.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fsitem.cpp
@@ -114,7 +118,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/stdinputitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
+     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp)
 
 # enable only debug/release configurations for generated VS project file
 if( CMAKE_CONFIGURATION_TYPES )
