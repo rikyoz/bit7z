@@ -311,11 +311,13 @@
     <ClCompile Include="src\internal\cbufferoutstream.cpp" />
     <ClCompile Include="src\internal\cfileinstream.cpp" />
     <ClCompile Include="src\internal\cfileoutstream.cpp" />
+    <ClCompile Include="src\internal\cfixedbufferoutstream.cpp" />
     <ClCompile Include="src\internal\cmultivoloutstream.cpp" />
     <ClCompile Include="src\internal\cstdinstream.cpp" />
     <ClCompile Include="src\internal\cstdoutstream.cpp" />
     <ClCompile Include="src\internal\extractcallback.cpp" />
     <ClCompile Include="src\internal\fileextractcallback.cpp" />
+    <ClCompile Include="src\internal\fixedbufferextractcallback.cpp" />
     <ClCompile Include="src\internal\formatdetect.cpp" />
     <ClCompile Include="src\internal\fsindexer.cpp" />
     <ClCompile Include="src\internal\fsitem.cpp" />
@@ -366,11 +368,13 @@
     <ClInclude Include="include\internal\cbufferoutstream.hpp" />
     <ClInclude Include="include\internal\cfileinstream.hpp" />
     <ClInclude Include="include\internal\cfileoutstream.hpp" />
+    <ClInclude Include="include\internal\cfixedbufferoutstream.hpp" />
     <ClInclude Include="include\internal\cmultivoloutstream.hpp" />
     <ClInclude Include="include\internal\cstdinstream.hpp" />
     <ClInclude Include="include\internal\cstdoutstream.hpp" />
     <ClInclude Include="include\internal\extractcallback.hpp" />
     <ClInclude Include="include\internal\fileextractcallback.hpp" />
+    <ClInclude Include="include\internal\fixedbufferextractcallback.hpp" />
     <ClInclude Include="include\internal\formatdetect.hpp" />
     <ClInclude Include="include\internal\fs.hpp" />
     <ClInclude Include="include\internal\fsindexer.hpp" />

@@ -118,7 +118,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/stdinputitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp)
+     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
 
 # enable only debug/release configurations for generated VS project file
 if( CMAKE_CONFIGURATION_TYPES )
