@@ -31,24 +31,24 @@ namespace bit7z {
         const BitInFormat Auto( 0x00 );
 #endif
         const BitInOutFormat Zip( 0x01, TSTRING( ".zip" ), BitCompressionMethod::Deflate,
-                                  FormatFeatures::MULTIPLE_FILES | FormatFeatures::COMPRESSION_LEVEL |
-                                  FormatFeatures::ENCRYPTION | FormatFeatures::MULTIPLE_METHODS );
+                                  FormatFeatures::MultipleFiles | FormatFeatures::CompressionLevel |
+                                  FormatFeatures::Encryption | FormatFeatures::MultipleMethods );
         const BitInOutFormat BZip2( 0x02, TSTRING( ".bz2" ), BitCompressionMethod::BZip2,
-                                    FormatFeatures::COMPRESSION_LEVEL );
+                                    FormatFeatures::CompressionLevel );
         const BitInFormat Rar( 0x03 );
         const BitInFormat Arj( 0x04 ); //-V112
         const BitInFormat Z( 0x05 );
         const BitInFormat Lzh( 0x06 );
         const BitInOutFormat SevenZip( 0x07, TSTRING( ".7z" ), BitCompressionMethod::Lzma2,
-                                       FormatFeatures::MULTIPLE_FILES | FormatFeatures::SOLID_ARCHIVE |
-                                       FormatFeatures::COMPRESSION_LEVEL | FormatFeatures::ENCRYPTION |
-                                       FormatFeatures::HEADER_ENCRYPTION | FormatFeatures::MULTIPLE_METHODS );
+                                       FormatFeatures::MultipleFiles | FormatFeatures::SolidArchive |
+                                       FormatFeatures::CompressionLevel | FormatFeatures::Encryption |
+                                       FormatFeatures::HeaderEncryption | FormatFeatures::MultipleMethods );
         const BitInFormat Cab( 0x08 );
         const BitInFormat Nsis( 0x09 );
         const BitInFormat Lzma( 0x0A );
         const BitInFormat Lzma86( 0x0B );
         const BitInOutFormat Xz( 0x0C, TSTRING( ".xz" ), BitCompressionMethod::Lzma2,
-                                 FormatFeatures::COMPRESSION_LEVEL );
+                                 FormatFeatures::CompressionLevel );
         const BitInFormat Ppmd( 0x0D );
         const BitInFormat COFF( 0xC6 );
         const BitInFormat Ext( 0xC7 );
@@ -82,18 +82,16 @@ namespace bit7z {
         const BitInFormat Hfs( 0xE3 );
         const BitInFormat Dmg( 0xE4 );
         const BitInFormat Compound( 0xE5 );
-        const BitInOutFormat Wim( 0xE6, TSTRING( ".wim" ), BitCompressionMethod::Copy,
-                                  FormatFeatures::MULTIPLE_FILES );
+        const BitInOutFormat Wim( 0xE6, TSTRING( ".wim" ), BitCompressionMethod::Copy, FormatFeatures::MultipleFiles );
         const BitInFormat Iso( 0xE7 );
         const BitInFormat Chm( 0xE9 );
         const BitInFormat Split( 0xEA );
         const BitInFormat Rpm( 0xEB );
         const BitInFormat Deb( 0xEC );
         const BitInFormat Cpio( 0xED );
-        const BitInOutFormat Tar( 0xEE, TSTRING( ".tar" ), BitCompressionMethod::Copy,
-                                  FormatFeatures::MULTIPLE_FILES );
+        const BitInOutFormat Tar( 0xEE, TSTRING( ".tar" ), BitCompressionMethod::Copy, FormatFeatures::MultipleFiles );
         const BitInOutFormat GZip( 0xEF, TSTRING( ".gz" ), BitCompressionMethod::Deflate,
-                                   FormatFeatures::COMPRESSION_LEVEL );
+                                   FormatFeatures::CompressionLevel );
     }
 #endif
 

@@ -42,11 +42,11 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     std::error_code ec;
     if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
-        if ( mArchiveCreator.updateMode() == UpdateMode::NONE ) {
+        if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
             throw BitException( "Archive creator cannot update archives",
                                 std::make_error_code( std::errc::invalid_argument ) );
         }
-        if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MULTIPLE_FILES ) ) {
+        if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
             //Update mode is set but format does not support adding more files
             throw BitException( "Format does not support updating existing archive files",
                                 std::make_error_code( std::errc::invalid_argument ) );
@@ -143,7 +143,7 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
 void BitOutputArchive::compressOut( IOutArchive* out_arc,
                                     IOutStream* out_stream,
                                     UpdateCallback* update_callback ) {
-    if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::OVERWRITE ) {
+    if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Overwrite ) {
         for ( auto& new_item : mNewItemsVector ) {
             auto overwritten_item = mInputArchive->find( new_item->inArchivePath() );
             if ( overwritten_item != mInputArchive->cend() ) {

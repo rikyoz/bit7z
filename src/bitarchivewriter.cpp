@@ -30,19 +30,19 @@ BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
                                     const tstring& in_file,
                                     const BitInOutFormat& format,
                                     const tstring& password )
-    : BitArchiveCreator( lib, format, password, UpdateMode::APPEND ),
+    : BitArchiveCreator( lib, format, password, UpdateMode::Append ),
       BitOutputArchive( *this, in_file ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
                                     const std::vector< byte_t >& in_buffer,
                                     const BitInOutFormat& format,
                                     const tstring& password )
-    : BitArchiveCreator( lib, format, password, UpdateMode::APPEND ),
+    : BitArchiveCreator( lib, format, password, UpdateMode::Append ),
       BitOutputArchive( *this, in_buffer ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
                                     std::istream& in_stream,
                                     const BitInOutFormat& format,
                                     const tstring& password )
-    : BitArchiveCreator( lib, format, password, UpdateMode::APPEND ),
+    : BitArchiveCreator( lib, format, password, UpdateMode::Append ),
       BitOutputArchive( *this, in_stream ) {}

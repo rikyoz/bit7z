@@ -32,12 +32,12 @@ namespace bit7z {
      * @brief The FormatFeatures enum specifies the features supported by an archive file format.
      */
     enum struct FormatFeatures : unsigned {
-        MULTIPLE_FILES    = 1 << 0,///< The format can compress/extract multiple files         (2^0 = 0000001)
-        SOLID_ARCHIVE     = 1 << 1,///< The format supports solid archives                     (2^1 = 0000010)
-        COMPRESSION_LEVEL = 1 << 2,///< The format is able to use different compression levels (2^2 = 0000100)
-        ENCRYPTION        = 1 << 3,///< The format supports archive encryption                 (2^3 = 0001000)
-        HEADER_ENCRYPTION = 1 << 4,///< The format can encrypt the file names                  (2^4 = 0010000)
-        MULTIPLE_METHODS  = 1 << 5 ///< The format can use different compression methods       (2^6 = 0100000)
+        MultipleFiles    = 1 << 0,///< The format can compress/extract multiple files         (2^0 = 0000001)
+        SolidArchive     = 1 << 1,///< The format supports solid archives                     (2^1 = 0000010)
+        CompressionLevel = 1 << 2,///< The format is able to use different compression levels (2^2 = 0000100)
+        Encryption       = 1 << 3,///< The format supports archive encryption                 (2^3 = 0001000)
+        HeaderEncryption = 1 << 4,///< The format can encrypt the file names                  (2^4 = 0010000)
+        MultipleMethods  = 1 << 5 ///< The format can use different compression methods       (2^6 = 0100000)
     };
 
     template< typename E >
@@ -173,27 +173,27 @@ namespace bit7z {
 #endif
 
         inline constexpr BitInOutFormat Zip( 0x01, TSTRING( ".zip" ), BitCompressionMethod::Deflate,
-                                             FormatFeatures::MULTIPLE_FILES | FormatFeatures::COMPRESSION_LEVEL |
-                                             FormatFeatures::ENCRYPTION | FormatFeatures::MULTIPLE_METHODS );
+                                             FormatFeatures::MultipleFiles | FormatFeatures::CompressionLevel |
+                                             FormatFeatures::Encryption | FormatFeatures::MultipleMethods );
         inline constexpr BitInOutFormat BZip2( 0x02, TSTRING( ".bz2" ), BitCompressionMethod::BZip2,
-                                               FormatFeatures::COMPRESSION_LEVEL );
+                                               FormatFeatures::CompressionLevel );
         inline constexpr BitInFormat    Rar( 0x03 );
         inline constexpr BitInFormat    Arj( 0x04 ); //-V112
         inline constexpr BitInFormat    Z( 0x05 );
         inline constexpr BitInFormat    Lzh( 0x06 );
         inline constexpr BitInOutFormat SevenZip( 0x07, TSTRING( ".7z" ), BitCompressionMethod::Lzma2,
-                                                  FormatFeatures::MULTIPLE_FILES |
-                                                  FormatFeatures::SOLID_ARCHIVE |
-                                                  FormatFeatures::COMPRESSION_LEVEL |
-                                                  FormatFeatures::ENCRYPTION |
-                                                  FormatFeatures::HEADER_ENCRYPTION |
-                                                  FormatFeatures::MULTIPLE_METHODS );
+                                                  FormatFeatures::MultipleFiles |
+                                                  FormatFeatures::SolidArchive |
+                                                  FormatFeatures::CompressionLevel |
+                                                  FormatFeatures::Encryption |
+                                                  FormatFeatures::HeaderEncryption |
+                                                  FormatFeatures::MultipleMethods );
         inline constexpr BitInFormat    Cab( 0x08 );
         inline constexpr BitInFormat    Nsis( 0x09 );
         inline constexpr BitInFormat    Lzma( 0x0A );
         inline constexpr BitInFormat    Lzma86( 0x0B );
         inline constexpr BitInOutFormat Xz( 0x0C, TSTRING( ".xz" ), BitCompressionMethod::Lzma2,
-                                            FormatFeatures::COMPRESSION_LEVEL );
+                                            FormatFeatures::CompressionLevel );
         inline constexpr BitInFormat    Ppmd( 0x0D );
         inline constexpr BitInFormat    COFF( 0xC6 );
         inline constexpr BitInFormat    Ext( 0xC7 );
@@ -228,7 +228,7 @@ namespace bit7z {
         inline constexpr BitInFormat    Dmg( 0xE4 );
         inline constexpr BitInFormat    Compound( 0xE5 );
         inline constexpr BitInOutFormat Wim( 0xE6, TSTRING( ".wim" ), BitCompressionMethod::Copy,
-                                             FormatFeatures::MULTIPLE_FILES );
+                                             FormatFeatures::MultipleFiles );
         inline constexpr BitInFormat    Iso( 0xE7 );
         inline constexpr BitInFormat    Chm( 0xE9 );
         inline constexpr BitInFormat    Split( 0xEA );
@@ -236,9 +236,9 @@ namespace bit7z {
         inline constexpr BitInFormat    Deb( 0xEC );
         inline constexpr BitInFormat    Cpio( 0xED );
         inline constexpr BitInOutFormat Tar( 0xEE, TSTRING( ".tar" ), BitCompressionMethod::Copy,
-                                             FormatFeatures::MULTIPLE_FILES );
+                                             FormatFeatures::MultipleFiles );
         inline constexpr BitInOutFormat GZip( 0xEF, TSTRING( ".gz" ), BitCompressionMethod::Deflate,
-                                              FormatFeatures::COMPRESSION_LEVEL );
+                                              FormatFeatures::CompressionLevel );
 #else
 #ifdef BIT7Z_AUTO_FORMAT
         extern const BitInFormat Auto;      ///< Automatic Format Detection (available only when compiling bit7z using the BIT7Z_AUTO_FORMAT preprocessor define)

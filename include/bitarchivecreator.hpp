@@ -40,9 +40,9 @@ namespace bit7z {
     };
 
     enum struct UpdateMode {
-        NONE,
-        APPEND,
-        OVERWRITE
+        None,
+        Append,
+        Overwrite
     };
 
     /**
@@ -211,7 +211,7 @@ namespace bit7z {
             BitArchiveCreator( const Bit7zLibrary& lib,
                                const BitInOutFormat& format,
                                tstring password = TSTRING( "" ),
-                               UpdateMode update_mode = UpdateMode::NONE );
+                               UpdateMode update_mode = UpdateMode::None );
 
             ~BitArchiveCreator() override = default;
 

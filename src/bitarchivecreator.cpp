@@ -50,8 +50,6 @@ bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_siz
     static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
     static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
     static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
-    // static constexpr auto DEFLATE64_DICTIONARY_SIZE = ( 1 << 16 );       // equal to 64 KiB, i.e. 2^16 bytes
-    // static constexpr auto DEFLATE_DICTIONARY_SIZE = ( 1 << 15 );         // equal to 32 KiB, i.e. 2^15 bytes
 
     switch ( method ) {
         case BitCompressionMethod::Lzma:
@@ -125,7 +123,7 @@ BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
     BitArchiveHandler( lib, std::move( password ) ),
     mFormat( format ),
     mUpdateMode( update_mode ),
-    mCompressionLevel( BitCompressionLevel::NORMAL ),
+    mCompressionLevel( BitCompressionLevel::Normal ),
     mCompressionMethod( format.defaultMethod() ),
     mDictionarySize( 0 ),
     mWordSize( 0 ),
@@ -198,7 +196,7 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_m
         throw BitException( "Invalid compression method for the chosen archive format",
                             std::make_error_code( std::errc::invalid_argument ) );
     }
-    if ( mFormat.hasFeature( FormatFeatures::MULTIPLE_METHODS ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) ) {
         /* even though the compression method is valid, we set it only if the format supports
          * different methods than the default one (i.e., setting BitCompressionMethod::BZip2
          * of a BitFormat::BZip2 archive does nothing!) */
@@ -253,20 +251,20 @@ ArchiveProperties BitArchiveCreator::getArchiveProperties() const {
     ArchiveProperties properties = {};
     vector< const wchar_t* >& names = properties.names;
     vector< BitPropVariant >& values = properties.values;
-    if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HEADER_ENCRYPTION ) ) {
+    if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HeaderEncryption ) ) {
         names.push_back( L"he" );
         values.emplace_back( true );
     }
-    if ( mFormat.hasFeature( FormatFeatures::COMPRESSION_LEVEL ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::CompressionLevel ) ) {
         names.push_back( L"x" );
         values.emplace_back( static_cast< uint32_t >( mCompressionLevel ) );
 
-        if ( mFormat.hasFeature( FormatFeatures::MULTIPLE_METHODS ) && mCompressionMethod != mFormat.defaultMethod() ) {
+        if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) && mCompressionMethod != mFormat.defaultMethod() ) {
             names.push_back( mFormat == BitFormat::SevenZip ? L"0" : L"m" );
             values.emplace_back( methodName( mCompressionMethod ) );
         }
     }
-    if ( mFormat.hasFeature( FormatFeatures::SOLID_ARCHIVE ) ) {
+    if ( mFormat.hasFeature( FormatFeatures::SolidArchive ) ) {
         names.push_back( L"s" );
         values.emplace_back( mSolidMode );
 #ifndef _WIN32
