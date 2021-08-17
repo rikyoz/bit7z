@@ -71,14 +71,14 @@ namespace bit7z {
                 } );
             }
 
-            vector< byte_t > extractMatching( Input input, const tstring& item_filter ) const {
+            void extractMatching( Input input, vector< byte_t >& out_buffer, const tstring& item_filter ) const {
                 using namespace filesystem;
 
                 if ( item_filter.empty() ) {
                     throw BitException( "Empty wildcard filter", std::make_error_code( std::errc::invalid_argument ) );
                 }
 
-                return extractMatchingFilter( input, [ &item_filter ]( const tstring& item_path ) -> bool {
+                extractMatchingFilter( input, out_buffer, [ &item_filter ]( const tstring& item_path ) -> bool {
                     return fsutil::wildcardMatch( item_filter, item_path );
                 } );
             }
@@ -116,13 +116,13 @@ namespace bit7z {
                 } );
             }
 
-            vector< byte_t > extractMatchingRegex( Input input, const tstring& regex ) const {
+            void extractMatchingRegex( Input input, vector< byte_t >& out_buffer, const tstring& regex ) const {
                 if ( regex.empty() ) {
                     throw BitException( "Empty regex filter", std::make_error_code( std::errc::invalid_argument ) );
                 }
 
                 const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
-                return extractMatchingFilter( input, [ &regex_filter ]( const tstring& item_path ) -> bool {
+                return extractMatchingFilter( input, out_buffer, [ &regex_filter ]( const tstring& item_path ) -> bool {
                     return std::regex_match( item_path, regex_filter );
                 } );
             }
@@ -163,14 +163,15 @@ namespace bit7z {
                 in_archive.extract( out_dir, matched_indices );
             }
 
-            vector< byte_t > extractMatchingFilter( Input input,
-                                                    const function< bool( const tstring& ) >& filter ) const {
+            void extractMatchingFilter( Input input, vector< byte_t >& out_buffer,
+                                        const function< bool( const tstring& ) >& filter ) const {
                 BitInputArchive in_archive( *this, input );
 
                 //Searching for files inside the archive that match the given regex filter
                 for ( auto& item : in_archive ) {
                     if ( filter( item.path() ) ) {
-                        return in_archive.extract( item.index() );
+                        in_archive.extract( out_buffer, item.index() );
+                        return;
                     }
                 }
 
