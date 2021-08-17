@@ -31,9 +31,9 @@ using HMODULE = void*;
 #include "bittypes.hpp"
 
 #ifdef _WIN32
-#define DEFAULT_DLL L"7z.dll"
+constexpr auto default_dll = L"7z.dll";
 #else
-#define DEFAULT_DLL "/usr/lib/p7zip/7z.so" //default installation path of p7zip shared library
+constexpr auto default_dll = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip shared library
 #endif
 
 struct IInArchive;
@@ -65,7 +65,7 @@ namespace bit7z {
              *
              * @param dll_path  the path to the dll wanted
              */
-            explicit Bit7zLibrary( const tstring& dll_path = DEFAULT_DLL );
+            explicit Bit7zLibrary( const tstring& dll_path = default_dll );
 
             /**
              * @brief Destructs the Bit7zLibrary object, freeing the loaded dynamic-link library (DLL) module.
