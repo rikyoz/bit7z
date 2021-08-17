@@ -107,23 +107,23 @@ namespace bit7z {
 
             BIT7Z_NODISCARD const BitArchiveHandler& getHandler() const noexcept;
 
-            void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
+            void extract( const tstring& out_dir, const vector< uint32_t >& indices = {} ) const;
 
-            BIT7Z_NODISCARD vector< byte_t > extract( uint32_t index ) const;
+            void extract( vector< byte_t >& out_buffer, uint32_t index = 0 ) const;
 
             template< std::size_t N >
-            void extract( std::array< byte_t, N >& buffer, uint32_t index ) const {
+            void extract( std::array< byte_t, N >& buffer, uint32_t index = 0 ) const {
                 extract( buffer.data(), buffer.size(), index );
             };
 
             template< std::size_t N >
-            void extract( byte_t (&buffer)[ N ], uint32_t index ) const {
+            void extract( byte_t (&buffer)[ N ], uint32_t index = 0 ) const {
                 extract( buffer, N, index );
             };
 
-            void extract( byte_t* buffer, std::size_t size, uint32_t index ) const;
+            void extract( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const;
 
-            void extract( std::ostream& out_stream, uint32_t index ) const;
+            void extract( std::ostream& out_stream, uint32_t index = 0 ) const;
 
             void extract( map< tstring, vector< byte_t > >& out_map ) const;
 
