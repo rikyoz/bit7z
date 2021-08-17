@@ -71,7 +71,7 @@ namespace bit7z {
              *
              * @return the current value of the archive property or an empty BitPropVariant if no value is specified.
              */
-            BIT7Z_NODISCARD BitPropVariant getArchiveProperty(BitProperty property ) const;
+            BIT7Z_NODISCARD BitPropVariant getArchiveProperty( BitProperty property ) const;
 
             /**
              * @brief Gets the specified property of an item in the archive.
@@ -82,7 +82,7 @@ namespace bit7z {
              * @return the current value of the item property or an empty BitPropVariant if the item has no value for
              * the property.
              */
-            BIT7Z_NODISCARD BitPropVariant getItemProperty(uint32_t index, BitProperty property ) const;
+            BIT7Z_NODISCARD BitPropVariant getItemProperty( uint32_t index, BitProperty property ) const;
 
             /**
              * @return the number of items contained in the archive.
@@ -94,14 +94,14 @@ namespace bit7z {
              *
              * @return true if and only if the item at index is a folder.
              */
-            BIT7Z_NODISCARD bool isItemFolder(uint32_t index ) const;
+            BIT7Z_NODISCARD bool isItemFolder( uint32_t index ) const;
 
             /**
              * @param index the index of an item in the archive.
              *
              * @return true if and only if the item at index is encrypted.
              */
-            BIT7Z_NODISCARD bool isItemEncrypted(uint32_t index ) const;
+            BIT7Z_NODISCARD bool isItemEncrypted( uint32_t index ) const;
 
             BIT7Z_NODISCARD const tstring& getArchivePath() const noexcept;
 
@@ -109,21 +109,21 @@ namespace bit7z {
 
             void extract( const tstring& out_dir, const vector< uint32_t >& indices ) const;
 
-            BIT7Z_NODISCARD vector< byte_t > extract( unsigned int index ) const;
+            BIT7Z_NODISCARD vector< byte_t > extract( uint32_t index ) const;
 
             template< std::size_t N >
-            void extract( std::array< byte_t, N >& buffer, unsigned int index ) const {
-                extract( buffer.data(), buffer.size() );
+            void extract( std::array< byte_t, N >& buffer, uint32_t index ) const {
+                extract( buffer.data(), buffer.size(), index );
             };
 
             template< std::size_t N >
-            void extract( byte_t (&buffer)[ N ], unsigned int index ) const {
-                extract( buffer, N );
+            void extract( byte_t (&buffer)[ N ], uint32_t index ) const {
+                extract( buffer, N, index );
             };
 
-            void extract( byte_t* buffer, std::size_t size, unsigned int index ) const;
+            void extract( byte_t* buffer, std::size_t size, uint32_t index ) const;
 
-            void extract( std::ostream& out_stream, unsigned int index ) const;
+            void extract( std::ostream& out_stream, uint32_t index ) const;
 
             void extract( map< tstring, vector< byte_t > >& out_map ) const;
 

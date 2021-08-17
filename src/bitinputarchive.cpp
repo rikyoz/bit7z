@@ -209,7 +209,7 @@ void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >&
     extractArc( mInArchive, indices, callback);
 }
 
-vector< byte_t > BitInputArchive::extract( unsigned int index ) const {
+vector< byte_t > BitInputArchive::extract( uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Index " + std::to_string( index ) + " is out of range",
@@ -227,7 +227,7 @@ vector< byte_t > BitInputArchive::extract( unsigned int index ) const {
     return std::move( buffers_map.begin()->second );
 }
 
-void BitInputArchive::extract( ostream& out_stream, unsigned int index ) const {
+void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Index " + std::to_string( index ) + " is out of range",
@@ -303,7 +303,7 @@ bool BitInputArchive::contains( const tstring& path ) const noexcept {
 }
 
 
-void BitInputArchive::extract( byte_t* buffer, std::size_t size, unsigned int index ) const {
+void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Index " + std::to_string( index ) + " is out of range",
@@ -320,7 +320,7 @@ void BitInputArchive::extract( byte_t* buffer, std::size_t size, unsigned int in
     }
 
     const vector< uint32_t > indices( 1, index );
-    auto extract_callback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >(*this, buffer, size);
+    auto extract_callback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
     extractArc( mInArchive, indices, extract_callback );
 }
 
