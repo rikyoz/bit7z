@@ -61,7 +61,7 @@ namespace bit7z {
 
             BIT7Z_NODISCARD size_t size() const;
 
-            const GenericInputItem& operator[]( size_t index) const;
+            const GenericInputItem& operator[]( size_t index ) const;
 
             BIT7Z_NODISCARD GenericInputItemVector::const_iterator begin() const noexcept;
 

@@ -34,7 +34,6 @@
 struct IInStream;
 struct IInArchive;
 struct IOutArchive;
-struct IArchiveExtractCallback;
 
 namespace bit7z {
     using std::vector;

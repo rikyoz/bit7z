@@ -34,8 +34,6 @@ namespace bit7z {
     using std::unique_ptr;
     using std::ostream;
 
-    class UpdateCallback;
-
     struct ArchiveProperties {
         vector< const wchar_t* > names;
         vector< BitPropVariant > values;

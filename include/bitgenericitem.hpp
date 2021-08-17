@@ -30,21 +30,21 @@
 namespace bit7z {
     class BitGenericItem {
         public:
-            virtual bool isDir() const = 0;
+            BIT7Z_NODISCARD virtual bool isDir() const = 0;
 
-            virtual uint64_t size() const = 0;
+            BIT7Z_NODISCARD virtual uint64_t size() const = 0;
 
-            virtual FILETIME creationTime() const = 0;
+            BIT7Z_NODISCARD virtual FILETIME creationTime() const = 0;
 
-            virtual FILETIME lastAccessTime() const = 0;
+            BIT7Z_NODISCARD virtual FILETIME lastAccessTime() const = 0;
 
-            virtual FILETIME lastWriteTime() const = 0;
+            BIT7Z_NODISCARD virtual FILETIME lastWriteTime() const = 0;
 
-            virtual tstring name() const = 0;
+            BIT7Z_NODISCARD virtual tstring name() const = 0;
 
-            virtual tstring path() const = 0;
+            BIT7Z_NODISCARD virtual tstring path() const = 0;
 
-            virtual uint32_t attributes() const = 0;
+            BIT7Z_NODISCARD virtual uint32_t attributes() const = 0;
 
             /**
              * @brief Gets the specified item property.
@@ -53,7 +53,7 @@ namespace bit7z {
              *
              * @return the value of the item property, if available, or an empty BitPropVariant.
              */
-            virtual BitPropVariant getProperty( BitProperty property ) const = 0;
+            BIT7Z_NODISCARD virtual BitPropVariant getProperty( BitProperty property ) const = 0;
 
             virtual ~BitGenericItem() = default;
     };

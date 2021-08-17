@@ -55,6 +55,8 @@ namespace bit7z {
      *         if i >= mInputArchiveItemsCount, the item is new (added by the user); */
     enum class input_index : std::uint32_t {};
 
+    class UpdateCallback;
+
     class BitOutputArchive {
         public:
             explicit BitOutputArchive( const BitArchiveCreator& creator, tstring in_file = TSTRING( "" ) );

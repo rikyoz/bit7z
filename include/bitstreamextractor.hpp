@@ -23,12 +23,10 @@
 #include "bittypes.hpp"
 
 namespace bit7z {
-    using std::istream;
-
     /**
      * @brief The BitStreamExtractor class allows to extract the content of in-memory archives.
      */
-    using BitStreamExtractor = BitExtractor< istream& >;
+    using BitStreamExtractor = BitExtractor< std::istream& >;
 }
 
 #endif // BITSTREAMEXTRACTOR_HPP

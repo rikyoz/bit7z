@@ -66,24 +66,22 @@ namespace bit7z {
     using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
 
     namespace { //private
-        template<class Char>
+        template< class Char >
         struct string_traits;
 
         template<>
-        struct string_traits<char> {
-            template<class T>
-            static std::string convert_to_string(T &&t) {
-                using std::to_string;
-                return to_string(std::forward<T>(t));
+        struct string_traits< char > {
+            template< class T >
+            static inline std::string convert_to_string( T&& t ) {
+                return std::to_string( std::forward< T >( t ) );
             }
         };
 
         template<>
-        struct string_traits<wchar_t> {
-            template<class T>
-            static std::wstring convert_to_string(T &&t) {
-                using std::to_wstring;
-                return to_wstring(std::forward<T>(t));
+        struct string_traits< wchar_t > {
+            template< class T >
+            static inline std::wstring convert_to_string( T&& t ) {
+                return std::to_wstring( std::forward< T >( t )) ;
             }
         };
     }
@@ -114,9 +112,9 @@ namespace bit7z {
 #define COM_DECLSPEC_NOTHROW
 #endif
 
-    template <typename T>
-    inline std::basic_string<tchar> to_tstring(T&& Arg) {
-        return string_traits<tchar>::convert_to_string(std::forward<T>(Arg));
+    template< typename T >
+    inline std::basic_string< tchar > to_tstring( T&& Arg ) {
+        return string_traits< tchar >::convert_to_string( std::forward< T >( Arg ) );
     }
 }
 #endif // BITTYPES_HPP

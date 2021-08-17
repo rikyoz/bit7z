@@ -31,8 +31,6 @@ namespace bit7z {
     using std::map;
     using std::ostream;
 
-    class BitInputArchive;
-
     /**
      * @brief Abstract class representing a generic archive opener.
      */
