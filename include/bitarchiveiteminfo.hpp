@@ -39,7 +39,7 @@ namespace bit7z {
              *
              * @return the value of the item property, if available, or an empty BitPropVariant.
              */
-            BIT7Z_NODISCARD BitPropVariant getProperty( BitProperty property ) const override;
+            BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
 
             /**
              * @return a map of all the available (i.e. non empty) item properties and their respective values.

@@ -47,6 +47,6 @@ bool BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const
     return !( *this == other );
 }
 
-BitPropVariant BitArchiveItemOffset::getProperty( BitProperty property ) const {
-    return mArc != nullptr ? mArc->getItemProperty( mItemIndex, property ) : BitPropVariant();
+BitPropVariant BitArchiveItemOffset::itemProperty( BitProperty property ) const {
+    return mArc != nullptr ? mArc->itemProperty( mItemIndex, property ) : BitPropVariant();
 }

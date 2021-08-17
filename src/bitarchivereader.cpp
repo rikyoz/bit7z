@@ -49,9 +49,9 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
 map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
-        // Yeah, I know, I cast property twice (here and in getArchiveProperty), but the code is easier to read!
+        // Yeah, I know, I cast property twice (here and in archiveProperty), but the code is easier to read!
         const auto property = static_cast< BitProperty >( i );
-        BitPropVariant property_value = getArchiveProperty( property );
+        BitPropVariant property_value = archiveProperty( property );
         if ( !property_value.isEmpty() ) {
             result[ property ] = property_value;
         }
@@ -64,9 +64,9 @@ vector< BitArchiveItemInfo > BitArchiveReader::items() const {
     for ( uint32_t i = 0; i < itemsCount(); ++i ) {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
-            // Yeah, I know, I cast property twice (here and in getItemProperty), but the code is easier to read!
+            // Yeah, I know, I cast property twice (here and in itemProperty), but the code is easier to read!
             const auto property = static_cast<BitProperty>( j );
-            BitPropVariant property_value = getItemProperty( i, property );
+            BitPropVariant property_value = itemProperty( i, property );
             if ( !property_value.isEmpty() ) {
                 item.setProperty( property, property_value );
             }
@@ -110,16 +110,16 @@ bool BitArchiveReader::isMultiVolume() const {
     if ( mFormat == BitFormat::Split ) {
         return true;
     }
-    BitPropVariant is_multi_volume = getArchiveProperty( BitProperty::IsVolume );
+    BitPropVariant is_multi_volume = archiveProperty( BitProperty::IsVolume );
     return is_multi_volume.isBool() && is_multi_volume.getBool();
 }
 
 bool BitArchiveReader::isSolid() const {
-    BitPropVariant is_solid = getArchiveProperty( BitProperty::Solid );
+    BitPropVariant is_solid = archiveProperty( BitProperty::Solid );
     return is_solid.isBool() && is_solid.getBool();
 }
 
 uint32_t BitArchiveReader::volumesCount() const {
-    BitPropVariant volumes_count = getArchiveProperty( BitProperty::NumVolumes );
+    BitPropVariant volumes_count = archiveProperty( BitProperty::NumVolumes );
     return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
 }

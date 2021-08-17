@@ -36,7 +36,7 @@ namespace bit7z {
 
             bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
 
-            BIT7Z_NODISCARD BitPropVariant getProperty( BitProperty property ) const override;
+            BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
 
         private:
             /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,

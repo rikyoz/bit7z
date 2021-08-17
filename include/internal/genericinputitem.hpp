@@ -40,7 +40,7 @@ namespace bit7z {
 
         BIT7Z_NODISCARD virtual bool hasNewData() const noexcept;
 
-        BIT7Z_NODISCARD BitPropVariant getProperty( BitProperty propID ) const override;
+        BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty propID ) const override;
 
         ~GenericInputItem() override = default;
     };

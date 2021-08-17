@@ -28,7 +28,7 @@ bool GenericInputItem::hasNewData() const noexcept {
     return true;
 }
 
-BitPropVariant GenericInputItem::getProperty( BitProperty propID ) const {
+BitPropVariant GenericInputItem::itemProperty( BitProperty propID ) const {
     BitPropVariant prop;
     switch ( propID ) {
         case BitProperty::Path:

@@ -53,7 +53,7 @@ namespace bit7z {
              *
              * @return the value of the item property, if available, or an empty BitPropVariant.
              */
-            BIT7Z_NODISCARD virtual BitPropVariant getProperty( BitProperty property ) const = 0;
+            BIT7Z_NODISCARD virtual BitPropVariant itemProperty( BitProperty property ) const = 0;
 
             virtual ~BitGenericItem() = default;
     };

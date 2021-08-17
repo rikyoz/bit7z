@@ -247,7 +247,7 @@ void BitAbstractArchiveCreator::setThreadsCount( uint32_t threads_count ) noexce
     mThreadsCount = threads_count;
 }
 
-ArchiveProperties BitAbstractArchiveCreator::getArchiveProperties() const {
+ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
     ArchiveProperties properties = {};
     vector< const wchar_t* >& names = properties.names;
     vector< BitPropVariant >& values = properties.values;

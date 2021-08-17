@@ -97,7 +97,7 @@ namespace bit7z {
 
             uint32_t itemsCount() const;
 
-            const BitAbstractArchiveHandler& getHandler() const noexcept;
+            const BitAbstractArchiveHandler& handler() const noexcept;
 
             virtual ~BitOutputArchive() = default;
 
@@ -117,27 +117,27 @@ namespace bit7z {
              * if there are some deleted items, then i != mInputIndices[i]
              * (at least for values of i greater than the index of the first deleted item).
              *
-             * if there are no deleted items, mInputIndices is empty, and getItemInputIndex(i)
+             * if there are no deleted items, mInputIndices is empty, and itemInputIndex(i)
              * will return input_index with value i.
              *
              * This vector is either empty or it has size equal to itemsCount() (thanks to updateInputIndices()). */
             std::vector< input_index > mInputIndices;
 
-            virtual BitPropVariant getItemProperty( input_index index, BitProperty prop ) const;
+            virtual BitPropVariant itemProperty( input_index index, BitProperty prop ) const;
 
-            virtual HRESULT getItemStream( input_index index, ISequentialInStream** inStream ) const;
+            virtual HRESULT itemStream( input_index index, ISequentialInStream** inStream ) const;
 
             virtual bool hasNewData( uint32_t index ) const noexcept;
 
             virtual bool hasNewProperties( uint32_t index ) const noexcept;
 
-            input_index getItemInputIndex( uint32_t new_index ) const noexcept;
+            input_index itemInputIndex( uint32_t new_index ) const noexcept;
 
-            BitPropVariant getOutputItemProperty( uint32_t index, BitProperty propID ) const;
+            BitPropVariant outputItemProperty( uint32_t index, BitProperty propID ) const;
 
-            HRESULT getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
+            HRESULT outputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
 
-            uint32_t getIndexInArchive( uint32_t index ) const noexcept;
+            uint32_t indexInArchive( uint32_t index ) const noexcept;
 
             friend class UpdateCallback;
 

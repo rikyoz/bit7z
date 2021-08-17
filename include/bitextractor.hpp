@@ -150,7 +150,7 @@ namespace bit7z {
                 //Searching for files inside the archive that match the given regex filter
                 uint32_t items_count = in_archive.itemsCount();
                 for ( uint32_t index = 0; index < items_count; ++index ) {
-                    BitPropVariant item_path = in_archive.getItemProperty( index, BitProperty::Path );
+                    BitPropVariant item_path = in_archive.itemProperty( index, BitProperty::Path );
                     if ( item_path.isString() && filter( item_path.getString() ) ) {
                         matched_indices.push_back( index );
                     }

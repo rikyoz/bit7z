@@ -144,7 +144,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
     mInArchive = openArchiveStream( TSTRING( "." ), std_stream );
 }
 
-BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const {
+BitPropVariant BitInputArchive::archiveProperty( BitProperty property ) const {
     BitPropVariant archive_property;
     const HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );
     if ( res != S_OK ) {
@@ -153,7 +153,7 @@ BitPropVariant BitInputArchive::getArchiveProperty( BitProperty property ) const
     return archive_property;
 }
 
-BitPropVariant BitInputArchive::getItemProperty( uint32_t index, BitProperty property ) const {
+BitPropVariant BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const {
     BitPropVariant item_property;
     const HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
     if ( res != S_OK ) {
@@ -173,12 +173,12 @@ uint32_t BitInputArchive::itemsCount() const {
 }
 
 bool BitInputArchive::isItemFolder( uint32_t index ) const {
-    BitPropVariant is_item_folder = getItemProperty( index, BitProperty::IsDir );
+    BitPropVariant is_item_folder = itemProperty( index, BitProperty::IsDir );
     return !is_item_folder.isEmpty() && is_item_folder.getBool();
 }
 
 bool BitInputArchive::isItemEncrypted( uint32_t index ) const {
-    BitPropVariant is_item_encrypted = getItemProperty( index, BitProperty::Encrypted );
+    BitPropVariant is_item_encrypted = itemProperty( index, BitProperty::Encrypted );
     return is_item_encrypted.isBool() && is_item_encrypted.getBool();
 }
 
@@ -196,11 +196,11 @@ const BitInFormat& BitInputArchive::detectedFormat() const noexcept {
 #endif
 }
 
-const tstring& BitInputArchive::getArchivePath() const noexcept {
+const tstring& BitInputArchive::archivePath() const noexcept {
     return mArchivePath;
 }
 
-const BitAbstractArchiveHandler& BitInputArchive::getHandler() const noexcept {
+const BitAbstractArchiveHandler& BitInputArchive::handler() const noexcept {
     return mArchiveHandler;
 }
 
@@ -314,7 +314,7 @@ void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index 
         throw BitException( kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
     }
 
-    auto item_size = getItemProperty( index, BitProperty::Size ).getUInt64();
+    auto item_size = itemProperty( index, BitProperty::Size ).getUInt64();
     if ( size != item_size ) {
         throw BitException( "Preallocated buffer size different from extracted item size" );
     }

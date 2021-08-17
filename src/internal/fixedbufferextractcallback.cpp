@@ -45,7 +45,7 @@ HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index,
     }
 
     // Get Name
-    BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
+    BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
     tstring fullPath;
 
     if ( prop.isEmpty() ) {

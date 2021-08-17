@@ -70,7 +70,7 @@ namespace bit7z {
              *
              * @return the current value of the archive property or an empty BitPropVariant if no value is specified.
              */
-            BIT7Z_NODISCARD BitPropVariant getArchiveProperty( BitProperty property ) const;
+            BIT7Z_NODISCARD BitPropVariant archiveProperty( BitProperty property ) const;
 
             /**
              * @brief Gets the specified property of an item in the archive.
@@ -81,7 +81,7 @@ namespace bit7z {
              * @return the current value of the item property or an empty BitPropVariant if the item has no value for
              * the property.
              */
-            BIT7Z_NODISCARD BitPropVariant getItemProperty( uint32_t index, BitProperty property ) const;
+            BIT7Z_NODISCARD BitPropVariant itemProperty( uint32_t index, BitProperty property ) const;
 
             /**
              * @return the number of items contained in the archive.
@@ -102,9 +102,9 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD bool isItemEncrypted( uint32_t index ) const;
 
-            BIT7Z_NODISCARD const tstring& getArchivePath() const noexcept;
+            BIT7Z_NODISCARD const tstring& archivePath() const noexcept;
 
-            BIT7Z_NODISCARD const BitAbstractArchiveHandler& getHandler() const noexcept;
+            BIT7Z_NODISCARD const BitAbstractArchiveHandler& handler() const noexcept;
 
             void extract( const tstring& out_dir, const vector< uint32_t >& indices = {} ) const;
 

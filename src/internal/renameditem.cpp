@@ -46,25 +46,25 @@ bool RenamedItem::hasNewData() const noexcept {
 }
 
 bool RenamedItem::isDir() const {
-    return mInputArchive.getItemProperty( mIndex, BitProperty::IsDir ).getBool();
+    return mInputArchive.itemProperty( mIndex, BitProperty::IsDir ).getBool();
 }
 
 uint64_t RenamedItem::size() const {
-    return mInputArchive.getItemProperty( mIndex, BitProperty::Size ).getUInt64();
+    return mInputArchive.itemProperty( mIndex, BitProperty::Size ).getUInt64();
 }
 
 FILETIME RenamedItem::creationTime() const {
-    return mInputArchive.getItemProperty( mIndex, BitProperty::CTime ).getFileTime();
+    return mInputArchive.itemProperty( mIndex, BitProperty::CTime ).getFileTime();
 }
 
 FILETIME RenamedItem::lastAccessTime() const {
-    return mInputArchive.getItemProperty( mIndex, BitProperty::ATime ).getFileTime();
+    return mInputArchive.itemProperty( mIndex, BitProperty::ATime ).getFileTime();
 }
 
 FILETIME RenamedItem::lastWriteTime() const {
-    return mInputArchive.getItemProperty( mIndex, BitProperty::MTime ).getFileTime();
+    return mInputArchive.itemProperty( mIndex, BitProperty::MTime ).getFileTime();
 }
 
 uint32_t bit7z::RenamedItem::attributes() const {
-    return mInputArchive.getItemProperty( mIndex, BitProperty::Attrib ).getUInt32();
+    return mInputArchive.itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
 }

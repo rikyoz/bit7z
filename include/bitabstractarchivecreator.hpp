@@ -215,7 +215,7 @@ namespace bit7z {
 
             ~BitAbstractArchiveCreator() override = default;
 
-            BIT7Z_NODISCARD ArchiveProperties getArchiveProperties() const;
+            BIT7Z_NODISCARD ArchiveProperties archiveProperties() const;
 
             friend class BitOutputArchive;
 

@@ -25,7 +25,7 @@ using namespace bit7z;
 
 BitArchiveItemInfo::BitArchiveItemInfo( uint32_t item_index ) : BitArchiveItem( item_index ) {}
 
-BitPropVariant BitArchiveItemInfo::getProperty( BitProperty property ) const {
+BitPropVariant BitArchiveItemInfo::itemProperty( BitProperty property ) const {
     auto prop_it = mItemProperties.find( property );
     return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
 }

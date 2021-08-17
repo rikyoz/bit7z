@@ -28,7 +28,7 @@
 using namespace bit7z;
 
 UpdateCallback::UpdateCallback( const BitOutputArchive& output )
-    : Callback{ output.getHandler() },
+    : Callback{ output.handler() },
       mOutputArchive{ output },
       mNeedBeClosed{ false } {}
 
@@ -74,7 +74,7 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
     if ( propID == kpidIsAnti ) {
         prop = false;
     } else {
-        prop = mOutputArchive.getOutputItemProperty( index, static_cast< BitProperty >( propID ) );
+        prop = mOutputArchive.outputItemProperty( index, static_cast< BitProperty >( propID ));
     }
     *value = prop;
     prop.bstrVal = nullptr;
@@ -86,13 +86,13 @@ STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inSt
     RINOK( Finalize() )
 
     if ( mHandler.fileCallback() ) {
-        BitPropVariant filePath = mOutputArchive.getOutputItemProperty( index, BitProperty::Path );
+        BitPropVariant filePath = mOutputArchive.outputItemProperty( index, BitProperty::Path );
         if ( filePath.isString() ) {
             mHandler.fileCallback()( filePath.getString() );
         }
     }
 
-    return mOutputArchive.getOutputItemStream( index, inStream );
+    return mOutputArchive.outputItemStream( index, inStream );
 }
 
 COM_DECLSPEC_NOTHROW
@@ -131,7 +131,7 @@ STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
         *newProperties = static_cast< Int32 >( mOutputArchive.hasNewProperties( index ) ); //1 = true, 0 = false;
     }
     if ( indexInArchive != nullptr ) {
-        *indexInArchive = mOutputArchive.getIndexInArchive( index );
+        *indexInArchive = mOutputArchive.indexInArchive( index );
     }
 
     return S_OK;

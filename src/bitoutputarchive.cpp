@@ -167,7 +167,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
 void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) {
     // Note: if mInputArchive != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
-    const bool updating_archive = mInputArchive != nullptr && mInputArchive->getArchivePath() == out_file;
+    const bool updating_archive = mInputArchive != nullptr && mInputArchive->archivePath() == out_file;
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, updating_archive );
     compressOut( new_arc, out_stream, update_callback );
@@ -176,7 +176,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
         auto close_result = mInputArchive->close();
         if ( close_result != S_OK ) {
             throw BitException( "Could not close opened archive", make_hresult_code( close_result ),
-                                mInputArchive->getArchivePath() );
+                                mInputArchive->archivePath() );
         }
         /* NOTE: In the following instruction, we use the . (dot) operator, not the -> (arrow) operator:
          *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
@@ -221,7 +221,7 @@ void BitOutputArchive::compressTo( std::ostream& out_stream ) {
 }
 
 void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
-    ArchiveProperties properties = mArchiveCreator.getArchiveProperties();
+    ArchiveProperties properties = mArchiveCreator.archiveProperties();
     if ( !properties.names.empty() ) {
         CMyComPtr< ISetProperties > set_properties;
         if ( out_archive->QueryInterface( ::IID_ISetProperties,
@@ -260,13 +260,13 @@ uint32_t BitOutputArchive::itemsCount() const {
     return result;
 }
 
-BitPropVariant BitOutputArchive::getItemProperty( input_index index, BitProperty propID ) const {
+BitPropVariant BitOutputArchive::itemProperty( input_index index, BitProperty propID ) const {
     const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
     const GenericInputItem& new_item = mNewItemsVector[ new_item_index ];
-    return new_item.getProperty( propID );
+    return new_item.itemProperty( propID );
 }
 
-HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream** inStream ) const {
+HRESULT BitOutputArchive::itemStream( input_index index, ISequentialInStream** inStream ) const {
     const auto new_item_index = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
     const GenericInputItem& new_item = mNewItemsVector[ new_item_index ];
 
@@ -283,7 +283,7 @@ HRESULT BitOutputArchive::getItemStream( input_index index, ISequentialInStream*
 }
 
 bool BitOutputArchive::hasNewData( uint32_t index ) const noexcept {
-    const auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+    const auto original_index = static_cast< uint32_t >( itemInputIndex( index ) );
     return original_index >= mInputArchiveItemsCount;
 }
 
@@ -293,7 +293,7 @@ bool BitOutputArchive::hasNewProperties( uint32_t index ) const noexcept {
     return hasNewData( index );
 }
 
-input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const noexcept {
+input_index BitOutputArchive::itemInputIndex( uint32_t new_index ) const noexcept {
     const auto index = static_cast< decltype( mInputIndices )::size_type >( new_index );
     if ( index < mInputIndices.size() ) {
         return mInputIndices[ index ];
@@ -302,21 +302,21 @@ input_index BitOutputArchive::getItemInputIndex( uint32_t new_index ) const noex
     return static_cast< input_index >( new_index );
 }
 
-BitPropVariant BitOutputArchive::getOutputItemProperty( uint32_t index, BitProperty propID ) const {
-    const auto mapped_index = getItemInputIndex( index );
-    return getItemProperty( mapped_index, propID );
+BitPropVariant BitOutputArchive::outputItemProperty( uint32_t index, BitProperty propID ) const {
+    const auto mapped_index = itemInputIndex( index );
+    return itemProperty( mapped_index, propID );
 }
 
-HRESULT BitOutputArchive::getOutputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
-    const auto mapped_index = getItemInputIndex( index );
-    return getItemStream( mapped_index, inStream );
+HRESULT BitOutputArchive::outputItemStream( uint32_t index, ISequentialInStream** inStream ) const {
+    const auto mapped_index = itemInputIndex( index );
+    return itemStream( mapped_index, inStream );
 }
 
-uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const noexcept {
-    const auto original_index = static_cast< uint32_t >( getItemInputIndex( index ) );
+uint32_t BitOutputArchive::indexInArchive( uint32_t index ) const noexcept {
+    const auto original_index = static_cast< uint32_t >( itemInputIndex( index ) );
     return original_index < mInputArchiveItemsCount ? original_index : static_cast< uint32_t >( -1 );
 }
 
-const BitAbstractArchiveHandler& BitOutputArchive::getHandler() const noexcept {
+const BitAbstractArchiveHandler& BitOutputArchive::handler() const noexcept {
     return mArchiveCreator;
 }

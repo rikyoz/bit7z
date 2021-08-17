@@ -40,9 +40,9 @@ using namespace bit7z;
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
                                           const tstring& directoryPath )
     : ExtractCallback( inputArchive ),
-      mInFilePath( inputArchive.getArchivePath() ),
+      mInFilePath( inputArchive.archivePath() ),
       mDirectoryPath( directoryPath ),
-      mRetainDirectories( inputArchive.getHandler().retainDirectories() ),
+      mRetainDirectories( inputArchive.handler().retainDirectories() ),
       mProcessedFileInfo() {}
 
 void FileExtractCallback::releaseStream() {
@@ -76,7 +76,7 @@ void FileExtractCallback::throwException( HRESULT error ) {
 
 HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
     // Get Name
-    BitPropVariant prop = mInputArchive.getItemProperty( index, BitProperty::Path );
+    BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
 
     fs::path filePath;
     if ( prop.isEmpty() ) {
@@ -96,7 +96,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     }
 
     // Get Attrib
-    BitPropVariant prop2 = mInputArchive.getItemProperty( index, BitProperty::Attrib );
+    BitPropVariant prop2 = mInputArchive.itemProperty( index, BitProperty::Attrib );
 
     if ( prop2.isEmpty() ) {
         mProcessedFileInfo.Attrib = 0;
@@ -113,7 +113,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     mProcessedFileInfo.isDir = mInputArchive.isItemFolder( index );
 
     // Get Modified Time
-    BitPropVariant prop3 = mInputArchive.getItemProperty( index, BitProperty::MTime );
+    BitPropVariant prop3 = mInputArchive.itemProperty( index, BitProperty::MTime );
     mProcessedFileInfo.MTimeDefined = false;
 
     switch ( prop3.type() ) {
