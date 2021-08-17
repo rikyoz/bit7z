@@ -155,16 +155,16 @@ namespace bit7z {
             /**
              * @brief Sets the compression level to be used when creating an archive.
              *
-             * @param compression_level the compression level desired.
+             * @param level the compression level desired.
              */
-            void setCompressionLevel( BitCompressionLevel compression_level ) noexcept;
+            void setCompressionLevel( BitCompressionLevel level ) noexcept;
 
             /**
              * @brief Sets the compression method to be used when creating an archive.
              *
-             * @param compression_method the compression method desired.
+             * @param method the compression method desired.
              */
-            void setCompressionMethod( BitCompressionMethod compression_method );
+            void setCompressionMethod( BitCompressionMethod method );
 
             /**
              * @brief Sets the dictionary size to be used when creating an archive.
@@ -190,18 +190,18 @@ namespace bit7z {
              *
              * @note If false, an exception will be thrown in case a compression operation targets an existing archive.
              *
-             * @param update_mode if true, compressing operations will update existing archives.
+             * @param mode if true, compressing operations will update existing archives.
              */
-            virtual void setUpdateMode( UpdateMode update_mode );
+            virtual void setUpdateMode( UpdateMode mode );
 
             /**
-             * @brief Sets the size (in bytes) of the archive volumes.
+             * @brief Sets the volume_size (in bytes) of the archive volumes.
              *
              * @note This setting has effects only when the destination archive is on filesystem.
              *
-             * @param size    The dimension of a volume.
+             * @param volume_size    The dimension of a volume.
              */
-            void setVolumeSize( uint64_t size ) noexcept;
+            void setVolumeSize( uint64_t volume_size ) noexcept;
 
             void setThreadsCount( uint32_t threads_count ) noexcept;
 

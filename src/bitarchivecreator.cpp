@@ -185,14 +185,14 @@ void BitArchiveCreator::setPassword( const tstring& password, bool crypt_headers
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
 
-void BitArchiveCreator::setCompressionLevel( BitCompressionLevel compression_level ) noexcept {
-    mCompressionLevel = compression_level;
+void BitArchiveCreator::setCompressionLevel( BitCompressionLevel level ) noexcept {
+    mCompressionLevel = level;
     mDictionarySize = 0; //reset dictionary size to default for the compression level
     mWordSize = 0; //reset word size to default for the compression level
 }
 
-void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_method ) {
-    if ( !isValidCompressionMethod( mFormat, compression_method ) ) {
+void BitArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
+    if ( !isValidCompressionMethod( mFormat, method ) ) {
         throw BitException( "Invalid compression method for the chosen archive format",
                             std::make_error_code( std::errc::invalid_argument ) );
     }
@@ -200,7 +200,7 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod compression_m
         /* even though the compression method is valid, we set it only if the format supports
          * different methods than the default one (i.e., setting BitCompressionMethod::BZip2
          * of a BitFormat::BZip2 archive does nothing!) */
-        mCompressionMethod = compression_method;
+        mCompressionMethod = method;
         mDictionarySize = 0; //reset dictionary size to default value for the method
         mWordSize = 0; //reset word size to default value for the method
     }
@@ -235,12 +235,12 @@ void BitArchiveCreator::setSolidMode( bool solid_mode ) noexcept {
     mSolidMode = solid_mode;
 }
 
-void BitArchiveCreator::setUpdateMode( UpdateMode update_mode ) {
-    mUpdateMode = update_mode;
+void BitArchiveCreator::setUpdateMode( UpdateMode mode ) {
+    mUpdateMode = mode;
 }
 
-void BitArchiveCreator::setVolumeSize( uint64_t size ) noexcept {
-    mVolumeSize = size;
+void BitArchiveCreator::setVolumeSize( uint64_t volume_size ) noexcept {
+    mVolumeSize = volume_size;
 }
 
 void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) noexcept {
