@@ -60,10 +60,9 @@ namespace bit7z {
 #define WIDEN( tstr ) bit7z::widen(tstr)
 #endif
 
-    template< typename T, typename = typename std::enable_if<std::is_integral<T>::value>::type >
-    constexpr inline bool check_overflow( T position, T offset ) noexcept {
-        return ( offset > 0 && position > (std::numeric_limits< T >::max)() - offset ) ||
-               ( offset < 0 && position < (std::numeric_limits< T >::min)() - offset );
+    constexpr inline bool check_overflow( int64_t position, int64_t offset ) noexcept {
+        return ( offset > 0 && position > (std::numeric_limits< int64_t >::max)() - offset ) ||
+               ( offset < 0 && position < (std::numeric_limits< int64_t >::min)() - offset );
     }
 
     template<typename T, typename I = T, class... Args>
