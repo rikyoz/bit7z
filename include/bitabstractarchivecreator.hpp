@@ -16,12 +16,12 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITARCHIVECREATOR_HPP
-#define BITARCHIVECREATOR_HPP
+#ifndef BITABSTRACTARCHIVECREATOR_HPP
+#define BITABSTRACTARCHIVECREATOR_HPP
 
 #include <memory>
 
-#include "bitarchivehandler.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "bitcompressionlevel.hpp"
 #include "bitcompressionmethod.hpp"
 #include "bitformat.hpp"
@@ -48,15 +48,15 @@ namespace bit7z {
     /**
      * @brief Abstract class representing a generic archive creator.
      */
-    class BitArchiveCreator : public BitArchiveHandler {
+    class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         public:
-            BitArchiveCreator( const BitArchiveCreator& ) = delete;
+            BitAbstractArchiveCreator( const BitAbstractArchiveCreator& ) = delete;
 
-            BitArchiveCreator( BitArchiveCreator&& ) = delete;
+            BitAbstractArchiveCreator( BitAbstractArchiveCreator&& ) = delete;
 
-            BitArchiveCreator& operator=( const BitArchiveCreator& ) = delete;
+            BitAbstractArchiveCreator& operator=( const BitAbstractArchiveCreator& ) = delete;
 
-            BitArchiveCreator& operator=( BitArchiveCreator&& ) = delete;
+            BitAbstractArchiveCreator& operator=( BitAbstractArchiveCreator&& ) = delete;
 
             /**
              * @return the format used by the archive creator.
@@ -121,7 +121,7 @@ namespace bit7z {
              *
              * @note After a password has been set, it will be used for every subsequent operation.
              * To disable the use of the password, you need to call the clearPassword method
-             * (inherited from BitArchiveHandler), which is equivalent to setPassword(L"").
+             * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
              *
              * @param password
              */
@@ -144,7 +144,7 @@ namespace bit7z {
              *
              * @note After a password has been set, it will be used for every subsequent operation.
              * To disable the use of the password, you need to call the clearPassword method
-             * (inherited from BitArchiveHandler), which is equivalent to setPassword(L"").
+             * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
              *
              * @param password          the password desired.
              * @param crypt_headers     if true, the headers of the output archive will be encrypted
@@ -208,12 +208,12 @@ namespace bit7z {
         protected:
             const BitInOutFormat& mFormat;
 
-            BitArchiveCreator( const Bit7zLibrary& lib,
-                               const BitInOutFormat& format,
-                               tstring password = TSTRING( "" ),
-                               UpdateMode update_mode = UpdateMode::None );
+            BitAbstractArchiveCreator( const Bit7zLibrary& lib,
+                                       const BitInOutFormat& format,
+                                       tstring password = TSTRING( "" ),
+                                       UpdateMode update_mode = UpdateMode::None );
 
-            ~BitArchiveCreator() override = default;
+            ~BitAbstractArchiveCreator() override = default;
 
             BIT7Z_NODISCARD ArchiveProperties getArchiveProperties() const;
 
@@ -232,4 +232,4 @@ namespace bit7z {
     };
 }
 
-#endif // BITARCHIVECREATOR_HPP
+#endif // BITABSTRACTARCHIVECREATOR_HPP

@@ -23,7 +23,7 @@
 #include <cstdint>
 #include <array>
 
-#include "bitarchivehandler.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "bitarchiveiteminfo.hpp"
 #include "bitarchiveitemoffset.hpp"
 #include "bitexception.hpp"
@@ -42,11 +42,11 @@ namespace bit7z {
 
     class BitInputArchive {
         public:
-            BitInputArchive( const BitArchiveHandler& handler, tstring in_file );
+            BitInputArchive( const BitAbstractArchiveHandler& handler, tstring in_file );
 
-            BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer );
+            BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer );
 
-            BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream );
+            BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream );
 
             BitInputArchive( const BitInputArchive& ) = delete;
 
@@ -104,7 +104,7 @@ namespace bit7z {
 
             BIT7Z_NODISCARD const tstring& getArchivePath() const noexcept;
 
-            BIT7Z_NODISCARD const BitArchiveHandler& getHandler() const noexcept;
+            BIT7Z_NODISCARD const BitAbstractArchiveHandler& getHandler() const noexcept;
 
             void extract( const tstring& out_dir, const vector< uint32_t >& indices = {} ) const;
 
@@ -135,16 +135,16 @@ namespace bit7z {
 
             BIT7Z_NODISCARD HRESULT close() const noexcept;
 
-            friend class BitArchiveOpener;
+            friend class BitAbstractArchiveOpener;
 
-            friend class BitArchiveCreator;
+            friend class BitAbstractArchiveCreator;
 
             friend class BitOutputArchive;
 
         private:
             IInArchive* mInArchive;
             const BitInFormat* mDetectedFormat;
-            const BitArchiveHandler& mArchiveHandler;
+            const BitAbstractArchiveHandler& mArchiveHandler;
             const tstring mArchivePath;
 
         public:

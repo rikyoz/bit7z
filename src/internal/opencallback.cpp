@@ -32,7 +32,7 @@ using namespace bit7z::filesystem;
  *  + Use of wstring instead of UString (see Callback base interface)
  *  + Error messages are not showed (see comments in ExtractCallback) */
 
-OpenCallback::OpenCallback( const BitArchiveHandler& handler, const tstring& filename )
+OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const tstring& filename )
     : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
 
 COM_DECLSPEC_NOTHROW

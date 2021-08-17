@@ -27,7 +27,7 @@
 #include <7zip/IPassword.h>
 #include <Common/MyCom.h>
 
-#include "bitarchivehandler.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "internal/callback.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/util.hpp"
@@ -41,7 +41,7 @@ namespace bit7z {
                                public ICryptoGetTextPassword,
                                public Callback {
         public:
-            explicit OpenCallback( const BitArchiveHandler& handler, const tstring& filename = TSTRING( "." ) );
+            explicit OpenCallback( const BitAbstractArchiveHandler& handler, const tstring& filename = TSTRING( "." ) );
 
             OpenCallback( const OpenCallback& ) = delete;
 

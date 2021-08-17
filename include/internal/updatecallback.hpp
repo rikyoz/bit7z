@@ -27,7 +27,7 @@
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
 
-#include "bitarchivecreator.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 #include "bititemsvector.hpp"

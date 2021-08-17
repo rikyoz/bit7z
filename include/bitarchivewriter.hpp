@@ -19,12 +19,12 @@
 #ifndef BITARCHIVEWRITER_HPP
 #define BITARCHIVEWRITER_HPP
 
-#include "bitarchivecreator.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
 #include "bittypes.hpp"
 
 namespace bit7z {
-    class BitArchiveWriter : public BitArchiveCreator, public BitOutputArchive {
+    class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchive {
         public:
             BitArchiveWriter( const Bit7zLibrary& lib, const BitInOutFormat& format );
 

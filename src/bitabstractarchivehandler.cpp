@@ -19,79 +19,79 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "bitarchivehandler.hpp"
+#include "bitabstractarchivehandler.hpp"
 
 #include <utility> // for std::move
 
 using namespace bit7z;
 
-BitArchiveHandler::BitArchiveHandler( const Bit7zLibrary& lib, tstring password )
+BitAbstractArchiveHandler::BitAbstractArchiveHandler( const Bit7zLibrary& lib, tstring password )
     : mLibrary( lib ), mPassword( std::move( password ) ), mRetainDirectories( true ) {}
 
-const Bit7zLibrary& BitArchiveHandler::library() const noexcept {
+const Bit7zLibrary& BitAbstractArchiveHandler::library() const noexcept {
     return mLibrary;
 }
 
-tstring BitArchiveHandler::password() const {
+tstring BitAbstractArchiveHandler::password() const {
     return mPassword;
 }
 
-bool BitArchiveHandler::retainDirectories() const noexcept {
+bool BitAbstractArchiveHandler::retainDirectories() const noexcept {
     return mRetainDirectories;
 }
 
-bool BitArchiveHandler::isPasswordDefined() const noexcept {
+bool BitAbstractArchiveHandler::isPasswordDefined() const noexcept {
     return !mPassword.empty();
 }
 
-TotalCallback BitArchiveHandler::totalCallback() const {
+TotalCallback BitAbstractArchiveHandler::totalCallback() const {
     return mTotalCallback;
 }
 
-ProgressCallback BitArchiveHandler::progressCallback() const {
+ProgressCallback BitAbstractArchiveHandler::progressCallback() const {
     return mProgressCallback;
 }
 
-RatioCallback BitArchiveHandler::ratioCallback() const {
+RatioCallback BitAbstractArchiveHandler::ratioCallback() const {
     return mRatioCallback;
 }
 
-FileCallback BitArchiveHandler::fileCallback() const {
+FileCallback BitAbstractArchiveHandler::fileCallback() const {
     return mFileCallback;
 }
 
-PasswordCallback BitArchiveHandler::passwordCallback() const {
+PasswordCallback BitAbstractArchiveHandler::passwordCallback() const {
     return mPasswordCallback;
 }
 
-void BitArchiveHandler::setPassword( const tstring& password ) {
+void BitAbstractArchiveHandler::setPassword( const tstring& password ) {
     mPassword = password;
 }
 
-void BitArchiveHandler::clearPassword() noexcept {
+void BitAbstractArchiveHandler::clearPassword() noexcept {
     mPassword.clear();
 }
 
-void BitArchiveHandler::setRetainDirectories( bool retain ) noexcept {
+void BitAbstractArchiveHandler::setRetainDirectories( bool retain ) noexcept {
     mRetainDirectories = retain;
 }
 
-void BitArchiveHandler::setTotalCallback( const TotalCallback& callback ) {
+void BitAbstractArchiveHandler::setTotalCallback( const TotalCallback& callback ) {
     mTotalCallback = callback;
 }
 
-void BitArchiveHandler::setProgressCallback( const ProgressCallback& callback ) {
+void BitAbstractArchiveHandler::setProgressCallback( const ProgressCallback& callback ) {
     mProgressCallback = callback;
 }
 
-void BitArchiveHandler::setRatioCallback( const RatioCallback& callback ) {
+void BitAbstractArchiveHandler::setRatioCallback( const RatioCallback& callback ) {
     mRatioCallback = callback;
 }
 
-void BitArchiveHandler::setFileCallback( const FileCallback& callback ) {
+void BitAbstractArchiveHandler::setFileCallback( const FileCallback& callback ) {
     mFileCallback = callback;
 }
 
-void BitArchiveHandler::setPasswordCallback( const PasswordCallback& callback ) {
+void BitAbstractArchiveHandler::setPasswordCallback( const PasswordCallback& callback ) {
     mPasswordCallback = callback;
 }

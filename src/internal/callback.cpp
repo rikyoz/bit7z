@@ -25,7 +25,7 @@
 
 using namespace bit7z;
 
-Callback::Callback( const BitArchiveHandler& handler ) : mHandler( handler ), mErrorMessage( nullptr ) {}
+Callback::Callback( const BitAbstractArchiveHandler& handler ) : mHandler( handler ), mErrorMessage( nullptr ) {}
 
 void Callback::throwException( HRESULT error ) {
     if ( mErrorMessage != nullptr ) {

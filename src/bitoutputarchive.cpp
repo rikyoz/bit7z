@@ -30,15 +30,15 @@
 
 using bit7z::BitException;
 using bit7z::BitOutputArchive;
-using bit7z::BitArchiveCreator;
-using bit7z::BitArchiveHandler;
+using bit7z::BitAbstractArchiveCreator;
+using bit7z::BitAbstractArchiveHandler;
 using bit7z::BitPropVariant;
 using bit7z::UpdateCallback;
 using bit7z::byte_t;
 using bit7z::tstring;
 using bit7z::input_index;
 
-BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in_file )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     std::error_code ec;
     if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
@@ -56,7 +56,7 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, tstring in
     }
 }
 
-BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator,
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
                                     const std::vector< bit7z::byte_t >& in_buffer )
     :  mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     if ( !in_buffer.empty() ) {
@@ -65,7 +65,7 @@ BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator,
     }
 }
 
-BitOutputArchive::BitOutputArchive( const BitArchiveCreator& creator, std::istream& in_stream )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& in_stream )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
     mInputArchiveItemsCount = mInputArchive->itemsCount();
@@ -317,6 +317,6 @@ uint32_t BitOutputArchive::getIndexInArchive( uint32_t index ) const noexcept {
     return original_index < mInputArchiveItemsCount ? original_index : static_cast< uint32_t >( -1 );
 }
 
-const BitArchiveHandler& BitOutputArchive::getHandler() const noexcept {
+const BitAbstractArchiveHandler& BitOutputArchive::getHandler() const noexcept {
     return mArchiveCreator;
 }

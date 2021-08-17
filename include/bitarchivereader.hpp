@@ -20,7 +20,7 @@
 #define BITARCHIVEREADER_HPP
 
 #include "bitarchiveiteminfo.hpp"
-#include "bitarchiveopener.hpp"
+#include "bitabstractarchiveopener.hpp"
 #include "bitinputarchive.hpp"
 #include "bittypes.hpp"
 
@@ -32,7 +32,7 @@ namespace bit7z {
     /**
      * @brief The BitArchiveReader class allows to retrieve metadata information of archives and their content.
      */
-    class BitArchiveReader : public BitArchiveOpener, public BitInputArchive {
+    class BitArchiveReader : public BitAbstractArchiveOpener, public BitInputArchive {
         public:
             /**
              * @brief Constructs a BitArchiveReader object, opening the input file archive.

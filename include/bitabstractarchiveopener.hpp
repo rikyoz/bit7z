@@ -16,13 +16,13 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITARCHIVEOPENER_HPP
-#define BITARCHIVEOPENER_HPP
+#ifndef BITABSTRACTARCHIVEOPENER_HPP
+#define BITABSTRACTARCHIVEOPENER_HPP
 
 #include <vector>
 #include <map>
 
-#include "bitarchivehandler.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "bitformat.hpp"
 #include "bittypes.hpp"
 
@@ -34,15 +34,15 @@ namespace bit7z {
     /**
      * @brief Abstract class representing a generic archive opener.
      */
-    class BitArchiveOpener : public BitArchiveHandler {
+    class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
         public:
-            BitArchiveOpener( const BitArchiveOpener& ) = delete;
+            BitAbstractArchiveOpener( const BitAbstractArchiveOpener& ) = delete;
 
-            BitArchiveOpener( BitArchiveOpener&& ) = delete;
+            BitAbstractArchiveOpener( BitAbstractArchiveOpener&& ) = delete;
 
-            BitArchiveOpener& operator=( const BitArchiveOpener& ) = delete;
+            BitAbstractArchiveOpener& operator=( const BitAbstractArchiveOpener& ) = delete;
 
-            BitArchiveOpener& operator=( BitArchiveOpener&& ) = delete;
+            BitAbstractArchiveOpener& operator=( BitAbstractArchiveOpener&& ) = delete;
 
             /**
              * @return the archive format used by the archive opener.
@@ -57,13 +57,13 @@ namespace bit7z {
         protected:
             const BitInFormat& mFormat;
 
-            BitArchiveOpener( const Bit7zLibrary& lib,
-                              const BitInFormat& format,
-                              const tstring& password = TSTRING( "" ) );
+            BitAbstractArchiveOpener( const Bit7zLibrary& lib,
+                                      const BitInFormat& format,
+                                      const tstring& password = TSTRING( "" ) );
 
-            ~BitArchiveOpener() override = default;
+            ~BitAbstractArchiveOpener() override = default;
 
     };
 }
 
-#endif // BITARCHIVEOPENER_HPP
+#endif // BITABSTRACTARCHIVEOPENER_HPP

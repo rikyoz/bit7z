@@ -32,19 +32,19 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& in_file,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_file ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_file ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const vector< byte_t >& in_buffer,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_buffer ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_buffer ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     std::istream& in_stream,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
 
 map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;

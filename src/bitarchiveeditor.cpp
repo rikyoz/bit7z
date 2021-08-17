@@ -125,7 +125,7 @@ void BitArchiveEditor::setUpdateMode( UpdateMode update_mode ) {
         throw BitException( "BitArchiveEditor doesn't support setting update mode to UpdateMode::None",
                             std::make_error_code( std::errc::invalid_argument ) );
     }
-    BitArchiveCreator::setUpdateMode( update_mode );
+    BitAbstractArchiveCreator::setUpdateMode( update_mode );
 }
 
 void BitArchiveEditor::applyChanges() {

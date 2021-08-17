@@ -19,7 +19,7 @@
 #ifndef BITEXTRACTOR_HPP
 #define BITEXTRACTOR_HPP
 
-#include "bitarchiveopener.hpp"
+#include "bitabstractarchiveopener.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 #include "bittypes.hpp"
@@ -34,10 +34,10 @@ namespace bit7z {
     }
 
     template< typename Input >
-    class BitExtractor : public BitArchiveOpener {
+    class BitExtractor : public BitAbstractArchiveOpener {
         public:
             explicit BitExtractor( const Bit7zLibrary& lib, const BitInFormat& format DEFAULT_FORMAT )
-                : BitArchiveOpener( lib, format ) {}
+                : BitAbstractArchiveOpener( lib, format ) {}
 
             void extract( Input input, const tstring& out_dir = TSTRING( "" ) ) const {
                 BitInputArchive in_archive( *this, input );

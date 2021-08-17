@@ -15,13 +15,13 @@ endif()
 set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bit7z.hpp
      ${PROJECT_SOURCE_DIR}/include/bit7zlibrary.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchivecreator.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitabstractarchivecreator.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitabstractarchivehandler.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitabstractarchiveopener.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchiveeditor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchivehandler.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchiveitem.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchiveiteminfo.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchiveitemoffset.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchiveopener.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchivereader.hpp
      ${PROJECT_SOURCE_DIR}/include/bitarchivewriter.hpp
      ${PROJECT_SOURCE_DIR}/include/bitcompressionlevel.hpp
@@ -75,13 +75,13 @@ set( HEADERS
 # sources
 set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bit7zlibrary.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchivecreator.cpp
+     ${PROJECT_SOURCE_DIR}/src/bitabstractarchivecreator.cpp
+     ${PROJECT_SOURCE_DIR}/src/bitabstractarchivehandler.cpp
+     ${PROJECT_SOURCE_DIR}/src/bitabstractarchiveopener.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveeditor.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchivehandler.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveitem.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveiteminfo.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchiveitemoffset.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchiveopener.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchivereader.cpp
      ${PROJECT_SOURCE_DIR}/src/bitarchivewriter.cpp
      ${PROJECT_SOURCE_DIR}/src/bitexception.cpp

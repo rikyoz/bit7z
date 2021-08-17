@@ -24,7 +24,7 @@
 
 #include <vector>
 
-#include "bitarchivecreator.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
 #include "bittypes.hpp"
 
@@ -40,10 +40,10 @@ namespace bit7z {
     using namespace filesystem;
 
     template< typename Input >
-    class BitCompressor : public BitArchiveCreator {
+    class BitCompressor : public BitAbstractArchiveCreator {
         public:
             BitCompressor( Bit7zLibrary const& lib, BitInOutFormat const& format )
-                : BitArchiveCreator( lib, format ) {}
+                : BitAbstractArchiveCreator( lib, format ) {}
 
             void compressFile( Input& in_file,
                                const tstring& out_file,

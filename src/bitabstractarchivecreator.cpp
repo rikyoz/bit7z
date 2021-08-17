@@ -19,7 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "bitarchivecreator.hpp"
+#include "bitabstractarchivecreator.hpp"
 
 #include "bitexception.hpp"
 
@@ -116,82 +116,82 @@ const wchar_t* methodName( BitCompressionMethod method ) noexcept {
     }
 }
 
-BitArchiveCreator::BitArchiveCreator( const Bit7zLibrary& lib,
-                                      const BitInOutFormat& format,
-                                      tstring password,
-                                      UpdateMode update_mode ) :
-    BitArchiveHandler( lib, std::move( password ) ),
-    mFormat( format ),
-    mUpdateMode( update_mode ),
-    mCompressionLevel( BitCompressionLevel::Normal ),
-    mCompressionMethod( format.defaultMethod() ),
-    mDictionarySize( 0 ),
-    mWordSize( 0 ),
-    mCryptHeaders( false ),
-    mSolidMode( false ),
-    mVolumeSize( 0 ),
-    mThreadsCount( 0 ) {}
+BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
+                                                      const BitInOutFormat& format,
+                                                      tstring password,
+                                                      UpdateMode update_mode ) :
+        BitAbstractArchiveHandler( lib, std::move( password ) ),
+        mFormat( format ),
+        mUpdateMode( update_mode ),
+        mCompressionLevel( BitCompressionLevel::Normal ),
+        mCompressionMethod( format.defaultMethod() ),
+        mDictionarySize( 0 ),
+        mWordSize( 0 ),
+        mCryptHeaders( false ),
+        mSolidMode( false ),
+        mVolumeSize( 0 ),
+        mThreadsCount( 0 ) {}
 
-const BitInFormat& BitArchiveCreator::format() const noexcept {
+const BitInFormat& BitAbstractArchiveCreator::format() const noexcept {
     return mFormat;
 }
 
-const BitInOutFormat& BitArchiveCreator::compressionFormat() const noexcept {
+const BitInOutFormat& BitAbstractArchiveCreator::compressionFormat() const noexcept {
     return mFormat;
 }
 
-bool BitArchiveCreator::cryptHeaders() const noexcept {
+bool BitAbstractArchiveCreator::cryptHeaders() const noexcept {
     return mCryptHeaders;
 }
 
-BitCompressionLevel BitArchiveCreator::compressionLevel() const noexcept {
+BitCompressionLevel BitAbstractArchiveCreator::compressionLevel() const noexcept {
     return mCompressionLevel;
 }
 
-BitCompressionMethod BitArchiveCreator::compressionMethod() const noexcept {
+BitCompressionMethod BitAbstractArchiveCreator::compressionMethod() const noexcept {
     return mCompressionMethod;
 }
 
-uint32_t BitArchiveCreator::dictionarySize() const noexcept {
+uint32_t BitAbstractArchiveCreator::dictionarySize() const noexcept {
     return mDictionarySize;
 }
 
-uint32_t BitArchiveCreator::wordSize() const noexcept {
+uint32_t BitAbstractArchiveCreator::wordSize() const noexcept {
     return mWordSize;
 }
 
-bool BitArchiveCreator::solidMode() const noexcept {
+bool BitAbstractArchiveCreator::solidMode() const noexcept {
     return mSolidMode;
 }
 
-UpdateMode BitArchiveCreator::updateMode() const noexcept {
+UpdateMode BitAbstractArchiveCreator::updateMode() const noexcept {
     return mUpdateMode;
 }
 
-uint64_t BitArchiveCreator::volumeSize() const noexcept {
+uint64_t BitAbstractArchiveCreator::volumeSize() const noexcept {
     return mVolumeSize;
 }
 
-uint32_t BitArchiveCreator::threadsCount() const noexcept {
+uint32_t BitAbstractArchiveCreator::threadsCount() const noexcept {
     return mThreadsCount;
 }
 
-void BitArchiveCreator::setPassword( const tstring& password ) {
+void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders );
 }
 
-void BitArchiveCreator::setPassword( const tstring& password, bool crypt_headers ) {
+void BitAbstractArchiveCreator::setPassword( const tstring& password, bool crypt_headers ) {
     mPassword = password;
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
 
-void BitArchiveCreator::setCompressionLevel( BitCompressionLevel level ) noexcept {
+void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level ) noexcept {
     mCompressionLevel = level;
     mDictionarySize = 0; //reset dictionary size to default for the compression level
     mWordSize = 0; //reset word size to default for the compression level
 }
 
-void BitArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
+void BitAbstractArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
     if ( !isValidCompressionMethod( mFormat, method ) ) {
         throw BitException( "Invalid compression method for the chosen archive format",
                             std::make_error_code( std::errc::invalid_argument ) );
@@ -206,7 +206,7 @@ void BitArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
     }
 }
 
-void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
+void BitAbstractArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
     if ( mCompressionMethod == BitCompressionMethod::Copy ||
          mCompressionMethod == BitCompressionMethod::Deflate ||
          mCompressionMethod == BitCompressionMethod::Deflate64 ) {
@@ -220,7 +220,7 @@ void BitArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
     mDictionarySize = dictionary_size;
 }
 
-void BitArchiveCreator::setWordSize( uint32_t word_size ) {
+void BitAbstractArchiveCreator::setWordSize( uint32_t word_size ) {
     if ( mCompressionMethod == BitCompressionMethod::Copy || mCompressionMethod == BitCompressionMethod::BZip2 ) {
         return;
     }
@@ -231,23 +231,23 @@ void BitArchiveCreator::setWordSize( uint32_t word_size ) {
     mWordSize = word_size;
 }
 
-void BitArchiveCreator::setSolidMode( bool solid_mode ) noexcept {
+void BitAbstractArchiveCreator::setSolidMode( bool solid_mode ) noexcept {
     mSolidMode = solid_mode;
 }
 
-void BitArchiveCreator::setUpdateMode( UpdateMode mode ) {
+void BitAbstractArchiveCreator::setUpdateMode( UpdateMode mode ) {
     mUpdateMode = mode;
 }
 
-void BitArchiveCreator::setVolumeSize( uint64_t volume_size ) noexcept {
+void BitAbstractArchiveCreator::setVolumeSize( uint64_t volume_size ) noexcept {
     mVolumeSize = volume_size;
 }
 
-void BitArchiveCreator::setThreadsCount( uint32_t threads_count ) noexcept {
+void BitAbstractArchiveCreator::setThreadsCount( uint32_t threads_count ) noexcept {
     mThreadsCount = threads_count;
 }
 
-ArchiveProperties BitArchiveCreator::getArchiveProperties() const {
+ArchiveProperties BitAbstractArchiveCreator::getArchiveProperties() const {
     ArchiveProperties properties = {};
     vector< const wchar_t* >& names = properties.names;
     vector< BitPropVariant >& values = properties.values;

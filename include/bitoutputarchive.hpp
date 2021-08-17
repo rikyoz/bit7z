@@ -22,7 +22,7 @@
 #include <istream>
 #include <set>
 
-#include "bitarchivecreator.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitexception.hpp"
 #include "bititemsvector.hpp"
 #include "bitpropvariant.hpp"
@@ -59,11 +59,11 @@ namespace bit7z {
 
     class BitOutputArchive {
         public:
-            explicit BitOutputArchive( const BitArchiveCreator& creator, tstring in_file = TSTRING( "" ) );
+            explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file = TSTRING( "" ) );
 
-            BitOutputArchive( const BitArchiveCreator& creator, const vector< byte_t >& in_buffer );
+            BitOutputArchive( const BitAbstractArchiveCreator& creator, const vector< byte_t >& in_buffer );
 
-            BitOutputArchive( const BitArchiveCreator& creator, std::istream& in_stream );
+            BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& in_stream );
 
             BitOutputArchive( const BitOutputArchive& ) = delete;
 
@@ -97,7 +97,7 @@ namespace bit7z {
 
             uint32_t itemsCount() const;
 
-            const BitArchiveHandler& getHandler() const noexcept;
+            const BitAbstractArchiveHandler& getHandler() const noexcept;
 
             virtual ~BitOutputArchive() = default;
 
@@ -142,7 +142,7 @@ namespace bit7z {
             friend class UpdateCallback;
 
         private:
-            const BitArchiveCreator& mArchiveCreator;
+            const BitAbstractArchiveCreator& mArchiveCreator;
 
             CMyComPtr< IOutArchive > initOutArchive() const;
 

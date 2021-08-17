@@ -23,7 +23,7 @@
 
 #include <Common/MyCom.h>
 
-#include "bitarchivehandler.hpp"
+#include "bitabstractarchivehandler.hpp"
 
 constexpr auto kUnsupportedMethod  = "Unsupported Method";
 constexpr auto kCRCFailed          = "CRC Failed";
@@ -50,9 +50,9 @@ namespace bit7z {
             virtual void throwException( HRESULT error );
 
         protected:
-            explicit Callback( const BitArchiveHandler& handler ); // Protected constructor => Abstract class
+            explicit Callback( const BitAbstractArchiveHandler& handler ); // Protected constructor => Abstract class
 
-            const BitArchiveHandler& mHandler;
+            const BitAbstractArchiveHandler& mHandler;
             const char* mErrorMessage;
 
     };

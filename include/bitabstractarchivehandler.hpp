@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITARCHIVEHANDLER_HPP
-#define BITARCHIVEHANDLER_HPP
+#ifndef BITABSTRACTARCHIVEHANDLER_HPP
+#define BITABSTRACTARCHIVEHANDLER_HPP
 
 #include <cstdint>
 #include <functional>
@@ -58,15 +58,15 @@ namespace bit7z {
     /**
      * @brief Abstract class representing a generic archive handler.
      */
-    class BitArchiveHandler {
+    class BitAbstractArchiveHandler {
         public:
-            BitArchiveHandler( const BitArchiveHandler& ) = delete;
+            BitAbstractArchiveHandler( const BitAbstractArchiveHandler& ) = delete;
 
-            BitArchiveHandler( BitArchiveHandler&& ) = delete;
+            BitAbstractArchiveHandler( BitAbstractArchiveHandler&& ) = delete;
 
-            BitArchiveHandler& operator= ( const BitArchiveHandler& ) = delete;
+            BitAbstractArchiveHandler& operator= ( const BitAbstractArchiveHandler& ) = delete;
 
-            BitArchiveHandler& operator= ( BitArchiveHandler&& ) = delete;
+            BitAbstractArchiveHandler& operator= ( BitAbstractArchiveHandler&& ) = delete;
 
             /**
              * @return the Bit7zLibrary object used by the handler.
@@ -199,9 +199,9 @@ namespace bit7z {
             tstring mPassword;
             bool mRetainDirectories;
 
-            explicit BitArchiveHandler( const Bit7zLibrary& lib, tstring password = TSTRING( "" ) );
+            explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib, tstring password = TSTRING( "" ) );
 
-            virtual ~BitArchiveHandler() = default;
+            virtual ~BitAbstractArchiveHandler() = default;
 
         private:
             //CALLBACKS
@@ -213,4 +213,4 @@ namespace bit7z {
     };
 }
 
-#endif // BITARCHIVEHANDLER_HPP
+#endif // BITABSTRACTARCHIVEHANDLER_HPP

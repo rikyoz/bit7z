@@ -19,19 +19,19 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "bitarchiveopener.hpp"
+#include "bitabstractarchiveopener.hpp"
 
 #include <utility> // for std::move
 
 using namespace bit7z;
 
-BitArchiveOpener::BitArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
-    : BitArchiveHandler( lib, password ), mFormat( format ) {}
+BitAbstractArchiveOpener::BitAbstractArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )
+    : BitAbstractArchiveHandler( lib, password ), mFormat( format ) {}
 
-const BitInFormat& BitArchiveOpener::format() const noexcept {
+const BitInFormat& BitAbstractArchiveOpener::format() const noexcept {
     return mFormat;
 }
 
-const BitInFormat& BitArchiveOpener::extractionFormat() const noexcept {
+const BitInFormat& BitAbstractArchiveOpener::extractionFormat() const noexcept {
     return mFormat;
 }

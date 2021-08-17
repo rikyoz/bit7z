@@ -112,7 +112,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
     return in_archive.Detach();
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_file )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstring in_file )
     : mArchiveHandler{ handler }, mArchivePath{ std::move( in_file ) } {
 
     auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
@@ -130,14 +130,14 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, tstring in_f
     mInArchive = openArchiveStream( mArchivePath, file_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )
     : mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
     mInArchive = openArchiveStream( TSTRING( "." ), buf_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, std::istream& in_stream )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream )
     : mArchiveHandler{ handler } {
     auto std_stream = bit7z::make_com< CStdInStream, IInStream >( in_stream );
     mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
@@ -200,7 +200,7 @@ const tstring& BitInputArchive::getArchivePath() const noexcept {
     return mArchivePath;
 }
 
-const BitArchiveHandler& BitInputArchive::getHandler() const noexcept {
+const BitAbstractArchiveHandler& BitInputArchive::getHandler() const noexcept {
     return mArchiveHandler;
 }
 
