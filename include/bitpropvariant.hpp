@@ -31,8 +31,6 @@
 #include "bittypes.hpp"
 
 namespace bit7z {
-    static const char* const kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
-
     enum struct BitProperty : PROPID {
         NoProperty = 0,         ///<
         MainSubfile,            ///<

@@ -25,8 +25,6 @@
 #include <myWindows/StdAfx.h>
 #endif
 
-#include <7zip/IStream.h>
-
 #include "bitpropvariant.hpp"
 
 namespace bit7z {

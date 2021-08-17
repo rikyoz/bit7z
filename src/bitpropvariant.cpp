@@ -32,6 +32,8 @@
 #define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
 #endif
 
+constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
+
 using namespace bit7z;
 
 BitPropVariantType lookupType( VARTYPE type ) {
