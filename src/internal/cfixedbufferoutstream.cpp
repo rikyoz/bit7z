@@ -32,18 +32,44 @@
 using namespace bit7z;
 
 /* Safe integer comparison like in C++20 */
+#ifdef __cpp_if_constexpr
+
 template< class T, class U >
 constexpr bool cmp_less( T t, U u ) noexcept {
     using UT = std::make_unsigned_t< T >;
     using UU = std::make_unsigned_t< U >;
-    if constexpr ( std::is_signed_v< T > == std::is_signed_v< U > ) {
+    if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
         return t < u;
-    } else if constexpr ( std::is_signed_v< T > ) {
+    } else if constexpr ( std::is_signed< T >::value ) {
         return t < 0 || UT( t ) < u;
     } else {
         return u >= 0 && t < UU( u );
     }
 }
+
+#else // SFINAE implementation for C++14
+
+template< class T, class U >
+constexpr std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, bool >
+cmp_less( T t, U u ) noexcept {
+    return t < u;
+}
+
+template< class T, class U >
+constexpr std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool >
+cmp_less( T t, U u ) noexcept {
+    using UT = std::make_unsigned_t< T >;
+    return t < 0 || UT( t ) < u;
+}
+
+template< class T, class U >
+constexpr std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool >
+cmp_less( T t, U u ) noexcept {
+    using UU = std::make_unsigned_t< U >;
+    return u >= 0 && t < UU( u );
+}
+
+#endif
 
 template< class T, class U >
 constexpr bool cmp_greater( T t, U u ) noexcept {
