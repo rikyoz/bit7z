@@ -120,6 +120,11 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
 
+# BitPropVariant needs the implementation of some Windows functions on Unix systems
+if( UNIX )
+    set( SOURCES ${SOURCES} ${7ZIP_SOURCE_DIR}/CPP/Common/MyWindows.cpp )
+endif()
+
 # enable only debug/release configurations for generated VS project file
 if( CMAKE_CONFIGURATION_TYPES )
     set( CMAKE_CONFIGURATION_TYPES Debug Release )
