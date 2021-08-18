@@ -82,7 +82,7 @@ constexpr bool cmp_greater_equal( T t, U u ) noexcept {
 }
 
 CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
-        : mBuffer( buffer ), mBufferSize( size ), mCurrentPosition( 0 ) {
+    : mBuffer( buffer ), mBufferSize( size ), mCurrentPosition( 0 ) {
     if ( size == 0 || cmp_greater( size, ( std::numeric_limits< int64_t >::max )() ) ) {
         throw BitException( "Invalid buffer size" );
     }
@@ -114,7 +114,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
     }
 
     // Checking if the sum between current_index and offset would result in an integer overflow or underflow
-    if ( check_overflow( current_index, offset )) {
+    if ( check_overflow( current_index, offset ) ) {
         return E_INVALIDARG;
     }
 
@@ -125,7 +125,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
     }
 
-    if ( cmp_greater_equal( new_index, mBufferSize )) {
+    if ( cmp_greater_equal( new_index, mBufferSize ) ) {
         return E_INVALIDARG;
     }
 
