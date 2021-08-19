@@ -22,6 +22,7 @@
 #include "internal/cbufferoutstream.hpp"
 
 #include <cstdint>
+#include <algorithm> //for std::copy_n
 
 #ifndef _WIN32
 #include <myWindows/StdAfx.h>
