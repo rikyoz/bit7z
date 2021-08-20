@@ -37,7 +37,7 @@ namespace bit7z {
 
     std::error_code make_hresult_code( HRESULT res ) noexcept;
 
-    inline std::error_code last_error_code() noexcept;
+    std::error_code last_error_code() noexcept;
 
     /**
      * @brief The BitException class represents a generic exception thrown from the bit7z classes.

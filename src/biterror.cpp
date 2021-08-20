@@ -23,8 +23,8 @@
 
 #include "internal/errorcategory.hpp"
 
-using bit7z::BitError;
+using namespace bit7z;
 
-std::error_code bit7z::make_error_code( const BitError& e ) {
+std::error_code make_error_code( const BitError& e ) {
     return { static_cast< int >( e ), error_category() };
 }
