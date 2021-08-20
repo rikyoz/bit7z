@@ -160,7 +160,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
     }
 
     if ( result != S_OK ) {
-        throw BitException( "Error compressing files", make_hresult_code( result ), std::move( mFailedFiles ) );
+        throw BitException( "Error while compressing files", make_hresult_code( result ), std::move( mFailedFiles ) );
     }
 }
 
@@ -204,7 +204,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
 
 void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     if ( !out_buffer.empty() ) {
-        throw BitException( kCannotOverwriteBuffer, std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot compress to buffer", make_error_code( BitError::NonEmptyOutputBuffer ) );
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
@@ -222,17 +222,19 @@ void BitOutputArchive::compressTo( std::ostream& out_stream ) {
 
 void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
     ArchiveProperties properties = mArchiveCreator.archiveProperties();
-    if ( !properties.names.empty() ) {
-        CMyComPtr< ISetProperties > set_properties;
-        if ( out_archive->QueryInterface( ::IID_ISetProperties,
-                                          reinterpret_cast< void** >( &set_properties ) ) != S_OK ) {
-            throw BitException( "ISetProperties unsupported", std::make_error_code( std::errc::not_supported ) );
-        }
-        if ( set_properties->SetProperties( properties.names.data(), properties.values.data(),
-                                            static_cast< uint32_t >( properties.names.size() ) ) != S_OK ) {
-            throw BitException( "Cannot set properties of the archive",
-                                std::make_error_code( std::errc::invalid_argument ) );
-        }
+    if ( properties.names.empty() ) {
+        return;
+    }
+
+    CMyComPtr< ISetProperties > set_properties;
+    HRESULT res = out_archive->QueryInterface( ::IID_ISetProperties, reinterpret_cast< void** >( &set_properties ) );
+    if ( res != S_OK ) {
+        throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
+    }
+    res = set_properties->SetProperties( properties.names.data(), properties.values.data(),
+                                         static_cast< uint32_t >( properties.names.size() ) );
+    if ( res != S_OK ) {
+        throw BitException( "Cannot set properties of the archive", make_hresult_code( res ) );
     }
 }
 

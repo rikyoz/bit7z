@@ -287,7 +287,7 @@ namespace bit7z {
              * @return a reference to *this object having the value as new variant value
              */
             template< typename T >
-            BitPropVariant& operator=( const T& value ) noexcept(std::is_integral<T>::value) {
+            BitPropVariant& operator=( const T& value ) noexcept( std::is_integral< T >::value ) {
                 *this = BitPropVariant( value );
                 return *this;
             }

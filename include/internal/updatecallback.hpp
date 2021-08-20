@@ -38,7 +38,6 @@
 namespace bit7z {
     constexpr auto kUnsupportedOperation = "Unsupported operation";
     constexpr auto kUnsupportedInMemoryFormat = "Unsupported format for in-memory compression";
-    constexpr auto kCannotOverwriteBuffer = "Cannot overwrite or update a non empty buffer";
 
     class UpdateCallback final : public Callback,
                                  public IArchiveUpdateCallback2,

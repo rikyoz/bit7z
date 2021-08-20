@@ -193,8 +193,7 @@ void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level )
 
 void BitAbstractArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
     if ( !isValidCompressionMethod( mFormat, method ) ) {
-        throw BitException( "Invalid compression method for the chosen archive format",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot set compression method", make_error_code( BitError::InvalidCompressionMethod ) );
     }
     if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) ) {
         /* even though the compression method is valid, we set it only if the format supports
@@ -214,8 +213,7 @@ void BitAbstractArchiveCreator::setDictionarySize( uint32_t dictionary_size ) {
         return;
     }
     if ( !isValidDictionarySize( mCompressionMethod, dictionary_size ) ) {
-        throw BitException( "Invalid dictionary size for the chosen compression method",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot set dictionary size", make_error_code( BitError::InvalidDictionarySize ) );
     }
     mDictionarySize = dictionary_size;
 }
@@ -225,8 +223,7 @@ void BitAbstractArchiveCreator::setWordSize( uint32_t word_size ) {
         return;
     }
     if ( !isValidWordSize( mFormat, mCompressionMethod, word_size ) ) {
-        throw BitException( "Invalid word size for the chosen compression method",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot set word size", make_error_code( BitError::InvalidWordSize ) );
     }
     mWordSize = word_size;
 }

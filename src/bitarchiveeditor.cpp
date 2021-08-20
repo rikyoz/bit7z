@@ -45,14 +45,14 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
 
     /* Note: BitArchiveWriter doesn't require an input file, but BitArchiveEditor does! */
     if ( in_file.empty() ) {
-        throw BitException( "Invalid archive path", std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot open archive", make_error_code( BitError::InvalidArchivePath ) );
     }
 
     /* Note: if we are here, a non-empty in_file was specified, but BitOutputArchive constructor
      *       left a nullptr mInputArchive.
      *       This means that in_file doesn't exist (see BitOutputArchive's constructor).
      *       There's no need to check again for its existence (e.g., using fs::exists). */
-    throw BitException( "Could not open archive",
+    throw BitException( "Cannot open archive",
                         std::make_error_code( std::errc::no_such_file_or_directory ),
                         in_file );
 }
@@ -123,7 +123,7 @@ void BitArchiveEditor::deleteItem( const tstring& item_path ) {
 void BitArchiveEditor::setUpdateMode( UpdateMode update_mode ) {
     if ( update_mode == UpdateMode::None ) {
         throw BitException( "BitArchiveEditor doesn't support setting update mode to UpdateMode::None",
-                            std::make_error_code( std::errc::invalid_argument ) );
+                            make_error_code( std::errc::invalid_argument ) );
     }
     BitAbstractArchiveCreator::setUpdateMode( update_mode );
 }

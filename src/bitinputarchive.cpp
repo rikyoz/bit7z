@@ -316,7 +316,7 @@ void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index 
 
     auto item_size = itemProperty( index, BitProperty::Size ).getUInt64();
     if ( size != item_size ) {
-        throw BitException( "Preallocated buffer size different from extracted item size" );
+        throw BitException( "Cannot extract archive to pre-allocated buffer", make_error_code( BitError::InvalidOutputBufferSize ) );
     }
 
     const vector< uint32_t > indices( 1, index );

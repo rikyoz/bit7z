@@ -28,6 +28,7 @@
 #include <myWindows/StdAfx.h>
 #endif
 
+#include "biterror.hpp"
 #include "bittypes.hpp"
 
 namespace bit7z {
@@ -36,9 +37,7 @@ namespace bit7z {
 
     std::error_code make_hresult_code( HRESULT res ) noexcept;
 
-    inline std::error_code last_error_code() noexcept {
-        return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
-    }
+    inline std::error_code last_error_code() noexcept;
 
     /**
      * @brief The BitException class represents a generic exception thrown from the bit7z classes.
@@ -59,7 +58,7 @@ namespace bit7z {
              * @param code      the HRESULT code associated with the exception object.
              */
             explicit BitException( const char* message,
-                                   std::error_code code = make_hresult_code( E_FAIL ),
+                                   std::error_code code = make_error_code( BitError::Fail ),
                                    FailedFiles&& files = {} );
 
             /**
@@ -77,7 +76,7 @@ namespace bit7z {
              * @param message   the message associated with the exception object.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const std::string& message, std::error_code code = make_hresult_code( E_FAIL ) );
+            explicit BitException( const std::string& message, std::error_code code = make_error_code( BitError::Fail ) );
 
             BIT7Z_NODISCARD native_code_type nativeCode() const noexcept;
 

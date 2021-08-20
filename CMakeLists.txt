@@ -44,6 +44,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitstreamcompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitstreamextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bittypes.hpp
+        ${PROJECT_SOURCE_DIR}/include/internal/errorcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/bufferextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/bufferitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/callback.hpp
@@ -70,7 +71,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/stdinputitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/updatecallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/util.hpp )
+     ${PROJECT_SOURCE_DIR}/include/internal/util.hpp include/biterror.hpp)
 
 # sources
 set( SOURCES
@@ -93,6 +94,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bititemsvector.cpp
      ${PROJECT_SOURCE_DIR}/src/bitoutputarchive.cpp
      ${PROJECT_SOURCE_DIR}/src/bitpropvariant.cpp
+        ${PROJECT_SOURCE_DIR}/src/internal/errorcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/bufferextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/bufferitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/callback.cpp
@@ -118,7 +120,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/stdinputitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
+     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp src/biterror.cpp)
 
 # BitPropVariant needs the implementation of some Windows functions on Unix systems
 if( UNIX )

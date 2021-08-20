@@ -63,7 +63,7 @@ namespace bit7z {
                 using namespace filesystem;
 
                 if ( item_filter.empty() ) {
-                    throw BitException( "Empty wildcard filter", std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
                 extractMatchingFilter( input, out_dir, [ &item_filter ]( const tstring& item_path ) -> bool {
@@ -75,7 +75,7 @@ namespace bit7z {
                 using namespace filesystem;
 
                 if ( item_filter.empty() ) {
-                    throw BitException( "Empty wildcard filter", std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
                 extractMatchingFilter( input, out_buffer, [ &item_filter ]( const tstring& item_path ) -> bool {
@@ -85,7 +85,7 @@ namespace bit7z {
 
             void extractItems( Input input, const vector< uint32_t >& indices, const tstring& out_dir ) const {
                 if ( indices.empty() ) {
-                    throw BitException( "Empty indices vector", std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );
                 }
 
                 BitInputArchive in_archive( *this, input );
@@ -157,7 +157,7 @@ namespace bit7z {
                 }
 
                 if ( matched_indices.empty() ) {
-                    throw BitException( kNoMatchingFile, std::make_error_code( std::errc::no_such_file_or_directory ) );
+                    throw BitException( "Failed to extract items", make_error_code( BitError::NoMatchingItems ) );
                 }
 
                 in_archive.extract( out_dir, matched_indices );
@@ -175,7 +175,7 @@ namespace bit7z {
                     }
                 }
 
-                throw BitException( kNoMatchingFile, std::make_error_code( std::errc::no_such_file_or_directory ) );
+                throw BitException( "Failed to extract items", make_error_code( BitError::NoMatchingItems ) );
             }
     };
 }
