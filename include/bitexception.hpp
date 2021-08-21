@@ -57,9 +57,7 @@ namespace bit7z {
              * @param files     the vector of files that failed, with the corresponding error codes.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const char* message,
-                                   std::error_code code = make_error_code( BitError::Fail ),
-                                   FailedFiles&& files = {} );
+            explicit BitException( const char* message, std::error_code code, FailedFiles&& files = {} );
 
             /**
              * @brief Constructs a BitException object with the given message and the specific file that failed.
@@ -76,7 +74,7 @@ namespace bit7z {
              * @param message   the message associated with the exception object.
              * @param code      the HRESULT code associated with the exception object.
              */
-            explicit BitException( const std::string& message, std::error_code code = make_error_code( BitError::Fail ) );
+            explicit BitException( const std::string& message, std::error_code code );
 
             BIT7Z_NODISCARD native_code_type nativeCode() const noexcept;
 

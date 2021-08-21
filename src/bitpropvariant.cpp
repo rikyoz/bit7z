@@ -67,15 +67,15 @@ BitPropVariantType lookupType( VARTYPE type ) {
         default:
             // this is very unlikely to happen:
             // properties types used in archives are the ones supported by PropertyType enum class
-            throw BitException(  "Property type not supported", std::make_error_code( std::errc::invalid_argument ) );
+            throw BitException( "Property type not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
 }
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
-    vt = VT_EMPTY;
+    vt         = VT_EMPTY;
     wReserved1 = 0;
-    bstrVal = nullptr;
+    bstrVal    = nullptr;
 }
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
@@ -83,7 +83,7 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
         if ( bstrVal == nullptr ) {
-            throw BitException(  kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
+            throw BitException( kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
         }
     }
 }
@@ -97,19 +97,19 @@ BitPropVariant::BitPropVariant( BitPropVariant&& other ) noexcept: PROPVARIANT( 
     }
 }
 
-BitPropVariant::BitPropVariant( bool value ) noexcept : PROPVARIANT() {
-    vt = VT_BOOL;
+BitPropVariant::BitPropVariant( bool value ) noexcept: PROPVARIANT() {
+    vt         = VT_BOOL;
     wReserved1 = 0;
-    boolVal = ( value ? VARIANT_TRUE : VARIANT_FALSE );
+    boolVal    = ( value ? VARIANT_TRUE : VARIANT_FALSE );
 }
 
 BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
-    vt = VT_BSTR;
+    vt         = VT_BSTR;
     wReserved1 = 0;
     if ( value != nullptr ) {
         bstrVal = ::SysAllocString( value );
         if ( bstrVal == nullptr ) {
-            throw BitException(  kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
+            throw BitException( kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
         }
     } else {
         bstrVal = nullptr;
@@ -117,66 +117,66 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
 }
 
 BitPropVariant::BitPropVariant( const std::wstring& value ) : PROPVARIANT() {
-    vt = VT_BSTR;
+    vt         = VT_BSTR;
     wReserved1 = 0;
-    bstrVal = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );
+    bstrVal    = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );
     if ( bstrVal == nullptr ) {
-        throw BitException(  kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
+        throw BitException( kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
     }
 }
 
-BitPropVariant::BitPropVariant( uint8_t value ) noexcept : PROPVARIANT() {
-    vt = VT_UI1;
+BitPropVariant::BitPropVariant( uint8_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_UI1;
     wReserved1 = 0;
-    bVal = value;
+    bVal       = value;
 }
 
-BitPropVariant::BitPropVariant( uint16_t value ) noexcept : PROPVARIANT() {
-    vt = VT_UI2;
+BitPropVariant::BitPropVariant( uint16_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_UI2;
     wReserved1 = 0;
-    uiVal = value;
+    uiVal      = value;
 }
 
-BitPropVariant::BitPropVariant( uint32_t value ) noexcept : PROPVARIANT() {
-    vt = VT_UI4;
+BitPropVariant::BitPropVariant( uint32_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_UI4;
     wReserved1 = 0;
-    ulVal = value;
+    ulVal      = value;
 }
 
-BitPropVariant::BitPropVariant( uint64_t value ) noexcept : PROPVARIANT() {
-    vt = VT_UI8;
+BitPropVariant::BitPropVariant( uint64_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_UI8;
     wReserved1 = 0;
     uhVal.QuadPart = value;
 }
 
-BitPropVariant::BitPropVariant( int8_t value ) noexcept : PROPVARIANT() {
-    vt = VT_I1;
+BitPropVariant::BitPropVariant( int8_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_I1;
     wReserved1 = 0;
-    cVal = value;
+    cVal       = value;
 }
 
-BitPropVariant::BitPropVariant( int16_t value ) noexcept : PROPVARIANT() {
-    vt = VT_I2;
+BitPropVariant::BitPropVariant( int16_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_I2;
     wReserved1 = 0;
-    iVal = value;
+    iVal       = value;
 }
 
-BitPropVariant::BitPropVariant( int32_t value ) noexcept : PROPVARIANT() {
-    vt = VT_I4;
+BitPropVariant::BitPropVariant( int32_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_I4;
     wReserved1 = 0;
-    lVal = value;
+    lVal       = value;
 }
 
-BitPropVariant::BitPropVariant( int64_t value ) noexcept : PROPVARIANT() {
-    vt = VT_I8;
+BitPropVariant::BitPropVariant( int64_t value ) noexcept: PROPVARIANT() {
+    vt         = VT_I8;
     wReserved1 = 0;
     hVal.QuadPart = value;
 }
 
-BitPropVariant::BitPropVariant( const FILETIME& value ) noexcept : PROPVARIANT() {
-    vt = VT_FILETIME;
+BitPropVariant::BitPropVariant( const FILETIME& value ) noexcept: PROPVARIANT() {
+    vt         = VT_FILETIME;
     wReserved1 = 0;
-    filetime = value;
+    filetime   = value;
 }
 
 BitPropVariant::~BitPropVariant() {
@@ -243,14 +243,14 @@ BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
 
 bool BitPropVariant::getBool() const {
     if ( vt != VT_BOOL ) {
-        throw BitException( "BitPropVariant is not a bool" );
+        throw BitException( "BitPropVariant is not a bool", make_error_code( BitError::RequestedWrongVariantType ) );
     }
     return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings
 }
 
 tstring BitPropVariant::getString() const {
     if ( vt != VT_BSTR ) {
-        throw BitException( "BitPropVariant is not a string" );
+        throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
     }
     //Note: a nullptr BSTR is semantically equivalent to an empty string!
     return bstrVal == nullptr ? TSTRING( "" ) : BSTR_TO_TSTRING( bstrVal );
@@ -261,7 +261,8 @@ uint8_t BitPropVariant::getUInt8() const {
         case VT_UI1:
             return bVal;
         default:
-            throw BitException( "BitPropVariant is not a 8-bits unsigned integer" );
+            throw BitException( "BitPropVariant is not a 8-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -272,7 +273,8 @@ uint16_t BitPropVariant::getUInt16() const {
         case VT_UI2:
             return uiVal;
         default:
-            throw BitException( "BitPropVariant is not a 16-bits unsigned integer" );
+            throw BitException( "BitPropVariant is not a 16-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -287,7 +289,8 @@ uint32_t BitPropVariant::getUInt32() const {
         case VT_UI4:
             return ulVal;
         default:
-            throw BitException( "BitPropVariant is not a 32-bits unsigned integer" );
+            throw BitException( "BitPropVariant is not a 32-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -304,7 +307,8 @@ uint64_t BitPropVariant::getUInt64() const {
         case VT_UI8:
             return uhVal.QuadPart;
         default:
-            throw BitException( "BitPropVariant is not a 64-bits unsigned integer" );
+            throw BitException( "BitPropVariant is not a 64-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -313,7 +317,8 @@ int8_t BitPropVariant::getInt8() const {
         case VT_I1:
             return cVal;
         default:
-            throw BitException( "BitPropVariant is not a 8-bits integer" );
+            throw BitException( "BitPropVariant is not a 8-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -324,7 +329,8 @@ int16_t BitPropVariant::getInt16() const {
         case VT_I2:
             return iVal;
         default:
-            throw BitException( "BitPropVariant is not a 16-bits integer" );
+            throw BitException( "BitPropVariant is not a 16-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -339,7 +345,8 @@ int32_t BitPropVariant::getInt32() const {
         case VT_I4:
             return lVal;
         default:
-            throw BitException( "BitPropVariant is not a 32-bits integer" );
+            throw BitException( "BitPropVariant is not a 32-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -356,13 +363,15 @@ int64_t BitPropVariant::getInt64() const {
         case VT_I8:
             return hVal.QuadPart;
         default:
-            throw BitException( "BitPropVariant is not a 64-bits integer" );
+            throw BitException( "BitPropVariant is not a 64-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
 FILETIME BitPropVariant::getFileTime() const {
     if ( vt != VT_FILETIME ) {
-        throw BitException( "BitPropVariant is not a FILETIME" );
+        throw BitException( "BitPropVariant is not a FILETIME",
+                            make_error_code( BitError::RequestedWrongVariantType ) );
     }
     return filetime;
 }
@@ -398,7 +407,8 @@ tstring BitPropVariant::toString() const {
         case VT_EMPTY:
             return TSTRING( "" );
         default:
-            throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")" );
+            throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")",
+                                make_error_code( BitError::UnsupportedOperation ) );
     }
 }
 

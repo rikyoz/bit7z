@@ -36,6 +36,7 @@ namespace bit7z {
         NoMatchingItems,
         NoMatchingSignature,
         NonEmptyOutputBuffer,
+        RequestedWrongVariantType,
         UnsupportedOperation
     };
 

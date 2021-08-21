@@ -57,6 +57,8 @@ std::string error_category_t::message( int ev ) const noexcept {
             return "No known signature found.";
         case BitError::NonEmptyOutputBuffer:
             return "Output buffer is not empty.";
+        case BitError::RequestedWrongVariantType:
+            return "Requested wrong variant type.";
         case BitError::UnsupportedOperation:
             return "Unsupported operation.";
         default:
