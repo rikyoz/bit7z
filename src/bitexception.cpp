@@ -26,15 +26,17 @@
 #include "internal/errorcategory.hpp"
 #include "internal/hresultcategory.hpp"
 
-using namespace bit7z;
-
 std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };
 }
 
-std::error_code last_error_code() noexcept {
+std::error_code bit7z::last_error_code() noexcept {
     return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
 }
+
+
+using bit7z::BitException;
+using bit7z::FailedFiles;
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
     : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
