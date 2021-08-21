@@ -25,8 +25,6 @@
 #include "bittypes.hpp"
 
 namespace bit7z {
-    constexpr auto kNoMatchingFile = "No matching file was found in the archive";
-
     namespace filesystem {
         namespace fsutil {
             bool wildcardMatch( const tstring& pattern, const tstring& str );
@@ -90,14 +88,15 @@ namespace bit7z {
 
                 BitInputArchive in_archive( *this, input );
                 uint32_t n_items = in_archive.itemsCount();
+                // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
                 const auto find_res = std::find_if( indices.cbegin(),
                                                     indices.cend(),
                                                     [ &n_items ]( uint32_t index ) -> bool {
                                                         return index >= n_items;
                                                     } );
                 if ( find_res != indices.cend() ) {
-                    throw BitException( "Index " + std::to_string( *find_res ) + " is not valid",
-                                        std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Cannot extract item at index " + std::to_string( *find_res ),
+                                        make_error_code( BitError::InvalidIndex ) );
                 }
 
                 in_archive.extract( out_dir, indices );
@@ -107,7 +106,7 @@ namespace bit7z {
 
             void extractMatchingRegex( Input input, const tstring& regex, const tstring& out_dir ) const {
                 if ( regex.empty() ) {
-                    throw BitException( "Empty regex filter", std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
                 const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
@@ -118,7 +117,7 @@ namespace bit7z {
 
             void extractMatchingRegex( Input input, vector< byte_t >& out_buffer, const tstring& regex ) const {
                 if ( regex.empty() ) {
-                    throw BitException( "Empty regex filter", std::make_error_code( std::errc::invalid_argument ) );
+                    throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
                 const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );

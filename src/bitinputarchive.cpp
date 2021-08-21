@@ -212,12 +212,12 @@ void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >&
 void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+                            make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( kCannotExtractFolderToBuffer, make_error_code( BitError::InvalidIndex ) );
     }
 
     const vector< uint32_t > indices( 1, index );
@@ -230,17 +230,39 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) co
 void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+                            make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( kCannotExtractFolderToBuffer, make_error_code( BitError::InvalidIndex ) );
     }
 
     const vector< uint32_t > indices( 1, index );
     auto extract_callback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, out_stream );
     extractArc( mInArchive, indices, extract_callback);
+}
+
+void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index ) const {
+    const uint32_t number_items = itemsCount();
+    if ( index >= number_items ) {
+        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
+    if ( isItemFolder( index ) ) { //Consider only files, not folders
+        throw BitException( kCannotExtractFolderToBuffer, make_error_code( BitError::InvalidIndex ) );
+    }
+
+    auto item_size = itemProperty( index, BitProperty::Size ).getUInt64();
+    if ( size != item_size ) {
+        throw BitException( "Cannot extract archive to pre-allocated buffer",
+                            make_error_code( BitError::InvalidOutputBufferSize ) );
+    }
+
+    const vector< uint32_t > indices( 1, index );
+    auto extract_callback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
+    extractArc( mInArchive, indices, extract_callback );
 }
 
 void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const {
@@ -300,28 +322,6 @@ BitInputArchive::const_iterator BitInputArchive::find( const tstring& path ) con
 
 bool BitInputArchive::contains( const tstring& path ) const noexcept {
     return find( path ) != end();
-}
-
-
-void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index ) const {
-    const uint32_t number_items = itemsCount();
-    if ( index >= number_items ) {
-        throw BitException( "Index " + std::to_string( index ) + " is out of range",
-                            std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, std::make_error_code( std::errc::invalid_argument ) );
-    }
-
-    auto item_size = itemProperty( index, BitProperty::Size ).getUInt64();
-    if ( size != item_size ) {
-        throw BitException( "Cannot extract archive to pre-allocated buffer", make_error_code( BitError::InvalidOutputBufferSize ) );
-    }
-
-    const vector< uint32_t > indices( 1, index );
-    auto extract_callback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
-    extractArc( mInArchive, indices, extract_callback );
 }
 
 BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() noexcept {
