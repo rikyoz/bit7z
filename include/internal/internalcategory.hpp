@@ -16,8 +16,8 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BIT7ZERROR_HPP
-#define BIT7ZERROR_HPP
+#ifndef INTERNALCATEGORY_HPP
+#define INTERNALCATEGORY_HPP
 
 #include <system_error>
 #include <string>
@@ -26,7 +26,7 @@
 
 namespace bit7z {
 
-    struct error_category_t : public std::error_category {
+    struct internal_category_t : public std::error_category {
         BIT7Z_NODISCARD const char* name() const noexcept override;
 
         BIT7Z_NODISCARD std::string message( int ev ) const noexcept override;
@@ -34,7 +34,8 @@ namespace bit7z {
         BIT7Z_NODISCARD std::error_condition default_error_condition( int ev ) const noexcept override;
     };
 
-    std::error_category &error_category() noexcept;
+    std::error_category& internal_category() noexcept;
+
 }
 
-#endif //BIT7ZERROR_HPP
+#endif //INTERNALCATEGORY_HPP

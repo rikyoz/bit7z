@@ -56,7 +56,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/cmultivoloutstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdinstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/errorcategory.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/internalcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/extractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fileextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/formatdetect.hpp
@@ -107,7 +107,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/cmultivoloutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdinstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/errorcategory.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/internalcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/extractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fileextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fixedbufferextractcallback.cpp

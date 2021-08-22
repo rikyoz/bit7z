@@ -23,7 +23,7 @@
 
 #include <utility> // for std::move
 
-#include "internal/errorcategory.hpp"
+#include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
 
 std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {

@@ -21,10 +21,10 @@
 
 #include "biterror.hpp"
 
-#include "internal/errorcategory.hpp"
+#include "internal/internalcategory.hpp"
 
 using bit7z::BitError;
 
 std::error_code bit7z::make_error_code( const BitError& e ) {
-    return { static_cast< int >( e ), error_category() };
+    return { static_cast< int >( e ), internal_category() };
 }

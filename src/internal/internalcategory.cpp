@@ -19,17 +19,17 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "internal/errorcategory.hpp"
+#include "internal/internalcategory.hpp"
 
 #include "biterror.hpp"
 
-using bit7z::error_category_t;
+using bit7z::internal_category_t;
 
-const char* error_category_t::name() const noexcept {
+const char* internal_category_t::name() const noexcept {
     return "bit7z";
 }
 
-std::string error_category_t::message( int ev ) const noexcept {
+std::string internal_category_t::message( int ev ) const noexcept {
     switch ( static_cast< BitError >( ev ) ) {
         case BitError::Fail:
             return "Unspecified error.";
@@ -70,7 +70,7 @@ std::string error_category_t::message( int ev ) const noexcept {
     }
 }
 
-std::error_condition bit7z::error_category_t::default_error_condition( int ev ) const noexcept {
+std::error_condition bit7z::internal_category_t::default_error_condition( int ev ) const noexcept {
     switch ( static_cast< BitError >( ev ) ) {
         case BitError::FilterNotSpecified:
         case BitError::FormatFeatureNotSupported:
@@ -93,7 +93,7 @@ std::error_condition bit7z::error_category_t::default_error_condition( int ev ) 
     }
 }
 
-std::error_category& bit7z::error_category() noexcept {
-    static error_category_t instance{};
+std::error_category& bit7z::internal_category() noexcept {
+    static internal_category_t instance{};
     return instance;
 }
