@@ -70,6 +70,29 @@ std::string error_category_t::message( int ev ) const noexcept {
     }
 }
 
+std::error_condition bit7z::error_category_t::default_error_condition( int ev ) const noexcept {
+    switch ( static_cast< BitError >( ev ) ) {
+        case BitError::FilterNotSpecified:
+        case BitError::FormatFeatureNotSupported:
+        case BitError::IndicesNotSpecified:
+        case BitError::InvalidArchivePath:
+        case BitError::InvalidOutputBufferSize:
+        case BitError::InvalidCompressionMethod:
+        case BitError::InvalidDictionarySize:
+        case BitError::InvalidIndex:
+        case BitError::InvalidWordSize:
+        case BitError::NonEmptyOutputBuffer:
+            return std::make_error_condition( std::errc::invalid_argument );
+        case BitError::NoMatchingItems:
+            return std::make_error_condition( std::errc::no_such_file_or_directory );
+        case BitError::RequestedWrongVariantType:
+        case BitError::UnsupportedOperation:
+            return std::make_error_condition( std::errc::operation_not_supported );
+        default:
+            return error_category::default_error_condition( ev );
+    }
+}
+
 std::error_category& bit7z::error_category() noexcept {
     static error_category_t instance{};
     return instance;

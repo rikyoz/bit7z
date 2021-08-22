@@ -30,6 +30,8 @@ namespace bit7z {
         BIT7Z_NODISCARD const char* name() const noexcept override;
 
         BIT7Z_NODISCARD std::string message( int ev ) const noexcept override;
+
+        BIT7Z_NODISCARD std::error_condition default_error_condition( int ev ) const noexcept override;
     };
 
     std::error_category &error_category() noexcept;
