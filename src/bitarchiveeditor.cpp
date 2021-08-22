@@ -101,8 +101,8 @@ void BitArchiveEditor::updateItem( const tstring& item_path, std::istream& in_st
 
 void BitArchiveEditor::deleteItem( uint32_t index ) {
     if ( index >= mInputArchiveItemsCount ) {
-        throw BitException( "Invalid index " + std::to_string( index ),
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot delete item at index " + std::to_string( index ),
+                            make_error_code( BitError::InvalidIndex ) );
     }
     mEditedItems.erase( index );
     mDeletedItems.insert( index );
@@ -122,8 +122,8 @@ void BitArchiveEditor::deleteItem( const tstring& item_path ) {
 
 void BitArchiveEditor::setUpdateMode( UpdateMode update_mode ) {
     if ( update_mode == UpdateMode::None ) {
-        throw BitException( "BitArchiveEditor doesn't support setting update mode to UpdateMode::None",
-                            make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot set update mode to UpdateMode::None",
+                            make_error_code( BitError::UnsupportedOperation ) );
     }
     BitAbstractArchiveCreator::setUpdateMode( update_mode );
 }
@@ -154,12 +154,12 @@ uint32_t BitArchiveEditor::findItem( const tstring& item_path ) {
 
 void BitArchiveEditor::checkIndex( uint32_t index ) {
     if ( index >= mInputArchiveItemsCount ) {
-        throw BitException( "Invalid index " + std::to_string( index ),
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException( "Cannot edit item at index " + std::to_string( index ),
+                            make_error_code( BitError::InvalidIndex ) );
     }
     if ( mDeletedItems.find( index ) != mDeletedItems.cend() ) {
         throw BitException( "Cannot edit deleted item at index " + std::to_string( index ),
-                            std::make_error_code( std::errc::invalid_argument ) );
+                            make_error_code( BitError::InvalidIndex ) );
     }
 }
 

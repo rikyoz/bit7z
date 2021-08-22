@@ -47,8 +47,14 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     : mFileAttributeData(), mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
     std::error_code ec;
     mFileEntry.assign( itemPath, ec );
-    if ( !mFileEntry.exists() ) { // NOLINT
-        throw BitException(  "Invalid path", std::make_error_code( std::errc::no_such_file_or_directory ), itemPath.native() );
+    if ( ec ) {
+        throw BitException(  "Cannot read file entry", ec, itemPath.native() );
+    }
+    if ( !mFileEntry.exists( ec ) ) { // NOLINT
+        if ( !ec ) { // call to exists(ec) succeeded
+            ec = std::make_error_code( std::errc::no_such_file_or_directory );
+        }
+        throw BitException(  "Invalid path", ec, itemPath.native() );
     }
     initAttributes( itemPath );
 }

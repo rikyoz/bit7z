@@ -32,7 +32,10 @@ CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways ) : 
 void CFileOutStream::open( const fs::path& filePath, bool createAlways ) {
     std::error_code ec;
     if ( !createAlways && fs::exists( filePath, ec ) ) {
-        throw BitException( "Cannot create output file", std::make_error_code( std::errc::file_exists ), filePath.native() );
+        if ( !ec ) { // the call to fs::exists succeeded, but filePath doesn't exist, and this is an error!
+            ec = std::make_error_code( std::errc::file_exists );
+        }
+        throw BitException( "Cannot create output file", ec, filePath.native() );
     }
     mFileStream.open( filePath, std::ios::binary | std::ios::trunc );
 }

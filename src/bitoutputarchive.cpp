@@ -43,13 +43,13 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
     std::error_code ec;
     if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
         if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
-            throw BitException( "Archive creator cannot update archives",
-                                std::make_error_code( std::errc::invalid_argument ) );
+            throw BitException( "Cannot update existing archive",
+                                make_error_code( BitError::WrongUpdateMode ) );
         }
         if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
             //Update mode is set but format does not support adding more files
-            throw BitException( "Format does not support updating existing archive files",
-                                std::make_error_code( std::errc::invalid_argument ) );
+            throw BitException( "Cannot update existing archive",
+                                make_error_code( BitError::FormatFeatureNotSupported ) );
         }
         mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
@@ -135,7 +135,9 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
     auto file_out_stream = bit7z::make_com< CFileOutStream >( out_path, updating_archive );
     if ( file_out_stream->fail() ) {
         //Unknown error!
-        throw BitException( "Cannot create output archive file", last_error_code(), out_path.native() );
+        throw BitException( "Cannot create output archive file",
+                            make_error_code( std::errc::io_error ),
+                            out_path.native() );
     }
     return CMyComPtr< IOutStream >{ file_out_stream };
 }

@@ -25,6 +25,7 @@ namespace bit7z {
     enum struct BitError {
         Fail = 1,
         FilterNotSpecified,
+        FormatFeatureNotSupported,
         IndicesNotSpecified,
         InvalidArchivePath,
         InvalidOutputBufferSize,
@@ -37,7 +38,8 @@ namespace bit7z {
         NoMatchingSignature,
         NonEmptyOutputBuffer,
         RequestedWrongVariantType,
-        UnsupportedOperation
+        UnsupportedOperation,
+        WrongUpdateMode
     };
 
     std::error_code make_error_code( const BitError& e );

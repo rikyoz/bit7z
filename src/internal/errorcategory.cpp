@@ -35,6 +35,8 @@ std::string error_category_t::message( int ev ) const noexcept {
             return "Unspecified error.";
         case BitError::FilterNotSpecified:
             return "Item filter not specified.";
+        case BitError::FormatFeatureNotSupported:
+            return "Feature not supported by the archive format.";
         case BitError::IndicesNotSpecified:
             return "No indices specified.";
         case BitError::InvalidArchivePath:
@@ -61,6 +63,8 @@ std::string error_category_t::message( int ev ) const noexcept {
             return "Requested wrong variant type.";
         case BitError::UnsupportedOperation:
             return "Unsupported operation.";
+        case BitError::WrongUpdateMode:
+            return "Wrong update mode.";
         default:
             return "Unknown error.";
     }
