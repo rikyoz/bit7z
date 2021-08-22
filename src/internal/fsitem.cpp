@@ -51,7 +51,7 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
         throw BitException(  "Cannot read file entry", ec, itemPath.native() );
     }
     if ( !mFileEntry.exists( ec ) ) { // NOLINT
-        if ( !ec ) { // call to exists(ec) succeeded
+        if ( !ec ) { // call to "exists(ec)" succeeded
             ec = std::make_error_code( std::errc::no_such_file_or_directory );
         }
         throw BitException(  "Invalid path", ec, itemPath.native() );

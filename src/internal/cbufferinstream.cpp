@@ -69,7 +69,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
     if ( processedSize != nullptr ) {
         /* Note: even though on 64-bit systems "remaining" will be a 64-bit unsigned integer (size_t),
-         * its value cannot be greater than "size", which is a 32-bit unsigned int. Hence this cast is safe! */
+         * its value cannot be greater than "size", which is a 32-bit unsigned int. Hence, this cast is safe! */
         *processedSize = static_cast< UInt32 >( remaining );
     }
     return S_OK;

@@ -60,7 +60,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
         }
 
         if ( current_item.isDir() && ( recursive || item_matches ) ) {
-            //currentItem is a directory and we must list it only if:
+            //currentItem is a directory, and we must list it only if:
             // > indexing is done recursively
             // > indexing is not recursive but the directory name matched the filter
             fs::path next_dir = prefix.empty() ? fs::path( current_item.name() ) : prefix / current_item.name();
