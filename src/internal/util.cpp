@@ -33,7 +33,7 @@ using namespace bit7z;
 string bit7z::narrow( const wchar_t* wideString, size_t size ) {
     ostringstream stream;
     stream.imbue( std::locale( "C" ) );
-    const auto& ctfacet = use_facet< ctype< char > >( stream.getloc() ) ;
+    const auto& ctfacet = use_facet< ctype< wchar_t > >( stream.getloc() ) ;
     for ( size_t i = 0 ; i < size; ++i ) {
         stream << ctfacet.narrow( wideString[ i ], 0 );
     }

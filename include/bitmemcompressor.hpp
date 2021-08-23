@@ -22,6 +22,6 @@
 #include "bitcompressor.hpp"
 
 namespace bit7z {
-    using BitMemCompressor = BitCompressor< const buffer_t >;
+    using BitMemCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< const buffer_t >;
 }
 #endif // BITMEMCOMPRESSOR_HPP

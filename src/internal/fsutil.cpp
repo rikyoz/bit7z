@@ -63,7 +63,7 @@ fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& searc
 
     auto filename = normal_path.filename();
     if ( filename == "." || filename == ".." ) {
-        return fs::path();
+        return {};
     }
     if ( filename.empty() ) {
         filename = normal_path.parent_path().filename();

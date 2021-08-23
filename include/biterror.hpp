@@ -21,6 +21,8 @@
 
 #include <system_error>
 
+#include "bittypes.hpp"
+
 namespace bit7z {
     enum struct BitError {
         Fail = 1,
@@ -49,7 +51,7 @@ namespace bit7z {
 
 namespace std {
     template<>
-    struct is_error_code_enum< bit7z::BitError > : public true_type {};
+    struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public true_type {};
 }
 
 

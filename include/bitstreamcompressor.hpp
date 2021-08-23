@@ -22,7 +22,7 @@
 #include "bitcompressor.hpp"
 
 namespace bit7z {
-    using BitStreamCompressor = BitCompressor< istream >;
+    using BitStreamCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< istream >;
 }
 
 #endif // BITSTREAMCOMPRESSOR_HPP

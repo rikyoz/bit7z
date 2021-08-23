@@ -26,7 +26,7 @@ namespace bit7z {
     /**
      * @brief The BitStreamExtractor class allows to extract the content of in-memory archives.
      */
-    using BitStreamExtractor = BitExtractor< std::istream& >;
+    using BitStreamExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< std::istream& >;
 }
 
 #endif // BITSTREAMEXTRACTOR_HPP

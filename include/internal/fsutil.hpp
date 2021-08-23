@@ -27,7 +27,7 @@
 #include "internal/fs.hpp"
 
 #ifndef _WIN32
-typedef struct _WIN32_FILE_ATTRIBUTE_DATA {
+struct WIN32_FILE_ATTRIBUTE_DATA {
     DWORD    dwFileAttributes;
     FILETIME ftCreationTime;
     FILETIME ftLastAccessTime;
@@ -35,7 +35,7 @@ typedef struct _WIN32_FILE_ATTRIBUTE_DATA {
     // not needed fields
     // DWORD    nFileSizeHigh;
     // DWORD    nFileSizeLow;
-} WIN32_FILE_ATTRIBUTE_DATA;
+};
 #endif
 
 namespace bit7z {
