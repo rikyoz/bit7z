@@ -249,20 +249,20 @@ ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
     vector< const wchar_t* >& names = properties.names;
     vector< BitPropVariant >& values = properties.values;
     if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HeaderEncryption ) ) {
-        names.push_back( L"he" );
+        names.emplace_back( L"he" );
         values.emplace_back( true );
     }
     if ( mFormat.hasFeature( FormatFeatures::CompressionLevel ) ) {
-        names.push_back( L"x" );
+        names.emplace_back( L"x" );
         values.emplace_back( static_cast< uint32_t >( mCompressionLevel ) );
 
         if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) && mCompressionMethod != mFormat.defaultMethod() ) {
-            names.push_back( mFormat == BitFormat::SevenZip ? L"0" : L"m" );
+            names.emplace_back( mFormat == BitFormat::SevenZip ? L"0" : L"m" );
             values.emplace_back( methodName( mCompressionMethod ) );
         }
     }
     if ( mFormat.hasFeature( FormatFeatures::SolidArchive ) ) {
-        names.push_back( L"s" );
+        names.emplace_back( L"s" );
         values.emplace_back( mSolidMode );
 #ifndef _WIN32
         if ( mSolidMode ) {
@@ -276,18 +276,18 @@ ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
 #endif
     }
     if ( mThreadsCount != 0 ) {
-        names.push_back( L"mt" );
+        names.emplace_back( L"mt" );
         values.emplace_back( mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
-        const wchar_t* prop_name = nullptr;
+        const wchar_t* prop_name;
         //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
         } else {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
         }
-        names.push_back( prop_name );
+        names.emplace_back( prop_name );
         values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
     }
     if ( mWordSize != 0 ) {
@@ -298,7 +298,7 @@ ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
         } else {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"o" : L"fb" );
         }
-        names.push_back( prop_name );
+        names.emplace_back( prop_name );
         values.emplace_back( mWordSize );
     }
     return properties;
