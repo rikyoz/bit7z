@@ -245,7 +245,7 @@ namespace bit7z {
 
     /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
      * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
-     *         format, however the switch case is faster and has less memory footprint. */
+     *         format. However, the switch case is faster and has less memory footprint. */
     bool findFormatBySignature( uint64_t signature, const BitInFormat** format ) noexcept {
         constexpr auto RarSignature = 0x526172211A070000ull; // R  a  r  !  1A 07 00
         constexpr auto Rar5Signature = 0x526172211A070100ull; // R  a  r  !  1A 07 01 00

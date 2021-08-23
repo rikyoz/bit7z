@@ -111,7 +111,7 @@ namespace bit7z {
             mutable FailedFiles mFailedFiles;
 
             /* mInputIndices:
-             *   Position i = index in range [0, itemsCount()) used by UpdateCallback.
+             *   Position i = index in range [0, itemsCount() - 1] used by UpdateCallback.
              *   Value at pos. i = corresponding index in the input archive (type input_index).
              *
              * if there are some deleted items, then i != mInputIndices[i]
