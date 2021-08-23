@@ -26,26 +26,38 @@
 #include <regex>
 #endif
 
+#if defined( __cplusplus ) && __cplusplus >= 201703
+#define BIT7Z_CPP17
+#endif
+
 #if defined( __cpp_lib_filesystem )
 #   define BIT7Z_USE_STANDARD_FILESYSTEM
-#elif defined( __cplusplus ) && __cplusplus >= 201703L && defined( __has_include )
+#elif defined( BIT7Z_CPP17 ) && defined( __has_include )
 #   if __has_include( <filesystem> )
 #       define BIT7Z_USE_STANDARD_FILESYSTEM
 #   endif
 #endif
 
+/* Macro defines for [[nodiscard]] and [[maybe_unused]] attributes. */
 #if defined( __has_cpp_attribute )
-#   if __has_cpp_attribute(nodiscard)
+#   if __has_cpp_attribute( nodiscard )
 #       define BIT7Z_NODISCARD [[nodiscard]]
 #   endif
-#   if __has_cpp_attribute(maybe_unused)
+#   if __has_cpp_attribute( maybe_unused )
 #       define BIT7Z_MAYBE_UNUSED [[maybe_unused]]
 #   endif
-#elif defined( __cplusplus ) && __cplusplus >= 201703L
+#endif
+
+/* The compiler doesn't support __has_cpp_attribute, but it's using C++17 standard. */
+#if !defined( BIT7Z_NODISCARD ) && defined( BIT7Z_CPP17 )
 #   define BIT7Z_NODISCARD [[nodiscard]]
+#endif
+
+#if !defined( BIT7Z_MAYBE_UNUSED ) && defined( BIT7Z_CPP17 )
 #   define BIT7Z_MAYBE_UNUSED [[maybe_unused]]
 #endif
 
+/* Compiler is using C++14 standard, define empty macros. */
 #ifndef BIT7Z_NODISCARD
 #define BIT7Z_NODISCARD
 #endif
