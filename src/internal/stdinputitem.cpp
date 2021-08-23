@@ -22,7 +22,6 @@
 #include "internal/stdinputitem.hpp"
 
 #include "internal/cstdinstream.hpp"
-#include "internal/util.hpp"
 
 using bit7z::StdInputItem;
 using bit7z::BitPropVariant;

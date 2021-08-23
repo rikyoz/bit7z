@@ -21,12 +21,10 @@
 
 #include "internal/fsitem.hpp"
 
-#include <utility>
 #include <system_error>
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
-#include "internal/util.hpp"
 
 using bit7z::tstring;
 using bit7z::BitPropVariant;

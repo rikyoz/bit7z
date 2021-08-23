@@ -26,7 +26,6 @@
 #include "internal/cmultivoloutstream.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
-#include "internal/util.hpp"
 
 using bit7z::BitException;
 using bit7z::BitOutputArchive;

@@ -21,8 +21,6 @@
 
 #include "bitexception.hpp"
 
-#include <utility> // for std::move
-
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
 
@@ -33,7 +31,6 @@ std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
 std::error_code bit7z::last_error_code() noexcept {
     return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
 }
-
 
 using bit7z::BitException;
 using bit7z::FailedFiles;

@@ -23,7 +23,6 @@
 
 #include "internal/cfileoutstream.hpp"
 #include "internal/genericinputitem.hpp"
-#include "internal/util.hpp"
 
 using namespace bit7z;
 

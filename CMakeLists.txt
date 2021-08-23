@@ -90,7 +90,6 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitexception.cpp
      ${PROJECT_SOURCE_DIR}/src/bitfilecompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitgenericitem.cpp
      ${PROJECT_SOURCE_DIR}/src/bitguids.cpp
      ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp
      ${PROJECT_SOURCE_DIR}/src/bititemsvector.cpp

@@ -34,8 +34,6 @@
 #include <myWindows/StdAfx.h>
 #endif
 
-#include "internal/util.hpp"
-
 using namespace bit7z;
 
 CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer )

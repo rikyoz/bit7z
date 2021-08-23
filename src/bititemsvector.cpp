@@ -23,7 +23,6 @@
 
 #include "bitexception.hpp"
 #include "internal/bufferitem.hpp"
-#include "internal/fs.hpp"
 #include "internal/fsindexer.hpp"
 #include "internal/stdinputitem.hpp"
 

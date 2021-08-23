@@ -23,7 +23,6 @@
 
 #include "bitexception.hpp"
 #include "internal/fsutil.hpp"
-#include "internal/util.hpp"
 
 using namespace std;
 using namespace NWindows;

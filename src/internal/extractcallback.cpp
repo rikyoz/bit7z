@@ -22,7 +22,6 @@
 #include "internal/extractcallback.hpp"
 
 #include "bitexception.hpp"
-#include "internal/util.hpp"
 
 using namespace bit7z;
 

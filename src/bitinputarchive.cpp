@@ -21,8 +21,6 @@
 
 #include "bitinputarchive.hpp"
 
-#include <utility> // for std::move
-
 #include "bitexception.hpp"
 #include "internal/bufferextractcallback.hpp"
 #include "internal/cbufferinstream.hpp"

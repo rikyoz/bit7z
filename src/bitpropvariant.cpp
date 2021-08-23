@@ -21,8 +21,6 @@
 
 #include "bitpropvariant.hpp"
 
-#include <utility> // for std::move
-
 #include "bitexception.hpp"
 
 #ifdef _WIN32

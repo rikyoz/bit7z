@@ -22,7 +22,6 @@
 #include "internal/bufferitem.hpp"
 
 #include "internal/cbufferinstream.hpp"
-#include "internal/util.hpp"
 
 using bit7z::BufferItem;
 using bit7z::BitPropVariant;

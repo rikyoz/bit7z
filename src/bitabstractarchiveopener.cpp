@@ -21,8 +21,6 @@
 
 #include "bitabstractarchiveopener.hpp"
 
-#include <utility> // for std::move
-
 using namespace bit7z;
 
 BitAbstractArchiveOpener::BitAbstractArchiveOpener( const Bit7zLibrary& lib, const BitInFormat& format, const tstring& password )

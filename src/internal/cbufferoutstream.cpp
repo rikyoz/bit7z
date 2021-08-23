@@ -28,8 +28,6 @@
 #include <myWindows/StdAfx.h>
 #endif
 
-#include "internal/util.hpp"
-
 using namespace bit7z;
 
 CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer )

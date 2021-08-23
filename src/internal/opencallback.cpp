@@ -22,7 +22,6 @@
 #include "internal/opencallback.hpp"
 
 #include "internal/cfileinstream.hpp"
-#include "internal/util.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
