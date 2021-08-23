@@ -56,9 +56,9 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/cmultivoloutstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdinstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/internalcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/extractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fileextractcallback.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/fixedbufferextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/formatdetect.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fsindexer.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fsitem.hpp
@@ -66,11 +66,11 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/fs.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/genericinputitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/internalcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/fixedbufferextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/renameditem.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/stdinputitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/updatecallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/util.hpp )
 
@@ -106,7 +106,6 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/cmultivoloutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdinstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/internalcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/extractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fileextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fixedbufferextractcallback.cpp
@@ -116,10 +115,11 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/fsutil.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/genericinputitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/hresultcategory.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/internalcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/opencallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/renameditem.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/stdinputitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
 
