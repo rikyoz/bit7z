@@ -85,7 +85,7 @@ constexpr bool cmp_greater_equal( T t, U u ) noexcept {
 CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
     : mBuffer( buffer ), mBufferSize( size ), mCurrentPosition( 0 ) {
     if ( size == 0 || cmp_greater( size, ( std::numeric_limits< int64_t >::max )() ) ) {
-        throw BitException( "Cannot initialize output buffer stream",
+        throw BitException( "Could not initialize output buffer stream",
                             make_error_code( BitError::InvalidOutputBufferSize ) );
     }
 }

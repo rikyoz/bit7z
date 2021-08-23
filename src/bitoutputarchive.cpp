@@ -135,7 +135,7 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
     auto file_out_stream = bit7z::make_com< CFileOutStream >( out_path, updating_archive );
     if ( file_out_stream->fail() ) {
         //Unknown error!
-        throw BitException( "Cannot create output archive file",
+        throw BitException( "Failed to create the output archive file",
                             make_error_code( std::errc::io_error ),
                             out_path.native() );
     }
@@ -177,10 +177,10 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
     if ( updating_archive ) { //we updated the input archive
         auto close_result = mInputArchive->close();
         if ( close_result != S_OK ) {
-            throw BitException( "Could not close opened archive", make_hresult_code( close_result ),
+            throw BitException( "Failed to close the opened archive", make_hresult_code( close_result ),
                                 mInputArchive->archivePath() );
         }
-        /* NOTE: In the following instruction, we use the . (dot) operator, not the -> (arrow) operator:
+        /* NOTE: In the following instruction, we use the (dot) operator, not the -> (arrow) operator:
          *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
          *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
         out_stream.Release(); //Releasing the output stream so that we can rename it as the original file
@@ -191,7 +191,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
         std::error_code ec;
         fs::remove( out_file, ec );
         if ( ec ) {
-            throw BitException( "Cannot remove old archive file", ec, out_file );
+            throw BitException( "Failed to delete the old archive file", ec, out_file );
         }
 #endif
 
@@ -199,7 +199,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
         std::error_code error;
         fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
         if ( error ) {
-            throw BitException( "Cannot rename temp archive file", error, out_file );
+            throw BitException( "Failed to overwrite the old archive file", error, out_file );
         }
     }
 }
@@ -302,7 +302,7 @@ input_index BitOutputArchive::itemInputIndex( uint32_t new_index ) const noexcep
     if ( index < mInputIndices.size() ) {
         return mInputIndices[ index ];
     }
-    // if we are here, the user didn't delete any item, so a input_index is essentially equivalent to new_index
+    // if we are here, the user didn't delete any item, so an input_index is essentially equivalent to new_index
     return static_cast< input_index >( new_index );
 }
 

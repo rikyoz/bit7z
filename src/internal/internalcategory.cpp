@@ -40,7 +40,7 @@ std::string internal_category_t::message( int ev ) const noexcept {
         case BitError::IndicesNotSpecified:
             return "No indices specified.";
         case BitError::InvalidArchivePath:
-            return "No matching file was found in the archive.";
+            return "Invalid archive path.";
         case BitError::InvalidOutputBufferSize:
             return "Invalid output buffer size.";
         case BitError::InvalidCompressionMethod:
@@ -51,6 +51,10 @@ std::string internal_category_t::message( int ev ) const noexcept {
             return "Invalid index.";
         case BitError::InvalidWordSize:
             return "Invalid word size for the chosen compression method.";
+        case BitError::ItemIsAFolder:
+            return "The item is a folder.";
+        case BitError::ItemMarkedAsDeleted:
+            return "The item is marked as deleted.";
         case BitError::NoMatchingExtension:
             return "No known extension found.";
         case BitError::NoMatchingItems:

@@ -48,13 +48,13 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     std::error_code ec;
     mFileEntry.assign( itemPath, ec );
     if ( ec ) {
-        throw BitException(  "Cannot read file entry", ec, itemPath.native() );
+        throw BitException( "Cannot read file entry", ec, itemPath.native() );
     }
     if ( !mFileEntry.exists( ec ) ) { // NOLINT
         if ( !ec ) { // call to "exists(ec)" succeeded
             ec = std::make_error_code( std::errc::no_such_file_or_directory );
         }
-        throw BitException(  "Invalid path", ec, itemPath.native() );
+        throw BitException( "Invalid path", ec, itemPath.native() );
     }
     initAttributes( itemPath );
 }

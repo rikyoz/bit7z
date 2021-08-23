@@ -40,8 +40,6 @@ using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
 
-constexpr auto kCannotExtractFolderToBuffer = "Cannot extract a folder to a buffer";
-
 CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
     CMyComPtr< IInArchive > arc_object;
     lib.createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &arc_object ) );
@@ -106,7 +104,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( "Cannot open archive", make_hresult_code( res ), name );
+        throw BitException( "Failed to open the archive", make_hresult_code( res ), name );
     }
 
     return in_archive.Detach();
@@ -118,7 +116,8 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
     auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
     if ( file_stream->fail() ) {
         //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions
-        throw BitException( "Cannot open archive file", std::make_error_code( std::errc::io_error ), mArchivePath );
+        throw BitException( "Failed to open the archive file",
+                            std::make_error_code( std::errc::io_error ), mArchivePath );
     }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
@@ -217,7 +216,8 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) co
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, make_error_code( BitError::InvalidIndex ) );
+        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+                            make_error_code( BitError::ItemIsAFolder ) );
     }
 
     const vector< uint32_t > indices( 1, index );
@@ -235,7 +235,8 @@ void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, make_error_code( BitError::InvalidIndex ) );
+        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+                            make_error_code( BitError::ItemIsAFolder ) );
     }
 
     const vector< uint32_t > indices( 1, index );
@@ -251,7 +252,8 @@ void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index 
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( kCannotExtractFolderToBuffer, make_error_code( BitError::InvalidIndex ) );
+        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+                            make_error_code( BitError::ItemIsAFolder ) );
     }
 
     auto item_size = itemProperty( index, BitProperty::Size ).getUInt64();

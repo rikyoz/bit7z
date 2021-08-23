@@ -33,6 +33,8 @@ namespace bit7z {
         InvalidDictionarySize,
         InvalidIndex,
         InvalidWordSize,
+        ItemIsAFolder,
+        ItemMarkedAsDeleted,
         NoMatchingExtension,
         NoMatchingItems,
         NoMatchingSignature,

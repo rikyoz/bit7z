@@ -156,7 +156,7 @@ namespace bit7z {
                 }
 
                 if ( matched_indices.empty() ) {
-                    throw BitException( "Failed to extract items", make_error_code( BitError::NoMatchingItems ) );
+                    throw BitException( "Cannot extract items", make_error_code( BitError::NoMatchingItems ) );
                 }
 
                 in_archive.extract( out_dir, matched_indices );

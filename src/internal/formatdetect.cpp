@@ -505,7 +505,7 @@ namespace bit7z {
         }
 
         stream->Seek( 0, 0, nullptr );
-        throw BitException( "Cannot detect the format of the file",
+        throw BitException( "Failed to detect the format of the file",
                             make_error_code( BitError::NoMatchingSignature ) );
     }
 
@@ -520,7 +520,7 @@ namespace bit7z {
     const BitInFormat& detectFormatFromExt( const tstring& in_file ) {
         tstring ext = filesystem::fsutil::extension( in_file );
         if ( ext.empty() ) {
-            throw BitException( "Cannot detect the archive format from the extension",
+            throw BitException( "Failed to detect the archive format from the extension",
                                 make_error_code( BitError::NoMatchingExtension ) );
         }
         std::transform( ext.cbegin(), ext.cend(), ext.begin(), to_lower );
