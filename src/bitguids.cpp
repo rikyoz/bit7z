@@ -21,6 +21,8 @@
 
 #include "bitguids.hpp"
 
+#include "internal/guiddef.hpp"
+
 namespace bit7z {
     // GUIDs of Interfaces
 #ifndef _MSVC_VER

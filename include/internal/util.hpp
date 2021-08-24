@@ -25,6 +25,7 @@
 
 #ifndef _WIN32
 #include <string>
+#include "internal/guiddef.hpp"
 #endif
 
 #include <Common/MyCom.h>

@@ -24,6 +24,7 @@
 #include <type_traits>
 
 #include "bitcompressionmethod.hpp"
+#include "bitdefines.hpp"
 #include "bitguids.hpp"
 #include "bittypes.hpp"
 
@@ -80,7 +81,7 @@ namespace bit7z {
             /**
              * @return the value of the format in the 7z SDK.
              */
-            BIT7Z_NODISCARD int value() const noexcept;
+            BIT7Z_NODISCARD unsigned char value() const noexcept;
 
             /**
              * @return the GUID that identifies the file format in the 7z SDK.

@@ -24,10 +24,6 @@
 #include <cstdint>
 #include <algorithm> //for std::copy_n
 
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#endif
-
 #include "bitexception.hpp"
 
 using namespace bit7z;

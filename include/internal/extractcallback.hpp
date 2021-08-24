@@ -19,18 +19,16 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#ifndef _WIN32
-#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
-#endif
+#include "bitabstractarchivehandler.hpp"
+#include "bitinputarchive.hpp"
+#include "bitwindows.hpp" // Must be included here for defining WINAPI (used by IArchive.h)
+#include "internal/callback.hpp"
+#include "internal/guiddef.hpp"
+#include "internal/util.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
-
-#include "bitabstractarchivehandler.hpp"
-#include "bitinputarchive.hpp"
-#include "internal/callback.hpp"
-#include "internal/util.hpp"
 
 namespace bit7z {
     class ExtractCallback : public Callback,

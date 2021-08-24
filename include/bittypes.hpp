@@ -26,45 +26,6 @@
 #include <regex>
 #endif
 
-#if defined( __cplusplus ) && __cplusplus >= 201703
-#define BIT7Z_CPP17
-#endif
-
-#if defined( __cpp_lib_filesystem )
-#   define BIT7Z_USE_STANDARD_FILESYSTEM
-#elif defined( BIT7Z_CPP17 ) && defined( __has_include )
-#   if __has_include( <filesystem> )
-#       define BIT7Z_USE_STANDARD_FILESYSTEM
-#   endif
-#endif
-
-/* Macro defines for [[nodiscard]] and [[maybe_unused]] attributes. */
-#if defined( __has_cpp_attribute )
-#   if __has_cpp_attribute( nodiscard )
-#       define BIT7Z_NODISCARD [[nodiscard]]
-#   endif
-#   if __has_cpp_attribute( maybe_unused )
-#       define BIT7Z_MAYBE_UNUSED [[maybe_unused]]
-#   endif
-#endif
-
-/* The compiler doesn't support __has_cpp_attribute, but it's using C++17 standard. */
-#if !defined( BIT7Z_NODISCARD ) && defined( BIT7Z_CPP17 )
-#   define BIT7Z_NODISCARD [[nodiscard]]
-#endif
-
-#if !defined( BIT7Z_MAYBE_UNUSED ) && defined( BIT7Z_CPP17 )
-#   define BIT7Z_MAYBE_UNUSED [[maybe_unused]]
-#endif
-
-/* Compiler is using C++14 standard, define empty macros. */
-#ifndef BIT7Z_NODISCARD
-#define BIT7Z_NODISCARD
-#endif
-#ifndef BIT7Z_MAYBE_UNUSED
-#define BIT7Z_MAYBE_UNUSED
-#endif
-
 namespace bit7z {
     /**
      * @brief A type representing a byte (equivalent to an unsigned char).
@@ -74,6 +35,7 @@ namespace bit7z {
 #else
     enum class byte_t : unsigned char {}; //same as std::byte_t
 #endif
+
     using buffer_t = std::vector< byte_t >;
     using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
 
@@ -100,28 +62,15 @@ namespace bit7z {
 
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
-    using tstring = std::wstring;
-#ifdef BIT7Z_REGEX_MATCHING
-    using tregex = std::wregex;
-#endif
 #define TSTRING( str ) L##str
 #else // Unix
     using tchar = char;
-    using tstring = std::string;
-#ifdef BIT7Z_REGEX_MATCHING
-    using tregex = std::regex;
-#endif
 #define TSTRING( str ) str
+#endif
 
-    constexpr auto ERROR_OPEN_FAILED = EIO;
-    constexpr auto ERROR_SEEK = EIO;
-    constexpr auto ERROR_READ_FAULT = EIO;
-    constexpr auto ERROR_WRITE_FAULT = EIO;
-
-//Macros not defined by p7zip
-#define HRESULT_FACILITY(hr)  (((hr) >> 16) & 0x1fff)
-#define HRESULT_CODE(hr)    ((hr) & 0xFFFF)
-#define COM_DECLSPEC_NOTHROW
+    using tstring = std::basic_string< tchar >;
+#ifdef BIT7Z_REGEX_MATCHING
+    using tregex = std::basic_regex< tchar >;
 #endif
 
     template< typename T >

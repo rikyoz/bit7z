@@ -21,14 +21,8 @@
 
 #include <string>
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <myWindows/StdAfx.h>
-using HMODULE = void*;
-#endif
-
 #include "bittypes.hpp"
+#include "bitwindows.hpp"
 
 #ifdef _WIN32
 constexpr auto default_dll = L"7z.dll";
@@ -38,6 +32,7 @@ constexpr auto default_dll = "/usr/lib/p7zip/7z.so"; //default installation path
 
 struct IInArchive;
 struct IOutArchive;
+struct GUID;
 
 //! \cond IGNORE_BLOCK_IN_DOXYGEN
 template< typename T >

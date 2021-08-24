@@ -21,9 +21,12 @@
 
 #include <string>
 
+#include "bitabstractarchivehandler.hpp"
+#include "bitwindows.hpp"
+#include "internal/guiddef.hpp"
+
 #include <Common/MyCom.h>
 
-#include "bitabstractarchivehandler.hpp"
 
 constexpr auto kUnsupportedMethod  = "Unsupported Method";
 constexpr auto kCRCFailed          = "CRC Failed";

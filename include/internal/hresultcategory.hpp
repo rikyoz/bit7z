@@ -22,13 +22,9 @@
 #include <system_error>
 #include <string>
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <myWindows/StdAfx.h>
-#endif
-
+#include "bitdefines.hpp"
 #include "bittypes.hpp"
+#include "bitwindows.hpp"
 
 namespace bit7z {
     struct hresult_category_t : public std::error_category {

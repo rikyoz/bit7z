@@ -22,6 +22,7 @@
 #include "internal/hresultcategory.hpp"
 
 #include "bittypes.hpp"
+#include "bitwindows.hpp"
 
 using namespace bit7z;
 
@@ -67,11 +68,11 @@ std::string hresult_category_t::message( int ev ) const {
             return "Not enough memory resources are available to complete this operation.";
         /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY, ERROR_NO_MORE_FILES, and
          *       ERROR_NEGATIVE_SEEK, so we need to handle also these cases here. */
-        case __HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
+        case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return "The directory name is invalid.";
-        case __HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
+        case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return "There are no more files.";
-        case __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+        case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
             return "An attempt was made to move the file pointer before the beginning of the file.";
         case E_FAIL:
             return "Unspecified error";
@@ -107,11 +108,11 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
 #endif
         case E_INVALIDARG:
         case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in stream classes functions.
-        case __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+        case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
             return std::make_error_condition( std::errc::invalid_argument );
-        case __HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
+        case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
-        case __HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
+        case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return std::make_error_condition( std::errc::no_such_file_or_directory );
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );

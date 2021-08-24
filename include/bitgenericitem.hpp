@@ -21,10 +21,6 @@
 
 #include <cstdint>
 
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#endif
-
 #include "bitpropvariant.hpp"
 
 namespace bit7z {

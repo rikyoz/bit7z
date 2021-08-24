@@ -22,14 +22,9 @@
 #include <vector>
 #include <system_error>
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-#include <myWindows/StdAfx.h>
-#endif
-
 #include "biterror.hpp"
 #include "bittypes.hpp"
+#include "bitwindows.hpp"
 
 namespace bit7z {
     using std::system_error;

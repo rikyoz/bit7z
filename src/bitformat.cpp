@@ -21,6 +21,8 @@
 
 #include "bitformat.hpp"
 
+#include "internal/guiddef.hpp"
+
 using namespace std;
 
 namespace bit7z {
@@ -95,7 +97,7 @@ namespace bit7z {
     }
 #endif
 
-    int BitInFormat::value() const noexcept {
+    unsigned char BitInFormat::value() const noexcept {
         return mValue;
     }
 

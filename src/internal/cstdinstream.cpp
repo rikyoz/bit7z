@@ -21,11 +21,6 @@
 
 #include "internal/cstdinstream.hpp"
 
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#include "bittypes.hpp"  //for error codes
-#endif
-
 using namespace bit7z;
 
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}

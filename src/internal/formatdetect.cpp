@@ -30,7 +30,11 @@
 #endif
 
 #include "bitexception.hpp"
+#include "bitguids.hpp"
+#include "internal/guiddef.hpp"
 #include "internal/fsutil.hpp"
+
+#include <7zip/IStream.h>
 
 #if defined(_WIN32)
 #define bswap64 _byteswap_uint64

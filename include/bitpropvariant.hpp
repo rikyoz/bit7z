@@ -20,15 +20,10 @@
 #define BITPROPVARIANT_HPP
 
 #include <cstdint>
-//#include <array>
 
-#ifdef _WIN32
-#include <Propidl.h>
-#else
-#include <Common/MyWindows.h>
-#endif
-
+#include "bitdefines.hpp"
 #include "bittypes.hpp"
+#include "bitwindows.hpp"
 
 namespace bit7z {
     enum struct BitProperty : PROPID {

@@ -19,11 +19,14 @@
 #ifndef CFIXEDBUFFEROUTSTREAM_HPP
 #define CFIXEDBUFFEROUTSTREAM_HPP
 
+#include "bitwindows.hpp"
+#include "bitguids.hpp"
+#include "bittypes.hpp"
+#include "internal/guiddef.hpp"
+#include "internal/util.hpp"
+
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>
-
-#include "bittypes.hpp"
-#include "internal/util.hpp"
 
 namespace bit7z {
     using std::vector;

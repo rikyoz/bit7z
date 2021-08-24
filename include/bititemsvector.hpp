@@ -23,6 +23,7 @@
 #include <map>
 #include <memory>
 
+#include "bitdefines.hpp"
 #include "bitfs.hpp"
 #include "bittypes.hpp"
 

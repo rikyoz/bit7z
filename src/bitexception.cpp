@@ -21,6 +21,7 @@
 
 #include "bitexception.hpp"
 
+#include "bitwindows.hpp"
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
 

@@ -27,6 +27,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitcompressionlevel.hpp
      ${PROJECT_SOURCE_DIR}/include/bitcompressionmethod.hpp
      ${PROJECT_SOURCE_DIR}/include/bitcompressor.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitdefines.hpp
      ${PROJECT_SOURCE_DIR}/include/biterror.hpp
      ${PROJECT_SOURCE_DIR}/include/bitexception.hpp
      ${PROJECT_SOURCE_DIR}/include/bitextractor.hpp
@@ -45,6 +46,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitstreamcompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitstreamextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bittypes.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitwindows.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/bufferextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/bufferitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/callback.hpp
@@ -65,6 +67,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/fsutil.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fs.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/genericinputitem.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/guiddef.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/internalcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp

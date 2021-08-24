@@ -22,6 +22,7 @@
 #include <system_error>
 
 #include "bittypes.hpp"
+#include "bitdefines.hpp"
 
 namespace bit7z {
     enum struct BitError {

@@ -22,7 +22,7 @@
 #ifdef _WIN32
 #include <guiddef.h>
 #else
-#include <Common/MyGuidDef.h>
+struct GUID;
 #endif
 
 namespace bit7z {

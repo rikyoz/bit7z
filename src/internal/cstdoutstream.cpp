@@ -23,11 +23,6 @@
 
 #include <iterator>
 
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#include "bittypes.hpp"  //for error codes
-#endif
-
 using namespace bit7z;
 
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}

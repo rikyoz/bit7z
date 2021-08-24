@@ -23,6 +23,7 @@
 #include <functional>
 
 #include "bit7zlibrary.hpp"
+#include "bitdefines.hpp"
 
 namespace bit7z {
     using std::function;

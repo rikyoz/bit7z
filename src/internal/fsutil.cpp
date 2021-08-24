@@ -26,7 +26,7 @@
 #include <sys/stat.h>
 #include <cstdio>
 #include <unistd.h>
-#include <myWindows/StdAfx.h>
+#include "bitwindows.hpp"
 #endif
 
 using namespace std;

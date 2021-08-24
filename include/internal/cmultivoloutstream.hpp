@@ -23,10 +23,13 @@
 #include <string>
 #include <cstdint>
 
+#include "bitwindows.hpp"
+#include "internal/guiddef.hpp"
+#include "internal/cfileoutstream.hpp"
+
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>
 
-#include "internal/cfileoutstream.hpp"
 
 using std::vector;
 using std::wstring;

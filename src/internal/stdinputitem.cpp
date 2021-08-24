@@ -68,8 +68,8 @@ FILETIME StdInputItem::lastAccessTime() const noexcept { //-V524
 }
 
 FILETIME StdInputItem::lastWriteTime() const noexcept {
-    FILETIME ft;
-    SYSTEMTIME st;
+    FILETIME ft{};
+    SYSTEMTIME st{};
 
     GetSystemTime( &st ); // gets current time
     SystemTimeToFileTime( &st, &ft ); // converts to file time format

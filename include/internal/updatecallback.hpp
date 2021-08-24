@@ -19,21 +19,19 @@
 #ifndef UPDATECALLBACK_HPP
 #define UPDATECALLBACK_HPP
 
-#ifndef _WIN32
-#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
-#endif
-
-#include <7zip/Archive/IArchive.h>
-#include <7zip/ICoder.h>
-#include <7zip/IPassword.h>
-
 #include "bitabstractarchivecreator.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 #include "bititemsvector.hpp"
 #include "bitoutputarchive.hpp"
+#include "bitwindows.hpp"
 #include "internal/callback.hpp"
+#include "internal/guiddef.hpp"
 #include "internal/util.hpp"
+
+#include <7zip/Archive/IArchive.h>
+#include <7zip/ICoder.h>
+#include <7zip/IPassword.h>
 
 namespace bit7z {
     constexpr auto kUnsupportedOperation = "Unsupported operation";

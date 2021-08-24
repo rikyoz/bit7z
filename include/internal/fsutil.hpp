@@ -21,22 +21,10 @@
 
 #include <string>
 
-#include <windows.h>
-
+#include "bitdefines.hpp"
 #include "bittypes.hpp"
+#include "bitwindows.hpp"
 #include "internal/fs.hpp"
-
-#ifndef _WIN32
-struct WIN32_FILE_ATTRIBUTE_DATA {
-    DWORD    dwFileAttributes;
-    FILETIME ftCreationTime;
-    FILETIME ftLastAccessTime;
-    FILETIME ftLastWriteTime;
-    // not needed fields
-    // DWORD    nFileSizeHigh;
-    // DWORD    nFileSizeLow;
-};
-#endif
 
 namespace bit7z {
     namespace filesystem {

@@ -19,6 +19,7 @@
 #ifndef CFILEOUTSTREAM_HPP
 #define CFILEOUTSTREAM_HPP
 
+#include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "internal/cstdoutstream.hpp"
 #include "internal/fs.hpp"

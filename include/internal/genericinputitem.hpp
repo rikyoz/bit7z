@@ -20,17 +20,13 @@
 #define GENERICINPUTITEM_HPP
 
 #include <cstdint>
-#include <windows.h>
 
-#ifndef _WIN32
-#include <myWindows/StdAfx.h>
-#endif
-
-#include <7zip/IStream.h>
-
+#include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
 #include "bitgenericitem.hpp"
-#include "fs.hpp"
+#include "internal/fs.hpp"
+
+struct ISequentialInStream;
 
 namespace bit7z {
     struct GenericInputItem : public BitGenericItem {

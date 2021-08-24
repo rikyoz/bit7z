@@ -21,9 +21,9 @@
 
 #ifdef BIT7Z_AUTO_FORMAT
 
-#include <7zip/IStream.h>
-
 #include "bitformat.hpp"
+
+struct IInStream;
 
 namespace bit7z {
     const BitInFormat& detectFormatFromExt( const tstring& in_file );

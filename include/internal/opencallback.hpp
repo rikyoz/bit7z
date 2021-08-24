@@ -19,18 +19,17 @@
 #ifndef OPENCALLBACK_HPP
 #define OPENCALLBACK_HPP
 
-#ifndef _WIN32
-#include <include_windows/windows.h>  //Needed for WINAPI macro definition used in IArchive of p7zip
-#endif
+#include "bitabstractarchivehandler.hpp"
+#include "bitguids.hpp"
+#include "bitwindows.hpp" //Needed for WINAPI macro definition used in IArchive of p7zip
+#include "internal/callback.hpp"
+#include "internal/fsitem.hpp"
+#include "internal/guiddef.hpp"
+#include "internal/util.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/IPassword.h>
 #include <Common/MyCom.h>
-
-#include "bitabstractarchivehandler.hpp"
-#include "internal/callback.hpp"
-#include "internal/fsitem.hpp"
-#include "internal/util.hpp"
 
 namespace bit7z {
     using filesystem::FSItem;
