@@ -209,6 +209,7 @@ enum STREAM_SEEK {
 #define MY_EXTERN_C extern "C"
 #endif
 
+// String-related functions defined in MyWindows.cpp (compiled with bit7z)
 MY_EXTERN_C BSTR SysAllocStringByteLen( LPCSTR psz, UINT len );
 MY_EXTERN_C BSTR SysAllocStringLen( const OLECHAR*, UINT );
 MY_EXTERN_C BSTR SysAllocString( const OLECHAR* sz );
@@ -216,10 +217,8 @@ MY_EXTERN_C void SysFreeString( BSTR bstr );
 MY_EXTERN_C UINT SysStringByteLen( BSTR bstr );
 MY_EXTERN_C UINT SysStringLen( BSTR bstr );
 
+// Date-related functions defined in MyWindows.cpp (compiled with bit7z)
 MY_EXTERN_C LONG CompareFileTime( const FILETIME* ft1, const FILETIME* ft2 );
-MY_EXTERN_C void WINAPI GetSystemTime( SYSTEMTIME* );
-MY_EXTERN_C int WINAPI SystemTimeToFileTime( const SYSTEMTIME*, FILETIME* );
-MY_EXTERN_C int WINAPI FileTimeToSystemTime( const FILETIME*, SYSTEMTIME* );
 #endif
 
 #endif //BITWINDOWS_HPP

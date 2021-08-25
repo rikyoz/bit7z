@@ -28,11 +28,11 @@
 constexpr auto default_dll = L"7z.dll";
 #else
 constexpr auto default_dll = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip shared library
+struct GUID;
 #endif
 
 struct IInArchive;
 struct IOutArchive;
-struct GUID;
 
 //! \cond IGNORE_BLOCK_IN_DOXYGEN
 template< typename T >

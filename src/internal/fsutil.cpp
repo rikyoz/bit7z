@@ -26,7 +26,9 @@
 #include <sys/stat.h>
 #include <cstdio>
 #include <unistd.h>
+
 #include "bitwindows.hpp"
+#include "internal/dateutil.hpp"
 #endif
 
 using namespace std;
@@ -189,23 +191,6 @@ bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
 #endif
 }
 
-#ifndef _WIN32
-// 100ns intervals
-using FileTimeTickRate = std::ratio<1, 10'000'000>;
-// FileTimeDuration has the same layout as FILETIME;
-using FileTimeDuration = chrono::duration< int64_t, FileTimeTickRate >;
-// January 1, 1601 (NT epoch) - January 1, 1970 (Unix epoch):
-constexpr chrono::seconds nt_to_unix_epoch{ -11644473600 };
-
-fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime ) {
-    const FileTimeDuration asDuration{
-        static_cast< int64_t >( ( static_cast< uint64_t >( fileTime.dwHighDateTime ) << 32u ) | fileTime.dwLowDateTime )
-    };
-    const auto withUnixEpoch = asDuration + nt_to_unix_epoch;
-    return fs::file_time_type{ chrono::duration_cast< chrono::system_clock::duration >( withUnixEpoch ) };
-}
-#endif
-
 bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept {
     if ( filePath.empty() ) {
         return false;
@@ -227,16 +212,6 @@ bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftMo
     return !ec;
 #endif
 }
-
-#ifndef _WIN32
-FILETIME time_to_FILETIME( const std::time_t& time ) {
-    uint64_t secs = ( time * 10000000ull ) + 116444736000000000;
-    FILETIME fileTime;
-    fileTime.dwLowDateTime = static_cast< DWORD >( secs );
-    fileTime.dwHighDateTime = static_cast< DWORD >( secs >> 32 );
-    return fileTime;
-}
-#endif
 
 bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) noexcept {
 #ifdef _WIN32

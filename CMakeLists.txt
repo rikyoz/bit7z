@@ -58,6 +58,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/cmultivoloutstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdinstream.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/cstdoutstream.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/dateutil.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/extractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fileextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/fixedbufferextractcallback.hpp
@@ -109,6 +110,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/cmultivoloutstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdinstream.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/cstdoutstream.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/dateutil.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/extractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fileextractcallback.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fixedbufferextractcallback.cpp
