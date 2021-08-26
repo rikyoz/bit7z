@@ -1,5 +1,9 @@
 cmake_minimum_required( VERSION 3.8.2 )
-project( bit7z )
+
+project( bit7z
+         VERSION 4.0.0
+         DESCRIPTION "A C++ static library offering a clean and simple interface to the 7-zip/p7zip shared libraries"
+         HOMEPAGE_URL "https://github.com/rikyoz/bit7z/" )
 
 set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
 cmake_policy( SET CMP0022 NEW )
@@ -11,8 +15,8 @@ else()
     set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/p7zip )
 endif()
 
-# headers
-set( HEADERS
+# public headers
+set( PUBLIC_HEADERS
      ${PROJECT_SOURCE_DIR}/include/bit7z.hpp
      ${PROJECT_SOURCE_DIR}/include/bit7zlibrary.hpp
      ${PROJECT_SOURCE_DIR}/include/bitabstractarchivecreator.hpp
@@ -45,7 +49,10 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitstreamcompressor.hpp
      ${PROJECT_SOURCE_DIR}/include/bitstreamextractor.hpp
      ${PROJECT_SOURCE_DIR}/include/bittypes.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitwindows.hpp
+     ${PROJECT_SOURCE_DIR}/include/bitwindows.hpp )
+
+# headers
+set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/bufferextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/bufferitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/callback.hpp
@@ -173,6 +180,7 @@ if( NOT CMAKE_GENERATOR MATCHES "Visual Studio" )
     set( CMAKE_DEBUG_POSTFIX "_d" )
 endif()
 
+message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
 message( STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}" )
 message( STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}" )
 message( STATUS "Architecture: ${ARCH_DIR}" )
@@ -204,12 +212,15 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 message( STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}" )
 
 set( TARGET_NAME bit7z${ARCH_POSTFIX} )
-add_library( ${TARGET_NAME} STATIC ${SOURCES} ${HEADERS} )
+add_library( ${TARGET_NAME} STATIC )
+target_sources( ${TARGET_NAME}
+                PUBLIC ${PUBLIC_HEADERS}
+                PRIVATE ${HEADERS} ${SOURCES} )
 
 # macros
-target_compile_definitions( ${TARGET_NAME} PUBLIC UNICODE _UNICODE _7Z_VOL )
+target_compile_definitions( ${TARGET_NAME} PRIVATE UNICODE _UNICODE )
 if( WIN32 )
-    target_compile_definitions( ${TARGET_NAME} PUBLIC _WINDOWS )
+    target_compile_definitions( ${TARGET_NAME} PRIVATE _WINDOWS )
 endif()
 
 option( BIT7Z_AUTO_FORMAT "Enable or disable auto format detection" )
@@ -225,18 +236,16 @@ if( BIT7Z_REGEX_MATCHING )
 endif()
 
 # includes
+target_include_directories( ${TARGET_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/ )
 target_include_directories( ${TARGET_NAME} PRIVATE
-                            ${PROJECT_SOURCE_DIR}/include/
                             ${EXTERNAL_LIBS_DIR}
-                            ${7ZIP_SOURCE_DIR}/CPP/
-                            )
+                            ${7ZIP_SOURCE_DIR}/CPP/ )
 
 if( UNIX )
     target_include_directories( ${TARGET_NAME} PRIVATE
-                                ${7ZIP_SOURCE_DIR}/CPP/7zip
                                 ${7ZIP_SOURCE_DIR}/CPP/myWindows
-                                ${7ZIP_SOURCE_DIR}/CPP/include_windows/ )
-    target_compile_definitions( ${TARGET_NAME} PUBLIC EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
+                                ${7ZIP_SOURCE_DIR}/CPP/include_windows ) # For compiling MyWindows.cpp
+    target_compile_definitions( ${TARGET_NAME} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
                                 ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
     target_link_libraries( ${TARGET_NAME} ${CMAKE_DL_LIBS} )
 endif()
