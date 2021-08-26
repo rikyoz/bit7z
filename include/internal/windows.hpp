@@ -106,6 +106,10 @@ enum STREAM_SEEK {
     STREAM_SEEK_END = 2
 };
 
+#ifndef MY_EXTERN_C
+#define MY_EXTERN_C extern "C"
+#endif
+
 // Externally defined, string-related Win32 API functions defined in MyWindows.cpp (compiled with bit7z)
 extern "C" BSTR SysAllocStringByteLen( LPCSTR psz, UINT len );
 extern "C" BSTR SysAllocStringLen( const OLECHAR*, UINT );

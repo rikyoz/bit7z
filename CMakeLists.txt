@@ -7,13 +7,9 @@ project( bit7z
 
 set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
 cmake_policy( SET CMP0022 NEW )
-set( EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party )
 
-if( WIN32 )
-    set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip )
-else()
-    set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/p7zip )
-endif()
+set( EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party )
+set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip )
 
 # public headers
 set( PUBLIC_HEADERS
@@ -243,9 +239,6 @@ target_include_directories( ${TARGET_NAME} PRIVATE
                             ${7ZIP_SOURCE_DIR}/CPP/ )
 
 if( UNIX )
-    target_include_directories( ${TARGET_NAME} PRIVATE
-                                ${7ZIP_SOURCE_DIR}/CPP/myWindows
-                                ${7ZIP_SOURCE_DIR}/CPP/include_windows ) # For compiling MyWindows.cpp
     target_compile_definitions( ${TARGET_NAME} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
                                 ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
     target_link_libraries( ${TARGET_NAME} ${CMAKE_DL_LIBS} )

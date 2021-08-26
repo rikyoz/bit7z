@@ -39,6 +39,11 @@
 #define __MYWINDOWS_H
 #endif
 
+// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code!
+#ifndef __MY_WINDOWS_H
+#define __MY_WINDOWS_H
+#endif
+
 using std::size_t;
 
 #define WINAPI
