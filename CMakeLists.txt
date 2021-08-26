@@ -197,11 +197,12 @@ if( NOT USE_STANDARD_FILESYSTEM )
     if( NOT EXISTS ${EXTERNAL_LIBS_DIR}/ghc/filesystem.hpp )
         include( ExternalProject )
 
+        # downloading ghc::filesystem as an alternative to std::filesystem
         file( DOWNLOAD
               https://raw.githubusercontent.com/gulrak/filesystem/master/include/ghc/filesystem.hpp
               ${EXTERNAL_LIBS_DIR}/ghc/filesystem.hpp
               SHOW_PROGRESS
-              )
+              TLS_VERIFY ON )
     endif()
     message( STATUS "Standard filesystem: NO (using ghc::filesystem)" )
 else()
