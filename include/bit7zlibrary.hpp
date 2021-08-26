@@ -85,7 +85,6 @@ namespace bit7z {
 
         private:
             using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* interfaceID, void** out );
-            using SetLargePageMode = HRESULT ( WINAPI* )();
 
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;

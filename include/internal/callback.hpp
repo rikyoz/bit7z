@@ -27,13 +27,6 @@
 
 #include <Common/MyCom.h>
 
-
-constexpr auto kUnsupportedMethod  = "Unsupported Method";
-constexpr auto kCRCFailed          = "CRC Failed";
-constexpr auto kDataError          = "Data Error";
-constexpr auto kUnknownError       = "Unknown Error";
-constexpr auto kCannotOpenOutput   = "Cannot open output file";
-constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 constexpr auto kPasswordNotDefined = "Password is not defined";
 constexpr auto kEmptyFileAlias     = TSTRING("[Content]");
 

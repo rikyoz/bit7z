@@ -28,6 +28,9 @@ using namespace std;
 using namespace NWindows;
 using namespace bit7z;
 
+constexpr auto kCannotOpenOutput   = "Cannot open output file";
+constexpr auto kCannotDeleteOutput = "Cannot delete output file";
+
 /* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
  * Main changes made:
  *  + Use of wstring instead of UString
