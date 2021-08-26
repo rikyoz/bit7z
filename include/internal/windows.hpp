@@ -26,9 +26,10 @@
 #include <Common/MyTypes.h>
 
 /* Making sure that constants and type aliases declared in bitwindows.hpp are usable by p7zip
-   (i.e. as if they were not inside the bit7z namespace) */
+ * as if they were not inside the bit7z namespace. */
 using namespace bit7z;
 
+/* Extra Win32 type aliases used by p7zip */
 using LPCOLESTR = const OLECHAR*;
 using LPCSTR = const char*;
 using UINT = unsigned int;

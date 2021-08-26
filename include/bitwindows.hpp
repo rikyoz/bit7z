@@ -22,6 +22,15 @@
 #ifdef _WIN32
 #include <Windows.h>
 #else
+/* We don't have the "Windows.h" header on Unix systems, so in theory, we could use the "MyWindows.h" of p7zip.
+ * However, some of bit7z's public API headers need some Win32 API structs like PROPVARIANT and GUID.
+ * Hence, it would result in the leak of p7zip headers, making bit7z's clients dependent on them.
+ * Also, (publicly) forward declaring them and then (internally) using the "MyWindows.h" is impossible:
+ * the two different declarations would conflict, making the compilation fail.
+ *
+ * To avoid all these issues, we define the required Win32 API structs, constants, and type aliases,
+ * with the same definitions in the MyWindows.h header.
+ * We will use only this header and avoid including "MyWindows.h" or similar headers (e.g., StdAfx.h). */
 #include <cerrno>
 #include <cstdint>
 
@@ -48,6 +57,8 @@ namespace bit7z {
 
     using ULONG = unsigned int;
     using PROPID = ULONG;
+
+    // Error codes constants can be useful for bit7z's clients on Unix (since they don't have Windows.h header)
 
     // Win32 HRESULT error codes
     constexpr auto S_OK                  = static_cast< HRESULT >( 0x00000000L );
