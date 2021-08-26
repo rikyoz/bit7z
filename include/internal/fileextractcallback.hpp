@@ -21,7 +21,6 @@
 
 #include <string>
 
-#include "internal/guiddef.hpp"
 #include "internal/cfileoutstream.hpp"
 #include "internal/extractcallback.hpp"
 

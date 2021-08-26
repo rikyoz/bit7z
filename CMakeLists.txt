@@ -36,7 +36,6 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/bitformat.hpp
      ${PROJECT_SOURCE_DIR}/include/bitfs.hpp
      ${PROJECT_SOURCE_DIR}/include/bitgenericitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitguids.hpp
      ${PROJECT_SOURCE_DIR}/include/bitinputarchive.hpp
      ${PROJECT_SOURCE_DIR}/include/bititemsvector.hpp
      ${PROJECT_SOURCE_DIR}/include/bitmemcompressor.hpp
@@ -69,6 +68,7 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/fs.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/genericinputitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/guiddef.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/guids.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/internalcategory.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp
@@ -76,7 +76,8 @@ set( HEADERS
      ${PROJECT_SOURCE_DIR}/include/internal/stdinputitem.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
      ${PROJECT_SOURCE_DIR}/include/internal/updatecallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/util.hpp )
+     ${PROJECT_SOURCE_DIR}/include/internal/util.hpp
+     ${PROJECT_SOURCE_DIR}/include/internal/windows.hpp )
 
 # sources
 set( SOURCES
@@ -94,7 +95,6 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/bitexception.cpp
      ${PROJECT_SOURCE_DIR}/src/bitfilecompressor.cpp
      ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitguids.cpp
      ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp
      ${PROJECT_SOURCE_DIR}/src/bititemsvector.cpp
      ${PROJECT_SOURCE_DIR}/src/bitoutputarchive.cpp
@@ -119,6 +119,7 @@ set( SOURCES
      ${PROJECT_SOURCE_DIR}/src/internal/fsitem.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/fsutil.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/genericinputitem.cpp
+     ${PROJECT_SOURCE_DIR}/src/internal/guids.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/hresultcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/internalcategory.cpp
      ${PROJECT_SOURCE_DIR}/src/internal/opencallback.cpp

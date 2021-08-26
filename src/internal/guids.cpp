@@ -19,9 +19,7 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#include "bitguids.hpp"
-
-#include "internal/guiddef.hpp"
+#include "internal/guids.hpp"
 
 namespace bit7z {
     // GUIDs of Interfaces

@@ -30,7 +30,6 @@
 #endif
 
 #include "bitexception.hpp"
-#include "bitguids.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/fsutil.hpp"
 

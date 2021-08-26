@@ -22,8 +22,8 @@
 #include <string>
 
 #include "bitabstractarchivehandler.hpp"
-#include "bitwindows.hpp"
-#include "internal/guiddef.hpp"
+#include "internal/guids.hpp"
+#include "internal/windows.hpp"
 
 #include <Common/MyCom.h>
 

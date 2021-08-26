@@ -23,8 +23,8 @@
 
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
-#include "bitwindows.hpp"
 #include "internal/fs.hpp"
+#include "internal/windows.hpp"
 
 namespace bit7z {
     namespace filesystem {

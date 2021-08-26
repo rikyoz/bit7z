@@ -19,15 +19,11 @@
 #ifndef UPDATECALLBACK_HPP
 #define UPDATECALLBACK_HPP
 
-#include "bitabstractarchivecreator.hpp"
-#include "bitexception.hpp"
-#include "bitinputarchive.hpp"
-#include "bititemsvector.hpp"
 #include "bitoutputarchive.hpp"
-#include "bitwindows.hpp"
 #include "internal/callback.hpp"
-#include "internal/guiddef.hpp"
+#include "internal/guids.hpp"
 #include "internal/util.hpp"
+#include "internal/windows.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
@@ -54,7 +50,7 @@ namespace bit7z {
 
             ~UpdateCallback() override;
 
-            MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
+            MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) // NOLINT(modernize-use-noexcept)
 
             HRESULT Finalize() noexcept;
 

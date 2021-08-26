@@ -26,6 +26,7 @@
 #ifndef _WIN32
 #include <string>
 #include "internal/guiddef.hpp"
+#include "internal/windows.hpp"
 #endif
 
 #include <Common/MyCom.h>
@@ -42,6 +43,10 @@
 #define MY_UNKNOWN_VIRTUAL_DESTRUCTOR(x) virtual x
 #else
 #define MY_UNKNOWN_VIRTUAL_DESTRUCTOR(x) MY_UNKNOWN_DESTRUCTOR(x)
+#endif
+
+#ifndef _WIN32
+#define COM_DECLSPEC_NOTHROW
 #endif
 
 #define MY_STDMETHOD(method, ...) HRESULT STDMETHODCALLTYPE method ( __VA_ARGS__ )

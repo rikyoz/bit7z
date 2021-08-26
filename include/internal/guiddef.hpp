@@ -15,40 +15,42 @@
  * You should have received a copy of the GNU General Public License
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
-#ifndef _WIN32
 
 #ifndef GUIDDEF_HPP
 #define GUIDDEF_HPP
 
+#include "bitformat.hpp"
+
+#ifdef _WIN32
+#include <Windows.h>
+#else
+
+#ifndef GUID_DEFINED
 #define GUID_DEFINED
+#endif
 
 #include <cstdint>
 
-#include "bitwindows.hpp"
+#include "internal/windows.hpp"
 
 struct GUID {
-    uint32_t      Data1;
-    uint32_t      Data2;
-    uint32_t      Data3;
+    UInt32        Data1;
+    UInt16        Data2;
+    UInt16        Data3;
     unsigned char Data4[8];
 };
 
 #define DEFINE_GUID( name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8 ) \
-    MY_EXTERN_C const GUID name
+    extern "C" const GUID name
 
 using REFGUID = const GUID&;
 using REFIID = REFGUID;
 
-inline int operator==( REFGUID g1, REFGUID g2 ) {
-    for ( int i = 0; i < ( int ) sizeof( g1 ); i++ ) {
-        if ( ( ( unsigned char* ) &g1 )[ i ] != ( ( unsigned char* ) &g2 )[ i ] ) {
-            return 0;
-        }
-    }
-    return 1;
+inline bool operator==( REFGUID g1, REFGUID g2 ) {
+    return std::memcmp( &g1, &g2, sizeof( GUID ) ) == 0;
 }
 
-inline int operator!=( REFGUID g1, REFGUID g2 ) { return !( g1 == g2 ); }
+inline bool operator!=( REFGUID g1, REFGUID g2 ) { return !( g1 == g2 ); }
 
 #define STDMETHODCALLTYPE
 #define STDMETHOD_( t, f ) virtual t STDMETHODCALLTYPE f
@@ -68,6 +70,15 @@ struct IUnknown {
     virtual ~IUnknown() = default;
 };
 
-#endif //GUIDDEF_HPP
-
 #endif
+
+namespace bit7z {
+    /**
+     * @return the GUID that identifies the file format in the 7z SDK.
+     */
+    inline GUID formatGUID( const BitInFormat& format ) {
+        return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, format.value(), 0x00, 0x00 } }; // NOLINT
+    }
+}
+
+#endif //GUIDDEF_HPP

@@ -24,6 +24,7 @@
 #include "bitwindows.hpp"
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
+#include "internal/windows.hpp"
 
 std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };

@@ -22,19 +22,16 @@
 #include "internal/fsutil.hpp"
 
 #ifndef _WIN32
-#include <chrono>
 #include <sys/stat.h>
 #include <cstdio>
 #include <unistd.h>
 
-#include "bitwindows.hpp"
 #include "internal/dateutil.hpp"
 #endif
 
 using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
-
 
 tstring fsutil::filename( const tstring& path, bool ext ) {
     const size_t start = path.find_last_of( TSTRING( "/\\" ) ) + 1;

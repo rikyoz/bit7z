@@ -16,13 +16,13 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef BITGUIDS_HPP
-#define BITGUIDS_HPP
+#ifndef GUIDS_HPP
+#define GUIDS_HPP
 
 #ifdef _WIN32
 #include <guiddef.h>
 #else
-struct GUID;
+#include "internal/guiddef.hpp"
 #endif
 
 namespace bit7z {
@@ -58,4 +58,4 @@ namespace bit7z {
         extern const GUID IID_IArchiveUpdateCallback2;
     }
 }
-#endif // BITGUIDS_HPP
+#endif // GUIDS_HPP

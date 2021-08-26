@@ -110,7 +110,7 @@ void BitOutputArchive::compressTo( const tstring& out_file ) {
 CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     if ( mInputArchive == nullptr ) {
-        const GUID format_GUID = mArchiveCreator.format().guid();
+        const GUID format_GUID = formatGUID( mArchiveCreator.format() );
         mArchiveCreator.library()
                        .createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
     } else {

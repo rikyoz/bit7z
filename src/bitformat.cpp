@@ -21,8 +21,6 @@
 
 #include "bitformat.hpp"
 
-#include "internal/guiddef.hpp"
-
 using namespace std;
 
 namespace bit7z {
@@ -107,10 +105,6 @@ namespace bit7z {
 
     bool BitInFormat::operator!=( const BitInFormat& other ) const noexcept {
         return !( *this == other );
-    }
-
-    GUID BitInFormat::guid() const noexcept {
-        return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, mValue, 0x00, 0x00 } }; // NOLINT
     }
 
     const tchar* BitInOutFormat::extension() const noexcept {

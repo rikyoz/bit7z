@@ -72,9 +72,9 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         detected_by_signature = true;
     }
-    GUID format_GUID = mDetectedFormat->guid();
+    GUID format_GUID = formatGUID( *mDetectedFormat );
 #else
-    GUID format_GUID = mArchiveHandler.format().guid();
+    GUID format_GUID = formatGUID( mArchiveHandler.format() );
 #endif
     // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically!
@@ -95,7 +95,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
          * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected
          *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
-        format_GUID = mDetectedFormat->guid();
+        format_GUID = formatGUID( *mDetectedFormat );
         in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
         res = in_archive->Open( in_stream, nullptr, open_callback );
     }

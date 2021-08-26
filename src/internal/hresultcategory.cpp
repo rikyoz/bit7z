@@ -22,7 +22,7 @@
 #include "internal/hresultcategory.hpp"
 
 #include "bittypes.hpp"
-#include "bitwindows.hpp"
+#include "internal/windows.hpp"
 
 using namespace bit7z;
 

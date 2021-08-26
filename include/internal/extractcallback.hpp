@@ -19,12 +19,10 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#include "bitabstractarchivehandler.hpp"
 #include "bitinputarchive.hpp"
-#include "bitwindows.hpp" // Must be included here for defining WINAPI (used by IArchive.h)
 #include "internal/callback.hpp"
-#include "internal/guiddef.hpp"
 #include "internal/util.hpp"
+#include "internal/windows.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
@@ -46,7 +44,7 @@ namespace bit7z {
 
             ~ExtractCallback() override = default;
 
-            MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
+            MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) // NOLINT(modernize-use-noexcept)
 
             // IProgress from IArchiveExtractCallback
             BIT7Z_STDMETHOD( SetTotal, UInt64 size );

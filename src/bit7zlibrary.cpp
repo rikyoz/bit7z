@@ -22,6 +22,7 @@
 #include "bit7zlibrary.hpp"
 
 #include "bitexception.hpp"
+#include "internal/windows.hpp"
 
 #ifndef _WIN32
 #include <dlfcn.h>

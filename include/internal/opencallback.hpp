@@ -20,12 +20,12 @@
 #define OPENCALLBACK_HPP
 
 #include "bitabstractarchivehandler.hpp"
-#include "bitguids.hpp"
-#include "bitwindows.hpp" //Needed for WINAPI macro definition used in IArchive of p7zip
 #include "internal/callback.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/guiddef.hpp"
+#include "internal/guids.hpp"
 #include "internal/util.hpp"
+#include "internal/windows.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/IPassword.h>
@@ -52,7 +52,7 @@ namespace bit7z {
 
             ~OpenCallback() override = default;
 
-            MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
+            MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword ) // NOLINT(modernize-use-noexcept)
 
             //IArchiveOpenCallback
             BIT7Z_STDMETHOD_NOEXCEPT( SetTotal, const UInt64* files, const UInt64* bytes );
