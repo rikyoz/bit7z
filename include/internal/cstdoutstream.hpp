@@ -40,7 +40,7 @@ namespace bit7z {
 
             CStdOutStream( const CStdOutStream& ) = delete;
 
-            CStdOutStream( CStdOutStream& ) = delete;
+            CStdOutStream( CStdOutStream&& ) = delete;
 
             CStdOutStream& operator=( const CStdOutStream& ) = delete;
 
