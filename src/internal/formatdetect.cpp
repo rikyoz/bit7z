@@ -54,8 +54,8 @@ static inline uint64_t bswap64 (uint64_t x) {
 }
 #endif
 
-unsigned constexpr str_hash( bit7z::tchar const* input ) {
-    return *input != 0 ? static_cast< unsigned int >( *input ) + 33 * str_hash( input + 1 ) : 5381;
+uint64_t constexpr str_hash( bit7z::tchar const* input ) {
+    return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381;
 }
 
 namespace bit7z {
