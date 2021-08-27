@@ -28,11 +28,18 @@
 #include "internal/stdinputitem.hpp"
 #include "internal/updatecallback.hpp"
 
+using bit7z::Bit7zLibrary;
 using bit7z::BitArchiveEditor;
 using bit7z::BitException;
-using bit7z::BitInFormat;
+using bit7z::BitInOutFormat;
 using bit7z::BitPropVariant;
+using bit7z::BitProperty;
 using bit7z::UpdateCallback;
+using bit7z::UpdateMode;
+using bit7z::byte_t;
+using bit7z::input_index;
+using bit7z::tstring;
+using std::istream;
 
 BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& in_file,

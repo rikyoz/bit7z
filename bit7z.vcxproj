@@ -25,14 +25,6 @@
     <!-- Assume Visual Studio 2017 / 15.0 as the default -->
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
   </PropertyGroup>
-  <!-- Visual Studio 2012 (11.0) -->
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '11.0'">
-    <PlatformToolset>v110</PlatformToolset>
-  </PropertyGroup>
-  <!-- Visual Studio 2013 (12.0) -->
-  <PropertyGroup Condition="'$(VisualStudioVersion)' == '12.0'">
-    <PlatformToolset>v120</PlatformToolset>
-  </PropertyGroup>
   <!-- Visual Studio 2015 (14.0) -->
   <PropertyGroup Condition="'$(VisualStudioVersion)' == '14.0'">
     <PlatformToolset>v140</PlatformToolset>
@@ -146,8 +138,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;third_party;third_party\7-zip\CPP;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -GR- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding -GR- %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\vstudio\$(PlatformShortName)\release\.obj\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -180,9 +171,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;include;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;include;third_party;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\$(PlatformShortName)\release\.obj\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>None</DebugInformationFormat>
@@ -216,9 +206,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;include;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding  -GR- %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;include;third_party;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding  -GR- %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\vstudio\$(PlatformShortName)\debug\.obj\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -251,9 +240,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;include;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;include;third_party;third_party\7-zip\CPP;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\$(PlatformShortName)\debug\.obj\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>

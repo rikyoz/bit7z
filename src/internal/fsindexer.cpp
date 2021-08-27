@@ -23,6 +23,7 @@
 
 #include "bitexception.hpp"
 
+using bit7z::GenericInputItem;
 using bit7z::tstring;
 using namespace bit7z::filesystem;
 

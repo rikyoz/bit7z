@@ -36,6 +36,7 @@ std::error_code bit7z::last_error_code() noexcept {
 
 using bit7z::BitException;
 using bit7z::FailedFiles;
+using bit7z::tstring;
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
     : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }

@@ -27,9 +27,10 @@
 #include "internal/dateutil.hpp"
 #endif
 
-using bit7z::StdInputItem;
 using bit7z::BitPropVariant;
+using bit7z::StdInputItem;
 using bit7z::tstring;
+using std::istream;
 
 StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
 

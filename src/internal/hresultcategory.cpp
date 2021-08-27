@@ -108,11 +108,13 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
 #endif
         case E_INVALIDARG:
         case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in stream classes functions.
-        case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+        case __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+			/* Note: using macro __HRESULT_FROM_WIN32 since it can be used in case statement, 
+			 * unlike HRESULT_FROM_WIN32 function. */
             return std::make_error_condition( std::errc::invalid_argument );
-        case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
+        case __HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
-        case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
+        case __HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return std::make_error_condition( std::errc::no_such_file_or_directory );
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );

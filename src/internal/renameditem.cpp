@@ -23,9 +23,10 @@
 
 #include "internal/fsutil.hpp"
 
+using bit7z::BitInputArchive;
+using bit7z::BitPropVariant;
 using bit7z::RenamedItem;
 using bit7z::tstring;
-using bit7z::BitPropVariant;
 using namespace bit7z::filesystem;
 
 RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path )

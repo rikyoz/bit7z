@@ -32,6 +32,7 @@ using bit7z::BitOutputArchive;
 using bit7z::BitAbstractArchiveCreator;
 using bit7z::BitAbstractArchiveHandler;
 using bit7z::BitPropVariant;
+using bit7z::BitProperty;
 using bit7z::UpdateCallback;
 using bit7z::byte_t;
 using bit7z::tstring;
