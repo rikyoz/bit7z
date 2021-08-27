@@ -19,7 +19,7 @@
 #ifndef FS_HPP
 #define FS_HPP
 
-#include "bittypes.hpp"
+#include "bitdefines.hpp"
 
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 #include <filesystem>

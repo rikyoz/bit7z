@@ -19,7 +19,7 @@
 #ifndef BITDEFINES_HPP
 #define BITDEFINES_HPP
 
-#if defined( __cplusplus ) && __cplusplus >= 201703
+#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || ( defined( __cplusplus ) && __cplusplus >= 201703 )
 #define BIT7Z_CPP17
 #endif
 
