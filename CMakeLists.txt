@@ -187,7 +187,22 @@ set( CMAKE_CXX_STANDARD 17 )
 include( CheckIncludeFileCXX )
 check_include_file_cxx( "filesystem" USE_STANDARD_FILESYSTEM )
 
-if( NOT USE_STANDARD_FILESYSTEM )
+if( USE_STANDARD_FILESYSTEM )
+    include( CheckCXXSourceCompiles )
+    string( CONFIGURE [[
+        #include <cstdlib>
+        #include <filesystem>
+
+        int main() {
+            auto cwd = std::filesystem::current_path();
+            printf("%s", cwd.c_str());
+            return EXIT_SUCCESS;
+        }
+    ]] code @ONLY )
+    check_cxx_source_compiles( "${code}" STANDARD_FILESYSTEM_COMPILES )
+endif()
+
+if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES )
     set( CMAKE_CXX_STANDARD 14 ) # if standard filesystem lib is not supported, revert to C++14 standard
 
     if( NOT EXISTS ${EXTERNAL_LIBS_DIR}/ghc/filesystem.hpp )
@@ -260,10 +275,15 @@ if( MSVC )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
     # warning level
-    target_compile_options( ${TARGET_NAME} PRIVATE /W4 /WX )
+    target_compile_options( ${TARGET_NAME} PRIVATE /W4 )
     # standard conformance options of MSVC
     target_compile_options( ${TARGET_NAME} PRIVATE /nologo /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
-                            /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding /Zc:__cplusplus )
+                            /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
+    if( MSVC_VERSION GREATER_EQUAL 1910 ) # only for MSVC versions equal or greater than 15.0 (VS 2017)
+        target_compile_options( ${TARGET_NAME} PRIVATE /Zc:__cplusplus )
+        # treating warnings as errors
+        target_compile_options( ${TARGET_NAME} PRIVATE /WX )
+    endif()
     # enabling multi-threaded compiling
     set( MSVC_COMPILE_FLAGS "/MP" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )
