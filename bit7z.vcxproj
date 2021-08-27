@@ -146,7 +146,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;third_party\7-zip\CPP;include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding  -GR- %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(VisualStudioVersion)' != '12.0'">-Zc:strictStrings -Zc:rvalueCast -Zc:inline -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -GR- %(AdditionalOptions)</AdditionalOptions>
       <AdditionalOptions Condition="'$(VisualStudioVersion)' == '12.0'">-Zc:rvalueCast -Zc:inline %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>build\vstudio\$(PlatformShortName)\release\.obj\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -154,7 +154,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_7Z_VOL;NDEBUG;BIT7Z_AUTO_FORMAT;BIT7Z_REGEX_MATCHING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;NDEBUG;BIT7Z_AUTO_FORMAT;BIT7Z_REGEX_MATCHING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -299,7 +299,6 @@
     <ClCompile Include="src\bitexception.cpp" />
     <ClCompile Include="src\bitfilecompressor.cpp" />
     <ClCompile Include="src\bitformat.cpp" />
-    <ClCompile Include="src\bitguids.cpp" />
     <ClCompile Include="src\bitinputarchive.cpp" />
     <ClCompile Include="src\bititemsvector.cpp" />
     <ClCompile Include="src\bitoutputarchive.cpp" />
@@ -315,6 +314,7 @@
     <ClCompile Include="src\internal\cmultivoloutstream.cpp" />
     <ClCompile Include="src\internal\cstdinstream.cpp" />
     <ClCompile Include="src\internal\cstdoutstream.cpp" />
+    <ClCompile Include="src\internal\dateutil.cpp" />
     <ClCompile Include="src\internal\extractcallback.cpp" />
     <ClCompile Include="src\internal\fileextractcallback.cpp" />
     <ClCompile Include="src\internal\fixedbufferextractcallback.cpp" />
@@ -323,6 +323,7 @@
     <ClCompile Include="src\internal\fsitem.cpp" />
     <ClCompile Include="src\internal\fsutil.cpp" />
     <ClCompile Include="src\internal\genericinputitem.cpp" />
+    <ClCompile Include="src\internal\guids.cpp" />
     <ClCompile Include="src\internal\hresultcategory.cpp" />
     <ClCompile Include="src\internal\internalcategory.cpp" />
     <ClCompile Include="src\internal\opencallback.cpp" />
@@ -347,14 +348,14 @@
     <ClInclude Include="include\bitcompressionlevel.hpp" />
     <ClInclude Include="include\bitcompressionmethod.hpp" />
     <ClInclude Include="include\bitcompressor.hpp" />
-    <ClInclude Include="include/biterror.hpp" />
+    <ClInclude Include="include\bitdefines.hpp" />
+    <ClInclude Include="include\biterror.hpp" />
     <ClInclude Include="include\bitexception.hpp" />
     <ClInclude Include="include\bitextractor.hpp" />
     <ClInclude Include="include\bitfilecompressor.hpp" />
     <ClInclude Include="include\bitformat.hpp" />
-    <ClInclude Include="include/bitfs.hpp" />
+    <ClInclude Include="include\bitfs.hpp" />
     <ClInclude Include="include\bitgenericitem.hpp" />
-    <ClInclude Include="include\bitguids.hpp" />
     <ClInclude Include="include\bitinputarchive.hpp" />
     <ClInclude Include="include\bititemsvector.hpp" />
     <ClInclude Include="include\bitmemcompressor.hpp" />
@@ -364,6 +365,7 @@
     <ClInclude Include="include\bitstreamcompressor.hpp" />
     <ClInclude Include="include\bitstreamextractor.hpp" />
     <ClInclude Include="include\bittypes.hpp" />
+    <ClInclude Include="include\bitwindows.hpp" />
     <ClInclude Include="include\internal\bufferextractcallback.hpp" />
     <ClInclude Include="include\internal\bufferitem.hpp" />
     <ClInclude Include="include\internal\callback.hpp" />
@@ -375,6 +377,7 @@
     <ClInclude Include="include\internal\cmultivoloutstream.hpp" />
     <ClInclude Include="include\internal\cstdinstream.hpp" />
     <ClInclude Include="include\internal\cstdoutstream.hpp" />
+    <ClInclude Include="include\internal\dateutil.hpp" />
     <ClInclude Include="include\internal\extractcallback.hpp" />
     <ClInclude Include="include\internal\fileextractcallback.hpp" />
     <ClInclude Include="include\internal\fixedbufferextractcallback.hpp" />
@@ -384,6 +387,8 @@
     <ClInclude Include="include\internal\fsitem.hpp" />
     <ClInclude Include="include\internal\fsutil.hpp" />
     <ClInclude Include="include\internal\genericinputitem.hpp" />
+    <ClInclude Include="include\internal\guiddef.hpp" />
+    <ClInclude Include="include\internal\guids.hpp" />
     <ClInclude Include="include\internal\hresultcategory.hpp" />
     <ClInclude Include="include\internal\internalcategory.hpp" />
     <ClInclude Include="include\internal\itemsvector.hpp" />
@@ -393,6 +398,7 @@
     <ClInclude Include="include\internal\streamextractcallback.hpp" />
     <ClInclude Include="include\internal\updatecallback.hpp" />
     <ClInclude Include="include\internal\util.hpp" />
+    <ClInclude Include="include\internal\windows.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
