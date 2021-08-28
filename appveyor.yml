@@ -85,7 +85,11 @@ build_script:
 
 after_build:
   - cd ..
-  - cmd: set tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%platform%
+  - cmd: if "%compiler%"=="mingw" ( 
+            for /f %%i in ('g++ -dumpversion') do set tag=mingw%%i_%platform%
+         ) else (
+            set tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%platform%
+         )
   - cmd: mkdir "pkg/bit7z/"
   - cmd: mkdir "pkg/bit7z/lib/"
   - cmd: mkdir "pkg/bit7z/include/"
