@@ -310,3 +310,7 @@ endif()
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     target_compile_options( ${TARGET_NAME} PRIVATE -Wno-inconsistent-missing-override )
 endif()
+
+if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0 )
+    target_compile_options( ${TARGET_NAME} PRIVATE -Wno-missing-field-initializers )
+endif()
