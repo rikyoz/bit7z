@@ -23,10 +23,17 @@ environment:
     generator: MinGW Makefiles
     
   - compiler: gcc
-    generator: Ninja
+    generator: Unix Makefiles
     
   - compiler: clang
-    generator: Ninja
+    generator: Unix Makefiles
+    
+for:
+- 
+   matrix:
+      only:
+       - image: Visual Studio 2017
+         
     
 platform:
   - x86
@@ -58,14 +65,22 @@ matrix:
       compiler: msvc_mt
     - image: Ubuntu
       compiler: mingw
+      
+init:
+  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set vcvarsall="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" )
+  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set vcvarsall="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" )
+  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set vcvarsall="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" )
 
 before_build:
+  - cmd: if "%compiler:~0,4%"=="msvc" ( call %vcvarsall% %platform% )
   - git submodule update --init --recursive
+  - mkdir build
+  - cd build
 
 build_script:
-  - cmake . -G "%generator%" -DCMAKE_BUILD_TYPE=Release %flags%
+  - cmake .. -G "%generator%" -DCMAKE_BUILD_TYPE=Release %flags%
   - cmake --build . -j
-  - cmake . -G "%generator%" -DCMAKE_BUILD_TYPE=Debug %flags%
+  - cmake .. -G "%generator%" -DCMAKE_BUILD_TYPE=Debug %flags%
   - cmake --build . -j
 
 after_build:
