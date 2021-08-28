@@ -281,8 +281,11 @@ if( MSVC )
     target_compile_options( ${TARGET_NAME} PRIVATE /W4 )
 
     # standard conformance options of MSVC
-    target_compile_options( ${TARGET_NAME} PRIVATE /nologo /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
+    target_compile_options( ${TARGET_NAME} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
                             /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
+
+    # linker flags
+    set( CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /nologo" )
 
     # options only for MSVC versions equal or greater than 15.0 (VS 2017)
     if( MSVC_VERSION GREATER_EQUAL 1910 )
@@ -294,7 +297,6 @@ if( MSVC )
     # enabling multi-threaded compiling
     set( MSVC_COMPILE_FLAGS "/MP" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )
-    set( CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /nologo" )
 
     # static runtime option
     option( BIT7Z_STATIC_RUNTIME "Enable or disable using /MT MSVC flag" )
