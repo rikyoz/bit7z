@@ -13,10 +13,10 @@ environment:
 
   matrix:
   - compiler: msvc
-    generator: Ninja
+    generator: NMake Makefiles
 
   - compiler: msvc_mt
-    generator: Ninja
+    generator: NMake Makefiles
     flags: -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
@@ -37,9 +37,13 @@ matrix:
   
   exclude:
     - image: Visual Studio 2015
+      compiler: mingw
+    - image: Visual Studio 2015
       compiler: gcc
     - image: Visual Studio 2015
       compiler: clang
+    - image: Visual Studio 2017
+      compiler: mingw
     - image: Visual Studio 2017
       compiler: gcc
     - image: Visual Studio 2017
