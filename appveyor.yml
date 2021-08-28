@@ -65,7 +65,6 @@ init:
 before_build:
   - sh: arch=$platform
   - cmd: set arch=%platform% # preserving platform value (vcvarsall overwrites it)
-  - cmd: if "%compiler:~0,4%"=="msvc" ( call %vcvarsall% %platform% )
   - cmd: if "%compiler:~0,5%"=="mingw" ( set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\bin )
   - git submodule update --init --recursive
   - mkdir build
@@ -93,8 +92,14 @@ after_build:
   - cmd: copy README.md pkg\bit7z\
   - cmd: copy LICENSE pkg\bit7z\
   # Ubuntu image
-  - sh: [[ "$compiler" == "gcc" ]] && tag=g++$(g++ --version | grep ^g++ | sed 's/^.* //g')_$arch
-  - sh: [[ "$compiler" == "clang" ]] && tag=g++$(clang --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_$arch
+  - sh: if "$compiler"=="gcc" 
+        then 
+          tag=g++$(g++ --version | grep ^g++ | sed 's/^.* //g')_$arch
+        fi
+  - sh: if "$compiler"=="clang"
+        then
+          tag=g++$(clang --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_$arch
+        fi
   - sh: mkdir -p pkg/bit7z/lib/
   - sh: mkdir -p pkg/bit7z/include/
   - sh: cp lib/$arch/*.* pkg/bit7z/lib/
