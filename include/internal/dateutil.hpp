@@ -24,7 +24,7 @@
 #include <chrono>
 
 #include "bitwindows.hpp"
-#include "bitfs.hpp"
+#include "internal/fs.hpp"
 
 namespace bit7z {
     fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime );
