@@ -263,33 +263,43 @@ endif()
 if( MSVC )
     # setting pdb file name for debug builds (otherwise it is not generated!)
     set_target_properties( ${TARGET_NAME} PROPERTIES COMPILE_PDB_NAME_DEBUG ${TARGET_NAME}${CMAKE_DEBUG_POSTFIX} )
+
     # release builds should be optimized (e.g., for size)
     target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Os>" )
     target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Oi>" )
     target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/analyze>" )
     target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/GS>" )
     target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Gy>" )
+
     # remove default warning level
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
+
     # warning level
     target_compile_options( ${TARGET_NAME} PRIVATE /W4 )
+
     # standard conformance options of MSVC
     target_compile_options( ${TARGET_NAME} PRIVATE /nologo /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
                             /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
-    if( MSVC_VERSION GREATER_EQUAL 1910 ) # only for MSVC versions equal or greater than 15.0 (VS 2017)
+
+    # options only for MSVC versions equal or greater than 15.0 (VS 2017)
+    if( MSVC_VERSION GREATER_EQUAL 1910 )
         target_compile_options( ${TARGET_NAME} PRIVATE /Zc:__cplusplus )
         # treating warnings as errors
         target_compile_options( ${TARGET_NAME} PRIVATE /WX )
     endif()
+
     # enabling multi-threaded compiling
     set( MSVC_COMPILE_FLAGS "/MP" )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )
     set( CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /nologo" )
+
     # static runtime option
-    if( STATIC_RUNTIME )
+    option( BIT7Z_STATIC_RUNTIME "Enable or disable using /MT MSVC flag" )
+    message( STATUS "Static runtime: ${BIT7Z_STATIC_RUNTIME}" )
+    if( BIT7Z_STATIC_RUNTIME )
         set( CompilerFlags
              CMAKE_CXX_FLAGS_DEBUG
              CMAKE_CXX_FLAGS_RELEASE
