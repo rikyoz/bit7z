@@ -13,10 +13,10 @@ environment:
 
   matrix:
   - compiler: msvc
-    generator: NMake Makefiles JOM
+    generator: Ninja
 
   - compiler: msvc_mt
-    generator: NMake Makefiles JOM
+    generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
