@@ -13,10 +13,8 @@ environment:
 
   matrix:
   - compiler: msvc
-    generator: Ninja
 
   - compiler: msvc_mt
-    generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
@@ -28,13 +26,6 @@ environment:
   - compiler: clang
     generator: Unix Makefiles
     
-for:
-- 
-   matrix:
-      only:
-       - image: Visual Studio 2017
-         
-    
 platform:
   - x86
   - x64
@@ -44,8 +35,6 @@ matrix:
   
   exclude:
     - image: Visual Studio 2015
-      compiler: mingw
-    - image: Visual Studio 2015
       compiler: gcc
     - image: Visual Studio 2015
       compiler: clang
@@ -55,6 +44,8 @@ matrix:
       compiler: gcc
     - image: Visual Studio 2017
       compiler: clang
+    - image: Visual Studio 2019
+      compiler: mingw
     - image: Visual Studio 2019
       compiler: gcc
     - image: Visual Studio 2019
@@ -67,12 +58,15 @@ matrix:
       compiler: mingw
       
 init:
-  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set vcvarsall="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" )
-  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set vcvarsall="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" )
-  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" ( set vcvarsall="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" )
+  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set generator=Visual Studio 16 2019 )
+  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator=Visual Studio 15 2017 )
+  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" ( set generator=Visual Studio 14 2015 )
 
 before_build:
+  - sh: arch=$platform
+  - cmd: set arch=%platform% # preserving platform value (vcvarsall overwrites it)
   - cmd: if "%compiler:~0,4%"=="msvc" ( call %vcvarsall% %platform% )
+  - cmd: if "%compiler:~0,5%"=="mingw" ( set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\bin )
   - git submodule update --init --recursive
   - mkdir build
   - cd build
@@ -85,25 +79,29 @@ build_script:
 
 after_build:
   - cd ..
+  # Windows images
   - cmd: if "%compiler%"=="mingw" ( 
-            for /f %%i in ('g++ -dumpversion') do set tag=mingw%%i_%platform%
+            for /f %%i in ('g++ -dumpversion') do set tag=mingw%%i_%arch%
          ) else (
-            set tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%platform%
+            set tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%arch%
          )
   - cmd: mkdir "pkg/bit7z/"
   - cmd: mkdir "pkg/bit7z/lib/"
   - cmd: mkdir "pkg/bit7z/include/"
-  - cmd: copy lib\%platform%\*.* pkg\bit7z\lib\
+  - cmd: copy lib\%arch%\*.* pkg\bit7z\lib\
   - cmd: copy include\bit*.hpp pkg\bit7z\include\
   - cmd: copy README.md pkg\bit7z\
   - cmd: copy LICENSE pkg\bit7z\
-  - sh: set tag=g++$(g++ --version | grep ^g++ | sed 's/^.* //g')_%platform%
+  # Ubuntu image
+  - sh: [[ "$compiler" == "gcc" ]] && tag=g++$(g++ --version | grep ^g++ | sed 's/^.* //g')_$arch
+  - sh: [[ "$compiler" == "clang" ]] && tag=g++$(clang --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_$arch
   - sh: mkdir -p pkg/bit7z/lib/
   - sh: mkdir -p pkg/bit7z/include/
-  - sh: cp lib/%platform%/*.* pkg/bit7z/lib/
+  - sh: cp lib/$arch/*.* pkg/bit7z/lib/
   - sh: cp include/bit*.hpp pkg/bit7z/include/
   - sh: cp README.md pkg/bit7z/
   - sh: cp LICENSE pkg/bit7z/
+  # Packaging
   - echo %bit7z_version% %tag% > "pkg/bit7z/BUILD.txt"
   - cd pkg
   - 7z a -t7z bit7z-v%bit7z_version%-%tag%.7z *
