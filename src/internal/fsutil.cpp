@@ -21,6 +21,8 @@
 
 #include "internal/fsutil.hpp"
 
+#include <algorithm> //for std::adjacent_find
+
 #ifndef _WIN32
 #include <sys/stat.h>
 #include <cstdio>
