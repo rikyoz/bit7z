@@ -1,5 +1,5 @@
 version: 4.0.0-beta-build{build}
-skip_non_tags: true
+# skip_non_tags: true
 clone_depth: 1
 
 image:
@@ -18,7 +18,8 @@ environment:
     flags: -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
-    generator: MinGW Makefiles
+    generator: MinGW Makefile
+    PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\bin;$(PATH)
     
   - compiler: gcc
     generator: Unix Makefiles
@@ -65,7 +66,6 @@ init:
 before_build:
   - sh: arch=$platform
   - cmd: set arch=%platform% # preserving platform value (vcvarsall overwrites it)
-  - cmd: if "%compiler:~0,5%"=="mingw" ( set PATH=%PATH%;C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\bin )
   - git submodule update --init --recursive
   - mkdir build
   - cd build
