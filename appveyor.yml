@@ -7,10 +7,6 @@ image:
   - Visual Studio 2017
   - Visual Studio 2019
   - Ubuntu
-    
-platform:
-  - x86
-  - x64
 
 environment:
   bit7z_version: 4.0.0-beta
@@ -18,24 +14,60 @@ environment:
 
   matrix:
   - compiler: msvc
-    flags: -DBIT7Z_STATIC_RUNTIME=OFF
+    platform: x86
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF -A Win32
+    
+  - compiler: msvc
+    platform: x64
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF -A x64
 
   - compiler: msvc_mt
-    flags: -DBIT7Z_STATIC_RUNTIME=ON
+    platform: x86
+    flags: -DBIT7Z_STATIC_RUNTIME=ON -A Win32
+    
+  - compiler: msvc_mt
+    platform: x64
+    flags: -DBIT7Z_STATIC_RUNTIME=ON -A x64
 
   - compiler: mingw
+    platform: x86
     generator: MinGW Makefiles
     flags:
+    PATH: C:\Qt\Tools\mingw810_32\bin;$(PATH)
+    
+  - compiler: mingw
+    platform: x64
+    generator: MinGW Makefiles
+    flags:
+    PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;$(PATH)
     
   - compiler: gcc
+    platform: x86
     generator: Unix Makefiles
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
+    CXX_FLAGS: -m32
+    
+  - compiler: gcc
+    platform: x64
+    generator: Unix Makefiles
+    CC: /usr/bin/gcc-9
+    CXX: /usr/bin/g++-9
+    CXX_FLAGS: -m64
     
   - compiler: clang
+    platform: x86
     generator: Unix Makefiles
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
+    CXX_FLAGS: -m32
+    
+  - compiler: clang
+    platform: x64
+    generator: Unix Makefiles
+    CC: /usr/bin/clang
+    CXX: /usr/bin/clang++
+    CXX_FLAGS: -m64
 
 matrix:
   # fast_finish: true
@@ -112,10 +144,11 @@ for:
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" (set generator=Visual Studio 16 2019)
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (set generator=Visual Studio 15 2017)
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" (set generator=Visual Studio 14 2015)
-    - if "%platform%"=="x86" (set "PATH=C:\Qt\Tools\mingw810_32;%PATH%") else (set "PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%PATH%")
-    - if "%compiler%"=="mingw" (for /f %%i in ('g++ -dumpversion') do set "tag=mingw%%i_%platform%") else (set "tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%platform%")
-    - if "%platform%"=="x86" (set "generator_platform=Win32") else (set "generator_platform=x64")
-    - if NOT "%compiler%"=="mingw" (set "flags=-A %generator_platform% %flags%")
+    - if "%compiler%"=="mingw" (
+        for /f %%i in ('g++ -dumpversion') do set "tag=mingw%%i_%platform%"
+      ) else (
+        set "tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%platform%"
+      )
 
   before_build:
     - git submodule update --init --recursive
@@ -131,7 +164,6 @@ for:
 
   after_build:
     - cd ..
-    - echo Tag is %tag%
     - mkdir "pkg/bit7z/lib/"
     - mkdir "pkg/bit7z/include/"
     - ps: Copy-Item -Path lib\* -Destination pkg\bit7z\lib\ -Recurse
@@ -141,7 +173,6 @@ for:
     - echo %bit7z_version% %tag% > "pkg/bit7z/BUILD.txt"
     - cd pkg
     - 7z a "bit7z-v%bit7z_version%-%tag%.7z" *
-    - dir .
 
 artifacts:
   - path: pkg\*.7z
