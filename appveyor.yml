@@ -7,32 +7,38 @@ image:
   - Visual Studio 2017
   - Visual Studio 2019
   - Ubuntu
-
-environment:
-  bit7z_version: 4.0.0-beta
-
-  matrix:
-  - compiler: msvc
-
-  - compiler: msvc_mt
-    flags: -DBIT7Z_STATIC_RUNTIME=ON
-
-  - compiler: mingw
-    generator: MinGW Makefile
-    PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\bin;$(PATH)
-    
-  - compiler: gcc
-    generator: Unix Makefiles
-    
-  - compiler: clang
-    generator: Unix Makefiles
     
 platform:
   - x86
   - x64
 
+environment:
+  bit7z_version: 4.0.0-beta
+  APPVEYOR_YML_DISABLE_PS_LINUX: true
+
+  matrix:
+  - compiler: msvc
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF
+
+  - compiler: msvc_mt
+    flags: -DBIT7Z_STATIC_RUNTIME=ON
+
+  - compiler: mingw
+    generator: MinGW Makefiles
+    flags:
+    
+  - compiler: gcc
+    generator: Unix Makefiles
+    CC: /usr/bin/gcc-9
+    CXX: /usr/bin/g++-9
+    
+  - compiler: clang
+    generator: Unix Makefiles
+    CC: /usr/bin/clang
+    CXX: /usr/bin/clang++
+
 matrix:
-  fast_finish: true
+  # fast_finish: true
   
   exclude:
     - image: Visual Studio 2015
@@ -58,61 +64,87 @@ matrix:
     - image: Ubuntu
       compiler: mingw
       
-init:
-  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" ( set generator=Visual Studio 16 2019 )
-  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" ( set generator=Visual Studio 15 2017 )
-  - cmd: if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" ( set generator=Visual Studio 14 2015 )
+for:
+-
+  matrix:
+    only:
+      - image: Ubuntu
 
-before_build:
-  - sh: arch=$platform
-  - cmd: set arch=%platform% # preserving platform value (vcvarsall overwrites it)
-  - git submodule update --init --recursive
-  - mkdir build
-  - cd build
+  init: |-
+    if [ "${compiler}" = "gcc" ];
+    then
+      tag=gcc$(${CXX} --version | grep ^g++ | sed 's/^.* //g')_${PLATFORM}
+    else
+      tag=clang$(${CXX} --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_${PLATFORM}
+    fi
 
-build_script:
-  - cmake .. -G "%generator%" -DCMAKE_BUILD_TYPE=Release %flags%
-  - cmake --build . -j
-  - cmake .. -G "%generator%" -DCMAKE_BUILD_TYPE=Debug %flags%
-  - cmake --build . -j
+  before_build:
+    - git submodule update --init --recursive
+    - mkdir build
+    - cd build
 
-after_build:
-  - cd ..
-  # Windows images
-  - cmd: if "%compiler%"=="mingw" ( 
-            for /f %%i in ('g++ -dumpversion') do set tag=mingw%%i_%arch%
-         ) else (
-            set tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%arch%
-         )
-  - cmd: mkdir "pkg/bit7z/"
-  - cmd: mkdir "pkg/bit7z/lib/"
-  - cmd: mkdir "pkg/bit7z/include/"
-  - cmd: copy lib\%arch%\*.* pkg\bit7z\lib\
-  - cmd: copy include\bit*.hpp pkg\bit7z\include\
-  - cmd: copy README.md pkg\bit7z\
-  - cmd: copy LICENSE pkg\bit7z\
-  # Ubuntu image
-  - sh: if "$compiler"=="gcc" 
-        then 
-          tag=g++$(g++ --version | grep ^g++ | sed 's/^.* //g')_$arch
-        fi
-  - sh: if "$compiler"=="clang"
-        then
-          tag=g++$(clang --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_$arch
-        fi
-  - sh: mkdir -p pkg/bit7z/lib/
-  - sh: mkdir -p pkg/bit7z/include/
-  - sh: cp lib/$arch/*.* pkg/bit7z/lib/
-  - sh: cp include/bit*.hpp pkg/bit7z/include/
-  - sh: cp README.md pkg/bit7z/
-  - sh: cp LICENSE pkg/bit7z/
-  # Packaging
-  - echo %bit7z_version% %tag% > "pkg/bit7z/BUILD.txt"
-  - cd pkg
-  - 7z a -t7z bit7z-v%bit7z_version%-%tag%.7z *
+  build_script:
+    - cmake .. -G "$generator" -DCMAKE_BUILD_TYPE=Release 
+    - cmake --build . -j --config Release
+    - cmake .. -G "$generator" -DCMAKE_BUILD_TYPE=Debug 
+    - cmake --build . -j --config Debug
+
+  after_build:
+    - cd ..
+    - mkdir -p pkg/bit7z/
+    - mkdir -p pkg/bit7z/include/
+    - cp -r lib pkg/bit7z
+    - cp include/bit*.hpp pkg/bit7z/include/
+    - cp README.md pkg/bit7z/
+    - cp LICENSE pkg/bit7z/
+    - echo $bit7z_version $tag > "pkg/bit7z/BUILD.txt"
+    - cd pkg
+    - 7z a -t7z bit7z-v$bit7z_version-$tag.7z *
+
+-
+  matrix:
+    only:
+      - image: Visual Studio 2015
+      - image: Visual Studio 2017
+      - image: Visual Studio 2019
+
+  init:
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" (set generator=Visual Studio 16 2019)
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (set generator=Visual Studio 15 2017)
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" (set generator=Visual Studio 14 2015)
+    - if "%platform%"=="x86" (set "PATH=C:\Qt\Tools\mingw810_32;%PATH%") else (set "PATH=C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;%PATH%")
+    - if "%compiler%"=="mingw" (for /f %%i in ('g++ -dumpversion') do set "tag=mingw%%i_%platform%") else (set "tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%platform%")
+    - if "%platform%"=="x86" (set "generator_platform=Win32") else (set "generator_platform=x64")
+    - if NOT "%compiler%"=="mingw" (set "flags=-A %generator_platform% %flags%")
+
+  before_build:
+    - git submodule update --init --recursive
+    - mkdir build
+    - cd build
+    - if "%compiler%"=="mingw" (rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe")
+
+  build_script:
+    - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Release
+    - cmake --build . -j --config Release 
+    - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Debug
+    - cmake --build . -j --config Debug
+
+  after_build:
+    - cd ..
+    - echo Tag is %tag%
+    - mkdir "pkg/bit7z/lib/"
+    - mkdir "pkg/bit7z/include/"
+    - ps: Copy-Item -Path lib\* -Destination pkg\bit7z\lib\ -Recurse
+    - copy include\bit*.hpp pkg\bit7z\include\
+    - copy README.md pkg\bit7z\
+    - copy LICENSE pkg\bit7z\
+    - echo %bit7z_version% %tag% > "pkg/bit7z/BUILD.txt"
+    - cd pkg
+    - 7z a "bit7z-v%bit7z_version%-%tag%.7z" *
+    - dir .
 
 artifacts:
-  - path: pkg/*.7z
+  - path: pkg\*.7z
     name: binary
 
 test: off

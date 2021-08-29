@@ -292,11 +292,10 @@ if( MSVC )
         target_compile_options( ${TARGET_NAME} PRIVATE /Zc:__cplusplus )
         # treating warnings as errors
         target_compile_options( ${TARGET_NAME} PRIVATE /WX )
+    else() # MSVC < 15.0 (i.e., <= VS 2015)
+        # ignoring C4127 warning
+        target_compile_options( ${TARGET_NAME} PRIVATE /wd4127 )
     endif()
-
-    # enabling multi-threaded compiling
-    set( MSVC_COMPILE_FLAGS "/MP" )
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MSVC_COMPILE_FLAGS}" )
 
     # static runtime option
     option( BIT7Z_STATIC_RUNTIME "Enable or disable using /MT MSVC flag" )
