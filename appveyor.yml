@@ -16,22 +16,18 @@ environment:
   - compiler: msvc
     platform: x86
     flags: -T host=x64 -A Win32 -DBIT7Z_STATIC_RUNTIME=OFF
-    build_flags: -- '/p:RunCodeAnalysis=false'
     
   - compiler: msvc
     platform: x64
     flags: -T host=x64 -A x64 -DBIT7Z_STATIC_RUNTIME=OFF
-    build_flags: -- '/p:RunCodeAnalysis=false'
 
   - compiler: msvc_mt
     platform: x86
     flags: -T host=x64 -A Win32 -DBIT7Z_STATIC_RUNTIME=ON
-    build_flags: -- '/p:RunCodeAnalysis=false'
     
   - compiler: msvc_mt
     platform: x64
     flags: -T host=x64 -A x64 -DBIT7Z_STATIC_RUNTIME=ON
-    build_flags: -- '/p:RunCodeAnalysis=false'
 
   - compiler: mingw
     platform: x86
