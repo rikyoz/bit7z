@@ -15,59 +15,49 @@ environment:
   matrix:
   - compiler: msvc
     arch: x86
-    generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=OFF
     
   - compiler: msvc
     arch: x64
-    generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=OFF
 
   - compiler: msvc_mt
     arch: x86
-    generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=ON
     
   - compiler: msvc_mt
     arch: x64
-    generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
     arch: x86
-    generator: Ninja
     flags:
     PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
     
   - compiler: mingw
     arch: x64
-    generator: Ninja
     flags:
     PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;$(PATH)
     
   - compiler: gcc
     arch: x86
-    generator: Ninja
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
     
   - compiler: gcc
     arch: x64
-    generator: Ninja
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
     
   - compiler: clang
     arch: x86
-    generator: Ninja
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
     
   - compiler: clang
     arch: x64
-    generator: Ninja
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
 
@@ -131,9 +121,9 @@ for:
     - cd build
 
   build_script:
-    - cmake .. -G "$generator" $flags -DCMAKE_BUILD_TYPE=Release 
+    - cmake .. -G "Ninja" $flags -DCMAKE_BUILD_TYPE=Release 
     - cmake --build . -j --config Release
-    - cmake .. -G "$generator" $flags -DCMAKE_BUILD_TYPE=Debug 
+    - cmake .. -G "Ninja" $flags -DCMAKE_BUILD_TYPE=Debug 
     - cmake --build . -j --config Debug
 
   after_build:
@@ -178,9 +168,9 @@ for:
     - if "%compiler%"=="mingw" (rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe")
 
   build_script:
-    - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Release
+    - cmake .. -G "Ninja" %flags% -DCMAKE_BUILD_TYPE=Release
     - cmake --build . -j --config Release
-    - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Debug
+    - cmake .. -G "Ninja" %flags% -DCMAKE_BUILD_TYPE=Debug
     - cmake --build . -j --config Debug
 
   after_build:
