@@ -15,55 +15,59 @@ environment:
   matrix:
   - compiler: msvc
     platform: x86
-    flags: -T host=x64 -A Win32 -DBIT7Z_STATIC_RUNTIME=OFF
+    generator: Ninja
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF
     
   - compiler: msvc
     platform: x64
-    flags: -T host=x64 -A x64 -DBIT7Z_STATIC_RUNTIME=OFF
+    generator: Ninja
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF
 
   - compiler: msvc_mt
     platform: x86
-    flags: -T host=x64 -A Win32 -DBIT7Z_STATIC_RUNTIME=ON
+    generator: Ninja
+    flags: -DBIT7Z_STATIC_RUNTIME=ON
     
   - compiler: msvc_mt
     platform: x64
-    flags: -T host=x64 -A x64 -DBIT7Z_STATIC_RUNTIME=ON
+    generator: Ninja
+    flags: -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
     platform: x86
-    generator: MinGW Makefiles
+    generator: Ninja
     flags:
     PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
     
   - compiler: mingw
     platform: x64
-    generator: MinGW Makefiles
+    generator: Ninja
     flags:
     PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;$(PATH)
     
   - compiler: gcc
     platform: x86
-    generator: Unix Makefiles
+    generator: Ninja
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
     
   - compiler: gcc
     platform: x64
-    generator: Unix Makefiles
+    generator: Ninja
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
     
   - compiler: clang
     platform: x86
-    generator: Unix Makefiles
+    generator: Ninja
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
     
   - compiler: clang
     platform: x64
-    generator: Unix Makefiles
+    generator: Ninja
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
 
@@ -152,9 +156,15 @@ for:
       - image: Visual Studio 2019
 
   init:
-    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if NOT "%compiler%"=="mingw" (set generator=Visual Studio 16 2019)
-    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (set generator=Visual Studio 15 2017)
-    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" (set generator=Visual Studio 14 2015)
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if NOT "%compiler%"=="mingw" (
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %platform:x86=amd64_x86%
+      )
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %platform:x86=amd64_x86%
+      )
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" (
+        call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %platform:x86=amd64_x86%
+      )
     - if "%compiler%"=="mingw" (
         for /f %%i in ('g++ -dumpversion') do set "tag=mingw%%i_%platform%"
       ) else (
