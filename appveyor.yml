@@ -15,19 +15,19 @@ environment:
   matrix:
   - compiler: msvc
     arch: x86
-    flags: -DBIT7Z_STATIC_RUNTIME=OFF
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
     
   - compiler: msvc
     arch: x64
-    flags: -DBIT7Z_STATIC_RUNTIME=OFF
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
 
   - compiler: msvc_mt
     arch: x86
-    flags: -DBIT7Z_STATIC_RUNTIME=ON
+    flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
     
   - compiler: msvc_mt
     arch: x64
-    flags: -DBIT7Z_STATIC_RUNTIME=ON
+    flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
 
   - compiler: mingw
     arch: x86
