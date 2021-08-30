@@ -29,9 +29,12 @@
 #include <cctype>
 #endif
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
-#include "internal/guiddef.hpp"
 #include "internal/fsutil.hpp"
+#ifndef _WIN32
+#include "internal/guiddef.hpp"
+#endif
 
 #include <7zip/IStream.h>
 

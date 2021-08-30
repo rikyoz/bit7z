@@ -22,7 +22,7 @@
 #include <vector>
 #include <system_error>
 
-#include "biterror.hpp"
+#include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 

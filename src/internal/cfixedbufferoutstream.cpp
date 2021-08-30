@@ -24,6 +24,7 @@
 #include <cstdint>
 #include <algorithm> //for std::copy_n
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 
 using namespace bit7z;

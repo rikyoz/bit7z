@@ -20,9 +20,9 @@
 #define BITEXTRACTOR_HPP
 
 #include "bitabstractarchiveopener.hpp"
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
-#include "bittypes.hpp"
 
 namespace bit7z {
     namespace filesystem {

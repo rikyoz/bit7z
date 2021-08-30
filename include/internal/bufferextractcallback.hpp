@@ -22,7 +22,6 @@
 #include <vector>
 #include <map>
 
-#include "bittypes.hpp"
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {

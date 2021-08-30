@@ -60,7 +60,6 @@ environment:
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
-    CXX_FLAGS: -m32
     
   - compiler: clang
     platform: x64

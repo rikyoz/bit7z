@@ -22,7 +22,7 @@
 #include "bitformat.hpp"
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <guiddef.h>
 #else
 
 #ifndef GUID_DEFINED

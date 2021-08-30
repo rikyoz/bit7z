@@ -20,10 +20,8 @@
 #define CBUFFEROUTSTREAM_HPP
 
 #include "bittypes.hpp"
-#include "internal/guiddef.hpp"
 #include "internal/guids.hpp"
 #include "internal/util.hpp"
-#include "internal/windows.hpp"
 
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>

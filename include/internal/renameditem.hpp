@@ -20,7 +20,6 @@
 #define RENAMEDITEM_HPP
 
 #include "bitinputarchive.hpp"
-#include "bittypes.hpp"
 #include "internal/genericinputitem.hpp"
 
 namespace bit7z {

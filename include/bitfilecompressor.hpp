@@ -19,10 +19,9 @@
 #ifndef BITFILECOMPRESSOR_HPP
 #define BITFILECOMPRESSOR_HPP
 
-#include <string>
-#include <vector>
-#include <ostream>
 #include <map>
+#include <ostream>
+#include <vector>
 
 #include "bitcompressor.hpp"
 

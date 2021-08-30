@@ -18,18 +18,12 @@
 #ifndef BITINPUTARCHIVE_HPP
 #define BITINPUTARCHIVE_HPP
 
-#include <vector>
-#include <string>
-#include <cstdint>
 #include <array>
+#include <map>
 
 #include "bitabstractarchivehandler.hpp"
-#include "bitarchiveiteminfo.hpp"
 #include "bitarchiveitemoffset.hpp"
-#include "bitexception.hpp"
 #include "bitformat.hpp"
-#include "bitpropvariant.hpp"
-#include "bittypes.hpp"
 
 struct IInStream;
 struct IInArchive;
@@ -124,7 +118,7 @@ namespace bit7z {
 
             void extract( std::ostream& out_stream, uint32_t index = 0 ) const;
 
-            void extract( map< tstring, vector< byte_t > >& out_map ) const;
+            void extract( std::map< tstring, vector< byte_t > >& out_map ) const;
 
             void test() const;
 

@@ -19,11 +19,7 @@
 #ifndef GUIDS_HPP
 #define GUIDS_HPP
 
-#ifdef _WIN32
-#include <guiddef.h>
-#else
 #include "internal/guiddef.hpp"
-#endif
 
 namespace bit7z {
     extern "C" {

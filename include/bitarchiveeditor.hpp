@@ -22,7 +22,6 @@
 #include <unordered_map>
 
 #include "bitarchivewriter.hpp"
-#include "bittypes.hpp"
 
 namespace bit7z {
     using std::vector;

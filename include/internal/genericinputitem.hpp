@@ -21,8 +21,6 @@
 
 #include <cstdint>
 
-#include "bitdefines.hpp"
-#include "bitpropvariant.hpp"
 #include "bitgenericitem.hpp"
 #include "internal/fs.hpp"
 

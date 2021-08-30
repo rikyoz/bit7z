@@ -20,7 +20,6 @@
 #define BITFILEEXTRACTOR_HPP
 
 #include "bitextractor.hpp"
-#include "bittypes.hpp"
 
 namespace bit7z {
     /**

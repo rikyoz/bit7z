@@ -25,6 +25,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/fsutil.hpp"
 
 using bit7z::tstring;
 using bit7z::BitPropVariant;

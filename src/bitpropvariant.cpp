@@ -22,6 +22,7 @@
 #include "bitpropvariant.hpp"
 
 #include "bitexception.hpp"
+#include "biterror.hpp"
 
 #ifdef _WIN32
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )

@@ -22,7 +22,6 @@
 #include "bitinputarchive.hpp"
 #include "internal/callback.hpp"
 #include "internal/util.hpp"
-#include "internal/windows.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>

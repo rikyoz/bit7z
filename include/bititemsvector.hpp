@@ -19,11 +19,9 @@
 #ifndef BITITEMSVECTOR_HPP
 #define BITITEMSVECTOR_HPP
 
-#include <vector>
 #include <map>
 #include <memory>
 
-#include "bitdefines.hpp"
 #include "bitfs.hpp"
 #include "bittypes.hpp"
 

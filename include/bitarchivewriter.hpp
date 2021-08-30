@@ -19,9 +19,7 @@
 #ifndef BITARCHIVEWRITER_HPP
 #define BITARCHIVEWRITER_HPP
 
-#include "bitabstractarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
-#include "bittypes.hpp"
 
 namespace bit7z {
     class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchive {

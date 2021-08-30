@@ -23,7 +23,6 @@
 #include <string>
 
 #include "bitdefines.hpp"
-#include "bittypes.hpp"
 
 namespace bit7z {
 

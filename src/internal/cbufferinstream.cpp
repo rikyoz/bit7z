@@ -25,7 +25,6 @@
 #pragma warning(disable:4996)
 #endif
 
-#include "internal/guiddef.hpp"
 #include "internal/cbufferinstream.hpp"
 
 #include <algorithm> //for std::copy_n

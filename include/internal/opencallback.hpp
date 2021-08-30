@@ -22,10 +22,7 @@
 #include "bitabstractarchivehandler.hpp"
 #include "internal/callback.hpp"
 #include "internal/fsitem.hpp"
-#include "internal/guiddef.hpp"
-#include "internal/guids.hpp"
 #include "internal/util.hpp"
-#include "internal/windows.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/IPassword.h>

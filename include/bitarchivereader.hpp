@@ -19,10 +19,9 @@
 #ifndef BITARCHIVEREADER_HPP
 #define BITARCHIVEREADER_HPP
 
-#include "bitarchiveiteminfo.hpp"
 #include "bitabstractarchiveopener.hpp"
+#include "bitarchiveiteminfo.hpp"
 #include "bitinputarchive.hpp"
-#include "bittypes.hpp"
 
 struct IInArchive;
 struct IOutArchive;

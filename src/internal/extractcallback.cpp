@@ -112,7 +112,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    wstring pass;
+    std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         // You can ask real password here from user
         // Password = GetPassword(OutStream);

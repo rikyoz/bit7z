@@ -23,7 +23,6 @@
 #include <string>
 #include <cstdint>
 
-#include "bitwindows.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/cfileoutstream.hpp"
 

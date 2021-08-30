@@ -21,6 +21,7 @@
 
 #include "bitabstractarchivecreator.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 
 using namespace bit7z;

@@ -23,7 +23,6 @@
 
 #include "bitabstractarchivehandler.hpp"
 #include "internal/guids.hpp"
-#include "internal/windows.hpp"
 
 #include <Common/MyCom.h>
 

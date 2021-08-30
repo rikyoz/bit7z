@@ -22,6 +22,7 @@
 #include "internal/fsindexer.hpp"
 
 #include "bitexception.hpp"
+#include "internal/fsutil.hpp"
 
 using bit7z::GenericInputItem;
 using bit7z::tstring;

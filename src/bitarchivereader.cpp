@@ -24,8 +24,6 @@
 #include <algorithm>
 #include <numeric>
 
-#include "internal/windows.hpp"
-
 #include <7zip/PropID.h>
 
 using namespace bit7z;

@@ -23,8 +23,8 @@
 #include <set>
 
 #include "bitabstractarchivecreator.hpp"
-#include "bitexception.hpp"
 #include "bititemsvector.hpp"
+#include "bitexception.hpp" //for FailedFiles
 #include "bitpropvariant.hpp"
 
 struct ISequentialInStream;

@@ -24,9 +24,7 @@
 
 #include <vector>
 
-#include "bitabstractarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
-#include "bittypes.hpp"
 
 namespace bit7z {
     using std::vector;

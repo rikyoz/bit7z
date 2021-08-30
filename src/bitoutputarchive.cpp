@@ -21,18 +21,20 @@
 
 #include "bitoutputarchive.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivoloutstream.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
 
-using bit7z::BitException;
-using bit7z::BitOutputArchive;
 using bit7z::BitAbstractArchiveCreator;
 using bit7z::BitAbstractArchiveHandler;
-using bit7z::BitPropVariant;
+using bit7z::BitError;
+using bit7z::BitException;
+using bit7z::BitOutputArchive;
 using bit7z::BitProperty;
+using bit7z::BitPropVariant;
 using bit7z::UpdateCallback;
 using bit7z::byte_t;
 using bit7z::tstring;

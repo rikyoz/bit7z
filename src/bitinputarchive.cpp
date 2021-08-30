@@ -21,6 +21,7 @@
 
 #include "bitinputarchive.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/bufferextractcallback.hpp"
 #include "internal/cbufferinstream.hpp"

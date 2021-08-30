@@ -21,6 +21,7 @@
 
 #include "bitfilecompressor.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitoutputarchive.hpp"
 #include "internal/updatecallback.hpp" //for exception strings
