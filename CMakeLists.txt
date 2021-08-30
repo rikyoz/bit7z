@@ -152,14 +152,16 @@ if( NOT CMAKE_BUILD_TYPE )
 endif()
 
 # per-architecture options
+set( ARCH_POSTFIX "" )
 if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( ARCH_POSTFIX 64 )
     set( ARCH_DIR "x64" )
     if( WIN32 )
         add_definitions( -DWIN64 )
     endif()
+    if( NOT CMAKE_GENERATOR MATCHES "Visual Studio" )
+        set( ARCH_POSTFIX 64 )
+    endif()
 else()
-    set( ARCH_POSTFIX "" )
     set( ARCH_DIR "x86" )
 endif()
 
@@ -271,7 +273,7 @@ if( MSVC )
     target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Gy>" )
 
     option( BIT7Z_ANALYZE_CODE "Enable or disable code analysis" )
-    message( STATUS "Static runtime: ${BIT7Z_ANALYZE_CODE}" )
+    message( STATUS "Code analysis: ${BIT7Z_ANALYZE_CODE}" )
     if( BIT7Z_ANALYZE_CODE )
         target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/analyze>" )
     endif()
@@ -290,7 +292,7 @@ if( MSVC )
                             /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
 
     if( CMAKE_GENERATOR MATCHES "Visual Studio" )
-        target_compile_options( ${TARGET_NAME} PRIVATE /MP )
+        target_compile_options( ${TARGET_NAME} PRIVATE /MP$ENV{NUMBER_OF_PROCESSORS} )
     endif()
 
     # linker flags
