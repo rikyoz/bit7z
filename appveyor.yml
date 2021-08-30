@@ -118,7 +118,7 @@ for:
     if [ "${platform}" = "x86" ];
     then
       sudo apt-get update;
-      sudo apt-get install -y g++-multilib;
+      sudo apt-get install -y g++-9-multilib;
     fi
 
   before_build:
