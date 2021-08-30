@@ -289,6 +289,10 @@ if( MSVC )
     target_compile_options( ${TARGET_NAME} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
                             /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
 
+    if( CMAKE_GENERATOR MATCHES "Visual Studio" )
+        target_compile_options( ${TARGET_NAME} PRIVATE /MP )
+    endif()
+
     # linker flags
     set( CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /nologo" )
 
