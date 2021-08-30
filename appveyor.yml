@@ -15,25 +15,25 @@ environment:
   matrix:
   - compiler: msvc
     platform: x86
-    flags: -DBIT7Z_STATIC_RUNTIME=OFF -A Win32
+    flags: -A Win32 -DBIT7Z_STATIC_RUNTIME=OFF
     
   - compiler: msvc
     platform: x64
-    flags: -DBIT7Z_STATIC_RUNTIME=OFF -A x64
+    flags: -A x64 -DBIT7Z_STATIC_RUNTIME=OFF
 
   - compiler: msvc_mt
     platform: x86
-    flags: -DBIT7Z_STATIC_RUNTIME=ON -A Win32
+    flags: -A Win32 -DBIT7Z_STATIC_RUNTIME=ON
     
   - compiler: msvc_mt
     platform: x64
-    flags: -DBIT7Z_STATIC_RUNTIME=ON -A x64
+    flags: -A x64 -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
     platform: x86
     generator: MinGW Makefiles
     flags:
-    PATH: C:\Qt\Tools\mingw810_32\bin;$(PATH)
+    PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
     
   - compiler: mingw
     platform: x64
@@ -44,20 +44,20 @@ environment:
   - compiler: gcc
     platform: x86
     generator: Unix Makefiles
+    flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
-    CXX_FLAGS: -m32
     
   - compiler: gcc
     platform: x64
     generator: Unix Makefiles
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
-    CXX_FLAGS: -m64
     
   - compiler: clang
     platform: x86
     generator: Unix Makefiles
+    flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
     CXX_FLAGS: -m32
@@ -67,24 +67,31 @@ environment:
     generator: Unix Makefiles
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
-    CXX_FLAGS: -m64
 
 matrix:
   # fast_finish: true
   
   exclude:
     - image: Visual Studio 2015
+      compiler: mingw
+      platform: x86
+    - image: Visual Studio 2015
       compiler: gcc
     - image: Visual Studio 2015
       compiler: clang
     - image: Visual Studio 2017
       compiler: mingw
+      platform: x86
+    - image: Visual Studio 2017
+      compiler: mingw
+      platform: x64
     - image: Visual Studio 2017
       compiler: gcc
     - image: Visual Studio 2017
       compiler: clang
     - image: Visual Studio 2019
       compiler: mingw
+      platform: x64
     - image: Visual Studio 2019
       compiler: gcc
     - image: Visual Studio 2019
