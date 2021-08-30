@@ -32,7 +32,7 @@ environment:
   - compiler: mingw
     platform: x86
     generator: MinGW Makefiles
-    flags: -DCMAKE_MAKE_PROGRAM=mingw32-make
+    flags:
     PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
     
   - compiler: mingw
@@ -111,9 +111,14 @@ for:
   init: |-
     if [ "${compiler}" = "gcc" ];
     then
-      tag=gcc$(${CXX} --version | grep ^g++ | sed 's/^.* //g')_${PLATFORM}
+      tag=gcc$(${CXX} --version | grep ^g++ | sed 's/^.* //g')_${platform}
     else
-      tag=clang$(${CXX} --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_${PLATFORM}
+      tag=clang$(${CXX} --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_${platform}
+    fi
+    if [ "${platform}" = "x86" ];
+    then
+      sudo apt-get update;
+      sudo apt-get install -y g++-multilib;
     fi
 
   before_build:
@@ -147,7 +152,7 @@ for:
       - image: Visual Studio 2019
 
   init:
-    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" (set generator=Visual Studio 16 2019)
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if NOT "%compiler%"=="mingw" (set generator=Visual Studio 16 2019)
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (set generator=Visual Studio 15 2017)
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" (set generator=Visual Studio 14 2015)
     - if "%compiler%"=="mingw" (
