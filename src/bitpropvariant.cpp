@@ -62,7 +62,7 @@ BitPropVariantType lookupType( VARTYPE type ) {
         case VT_I8:
             return BitPropVariantType::Int64;
         case VT_FILETIME:
-            return BitPropVariantType::Filetime;
+            return BitPropVariantType::FileTime;
         default:
             // this is very unlikely to happen:
             // properties types used in archives are the ones supported by PropertyType enum class

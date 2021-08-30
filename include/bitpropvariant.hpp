@@ -137,7 +137,7 @@ namespace bit7z {
         Int16,      ///< 16-bit signed int BitPropVariant type
         Int32,      ///< 32-bit signed int BitPropVariant type
         Int64,      ///< 64-bit signed int BitPropVariant type
-        Filetime    ///< FILETIME BitPropVariant type
+        FileTime    ///< FILETIME BitPropVariant type
     };
 
     /**

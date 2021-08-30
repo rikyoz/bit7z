@@ -122,7 +122,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
         case BitPropVariantType::Empty:
             break;
 
-        case BitPropVariantType::Filetime:
+        case BitPropVariantType::FileTime:
             mProcessedFileInfo.MTime = prop3.getFileTime();
             mProcessedFileInfo.MTimeDefined = true;
             break;
