@@ -32,10 +32,9 @@ environment:
   - compiler: mingw
     platform: x86
     generator: MinGW Makefiles
-    flags:
+    flags: -DCMAKE_MAKE_PROGRAM=mingw32-make
     build_flags:
     PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
-    MAKE: mingw32-make
     
   - compiler: mingw
     platform: x64
@@ -125,9 +124,9 @@ for:
     - cd build
 
   build_script:
-    - cmake .. -G "$generator" -DCMAKE_BUILD_TYPE=Release 
+    - cmake .. -G "$generator" $flags -DCMAKE_BUILD_TYPE=Release 
     - cmake --build . -j --config Release
-    - cmake .. -G "$generator" -DCMAKE_BUILD_TYPE=Debug 
+    - cmake .. -G "$generator" $flags -DCMAKE_BUILD_TYPE=Debug 
     - cmake --build . -j --config Debug
 
   after_build:
@@ -167,9 +166,9 @@ for:
 
   build_script:
     - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . -j -v --config Release %build_flags%
+    - cmake --build . -j --config Release %build_flags%
     - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Debug
-    - cmake --build . -j -v --config Debug %build_flags%
+    - cmake --build . -j --config Debug %build_flags%
 
   after_build:
     - cd ..
