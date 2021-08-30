@@ -15,30 +15,36 @@ environment:
   matrix:
   - compiler: msvc
     platform: x86
-    flags: -A Win32 -DBIT7Z_STATIC_RUNTIME=OFF
+    flags: -T x64 -A Win32 -DBIT7Z_STATIC_RUNTIME=OFF
+    build_flags: -- '/p:RunCodeAnalysis=false,RunCodeAnalysisOnThisProject=false'
     
   - compiler: msvc
     platform: x64
-    flags: -A x64 -DBIT7Z_STATIC_RUNTIME=OFF
+    flags: -T x64 -A x64 -DBIT7Z_STATIC_RUNTIME=OFF
+    build_flags: -- '/p:RunCodeAnalysis=false,RunCodeAnalysisOnThisProject=false'
 
   - compiler: msvc_mt
     platform: x86
-    flags: -A Win32 -DBIT7Z_STATIC_RUNTIME=ON
+    flags: -T x64 -A Win32 -DBIT7Z_STATIC_RUNTIME=ON
+    build_flags: -- '/p:RunCodeAnalysis=false,RunCodeAnalysisOnThisProject=false'
     
   - compiler: msvc_mt
     platform: x64
-    flags: -A x64 -DBIT7Z_STATIC_RUNTIME=ON
+    flags: -T x64 -A x64 -DBIT7Z_STATIC_RUNTIME=ON
+    build_flags: -- '/p:RunCodeAnalysis=false,RunCodeAnalysisOnThisProject=false'
 
   - compiler: mingw
     platform: x86
     generator: MinGW Makefiles
     flags:
+    build_flags:
     PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
     
   - compiler: mingw
     platform: x64
     generator: MinGW Makefiles
     flags:
+    build_flags:
     PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;$(PATH)
     
   - compiler: gcc
@@ -163,10 +169,11 @@ for:
     - if "%compiler%"=="mingw" (rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe")
 
   build_script:
+    - echo cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Release
     - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . -j --config Release 
+    - cmake --build . -j -v --config Release %build_flags%
     - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Debug
-    - cmake --build . -j --config Debug
+    - cmake --build . -j -v --config Debug %build_flags%
 
   after_build:
     - cd ..
