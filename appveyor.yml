@@ -14,59 +14,59 @@ environment:
 
   matrix:
   - compiler: msvc
-    platform: x86
+    arch: x86
     generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=OFF
     
   - compiler: msvc
-    platform: x64
+    arch: x64
     generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=OFF
 
   - compiler: msvc_mt
-    platform: x86
+    arch: x86
     generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=ON
     
   - compiler: msvc_mt
-    platform: x64
+    arch: x64
     generator: Ninja
     flags: -DBIT7Z_STATIC_RUNTIME=ON
 
   - compiler: mingw
-    platform: x86
+    arch: x86
     generator: Ninja
     flags:
     PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
     
   - compiler: mingw
-    platform: x64
+    arch: x64
     generator: Ninja
     flags:
     PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;$(PATH)
     
   - compiler: gcc
-    platform: x86
+    arch: x86
     generator: Ninja
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
     
   - compiler: gcc
-    platform: x64
+    arch: x64
     generator: Ninja
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
     
   - compiler: clang
-    platform: x86
+    arch: x86
     generator: Ninja
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
     
   - compiler: clang
-    platform: x64
+    arch: x64
     generator: Ninja
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
@@ -77,24 +77,24 @@ matrix:
   exclude:
     - image: Visual Studio 2015
       compiler: mingw
-      platform: x86
+      arch: x86
     - image: Visual Studio 2015
       compiler: gcc
     - image: Visual Studio 2015
       compiler: clang
     - image: Visual Studio 2017
       compiler: mingw
-      platform: x86
+      arch: x86
     - image: Visual Studio 2017
       compiler: mingw
-      platform: x64
+      arch: x64
     - image: Visual Studio 2017
       compiler: gcc
     - image: Visual Studio 2017
       compiler: clang
     - image: Visual Studio 2019
       compiler: mingw
-      platform: x64
+      arch: x64
     - image: Visual Studio 2019
       compiler: gcc
     - image: Visual Studio 2019
@@ -115,11 +115,11 @@ for:
   init: |-
     if [ "${compiler}" = "gcc" ];
     then
-      tag=gcc$(${CXX} --version | grep ^g++ | sed 's/^.* //g')_${platform}
+      tag=gcc$(${CXX} --version | grep ^g++ | sed 's/^.* //g')_${arch}
     else
-      tag=clang$(${CXX} --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_${platform}
+      tag=clang$(${CXX} --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_${arch}
     fi
-    if [ "${platform}" = "x86" ];
+    if [ "${arch}" = "x86" ];
     then
       sudo apt-get update;
       sudo apt-get install -y g++-9-multilib;
@@ -157,18 +157,18 @@ for:
 
   init:
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if NOT "%compiler%"=="mingw" (
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %platform:x86=amd64_x86%
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch:x86=amd64_x86%
       )
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %platform:x86=amd64_x86%
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch:x86=amd64_x86%
       )
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2015" if NOT "%compiler%"=="mingw" (
-        call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %platform:x86=amd64_x86%
+        call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %arch:x86=amd64_x86%
       )
     - if "%compiler%"=="mingw" (
-        for /f %%i in ('g++ -dumpversion') do set "tag=mingw%%i_%platform%"
+        for /f %%i in ('g++ -dumpversion') do set "tag=mingw%%i_%arch%"
       ) else (
-        set "tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%platform%"
+        set "tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%arch%"
       )
 
   before_build:
@@ -179,9 +179,9 @@ for:
 
   build_script:
     - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . -j -v --config Release
+    - cmake --build . -j --config Release
     - cmake .. -G "%generator%" %flags% -DCMAKE_BUILD_TYPE=Debug
-    - cmake --build . -j -v --config Debug
+    - cmake --build . -j --config Debug
 
   after_build:
     - cd ..
