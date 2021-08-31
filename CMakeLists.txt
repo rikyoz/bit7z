@@ -1,4 +1,4 @@
-cmake_minimum_required( VERSION 3.8.2 )
+cmake_minimum_required( VERSION 3.9 )
 
 project( bit7z
          VERSION 4.0.0
@@ -160,19 +160,19 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     if( WIN32 )
         add_definitions( -DWIN64 )
     endif()
-    if( NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
+    if( NOT GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
         set( ARCH_POSTFIX 64 )
     endif()
 else()
     set( ARCH_DIR "x86" )
 endif()
 
-if( NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
+if( NOT GENERATOR_IS_MULTI_CONFIG AND BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
     # forcing output directory to ${BIT7Z_DIR}/lib/${ARCH_DIR}/${CMAKE_BUILD_TYPE} (e.g. ./lib/x64/Release)
     set( OUTPUT_DIR lib/${ARCH_DIR}/${CMAKE_BUILD_TYPE}/ )
 else()
     # forcing output directory to ${BIT7Z_DIR}/lib/${ARCH_DIR}/ (e.g. ./lib/x64/)
-    # Note: Visual Studio appends ${CMAKE_BUILD_TYPE} to ${OUTPUT_DIR}.
+    # Note: Visual Studio will append ${CMAKE_BUILD_TYPE} to ${OUTPUT_DIR}.
     set( OUTPUT_DIR lib/${ARCH_DIR}/ )
 endif()
 
@@ -181,7 +181,7 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
 
-if( NOT CMAKE_GENERATOR MATCHES "Visual Studio" AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
+if( NOT GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
     # debug library file name must end with "_d" (e.g. bit7z_d.lib)
     set( CMAKE_DEBUG_POSTFIX "_d" )
 endif()
