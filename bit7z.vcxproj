@@ -59,7 +59,7 @@
     <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
     <CharacterSet>NotSet</CharacterSet>
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <IntermediateDirectory>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
+    <IntermediateDirectory>$(ProjectDir)build\vstudio\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
     <PrimaryOutput>bit7z64</PrimaryOutput>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -67,7 +67,7 @@
     <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
     <CharacterSet>NotSet</CharacterSet>
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <IntermediateDirectory>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
+    <IntermediateDirectory>$(ProjectDir)build\vstudio\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
     <PrimaryOutput>bit7z</PrimaryOutput>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -75,7 +75,7 @@
     <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
     <CharacterSet>NotSet</CharacterSet>
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <IntermediateDirectory>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
+    <IntermediateDirectory>$(ProjectDir)build\vstudio\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
     <PrimaryOutput>bit7z64_d</PrimaryOutput>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -83,7 +83,7 @@
     <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
     <CharacterSet>NotSet</CharacterSet>
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <IntermediateDirectory>$(ProjectDir)build\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
+    <IntermediateDirectory>$(ProjectDir)build\vstudio\$(PlatformTarget)\$(Configuration)\.obj\</IntermediateDirectory>
     <PrimaryOutput>bit7z_d</PrimaryOutput>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -104,8 +104,7 @@
   <PropertyGroup>
     <OutDir>$(ProjectDir)lib\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\vstudio\$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName Condition="'$(Platform)'=='x64'">bit7z64</TargetName>
-    <TargetName Condition="'$(Platform)'=='Win32'">bit7z</TargetName>
+    <TargetName>bit7z</TargetName>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -168,7 +167,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_7Z_VOL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -190,7 +189,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_7Z_VOL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -203,7 +202,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_7Z_VOL;BIT7Z_AUTO_FORMAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;BIT7Z_AUTO_FORMAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -224,7 +223,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_7Z_VOL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -258,7 +257,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_7Z_VOL;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;_UNICODE;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
