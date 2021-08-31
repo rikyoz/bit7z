@@ -1,5 +1,5 @@
 version: 4.0.0-beta-build{build}
-# skip_non_tags: true
+skip_non_tags: true
 clone_depth: 1
 
 image:
@@ -62,7 +62,7 @@ environment:
     CXX: /usr/bin/clang++
 
 matrix:
-  # fast_finish: true
+  fast_finish: true
   
   exclude:
     - image: Visual Studio 2015
