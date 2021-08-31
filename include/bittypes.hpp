@@ -30,10 +30,14 @@ namespace bit7z {
     /**
      * @brief A type representing a byte (equivalent to an unsigned char).
      */
+#ifdef BIT7Z_USE_STD_BYTE
 #if __cpp_lib_byte
     using byte_t = std::byte;
 #else
     enum class byte_t : unsigned char {}; //same as std::byte_t
+#endif
+#else
+    using byte_t = unsigned char;
 #endif
 
     using buffer_t = std::vector< byte_t >;

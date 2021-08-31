@@ -257,6 +257,12 @@ if( BIT7Z_REGEX_MATCHING )
     target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_REGEX_MATCHING )
 endif()
 
+option( BIT7Z_USE_STD_BYTE "Enable or disable using type safe byte type (like std::byte) for buffers" )
+message( STATUS "Use std::byte: ${BIT7Z_USE_STD_BYTE}" )
+if( BIT7Z_USE_STD_BYTE )
+    target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_USE_STD_BYTE )
+endif()
+
 # includes
 target_include_directories( ${TARGET_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/ )
 target_include_directories( ${TARGET_NAME} PRIVATE
