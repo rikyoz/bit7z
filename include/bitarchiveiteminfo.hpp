@@ -28,7 +28,7 @@ namespace bit7z {
     using std::map;
 
     /**
-     * @brief The BitArchiveItem class represents an item contained in an archive and contains all its properties.
+     * @brief Class that represents an archived item and that stores all its properties for later use.
      */
     class BitArchiveItemInfo : public BitArchiveItem {
         public:

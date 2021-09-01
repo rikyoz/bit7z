@@ -28,8 +28,21 @@ namespace bit7z {
 
     using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
 
+    /**
+     * @brief Class that allows to create new file archives or update old ones.
+     *        Update operations supported are the addition of new items,
+     *        as well as renaming/updating/deleting old items;
+     */
     class BitArchiveEditor : public BitArchiveWriter {
         public:
+            /**
+             * @brief Constructs a BitArchiveEditor object, reading the given archive file path.
+             *
+             * @param lib      the 7z library to use.
+             * @param in_file  the path to an input archive file.
+             * @param format   the input/output archive format.
+             * @param password (optional) the password needed to read the input archive.
+             */
             BitArchiveEditor( const Bit7zLibrary& lib,
                               const tstring& in_file,
                               const BitInOutFormat& format,
@@ -45,28 +58,96 @@ namespace bit7z {
 
             ~BitArchiveEditor() override;
 
-            void setUpdateMode( UpdateMode update_mode ) override;
+            /**
+             * @brief Sets how the editor performs the update of the items in the archive.
+             *
+             * @note BitArchiveEditor doesn't support UpdateMode::None.
+             *
+             * @param mode the desired update mode.
+             */
+            void setUpdateMode( UpdateMode mode ) override;
 
+            /**
+             * @brief Sets a new path for the item at the specified index.
+             *
+             * @param index    the index of the item to be renamed.
+             * @param new_path the new path (in the archive) desired for the item.
+             */
             void renameItem( uint32_t index, const tstring& new_path );
 
+            /**
+             * @brief Sets a new path for the item having the given old_path.
+             *
+             * @param old_path the old path (in the archive) of the item to be renamed.
+             * @param new_path the new path (in the archive) desired for the item.
+             */
             void renameItem( const tstring& old_path, const tstring& new_path );
 
+            /**
+             * @brief Updates the content of the item at the specified index with the data from the given file.
+             *
+             * @param index    the index of the item to be updated.
+             * @param in_file  the path to the file containing the new data for the item.
+             */
             void updateItem( uint32_t index, const tstring& in_file );
 
+            /**
+             * @brief Updates the content of the item at the specified index with the data from the given buffer.
+             *
+             * @param index     the index of the item to be updated.
+             * @param in_buffer the buffer containing the new data for the item.
+             */
             void updateItem( uint32_t index, const vector< byte_t >& in_buffer );
 
+            /**
+             * @brief Updates the content of the item at the specified index with the data from the given stream.
+             *
+             * @param index     the index of the item to be updated.
+             * @param in_stream the stream of new data for the item.
+             */
             void updateItem( uint32_t index, istream& in_stream );
 
+            /**
+             * @brief Updates the content of the item at the specified path with the data from the given file.
+             *
+             * @param item_path the path (in the archive) of the item to be updated.
+             * @param in_file   the path to the file containing the new data for the item.
+             */
             void updateItem( const tstring& item_path, const tstring& in_file );
 
+            /**
+             * @brief Updates the content of the item at the specified path with the data from the given buffer.
+             *
+             * @param item_path the path (in the archive) of the item to be updated.
+             * @param in_buffer the buffer containing the new data for the item.
+             */
             void updateItem( const tstring& item_path, const vector< byte_t >& in_buffer );
 
+            /**
+             * @brief Updates the content of the item at the specified path with the data from the given stream.
+             *
+             * @param item_path the path (in the archive) of the item to be updated.
+             * @param in_stream the stream of new data for the item.
+             */
             void updateItem( const tstring& item_path, istream& in_stream );
 
+            /**
+             * @brief Marks the item at the given index as deleted.
+             *
+             * @param index
+             */
             void deleteItem( uint32_t index );
 
+            /**
+             * @brief Marks the item at the given path (in the archive) as deleted.
+             *
+             * @param item_path
+             */
             void deleteItem( const tstring& item_path );
 
+            /**
+             * @brief Applies the requested changes (i.e., rename/update/delete operations) to the input archive.
+             */
             void applyChanges();
 
         private:

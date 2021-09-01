@@ -24,6 +24,9 @@
 #include "bitdefines.hpp"
 
 namespace bit7z {
+    /**
+     * @brief Enum struct whose elements represent bit7z specific errors.
+     */
     enum struct BitError {
         Fail = 1,
         FilterNotSpecified,

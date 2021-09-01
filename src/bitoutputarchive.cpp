@@ -97,7 +97,7 @@ void BitOutputArchive::addFiles( const std::vector< tstring >& in_files ) {
     mNewItemsVector.indexPaths( in_files, true );
 }
 
-void BitOutputArchive::addFiles( const tstring& in_dir, bool recursive, const tstring& filter ) {
+void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, bool recursive ) {
     mNewItemsVector.indexDirectory( in_dir, filter, recursive );
 }
 

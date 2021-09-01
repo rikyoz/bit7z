@@ -54,7 +54,7 @@ namespace bit7z {
     }
 
     /**
-     * @brief The BitInFormat class specifies an extractable archive format.
+     * @brief Class that specifies an extractable archive format.
      *
      * @note Usually, the user of the library should not create new formats and, instead,
      * use the ones provided by the BitFormat namespace.
@@ -99,7 +99,7 @@ namespace bit7z {
     };
 
     /**
-     * @brief The BitInOutFormat class specifies a format available for creating new archives and extract old ones
+     * @brief Class that specifies a format available for creating new archives and extract old ones
      *
      * @note Usually, the user of the library should not create new formats and, instead,
      * use the ones provided by the BitFormat namespace
@@ -159,7 +159,7 @@ namespace bit7z {
     };
 
     /**
-     * @brief The namespace BitFormat contains a set of archive formats usable with bit7z classes
+     * @brief The namespace that contains a set of archive formats usable with bit7z classes
      */
     namespace BitFormat {
 #ifdef __cpp_inline_variables
@@ -298,9 +298,9 @@ namespace bit7z {
 
 
 #ifdef BIT7Z_AUTO_FORMAT
-#define DEFAULT_FORMAT = BitFormat::Auto
+#define BIT7Z_DEFAULT_FORMAT = BitFormat::Auto
 #else
-#define DEFAULT_FORMAT
+#define BIT7Z_DEFAULT_FORMAT
 #endif
 
 }

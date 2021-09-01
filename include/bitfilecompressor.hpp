@@ -37,7 +37,7 @@ namespace bit7z {
     using namespace filesystem;
 
     /**
-     * @brief The BitFileCompressor class allows to compress files and directories into file archives.
+     * @brief Class that allows to compress files and directories into file archives.
      *
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.

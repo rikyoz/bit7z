@@ -24,10 +24,11 @@
 namespace bit7z {
     class BitInputArchive;
 
+    /**
+     * @brief Class that represents an archived item but doesn't store its properties.
+     */
     class BitArchiveItemOffset : public BitArchiveItem {
         public:
-            BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
-
             BitArchiveItemOffset& operator++() noexcept;
 
             BitArchiveItemOffset operator++( int ) noexcept;
@@ -36,12 +37,23 @@ namespace bit7z {
 
             bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
 
+            /**
+             * @brief Gets the specified item property.
+             *
+             * @param property  the property to be retrieved.
+             *
+             * @return the value of the item property, if available, or an empty BitPropVariant.
+             */
             BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
 
         private:
             /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,
              * to be CopyConstructible so that stl algorithms can be used with const_iterator! */
             const BitInputArchive* mArc;
+
+            BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
+
+            friend class BitInputArchive;
     };
 }
 

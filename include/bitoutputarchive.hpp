@@ -57,12 +57,46 @@ namespace bit7z {
 
     class UpdateCallback;
 
+    /**
+     * @brief Class that, given a creator object, allows to create new archives.
+     */
     class BitOutputArchive {
         public:
+            /**
+             * @brief Constructs a BitOutputArchive object, opening an (optional) input file archive.
+             *
+             * If a non-empty input file path is passed, the corresponding archive will be opened and
+             * used as a base for the creation of the new archive. Otherwise, the class will behave
+             * as if it is creating a completely new archive.
+             *
+             * @param creator the reference to the BitAbstractArchiveCreator object containing all the settings to
+             *                be used for creating the new archive and reading the (optional) input archive.
+             * @param in_file (optional) the path to an input archive file.
+             */
             explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file = TSTRING( "" ) );
 
+
+            /**
+             * @brief Constructs a BitOutputArchive object, opening an input file archive from the given buffer.
+             *
+             * If a non-empty input buffer is passed, the archive file it contains will be opened and
+             * used as a base for the creation of the new archive. Otherwise, the class will behave
+             * as if it is creating a completely new archive.
+             *
+             * @param creator   the reference to the BitAbstractArchiveCreator object containing all the settings to
+             *                  be used for creating the new archive and reading the (optional) input archive.
+             * @param in_buffer the buffer containing an input archive file.
+             */
             BitOutputArchive( const BitAbstractArchiveCreator& creator, const vector< byte_t >& in_buffer );
 
+
+            /**
+             * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
+             *
+             * @param creator   the reference to the BitAbstractArchiveCreator object containing all the settings to
+             *                  be used for creating the new archive and reading the (optional) input archive.
+             * @param in_stream the standard input stream of the input archive file.
+             */
             BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& in_stream );
 
             BitOutputArchive( const BitOutputArchive& ) = delete;
@@ -73,30 +107,108 @@ namespace bit7z {
 
             BitOutputArchive& operator=( BitOutputArchive&& ) = delete;
 
+            /**
+             * @brief Adds all the items that can be found by indexing the given vector of filesystem paths.
+             *
+             * @param in_paths the vector of filesystem paths.
+             */
             void addItems( const vector< tstring >& in_paths );
 
+            /**
+             * @brief Adds all the items that can be found by indexing the keys of the given map of filesystem paths;
+             *       the corresponding mapped values are the user-defined paths wanted inside the output archive.
+             *
+             * @param in_paths map of filesystem paths with the corresponding user-defined path desired inside the
+             *                 output archive.
+             */
             void addItems( const map< tstring, tstring >& in_paths );
 
+            /**
+             * @brief Adds the given file path, with an optional user-defined path to be used in the output archive.
+             *
+             * @note If a directory path is given, a BitException is thrown.
+             *
+             * @param in_file the path to the filesystem file to be added to the output archive.
+             * @param name    (optional) user-defined path to be used inside the output archive.
+             */
             void addFile( const tstring& in_file, const tstring& name = TSTRING( "" ) );
 
+            /**
+             * @brief Adds the given buffer file, using the given name as path when compressed in the output archive.
+             *
+             * @param in_buffer the buffer containing the file to be added to the output archive.
+             * @param name      user-defined path to be used inside the output archive.
+             */
             void addFile( const vector< byte_t >& in_buffer, const tstring& name );
 
+            /**
+             * @brief Adds the given standard input stream, using the given name as path when compressed
+             *        in the output archive.
+             *
+             * @param in_stream
+             * @param name
+             */
             void addFile( istream& in_stream, const tstring& name );
 
+            /**
+             * @brief Adds all the files in the given vector of filesystem paths.
+             *
+             * @note Paths to directories are ignored.
+             *
+             * @param in_files the vector of paths to files.
+             */
             void addFiles( const vector< tstring >& in_files );
 
-            void addFiles( const tstring& in_dir, bool recursive = true, const tstring& filter = TSTRING( "*.*" ) );
+            /**
+             * @brief Adds all the files inside the given directory path that match the given wildcard filter.
+             *
+             * @param in_dir    the directory where to search for files to be added to the output archive.
+             * @param filter    (optional) the wildcard filter to be used for searching the files.
+             * @param recursive (optional) recursively search the files in the given directory
+             *                  and all of its sub-directories.
+             */
+            void addFiles( const tstring& in_dir, const tstring& filter = TSTRING( "*.*" ), bool recursive = true );
 
+            /**
+             * @brief Adds all the items inside the given directory path.
+             *
+             * @param in_dir the directory where to search for items to be added to the output archive.
+             */
             void addDirectory( const tstring& in_dir );
 
+            /**
+             * @brief Compresses all the items added to this object to the specified archive file path.
+             *
+             * @note If this object was created by passing an input archive file path, and this latter is the same as
+             * the out_file path parameter, the file will be updated.
+             *
+             * @param out_file the output archive file path.
+             */
             void compressTo( const tstring& out_file );
 
+            /**
+             * @brief Compresses all the items added to this object to the specified buffer.
+             *
+             * @param out_buffer the output buffer.
+             */
             void compressTo( std::vector< byte_t >& out_buffer );
 
+            /**
+             * @brief Compresses all the items added to this object to the specified buffer.
+             *
+             * @param out_stream the output standard stream.
+             */
             void compressTo( ostream& out_stream );
 
+            /**
+             * @return the total number of item added to the output archive object.
+             */
             uint32_t itemsCount() const;
 
+            /**
+             * @return a constant reference to the BitAbstractArchiveHandler object containing the
+             *         settings for writing the output archive.
+             */
             const BitAbstractArchiveHandler& handler() const noexcept;
 
             virtual ~BitOutputArchive() = default;

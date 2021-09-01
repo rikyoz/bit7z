@@ -23,7 +23,7 @@
 
 namespace bit7z {
     /**
-     * @brief The BitMemExtractor class allows to extract the content of in-memory archives.
+     * @brief Class that allows to extract the content of in-memory archives.
      */
     using BitMemExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const vector< byte_t >& >;
 }

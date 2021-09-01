@@ -35,7 +35,7 @@ namespace bit7z {
     std::error_code last_error_code() noexcept;
 
     /**
-     * @brief The BitException class represents a generic exception thrown from the bit7z classes.
+     * @brief Class that represents a generic exception thrown from the bit7z classes.
      */
     class BitException : public system_error {
         public:
@@ -71,8 +71,15 @@ namespace bit7z {
              */
             explicit BitException( const std::string& message, std::error_code code );
 
+            /**
+             * @return the native error code (e.g., HRESULT) corresponding to the exception's std::error_code
+             */
             BIT7Z_NODISCARD native_code_type nativeCode() const noexcept;
 
+            /**
+             * @return the vector of files that caused the exception to be thrown, along with the corresponding
+             *         error codes.
+             */
             BIT7Z_NODISCARD const FailedFiles& failedFiles() const noexcept;
 
         private:

@@ -23,6 +23,9 @@
 
 namespace bit7z {
 
+    /**
+     * Class representing an item inside an archive.
+     */
     class BitArchiveItem : public BitGenericItem {
         public:
             /**
@@ -62,12 +65,24 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD uint64_t size() const override;
 
+            /**
+             * @return the item creation time.
+             */
             BIT7Z_NODISCARD FILETIME creationTime() const override;
 
+            /**
+             * @return the item last access time.
+             */
             BIT7Z_NODISCARD FILETIME lastAccessTime() const override;
 
+            /**
+             * @return the item last write time.
+             */
             BIT7Z_NODISCARD FILETIME lastWriteTime() const override;
 
+            /**
+             * @return the item attributes.
+             */
             BIT7Z_NODISCARD uint32_t attributes() const override;
 
             /**

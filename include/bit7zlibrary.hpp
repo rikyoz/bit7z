@@ -41,7 +41,7 @@ class CMyComPtr;
 
 namespace bit7z {
     /**
-     * @brief The Bit7zLibrary class allows the access to the basic functionalities provided by the 7z DLLs.
+     * @brief Class that allows the access to the basic functionalities provided by the 7z DLLs.
      */
     class Bit7zLibrary {
         public:

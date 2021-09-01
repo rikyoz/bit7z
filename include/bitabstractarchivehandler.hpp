@@ -84,6 +84,10 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD tstring password() const;
 
+            /**
+             * @return true if the directory structure must be preserved while extracting or compressing
+             *         the archive, false otherwise.
+             */
             BIT7Z_NODISCARD bool retainDirectories() const noexcept;
 
             /**

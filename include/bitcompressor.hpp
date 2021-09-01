@@ -37,12 +37,34 @@ namespace bit7z {
 
     using namespace filesystem;
 
+    /**
+     * @brief Generic class that allows to compress files into archives.
+     *
+     * It let decide various properties of the produced archive file, such as the password
+     * protection and the compression level desired.
+     */
     template< typename Input >
     class BitCompressor : public BitAbstractArchiveCreator {
         public:
+            /**
+             * @brief Constructs a BitCompressor object.
+             *
+             * The Bit7zLibrary parameter is needed in order to have access to the functionalities
+             * of the 7z DLLs. On the other hand, the BitInOutFormat is required in order to know the
+             * format of the output archive.
+             *
+             * @param lib       the 7z library to use.
+             * @param format    the output archive format.
+             */
             BitCompressor( Bit7zLibrary const& lib, BitInOutFormat const& format )
                 : BitAbstractArchiveCreator( lib, format ) {}
 
+            /**
+             * @brief Compresses a single file.
+             *
+             * @param in_file  the file to be compressed.
+             * @param out_file the path (relative or absolute) to the output archive file.
+             */
             void compressFile( Input& in_file,
                                const tstring& out_file,
                                const tstring& input_name = TSTRING( "" ) ) const {
@@ -64,6 +86,13 @@ namespace bit7z {
                 output_archive.compressTo( out_file );
             }
 
+            /**
+             * @brief Compresses the input file to the output buffer.
+             *
+             * @param in_file     the file to be compressed.
+             * @param out_buffer  the buffer going to contain the output archive.
+             * @param input_name  (optional) the name to give to the compressed file inside the output archive.
+             */
             void compressFile( Input& in_file,
                                vector< byte_t >& out_buffer,
                                const tstring& input_name = TSTRING( "" ) ) const {
@@ -72,6 +101,13 @@ namespace bit7z {
                 output_archive.compressTo( out_buffer );
             }
 
+            /**
+             * @brief Compresses the input file to the output stream.
+             *
+             * @param in_file     the file to be compressed.
+             * @param out_stream  the output stream.
+             * @param input_name  (optional) the name to give to the compressed file inside the output archive.
+             */
             void compressFile( Input& in_file,
                                ostream& out_stream,
                                const tstring& input_name = TSTRING( "" ) ) const {

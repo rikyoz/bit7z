@@ -24,22 +24,49 @@
 #include "bitpropvariant.hpp"
 
 namespace bit7z {
+    /**
+     * @bfrief Interface class representing a generic item (either inside or outside an archive).
+     */
     class BitGenericItem {
         public:
+            /**
+             * @return true if and only if the item is a directory (i.e. it has the property BitProperty::IsDir).
+             */
             BIT7Z_NODISCARD virtual bool isDir() const = 0;
 
+            /**
+             * @return the uncompressed size of the item.
+             */
             BIT7Z_NODISCARD virtual uint64_t size() const = 0;
 
+            /**
+             * @return the item creation time.
+             */
             BIT7Z_NODISCARD virtual FILETIME creationTime() const = 0;
 
+            /**
+             * @return the item last access time.
+             */
             BIT7Z_NODISCARD virtual FILETIME lastAccessTime() const = 0;
 
+            /**
+             * @return the item last write time.
+             */
             BIT7Z_NODISCARD virtual FILETIME lastWriteTime() const = 0;
 
+            /**
+             * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
+             */
             BIT7Z_NODISCARD virtual tstring name() const = 0;
 
+            /**
+             * @return the path of the item.
+             */
             BIT7Z_NODISCARD virtual tstring path() const = 0;
 
+            /**
+             * @return the item attributes.
+             */
             BIT7Z_NODISCARD virtual uint32_t attributes() const = 0;
 
             /**

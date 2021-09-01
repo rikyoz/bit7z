@@ -22,20 +22,53 @@
 #include "bitoutputarchive.hpp"
 
 namespace bit7z {
+    /**
+     * @brief Class that allows to create new archives or update old ones with new items.
+     */
     class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchive {
         public:
+            /**
+             * @brief Constructs an empty BitArchiveWriter object that can write archives of the specified format.
+             *
+             * @param lib    the 7z library to use.
+             * @param format the output archive format.
+             */
             BitArchiveWriter( const Bit7zLibrary& lib, const BitInOutFormat& format );
 
+            /**
+             * @brief Constructs a BitArchiveWriter object, reading the given archive file path.
+             *
+             * @param lib      the 7z library to use.
+             * @param in_file  the path to an input archive file.
+             * @param format   the input/output archive format.
+             * @param password (optional) the password needed to read the input archive.
+             */
             BitArchiveWriter( const Bit7zLibrary& lib,
                               const tstring& in_file,
                               const BitInOutFormat& format,
                               const tstring& password = TSTRING( "" ) );
 
+            /**
+             * @brief Constructs a BitArchiveWriter object, reading the archive in the given buffer.
+             *
+             * @param lib       the 7z library to use.
+             * @param in_buffer the buffer containing the input archive.
+             * @param format    the input/output archive format.
+             * @param password  (optional) the password needed to read the input archive.
+             */
             BitArchiveWriter( const Bit7zLibrary& lib,
                               const vector< byte_t >& in_buffer,
                               const BitInOutFormat& format,
                               const tstring& password = TSTRING( "" ) );
 
+            /**
+             * @brief Constructs a BitArchiveWriter object, reading the archive from the given standard input stream.
+             *
+             * @param lib       the 7z library to use.
+             * @param in_stream the standard stream of the input archive.
+             * @param format    the input/output archive format.
+             * @param password  (optional) the password needed to read the input archive.
+             */
             BitArchiveWriter( const Bit7zLibrary& lib,
                               std::istream& in_stream,
                               const BitInOutFormat& format,

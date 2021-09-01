@@ -88,6 +88,9 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD uint32_t dictionarySize() const noexcept;
 
+            /**
+             * @return the word size used by the archive creator.
+             */
             BIT7Z_NODISCARD uint32_t wordSize() const noexcept;
 
             /**
@@ -106,6 +109,10 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD uint64_t volumeSize() const noexcept;
 
+            /**
+             * @return the number of threads that is used by the creator
+             *         (a 0 value means that it will use the 7-zip default value).
+             */
             BIT7Z_NODISCARD uint32_t threadsCount() const noexcept;
 
             /**
@@ -173,6 +180,11 @@ namespace bit7z {
              */
             void setDictionarySize( uint32_t dictionary_size );
 
+            /**
+             * @brief Sets the word size to be used when creating an archive.
+             *
+             * @param word_size the word size desired.
+             */
             void setWordSize( uint32_t word_size );
 
             /**
@@ -186,11 +198,12 @@ namespace bit7z {
             void setSolidMode( bool solid_mode ) noexcept;
 
             /**
-             * @brief Sets whether the creator can update existing archives or not.
+             * @brief Sets whether and how the creator can update existing archives or not.
              *
-             * @note If false, an exception will be thrown in case a compression operation targets an existing archive.
+             * @note If set to UpdateMode::None, an exception will be thrown in case a compression operation
+             *       targets an existing archive.
              *
-             * @param mode if true, compressing operations will update existing archives.
+             * @param mode the desired update mode.
              */
             virtual void setUpdateMode( UpdateMode mode );
 
@@ -203,6 +216,11 @@ namespace bit7z {
              */
             void setVolumeSize( uint64_t volume_size ) noexcept;
 
+            /**
+             * @brief Sets the threads_count to be used when creating an archive.
+             *
+             * @param threads_count the number of threads desired.
+             */
             void setThreadsCount( uint32_t threads_count ) noexcept;
 
         protected:
