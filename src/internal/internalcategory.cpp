@@ -85,6 +85,7 @@ std::error_condition bit7z::internal_category_t::default_error_condition( int ev
         case BitError::InvalidDictionarySize:
         case BitError::InvalidIndex:
         case BitError::InvalidWordSize:
+        case BitError::ItemIsAFolder:
         case BitError::NonEmptyOutputBuffer:
             return std::make_error_condition( std::errc::invalid_argument );
         case BitError::NoMatchingItems:
@@ -92,6 +93,9 @@ std::error_condition bit7z::internal_category_t::default_error_condition( int ev
         case BitError::RequestedWrongVariantType:
         case BitError::UnsupportedOperation:
             return std::make_error_condition( std::errc::operation_not_supported );
+        case BitError::ItemMarkedAsDeleted:
+        case BitError::WrongUpdateMode:
+            return std::make_error_condition( std::errc::operation_not_permitted );
         default:
             return error_category::default_error_condition( ev );
     }
