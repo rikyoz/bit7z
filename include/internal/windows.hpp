@@ -62,8 +62,6 @@ inline constexpr HRESULT HRESULT_FROM_WIN32( unsigned int x ) {
            static_cast< HRESULT >( ( x & 0x0000FFFF ) | ( FACILITY_WIN32 << 16 ) | 0x80000000 ) : static_cast< HRESULT >( x );
 }
 
-#define __HRESULT_FROM_WIN32 HRESULT_FROM_WIN32
-
 // Win32 structs
 struct WIN32_FILE_ATTRIBUTE_DATA {
     uint32_t dwFileAttributes;

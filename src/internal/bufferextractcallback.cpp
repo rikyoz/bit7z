@@ -22,7 +22,7 @@
 #include "internal/bufferextractcallback.hpp"
 
 #include "internal/cbufferoutstream.hpp"
-#include "internal/fsutil.hpp"
+#include "internal/fs.hpp"
 
 using namespace std;
 using namespace NWindows;

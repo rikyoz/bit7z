@@ -23,7 +23,6 @@
 
 #include "internal/dateutil.hpp"
 
-
 namespace bit7z {
     // 100ns intervals
     using FileTimeTickRate = std::ratio<1, 10'000'000>;

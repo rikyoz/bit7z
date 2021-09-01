@@ -22,7 +22,6 @@
 #include "internal/updatecallback.hpp"
 
 #include "internal/cfileoutstream.hpp"
-#include "internal/genericinputitem.hpp"
 
 using namespace bit7z;
 
