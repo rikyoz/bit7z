@@ -21,7 +21,9 @@
 
 #include "bitexception.hpp"
 
+#ifndef _WIN32
 #include "internal/internalcategory.hpp"
+#endif
 #include "internal/hresultcategory.hpp"
 #include "internal/windows.hpp"
 
@@ -64,7 +66,7 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
         return HRESULT_FROM_WIN32( static_cast< DWORD >( error.value() ) );
     }
 #endif
-    // POSIX error code (generic_category)
+    // POSIX error code (generic_category) or BitError code (internal_category)
     if ( error == std::errc::invalid_argument ) {
         return E_INVALIDARG;
     }
@@ -94,7 +96,7 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
     }
     return E_FAIL;
 #else // Unix
-    if ( error.category() == bit7z::hresult_category() ) {
+    if ( error.category() == bit7z::hresult_category() || error.category() == bit7z::internal_category() ) {
         return error.default_error_condition().value();
     }
     return error.value(); // On POSIX systems, std::system_category == std::generic_category
