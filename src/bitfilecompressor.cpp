@@ -67,7 +67,7 @@ void BitFileCompressor::compressFiles( const tstring& in_dir, const tstring& out
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
     BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addFiles( in_dir, recursive, filter );
+    output_archive.addFiles( in_dir, filter, recursive );
     output_archive.compressTo( out_file );
 }
 

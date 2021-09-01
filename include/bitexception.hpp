@@ -39,11 +39,7 @@ namespace bit7z {
      */
     class BitException : public system_error {
         public:
-#ifdef _WIN32
             using native_code_type = HRESULT;
-#else
-            using native_code_type = int;
-#endif
 
             /**
              * @brief Constructs a BitException object with the given message and the specific files that failed.

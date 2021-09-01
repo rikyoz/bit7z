@@ -117,7 +117,7 @@ namespace bit7z {
              * @param index the index of the desired item in the vector.
              * @return a constant reference to the GenericInputItem at the given index.
              */
-            const GenericInputItem& operator[]( size_t index ) const;
+            const GenericInputItem& operator[]( GenericInputItemVector::size_type index ) const;
 
             /**
              * @return an iterator to the first element of the vector. If the vector is empty,

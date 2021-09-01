@@ -51,7 +51,7 @@ using std::size_t;
 namespace bit7z {
     // Win32 type aliases
     using HMODULE = void*;
-    using HRESULT = int32_t;
+    using HRESULT = int;
     using OLECHAR = wchar_t;
     using BSTR = OLECHAR*;
     using VARIANT_BOOL = short;

@@ -85,7 +85,7 @@ size_t BitItemsVector::size() const {
     return mItems.size();
 }
 
-const GenericInputItem& BitItemsVector::operator[]( size_t index ) const {
+const GenericInputItem& BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const {
     // Note: here index is expected to be a correct one!
     return *mItems[ index ];
 }

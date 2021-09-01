@@ -19,8 +19,6 @@
 #ifndef BITGENERICITEM_HPP
 #define BITGENERICITEM_HPP
 
-#include <cstdint>
-
 #include "bitpropvariant.hpp"
 
 namespace bit7z {

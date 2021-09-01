@@ -134,14 +134,14 @@ namespace bit7z {
             /**
              * @brief Marks the item at the given index as deleted.
              *
-             * @param index
+             * @param index the index of the item to be deleted.
              */
             void deleteItem( uint32_t index );
 
             /**
              * @brief Marks the item at the given path (in the archive) as deleted.
              *
-             * @param item_path
+             * @param item_path the path (in the archive) of the item to be deleted.
              */
             void deleteItem( const tstring& item_path );
 
