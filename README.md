@@ -61,17 +61,20 @@ Below are a few examples that show how to use some of the main features of bit7z
 ### Extracting files from an archive
 
 ```cpp
-#include "bitextractor.hpp"
+#include "bitfileextractor.hpp"
 
-using namespace  bit7z;
+using bit7z::Bit7zLibrary;
+using bit7z::BitFileExtractor;
 
 try {
     Bit7zLibrary lib{ L"7za.dll" };
     BitFileExtractor extractor{ lib, BitFormat::SevenZip };
 
-    extractor.extract( L"path/to/archive.7z", L"out/dir/" ); //extracting a simple archive
+    //extracting a simple archive
+    extractor.extract( L"path/to/archive.7z", L"out/dir/" );
 
-    extractor.extractMatching( L"path/to/arc.7z", L"file.pdf", L"out/dir/" ); //extracting a specific file
+    //extracting a specific file
+    extractor.extractMatching( L"path/to/arc.7z", L"file.pdf", L"out/dir/" );
 
     //extracting the first file of an archive to a buffer
     std::vector< byte_t > buffer;
@@ -80,17 +83,16 @@ try {
     //extracting an encrypted archive
     extractor.setPassword( L"password" );
     extractor.extract( L"path/to/another/archive.7z", L"out/dir/" );
-} catch ( const BitException& ex ) {
-    //do something with ex.what()...
-}
+} catch ( const BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
 ### Compressing files into an archive
 
 ```cpp
-#include "bitcompressor.hpp"
+#include "bitfilecompressor.hpp"
 
-using namespace bit7z;
+using bit7z::Bit7zLibrary;
+using bit7z::BitFileCompressor;
 
 try {
     Bit7zLibrary lib{ L"7z.dll" };
@@ -98,14 +100,18 @@ try {
 
     std::vector< std::wstring > files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
 
-    compressor.compress( files, L"output_archive.zip" ); //creating a simple zip archive
+    //creating a simple zip archive
+    compressor.compress( files, L"output_archive.zip" ); 
 
     //creating a zip archive with a custom directory structure
-    std::map< std::wstring, std::wstring > files_map = { { L"path/to/file1.jpg", L"alias/path/file1.jpg" },
-    { L"path/to/file2.pdf", L"alias/path/file2.pdf" } };
+    std::map< std::wstring, std::wstring > files_map = {
+        { L"path/to/file1.jpg", L"alias/path/file1.jpg" },
+        { L"path/to/file2.pdf", L"alias/path/file2.pdf" }
+    };
     compressor.compress( files_map, L"output_archive2.zip" );
 
-    compressor.compressDirectory( L"dir/path/", L"dir_archive.zip" ); //compressing a directory
+    //compressing a directory
+    compressor.compressDirectory( L"dir/path/", L"dir_archive.zip" );
 
     //creating an encrypted zip archive of two files
     compressor.setPassword( L"password" );
@@ -119,21 +125,20 @@ try {
     std::vector< byte_t > buffer;
     BitFileCompressor compressor2{ lib, BitFormat::BZip2 };
     compressor2.compressFile( files[0], buffer );
-} catch ( const BitException& ex ) {
-    //do something with ex.what()...
-}
+} catch ( const BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
 ### Reading archive metadata
 
 ```cpp
-#include "bitarchiveinfo.hpp"
+#include "bitarchivereader.hpp"
 
-using namespace bit7z;
+using bit7z::Bit7zLibrary;
+using bit7z::BitArchiveReader;
 
 try {
     Bit7zLibrary lib{ L"7za.dll" };
-    BitArchiveInfo arc{ lib, L"archive.7z", BitFormat::SevenZip };
+    BitArchiveReader arc{ lib, L"archive.7z", BitFormat::SevenZip };
 
     //printing archive metadata
     wcout << L"Archive properties" << endl;
@@ -157,9 +162,7 @@ try {
         wcout << L"  Size: "        << item.size() << endl;
         wcout << L"  Packed size: " << item.packSize() << endl;
     }
-} catch ( const BitException& ex ) {
-    //do something with ex.what()...
-}
+} catch ( const BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
 A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
