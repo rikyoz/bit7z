@@ -79,24 +79,25 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
+    using namespace NArchive::NExtract;
     constexpr auto kUnsupportedMethod  = "Unsupported Method";
     constexpr auto kCRCFailed          = "CRC Failed";
     constexpr auto kDataError          = "Data Error";
     constexpr auto kUnknownError       = "Unknown Error";
 
-    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+    if ( operationResult != NOperationResult::kOK ) {
         mNumErrors++;
 
         switch ( operationResult ) {
-            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+            case NOperationResult::kUnsupportedMethod:
                 mErrorMessage = kUnsupportedMethod;
                 break;
 
-            case NArchive::NExtract::NOperationResult::kCRCError:
+            case NOperationResult::kCRCError:
                 mErrorMessage = kCRCFailed;
                 break;
 
-            case NArchive::NExtract::NOperationResult::kDataError:
+            case NOperationResult::kDataError:
                 mErrorMessage = kDataError;
                 break;
 

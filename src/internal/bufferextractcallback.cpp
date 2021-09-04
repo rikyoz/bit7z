@@ -25,7 +25,6 @@
 #include "internal/fs.hpp"
 
 using namespace std;
-using namespace NWindows;
 using namespace bit7z;
 
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
@@ -40,7 +39,8 @@ void BufferExtractCallback::releaseStream() {
 HRESULT BufferExtractCallback::getOutStream( uint32_t index,
                                              ISequentialOutStream** outStream,
                                              int32_t askExtractMode ) {
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
+    using namespace NArchive::NExtract;
+    if ( askExtractMode != NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
         return S_OK;
     }
 
