@@ -147,7 +147,6 @@ endif()
 
 if( NOT CMAKE_BUILD_TYPE ) # by default, use release build
     set( CMAKE_BUILD_TYPE "Release" )
-    message( STATUS "Build type not specified: using Release by default." )
 endif()
 
 option( BIT7Z_VS_LIBNAME_OUTDIR_STYLE
@@ -262,10 +261,8 @@ if( BIT7Z_USE_STD_BYTE )
     target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_USE_STD_BYTE )
 endif()
 
-target_include_directories( ${TARGET_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/ ) # public includes directory
-target_include_directories( ${TARGET_NAME} PRIVATE
-                            ${EXTERNAL_LIBS_DIR}
-                            ${7ZIP_SOURCE_DIR}/CPP/ ) # private includes directory
+target_include_directories( ${TARGET_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include/" ) # public includes
+target_include_directories( ${TARGET_NAME} PRIVATE "${EXTERNAL_LIBS_DIR}" "${7ZIP_SOURCE_DIR}/CPP/" ) # private includes
 
 if( UNIX )
     target_compile_definitions( ${TARGET_NAME} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
