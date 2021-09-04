@@ -4,156 +4,156 @@ project( bit7z
          VERSION 4.0.0
          DESCRIPTION "A C++ static library offering a clean and simple interface to the 7-zip/p7zip shared libraries"
          HOMEPAGE_URL "https://github.com/rikyoz/bit7z/" )
-
 set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
+
 cmake_policy( SET CMP0022 NEW )
+if( POLICY CMP0076 )
+    cmake_policy( SET CMP0076 NEW )
+endif()
 
 set( EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party )
 set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip )
 
 # public headers
 set( PUBLIC_HEADERS
-     ${PROJECT_SOURCE_DIR}/include/bit7z.hpp
-     ${PROJECT_SOURCE_DIR}/include/bit7zlibrary.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitabstractarchivecreator.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitabstractarchivehandler.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitabstractarchiveopener.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchiveeditor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchiveitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchiveiteminfo.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchiveitemoffset.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchivereader.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitarchivewriter.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitcompressionlevel.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitcompressionmethod.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitcompressor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitdefines.hpp
-     ${PROJECT_SOURCE_DIR}/include/biterror.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitexception.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitextractor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitfilecompressor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitfileextractor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitformat.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitfs.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitgenericitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitinputarchive.hpp
-     ${PROJECT_SOURCE_DIR}/include/bititemsvector.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitmemcompressor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitmemextractor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitoutputarchive.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitpropvariant.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitstreamcompressor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitstreamextractor.hpp
-     ${PROJECT_SOURCE_DIR}/include/bittypes.hpp
-     ${PROJECT_SOURCE_DIR}/include/bitwindows.hpp )
+     include/bit7z.hpp
+     include/bit7zlibrary.hpp
+     include/bitabstractarchivecreator.hpp
+     include/bitabstractarchivehandler.hpp
+     include/bitabstractarchiveopener.hpp
+     include/bitarchiveeditor.hpp
+     include/bitarchiveitem.hpp
+     include/bitarchiveiteminfo.hpp
+     include/bitarchiveitemoffset.hpp
+     include/bitarchivereader.hpp
+     include/bitarchivewriter.hpp
+     include/bitcompressionlevel.hpp
+     include/bitcompressionmethod.hpp
+     include/bitcompressor.hpp
+     include/bitdefines.hpp
+     include/biterror.hpp
+     include/bitexception.hpp
+     include/bitextractor.hpp
+     include/bitfilecompressor.hpp
+     include/bitfileextractor.hpp
+     include/bitformat.hpp
+     include/bitfs.hpp
+     include/bitgenericitem.hpp
+     include/bitinputarchive.hpp
+     include/bititemsvector.hpp
+     include/bitmemcompressor.hpp
+     include/bitmemextractor.hpp
+     include/bitoutputarchive.hpp
+     include/bitpropvariant.hpp
+     include/bitstreamcompressor.hpp
+     include/bitstreamextractor.hpp
+     include/bittypes.hpp
+     include/bitwindows.hpp )
 
-# headers
+# header files
 set( HEADERS
-     ${PROJECT_SOURCE_DIR}/include/internal/bufferextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/bufferitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/callback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cbufferinstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cbufferoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cfileinstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cfileoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cfixedbufferoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cmultivoloutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cstdinstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/cstdoutstream.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/dateutil.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/extractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/fileextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/fixedbufferextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/formatdetect.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/fsindexer.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/fsitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/fsutil.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/fs.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/genericinputitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/guiddef.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/guids.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/hresultcategory.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/internalcategory.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/opencallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/renameditem.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/stdinputitem.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/streamextractcallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/updatecallback.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/util.hpp
-     ${PROJECT_SOURCE_DIR}/include/internal/windows.hpp )
+     include/internal/bufferextractcallback.hpp
+     include/internal/bufferitem.hpp
+     include/internal/callback.hpp
+     include/internal/cbufferinstream.hpp
+     include/internal/cbufferoutstream.hpp
+     include/internal/cfileinstream.hpp
+     include/internal/cfileoutstream.hpp
+     include/internal/cfixedbufferoutstream.hpp
+     include/internal/cmultivoloutstream.hpp
+     include/internal/cstdinstream.hpp
+     include/internal/cstdoutstream.hpp
+     include/internal/dateutil.hpp
+     include/internal/extractcallback.hpp
+     include/internal/fileextractcallback.hpp
+     include/internal/fixedbufferextractcallback.hpp
+     include/internal/formatdetect.hpp
+     include/internal/fsindexer.hpp
+     include/internal/fsitem.hpp
+     include/internal/fsutil.hpp
+     include/internal/fs.hpp
+     include/internal/genericinputitem.hpp
+     include/internal/guiddef.hpp
+     include/internal/guids.hpp
+     include/internal/hresultcategory.hpp
+     include/internal/internalcategory.hpp
+     include/internal/opencallback.hpp
+     include/internal/renameditem.hpp
+     include/internal/stdinputitem.hpp
+     include/internal/streamextractcallback.hpp
+     include/internal/updatecallback.hpp
+     include/internal/util.hpp
+     include/internal/windows.hpp )
 
-# sources
+# source files
 set( SOURCES
-     ${PROJECT_SOURCE_DIR}/src/bit7zlibrary.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitabstractarchivecreator.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitabstractarchivehandler.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitabstractarchiveopener.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchiveeditor.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchiveitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchiveiteminfo.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchiveitemoffset.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchivereader.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitarchivewriter.cpp
-     ${PROJECT_SOURCE_DIR}/src/biterror.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitexception.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitfilecompressor.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp
-     ${PROJECT_SOURCE_DIR}/src/bititemsvector.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitoutputarchive.cpp
-     ${PROJECT_SOURCE_DIR}/src/bitpropvariant.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/bufferextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/bufferitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/callback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cbufferinstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cbufferoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cfileinstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cfileoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cfixedbufferoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cmultivoloutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cstdinstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/cstdoutstream.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/dateutil.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/extractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/fileextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/fixedbufferextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/formatdetect.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/fsindexer.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/fsitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/fsutil.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/genericinputitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/guids.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/hresultcategory.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/internalcategory.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/opencallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/renameditem.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/stdinputitem.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/streamextractcallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/updatecallback.cpp
-     ${PROJECT_SOURCE_DIR}/src/internal/util.cpp )
+     src/bit7zlibrary.cpp
+     src/bitabstractarchivecreator.cpp
+     src/bitabstractarchivehandler.cpp
+     src/bitabstractarchiveopener.cpp
+     src/bitarchiveeditor.cpp
+     src/bitarchiveitem.cpp
+     src/bitarchiveiteminfo.cpp
+     src/bitarchiveitemoffset.cpp
+     src/bitarchivereader.cpp
+     src/bitarchivewriter.cpp
+     src/biterror.cpp
+     src/bitexception.cpp
+     src/bitfilecompressor.cpp
+     src/bitformat.cpp
+     src/bitinputarchive.cpp
+     src/bititemsvector.cpp
+     src/bitoutputarchive.cpp
+     src/bitpropvariant.cpp
+     src/internal/bufferextractcallback.cpp
+     src/internal/bufferitem.cpp
+     src/internal/callback.cpp
+     src/internal/cbufferinstream.cpp
+     src/internal/cbufferoutstream.cpp
+     src/internal/cfileinstream.cpp
+     src/internal/cfileoutstream.cpp
+     src/internal/cfixedbufferoutstream.cpp
+     src/internal/cmultivoloutstream.cpp
+     src/internal/cstdinstream.cpp
+     src/internal/cstdoutstream.cpp
+     src/internal/dateutil.cpp
+     src/internal/extractcallback.cpp
+     src/internal/fileextractcallback.cpp
+     src/internal/fixedbufferextractcallback.cpp
+     src/internal/formatdetect.cpp
+     src/internal/fsindexer.cpp
+     src/internal/fsitem.cpp
+     src/internal/fsutil.cpp
+     src/internal/genericinputitem.cpp
+     src/internal/guids.cpp
+     src/internal/hresultcategory.cpp
+     src/internal/internalcategory.cpp
+     src/internal/opencallback.cpp
+     src/internal/renameditem.cpp
+     src/internal/stdinputitem.cpp
+     src/internal/streamextractcallback.cpp
+     src/internal/updatecallback.cpp
+     src/internal/util.cpp )
 
-# BitPropVariant needs the implementation of some Windows functions on Unix systems
-if( UNIX )
+if( UNIX ) # BitPropVariant needs the implementation of some Windows functions on Unix systems
     set( SOURCES ${SOURCES} ${7ZIP_SOURCE_DIR}/CPP/Common/MyWindows.cpp )
 endif()
 
-# enable only debug/release configurations for generated VS project file
-if( CMAKE_CONFIGURATION_TYPES )
+if( CMAKE_CONFIGURATION_TYPES ) # enable only debug/release configurations for generated VS project file
     set( CMAKE_CONFIGURATION_TYPES Debug Release )
     set( CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
-         "Reset the configurations to what we need"
-         FORCE )
+         "Reset the configurations to what we need" FORCE )
 endif()
 
-# by default, use release build
-if( NOT CMAKE_BUILD_TYPE )
+if( NOT CMAKE_BUILD_TYPE ) # by default, use release build
     set( CMAKE_BUILD_TYPE "Release" )
     message( STATUS "Build type not specified: using Release by default." )
 endif()
 
 option( BIT7Z_VS_LIBNAME_OUTDIR_STYLE
         "Force using Visual Studio output library name and directory structure convention" )
-# per-architecture options
+
+# architecture-specific options
 set( ARCH_POSTFIX "" )
 if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     set( ARCH_DIR "x64" )
@@ -182,8 +182,7 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
 
 if( NOT GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
-    # debug library file name must end with "_d" (e.g. bit7z_d.lib)
-    set( CMAKE_DEBUG_POSTFIX "_d" )
+    set( CMAKE_DEBUG_POSTFIX "_d" ) # debug library file name should end with "_d" (e.g. bit7z_d.lib)
 endif()
 
 message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
@@ -239,7 +238,7 @@ target_sources( ${TARGET_NAME}
                 PUBLIC ${PUBLIC_HEADERS}
                 PRIVATE ${HEADERS} ${SOURCES} )
 
-# macros
+# 7-zip compilation macros
 target_compile_definitions( ${TARGET_NAME} PRIVATE UNICODE _UNICODE )
 if( WIN32 )
     target_compile_definitions( ${TARGET_NAME} PRIVATE _WINDOWS )
@@ -263,11 +262,10 @@ if( BIT7Z_USE_STD_BYTE )
     target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_USE_STD_BYTE )
 endif()
 
-# includes
-target_include_directories( ${TARGET_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/ )
+target_include_directories( ${TARGET_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/ ) # public includes directory
 target_include_directories( ${TARGET_NAME} PRIVATE
                             ${EXTERNAL_LIBS_DIR}
-                            ${7ZIP_SOURCE_DIR}/CPP/ )
+                            ${7ZIP_SOURCE_DIR}/CPP/ ) # private includes directory
 
 if( UNIX )
     target_compile_definitions( ${TARGET_NAME} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
@@ -275,9 +273,8 @@ if( UNIX )
     target_link_libraries( ${TARGET_NAME} ${CMAKE_DL_LIBS} )
 endif()
 
-# compiler options
-if( MSVC )
-    # setting pdb file name for debug builds (otherwise it is not generated!)
+if( MSVC ) # compiler-specific options
+    # setting a pdb file name for debug builds (otherwise it is not generated!)
     set_target_properties( ${TARGET_NAME} PROPERTIES COMPILE_PDB_NAME_DEBUG ${TARGET_NAME}${CMAKE_DEBUG_POSTFIX} )
 
     # release builds should be optimized (e.g., for size)
@@ -292,16 +289,14 @@ if( MSVC )
         target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/analyze>" )
     endif()
 
-    # remove default warning level
-    string( REGEX REPLACE "/W[0-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
+    # remove CMake default warning level
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
-    string( REGEX REPLACE "/GR" "/GR-" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 
-    # warning level
+    # warning level option
     target_compile_options( ${TARGET_NAME} PRIVATE /W4 )
 
-    # standard conformance options of MSVC
+    # C++ standard conformance options of MSVC
     target_compile_options( ${TARGET_NAME} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
                             /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
 
