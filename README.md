@@ -41,10 +41,7 @@ bit7z
 + **Selective extraction** of only specified files/folders **using wildcards** (from v3.x) and **regexes** (from v3.1.x).
 + Creation of **encrypted archives** (strong AES-256 encryption &mdash; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
-+ Choice of the **compression level** (from none to ultra, not all supported by every output archive format).
-+ Choice of the **compression method** (from v3.1.x &mdash; see the [wiki](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods) for the supported methods).
-+ Choice of the compression **dictionary size** (from v3.1.x).
-+ Choice of the compression **word size** (from v4.0.x).
++ Possibility to choose the **compression level** (if supported by the archive format), the **compression method** (from v3.1.x &mdash; see the [wiki](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods) for the supported methods), the **dictionary size** (from v3.1.x), and the **word size** (from v4.0.x).
 + **Automatic input archive format detection** (from v3.1.x).
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
