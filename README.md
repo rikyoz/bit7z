@@ -12,7 +12,6 @@ bit7z
   <a href="https://ci.appveyor.com/project/rikyoz/bit7z"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat-square&logo=appveyor&logoColor=white&label=" alt="Build status"></a>
   <a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE"><img src="https://img.shields.io/badge/-GPL%20v2-lightgrey.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAAvUlEQVR42u3Zt1EEURRE0Ye0gFwI4BWJoC0KGxftExk+RQATAN+nLpo1R0+v6NsJHPOLcO4vKkrPVexEcMFZN8AQ7UXwCBx0ART6VtiN4BCA1AHO+SnVAEg1AFINgFQDINUASDUAUg2AVAMg1QBINQBSDYBUAyDVAMhxAVfUdzkmYJ+7mj1xPQ7gjbWYJTmQbGsB77zy0mjPPQH9UwOKAQYYYIABBhhggAFzCTDAAAMMMGDS+v2a9V8Vzs1PH+dRolvEzoAoAAAAAElFTkSuQmCC" alt="License"></a>
 </p>
-
 <h3 align="center">A C++ static library offering a clean and simple interface to the 7-zip DLLs</h3>
 
 <p align="center">
@@ -27,15 +26,16 @@ bit7z
 
 ## Introduction
 
-**bit7z** is a C++ static library that allows compression/extraction of file archive formats through a clean, simple, and entirely object-oriented wrapper interface to the dynamic libraries from the 7-zip project (<https://www.7-zip.org/>).<br/>It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
+**bit7z** is a cross-platform C++ static library that allows the compression/extraction of archive files through a clean, simple, and entirely object-oriented wrapper interface to the dynamic libraries from the 7-zip project (<https://www.7-zip.org/>).<br/>It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
 
 ## Supported Features
 
 + **Compression** using the following archive formats: 7z, XZ, BZIP2, GZIP, TAR, ZIP and WIM.
-+ **Extraction** of the following archive formats: 7z, AR, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, EXT, FAT, GPT, GZIP, HFS, HXS, IHEX, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, QCOW2, RAR, RAR5, RPM, SquashFS, TAR, UDF, UEFI, VDI, VHD, VMDK, WIM, XAR, XZ, Z and ZIP.
++ **Extraction** of many archive formats: 7z, AR, ARJ, BZIP2, CAB, CHM, CPIO, CramFS, DEB, DMG, EXT, FAT, GPT, GZIP, HFS, HXS, IHEX, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, QCOW2, RAR, RAR5, RPM, SquashFS, TAR, UDF, UEFI, VDI, VHD, VMDK, WIM, XAR, XZ, Z and ZIP.
 + **Reading metadata** of archives and of their content (from v3.x).
 + **Testing** archives for errors (from v3.x).
-+ **Updating** existing file archives (from v3.1.x).
++ **Updating** existing file archives with new files (from v3.1.x).
++ **Renaming** or **deleting** old items in existing file archives (from v4.0.x)
 + **Compression and extraction _to and from_ memory** (from v2.x) and **C++ standard streams** (from v3.1.x).
 + Compression using a **custom directory system** in the output archives (from v3.x)
 + **Selective extraction** of only specified files/folders **using wildcards** (from v3.x) and **regexes** (from v3.1.x).
@@ -44,6 +44,7 @@ bit7z
 + Choice of the **compression level** (from none to ultra, not all supported by every output archive format).
 + Choice of the **compression method** (from v3.1.x &mdash; see the [wiki](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods) for the supported methods).
 + Choice of the compression **dictionary size** (from v3.1.x).
++ Choice of the compression **word size** (from v4.0.x).
 + **Automatic input archive format detection** (from v3.1.x).
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
