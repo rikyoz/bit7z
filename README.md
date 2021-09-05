@@ -35,13 +35,13 @@ bit7z
 + **Reading metadata** of archives and of their content (from v3.x).
 + **Testing** archives for errors (from v3.x).
 + **Updating** existing file archives with new files (from v3.1.x).
-+ **Renaming** or **deleting** old items in existing file archives (from v4.0.x)
++ **Renaming**, **updating content**, or **deleting** old items in existing file archives (from v4.0.x)
 + **Compression and extraction _to and from_ memory** (from v2.x) and **C++ standard streams** (from v3.1.x).
 + Compression using a **custom directory system** in the output archives (from v3.x)
 + **Selective extraction** of only specified files/folders **using wildcards** (from v3.x) and **regexes** (from v3.1.x).
 + Creation of **encrypted archives** (strong AES-256 encryption &mdash; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
-+ Possibility to choose the **compression level** (if supported by the archive format), the **compression method** (from v3.1.x &mdash; see the [wiki](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods) for the supported methods), the **dictionary size** (from v3.1.x), and the **word size** (from v4.0.x).
++ Possibility to choose the **compression level** (if supported by the archive format), the **compression method** (from v3.1.x &mdash; [supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods)), the **dictionary size** (from v3.1.x), and the **word size** (from v4.0.x).
 + **Automatic input archive format detection** (from v3.1.x).
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
