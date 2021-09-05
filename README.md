@@ -26,7 +26,7 @@ bit7z
 
 ## Introduction
 
-**bit7z** is a cross-platform C++ static library that allows the compression/extraction of archive files through a clean, simple, and entirely object-oriented wrapper interface to the dynamic libraries from the 7-zip project (<https://www.7-zip.org/>).<br/>It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
+**bit7z** is a cross-platform C++ static library that allows the compression/extraction of archive files through a clean, simple, and entirely object-oriented wrapper interface to the dynamic libraries from the [7-zip](<https://www.7-zip.org/>) project.<br/>It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
 
 ## Supported Features
 
