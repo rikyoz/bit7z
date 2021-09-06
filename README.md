@@ -179,20 +179,20 @@ Obviously, you can also clone/download this repository and build the library by 
 
 ## Requirements
 
-+ **Target OS:** Windows**<sup>1</sup>**, Linux**<sup>2</sup>**.
++ **Target OS:** Windows<strong><sup>1</sup></strong>, Linux<strong><sup>2</sup></strong>.
 + **Target Architectures:** x86, x86_64.
-+ **Compilers:** MSVC 2015 or greater**<sup>3</sup>**, MinGW v6.4 or greater, GCC v4.9 or greater, Clang 3.5 or greater.
-+ **Shared Libraries:** a 7-zip DLL on Windows, a 7-zip/p7zip .so library on Linux**<sup>4</sup>**.
++ **Compilers:** MSVC 2015 or greater<strong><sup>3</sup></strong>, MinGW v6.4 or greater, GCC v4.9 or greater, Clang 3.5 or greater.
++ **Shared Libraries:** a 7-zip DLL on Windows, a 7-zip/p7zip .so library on Linux<strong><sup>4</sup></strong>.
 
 The 7-zip DLLs are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/).
 
-**<sup>1</sup>**On Windows, in order to use this library you should link your program _also_ with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`).
+**<sup>1</sup>** On Windows, in order to use this library you should link your program _also_ with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`).
 
-**<sup>2</sup>**The library _may_ work also on Mac OSX, but it has not been tested yet.
+**<sup>2</sup>** The library _may_ work also on Mac OSX, but it has not been tested yet.
 
-**<sup>3</sup>**MSVC 2010 was supported until v2.x, MSVC 2012 was supported until v3.1.x.
+**<sup>3</sup>** MSVC 2010 was supported until v2.x, MSVC 2012 was supported until v3.1.x.
 
-**<sup>4</sup>**Even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the DLLs of previous versions, such as v16.04. However, it is _strongly suggested_ to use DLLs with the same version.
+**<sup>4</sup>** Even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the DLLs of previous versions, such as v16.04. However, it is _strongly suggested_ to use DLLs with the same version.
 
 ## Building bit7z
 
