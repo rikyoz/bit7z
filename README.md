@@ -2,31 +2,31 @@
 bit7z
 </h1>
 <p align="center">
-  <a href="https://github.com/rikyoz/bit7z/releases"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat-square&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>
-  <img src="https://img.shields.io/badge/-C++14-4D57D2.svg?style=flat-square&logo=C%2B%2B&logoColor=white" alt="C++14/17">
-  <img src="https://img.shields.io/badge/-MSVC%202015+%20&middot;%20MinGW%206.4+%20-blueviolet.svg?style=flat-square&logo=windows&logoColor=white" alt="MSVC 2015+, MinGW 6.4+">
-  <img src="https://img.shields.io/badge/-GCC%204.9+%20&middot;%20Clang%203.5+-red.svg?style=flat-square&logo=linux&logoColor=white" alt="GCC 4.9+, Clang 3.5+">
-  <img src="https://img.shields.io/badge/-x86%20&middot;%20x64-orange.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAC1UlEQVR42u3WA9AjWRSA0bu2bdu2bdssrm3btm3btm3bmX+Ms7rLTiW9NUmvcsL7XuELu6Ojoz5DWcc5nvKp2kBdPvesi21m1Pgr7OxjrfWtgw0VZZjKM9rjXfNHM+bWWzutGo2YSH/tNm+jgNe1XzdDR322V41Tox5D6K4qY0WRtVRnjyhysercH0VeVJ13o8hXqvNNFOlSna4oUlOd2r8moBPwoQfd6THfoLweauqp6aJ8wInmMmjujWAFtwMeNJup5cXsVnWYDyDtajQjmMp7QOoypxGMbMtyAe+Ztf5/JTaJAkM6mjRXrj0KpE9zdZIyAV8bLX5lBIPlszXAVlGXMwAr5fwskL4wdPzAfGUC5o9kJy+o+dCVloiwJNg2907wimddZrqcB9GtNQF3RXI+kI5yCcgADwF6yvfLNa0JWD7n5dWXAa4lbZwrR7UioKdhc76vdEB+KxzbioAncxpGr9IBM+XKDa0IuCanaWkS8BzguEhqrQg4P6e5mgasbV+7WCySvWlFwIU5zdYooMhytCbghpzGLh9gAodCWjFXXwDSV4aJH5inWcBLkbzTOMBa9rWvk92jH5BWqBvwjSHKBfQ3as4HlvoSFq2b+zcB6bXIj6pZABvnPKzPgPSJlxV/hkUH5v7SUPiv2LN5wKuRjO82wDdON6xFSwW8XvhdcGYkrzUPYJf4lcktZh4jxg8sViqA9SKZxDo2NH0km1ImgE2jDjuBLXK6FPX1N1fUYQnKBnCeGeN3jGdPfUC+P27TyO7GjN8xoUMpHZCecKZ97etE9+hD6vKQOz1jgMa6u90J+VO9V//OaXnzgE5Al+p0iyLfqM63UeRV1Xk/ilylOo9Gkc1U55AoMrz+qjJJ1OMQ1bgq6jOYr1Rh9EgFZtd+q0QjVtFeW0UzFvGJ9uhhrSjDSE7UX6tdaMIoz0R2cbvXfKE2UJevvOEe+5kuOjr+qb4H0/HV/SQ0YjEAAAAASUVORK5CYII=" alt="x86, x86_64">
-  <a href="#donations"><img src="https://img.shields.io/badge/-donate-yellow.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABBCAMAAABW61JJAAAAM1BMVEUAAAD///////////////////////////////////////////////////////////////+3leKCAAAAEHRSTlMAv0CA7xBgrzDfn3BQIM+PWN4WLwAAAfhJREFUeF69llmS3CAQRLMWNi0t7n9ax/RI7lCOQMh2+H0DovQqo8A/RpNcksw0455Yu8i8ostabxFFB6sDSOcWqY7gC1p4HSPimlxHyU8dMAWXTJV4WkSpf3eFUIkib7xekC96aqE1M3ayeWXmxSOIjfd/CFMlNjjbhFCV3R4TJLaJemLqx0RgbFOpgr4igfKiud9scnVAaVfpuD2AP+O0gHjxL1JSRX/JbrrMoPSrKUl6EzRFpItSkm4qqICdDuAVLwAdRTXtWqRV48YFELpvkFaSllNMt4s0R5JlzRuEWCqjR3JSq0/2rKqa1J8kQNl2fcArAEK2tY7j+WMlkKbR/dl3m5SkEUoGQmFZ8DqIBCAcwSqUpHt8BpALBWZ8Jk0BwOIfm49mkk8rgJDqQQmUpC4pvpebn2xQkhq4mH4vs3K2yUn68JI3ZrZoOCKR2CZaSXLFmXUxYZvgmUSXy/rFbGYilzb7MynInc3eTIpdK76tIDhJa7uvPMX71503+qok06HXXQLKyeZkZqrjD9z56Kui6NGZScths0tnJm00GvqwMwFktzkGJ8mAw2af9kxSfmT14SQF2G5zFOGxnHabf3aAHX2VMcpGScy7zWGCycE7KkZz+yE8dsdZ9YtlopkxzsY2n8KPrMc42XzMRIl6TJjkNxH/kV+EeH5bYbU1DgAAAABJRU5ErkJggg==&logoColor=white" alt="Donations"></a>
-  <a href="https://github.com/rikyoz/bit7z/wiki"><img src="https://img.shields.io/badge/-docs-green.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAABCklEQVR42u3OAUQEARCF4SkKTgASgCIhCBRAQXHVSeEEgY6gAIggQiIACAISyAEkqigRiAKQAItEOlj1B1HU7nB2VvS+B4D3W/sYZZNzHnmlxQMHzNJhZWGCS346pdfi0c0u7/zulkr8fZM8WxaLffI902VxqOIbszhc41u0KAwAvoZFoQb4qhaFBr6UPotCHd+RxWEYzwv9Fok78qTMWyymeCNLizmLx2pGwhWDVg7GueG7lBOm6bQyMcQS62ywwiQ9JiJ/ARVGqLPDBctWLPY4zFyTY86454kva1YsEnwoIDJghoXPbUcHOKj9zwAFKEABClCAAhSgAAUoQAEKUIACSGhXYgpQgOsD2giqlbnGmc4AAAAASUVORK5CYII=" alt="Docs"></a>
-  <a href="https://ci.appveyor.com/project/rikyoz/bit7z"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat-square&logo=appveyor&logoColor=white&label=" alt="Build status"></a>
-  <a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE"><img src="https://img.shields.io/badge/-GPL%20v2-lightgrey.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAAvUlEQVR42u3Zt1EEURRE0Ye0gFwI4BWJoC0KGxftExk+RQATAN+nLpo1R0+v6NsJHPOLcO4vKkrPVexEcMFZN8AQ7UXwCBx0ART6VtiN4BCA1AHO+SnVAEg1AFINgFQDINUASDUAUg2AVAMg1QBINQBSDYBUAyDVAMhxAVfUdzkmYJ+7mj1xPQ7gjbWYJTmQbGsB77zy0mjPPQH9UwOKAQYYYIABBhhggAFzCTDAAAMMMGDS+v2a9V8Vzs1PH+dRolvEzoAoAAAAAElFTkSuQmCC" alt="License"></a>
+  <a href="https://github.com/rikyoz/bit7z/releases" title="GitHub Release"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat-square&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>
+  <img src="https://img.shields.io/badge/-C++14/17-4D57D2.svg?style=flat-square&logo=C%2B%2B&logoColor=white" alt="C++14/17" title="C++ Standards Used: C++14/17">
+  <img src="https://img.shields.io/badge/-MSVC%202015+%20&middot;%20MinGW%206.4+%20-blueviolet.svg?style=flat-square&logo=windows&logoColor=white" alt="MSVC 2015+, MinGW 6.4+" title="Supported Windows Compilers: MSVC 2015+, MinGW 6.4+">
+  <img src="https://img.shields.io/badge/-GCC%204.9+%20&middot;%20Clang%203.5+-red.svg?style=flat-square&logo=linux&logoColor=white" alt="GCC 4.9+, Clang 3.5+" title="Supported Linux Compilers: GCC 4.9+, Clang 3.5+">
+  <img src="https://img.shields.io/badge/-x86%20&middot;%20x64-orange.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAC1UlEQVR42u3WA9AjWRSA0bu2bdu2bdssrm3btm3btm3bmX+Ms7rLTiW9NUmvcsL7XuELu6Ojoz5DWcc5nvKp2kBdPvesi21m1Pgr7OxjrfWtgw0VZZjKM9rjXfNHM+bWWzutGo2YSH/tNm+jgNe1XzdDR322V41Tox5D6K4qY0WRtVRnjyhysercH0VeVJ13o8hXqvNNFOlSna4oUlOd2r8moBPwoQfd6THfoLweauqp6aJ8wInmMmjujWAFtwMeNJup5cXsVnWYDyDtajQjmMp7QOoypxGMbMtyAe+Ztf5/JTaJAkM6mjRXrj0KpE9zdZIyAV8bLX5lBIPlszXAVlGXMwAr5fwskL4wdPzAfGUC5o9kJy+o+dCVloiwJNg2907wimddZrqcB9GtNQF3RXI+kI5yCcgADwF6yvfLNa0JWD7n5dWXAa4lbZwrR7UioKdhc76vdEB+KxzbioAncxpGr9IBM+XKDa0IuCanaWkS8BzguEhqrQg4P6e5mgasbV+7WCySvWlFwIU5zdYooMhytCbghpzGLh9gAodCWjFXXwDSV4aJH5inWcBLkbzTOMBa9rWvk92jH5BWqBvwjSHKBfQ3as4HlvoSFq2b+zcB6bXIj6pZABvnPKzPgPSJlxV/hkUH5v7SUPiv2LN5wKuRjO82wDdON6xFSwW8XvhdcGYkrzUPYJf4lcktZh4jxg8sViqA9SKZxDo2NH0km1ImgE2jDjuBLXK6FPX1N1fUYQnKBnCeGeN3jGdPfUC+P27TyO7GjN8xoUMpHZCecKZ97etE9+hD6vKQOz1jgMa6u90J+VO9V//OaXnzgE5Al+p0iyLfqM63UeRV1Xk/ilylOo9Gkc1U55AoMrz+qjJJ1OMQ1bgq6jOYr1Rh9EgFZtd+q0QjVtFeW0UzFvGJ9uhhrSjDSE7UX6tdaMIoz0R2cbvXfKE2UJevvOEe+5kuOjr+qb4H0/HV/SQ0YjEAAAAASUVORK5CYII=" alt="x86, x64" title="Supported CPU Architectures: x86, x64">
+  <a href="#donations" title="Donate"><img src="https://img.shields.io/badge/-donate-yellow.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABBCAMAAABW61JJAAAAM1BMVEUAAAD///////////////////////////////////////////////////////////////+3leKCAAAAEHRSTlMAv0CA7xBgrzDfn3BQIM+PWN4WLwAAAfhJREFUeF69llmS3CAQRLMWNi0t7n9ax/RI7lCOQMh2+H0DovQqo8A/RpNcksw0455Yu8i8ostabxFFB6sDSOcWqY7gC1p4HSPimlxHyU8dMAWXTJV4WkSpf3eFUIkib7xekC96aqE1M3ayeWXmxSOIjfd/CFMlNjjbhFCV3R4TJLaJemLqx0RgbFOpgr4igfKiud9scnVAaVfpuD2AP+O0gHjxL1JSRX/JbrrMoPSrKUl6EzRFpItSkm4qqICdDuAVLwAdRTXtWqRV48YFELpvkFaSllNMt4s0R5JlzRuEWCqjR3JSq0/2rKqa1J8kQNl2fcArAEK2tY7j+WMlkKbR/dl3m5SkEUoGQmFZ8DqIBCAcwSqUpHt8BpALBWZ8Jk0BwOIfm49mkk8rgJDqQQmUpC4pvpebn2xQkhq4mH4vs3K2yUn68JI3ZrZoOCKR2CZaSXLFmXUxYZvgmUSXy/rFbGYilzb7MynInc3eTIpdK76tIDhJa7uvPMX71503+qok06HXXQLKyeZkZqrjD9z56Kui6NGZScths0tnJm00GvqwMwFktzkGJ8mAw2af9kxSfmT14SQF2G5zFOGxnHabf3aAHX2VMcpGScy7zWGCycE7KkZz+yE8dsdZ9YtlopkxzsY2n8KPrMc42XzMRIl6TJjkNxH/kV+EeH5bYbU1DgAAAABJRU5ErkJggg==&logoColor=white" alt="Donate"></a>
+  <a href="https://github.com/rikyoz/bit7z/wiki" title="Project Documentation"><img src="https://img.shields.io/badge/-docs-green.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAABCklEQVR42u3OAUQEARCF4SkKTgASgCIhCBRAQXHVSeEEgY6gAIggQiIACAISyAEkqigRiAKQAItEOlj1B1HU7nB2VvS+B4D3W/sYZZNzHnmlxQMHzNJhZWGCS346pdfi0c0u7/zulkr8fZM8WxaLffI902VxqOIbszhc41u0KAwAvoZFoQb4qhaFBr6UPotCHd+RxWEYzwv9Fok78qTMWyymeCNLizmLx2pGwhWDVg7GueG7lBOm6bQyMcQS62ywwiQ9JiJ/ARVGqLPDBctWLPY4zFyTY86454kva1YsEnwoIDJghoXPbUcHOKj9zwAFKEABClCAAhSgAAUoQAEKUIACSGhXYgpQgOsD2giqlbnGmc4AAAAASUVORK5CYII=" alt="Docs"></a>
+  <a href="https://ci.appveyor.com/project/rikyoz/bit7z" title="AppVeyor CI Build Status"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat-square&logo=appveyor&logoColor=white&label=" alt="Build status"></a>
+  <a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE" title="Project License"><img src="https://img.shields.io/badge/-GPL%20v2-lightgrey.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAAvUlEQVR42u3Zt1EEURRE0Ye0gFwI4BWJoC0KGxftExk+RQATAN+nLpo1R0+v6NsJHPOLcO4vKkrPVexEcMFZN8AQ7UXwCBx0ART6VtiN4BCA1AHO+SnVAEg1AFINgFQDINUASDUAUg2AVAMg1QBINQBSDYBUAyDVAMhxAVfUdzkmYJ+7mj1xPQ7gjbWYJTmQbGsB77zy0mjPPQH9UwOKAQYYYIABBhhggAFzCTDAAAMMMGDS+v2a9V8Vzs1PH+dRolvEzoAoAAAAAElFTkSuQmCC" alt="License"></a>
 </p>
 <h3 align="center">A C++ static library offering a clean and simple interface to the 7-zip DLLs</h3>
 
 <p align="center">
-  <a href="#supported-features">Supported Features</a> •
-  <a href="#getting-started-library-usage">Getting Started</a> •
-  <a href="#download">Download</a> •
-  <a href="#requirements">Requirements</a> •
-  <a href="#building-bit7z">Building</a> •
-  <a href="#donations">Donations</a> •
-  <a href="#license-gpl-v2">License</a>
+  <a href="#supported-features" title="List of Features Supported by the Library">Supported Features</a> •
+  <a href="#getting-started-library-usage" title="Basic Source Code Examples">Getting Started</a> •
+  <a href="#download" title="Download Pre-compiled Packages">Download</a> •
+  <a href="#requirements" title="Usage Requirements">Requirements</a> •
+  <a href="#building-bit7z" title="Building the Library">Building</a> •
+  <a href="#donate" title="Support the Project">Donate</a> •
+  <a href="#license-gpl-v2" title="Project License">License</a>
 </p>
 
 ## Introduction
 
-**bit7z** is a cross-platform C++ static library that allows the compression/extraction of archive files through a clean, simple, and entirely object-oriented wrapper interface to the dynamic libraries from the [7-zip](<https://www.7-zip.org/>) project.<br/>It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
+**bit7z** is a cross-platform C++ static library that allows the compression/extraction of archive files through a clean, simple, and entirely object-oriented wrapper interface to the dynamic libraries from the [7-zip](https://www.7-zip.org/ "7-zip Project Homepage") project.<br/>It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
 
 ## Supported Features
 
@@ -41,7 +41,7 @@ bit7z
 + **Selective extraction** of only specified files/folders **using wildcards** (from v3.x) and **regexes** (from v3.1.x).
 + Creation of **encrypted archives** (strong AES-256 encryption &mdash; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
-+ Possibility to choose the **compression level** (if supported by the archive format), the **compression method** (from v3.1.x &mdash; [supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods)), the **dictionary size** (from v3.1.x), and the **word size** (from v4.0.x).
++ Possibility to choose the **compression level** (if supported by the archive format), the **compression method** (from v3.1.x &mdash; [supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size** (from v3.1.x), and the **word size** (from v4.0.x).
 + **Automatic input archive format detection** (from v3.1.x).
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
@@ -62,10 +62,9 @@ Below are a few examples that show how to use some of the main features of bit7z
 ```cpp
 #include "bitfileextractor.hpp"
 
-using bit7z::Bit7zLibrary;
-using bit7z::BitFileExtractor;
+try { //bit7z classes can throw BitException objects
+    using namespace bit7z;
 
-try {
     Bit7zLibrary lib{ L"7za.dll" };
     BitFileExtractor extractor{ lib, BitFormat::SevenZip };
 
@@ -73,7 +72,7 @@ try {
     extractor.extract( L"path/to/archive.7z", L"out/dir/" );
 
     //extracting a specific file
-    extractor.extractMatching( L"path/to/arc.7z", L"file.pdf", L"out/dir/" );
+    extractor.extractMatching( L"path/to/archive.7z", L"file.pdf", L"out/dir/" );
 
     //extracting the first file of an archive to a buffer
     std::vector< byte_t > buffer;
@@ -82,7 +81,7 @@ try {
     //extracting an encrypted archive
     extractor.setPassword( L"password" );
     extractor.extract( L"path/to/another/archive.7z", L"out/dir/" );
-} catch ( const BitException& ex ) { /* do something with ex.what()...*/ }
+} catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
 ### Compressing files into an archive
@@ -90,10 +89,9 @@ try {
 ```cpp
 #include "bitfilecompressor.hpp"
 
-using bit7z::Bit7zLibrary;
-using bit7z::BitFileCompressor;
+try { //bit7z classes can throw BitException objects
+    using namespace bit7z;
 
-try {
     Bit7zLibrary lib{ L"7z.dll" };
     BitFileCompressor compressor{ lib, BitFormat::Zip };
 
@@ -117,14 +115,14 @@ try {
     compressor.compressFiles( files, L"protected_archive.zip" );
 
     //updating an existing zip archive
-    compressor.setUpdateMode( true );
+    compressor.setUpdateMode( UpdateMode::Append );
     compressor.compressFiles( files, L"existing_archive.zip" );
 
     //compressing a single file into a buffer
     std::vector< byte_t > buffer;
     BitFileCompressor compressor2{ lib, BitFormat::BZip2 };
     compressor2.compressFile( files[0], buffer );
-} catch ( const BitException& ex ) { /* do something with ex.what()...*/ }
+} catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
 ### Reading archive metadata
@@ -132,10 +130,9 @@ try {
 ```cpp
 #include "bitarchivereader.hpp"
 
-using bit7z::Bit7zLibrary;
-using bit7z::BitArchiveReader;
+try { //bit7z classes can throw BitException objects
+    using namespace bit7z;
 
-try {
     Bit7zLibrary lib{ L"7za.dll" };
     BitArchiveReader arc{ lib, L"archive.7z", BitFormat::SevenZip };
 
@@ -161,7 +158,7 @@ try {
         wcout << L"  Size: "        << item.size() << endl;
         wcout << L"  Packed size: " << item.packSize() << endl;
     }
-} catch ( const BitException& ex ) { /* do something with ex.what()...*/ }
+} catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
 A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
@@ -182,29 +179,32 @@ Obviously, you can also clone/download this repository and build the library by 
 
 ## Requirements
 
-+ **Target OS:** Windows (both x86 and x64).
-+ **Compiler:** MSVC 2012 or greater (MSVC 2010 supported until v2.x).
-+ **DLLs:** 7-zip DLLs (v19.00 for the GitHub release packages).
++ **Target OS:** Windows**<sup>1</sup>**, Linux**<sup>2</sup>**.
++ **Target Architectures:** x86, x86_64.
++ **Compilers:** MSVC 2015 or greater**<sup>3</sup>**, MinGW v6.4 or greater, GCC v4.9 or greater, Clang 3.5 or greater.
++ **Shared Libraries:** a 7-zip DLL on Windows, a 7-zip/p7zip .so library on Linux**<sup>4</sup>**.
 
-The 7-zip dlls are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/).
+The 7-zip DLLs are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/).
 
-**Note**: in order to use this library you should link your program not only with **bit7z** but also with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`).
+**<sup>1</sup>**On Windows, in order to use this library you should link your program _also_ with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`).
 
-**Note 2**: even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the dlls of previous versions, such as v16.04. However, it is _strongly suggested_ to use dlls with the same version.
+**<sup>2</sup>**The library _may_ work also on Mac OSX, but it has not been tested yet.
 
-**Note 3**: the code has been tested with MSVC 2012, 2015, 2017 and 2019.
+**<sup>3</sup>**MSVC 2010 was supported until v2.x, MSVC 2012 was supported until v3.1.x.
+
+**<sup>4</sup>**Even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the DLLs of previous versions, such as v16.04. However, it is _strongly suggested_ to use DLLs with the same version.
 
 ## Building bit7z
 
 A guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
-## Donations
+## Donate
 
 If you have found this project useful, please consider supporting it with a small donation or buying me a coffee/beer, so that I can keep improving it!
 Thank you! :)
 
 <div align="center">
-<a href='https://github.com/sponsors/rikyoz' target='_blank'><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Sponsor%20this%20project-fafbfc?logo=GitHub%20Sponsors' border='0' alt='Sponsor me on GitHub' /></a> <a href='https://ko-fi.com/G2G1LS1P' target='_blank'><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-red?logo=ko-fi&logoColor=white' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC"><img src="https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABBCAMAAABW61JJAAAAM1BMVEUAAAD///////////////////////////////////////////////////////////////+3leKCAAAAEHRSTlMAv0CA7xBgrzDfn3BQIM+PWN4WLwAAAfhJREFUeF69llmS3CAQRLMWNi0t7n9ax/RI7lCOQMh2+H0DovQqo8A/RpNcksw0455Yu8i8ostabxFFB6sDSOcWqY7gC1p4HSPimlxHyU8dMAWXTJV4WkSpf3eFUIkib7xekC96aqE1M3ayeWXmxSOIjfd/CFMlNjjbhFCV3R4TJLaJemLqx0RgbFOpgr4igfKiud9scnVAaVfpuD2AP+O0gHjxL1JSRX/JbrrMoPSrKUl6EzRFpItSkm4qqICdDuAVLwAdRTXtWqRV48YFELpvkFaSllNMt4s0R5JlzRuEWCqjR3JSq0/2rKqa1J8kQNl2fcArAEK2tY7j+WMlkKbR/dl3m5SkEUoGQmFZ8DqIBCAcwSqUpHt8BpALBWZ8Jk0BwOIfm49mkk8rgJDqQQmUpC4pvpebn2xQkhq4mH4vs3K2yUn68JI3ZrZoOCKR2CZaSXLFmXUxYZvgmUSXy/rFbGYilzb7MynInc3eTIpdK76tIDhJa7uvPMX71503+qok06HXXQLKyeZkZqrjD9z56Kui6NGZScths0tnJm00GvqwMwFktzkGJ8mAw2af9kxSfmT14SQF2G5zFOGxnHabf3aAHX2VMcpGScy7zWGCycE7KkZz+yE8dsdZ9YtlopkxzsY2n8KPrMc42XzMRIl6TJjkNxH/kV+EeH5bYbU1DgAAAABJRU5ErkJggg==&logoColor=white" alt="Donations" height='24' style='border:0px;height:24px;'></a>
+<a href='https://github.com/sponsors/rikyoz' target='_blank' title="Support this project via GitHub Sponsor"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Sponsor%20this%20project-fafbfc?logo=GitHub%20Sponsors' border='0' alt='Sponsor me on GitHub' /></a> <a href='https://ko-fi.com/G2G1LS1P' target='_blank' title="Support this project via Ko-Fi"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-red?logo=ko-fi&logoColor=white' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC" title="Support this project via PayPal"><img src="https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABBCAMAAABW61JJAAAAM1BMVEUAAAD///////////////////////////////////////////////////////////////+3leKCAAAAEHRSTlMAv0CA7xBgrzDfn3BQIM+PWN4WLwAAAfhJREFUeF69llmS3CAQRLMWNi0t7n9ax/RI7lCOQMh2+H0DovQqo8A/RpNcksw0455Yu8i8ostabxFFB6sDSOcWqY7gC1p4HSPimlxHyU8dMAWXTJV4WkSpf3eFUIkib7xekC96aqE1M3ayeWXmxSOIjfd/CFMlNjjbhFCV3R4TJLaJemLqx0RgbFOpgr4igfKiud9scnVAaVfpuD2AP+O0gHjxL1JSRX/JbrrMoPSrKUl6EzRFpItSkm4qqICdDuAVLwAdRTXtWqRV48YFELpvkFaSllNMt4s0R5JlzRuEWCqjR3JSq0/2rKqa1J8kQNl2fcArAEK2tY7j+WMlkKbR/dl3m5SkEUoGQmFZ8DqIBCAcwSqUpHt8BpALBWZ8Jk0BwOIfm49mkk8rgJDqQQmUpC4pvpebn2xQkhq4mH4vs3K2yUn68JI3ZrZoOCKR2CZaSXLFmXUxYZvgmUSXy/rFbGYilzb7MynInc3eTIpdK76tIDhJa7uvPMX71503+qok06HXXQLKyeZkZqrjD9z56Kui6NGZScths0tnJm00GvqwMwFktzkGJ8mAw2af9kxSfmT14SQF2G5zFOGxnHabf3aAHX2VMcpGScy7zWGCycE7KkZz+yE8dsdZ9YtlopkxzsY2n8KPrMc42XzMRIl6TJjkNxH/kV+EeH5bYbU1DgAAAABJRU5ErkJggg==&logoColor=white" alt="Donations" height='24' style='border:0px;height:24px;'></a>
 </div>
 
 ## License (GPL v2)
@@ -227,7 +227,5 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 <br/>
 <div align="center">
-
 Copyright &copy; 2014 - 2021 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)
-
 </div>
