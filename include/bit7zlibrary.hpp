@@ -27,8 +27,12 @@
 #ifdef _WIN32
 constexpr auto default_dll = L"7z.dll";
 #else
-constexpr auto default_dll = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip shared library
 struct GUID;
+#ifdef __linux__
+constexpr auto default_dll = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip shared library
+#else
+constexpr auto default_dll = "./7z.so";
+#endif
 #endif
 
 struct IInArchive;
