@@ -339,6 +339,11 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION
     target_compile_options( ${TARGET_NAME} PRIVATE -Wno-inconsistent-missing-override )
 endif()
 
+if( APPLE )
+    set( CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>" )
+    set( CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>" )
+endif()
+
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0 )
     target_compile_options( ${TARGET_NAME} PRIVATE -Wno-missing-field-initializers )
 endif()
