@@ -14,8 +14,8 @@ bit7z
 <p align="center">
   <a href="https://github.com/rikyoz/bit7z/releases" title="GitHub Release"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat-square&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a> 
   <img src="https://img.shields.io/badge/-C++14/17-306CCA.svg?style=flat-square&logo=C%2B%2B&logoColor=white" alt="C++14/17" title="C++ Standards Used: C++14/17">
-  <img src="https://img.shields.io/badge/-Windows-4D57D2.svg?style=flat-square&logo=windows&logoColor=white" alt="Windows" title="Supported Platform: Windows">
-  <img src="https://img.shields.io/badge/-Linux-blueviolet.svg?style=flat-square&logo=linux&logoColor=white" alt="Linux" title="Supported Platform: Linux">
+  <img src="https://img.shields.io/badge/-Windows-664BAE.svg?style=flat-square&logo=windows&logoColor=white" alt="Windows" title="Supported Platform: Windows">
+  <img src="https://img.shields.io/badge/-Linux-9C2A91.svg?style=flat-square&logo=linux&logoColor=white" alt="Linux" title="Supported Platform: Linux">
   <img src="https://img.shields.io/badge/-macOS-red.svg?style=flat-square&logo=apple&logoColor=white" alt="macOS" title="Supported Platform: macOS">
   <img src="https://img.shields.io/badge/-x86%20&middot;%20x64-orange.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAQAAAAAYLlVAAAC1UlEQVR42u3WA9AjWRSA0bu2bdu2bdssrm3btm3btm3bmX+Ms7rLTiW9NUmvcsL7XuELu6Ojoz5DWcc5nvKp2kBdPvesi21m1Pgr7OxjrfWtgw0VZZjKM9rjXfNHM+bWWzutGo2YSH/tNm+jgNe1XzdDR322V41Tox5D6K4qY0WRtVRnjyhysercH0VeVJ13o8hXqvNNFOlSna4oUlOd2r8moBPwoQfd6THfoLweauqp6aJ8wInmMmjujWAFtwMeNJup5cXsVnWYDyDtajQjmMp7QOoypxGMbMtyAe+Ztf5/JTaJAkM6mjRXrj0KpE9zdZIyAV8bLX5lBIPlszXAVlGXMwAr5fwskL4wdPzAfGUC5o9kJy+o+dCVloiwJNg2907wimddZrqcB9GtNQF3RXI+kI5yCcgADwF6yvfLNa0JWD7n5dWXAa4lbZwrR7UioKdhc76vdEB+KxzbioAncxpGr9IBM+XKDa0IuCanaWkS8BzguEhqrQg4P6e5mgasbV+7WCySvWlFwIU5zdYooMhytCbghpzGLh9gAodCWjFXXwDSV4aJH5inWcBLkbzTOMBa9rWvk92jH5BWqBvwjSHKBfQ3as4HlvoSFq2b+zcB6bXIj6pZABvnPKzPgPSJlxV/hkUH5v7SUPiv2LN5wKuRjO82wDdON6xFSwW8XvhdcGYkrzUPYJf4lcktZh4jxg8sViqA9SKZxDo2NH0km1ImgE2jDjuBLXK6FPX1N1fUYQnKBnCeGeN3jGdPfUC+P27TyO7GjN8xoUMpHZCecKZ97etE9+hD6vKQOz1jgMa6u90J+VO9V//OaXnzgE5Al+p0iyLfqM63UeRV1Xk/ilylOo9Gkc1U55AoMrz+qjJJ1OMQ1bgq6jOYr1Rh9EgFZtd+q0QjVtFeW0UzFvGJ9uhhrSjDSE7UX6tdaMIoz0R2cbvXfKE2UJevvOEe+5kuOjr+qb4H0/HV/SQ0YjEAAAAASUVORK5CYII=" alt="x86, x64" title="Supported CPU Architectures: x86, x64">
   <a href="#donations" title="Donate"><img src="https://img.shields.io/badge/-donate-yellow.svg?style=flat-square&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABBCAMAAABW61JJAAAAM1BMVEUAAAD///////////////////////////////////////////////////////////////+3leKCAAAAEHRSTlMAv0CA7xBgrzDfn3BQIM+PWN4WLwAAAfhJREFUeF69llmS3CAQRLMWNi0t7n9ax/RI7lCOQMh2+H0DovQqo8A/RpNcksw0455Yu8i8ostabxFFB6sDSOcWqY7gC1p4HSPimlxHyU8dMAWXTJV4WkSpf3eFUIkib7xekC96aqE1M3ayeWXmxSOIjfd/CFMlNjjbhFCV3R4TJLaJemLqx0RgbFOpgr4igfKiud9scnVAaVfpuD2AP+O0gHjxL1JSRX/JbrrMoPSrKUl6EzRFpItSkm4qqICdDuAVLwAdRTXtWqRV48YFELpvkFaSllNMt4s0R5JlzRuEWCqjR3JSq0/2rKqa1J8kQNl2fcArAEK2tY7j+WMlkKbR/dl3m5SkEUoGQmFZ8DqIBCAcwSqUpHt8BpALBWZ8Jk0BwOIfm49mkk8rgJDqQQmUpC4pvpebn2xQkhq4mH4vs3K2yUn68JI3ZrZoOCKR2CZaSXLFmXUxYZvgmUSXy/rFbGYilzb7MynInc3eTIpdK76tIDhJa7uvPMX71503+qok06HXXQLKyeZkZqrjD9z56Kui6NGZScths0tnJm00GvqwMwFktzkGJ8mAw2af9kxSfmT14SQF2G5zFOGxnHabf3aAHX2VMcpGScy7zWGCycE7KkZz+yE8dsdZ9YtlopkxzsY2n8KPrMc42XzMRIl6TJjkNxH/kV+EeH5bYbU1DgAAAABJRU5ErkJggg==&logoColor=white" alt="donate"></a>
@@ -184,20 +184,19 @@ Obviously, you can also clone/download this repository and build the library by 
 
 ## :toolbox: Requirements
 
-+ **Target OSes:** Windows<strong><sup>1</sup></strong>, Linux<strong><sup>2</sup></strong>.
-+ **Target Architectures:** x86, x86_64.
-+ **Compilers:** MSVC 2015 or greater<strong><sup>3</sup></strong>, MinGW v6.4 or greater, GCC v4.9 or greater, Clang 3.5 or greater.
-+ **Shared Libraries:** a 7-zip DLL on Windows, a 7-zip/p7zip .so library on Linux<strong><sup>4</sup></strong>.
++ **Operating Systems:** Windows, Linux, macOS<strong><sup>1</sup></strong>.
++ **Architectures:** x86, x86_64.
++ **Compilers:** MSVC 2015 or greater<strong><sup>2</sup></strong>, MinGW v6.4 or greater, GCC v4.9 or greater, Clang 3.5 or greater.
++ **Shared Libraries:** a 7-zip DLL on Windows, a 7-zip/p7zip `.so` library on Unix<strong><sup>3</sup></strong>.
 
 The 7-zip DLLs are not shipped with bit7z but they are available at [7-zip.org](http://www.7-zip.org/).
 
-**<sup>1</sup>** On Windows, in order to use this library you should link your program _also_ with *oleaut32* and *user32* (e.g. `-lbit7z -loleaut32 -luser32`).
+**<sup>1</sup>** On Windows, you should link your program _also_ with *oleaut32* (e.g., `-lbit7z -loleaut32`).<br/>
+On Unix systems (e.g., Linux, macOS), you should link your program _also_ with *dl* (e.g., `-lbit7z -ldl`).
 
-**<sup>2</sup>** The library _may_ work also on Mac OSX, but it has not been tested yet.
+**<sup>2</sup>** MSVC 2010 was supported until v2.x, MSVC 2012 was supported until v3.1.x.
 
-**<sup>3</sup>** MSVC 2010 was supported until v2.x, MSVC 2012 was supported until v3.1.x.
-
-**<sup>4</sup>** Even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the DLLs of previous versions, such as v16.04. However, it is _strongly suggested_ to use DLLs with the same version.
+**<sup>3</sup>** Even if compiled with the latest version of 7-zip, **bit7z** _should_ work also with the DLLs of previous versions, such as v16.04. However, it is _strongly suggested_ to use DLLs with the same version.
 
 ## :gear: Building bit7z
 
