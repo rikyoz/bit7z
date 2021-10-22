@@ -105,9 +105,8 @@ namespace bit7z {
             friend class BitArchiveInfo;
     };
 
-    /* Checking if BitArchiveItem class is copyable and movable.
-     * This check ensures that users can modify the vector of items returned by BitArchiveInfo::items(),
-     * allowing, for example, to call std::sort on it. */
+    /* Ensuring that users can apply the operations in <algorithm> on the vector returned by BitArchiveInfo::items().
+     * E.g., calling std::sort on a std::vector<T> requires the type T to be MoveConstructible and MoveAssignable. */
     static_assert(std::is_copy_constructible<BitArchiveItem>::value, "BitArchiveItem must be copy-constructible!");
     static_assert(std::is_copy_assignable<BitArchiveItem>::value, "BitArchiveItem must be copy-assignable!");
     static_assert(std::is_move_constructible<BitArchiveItem>::value, "BitArchiveItem must be move-constructible!");
