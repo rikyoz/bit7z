@@ -22,6 +22,7 @@
 #ifndef _WIN32
 
 #include <chrono>
+#include <ctime>
 
 #include "bitwindows.hpp"
 #include "internal/fs.hpp"

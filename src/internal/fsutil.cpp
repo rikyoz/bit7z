@@ -89,8 +89,8 @@ fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& searc
 }
 
 // Modified version of code found here: https://stackoverflow.com/a/3300547
-bool w_match( tstring::const_iterator pattern_it, tstring::const_iterator pattern_end,
-              tstring::const_iterator str_it, tstring::const_iterator str_end ) {
+bool w_match( tstring::const_iterator pattern_it, const tstring::const_iterator& pattern_end,
+              tstring::const_iterator str_it, const tstring::const_iterator& str_end ) {
     for ( ; pattern_it != pattern_end; ++pattern_it ) {
         switch ( *pattern_it ) {
             case TSTRING( '?' ):

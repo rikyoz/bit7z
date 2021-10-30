@@ -24,9 +24,9 @@
 #include "internal/formatdetect.hpp"
 
 #ifdef _WIN32
-#include <cwctype>
+#include <cwctype> // for std::iswdigit
 #else
-#include <cctype>
+#include <cctype> // for std::isdigit
 #endif
 
 #include "biterror.hpp"
