@@ -23,7 +23,7 @@
 
 namespace bit7z {
     /**
-     * @brief Class that allows to compress memory buffers to the filesystem, to standard streams,
+     * @brief The BitMemCompressor class allows to compress memory buffers to the filesystem, to standard streams,
      *        or to other memory buffers.
      *
      * It let decide various properties of the produced archive file, such as the password

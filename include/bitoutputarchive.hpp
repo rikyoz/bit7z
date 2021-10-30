@@ -34,10 +34,10 @@ namespace bit7z {
 
     using DeletedItems = std::set< uint32_t >;
 
-    /* General note: I tried my best to explain how indices work here, but it's a bit complex. */
+    /* General note: I tried my best to explain how indices work here, but it is a bit complex. */
 
     /* We introduce a strong index type to differentiate between indices in the output
-     * archive (uint32_t, as used by the UpdateCallback) and the corresponding indexes
+     * archive (uint32_t, as used by the UpdateCallback), and the corresponding indexes
      * in the input archive (input_index). In this way, we avoid implicit conversions
      * between the two kinds of indices.
      *
@@ -51,14 +51,14 @@ namespace bit7z {
      * of an input_index may differ from the corresponding UpdateCallback's index.
      *
      * Note: given an input_index i:
-     *         if i <  mInputArchiveItemsCount, the item is old (old item in the input archive);
+     *         if i < mInputArchiveItemsCount, the item is old (old item in the input archive);
      *         if i >= mInputArchiveItemsCount, the item is new (added by the user); */
     enum class input_index : std::uint32_t {};
 
     class UpdateCallback;
 
     /**
-     * @brief Class that, given a creator object, allows to create new archives.
+     * @brief The BitOutputArchive class, given a creator object, allows creating new archives.
      */
     class BitOutputArchive {
         public:
@@ -165,7 +165,7 @@ namespace bit7z {
              * @param in_dir    the directory where to search for files to be added to the output archive.
              * @param filter    (optional) the wildcard filter to be used for searching the files.
              * @param recursive (optional) recursively search the files in the given directory
-             *                  and all of its sub-directories.
+             *                  and all of its subdirectories.
              */
             void addFiles( const tstring& in_dir, const tstring& filter = TSTRING( "*.*" ), bool recursive = true );
 
@@ -226,13 +226,13 @@ namespace bit7z {
              *   Position i = index in range [0, itemsCount() - 1] used by UpdateCallback.
              *   Value at pos. i = corresponding index in the input archive (type input_index).
              *
-             * if there are some deleted items, then i != mInputIndices[i]
+             * If there are some deleted items, then i != mInputIndices[i]
              * (at least for values of i greater than the index of the first deleted item).
              *
-             * if there are no deleted items, mInputIndices is empty, and itemInputIndex(i)
+             * Otherwise, if there are no deleted items, mInputIndices is empty, and itemInputIndex(i)
              * will return input_index with value i.
              *
-             * This vector is either empty or it has size equal to itemsCount() (thanks to updateInputIndices()). */
+             * This vector is either empty, or it has size equal to itemsCount() (thanks to updateInputIndices()). */
             std::vector< input_index > mInputIndices;
 
             virtual BitPropVariant itemProperty( input_index index, BitProperty prop ) const;

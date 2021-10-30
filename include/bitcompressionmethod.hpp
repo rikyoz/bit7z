@@ -21,7 +21,7 @@
 
 namespace bit7z {
     /**
-     * @brief Enum that represents the compression methods used by 7z when creating archives.
+     * @brief The BitCompressionMethod enum represents the compression methods used by 7z when creating archives.
      */
     enum struct BitCompressionMethod {
         Copy,

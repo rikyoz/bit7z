@@ -23,12 +23,12 @@
 
 namespace bit7z {
     /**
-     * @bfrief Interface class representing a generic item (either inside or outside an archive).
+     * @bfrief The BitGenericItem interface class represents a generic item (either inside or outside an archive).
      */
     class BitGenericItem {
         public:
             /**
-             * @return true if and only if the item is a directory (i.e. it has the property BitProperty::IsDir).
+             * @return true if and only if the item is a directory (i.e., it has the property BitProperty::IsDir).
              */
             BIT7Z_NODISCARD virtual bool isDir() const = 0;
 

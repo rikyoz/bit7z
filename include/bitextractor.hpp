@@ -32,7 +32,7 @@ namespace bit7z {
     }
 
     /**
-     * @brief Generic class that allows to extract the content of archives from supported input types.
+     * @brief The BitExtractor template class allows to extract the content of archives from supported input types.
      */
     template< typename Input >
     class BitExtractor : public BitAbstractArchiveOpener {
@@ -40,13 +40,13 @@ namespace bit7z {
             /**
              * @brief Constructs a BitExtractor object.
              *
-             * The Bit7zLibrary parameter is needed in order to have access to the functionalities
-             * of the 7z DLLs. On the other hand, the BitInFormat is required in order to know the
+             * The Bit7zLibrary parameter is needed to have access to the functionalities
+             * of the 7z DLLs. On the contrary, the BitInFormat is required to know the
              * format of the in_file archives.
              *
              * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
              * argument has default value BitFormat::Auto (automatic format detection of the in_file archive).
-             * Otherwise, when BIT7Z_AUTO_FORMAT is not defined (i.e. no auto format detection available)
+             * Otherwise, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available)
              * the format argument must be specified.
              *
              * @param lib       the 7z library to use.
@@ -63,7 +63,7 @@ namespace bit7z {
              */
             void extract( Input in_file, const tstring& out_dir = TSTRING( "" ) ) const {
                 BitInputArchive in_archive( *this, in_file );
-                in_archive.extract( out_dir, vector< uint32_t >() );
+                in_archive.extract( out_dir );
             }
 
             /**
@@ -91,8 +91,8 @@ namespace bit7z {
             }
 
             /**
-             * @brief Extracts the content of the given archive into a map of memory buffers, where keys are the paths
-             * of the files (inside the archive) and values are the corresponding decompressed contents.
+             * @brief Extracts the content of the given archive into a map of memory buffers, where the keys are
+             * the paths of the files (inside the archive), and the values are their decompressed contents.
              *
              * @param in_file   the input archive file.
              * @param out_map   the output map.

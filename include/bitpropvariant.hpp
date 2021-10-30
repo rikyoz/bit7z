@@ -141,7 +141,7 @@ namespace bit7z {
     };
 
     /**
-     * @brief A light extension to the WinAPI PROPVARIANT struct providing useful getters.
+     * @brief The BitPropVariant struct is a light extension to the WinAPI PROPVARIANT struct providing useful getters.
      */
     struct BitPropVariant : public PROPVARIANT {
             /**
@@ -185,7 +185,7 @@ namespace bit7z {
             explicit BitPropVariant( const std::wstring& value );
 
             /**
-             * @brief Constructs a 8-bit unsigned integer BitPropVariant
+             * @brief Constructs an 8-bit unsigned integer BitPropVariant
              *
              * @param value the uint8_t value of the BitPropVariant
              */
@@ -213,7 +213,7 @@ namespace bit7z {
             explicit BitPropVariant( uint64_t value ) noexcept;
 
             /**
-             * @brief Constructs a 8-bit integer BitPropVariant
+             * @brief Constructs an 8-bit integer BitPropVariant
              *
              * @param value the int8_t value of the BitPropVariant
              */
@@ -250,7 +250,7 @@ namespace bit7z {
             /**
              * @brief BitPropVariant destructor.
              *
-             * @note This is not virtual, in order to maintain the same memory layout of the base struct!
+             * @note This is not virtual to maintain the same memory layout of the base struct!
              */
             ~BitPropVariant();
 
@@ -354,7 +354,7 @@ namespace bit7z {
             BIT7Z_NODISCARD FILETIME getFileTime() const;
 
             /**
-             * @return the the value of this variant converted from any supported type to std::wstring.
+             * @return the value of this variant converted from any supported type to std::wstring.
              */
             BIT7Z_NODISCARD tstring toString() const;
 

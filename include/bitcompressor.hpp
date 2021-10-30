@@ -38,7 +38,7 @@ namespace bit7z {
     using namespace filesystem;
 
     /**
-     * @brief Generic class that allows to compress files into archives.
+     * @brief The BitCompressor template class allows to compress files into archives.
      *
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.
@@ -49,8 +49,8 @@ namespace bit7z {
             /**
              * @brief Constructs a BitCompressor object.
              *
-             * The Bit7zLibrary parameter is needed in order to have access to the functionalities
-             * of the 7z DLLs. On the other hand, the BitInOutFormat is required in order to know the
+             * The Bit7zLibrary parameter is needed to have access to the functionalities
+             * of the 7z DLLs. On the contrary, the BitInOutFormat is required to know the
              * format of the output archive.
              *
              * @param lib       the 7z library to use.

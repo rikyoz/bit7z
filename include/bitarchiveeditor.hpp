@@ -29,9 +29,11 @@ namespace bit7z {
     using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
 
     /**
-     * @brief Class that allows to create new file archives or update old ones.
+     * @brief The BitArchiveEditor class allows to create new file archives or update old ones.
      *        Update operations supported are the addition of new items,
      *        as well as renaming/updating/deleting old items;
+     *
+     * @note  Changes are applied to the archive only after calling the applyChanges() method.
      */
     class BitArchiveEditor : public BitArchiveWriter {
         public:
@@ -63,12 +65,12 @@ namespace bit7z {
              *
              * @note BitArchiveEditor doesn't support UpdateMode::None.
              *
-             * @param mode the desired update mode.
+             * @param mode the desired update mode (either UpdateMode::Append or UpdateMode::Overwrite).
              */
             void setUpdateMode( UpdateMode mode ) override;
 
             /**
-             * @brief Sets a new path for the item at the specified index.
+             * @brief Requests to change the path of the item at the specified index with the given one.
              *
              * @param index    the index of the item to be renamed.
              * @param new_path the new path (in the archive) desired for the item.
@@ -76,7 +78,7 @@ namespace bit7z {
             void renameItem( uint32_t index, const tstring& new_path );
 
             /**
-             * @brief Sets a new path for the item having the given old_path.
+             * @brief Requests to change the path of the item from old_path to new_path.
              *
              * @param old_path the old path (in the archive) of the item to be renamed.
              * @param new_path the new path (in the archive) desired for the item.
@@ -84,7 +86,8 @@ namespace bit7z {
             void renameItem( const tstring& old_path, const tstring& new_path );
 
             /**
-             * @brief Updates the content of the item at the specified index with the data from the given file.
+             * @brief Requests to update the content of the item at the specified index
+             *        with the data from the given file.
              *
              * @param index    the index of the item to be updated.
              * @param in_file  the path to the file containing the new data for the item.
@@ -92,7 +95,8 @@ namespace bit7z {
             void updateItem( uint32_t index, const tstring& in_file );
 
             /**
-             * @brief Updates the content of the item at the specified index with the data from the given buffer.
+             * @brief Requests to update the content of the item at the specified index
+             *        with the data from the given buffer.
              *
              * @param index     the index of the item to be updated.
              * @param in_buffer the buffer containing the new data for the item.
@@ -100,7 +104,8 @@ namespace bit7z {
             void updateItem( uint32_t index, const vector< byte_t >& in_buffer );
 
             /**
-             * @brief Updates the content of the item at the specified index with the data from the given stream.
+             * @brief Requests to update the content of the item at the specified index
+             *        with the data from the given stream.
              *
              * @param index     the index of the item to be updated.
              * @param in_stream the stream of new data for the item.
@@ -108,7 +113,8 @@ namespace bit7z {
             void updateItem( uint32_t index, istream& in_stream );
 
             /**
-             * @brief Updates the content of the item at the specified path with the data from the given file.
+             * @brief Requests to update the content of the item at the specified path
+             *        with the data from the given file.
              *
              * @param item_path the path (in the archive) of the item to be updated.
              * @param in_file   the path to the file containing the new data for the item.
@@ -116,7 +122,8 @@ namespace bit7z {
             void updateItem( const tstring& item_path, const tstring& in_file );
 
             /**
-             * @brief Updates the content of the item at the specified path with the data from the given buffer.
+             * @brief Requests to update the content of the item at the specified path
+             *        with the data from the given buffer.
              *
              * @param item_path the path (in the archive) of the item to be updated.
              * @param in_buffer the buffer containing the new data for the item.
@@ -124,7 +131,8 @@ namespace bit7z {
             void updateItem( const tstring& item_path, const vector< byte_t >& in_buffer );
 
             /**
-             * @brief Updates the content of the item at the specified path with the data from the given stream.
+             * @brief Requests to update the content of the item at the specified path
+             *        with the data from the given stream.
              *
              * @param item_path the path (in the archive) of the item to be updated.
              * @param in_stream the stream of new data for the item.

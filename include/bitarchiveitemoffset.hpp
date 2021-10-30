@@ -25,7 +25,7 @@ namespace bit7z {
     class BitInputArchive;
 
     /**
-     * @brief Class that represents an archived item but doesn't store its properties.
+     * @brief The BitArchiveItemOffset class represents an archived item but doesn't store its properties.
      */
     class BitArchiveItemOffset : public BitArchiveItem {
         public:

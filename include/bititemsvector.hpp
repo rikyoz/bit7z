@@ -41,8 +41,8 @@ namespace bit7z {
     using GenericInputItemVector = std::vector< GenericInputItemPtr >;
 
     /**
-     * @brief Class representing a vector of generic input items, i.e., that can come from the filesystem,
-     * from memory buffers, or from standard streams.
+     * @brief The BitItemsVector class represents a vector of generic input items, i.e., items that can come
+     * from the filesystem, from memory buffers, or from standard streams.
      */
     class BitItemsVector {
         public:
@@ -54,7 +54,7 @@ namespace bit7z {
              * @param in_dir    the directory to be indexed.
              * @param filter    (optional) the wildcard filter to be used for indexing;
              *                  empty string means "index all files".
-             * @param recursive (optional) recursively index the given directory and all of its sub-directories.
+             * @param recursive (optional) recursively index the given directory and all of its subdirectories.
              */
             void indexDirectory( const fs::path& in_dir,
                                  const tstring& filter = TSTRING( "" ),

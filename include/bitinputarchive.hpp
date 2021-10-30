@@ -33,7 +33,7 @@ namespace bit7z {
     using std::vector;
 
     /**
-     * @brief Class that, given a handler object, allows to read/extract the content of archives.
+     * @brief The BitInputArchive class, given a handler object, allows reading/extracting the content of archives.
      */
     class BitInputArchive {
         public:
@@ -107,14 +107,14 @@ namespace bit7z {
             /**
              * @param index the index of an item in the archive.
              *
-             * @return true if and only if the item at index is a folder.
+             * @return true if and only if the item at the given index is a folder.
              */
             BIT7Z_NODISCARD bool isItemFolder( uint32_t index ) const;
 
             /**
              * @param index the index of an item in the archive.
              *
-             * @return true if and only if the item at index is encrypted.
+             * @return true if and only if the item at the given index is encrypted.
              */
             BIT7Z_NODISCARD bool isItemEncrypted( uint32_t index ) const;
 
@@ -189,8 +189,8 @@ namespace bit7z {
             void extract( std::ostream& out_stream, uint32_t index = 0 ) const;
 
             /**
-             * @brief Extracts the content of the archive to a map of memory buffers, where keys are the paths
-             * of the files (inside the archive) and values are the corresponding decompressed contents.
+             * @brief Extracts the content of the archive to a map of memory buffers, where the keys are the paths
+             * of the files (inside the archive), and the values are their decompressed contents.
              *
              * @param out_map   the output map.
              */

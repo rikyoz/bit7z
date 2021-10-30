@@ -23,7 +23,7 @@
 
 namespace bit7z {
     /**
-     * @brief Class that allows to create new archives or update old ones with new items.
+     * @brief The BitArchiveWriter class allows to create new archives or update old ones with new items.
      */
     class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchive {
         public:

@@ -19,6 +19,10 @@
 #ifndef BITDEFINES_HPP
 #define BITDEFINES_HPP
 
+/* Uncomment the following macros if you don't want to define them yourself in your project files */
+//#define BIT7Z_AUTO_FORMAT
+//#define BIT7Z_REGEX_MATCHING
+
 #if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || ( defined( __cplusplus ) && __cplusplus >= 201703 )
 #define BIT7Z_CPP17
 #endif
@@ -41,7 +45,7 @@
 #   endif
 #endif
 
-/* The compiler doesn't support __has_cpp_attribute, but it's using C++17 standard. */
+/* The compiler doesn't support __has_cpp_attribute, but it is using C++17 standard. */
 #if !defined( BIT7Z_NODISCARD ) && defined( BIT7Z_CPP17 )
 #   define BIT7Z_NODISCARD [[nodiscard]]
 #endif

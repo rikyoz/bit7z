@@ -28,7 +28,7 @@ namespace bit7z {
     using std::map;
 
     /**
-     * @brief Class that represents an archived item and that stores all its properties for later use.
+     * @brief The BitArchiveItemInfo class represents an archived item and that stores all its properties for later use.
      */
     class BitArchiveItemInfo : public BitArchiveItem {
         public:
@@ -42,7 +42,7 @@ namespace bit7z {
             BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
 
             /**
-             * @return a map of all the available (i.e. non empty) item properties and their respective values.
+             * @return a map of all the available (i.e., non-empty) item properties and their respective values.
              */
             BIT7Z_NODISCARD map< BitProperty, BitPropVariant > itemProperties() const;
 

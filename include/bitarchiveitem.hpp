@@ -24,7 +24,7 @@
 namespace bit7z {
 
     /**
-     * Class representing an item inside an archive.
+     * The BitArchiveItem class represents a generic item inside an archive.
      */
     class BitArchiveItem : public BitGenericItem {
         public:
@@ -39,24 +39,25 @@ namespace bit7z {
             BIT7Z_NODISCARD uint32_t index() const noexcept;
 
             /**
-             * @return true if and only if the item is a directory (i.e. it has the property BitProperty::IsDir).
+             * @return true if and only if the item is a directory (i.e., it has the property BitProperty::IsDir).
              */
             BIT7Z_NODISCARD bool isDir() const override;
 
             /**
-             * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
+             * @return the item's name; if not available, it tries to get it from the element's path or,
+             *         if not possible, it returns an empty string.
              */
             BIT7Z_NODISCARD tstring name() const override;
 
             /**
-             * @return the extension of the item, if available or inferable from the name, or an empty string otherwise
-             * (e.g. when the item is a folder).
+             * @return the extension of the item, if available or if it can be inferred from the name;
+             *         otherwise it returns an empty string (e.g., when the item is a folder).
              */
             BIT7Z_NODISCARD tstring extension() const;
 
             /**
              * @return the path of the item in the archive, if available or inferable from the name, or an empty string
-             * otherwise.
+             *         otherwise.
              */
             BIT7Z_NODISCARD tstring path() const override;
 
@@ -96,7 +97,7 @@ namespace bit7z {
             BIT7Z_NODISCARD bool isEncrypted() const;
 
         protected:
-            uint32_t mItemIndex; //Note: it is not const since sub-class BitArchiveItemOffset can increment it!
+            uint32_t mItemIndex; //Note: it is not const since the subclass BitArchiveItemOffset can increment it!
 
             explicit BitArchiveItem( uint32_t item_index ) noexcept;
     };

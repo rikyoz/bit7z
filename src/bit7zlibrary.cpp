@@ -34,7 +34,7 @@
 
 using namespace bit7z;
 
-Bit7zLibrary::Bit7zLibrary( const tstring& dll_path ) : mLibrary( LoadLibrary( dll_path.c_str() ) ) {
+Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( LoadLibrary( library_path.c_str() ) ) {
     if ( mLibrary == nullptr ) {
         throw BitException( "Failed to load 7-zip library",
 #ifdef _WIN32

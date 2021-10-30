@@ -54,7 +54,7 @@ namespace bit7z {
     }
 
     /**
-     * @brief Class that specifies an extractable archive format.
+     * @brief The BitInFormat class specifies an extractable archive format.
      *
      * @note Usually, the user of the library should not create new formats and, instead,
      * use the ones provided by the BitFormat namespace.
@@ -72,7 +72,7 @@ namespace bit7z {
             BitInFormat& operator=( BitInFormat&& other ) = delete;
 
             /**
-             * @brief Constructs a BitInFormat object with the id value used by the 7z SDK.
+             * @brief Constructs a BitInFormat object with the ID value used by the 7z SDK.
              * @param value  the value of the format in the 7z SDK.
              */
             explicit constexpr BitInFormat( unsigned char value ) noexcept: mValue( value ) {}
@@ -99,7 +99,7 @@ namespace bit7z {
     };
 
     /**
-     * @brief Class that specifies a format available for creating new archives and extract old ones
+     * @brief The BitInOutFormat class specifies a format available for creating new archives and extract old ones.
      *
      * @note Usually, the user of the library should not create new formats and, instead,
      * use the ones provided by the BitFormat namespace
@@ -107,11 +107,11 @@ namespace bit7z {
     class BitInOutFormat : public BitInFormat {
         public:
             /**
-             * @brief Constructs a BitInOutFormat object with a id value, an extension and a set of supported features
+             * @brief Constructs a BitInOutFormat object with an ID value, an extension and a set of supported features.
              *
              * @param value         the value of the format in the 7z SDK
              * @param ext           the default file extension of the archive format
-             * @param defaultMethod the default compression method of the archive format.
+             * @param defaultMethod the default method used for compressing the archive format.
              * @param features      the set of features supported by the archive format
              */
             constexpr BitInOutFormat( unsigned char value,
@@ -148,7 +148,7 @@ namespace bit7z {
             BIT7Z_NODISCARD bool hasFeature( FormatFeatures feature ) const noexcept;
 
             /**
-             * @return the default compression method of the archive format.
+             * @return the default method used for compressing the archive format.
              */
             BIT7Z_NODISCARD BitCompressionMethod defaultMethod() const noexcept;
 

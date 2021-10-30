@@ -36,18 +36,20 @@ namespace bit7z {
     using TotalCallback = function< void( uint64_t ) >;
 
     /**
-     * @brief A std::function whose argument is the current processed size of the ongoing operation.
+     * @brief A std::function whose argument is the current processed size of the ongoing operation and returns
+     *        true or false whether the operation must continue or not.
      */
     using ProgressCallback = function< bool( uint64_t ) >;
 
     /**
      * @brief A std::function whose arguments are the current processed input size and the current output size of the
-     * ongoing operation.
+     *        ongoing operation.
      */
     using RatioCallback = function< void( uint64_t, uint64_t ) >;
 
     /**
-     * @brief A std::function whose argument is the name of the file currently being processed by the ongoing operation.
+     * @brief A std::function whose argument is the path, in the archive, of the file currently being processed
+     *        by the ongoing operation.
      */
     using FileCallback = function< void( tstring ) >;
 
@@ -80,7 +82,7 @@ namespace bit7z {
             BIT7Z_NODISCARD virtual const BitInFormat& format() const = 0;
 
             /**
-             * @return the password used to open, extract or encrypt the archive.
+             * @return the password used to open, extract, or encrypt the archive.
              */
             BIT7Z_NODISCARD tstring password() const;
 
@@ -158,14 +160,14 @@ namespace bit7z {
             void setRetainDirectories( bool retain ) noexcept;
 
             /**
-             * @brief Sets the callback to be called when the total size of an operation is available.
+             * @brief Sets the function to be called when the total size of an operation is available.
              *
              * @param callback  the total callback to be used.
              */
             void setTotalCallback( const TotalCallback& callback );
 
             /**
-             * @brief Sets the callback to be called when the processed size of the ongoing operation is updated.
+             * @brief Sets the function to be called when the processed size of the ongoing operation is updated.
              *
              * @note The completion percentage of the current operation can be obtained by calculating
              * static_cast<int>( ( 100.0 * processed_size ) / total_size ).
@@ -175,7 +177,7 @@ namespace bit7z {
             void setProgressCallback( const ProgressCallback& callback );
 
             /**
-             * @brief Sets the callback to be called when the input processed size and current output size of the
+             * @brief Sets the function to be called when the input processed size and current output size of the
              * ongoing operation are known.
              *
              * @note The ratio percentage of a compression operation can be obtained by calculating
@@ -186,14 +188,14 @@ namespace bit7z {
             void setRatioCallback( const RatioCallback& callback );
 
             /**
-             * @brief Sets the callback to be called when the currently file being processed changes.
+             * @brief Sets the function to be called when the currently file being processed changes.
              *
              * @param callback  the file callback to be used.
              */
             void setFileCallback( const FileCallback& callback );
 
             /**
-             * @brief Sets the callback to be called when a password is needed to complete the ongoing operation.
+             * @brief Sets the function to be called when a password is needed to complete the ongoing operation.
              *
              * @param callback  the password callback to be used.
              */

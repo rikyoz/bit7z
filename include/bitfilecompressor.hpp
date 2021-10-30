@@ -37,7 +37,7 @@ namespace bit7z {
     using namespace filesystem;
 
     /**
-     * @brief Class that allows to compress files and directories into file archives.
+     * @brief The BitFileCompressor class allows to compress files and directories into file archives.
      *
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.
@@ -47,8 +47,8 @@ namespace bit7z {
             /**
              * @brief Constructs a BitFileCompressor object.
              *
-             * The Bit7zLibrary parameter is needed in order to have access to the functionalities
-             * of the 7z DLLs. On the other hand, the BitInOutFormat is required in order to know the
+             * The Bit7zLibrary parameter is needed to have access to the functionalities
+             * of the 7z DLLs. On the contrary, the BitInOutFormat is required to know the
              * format of the output archive.
              *
              * @param lib       the 7z library used.
