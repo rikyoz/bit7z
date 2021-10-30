@@ -101,7 +101,7 @@ std::error_condition bit7z::internal_category_t::default_error_condition( int ev
     }
 }
 
-std::error_category& bit7z::internal_category() noexcept {
-    static internal_category_t instance{};
+const std::error_category& bit7z::internal_category() noexcept {
+    static const internal_category_t instance{};
     return instance;
 }

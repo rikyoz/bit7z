@@ -165,7 +165,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
     }
 }
 
-std::error_category& bit7z::hresult_category() noexcept {
-    static bit7z::hresult_category_t instance{};
+const std::error_category& bit7z::hresult_category() noexcept {
+    static const bit7z::hresult_category_t instance{};
     return instance;
 }
