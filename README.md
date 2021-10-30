@@ -40,6 +40,7 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Solid archives** (only for 7z).
 + **Multi-volume archives** (from v2.1.x).
 + **Operation callbacks**, that allow to obtain real time information about the ongoing operations (from v2.1.x).
++ **Cancelling** or **pausing** the current operation (from v4.0.x).
 
 Please note that the presence or not of some of the above features depends on the particular .dll used along with bit7z.
 
