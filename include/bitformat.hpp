@@ -159,7 +159,7 @@ namespace bit7z {
     };
 
     /**
-     * @brief The namespace that contains a set of archive formats usable with bit7z classes
+     * @brief The namespace that contains a set of archive formats usable with bit7z classes.
      */
     namespace BitFormat {
 #ifdef __cpp_inline_variables

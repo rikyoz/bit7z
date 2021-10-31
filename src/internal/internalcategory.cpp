@@ -34,7 +34,7 @@ std::string internal_category_t::message( int ev ) const noexcept {
         case BitError::Fail:
             return "Unspecified error.";
         case BitError::FilterNotSpecified:
-            return "Item filter not specified.";
+            return "No item filter specified.";
         case BitError::FormatFeatureNotSupported:
             return "Feature not supported by the archive format.";
         case BitError::IndicesNotSpecified:

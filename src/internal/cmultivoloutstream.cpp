@@ -31,7 +31,7 @@ using namespace bit7z;
  *  + Use of vector instead of CObjectVector
  *  + Use of tstring instead of FString
  *  + Use of uint64_t instead of UInt64
- *  + The work performed originally by the Init method is now performed by the class constructor */
+ *  + The work performed originally by the Init method is now performed by the class constructor. */
 
 CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const tstring& archiveName ) :
     mVolSize( volSize ),

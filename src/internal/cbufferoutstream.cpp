@@ -59,14 +59,14 @@ STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* ne
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if the sum between current_index and offset would result in an integer overflow or underflow
+    // Checking if the sum between current_index and offset would result in an integer overflow or underflow.
     if ( check_overflow( current_index, offset ) ) {
         return E_INVALIDARG;
     }
 
     int64_t new_index = current_index + offset;
 
-    // Making sure that the new_index value is between 0 and mBuffer.size()
+    // Making sure the new_index value is between 0 and mBuffer.size()
     if ( new_index < 0 ) {
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
     }

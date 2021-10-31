@@ -64,8 +64,8 @@ BitPropVariantType lookupType( VARTYPE type ) {
         case VT_FILETIME:
             return BitPropVariantType::FileTime;
         default:
-            // this is very unlikely to happen:
-            // properties types used in archives are the ones supported by PropertyType enum class
+            /* This is unlikely to happen since properties types used in archives
+             * are the ones supported by PropertyType enum class.*/
             throw BitException( "Property type not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
 }
@@ -244,7 +244,7 @@ bool BitPropVariant::getBool() const {
     if ( vt != VT_BOOL ) {
         throw BitException( "BitPropVariant is not a bool", make_error_code( BitError::RequestedWrongVariantType ) );
     }
-    return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings
+    return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings.
 }
 
 tstring BitPropVariant::getString() const {
@@ -260,7 +260,7 @@ uint8_t BitPropVariant::getUInt8() const {
         case VT_UI1:
             return bVal;
         default:
-            throw BitException( "BitPropVariant is not a 8-bits unsigned integer",
+            throw BitException( "BitPropVariant is not an 8-bits unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -316,7 +316,7 @@ int8_t BitPropVariant::getInt8() const {
         case VT_I1:
             return cVal;
         default:
-            throw BitException( "BitPropVariant is not a 8-bits integer",
+            throw BitException( "BitPropVariant is not an 8-bits integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }

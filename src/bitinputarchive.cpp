@@ -77,7 +77,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 #else
     GUID format_GUID = formatGUID( mArchiveHandler.format() );
 #endif
-    // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
+    // NOTE: CMyComPtr is still needed: if an error occurs, and an exception is thrown,
     // the IInArchive object is deleted automatically!
     CMyComPtr< IInArchive > in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
 
@@ -91,10 +91,10 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
     if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detected_by_signature ) {
         /* User wanted auto-detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
-         * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
+         * NOTE: If user specified explicitly a format (i.e., not BitFormat::Auto), this check is not performed,
          *       and an exception is thrown (next if)!
          * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected
-         *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
+         *         a wrong format, no further check can be done, and an exception must be thrown (next if)! */
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         format_GUID = formatGUID( *mDetectedFormat );
         in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
@@ -114,12 +114,12 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
 
     auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
     if ( file_stream->fail() ) {
-        //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions
+        //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
         throw BitException( "Failed to open the archive file",
                             std::make_error_code( std::errc::io_error ), mArchivePath );
     }
 #ifdef BIT7Z_AUTO_FORMAT
-    //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
+    //if auto, detect the format from extension (and try later from signature if it fails), otherwise try passed format.
     mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath )
                                                             : &handler.format() );
 #else
@@ -131,14 +131,14 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )
     : mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
-    mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
+    mDetectedFormat = &handler.format(); //if auto, detect the format from content, otherwise try passed format.
     mInArchive = openArchiveStream( TSTRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream )
     : mArchiveHandler{ handler } {
     auto std_stream = bit7z::make_com< CStdInStream, IInStream >( in_stream );
-    mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
+    mDetectedFormat = &handler.format(); //if auto, detect the format from content, otherwise try passed format.
     mInArchive = openArchiveStream( TSTRING( "." ), std_stream );
 }
 
@@ -155,7 +155,7 @@ BitPropVariant BitInputArchive::itemProperty( uint32_t index, BitProperty proper
     BitPropVariant item_property;
     const HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve property for item at index " + std::to_string( index ),
+        throw BitException( "Could not retrieve property for item at the index " + std::to_string( index ),
                             make_hresult_code( res ) );
     }
     return item_property;
@@ -210,12 +210,12 @@ void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >&
 void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
@@ -229,12 +229,12 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) co
 void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
@@ -246,12 +246,12 @@ void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
 void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 

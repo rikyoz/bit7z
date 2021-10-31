@@ -50,7 +50,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     size_t remaining = mBuffer.cend() - mCurrentPosition;
     if ( remaining > static_cast< size_t >( size ) ) {
         /* Remaining buffer still to read is bigger than the buffer size requested by the user,
-         * so we need to read just "size" number of bytes */
+         * so we need to read just "size" number of bytes. */
         remaining = static_cast< size_t >( size );
     }
     /* else, the user requested to read a number of bytes greater than or equal to the number
@@ -89,14 +89,14 @@ STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* new
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if the sum between current_index and offset would result in an integer overflow or underflow
+    // Checking if the sum between current_index and offset would result in an integer overflow or underflow.
     if ( check_overflow( current_index, offset ) ) {
         return E_INVALIDARG;
     }
 
     int64_t new_index = current_index + offset;
 
-    // Making sure that the new_index value is between 0 and mBuffer.size()
+    // Making sure the new_index value is between 0 and mBuffer.size()
     if ( new_index < 0 ) {
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
     }

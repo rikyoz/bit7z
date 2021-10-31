@@ -163,7 +163,7 @@ namespace bit7z {
                                                         return index >= n_items;
                                                     } );
                 if ( find_res != indices.cend() ) {
-                    throw BitException( "Cannot extract item at index " + std::to_string( *find_res ),
+                    throw BitException( "Cannot extract item at the index " + std::to_string( *find_res ),
                                         make_error_code( BitError::InvalidIndex ) );
                 }
 

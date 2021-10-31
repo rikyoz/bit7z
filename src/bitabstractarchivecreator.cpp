@@ -49,7 +49,7 @@ bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
 
 bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) noexcept {
     static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
-    static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
+    static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e., 2^30 bytes
     static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
 
     switch ( method ) {

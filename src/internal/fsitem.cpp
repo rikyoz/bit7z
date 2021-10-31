@@ -34,11 +34,11 @@ using namespace bit7z::filesystem;
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what
  *    the user passes as path parameter in the constructor. If it is a directory, it doesn't contain a trailing / or \
- *    character, in order to use the method FindFirstFile without problems (as requested by that WinAPI function).
- * 2) mSearchPath contains the search path in which the item was found (e.g. if FSIndexer is searching items in
+ *    character, to use the method FindFirstFile without problems (as requested by that WinAPI function).
+ * 2) mSearchPath contains the search path in which the item was found (e.g., if FSIndexer is searching items in
  *    "foo/bar/", each FSItem created for the elements it found will have mSearchPath == "foo/bar").
  *    As in mPath, mSearchPath does not contain trailing / or \! *
- * 3) mInArchivePath is the path of the item in the archive. If not already given (i.e. the user doesn't want to custom
+ * 3) mInArchivePath is the path of the item in the archive. If not already given (i.e., the user doesn't want to custom
  *    the path of the file in the archive), the path in the archive is calculated form mPath and mSearchPath
  *    (see inArchivePath() method). */
 
@@ -109,9 +109,9 @@ tstring FSItem::path() const {
 }
 
 /* NOTE:
- * inArchivePath() returns the path that should be used inside the archive when compressing the item, i.e. the path
+ * inArchivePath() returns the path that should be used inside the archive when compressing the item, i.e., the path
  * relative to the 'root' of the archive.
- * This is needed in order to behave like 7-zip and retaining the directory structure when creating new archives.
+ * This is needed to behave like 7-zip and retaining the directory structure when creating new archives.
  *
  * In particular, 7-zip behaves differently according to the kind of paths that are passed to it:
  * + absolute paths (e.g. "C:\foo\bar\test.txt"):
@@ -125,7 +125,7 @@ tstring FSItem::path() const {
  * + relative paths (e.g. "foo/bar/test.txt"):
  *   the file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
  *
- * If the mInArchivePath is already given (i.e. the user wants a custom mapping of files), this one is returned.*/
+ * If the mInArchivePath is already given (i.e., the user wants a custom mapping of files), this one is returned.*/
 fs::path FSItem::inArchivePath() const {
     return mInArchivePath;
 }

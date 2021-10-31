@@ -36,13 +36,13 @@ namespace bit7z {
     using TotalCallback = function< void( uint64_t ) >;
 
     /**
-     * @brief A std::function whose argument is the current processed size of the ongoing operation and returns
+     * @brief A std::function whose argument is the currently processed size of the ongoing operation and returns
      *        true or false whether the operation must continue or not.
      */
     using ProgressCallback = function< bool( uint64_t ) >;
 
     /**
-     * @brief A std::function whose arguments are the current processed input size and the current output size of the
+     * @brief A std::function whose arguments are the current processed input size, and the current output size of the
      *        ongoing operation.
      */
     using RatioCallback = function< void( uint64_t, uint64_t ) >;
@@ -54,7 +54,7 @@ namespace bit7z {
     using FileCallback = function< void( tstring ) >;
 
     /**
-     * @brief A std::function which returns the password to be used in order to handle an archive.
+     * @brief A std::function returning the password to be used to handle an archive.
      */
     using PasswordCallback = function< tstring() >;
 
@@ -132,8 +132,8 @@ namespace bit7z {
              * the extraction process.
              *
              * @note Calling setPassword when the output format doesn't support archive encryption
-             * (e.g. GZip, BZip2, etc...) does not have any effects (in other words, it doesn't
-             * throw exceptions and it has no effects on compression operations).
+             * (e.g., GZip, BZip2, etc...) does not have any effects (in other words, it doesn't
+             * throw exceptions, and it has no effects on compression operations).
              *
              * @note After a password has been set, it will be used for every subsequent operation.
              * To disable the use of the password, you need to call the clearPassword method, which is equivalent
@@ -188,7 +188,7 @@ namespace bit7z {
             void setRatioCallback( const RatioCallback& callback );
 
             /**
-             * @brief Sets the function to be called when the currently file being processed changes.
+             * @brief Sets the function to be called when the current file being processed changes.
              *
              * @param callback  the file callback to be used.
              */

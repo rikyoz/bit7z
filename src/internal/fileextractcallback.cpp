@@ -37,7 +37,7 @@ constexpr auto kCannotDeleteOutput = "Cannot delete output file";
  *  + Error messages are not showed. Instead, they are memorized into a wstring and used by BitFileExtractor to throw
  *    exceptions (see also Callback interface). Note that this class doesn't throw exceptions, as other classes in bit7,
  *    because it must implement interfaces with nothrow methods.
- *  + The work performed originally by the Init method is now performed by the class constructor */
+ *  + The work performed originally by the Init method is now performed by the class constructor. */
 
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
                                           const tstring& directoryPath )

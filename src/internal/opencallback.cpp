@@ -50,7 +50,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     if ( mSubArchiveMode ) {
         if ( propID == kpidName ) {
             prop = mSubArchiveName;
-            // case kpidSize:  prop = _subArchiveSize; break; // we don't use it for now
+            // case kpidSize: prop = _subArchiveSize; break; // we don't use it for now.
         }
     } else {
         switch ( propID ) {
@@ -129,9 +129,6 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
-        // You can ask real password here from user
-        // Password = GetPassword(OutStream);
-        // PasswordIsDefined = true;
         if ( mHandler.passwordCallback() ) {
             pass = WIDEN( mHandler.passwordCallback()() );
         }

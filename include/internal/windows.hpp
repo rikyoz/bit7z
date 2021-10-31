@@ -25,7 +25,7 @@
 
 #include <Common/MyTypes.h>
 
-/* Making sure that constants and type aliases declared in bitwindows.hpp are usable by p7zip
+/* Making sure constants and type aliases declared in bitwindows.hpp are usable by p7zip
  * as if they were not inside the bit7z namespace. */
 using namespace bit7z;
 

@@ -21,8 +21,6 @@
 
 #include "bitexception.hpp"
 
-#include <utility> // for std::exchange
-
 #ifndef _WIN32
 #include "internal/internalcategory.hpp"
 #endif
@@ -42,7 +40,7 @@ using bit7z::FailedFiles;
 using bit7z::tstring;
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
-    : system_error( code, message ), mFailedFiles( std::exchange( files, {} ) ) {}
+    : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
 
 BitException::BitException( const char* const message, std::error_code code, const tstring& file )
     : system_error( code, message ) {
@@ -57,7 +55,7 @@ const FailedFiles& BitException::failedFiles() const noexcept {
 }
 
 BitException::native_code_type BitException::nativeCode() const noexcept {
-    const auto error = code();
+    const auto& error = code();
 #ifdef _WIN32
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
         return error.value();

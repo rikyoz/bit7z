@@ -145,7 +145,7 @@ namespace bit7z {
                 return true;
             case str_hash( TSTRING( "dll" ) ):
             case str_hash( TSTRING( "exe" ) ):
-                //note: we do not distinguish 7z SFX exe at the moment!
+                //note: at least for now, we do not distinguish 7z SFX executables!
                 *format = &BitFormat::Pe;
                 return true;
             case str_hash( TSTRING( "dylib" ) ):
@@ -544,9 +544,9 @@ namespace bit7z {
             return ext[ 0 ] == TSTRING('r') ? BitFormat::Rar : BitFormat::Zip;
         }
 
-        // Note: iso, img and ima extensions can be associated with different formats -> detect by signature
+        // Note: iso, img and ima extensions can be associated with different formats -> detect by signature.
 
-        // The extension did not match any known format extension, delegating the decision to the client
+        // The extension did not match any known format extension, delegating the decision to the client.
         return BitFormat::Auto;
     }
 }

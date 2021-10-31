@@ -161,11 +161,11 @@ uint32_t BitArchiveEditor::findItem( const tstring& item_path ) {
 
 void BitArchiveEditor::checkIndex( uint32_t index ) {
     if ( index >= mInputArchiveItemsCount ) {
-        throw BitException( "Cannot edit item at index " + std::to_string( index ),
+        throw BitException( "Cannot edit item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
     if ( mDeletedItems.find( index ) != mDeletedItems.cend() ) {
-        throw BitException( "Cannot edit item at index " + std::to_string( index ),
+        throw BitException( "Cannot edit item at the index " + std::to_string( index ),
                             make_error_code( BitError::ItemMarkedAsDeleted ) );
     }
 }

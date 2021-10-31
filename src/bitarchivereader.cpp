@@ -99,7 +99,7 @@ uint64_t BitArchiveReader::packSize() const {
 }
 
 bool BitArchiveReader::hasEncryptedItems() const {
-    /* Note: simple encryption (i.e. not including the archive headers) can be detected only reading
+    /* Note: simple encryption (i.e., not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
     return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return !item.isDir() && item.isEncrypted();

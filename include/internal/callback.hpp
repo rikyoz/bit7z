@@ -45,7 +45,7 @@ namespace bit7z {
             virtual void throwException( HRESULT error );
 
         protected:
-            explicit Callback( const BitAbstractArchiveHandler& handler ); // Protected constructor => Abstract class
+            explicit Callback( const BitAbstractArchiveHandler& handler ); // Abstract class
 
             const BitAbstractArchiveHandler& mHandler;
             const char* mErrorMessage;

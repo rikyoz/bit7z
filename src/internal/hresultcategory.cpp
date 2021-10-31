@@ -98,7 +98,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         case HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ):
 #endif
         case E_NOINTERFACE:
-            // e.g., function implemented, parameters ok, but the requested functionality is not available
+            // e.g., function implemented, parameters ok, but the requested functionality is not available.
             return std::make_error_condition( std::errc::not_supported );
 #ifdef _WIN32
         case E_PENDING:
@@ -107,10 +107,8 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         case E_HANDLE:
 #endif
         case E_INVALIDARG:
-        case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in stream classes functions.
+        case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in the stream classes functions.
         case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
-			/* Note: using macro __HRESULT_FROM_WIN32 since it can be used in case statement,
-			 * unlike HRESULT_FROM_WIN32 function. */
             return std::make_error_condition( std::errc::invalid_argument );
         case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
@@ -121,7 +119,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         default:
             if ( HRESULT_FACILITY( ev ) == FACILITY_WIN32 ) {
 #ifndef __MINGW32__
-                /* Note: MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
+                /* MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
                  * However, on Windows ev is a Win32 error wrapped into a HRESULT (e.g., through HRESULT_FROM_WIN32).
                  * Hence, to avoid returning a wrong error_condition, this check is not performed on MinGW,
                  * and instead we rely on specific cases for most common Win32 error codes (see 'else' branch).

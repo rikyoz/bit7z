@@ -49,7 +49,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
                                 make_error_code( BitError::WrongUpdateMode ) );
         }
         if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
-            //Update mode is set but format does not support adding more files
+            //Update mode is set but format does not support adding more files.
             throw BitException( "Cannot update existing archive",
                                 make_error_code( BitError::FormatFeatureNotSupported ) );
         }
@@ -185,7 +185,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
         /* NOTE: In the following instruction, we use the (dot) operator, not the -> (arrow) operator:
          *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
          *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
-        out_stream.Release(); //Releasing the output stream so that we can rename it as the original file
+        out_stream.Release(); //Releasing the output stream so that we can rename it as the original file.
 
 #if defined( __MINGW32__ ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
         /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
@@ -197,7 +197,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
         }
 #endif
 
-        //remove old file and rename tmp file (move file with overwriting)
+        //remove the old file and rename the temporary file (move file with overwriting)
         std::error_code error;
         fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
         if ( error ) {

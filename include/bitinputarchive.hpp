@@ -230,7 +230,7 @@ namespace bit7z {
                     using value_type = BitArchiveItemOffset;
                     using reference = const BitArchiveItemOffset&;
                     using pointer = const BitArchiveItemOffset*;
-                    using difference_type = uint32_t; //so that count_if returns a uint32_t
+                    using difference_type = uint32_t; //so that count_if returns an uint32_t
 
                     const_iterator& operator++() noexcept;
 

@@ -304,8 +304,8 @@ if( MSVC ) # compiler-specific options
     # linker flags
     set( CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /nologo" )
 
-    # options only for MSVC versions equal or greater than 15.0 (VS 2017)
-    if( MSVC_VERSION GREATER_EQUAL 1910 )
+    # options only for specific MSVC versions
+    if( MSVC_VERSION GREATER_EQUAL 1910 ) # MSVC >= 15.0 (VS 2017)
         target_compile_options( ${TARGET_NAME} PRIVATE /Zc:__cplusplus )
         # treating warnings as errors
         target_compile_options( ${TARGET_NAME} PRIVATE /WX )

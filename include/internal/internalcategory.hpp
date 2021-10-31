@@ -34,7 +34,7 @@ namespace bit7z {
         BIT7Z_NODISCARD std::error_condition default_error_condition( int ev ) const noexcept override;
     };
 
-    std::error_category& internal_category() noexcept;
+    const std::error_category& internal_category() noexcept;
 
 }
 
