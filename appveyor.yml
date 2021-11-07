@@ -9,7 +9,7 @@ image:
   - Ubuntu
 
 environment:
-  bit7z_version: 4.0.0-beta
+  bit7z_version: ${env:APPVEYOR_REPO_TAG_NAME}
   APPVEYOR_YML_DISABLE_PS_LINUX: true
 
   matrix:
