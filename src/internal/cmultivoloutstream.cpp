@@ -56,13 +56,9 @@ STDMETHODIMP CMultiVolOutStream::Write( const void* data, UInt32 size, UInt32* p
 
             CAltStreamInfo altStream;
             try {
-                altStream.stream = bit7z::make_com< CFileOutStream >( name );
+                altStream.stream = bit7z::make_com< CFileOutStream >(name);
             } catch ( const BitException& ex ) {
-                return HRESULT_FROM_WIN32( ex.code() == std::errc::file_exists ? ERROR_FILE_EXISTS : ERROR_OPEN_FAILED );
-            }
-
-            if ( altStream.stream->fail() ) {
-                return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
+                return ex.nativeCode();
             }
 
             altStream.pos = 0;

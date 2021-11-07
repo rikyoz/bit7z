@@ -21,6 +21,7 @@
 
 #include "internal/opencallback.hpp"
 
+#include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
 
 using namespace bit7z;
@@ -103,11 +104,13 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
                 return S_FALSE;
             }
         }
-        auto inStreamTemp = bit7z::make_com< CFileInStream >( stream_path );
-        if ( inStreamTemp->fail() ) {
-            return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
+
+        try {
+            auto inStreamTemp = bit7z::make_com< CFileInStream >( stream_path );
+            *inStream = inStreamTemp.Detach();
+        } catch ( const BitException& ex ) {
+            return ex.nativeCode();
         }
-        *inStream = inStreamTemp.Detach();
         return S_OK;
     } catch ( ... ) {
         return E_OUTOFMEMORY;

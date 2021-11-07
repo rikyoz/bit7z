@@ -74,7 +74,7 @@ namespace bit7z {
     template<typename T, typename I = T, class... Args>
     inline CMyComPtr<std::enable_if_t<std::is_base_of<CMyUnknownImp, T>::value && std::is_base_of<I, T>::value, I>>
     make_com( Args&&... args ) {
-        return new T(std::forward<Args>(args)...);
+        return CMyComPtr<I>(new T(std::forward<Args>(args)...));
     }
 }
 

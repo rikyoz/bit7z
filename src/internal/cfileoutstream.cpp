@@ -38,6 +38,11 @@ void CFileOutStream::open( const fs::path& filePath, bool createAlways ) {
         throw BitException( "Failed to create the output file", ec, filePath.native() );
     }
     mFileStream.open( filePath, std::ios::binary | std::ios::trunc );
+    if ( mFileStream.fail() ) {
+        throw BitException( "Failed to create the output file",
+                            make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
+                            filePath.native() );
+    }
 }
 
 bool CFileOutStream::fail() {

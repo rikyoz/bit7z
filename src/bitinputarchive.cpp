@@ -112,12 +112,6 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstring in_file )
     : mArchiveHandler{ handler }, mArchivePath{ std::move( in_file ) } {
 
-    auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
-    if ( file_stream->fail() ) {
-        //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
-        throw BitException( "Failed to open the archive file",
-                            std::make_error_code( std::errc::io_error ), mArchivePath );
-    }
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect the format from extension (and try later from signature if it fails), otherwise try passed format.
     mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath )
@@ -125,6 +119,8 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
 #else
     mDetectedFormat = &handler.format();
 #endif
+
+    auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
     mInArchive = openArchiveStream( mArchivePath, file_stream );
 }
 

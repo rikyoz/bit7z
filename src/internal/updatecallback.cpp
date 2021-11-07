@@ -107,13 +107,13 @@ STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream
     }
 
     tstring fileName = TSTRING( '.' ) + res;// + mVolExt;
-    auto stream = bit7z::make_com< CFileOutStream >( fileName );
 
-    if ( stream->fail() ) {
-        return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
+    try {
+        auto stream = bit7z::make_com< CFileOutStream >( fileName );
+        *volumeStream = stream.Detach();
+    } catch ( const BitException& ex ) {
+        return ex.nativeCode();
     }
-
-    *volumeStream = stream.Detach();
     return S_OK;
 }
 

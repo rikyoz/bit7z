@@ -144,14 +144,14 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
             return E_ABORT;
         }
 
-        auto outStreamLoc = bit7z::make_com< CFileOutStream >( mDiskFilePath, true );
-        if ( outStreamLoc->fail() ) {
+        try {
+            auto outStreamLoc = bit7z::make_com< CFileOutStream >( mDiskFilePath, true );
+            mFileOutStream = outStreamLoc;
+            *outStream = outStreamLoc.Detach();
+        } catch ( const BitException& ) {
             mErrorMessage = kCannotOpenOutput;
             return E_ABORT;
         }
-
-        mFileOutStream = outStreamLoc;
-        *outStream = outStreamLoc.Detach();
     } else if ( mRetainDirectories ) { // Directory, and we must retain it
         error_code ec;
         fs::create_directories( mDiskFilePath, ec );

@@ -134,14 +134,7 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
         out_path += ".tmp";
     }
 
-    auto file_out_stream = bit7z::make_com< CFileOutStream >( out_path, updating_archive );
-    if ( file_out_stream->fail() ) {
-        //Unknown error!
-        throw BitException( "Failed to create the output archive file",
-                            make_error_code( std::errc::io_error ),
-                            out_path.native() );
-    }
-    return CMyComPtr< IOutStream >{ file_out_stream };
+    return bit7z::make_com< CFileOutStream, IOutStream >( out_path, updating_archive );
 }
 
 void BitOutputArchive::compressOut( IOutArchive* out_arc,

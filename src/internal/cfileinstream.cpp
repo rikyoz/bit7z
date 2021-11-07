@@ -21,6 +21,8 @@
 
 #include "internal/cfileinstream.hpp"
 
+#include "bitexception.hpp"
+
 using namespace bit7z;
 
 CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ) {
@@ -29,8 +31,10 @@ CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileSt
 
 void CFileInStream::open( const fs::path& filePath ) {
     mFileStream.open( filePath, std::ios::in | std::ios::binary );
-}
-
-bool CFileInStream::fail() {
-    return mFileStream.fail();
+    if ( mFileStream.fail() ) {
+        //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
+        throw BitException( "Failed to open the archive file",
+                            make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
+                            filePath.native() );
+    }
 }

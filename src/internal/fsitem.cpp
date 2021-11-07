@@ -139,12 +139,11 @@ HRESULT FSItem::getStream( ISequentialInStream** inStream ) const {
         return S_OK;
     }
 
-    //CMyComPtr is necessary here for correct RAII
-    auto inStreamLoc = bit7z::make_com< CFileInStream >( path() );
-
-    if ( inStreamLoc->fail() ) {
-        return S_FALSE;
+    try {
+        auto inStreamLoc = bit7z::make_com< CFileInStream >( path() );
+        *inStream = inStreamLoc.Detach();
+    } catch ( const BitException& ex ) {
+        return ex.nativeCode();
     }
-    *inStream = inStreamLoc.Detach();
     return S_OK;
 }
