@@ -36,14 +36,14 @@ using namespace bit7z;
 using namespace bit7z::filesystem;
 
 tstring fsutil::filename( const tstring& path, bool ext ) {
-    const size_t start = path.find_last_of( TSTRING( "/\\" ) ) + 1;
-    const size_t end = ext ? path.size() : path.find_last_of( TSTRING('.') );
+    const size_t start = path.find_last_of( BIT7Z_STRING( "/\\" ) ) + 1;
+    const size_t end = ext ? path.size() : path.find_last_of( BIT7Z_STRING( '.' ) );
     return path.substr( start, end - start ); //RVO :)
 }
 
 tstring fsutil::extension( const tstring& path ) {
     tstring name = filename( path, true );
-    const size_t last_dot = name.find_last_of( TSTRING('.') );
+    const size_t last_dot = name.find_last_of( BIT7Z_STRING( '.' ) );
     return last_dot != tstring::npos ? name.substr( last_dot + 1 ) : tstring{};
 }
 
@@ -52,7 +52,7 @@ bool contains_dot_references( const fs::path& path ) {
              This must be true on Windows, but not on Unix systems! */
     const auto& native_path = path.native();
     return std::adjacent_find( native_path.begin(), native_path.end(), []( tchar a, tchar b ) {
-        return a == TSTRING('.') && ( b == TSTRING('/') || b == TSTRING('\\') );
+        return a == BIT7Z_STRING( '.' ) && ( b == BIT7Z_STRING( '/' ) || b == BIT7Z_STRING( '\\') );
     } ) != native_path.end();
 }
 
@@ -93,13 +93,13 @@ bool w_match( tstring::const_iterator pattern_it, const tstring::const_iterator&
               tstring::const_iterator str_it, const tstring::const_iterator& str_end ) {
     for ( ; pattern_it != pattern_end; ++pattern_it ) {
         switch ( *pattern_it ) {
-            case TSTRING( '?' ):
+            case BIT7Z_STRING( '?' ):
                 if ( str_it == str_end ) {
                     return false;
                 }
                 ++str_it;
                 break;
-            case TSTRING( '*' ): {
+            case BIT7Z_STRING( '*' ): {
                 if ( pattern_it + 1 == pattern_end ) {
                     return true;
                 }
@@ -122,7 +122,7 @@ bool w_match( tstring::const_iterator pattern_it, const tstring::const_iterator&
 
 bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) {
     if ( pattern.empty() ) {
-        return wildcardMatch( TSTRING( "*" ), str );
+        return wildcardMatch( BIT7Z_STRING( "*" ), str );
     }
     return w_match( pattern.cbegin(), pattern.cend(), str.begin(), str.end() );
 }

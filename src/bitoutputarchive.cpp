@@ -192,7 +192,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
 
         //remove the old file and rename the temporary file (move file with overwriting)
         std::error_code error;
-        fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
+        fs::rename( out_file + BIT7Z_STRING( ".tmp" ), out_file, error );
         if ( error ) {
             throw BitException( "Failed to overwrite the old archive file", error, out_file );
         }

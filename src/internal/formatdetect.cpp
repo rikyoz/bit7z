@@ -66,182 +66,182 @@ namespace bit7z {
      *       format, however the ifs are faster and have less memory footprint. */
     bool findFormatByExtension( const tstring& ext, const BitInFormat** format ) {
         switch ( str_hash( ext.c_str() ) ) {
-            case str_hash( TSTRING( "7z" ) ):
+            case str_hash( BIT7Z_STRING( "7z" ) ):
                 *format = &BitFormat::SevenZip;
                 return true;
-            case str_hash( TSTRING( "bzip2" ) ):
-            case str_hash( TSTRING( "bz2" ) ):
-            case str_hash( TSTRING( "tbz2" ) ):
-            case str_hash( TSTRING( "tbz" ) ):
+            case str_hash( BIT7Z_STRING( "bzip2" ) ):
+            case str_hash( BIT7Z_STRING( "bz2" ) ):
+            case str_hash( BIT7Z_STRING( "tbz2" ) ):
+            case str_hash( BIT7Z_STRING( "tbz" ) ):
                 *format = &BitFormat::BZip2;
                 return true;
-            case str_hash( TSTRING( "gz" ) ):
-            case str_hash( TSTRING( "gzip" ) ):
-            case str_hash( TSTRING( "tgz" ) ):
+            case str_hash( BIT7Z_STRING( "gz" ) ):
+            case str_hash( BIT7Z_STRING( "gzip" ) ):
+            case str_hash( BIT7Z_STRING( "tgz" ) ):
                 *format = &BitFormat::GZip;
                 return true;
-            case str_hash( TSTRING( "tar" ) ):
+            case str_hash( BIT7Z_STRING( "tar" ) ):
                 *format = &BitFormat::Tar;
                 return true;
-            case str_hash( TSTRING( "wim" ) ):
-            case str_hash( TSTRING( "swm" ) ):
+            case str_hash( BIT7Z_STRING( "wim" ) ):
+            case str_hash( BIT7Z_STRING( "swm" ) ):
                 *format = &BitFormat::Wim;
                 return true;
-            case str_hash( TSTRING( "xz" ) ):
-            case str_hash( TSTRING( "txz" ) ):
+            case str_hash( BIT7Z_STRING( "xz" ) ):
+            case str_hash( BIT7Z_STRING( "txz" ) ):
                 *format = &BitFormat::Xz;
                 return true;
-            case str_hash( TSTRING( "zip" ) ):
-            case str_hash( TSTRING( "zipx" ) ):
-            case str_hash( TSTRING( "jar" ) ):
-            case str_hash( TSTRING( "xpi" ) ):
-            case str_hash( TSTRING( "odt" ) ):
-            case str_hash( TSTRING( "ods" ) ):
-            case str_hash( TSTRING( "odp" ) ):
-            case str_hash( TSTRING( "docx" ) ):
-            case str_hash( TSTRING( "xlsx" ) ):
-            case str_hash( TSTRING( "pptx" ) ):
-            case str_hash( TSTRING( "epub" ) ):
+            case str_hash( BIT7Z_STRING( "zip" ) ):
+            case str_hash( BIT7Z_STRING( "zipx" ) ):
+            case str_hash( BIT7Z_STRING( "jar" ) ):
+            case str_hash( BIT7Z_STRING( "xpi" ) ):
+            case str_hash( BIT7Z_STRING( "odt" ) ):
+            case str_hash( BIT7Z_STRING( "ods" ) ):
+            case str_hash( BIT7Z_STRING( "odp" ) ):
+            case str_hash( BIT7Z_STRING( "docx" ) ):
+            case str_hash( BIT7Z_STRING( "xlsx" ) ):
+            case str_hash( BIT7Z_STRING( "pptx" ) ):
+            case str_hash( BIT7Z_STRING( "epub" ) ):
                 *format = &BitFormat::Zip;
                 return true;
-            case str_hash( TSTRING( "001" ) ):
+            case str_hash( BIT7Z_STRING( "001" ) ):
                 *format = &BitFormat::Split;
                 return true;
-            case str_hash( TSTRING( "ar" ) ):
-            case str_hash( TSTRING( "deb" ) ):
+            case str_hash( BIT7Z_STRING( "ar" ) ):
+            case str_hash( BIT7Z_STRING( "deb" ) ):
                 *format = &BitFormat::Deb;
                 return true;
-            case str_hash( TSTRING( "apm" ) ):
+            case str_hash( BIT7Z_STRING( "apm" ) ):
                 *format = &BitFormat::APM;
                 return true;
-            case str_hash( TSTRING( "arj" ) ):
+            case str_hash( BIT7Z_STRING( "arj" ) ):
                 *format = &BitFormat::Arj;
                 return true;
-            case str_hash( TSTRING( "cab" ) ):
+            case str_hash( BIT7Z_STRING( "cab" ) ):
                 *format = &BitFormat::Cab;
                 return true;
-            case str_hash( TSTRING( "chm" ) ):
-            case str_hash( TSTRING( "chi" ) ):
+            case str_hash( BIT7Z_STRING( "chm" ) ):
+            case str_hash( BIT7Z_STRING( "chi" ) ):
                 *format = &BitFormat::Chm;
                 return true;
-            case str_hash( TSTRING( "msi" ) ):
-            case str_hash( TSTRING( "doc" ) ):
-            case str_hash( TSTRING( "xls" ) ):
-            case str_hash( TSTRING( "ppt" ) ):
-            case str_hash( TSTRING( "msg" ) ):
+            case str_hash( BIT7Z_STRING( "msi" ) ):
+            case str_hash( BIT7Z_STRING( "doc" ) ):
+            case str_hash( BIT7Z_STRING( "xls" ) ):
+            case str_hash( BIT7Z_STRING( "ppt" ) ):
+            case str_hash( BIT7Z_STRING( "msg" ) ):
                 *format = &BitFormat::Compound;
                 return true;
-            case str_hash( TSTRING( "obj" ) ):
+            case str_hash( BIT7Z_STRING( "obj" ) ):
                 *format = &BitFormat::COFF;
                 return true;
-            case str_hash( TSTRING( "cpio" ) ):
+            case str_hash( BIT7Z_STRING( "cpio" ) ):
                 *format = &BitFormat::Cpio;
                 return true;
-            case str_hash( TSTRING( "cramfs" ) ):
+            case str_hash( BIT7Z_STRING( "cramfs" ) ):
                 *format = &BitFormat::CramFS;
                 return true;
-            case str_hash( TSTRING( "dmg" ) ):
+            case str_hash( BIT7Z_STRING( "dmg" ) ):
                 *format = &BitFormat::Dmg;
                 return true;
-            case str_hash( TSTRING( "dll" ) ):
-            case str_hash( TSTRING( "exe" ) ):
+            case str_hash( BIT7Z_STRING( "dll" ) ):
+            case str_hash( BIT7Z_STRING( "exe" ) ):
                 //note: at least for now, we do not distinguish 7z SFX executables!
                 *format = &BitFormat::Pe;
                 return true;
-            case str_hash( TSTRING( "dylib" ) ):
+            case str_hash( BIT7Z_STRING( "dylib" ) ):
                 *format = &BitFormat::Macho;
                 return true;
-            case str_hash( TSTRING( "ext" ) ):
-            case str_hash( TSTRING( "ext2" ) ):
-            case str_hash( TSTRING( "ext3" ) ):
-            case str_hash( TSTRING( "ext4" ) ):
+            case str_hash( BIT7Z_STRING( "ext" ) ):
+            case str_hash( BIT7Z_STRING( "ext2" ) ):
+            case str_hash( BIT7Z_STRING( "ext3" ) ):
+            case str_hash( BIT7Z_STRING( "ext4" ) ):
                 *format = &BitFormat::Ext;
                 return true;
-            case str_hash( TSTRING( "fat" ) ):
+            case str_hash( BIT7Z_STRING( "fat" ) ):
                 *format = &BitFormat::Fat;
                 return true;
-            case str_hash( TSTRING( "flv" ) ):
+            case str_hash( BIT7Z_STRING( "flv" ) ):
                 *format = &BitFormat::Flv;
                 return true;
-            case str_hash( TSTRING( "gpt" ) ):
+            case str_hash( BIT7Z_STRING( "gpt" ) ):
                 *format = &BitFormat::GPT;
                 return true;
-            case str_hash( TSTRING( "hfs" ) ):
-            case str_hash( TSTRING( "hfsx" ) ):
+            case str_hash( BIT7Z_STRING( "hfs" ) ):
+            case str_hash( BIT7Z_STRING( "hfsx" ) ):
                 *format = &BitFormat::Hfs;
                 return true;
-            case str_hash( TSTRING( "hxs" ) ):
+            case str_hash( BIT7Z_STRING( "hxs" ) ):
                 *format = &BitFormat::Hxs;
                 return true;
-            case str_hash( TSTRING( "ihex" ) ):
+            case str_hash( BIT7Z_STRING( "ihex" ) ):
                 *format = &BitFormat::IHex;
                 return true;
-            case str_hash( TSTRING( "lzh" ) ):
-            case str_hash( TSTRING( "lha" ) ):
+            case str_hash( BIT7Z_STRING( "lzh" ) ):
+            case str_hash( BIT7Z_STRING( "lha" ) ):
                 *format = &BitFormat::Lzh;
                 return true;
-            case str_hash( TSTRING( "lzma" ) ):
+            case str_hash( BIT7Z_STRING( "lzma" ) ):
                 *format = &BitFormat::Lzma;
                 return true;
-            case str_hash( TSTRING( "lzma86" ) ):
+            case str_hash( BIT7Z_STRING( "lzma86" ) ):
                 *format = &BitFormat::Lzma86;
                 return true;
-            case str_hash( TSTRING( "mbr" ) ):
+            case str_hash( BIT7Z_STRING( "mbr" ) ):
                 *format = &BitFormat::Mbr;
                 return true;
-            case str_hash( TSTRING( "mslz" ) ):
+            case str_hash( BIT7Z_STRING( "mslz" ) ):
                 *format = &BitFormat::Mslz;
                 return true;
-            case str_hash( TSTRING( "mub" ) ):
+            case str_hash( BIT7Z_STRING( "mub" ) ):
                 *format = &BitFormat::Mub;
                 return true;
-            case str_hash( TSTRING( "nsis" ) ):
+            case str_hash( BIT7Z_STRING( "nsis" ) ):
                 *format = &BitFormat::Nsis;
                 return true;
-            case str_hash( TSTRING( "ntfs" ) ):
+            case str_hash( BIT7Z_STRING( "ntfs" ) ):
                 *format = &BitFormat::Ntfs;
                 return true;
-            case str_hash( TSTRING( "pmd" ) ):
+            case str_hash( BIT7Z_STRING( "pmd" ) ):
                 *format = &BitFormat::Ppmd;
                 return true;
-            case str_hash( TSTRING( "qcow" ) ):
-            case str_hash( TSTRING( "qcow2" ) ):
-            case str_hash( TSTRING( "qcow2c" ) ):
+            case str_hash( BIT7Z_STRING( "qcow" ) ):
+            case str_hash( BIT7Z_STRING( "qcow2" ) ):
+            case str_hash( BIT7Z_STRING( "qcow2c" ) ):
                 *format = &BitFormat::QCow;
                 return true;
-            case str_hash( TSTRING( "rpm" ) ):
+            case str_hash( BIT7Z_STRING( "rpm" ) ):
                 *format = &BitFormat::Rpm;
                 return true;
-            case str_hash( TSTRING( "squashfs" ) ):
+            case str_hash( BIT7Z_STRING( "squashfs" ) ):
                 *format = &BitFormat::SquashFS;
                 return true;
-            case str_hash( TSTRING( "te" ) ):
+            case str_hash( BIT7Z_STRING( "te" ) ):
                 *format = &BitFormat::TE;
                 return true;
-            case str_hash( TSTRING( "udf" ) ):
+            case str_hash( BIT7Z_STRING( "udf" ) ):
                 *format = &BitFormat::Udf;
                 return true;
-            case str_hash( TSTRING( "scap" ) ):
+            case str_hash( BIT7Z_STRING( "scap" ) ):
                 *format = &BitFormat::UEFIc;
                 return true;
-            case str_hash( TSTRING( "uefif" ) ):
+            case str_hash( BIT7Z_STRING( "uefif" ) ):
                 *format = &BitFormat::UEFIs;
                 return true;
-            case str_hash( TSTRING( "vmdk" ) ):
+            case str_hash( BIT7Z_STRING( "vmdk" ) ):
                 *format = &BitFormat::VMDK;
                 return true;
-            case str_hash( TSTRING( "vdi" ) ):
+            case str_hash( BIT7Z_STRING( "vdi" ) ):
                 *format = &BitFormat::VDI;
                 return true;
-            case str_hash( TSTRING( "vhd" ) ):
+            case str_hash( BIT7Z_STRING( "vhd" ) ):
                 *format = &BitFormat::Vhd;
                 return true;
-            case str_hash( TSTRING( "xar" ) ):
-            case str_hash( TSTRING( "pkg" ) ):
+            case str_hash( BIT7Z_STRING( "xar" ) ):
+            case str_hash( BIT7Z_STRING( "pkg" ) ):
                 *format = &BitFormat::Xar;
                 return true;
-            case str_hash( TSTRING( "z" ) ):
-            case str_hash( TSTRING( "taz" ) ):
+            case str_hash( BIT7Z_STRING( "z" ) ):
+            case str_hash( BIT7Z_STRING( "taz" ) ):
                 *format = &BitFormat::Z;
                 return true;
             default:
@@ -538,10 +538,10 @@ namespace bit7z {
         }
 
         // Detecting multi-volume archives extension
-        if ( ( ext[ 0 ] == TSTRING('r') || ext[ 0 ] == TSTRING('z') ) &&
+        if ( ( ext[ 0 ] == BIT7Z_STRING( 'r') || ext[ 0 ] == BIT7Z_STRING( 'z') ) &&
              ( ext.size() == 3 && is_digit( ext[ 1 ] ) && is_digit( ext[ 2 ] ) ) ) {
             // Extension follows the format zXX or rXX, where X is a number in range [0-9]
-            return ext[ 0 ] == TSTRING('r') ? BitFormat::Rar : BitFormat::Zip;
+            return ext[ 0 ] == BIT7Z_STRING( 'r') ? BitFormat::Rar : BitFormat::Zip;
         }
 
         // Note: iso, img and ima extensions can be associated with different formats -> detect by signature.

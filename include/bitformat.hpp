@@ -167,16 +167,16 @@ namespace bit7z {
         inline constexpr BitInFormat Auto( 0x00 );
 #endif
 
-        inline constexpr BitInOutFormat Zip( 0x01, TSTRING( ".zip" ), BitCompressionMethod::Deflate,
+        inline constexpr BitInOutFormat Zip( 0x01, BIT7Z_STRING( ".zip" ), BitCompressionMethod::Deflate,
                                              FormatFeatures::MultipleFiles | FormatFeatures::CompressionLevel |
                                              FormatFeatures::Encryption | FormatFeatures::MultipleMethods );
-        inline constexpr BitInOutFormat BZip2( 0x02, TSTRING( ".bz2" ), BitCompressionMethod::BZip2,
+        inline constexpr BitInOutFormat BZip2( 0x02, BIT7Z_STRING( ".bz2" ), BitCompressionMethod::BZip2,
                                                FormatFeatures::CompressionLevel );
         inline constexpr BitInFormat    Rar( 0x03 );
         inline constexpr BitInFormat    Arj( 0x04 ); //-V112
         inline constexpr BitInFormat    Z( 0x05 );
         inline constexpr BitInFormat    Lzh( 0x06 );
-        inline constexpr BitInOutFormat SevenZip( 0x07, TSTRING( ".7z" ), BitCompressionMethod::Lzma2,
+        inline constexpr BitInOutFormat SevenZip( 0x07, BIT7Z_STRING( ".7z" ), BitCompressionMethod::Lzma2,
                                                   FormatFeatures::MultipleFiles |
                                                   FormatFeatures::SolidArchive |
                                                   FormatFeatures::CompressionLevel |
@@ -187,7 +187,7 @@ namespace bit7z {
         inline constexpr BitInFormat    Nsis( 0x09 );
         inline constexpr BitInFormat    Lzma( 0x0A );
         inline constexpr BitInFormat    Lzma86( 0x0B );
-        inline constexpr BitInOutFormat Xz( 0x0C, TSTRING( ".xz" ), BitCompressionMethod::Lzma2,
+        inline constexpr BitInOutFormat Xz( 0x0C, BIT7Z_STRING( ".xz" ), BitCompressionMethod::Lzma2,
                                             FormatFeatures::CompressionLevel );
         inline constexpr BitInFormat    Ppmd( 0x0D );
         inline constexpr BitInFormat    COFF( 0xC6 );
@@ -222,7 +222,7 @@ namespace bit7z {
         inline constexpr BitInFormat    Hfs( 0xE3 );
         inline constexpr BitInFormat    Dmg( 0xE4 );
         inline constexpr BitInFormat    Compound( 0xE5 );
-        inline constexpr BitInOutFormat Wim( 0xE6, TSTRING( ".wim" ), BitCompressionMethod::Copy,
+        inline constexpr BitInOutFormat Wim( 0xE6, BIT7Z_STRING( ".wim" ), BitCompressionMethod::Copy,
                                              FormatFeatures::MultipleFiles );
         inline constexpr BitInFormat    Iso( 0xE7 );
         inline constexpr BitInFormat    Chm( 0xE9 );
@@ -230,9 +230,9 @@ namespace bit7z {
         inline constexpr BitInFormat    Rpm( 0xEB );
         inline constexpr BitInFormat    Deb( 0xEC );
         inline constexpr BitInFormat    Cpio( 0xED );
-        inline constexpr BitInOutFormat Tar( 0xEE, TSTRING( ".tar" ), BitCompressionMethod::Copy,
+        inline constexpr BitInOutFormat Tar( 0xEE, BIT7Z_STRING( ".tar" ), BitCompressionMethod::Copy,
                                              FormatFeatures::MultipleFiles );
-        inline constexpr BitInOutFormat GZip( 0xEF, TSTRING( ".gz" ), BitCompressionMethod::Deflate,
+        inline constexpr BitInOutFormat GZip( 0xEF, BIT7Z_STRING( ".gz" ), BitCompressionMethod::Deflate,
                                               FormatFeatures::CompressionLevel );
 #else
 #ifdef BIT7Z_AUTO_FORMAT

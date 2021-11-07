@@ -103,10 +103,10 @@ STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream
     tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
         //adding leading zeros for a total res length of 3 (e.g., volume 42 will have extension .042)
-        res.insert( res.begin(), 3 - res.length(), TSTRING( '0' ) );
+        res.insert( res.begin(), 3 - res.length(), BIT7Z_STRING( '0' ) );
     }
 
-    tstring fileName = TSTRING( '.' ) + res;// + mVolExt;
+    tstring fileName = BIT7Z_STRING( '.' ) + res;// + mVolExt;
 
     try {
         auto stream = bit7z::make_com< CFileOutStream >( fileName );

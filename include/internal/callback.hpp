@@ -27,7 +27,7 @@
 #include <Common/MyCom.h>
 
 constexpr auto kPasswordNotDefined = "Password is not defined";
-constexpr auto kEmptyFileAlias     = TSTRING("[Content]");
+constexpr auto kEmptyFileAlias     = BIT7Z_STRING( "[Content]");
 
 namespace bit7z {
     class Callback : protected CMyUnknownImp {

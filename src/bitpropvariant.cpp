@@ -378,7 +378,7 @@ FILETIME BitPropVariant::getFileTime() const {
 tstring BitPropVariant::toString() const {
     switch ( vt ) {
         case VT_BOOL:
-            return boolVal == VARIANT_TRUE ? TSTRING( "true" ) : TSTRING( "false" );
+            return boolVal == VARIANT_TRUE ? BIT7Z_STRING( "true" ) : BIT7Z_STRING( "false" );
         case VT_BSTR:
             return BSTR_TO_TSTRING( bstrVal );
         case VT_UI1:
@@ -402,7 +402,7 @@ tstring BitPropVariant::toString() const {
         case VT_I8:
             return to_tstring( hVal.QuadPart );
         case VT_FILETIME:
-            return to_tstring( filetime.dwHighDateTime ) + TSTRING( ", " ) + to_tstring( filetime.dwLowDateTime );
+            return to_tstring( filetime.dwHighDateTime ) + BIT7Z_STRING( ", " ) + to_tstring( filetime.dwLowDateTime );
         case VT_EMPTY:
             return tstring{};
         default: //type not supported

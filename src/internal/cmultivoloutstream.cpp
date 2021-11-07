@@ -35,7 +35,7 @@ using namespace bit7z;
 
 CMultiVolOutStream::CMultiVolOutStream( uint64_t volSize, const tstring& archiveName ) :
     mVolSize( volSize ),
-    mVolPrefix( archiveName + TSTRING( "." ) ),
+    mVolPrefix( archiveName + BIT7Z_STRING( "." ) ),
     mStreamIndex( 0 ),
     mOffsetPos( 0 ),
     mAbsPos( 0 ),

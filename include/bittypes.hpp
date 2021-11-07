@@ -66,10 +66,10 @@ namespace bit7z {
 
 #ifdef _WIN32 // Windows
     using tchar = wchar_t;
-#define TSTRING( str ) L##str
+#define BIT7Z_STRING( str ) L##str
 #else // Unix
     using tchar = char;
-#define TSTRING( str ) str
+#define BIT7Z_STRING( str ) str
 #endif
 
     using tstring = std::basic_string< tchar >;

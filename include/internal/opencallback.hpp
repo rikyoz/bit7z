@@ -37,7 +37,7 @@ namespace bit7z {
                                public ICryptoGetTextPassword,
                                public Callback {
         public:
-            explicit OpenCallback( const BitAbstractArchiveHandler& handler, const tstring& filename = TSTRING( "." ) );
+            explicit OpenCallback( const BitAbstractArchiveHandler& handler, const tstring& filename = BIT7Z_STRING( "." ) );
 
             OpenCallback( const OpenCallback& ) = delete;
 

@@ -103,7 +103,7 @@ namespace bit7z {
             void compressFiles( const tstring& in_dir,
                                 const tstring& out_file,
                                 bool recursive = true,
-                                const tstring& filter = TSTRING( "*.*" ) ) const;
+                                const tstring& filter = BIT7Z_STRING( "*.*" ) ) const;
 
             /**
              * @brief Compresses an entire directory.
