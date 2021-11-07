@@ -116,15 +116,18 @@ void BitArchiveEditor::deleteItem( uint32_t index ) {
 }
 
 void BitArchiveEditor::deleteItem( const tstring& item_path ) {
-    for ( const auto& archiveItem : *mInputArchive ) {
+    auto res = std::find_if(mInputArchive->cbegin(), mInputArchive->cend(), [ & ]( const auto& archiveItem ) {
         if ( archiveItem.path() == item_path ) {
             mEditedItems.erase( archiveItem.index() );
             mDeletedItems.insert( archiveItem.index() );
-            return;
+            return true;
         }
+        return false;
+    });
+    if ( res == mInputArchive->cend() ) {
+        throw BitException( "Could not mark the item as deleted",
+                            std::make_error_code( std::errc::no_such_file_or_directory ), item_path );
     }
-    throw BitException( "Could not mark the item as deleted",
-                        std::make_error_code( std::errc::no_such_file_or_directory ), item_path );
 }
 
 void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
