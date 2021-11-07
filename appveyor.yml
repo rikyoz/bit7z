@@ -1,4 +1,3 @@
-version: 4.0.0-beta-build{build}
 skip_non_tags: true
 clone_depth: 1
 
@@ -105,9 +104,9 @@ for:
   init: |-
     if [ "${compiler}" = "gcc" ];
     then
-      tag=gcc$(${CXX} --version | grep ^g++ | sed 's/^.* //g')_${arch}
+      compiler_tag=gcc$(${CXX} --version | grep ^g++ | sed 's/^.* //g')_${arch}
     else
-      tag=clang$(${CXX} --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_${arch}
+      compiler_tag=clang$(${CXX} --version | head -n 1 | sed -e 's/.* version \([0-9.]*\).*/\1/')_${arch}
     fi
     if [ "${arch}" = "x86" ];
     then
@@ -134,9 +133,9 @@ for:
     - cp include/bit*.hpp pkg/bit7z/include/
     - cp README.md pkg/bit7z/
     - cp LICENSE pkg/bit7z/
-    - echo $bit7z_version $tag > "pkg/bit7z/BUILD.txt"
+    - echo $bit7z_version $compiler_tag > "pkg/bit7z/BUILD.txt"
     - cd pkg
-    - 7z a -t7z bit7z-v$bit7z_version-$tag.7z *
+    - 7z a -t7z bit7z-$bit7z_version-$compiler_tag.7z *
 
 -
   matrix:
@@ -156,9 +155,9 @@ for:
         call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" %arch:x86=amd64_x86%
       )
     - if "%compiler%"=="mingw" (
-        for /f %%i in ('g++ -dumpversion') do set "tag=mingw%%i_%arch%"
+        for /f %%i in ('g++ -dumpversion') do set "compiler_tag=mingw%%i_%arch%"
       ) else (
-        set "tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%arch%"
+        set "compiler_tag=%APPVEYOR_BUILD_WORKER_IMAGE:Visual Studio =msvc%%compiler:msvc=%_%arch%"
       )
 
   before_build:
@@ -181,9 +180,9 @@ for:
     - copy include\bit*.hpp pkg\bit7z\include\
     - copy README.md pkg\bit7z\
     - copy LICENSE pkg\bit7z\
-    - echo %bit7z_version% %tag% > "pkg/bit7z/BUILD.txt"
+    - echo %bit7z_version% %compiler_tag% > "pkg/bit7z/BUILD.txt"
     - cd pkg
-    - 7z a "bit7z-v%bit7z_version%-%tag%.7z" *
+    - 7z a "bit7z-%bit7z_version%-%compiler_tag%.7z" *
 
 artifacts:
   - path: pkg\*.7z
