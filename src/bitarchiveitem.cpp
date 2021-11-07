@@ -41,14 +41,14 @@ tstring BitArchiveItem::name() const {
     BitPropVariant name = itemProperty( BitProperty::Name );
     if ( name.isEmpty() ) {
         name = itemProperty( BitProperty::Path );
-        return name.isEmpty() ? TSTRING( "" ) : fsutil::filename( name.getString(), true );
+        return name.isEmpty() ? tstring{} : fsutil::filename( name.getString(), true );
     }
     return name.getString();
 }
 
 tstring BitArchiveItem::extension() const {
     if ( isDir() ) {
-        return TSTRING( "" );
+        return tstring{};
     }
     BitPropVariant extension = itemProperty( BitProperty::Extension );
     return extension.isEmpty() ? fsutil::extension( name() ) : extension.getString();
@@ -58,7 +58,7 @@ tstring BitArchiveItem::path() const {
     BitPropVariant path = itemProperty( BitProperty::Path );
     if ( path.isEmpty() ) {
         path = itemProperty( BitProperty::Name );
-        return path.isEmpty() ? TSTRING( "" ) : path.getString();
+        return path.isEmpty() ? tstring{} : path.getString();
     }
     return path.getString();
 }

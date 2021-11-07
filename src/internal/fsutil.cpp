@@ -44,7 +44,7 @@ tstring fsutil::filename( const tstring& path, bool ext ) {
 tstring fsutil::extension( const tstring& path ) {
     tstring name = filename( path, true );
     const size_t last_dot = name.find_last_of( TSTRING('.') );
-    return last_dot != tstring::npos ? name.substr( last_dot + 1 ) : TSTRING( "" );
+    return last_dot != tstring::npos ? name.substr( last_dot + 1 ) : tstring{};
 }
 
 bool contains_dot_references( const fs::path& path ) {

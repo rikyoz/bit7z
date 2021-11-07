@@ -58,7 +58,7 @@ namespace bit7z {
 
             BitAbstractArchiveOpener( const Bit7zLibrary& lib,
                                       const BitInFormat& format,
-                                      const tstring& password = TSTRING( "" ) );
+                                      const tstring& password = {} );
 
             ~BitAbstractArchiveOpener() override = default;
 

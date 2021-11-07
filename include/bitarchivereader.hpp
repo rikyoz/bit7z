@@ -49,7 +49,7 @@ namespace bit7z {
             BitArchiveReader( const Bit7zLibrary& lib,
                               const tstring& in_file,
                               const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                              const tstring& password = TSTRING( "" ) );
+                              const tstring& password = {} );
 
             /**
              * @brief Constructs a BitArchiveReader object, opening the archive in the input buffer.
@@ -67,7 +67,7 @@ namespace bit7z {
             BitArchiveReader( const Bit7zLibrary& lib,
                               const vector< byte_t >& in_buffer,
                               const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                              const tstring& password = TSTRING( "" ) );
+                              const tstring& password = {} );
 
             /**
              * @brief Constructs a BitArchiveReader object, opening the archive from the standard input stream.
@@ -85,7 +85,7 @@ namespace bit7z {
             BitArchiveReader( const Bit7zLibrary& lib,
                               std::istream& in_stream,
                               const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                              const tstring& password = TSTRING( "" ) );
+                              const tstring& password = {} );
 
             BitArchiveReader( const BitArchiveReader& ) = delete;
 

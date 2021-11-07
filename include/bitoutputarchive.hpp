@@ -73,7 +73,7 @@ namespace bit7z {
              *                be used for creating the new archive and reading the (optional) input archive.
              * @param in_file (optional) the path to an input archive file.
              */
-            explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file = TSTRING( "" ) );
+            explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file = {} );
 
 
             /**
@@ -131,7 +131,7 @@ namespace bit7z {
              * @param in_file the path to the filesystem file to be added to the output archive.
              * @param name    (optional) user-defined path to be used inside the output archive.
              */
-            void addFile( const tstring& in_file, const tstring& name = TSTRING( "" ) );
+            void addFile( const tstring& in_file, const tstring& name = {} );
 
             /**
              * @brief Adds the given buffer file, using the given name as path when compressed in the output archive.
@@ -167,7 +167,7 @@ namespace bit7z {
              * @param recursive (optional) recursively search the files in the given directory
              *                  and all of its subdirectories.
              */
-            void addFiles( const tstring& in_dir, const tstring& filter = TSTRING( "*.*" ), bool recursive = true );
+            void addFiles( const tstring& in_dir, const tstring& filter = BIT7Z_STRING( "*.*" ), bool recursive = true );
 
             /**
              * @brief Adds all the items inside the given directory path.

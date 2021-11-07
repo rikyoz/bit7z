@@ -33,7 +33,7 @@ namespace bit7z {
 
         class FSIndexer {
             public:
-                explicit FSIndexer( FSItem directory, tstring filter = TSTRING( "" ) );
+                explicit FSIndexer( FSItem directory, tstring filter = {} );
 
                 void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                          bool recursive,

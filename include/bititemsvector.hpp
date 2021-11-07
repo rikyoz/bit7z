@@ -57,7 +57,7 @@ namespace bit7z {
              * @param recursive (optional) recursively index the given directory and all of its subdirectories.
              */
             void indexDirectory( const fs::path& in_dir,
-                                 const tstring& filter = TSTRING( "" ),
+                                 const tstring& filter = {},
                                  bool recursive = true );
 
             /**
@@ -90,7 +90,7 @@ namespace bit7z {
              * @param in_file the path to the filesystem file to be indexed in the vector.
              * @param name    (optional) user-defined path to be used inside archives.
              */
-            void indexFile( const tstring& in_file, const tstring& name = TSTRING( "" ) );
+            void indexFile( const tstring& in_file, const tstring& name = {} );
 
             /**
              * @brief Indexes the given buffer, using the given name as path when compressed in archives.

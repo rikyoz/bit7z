@@ -46,7 +46,7 @@ namespace bit7z {
             BitArchiveWriter( const Bit7zLibrary& lib,
                               const tstring& in_file,
                               const BitInOutFormat& format,
-                              const tstring& password = TSTRING( "" ) );
+                              const tstring& password = {} );
 
             /**
              * @brief Constructs a BitArchiveWriter object, reading the archive in the given buffer.
@@ -59,7 +59,7 @@ namespace bit7z {
             BitArchiveWriter( const Bit7zLibrary& lib,
                               const vector< byte_t >& in_buffer,
                               const BitInOutFormat& format,
-                              const tstring& password = TSTRING( "" ) );
+                              const tstring& password = {} );
 
             /**
              * @brief Constructs a BitArchiveWriter object, reading the archive from the given standard input stream.
@@ -72,7 +72,7 @@ namespace bit7z {
             BitArchiveWriter( const Bit7zLibrary& lib,
                               std::istream& in_stream,
                               const BitInOutFormat& format,
-                              const tstring& password = TSTRING( "" ) );
+                              const tstring& password = {} );
     };
 }
 

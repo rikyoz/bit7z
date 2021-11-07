@@ -228,7 +228,7 @@ namespace bit7z {
 
             BitAbstractArchiveCreator( const Bit7zLibrary& lib,
                                        const BitInOutFormat& format,
-                                       tstring password = TSTRING( "" ),
+                                       tstring password = {},
                                        UpdateMode update_mode = UpdateMode::None );
 
             ~BitAbstractArchiveCreator() override = default;

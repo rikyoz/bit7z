@@ -252,7 +252,7 @@ tstring BitPropVariant::getString() const {
         throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
     }
     //Note: a nullptr BSTR is semantically equivalent to an empty string!
-    return bstrVal == nullptr ? TSTRING( "" ) : BSTR_TO_TSTRING( bstrVal );
+    return bstrVal == nullptr ? tstring{} : BSTR_TO_TSTRING( bstrVal );
 }
 
 uint8_t BitPropVariant::getUInt8() const {
@@ -404,7 +404,7 @@ tstring BitPropVariant::toString() const {
         case VT_FILETIME:
             return to_tstring( filetime.dwHighDateTime ) + TSTRING( ", " ) + to_tstring( filetime.dwLowDateTime );
         case VT_EMPTY:
-            return TSTRING( "" );
+            return tstring{};
         default: //type not supported
             throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")",
                                 make_error_code( BitError::UnsupportedOperation ) );

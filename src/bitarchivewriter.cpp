@@ -28,7 +28,7 @@ using bit7z::byte_t;
 using bit7z::tstring;
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib, const BitInOutFormat& format )
-    : BitAbstractArchiveCreator( lib, format ), BitOutputArchive( *this, TSTRING( "") ) {}
+    : BitAbstractArchiveCreator( lib, format ), BitOutputArchive( *this, tstring{} ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
                                     const tstring& in_file,

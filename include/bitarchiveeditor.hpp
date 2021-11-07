@@ -48,7 +48,7 @@ namespace bit7z {
             BitArchiveEditor( const Bit7zLibrary& lib,
                               const tstring& in_file,
                               const BitInOutFormat& format,
-                              const tstring& password = TSTRING( "" ) );
+                              const tstring& password = {} );
 
             BitArchiveEditor( const BitArchiveEditor& ) = delete;
 

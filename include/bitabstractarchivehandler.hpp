@@ -206,7 +206,7 @@ namespace bit7z {
             tstring mPassword;
             bool mRetainDirectories;
 
-            explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib, tstring password = TSTRING( "" ) );
+            explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib, tstring password = {} );
 
             virtual ~BitAbstractArchiveHandler() = default;
 

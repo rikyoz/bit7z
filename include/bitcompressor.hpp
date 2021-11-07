@@ -67,7 +67,7 @@ namespace bit7z {
              */
             void compressFile( Input& in_file,
                                const tstring& out_file,
-                               const tstring& input_name = TSTRING( "" ) ) const {
+                               const tstring& input_name = {} ) const {
                 /* Note: if in_file is a filesystem path (i.e., its type is const tstring&), we can deduce the archived
                  * item filename using the original filename. Otherwise, if the user didn't specify the input file name,
                  * we use the filename (without extension) of the output file path. */
@@ -95,7 +95,7 @@ namespace bit7z {
              */
             void compressFile( Input& in_file,
                                vector< byte_t >& out_buffer,
-                               const tstring& input_name = TSTRING( "" ) ) const {
+                               const tstring& input_name = {} ) const {
                 BitOutputArchive output_archive{ *this, out_buffer };
                 output_archive.addFile( in_file, input_name );
                 output_archive.compressTo( out_buffer );
@@ -110,7 +110,7 @@ namespace bit7z {
              */
             void compressFile( Input& in_file,
                                ostream& out_stream,
-                               const tstring& input_name = TSTRING( "" ) ) const {
+                               const tstring& input_name = {} ) const {
                 BitOutputArchive output_archive{ *this };
                 output_archive.addFile( in_file, input_name );
                 output_archive.compressTo( out_stream );

@@ -61,7 +61,7 @@ namespace bit7z {
              * @param in_file       the input archive file.
              * @param out_dir       the output directory where extracted files will be put.
              */
-            void extract( Input in_file, const tstring& out_dir = TSTRING( "" ) ) const {
+            void extract( Input in_file, const tstring& out_dir = {} ) const {
                 BitInputArchive in_archive( *this, in_file );
                 in_archive.extract( out_dir );
             }
@@ -110,7 +110,7 @@ namespace bit7z {
              * @param out_dir       the output directory where extracted files will be put.
              */
             void extractMatching( Input in_file, const tstring& item_filter,
-                                  const tstring& out_dir = TSTRING( "" ) ) const {
+                                  const tstring& out_dir = {} ) const {
                 using namespace filesystem;
 
                 if ( item_filter.empty() ) {
@@ -149,7 +149,7 @@ namespace bit7z {
              * @param out_dir   the output directory where the extracted files will be put.
              */
             void extractItems( Input in_file, const vector< uint32_t >& indices,
-                               const tstring& out_dir = TSTRING( "" ) ) const {
+                               const tstring& out_dir = {} ) const {
                 if ( indices.empty() ) {
                     throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );
                 }
@@ -181,7 +181,7 @@ namespace bit7z {
              * @param out_dir       the output directory where extracted files will be put.
              */
             void extractMatchingRegex( Input in_file, const tstring& regex,
-                                       const tstring& out_dir = TSTRING( "" ) ) const {
+                                       const tstring& out_dir = {} ) const {
                 if ( regex.empty() ) {
                     throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
