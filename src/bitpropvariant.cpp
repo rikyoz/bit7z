@@ -233,7 +233,7 @@ BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
             case VT_FILETIME:
                 filetime = other.filetime;
                 break;
-            default:
+            default: //type not supported
                 break;
         }
     }
@@ -259,7 +259,7 @@ uint8_t BitPropVariant::getUInt8() const {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
-        default:
+        default: // not an 8-bits unsigned integer.
             throw BitException( "BitPropVariant is not an 8-bits unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -271,7 +271,7 @@ uint16_t BitPropVariant::getUInt16() const {
             return bVal;
         case VT_UI2:
             return uiVal;
-        default:
+        default: // not a 16-bits unsigned integer.
             throw BitException( "BitPropVariant is not a 16-bits unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -287,7 +287,7 @@ uint32_t BitPropVariant::getUInt32() const {
             return uintVal;
         case VT_UI4:
             return ulVal;
-        default:
+        default: // not a 32-bits unsigned integer.
             throw BitException( "BitPropVariant is not a 32-bits unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -305,7 +305,7 @@ uint64_t BitPropVariant::getUInt64() const {
             return ulVal;
         case VT_UI8:
             return uhVal.QuadPart;
-        default:
+        default: // not a 64-bits unsigned integer.
             throw BitException( "BitPropVariant is not a 64-bits unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -315,7 +315,7 @@ int8_t BitPropVariant::getInt8() const {
     switch ( vt ) {
         case VT_I1:
             return cVal;
-        default:
+        default: // not an 8-bits integer.
             throw BitException( "BitPropVariant is not an 8-bits integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -327,7 +327,7 @@ int16_t BitPropVariant::getInt16() const {
             return cVal;
         case VT_I2:
             return iVal;
-        default:
+        default: // not a 16-bits integer.
             throw BitException( "BitPropVariant is not a 16-bits integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -343,7 +343,7 @@ int32_t BitPropVariant::getInt32() const {
             return intVal;
         case VT_I4:
             return lVal;
-        default:
+        default: // not a 32-bits integer.
             throw BitException( "BitPropVariant is not a 32-bits integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -361,7 +361,7 @@ int64_t BitPropVariant::getInt64() const {
             return lVal;
         case VT_I8:
             return hVal.QuadPart;
-        default:
+        default: // not a 64-bits integer.
             throw BitException( "BitPropVariant is not a 64-bits integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -405,7 +405,7 @@ tstring BitPropVariant::toString() const {
             return to_tstring( filetime.dwHighDateTime ) + TSTRING( ", " ) + to_tstring( filetime.dwLowDateTime );
         case VT_EMPTY:
             return TSTRING( "" );
-        default:
+        default: //type not supported
             throw BitException( "BitPropVariant type not supported (vt: " + std::to_string( vt ) + ")",
                                 make_error_code( BitError::UnsupportedOperation ) );
     }

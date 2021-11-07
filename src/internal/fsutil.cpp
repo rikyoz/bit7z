@@ -150,14 +150,15 @@ class Umask {
         mode_t current_umask;
         mode_t mask;
 
-        Umask() {
-            current_umask = umask( 0 );  /* get and set the umask */
-            umask( current_umask );   /* restore the umask */
+        Umask() noexcept
+            : current_umask{ umask( 0 ) }, /* get and set the umask */
+              mask{ 0 } {
+            umask( current_umask ); /* restore the umask */
             mask = 0777 & ( ~current_umask );
         }
 };
 
-static Umask gbl_umask;
+static const Umask gbl_umask{};
 #endif
 
 bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept {

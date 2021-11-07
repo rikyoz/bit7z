@@ -21,7 +21,10 @@
 
 #include "bitarchiveiteminfo.hpp"
 
-using namespace bit7z;
+using bit7z::BitArchiveItemInfo;
+using bit7z::BitProperty;
+using bit7z::BitPropVariant;
+using std::map;
 
 BitArchiveItemInfo::BitArchiveItemInfo( uint32_t item_index ) : BitArchiveItem( item_index ) {}
 

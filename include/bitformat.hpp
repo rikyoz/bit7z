@@ -75,7 +75,7 @@ namespace bit7z {
              * @brief Constructs a BitInFormat object with the ID value used by the 7z SDK.
              * @param value  the value of the format in the 7z SDK.
              */
-            explicit constexpr BitInFormat( unsigned char value ) noexcept: mValue( value ) {}
+            constexpr explicit BitInFormat( unsigned char value ) noexcept: mValue( value ) {}
 
             /**
              * @return the value of the format in the 7z SDK.

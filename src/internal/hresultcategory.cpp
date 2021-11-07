@@ -32,7 +32,7 @@ const char* hresult_category_t::name() const noexcept {
 
 std::string hresult_category_t::message( int ev ) const {
 #ifdef _MSC_VER
-    // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors
+    // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors.
     return std::system_category().message( ev );
 #elif defined( __MINGW32__ )
     // MinGW supports FormatMessageA!
@@ -88,7 +88,7 @@ std::string hresult_category_t::message( int ev ) const {
 
 std::error_condition hresult_category_t::default_error_condition( int ev ) const noexcept {
     switch ( static_cast< HRESULT >( ev ) ) {
-        // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors
+        // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors.
         case E_ABORT:
             return std::make_error_condition( std::errc::operation_canceled );
         case E_NOTIMPL:

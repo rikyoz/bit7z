@@ -24,19 +24,12 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
-#ifdef _WIN32
-constexpr auto default_library = L"7z.dll";
-#else
-struct GUID;
-#ifdef __linux__
-constexpr auto default_library = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip shared library
-#else
-constexpr auto default_library = "./7z.so";
-#endif
-#endif
-
 struct IInArchive;
 struct IOutArchive;
+
+#ifndef _WIN32
+struct GUID;
+#endif
 
 //! \cond IGNORE_BLOCK_IN_DOXYGEN
 template< typename T >
@@ -44,6 +37,14 @@ class CMyComPtr;
 //! \endcond
 
 namespace bit7z {
+#ifdef _WIN32
+    constexpr auto default_library = L"7z.dll";
+#elif defined( __linux__ )
+    constexpr auto default_library = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip shared library
+#else
+    constexpr auto default_library = "./7z.so";
+#endif
+
     /**
      * @brief The Bit7zLibrary class allows the access to the basic functionalities provided by the 7z DLLs.
      */
