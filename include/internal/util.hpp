@@ -60,7 +60,7 @@ namespace bit7z {
     using std::string;
     using std::wstring;
 
-    string narrow( const wchar_t* wideString, size_t size );
+    string narrow( const wchar_t* wideString );
     wstring widen( const string& narrowString );
 
 #define WIDEN( tstr ) bit7z::widen(tstr)

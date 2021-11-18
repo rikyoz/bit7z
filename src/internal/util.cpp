@@ -21,32 +21,26 @@
 
 #ifndef _WIN32
 #include "internal/util.hpp"
+#include <codecvt>
 #include <sstream>
 
-using std::ostringstream;
 using std::wostringstream;
 using std::ctype;
 using std::use_facet;
+using convert_type = std::codecvt_utf8<wchar_t>;
 
 using namespace bit7z;
 
-string bit7z::narrow( const wchar_t* wideString, size_t size ) {
-    ostringstream stream;
-    stream.imbue( std::locale( "C" ) );
-    const auto& ctfacet = use_facet< ctype< wchar_t > >( stream.getloc() ) ;
-    for ( size_t i = 0 ; i < size; ++i ) {
-        stream << ctfacet.narrow( wideString[ i ], 0 );
+string bit7z::narrow( const wchar_t* wideString ) {
+    if ( wideString == nullptr ) {
+        return "";
     }
-    return stream.str();
+    std::wstring_convert<convert_type, wchar_t> converter;
+    return converter.to_bytes( wideString );
 }
 
 wstring bit7z::widen( const string& narrowString ) {
-    wostringstream stream;
-    stream.imbue( std::locale( "" ) );
-    const auto& ctfacet = use_facet< ctype< wchar_t > >( stream.getloc() ) ;
-    for ( char c : narrowString ) {
-        stream << ctfacet.widen( c ) ;
-    }
-    return stream.str() ;
+    std::wstring_convert<convert_type, wchar_t> converter;
+    return converter.from_bytes( narrowString );
 }
 #endif

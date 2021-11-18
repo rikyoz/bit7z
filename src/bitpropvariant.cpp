@@ -28,7 +28,7 @@
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
 #include "internal/util.hpp"
-#define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, ::SysStringLen( bstr ) )
+#define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr )
 #endif
 
 constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
