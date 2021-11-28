@@ -133,11 +133,8 @@ set( SOURCES
      src/internal/stdinputitem.cpp
      src/internal/streamextractcallback.cpp
      src/internal/updatecallback.cpp
-     src/internal/util.cpp )
-
-if( UNIX ) # BitPropVariant needs the implementation of some Windows functions on Unix systems
-    set( SOURCES ${SOURCES} ${7ZIP_SOURCE_DIR}/CPP/Common/MyWindows.cpp )
-endif()
+     src/internal/util.cpp
+     src/internal/windows.cpp )
 
 if( CMAKE_CONFIGURATION_TYPES ) # enable only debug/release configurations for generated VS project file
     set( CMAKE_CONFIGURATION_TYPES Debug Release )

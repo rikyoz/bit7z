@@ -308,6 +308,7 @@
     <ClCompile Include="src\internal\streamextractcallback.cpp" />
     <ClCompile Include="src\internal\updatecallback.cpp" />
     <ClCompile Include="src\internal\util.cpp" />
+    <ClCompile Include="src\internal\windows.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\bit7z.hpp" />

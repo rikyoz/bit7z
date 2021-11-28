@@ -110,16 +110,13 @@ enum STREAM_SEEK {
 #define MY_EXTERN_C extern "C"
 #endif
 
-// Externally defined, string-related Win32 API functions defined in MyWindows.cpp (compiled with bit7z)
-extern "C" BSTR SysAllocStringByteLen( LPCSTR psz, UINT len );
-extern "C" BSTR SysAllocStringLen( const OLECHAR*, UINT );
-extern "C" BSTR SysAllocString( const OLECHAR* sz );
-extern "C" void SysFreeString( BSTR bstr );
-extern "C" UINT SysStringByteLen( BSTR bstr );
-extern "C" UINT SysStringLen( BSTR bstr );
-
-// Externally defined, date-related Win32 API functions defined in MyWindows.cpp (compiled with bit7z)
-extern "C" LONG CompareFileTime( const FILETIME* ft1, const FILETIME* ft2 );
+// String-related Win32 API functions (implemented in windows.cpp)
+BSTR SysAllocStringByteLen( LPCSTR psz, UINT len );
+BSTR SysAllocStringLen( const OLECHAR*, UINT );
+BSTR SysAllocString( const OLECHAR* str );
+void SysFreeString( BSTR bstr );
+UINT SysStringByteLen( BSTR bstr );
+UINT SysStringLen( BSTR bstr );
 
 #endif
 

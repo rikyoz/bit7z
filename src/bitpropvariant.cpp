@@ -70,6 +70,17 @@ BitPropVariantType lookupType( VARTYPE type ) {
     }
 }
 
+namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
+    /* Needed for comparing FILETIME objects in BitPropVariant */
+    inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
+#ifdef _WIN32
+        return CompareFileTime( &ft1, &ft2 ) == 0;
+#else
+        return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
+#endif
+    }
+}
+
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
     vt         = VT_EMPTY;
@@ -78,7 +89,7 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
 }
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
-    if ( vt == VT_BSTR ) { //until now, I've copied only the pointer to the string, hence we need a copy!
+    if ( vt == VT_BSTR ) { //until now, we've copied only the pointer to the string, hence we need a deep copy!
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
         if ( bstrVal == nullptr ) {
@@ -518,7 +529,7 @@ bool bit7z::operator==( const BitPropVariant& a, const BitPropVariant& b ) noexc
         case VT_I8:
             return a.hVal.QuadPart == b.hVal.QuadPart;
         case VT_FILETIME:
-            return CompareFileTime( &a.filetime, &b.filetime ) == 0;
+            return a.filetime == b.filetime;
         default:
             return false;
     }
