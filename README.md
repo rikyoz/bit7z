@@ -19,7 +19,7 @@ bit7z
 
 ## :zap: Introduction
 
-**bit7z** is a _cross-platform_ C++ static library that allows the _compression/extraction of archive files_ through a _clean_, _simple_, and entirely _object-oriented_ wrapper interface to the dynamic libraries from the [7-zip](https://www.7-zip.org/ "7-zip Project Homepage") project.
+**bit7z** is a _cross-platform_ C++ static library that allows the _compression/extraction of archive files_ through a _clean_ and _simple_ wrapper interface to the dynamic libraries from the [7-zip](https://www.7-zip.org/ "7-zip Project Homepage") project.
 It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
 
 ## :dart: Supported Features
@@ -42,16 +42,17 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Operation callbacks**, that allow to obtain real time information about the ongoing operations (from v2.1.x).
 + **Cancelling** or **pausing** the current operation (from v4.0.x).
 
-Please note that the presence or not of some of the above features depends on the particular .dll used along with bit7z.
+#### Notes:
 
-For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format and the 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
+The presence or not of some of the above features depends on the particular shared library used along with bit7z.<br/>
+For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format, and the 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
-In the end, some other features (e.g. _automatic format detection_ and _selective extraction using regexes_) are disabled by default and macros defines must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regexes_) are disabled by default, and macro defines must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## :fire: Getting Started (Library Usage)
 
 Below are a few examples that show how to use some of the main features of bit7z.
-Note: the following code is for Windows, where bit7z uses `std::wstring` for string parameters; on Unix systems, the library uses `std::string` parameters.
+Note: the following code is for Windows, where bit7z uses `std::wstring` for string parameters; the library uses `std::string` parameters on Unix systems.
 
 ### :open_file_folder: Extracting files from an archive
 
@@ -94,7 +95,7 @@ try { //bit7z classes can throw BitException objects
     std::vector< std::wstring > files = { L"path/to/file1.jpg", L"path/to/file2.pdf" };
 
     //creating a simple zip archive
-    compressor.compress( files, L"output_archive.zip" ); 
+    compressor.compress( files, L"output_archive.zip" );
 
     //creating a zip archive with a custom directory structure
     std::map< std::wstring, std::wstring > files_map = {
@@ -169,9 +170,9 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 <img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout&label=total%20downloads&logo=icloud&logoColor=white"/></a>
 </div>
 
-Each released package contains a _precompiled version_ of the library (both in _debug_ and _release_ mode) and the _public API headers_ that are needed to use it in your program; packages are available for both _x86_ and _x64_ architectures.
+Each released package contains a _precompiled version_ of bit7z (both in _debug_ and _release_ mode) and the _public API headers_ needed to use the library in your program; packages are available for both _x86_ and _x64_ architectures.
 
-Obviously, you can also clone/download this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+You can also clone/download this repository and build the library by yourself (please, see the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## :toolbox: Requirements
 
@@ -179,7 +180,6 @@ Obviously, you can also clone/download this repository and build the library by 
 + **Architecture:** x86, x86_64.
 + **Compiler:** MSVC 2015 or later<strong><sup>2</sup></strong>, MinGW v6.4 or later, GCC v4.9 or later, Clang 3.5 or later.
 + **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix<strong><sup>3</sup></strong>.
-
 
 **<sup>1</sup>** On Windows, you should link your program _also_ with *oleaut32* (e.g., `-lbit7z -loleaut32`).<br/>
 On Unix systems (e.g., Linux, macOS), you should link your program _also_ with *dl* (e.g., `-lbit7z -ldl`).
@@ -208,7 +208,7 @@ A more detailed guide on how to build this library is available [here](https://g
 
 ## :coffee: Donate
 
-If you have found this project useful, please consider supporting it with a small donation or buying me a coffee/beer, so that I can keep improving it!
+If you have found this project helpful, please consider supporting it with a small donation or buying me a coffee/beer so that I can keep improving it!
 Thank you! :)
 
 <div align="center">
