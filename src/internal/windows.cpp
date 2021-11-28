@@ -24,23 +24,28 @@
 #include "bittypes.hpp"
 #include "internal/windows.hpp"
 
-#include <cwchar>
 #include <iostream>
 
 
-/*size_t wcsnlen_s( const wchar_t* str, size_t len ) {
-    if ( str == nullptr || len == 0 ) {
+size_t wcsnlen_s( const wchar_t* str, size_t max_size ) {
+    if ( str == nullptr || max_size == 0 ) {
         return 0;
     }
-    return 0;
-}*/
+
+    size_t result;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+    for ( result = 0; result < max_size && str[ result ] != L'\0'; ++result ) {
+        // continue;
+    }
+    return result;
+}
 
 BSTR SysAllocString( const OLECHAR* str ) {
     if ( str == nullptr ) {
         return nullptr;
     }
 
-    auto len = static_cast< UINT >( std::wcslen( str ) );
+    auto len = static_cast< UINT >( wcsnlen_s( str, FILENAME_MAX ) );
     return SysAllocStringLen( str, len );
 }
 
