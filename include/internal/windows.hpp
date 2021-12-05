@@ -75,17 +75,6 @@ inline constexpr HRESULT HRESULT_FROM_WIN32( unsigned int x ) {
 }
 
 constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
-#else // 7-zip uses a different facility code since it uses HRESULT_FROM_WIN32 only for POSIX error codes.
-constexpr auto FACILITY_CODE = FACILITY_ERRNO;
-#endif
-
-/* For when we cannot include IStream.h */
-#ifndef HRESULT_WIN32_ERROR_NEGATIVE_SEEK
-#ifdef MY__E_ERROR_NEGATIVE_SEEK // 7-zip
-constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY__E_ERROR_NEGATIVE_SEEK;
-#else //p7zip
-constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = HRESULT_FROM_WIN32(ERROR_NEGATIVE_SEEK);
-#endif
 #endif
 
 // Win32 structs
@@ -144,6 +133,18 @@ void SysFreeString( BSTR bstr );
 UINT SysStringByteLen( BSTR bstr );
 UINT SysStringLen( BSTR bstr );
 
+#endif
+
+/* For when we cannot include IStream.h */
+#ifndef HRESULT_WIN32_ERROR_NEGATIVE_SEEK
+#ifdef MY__E_ERROR_NEGATIVE_SEEK // 7-zip on Unix
+// On Unix 7-zip uses a different facility code since it uses HRESULT_FROM_WIN32 only for POSIX error codes.
+constexpr auto FACILITY_CODE = FACILITY_ERRNO;
+constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY__E_ERROR_NEGATIVE_SEEK;
+#else //p7zip or 7-zip on Windows
+constexpr auto FACILITY_CODE = FACILITY_WIN32;
+constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = HRESULT_FROM_WIN32(ERROR_NEGATIVE_SEEK);
+#endif
 #endif
 
 #endif //WINDOWS_HPP
