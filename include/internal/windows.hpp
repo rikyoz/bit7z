@@ -25,6 +25,8 @@
 
 #include <Common/MyTypes.h>
 
+/* Note: we must avoid including other headers of p7zip, like stdafx.h! */
+
 /* Making sure constants and type aliases declared in bitwindows.hpp are usable by p7zip
  * as if they were not inside the bit7z namespace. */
 using namespace bit7z;
@@ -34,16 +36,19 @@ using LPCOLESTR = const OLECHAR*;
 using LPCSTR = const char*;
 using UINT = unsigned int;
 using LONG = int;
+using UInt16 = uint16_t;
+using UInt32 = uint32_t;
 
 // Win32 file attributes flags
+#ifndef FILE_ATTRIBUTE_READONLY
 constexpr auto FILE_ATTRIBUTE_READONLY       = 1;
 constexpr auto FILE_ATTRIBUTE_DIRECTORY      = 16;
 constexpr auto FILE_ATTRIBUTE_ARCHIVE        = 32;
 constexpr auto FILE_ATTRIBUTE_NORMAL         = 128;
 constexpr auto FILE_ATTRIBUTE_UNIX_EXTENSION = 0x8000; //as defined by p7zip
+#endif
 
 constexpr auto MAX_PATHNAME_LEN = 1024;
-constexpr auto FACILITY_WIN32 = 7;
 
 // Win32 VARIANT_BOOL constants
 constexpr auto VARIANT_TRUE  = static_cast< VARIANT_BOOL >( -1 );
@@ -51,16 +56,37 @@ constexpr auto VARIANT_FALSE = static_cast< VARIANT_BOOL >( 0 );
 
 // Win32 macros needed by p7zip code
 #define FAILED( Status ) ((HRESULT)(Status)<0)
-#define HRESULT_FACILITY( hr )  (((hr) >> 16) & 0x1fff)
+#define HRESULT_FACILITY( hr )  (((hr) >> 16) & 0x1FFF)
 #define HRESULT_CODE( hr )    ((hr) & 0xFFFF)
 
 // Win32 APIs
 inline DWORD WINAPI GetLastError() { return errno; }
 
+constexpr auto FACILITY_ERRNO = 0x800;
+constexpr auto FACILITY_WIN32 = 7;
+
+#ifndef HRESULT_FROM_WIN32 // for p7zip (7-zip declares HRESULT_FROM_WIN32 in C/7zTypes.h so there's no need for this).
+constexpr auto FACILITY_CODE = FACILITY_WIN32;
+
+/* Note: p7zip uses FACILITY_WIN32, 7-zip version of HRESULT_FROM_WIN32 uses FACILITY_ERRNO. */
 inline constexpr HRESULT HRESULT_FROM_WIN32( unsigned int x ) {
     return static_cast< HRESULT >( x ) > 0 ?
            static_cast< HRESULT >( ( x & 0x0000FFFF ) | ( FACILITY_WIN32 << 16 ) | 0x80000000 ) : static_cast< HRESULT >( x );
 }
+
+constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
+#else // 7-zip uses a different facility code since it uses HRESULT_FROM_WIN32 only for POSIX error codes.
+constexpr auto FACILITY_CODE = FACILITY_ERRNO;
+#endif
+
+/* For when we cannot include IStream.h */
+#ifndef HRESULT_WIN32_ERROR_NEGATIVE_SEEK
+#ifdef MY__E_ERROR_NEGATIVE_SEEK // 7-zip
+constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY__E_ERROR_NEGATIVE_SEEK;
+#else //p7zip
+constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = HRESULT_FROM_WIN32(ERROR_NEGATIVE_SEEK);
+#endif
+#endif
 
 // Win32 structs
 struct WIN32_FILE_ATTRIBUTE_DATA {

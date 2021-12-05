@@ -66,18 +66,23 @@ std::string hresult_category_t::message( int ev ) const {
             return "Unable to perform requested operation.";
         case E_OUTOFMEMORY:
             return "Not enough memory resources are available to complete this operation.";
-        /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY, ERROR_NO_MORE_FILES, and
-         *       ERROR_NEGATIVE_SEEK, so we need to handle also these cases here. */
+        /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY and ERROR_NO_MORE_FILES
+         *       so we need to handle also these cases here. */
         case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return "The directory name is invalid.";
         case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return "There are no more files.";
-        case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+        /* Note: p7zip and 7-zip do not use a POSIX-equivalent error code for ERROR_NEGATIVE_SEEK, but rather
+         *       its Win32 value; both also use the FACILITY_WIN32 (7) as facility code for the corresponding
+         *       HRESULT_WIN32_ERROR_NEGATIVE_SEEK, so we cannot use 7-zip's HRESULT_FROM_WIN32 macro
+         *       since it uses another facility code, i.e., FACILITY_ERRNO (0x800).
+         *       Hence, we simply check for the final HRESULT code. */
+        case HRESULT_WIN32_ERROR_NEGATIVE_SEEK:
             return "An attempt was made to move the file pointer before the beginning of the file.";
         case E_FAIL:
             return "Unspecified error";
         default:
-            if ( HRESULT_FACILITY( ev ) == FACILITY_WIN32 ) {
+            if ( HRESULT_FACILITY( ev ) == FACILITY_CODE ) {
                 // POSIX error code wrapped in a HRESULT value (e.g., through HRESULT_FROM_WIN32 macro)
                 return std::system_category().message( HRESULT_CODE( ev ) );
             }
@@ -108,7 +113,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
 #endif
         case E_INVALIDARG:
         case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in the stream classes functions.
-        case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+        case HRESULT_WIN32_ERROR_NEGATIVE_SEEK:
             return std::make_error_condition( std::errc::invalid_argument );
         case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
@@ -117,7 +122,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );
         default:
-            if ( HRESULT_FACILITY( ev ) == FACILITY_WIN32 ) {
+            if ( HRESULT_FACILITY( ev ) == FACILITY_CODE ) {
 #ifndef __MINGW32__
                 /* MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
                  * However, on Windows ev is a Win32 error wrapped into a HRESULT (e.g., through HRESULT_FROM_WIN32).
