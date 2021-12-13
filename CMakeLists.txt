@@ -149,9 +149,12 @@ if(BIT7Z_REGEX_MATCHING)
 endif()
 
 # includes
-target_include_directories(${TARGET_NAME} PRIVATE 
-    ${PROJECT_SOURCE_DIR}/include/
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/
+target_include_directories(${TARGET_NAME} PUBLIC
+        ${PROJECT_SOURCE_DIR}/include/
+)
+
+target_include_directories(${TARGET_NAME} PRIVATE
+        ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/
 )
 
 # compiler options
