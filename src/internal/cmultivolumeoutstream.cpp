@@ -41,6 +41,9 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
         *processedSize = 0;
     }
 
+    mCurrentVolumeIndex += ( mCurrentVolumeOffset / mMaxVolumeSize );
+    mCurrentVolumeOffset = mCurrentVolumeOffset % mMaxVolumeSize;
+
     while ( mCurrentVolumeIndex >= mVolumes.size() ) {
         /* The current volume stream still doesn't exist, so we need to create it. */
         tstring name = to_tstring( static_cast< uint64_t >( mCurrentVolumeIndex ) + 1 );
@@ -52,12 +55,6 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
         } catch ( const BitException& ex ) {
             return ex.nativeCode();
         }
-    }
-
-    for ( ; mCurrentVolumeOffset >= mMaxVolumeSize; ++mCurrentVolumeIndex ) {
-        /* the current offset position is beyond the size of the (current) volume,
-         * so we need to write on the next volume.*/
-        mCurrentVolumeOffset -= mMaxVolumeSize;
     }
 
     /* Getting the current volume stream. */
