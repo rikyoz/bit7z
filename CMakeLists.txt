@@ -79,6 +79,7 @@ set( HEADERS
      include/internal/hresultcategory.hpp
      include/internal/internalcategory.hpp
      include/internal/opencallback.hpp
+     include/internal/processeditem.hpp
      include/internal/renameditem.hpp
      include/internal/stdinputitem.hpp
      include/internal/streamextractcallback.hpp
@@ -131,6 +132,7 @@ set( SOURCES
      src/internal/hresultcategory.cpp
      src/internal/internalcategory.cpp
      src/internal/opencallback.cpp
+     src/internal/processeditem.cpp
      src/internal/renameditem.cpp
      src/internal/stdinputitem.cpp
      src/internal/streamextractcallback.cpp

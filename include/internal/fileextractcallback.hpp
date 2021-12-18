@@ -23,6 +23,7 @@
 
 #include "internal/cfileoutstream.hpp"
 #include "internal/extractcallback.hpp"
+#include "internal/processeditem.hpp"
 
 namespace bit7z {
     using std::wstring;
@@ -47,16 +48,10 @@ namespace bit7z {
         private:
             fs::path mInFilePath;     // Input file path
             fs::path mDirectoryPath;  // Output directory
-            fs::path mDiskFilePath;   // full path to file on disk
+            fs::path mFilePathOnDisk; // Full path to the file on disk
             bool mRetainDirectories;
 
-            struct CProcessedFileInfo {
-                FILETIME MTime;
-                UInt32 Attrib;
-                bool isDir;
-                bool AttribDefined;
-                bool MTimeDefined;
-            } mProcessedFileInfo;
+            ProcessedItem mCurrentItem;
 
             CMyComPtr< CFileOutStream > mFileOutStream;
 

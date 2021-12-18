@@ -31,21 +31,13 @@ using namespace bit7z;
 constexpr auto kCannotOpenOutput   = "Cannot open output file";
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
-/* Most of this code, though heavily modified, is taken from the CExtractCallback class in Client7z.cpp of the 7z SDK
- * Main changes made:
- *  + Use of wstring instead of UString
- *  + Error messages are not showed. Instead, they are memorized into a wstring and used by BitFileExtractor to throw
- *    exceptions (see also Callback interface). Note that this class doesn't throw exceptions, as other classes in bit7,
- *    because it must implement interfaces with nothrow methods.
- *  + The work performed originally by the Init method is now performed by the class constructor. */
-
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
                                           const tstring& directoryPath )
     : ExtractCallback( inputArchive ),
       mInFilePath( inputArchive.archivePath() ),
       mDirectoryPath( directoryPath ),
       mRetainDirectories( inputArchive.handler().retainDirectories() ),
-      mProcessedFileInfo() {}
+      mCurrentItem() {}
 
 void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!
@@ -59,93 +51,58 @@ void FileExtractCallback::finishOperation() {
         }
         mFileOutStream.Release(); // We need to release the file to change its modified time!
 
-        if ( mProcessedFileInfo.MTimeDefined ) {
-            filesystem::fsutil::setFileModifiedTime( mDiskFilePath, mProcessedFileInfo.MTime );
+        if ( mCurrentItem.isModifiedTimeDefined() ) {
+            filesystem::fsutil::setFileModifiedTime( mFilePathOnDisk, mCurrentItem.modifiedTime() );
         }
     }
 
-    if ( mExtractMode && mProcessedFileInfo.AttribDefined ) {
-        filesystem::fsutil::setFileAttributes( mDiskFilePath, mProcessedFileInfo.Attrib );
+    if ( mExtractMode && mCurrentItem.areAttributesDefined() ) {
+        filesystem::fsutil::setFileAttributes( mFilePathOnDisk, mCurrentItem.attributes() );
     }
 }
 
 void FileExtractCallback::throwException( HRESULT error ) {
     if ( mErrorMessage != nullptr ) {
-        throw BitException( mErrorMessage, make_hresult_code( error ), mDiskFilePath.native() );
+        throw BitException( mErrorMessage, make_hresult_code( error ), mFilePathOnDisk.native() );
     }
     Callback::throwException( error );
 }
 
 HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
-    // Get Name
-    BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
-
-    fs::path filePath;
-    if ( prop.isEmpty() ) {
-        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
-    } else if ( prop.isString() ) {
-        filePath = fs::path( prop.getString() );
-        if ( !mRetainDirectories ) {
-            filePath = filePath.filename();
-        }
-    } else {
-        return E_FAIL;
-    }
-    mDiskFilePath = mDirectoryPath / filePath;
-
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
     }
 
-    // Get Attrib
-    BitPropVariant prop2 = mInputArchive.itemProperty( index, BitProperty::Attrib );
-
-    if ( prop2.isEmpty() ) {
-        mProcessedFileInfo.Attrib = 0;
-        mProcessedFileInfo.AttribDefined = false;
-    } else {
-        if ( !prop2.isUInt32() ) {
-            return E_FAIL;
-        }
-
-        mProcessedFileInfo.Attrib = prop2.getUInt32();
-        mProcessedFileInfo.AttribDefined = true;
+    try {
+        mCurrentItem.loadItemInfo( mInputArchive, index );
+    } catch ( const BitException& ex ) {
+        mErrorMessage = ex.what();
+        return E_FAIL;
     }
 
-    mProcessedFileInfo.isDir = mInputArchive.isItemFolder( index );
-
-    // Get Modified Time
-    BitPropVariant prop3 = mInputArchive.itemProperty( index, BitProperty::MTime );
-    mProcessedFileInfo.MTimeDefined = false;
-
-    switch ( prop3.type() ) {
-        case BitPropVariantType::Empty:
-            break;
-
-        case BitPropVariantType::FileTime:
-            mProcessedFileInfo.MTime = prop3.getFileTime();
-            mProcessedFileInfo.MTimeDefined = true;
-            break;
-
-        default:
-            return E_FAIL;
+    fs::path filePath = mCurrentItem.path();
+    if ( filePath.empty() ) {
+        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
+    } else if ( !mRetainDirectories ) {
+        filePath = filePath.filename();
     }
+    mFilePathOnDisk = mDirectoryPath / filePath;
 
-    if ( !mProcessedFileInfo.isDir ) { // File
+    if ( !mInputArchive.isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
             mHandler.fileCallback()( filePath );
         }
 
         std::error_code ec;
-        fs::create_directories( mDiskFilePath.parent_path(), ec );
+        fs::create_directories( mFilePathOnDisk.parent_path(), ec );
 
-        if ( fs::exists( mDiskFilePath, ec ) && !fs::remove( mDiskFilePath, ec ) ) {
+        if ( fs::exists( mFilePathOnDisk, ec ) && !fs::remove( mFilePathOnDisk, ec ) ) {
             mErrorMessage = kCannotDeleteOutput;
             return E_ABORT;
         }
 
         try {
-            auto outStreamLoc = bit7z::make_com< CFileOutStream >( mDiskFilePath, true );
+            auto outStreamLoc = bit7z::make_com< CFileOutStream >( mFilePathOnDisk, true );
             mFileOutStream = outStreamLoc;
             *outStream = outStreamLoc.Detach();
         } catch ( const BitException& ) {
@@ -153,8 +110,8 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
             return E_ABORT;
         }
     } else if ( mRetainDirectories ) { // Directory, and we must retain it
-        error_code ec;
-        fs::create_directories( mDiskFilePath, ec );
+        std::error_code ec;
+        fs::create_directories( mFilePathOnDisk, ec );
     }
     return S_OK;
 }

@@ -26,10 +26,6 @@
 using namespace bit7z;
 
 CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways ) : CStdOutStream( mFileStream ) {
-    open( filePath, createAlways );
-}
-
-void CFileOutStream::open( const fs::path& filePath, bool createAlways ) {
     std::error_code ec;
     if ( !createAlways && fs::exists( filePath, ec ) ) {
         if ( !ec ) { // the call to fs::exists succeeded, but filePath doesn't exist, and this is an error!

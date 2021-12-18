@@ -28,8 +28,6 @@ namespace bit7z {
         public:
             explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
 
-            void open( const fs::path& filePath, bool createAlways = false );
-
             BIT7Z_NODISCARD bool fail();
 
         private:
