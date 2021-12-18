@@ -16,15 +16,15 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef COUTMULTIVOLSTREAM_HPP
-#define COUTMULTIVOLSTREAM_HPP
+#ifndef COUTMULTIVOLUMESTREAM_HPP
+#define COUTMULTIVOLUMESTREAM_HPP
 
 #include <vector>
 #include <string>
 #include <cstdint>
 
 #include "internal/guiddef.hpp"
-#include "internal/cfileoutstream.hpp"
+#include "internal/cvolumeoutstream.hpp"
 
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>
@@ -34,36 +34,40 @@ using std::vector;
 using std::wstring;
 
 namespace bit7z {
-    class CMultiVolOutStream final : public IOutStream, public CMyUnknownImp {
+    class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
-            uint64_t mVolSize;
-            tstring mVolPrefix;
-            size_t mStreamIndex; // required stream
-            uint64_t mOffsetPos;   // offset from start of _streamIndex index
-            uint64_t mAbsPos;
-            uint64_t mLength;
+            // Size of a single volume.
+            uint64_t mMaxVolumeSize;
 
-            struct CAltStreamInfo {
-                CMyComPtr< CFileOutStream > stream;
-                tstring name;
-                uint64_t pos{};
-                uint64_t realSize{};
-            };
+            // Common name prefix of every volume.
+            tstring mVolumePrefix;
 
-            vector< CAltStreamInfo > mVolStreams;
+            // The current volume stream on which we are working.
+            size_t mCurrentVolumeIndex;
+
+            // Offset from the beginning of the current volume stream (i.e., the one at mCurrentVolumeIndex).
+            uint64_t mCurrentVolumeOffset;
+
+            // Offset from the beginning of the full output archive.
+            uint64_t mAbsoluteOffset;
+
+            // Total size of the output archive (sum of the volumes' sizes).
+            uint64_t mFullSize;
+
+            vector< CMyComPtr< CVolumeOutStream > > mVolumes;
 
         public:
-            CMultiVolOutStream( uint64_t volSize, const tstring& archiveName );
+            CMultiVolumeOutStream( uint64_t volSize, const tstring& archiveName );
 
-            CMultiVolOutStream( const CMultiVolOutStream& ) = delete;
+            CMultiVolumeOutStream( const CMultiVolumeOutStream& ) = delete;
 
-            CMultiVolOutStream( CMultiVolOutStream&& ) = delete;
+            CMultiVolumeOutStream( CMultiVolumeOutStream&& ) = delete;
 
-            CMultiVolOutStream& operator=( const CMultiVolOutStream& ) = delete;
+            CMultiVolumeOutStream& operator=( const CMultiVolumeOutStream& ) = delete;
 
-            CMultiVolOutStream& operator=( CMultiVolOutStream&& ) = delete;
+            CMultiVolumeOutStream& operator=( CMultiVolumeOutStream&& ) = delete;
 
-            MY_UNKNOWN_DESTRUCTOR( ~CMultiVolOutStream() ) = default;
+            MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeOutStream() ) = default;
 
             BIT7Z_NODISCARD UInt64 GetSize() const noexcept;
 
@@ -78,4 +82,4 @@ namespace bit7z {
     };
 }
 
-#endif // COUTMULTIVOLSTREAM_HPP
+#endif // COUTMULTIVOLUMESTREAM_HPP

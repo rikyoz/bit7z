@@ -24,7 +24,7 @@
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/cbufferoutstream.hpp"
-#include "internal/cmultivoloutstream.hpp"
+#include "internal/cmultivolumeoutstream.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
 
@@ -126,7 +126,7 @@ CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
 CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_archive,
                                                              bool updating_archive ) const {
     if ( mArchiveCreator.volumeSize() > 0 ) {
-        return bit7z::make_com< CMultiVolOutStream, IOutStream >( mArchiveCreator.volumeSize(), out_archive );
+        return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), out_archive );
     }
 
     fs::path out_path = out_archive;
