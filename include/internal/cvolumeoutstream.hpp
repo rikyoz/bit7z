@@ -42,11 +42,11 @@ namespace bit7z {
             BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 
         private:
+            fs::path mPath;
+
             uint64_t mCurrentOffset;
 
             uint64_t mCurrentSize;
-
-            fs::path mPath;
     };
 }
 
