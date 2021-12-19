@@ -127,22 +127,34 @@ bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) {
     return w_match( pattern.cbegin(), pattern.cend(), str.begin(), str.end() );
 }
 
-#ifndef _WIN32 //code from p7zip
-static int convert_to_symlink( const tstring& name ) {
-    FILE* file = fopen( name.c_str(), "rb" );
-    if ( file ) {
-        char buf[MAX_PATHNAME_LEN + 1];
-        char* ret = fgets( buf, sizeof( buf ) - 1, file );
-        fclose( file );
-        if ( ret ) {
-            int ir = unlink( name.c_str() );
-            if ( ir == 0 ) {
-                ir = symlink( buf, name.c_str() );
-            }
-            return ir;
-        }
+#ifndef _WIN32
+bool restore_symlink( const std::string& name ) {
+    std::ifstream ifs( name, std::ios::in | std::ios::binary );
+    if ( !ifs.is_open() ) {
+        return false;
     }
-    return -1;
+
+    // Reading the path stored in the link file.
+    std::string link_path;
+    link_path.resize( MAX_PATHNAME_LEN );
+    ifs.getline( &link_path[ 0 ], MAX_PATHNAME_LEN );
+
+    if ( !ifs ) { // Error while reading the path, exiting.
+        return false;
+    }
+
+    // Shrinking the path string to its actual size.
+    link_path.resize( ifs.gcount() );
+
+    // No need to keep the file open.
+    ifs.close();
+
+    // Removing the link file.
+    std::error_code ec;
+    fs::remove( name, ec );
+
+    // Restoring the symbolic link to the target file.
+    return !ec && symlink( link_path.c_str(), name.c_str() ) == 0;
 }
 
 class Umask {
@@ -162,31 +174,33 @@ static const Umask gbl_umask{};
 #endif
 
 bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept {
+    if ( filePath.empty() ) {
+        return false;
+    }
+
 #ifdef _WIN32
     return ::SetFileAttributes( filePath.c_str(), attributes ) != FALSE;
 #else
-    struct stat stat_info{};
-    if ( lstat( filePath.c_str(), &stat_info ) != 0 ) {
+    struct stat file_stat{};
+    if ( lstat( filePath.c_str(), &file_stat ) != 0 ) {
         return false;
     }
 
     if ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        stat_info.st_mode = attributes >> 16u;
-        if ( S_ISLNK( stat_info.st_mode ) ) {
-            if ( convert_to_symlink( filePath ) != 0 ) {
-                return false;
-            }
-        } else if ( S_ISDIR( stat_info.st_mode ) ) {
-            stat_info.st_mode |= ( S_IRUSR | S_IWUSR | S_IXUSR );
+        file_stat.st_mode = attributes >> 16u;
+        if ( S_ISLNK( file_stat.st_mode ) ) {
+            return restore_symlink( filePath );
+        } else if ( S_ISDIR( file_stat.st_mode ) ) {
+            file_stat.st_mode |= ( S_IRUSR | S_IWUSR | S_IXUSR );
+        } else if ( !S_ISREG( file_stat.st_mode ) ) {
+            return true;
         }
-        chmod( filePath.c_str(), stat_info.st_mode & gbl_umask.mask );
-    } else if ( !S_ISLNK( stat_info.st_mode ) ) {
-        if ( !S_ISDIR( stat_info.st_mode ) && attributes & FILE_ATTRIBUTE_READONLY ) {
-            stat_info.st_mode &= ~0222;
-        }
-        chmod( filePath.c_str(), stat_info.st_mode & gbl_umask.mask );
+    } else if ( S_ISLNK( file_stat.st_mode ) ) {
+        return true;
+    } else if ( !S_ISDIR( file_stat.st_mode ) && ( attributes & FILE_ATTRIBUTE_READONLY ) != 0 ) {
+        file_stat.st_mode &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
     }
-
+    chmod( filePath.c_str(), file_stat.st_mode & gbl_umask.mask );
     return true;
 #endif
 }
@@ -213,23 +227,27 @@ bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftMo
 #endif
 }
 
-bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileInfo ) noexcept {
+bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept {
+    if ( filePath.empty() ) {
+        return false;
+    }
+
 #ifdef _WIN32
-    return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileInfo ) != FALSE;
+    return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileMetadata ) != FALSE;
 #else
     struct stat stat_info{};
     if ( lstat( filePath.c_str(), &stat_info ) != 0 ) {
         return false;
     }
-    fileInfo.dwFileAttributes = S_ISDIR( stat_info.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
-    if ( !( stat_info.st_mode & S_IWUSR ) ) {
-        fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
+    fileMetadata.dwFileAttributes = S_ISDIR( stat_info.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
+    if ( ( stat_info.st_mode & S_IWUSR ) == 0 ) {
+        fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
     }
-    fileInfo.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( stat_info.st_mode & 0xFFFF ) << 16 );
+    fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( stat_info.st_mode & 0xFFFF ) << 16 );
 
-    fileInfo.ftCreationTime = time_to_FILETIME( stat_info.st_ctime );
-    fileInfo.ftLastAccessTime = time_to_FILETIME( stat_info.st_atime );
-    fileInfo.ftLastWriteTime = time_to_FILETIME( stat_info.st_mtime );
+    fileMetadata.ftCreationTime = time_to_FILETIME( stat_info.st_ctime );
+    fileMetadata.ftLastAccessTime = time_to_FILETIME( stat_info.st_atime );
+    fileMetadata.ftLastWriteTime = time_to_FILETIME( stat_info.st_mtime );
     return true;
 #endif
 }
