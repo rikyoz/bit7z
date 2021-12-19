@@ -157,20 +157,15 @@ bool restore_symlink( const std::string& name ) {
     return !ec && symlink( link_path.c_str(), name.c_str() ) == 0;
 }
 
-class Umask {
-    public:
-        mode_t current_umask;
-        mode_t mask;
+static const mode_t global_umask = []() noexcept {
+    // Getting and setting the current umask.
+    mode_t current_umask{ umask( 0 ) };
 
-        Umask() noexcept
-            : current_umask{ umask( 0 ) }, /* get and set the umask */
-              mask{ 0 } {
-            umask( current_umask ); /* restore the umask */
-            mask = 0777 & ( ~current_umask );
-        }
-};
+    // Restoring the umask.
+    umask( current_umask );
 
-static const Umask gbl_umask{};
+    return 0777 & ( ~current_umask );
+}();
 #endif
 
 bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept {
@@ -200,7 +195,7 @@ bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
     } else if ( !S_ISDIR( file_stat.st_mode ) && ( attributes & FILE_ATTRIBUTE_READONLY ) != 0 ) {
         file_stat.st_mode &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
     }
-    chmod( filePath.c_str(), file_stat.st_mode & gbl_umask.mask );
+    chmod( filePath.c_str(), file_stat.st_mode & global_umask );
     return true;
 #endif
 }
