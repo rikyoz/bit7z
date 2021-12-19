@@ -65,11 +65,12 @@ void ProcessedItem::loadFilePath( const BitInputArchive& input_archive, uint32_t
 }
 
 void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32_t item_index ) {
+    mAttributes = 0;
+    mAreAttributesDefined = false;
+
     BitPropVariant posixAttributes = input_archive.itemProperty( item_index, BitProperty::PosixAttrib );
     switch ( posixAttributes.type() ) {
         case BitPropVariantType::Empty:
-            mAttributes = 0;
-            mAreAttributesDefined = false;
             break;
 
         case BitPropVariantType::UInt32:
@@ -85,8 +86,6 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
     BitPropVariant attributes = input_archive.itemProperty( item_index, BitProperty::Attrib );
     switch ( attributes.type() ) {
         case BitPropVariantType::Empty:
-            mAttributes = 0;
-            mAreAttributesDefined = false;
             break;
 
         case BitPropVariantType::UInt32:
