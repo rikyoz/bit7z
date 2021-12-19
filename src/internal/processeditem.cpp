@@ -116,10 +116,10 @@ void ProcessedItem::loadModifiedTime( const BitInputArchive& input_archive, uint
     }
 }
 
-bool bit7z::ProcessedItem::areAttributesDefined() const {
+bool ProcessedItem::areAttributesDefined() const {
     return mAreAttributesDefined;
 }
 
-bool bit7z::ProcessedItem::isModifiedTimeDefined() const {
+bool ProcessedItem::isModifiedTimeDefined() const {
     return mIsModifiedTimeDefined;
 }

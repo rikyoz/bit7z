@@ -27,7 +27,7 @@ namespace bit7z {
     /**
      * @brief The BitArchiveItemOffset class represents an archived item but doesn't store its properties.
      */
-    class BitArchiveItemOffset : public BitArchiveItem {
+    class BitArchiveItemOffset final : public BitArchiveItem {
         public:
             BitArchiveItemOffset& operator++() noexcept;
 

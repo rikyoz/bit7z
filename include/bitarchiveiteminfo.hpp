@@ -30,7 +30,7 @@ namespace bit7z {
     /**
      * @brief The BitArchiveItemInfo class represents an archived item and that stores all its properties for later use.
      */
-    class BitArchiveItemInfo : public BitArchiveItem {
+    class BitArchiveItemInfo final : public BitArchiveItem {
         public:
             /**
              * @brief Gets the specified item property.

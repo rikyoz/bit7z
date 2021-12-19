@@ -30,16 +30,15 @@ namespace bit7z {
 
             void loadItemInfo( const BitInputArchive& input_archive, std::uint32_t item_index );
 
-            fs::path path() const ;
+            BIT7Z_NODISCARD fs::path path() const ;
 
-            uint32_t attributes() const;
+            BIT7Z_NODISCARD uint32_t attributes() const;
 
-            bool areAttributesDefined() const;
+            BIT7Z_NODISCARD bool areAttributesDefined() const;
 
-            FILETIME modifiedTime() const;
+            BIT7Z_NODISCARD FILETIME modifiedTime() const;
 
-            bool isModifiedTimeDefined() const;
-
+            BIT7Z_NODISCARD bool isModifiedTimeDefined() const;
         private:
             fs::path mFilePath;
 

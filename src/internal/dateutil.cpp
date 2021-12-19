@@ -28,15 +28,16 @@ namespace bit7z {
     using FileTimeTickRate = std::ratio<1, 10'000'000>;
     // FileTimeDuration has the same layout as FILETIME;
     using FileTimeDuration = std::chrono::duration< int64_t, FileTimeTickRate >;
-    // January 1, 1601 (NT epoch) - January 1, 1970 (Unix epoch):
+    // Seconds between 01/01/1601 (NT epoch) and 01/01/1970 (Unix epoch):
     constexpr std::chrono::seconds nt_to_unix_epoch{ -11644473600 };
 
     fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime ) {
-        const FileTimeDuration asDuration{
+        const FileTimeDuration file_time_duration{
             static_cast< int64_t >( ( static_cast< uint64_t >( fileTime.dwHighDateTime ) << 32u ) | fileTime.dwLowDateTime )
         };
-        const auto withUnixEpoch = asDuration + nt_to_unix_epoch;
-        return fs::file_time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( withUnixEpoch ) };
+
+        const auto unix_epoch = file_time_duration + nt_to_unix_epoch;
+        return fs::file_time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unix_epoch ) };
     }
 
     FILETIME time_to_FILETIME( const std::time_t& time ) {
