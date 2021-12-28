@@ -19,21 +19,20 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef _WIN32
-
 #include "internal/dateutil.hpp"
 
 namespace bit7z {
     // 100ns intervals
-    using FileTimeTickRate = std::ratio<1, 10'000'000>;
+    using FileTimeTickRate = std::ratio< 1, 10'000'000 >;
     // FileTimeDuration has the same layout as FILETIME;
     using FileTimeDuration = std::chrono::duration< int64_t, FileTimeTickRate >;
     // Seconds between 01/01/1601 (NT epoch) and 01/01/1970 (Unix epoch):
     constexpr std::chrono::seconds nt_to_unix_epoch{ -11644473600 };
 
+#ifndef _WIN32
     fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime ) {
         const FileTimeDuration file_time_duration{
-            static_cast< int64_t >( ( static_cast< uint64_t >( fileTime.dwHighDateTime ) << 32u ) | fileTime.dwLowDateTime )
+            ( static_cast< int64_t >( fileTime.dwHighDateTime ) << 32 ) + fileTime.dwLowDateTime
         };
 
         const auto unix_epoch = file_time_duration + nt_to_unix_epoch;
@@ -41,12 +40,37 @@ namespace bit7z {
     }
 
     FILETIME time_to_FILETIME( const std::time_t& time ) {
-        uint64_t secs = ( time * 10000000ull ) + 116444736000000000;
+        uint64_t time_in_seconds = ( time * 10000000ull ) + 116444736000000000;
         FILETIME fileTime{};
-        fileTime.dwLowDateTime = static_cast< DWORD >( secs );
-        fileTime.dwHighDateTime = static_cast< DWORD >( secs >> 32 );
+        fileTime.dwLowDateTime = static_cast< DWORD >( time_in_seconds );
+        fileTime.dwHighDateTime = static_cast< DWORD >( time_in_seconds >> 32 );
         return fileTime;
+    }
+#endif
+
+    time_type FILETIME_to_time_type( const FILETIME& fileTime ) {
+        const FileTimeDuration file_time_duration{
+            ( static_cast< int64_t >( fileTime.dwHighDateTime ) << 32 ) + fileTime.dwLowDateTime
+        };
+
+        const auto unix_epoch = file_time_duration + nt_to_unix_epoch;
+        return time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unix_epoch ) };
+    }
+
+    FILETIME currentFileTime() {
+#ifdef _WIN32
+        FILETIME ft{};
+        SYSTEMTIME st{};
+
+        GetSystemTime( &st ); // gets current time
+        SystemTimeToFileTime( &st, &ft ); // converts to file time format
+        return ft;
+#else
+        auto current_time = std::chrono::system_clock::now();
+        std::time_t time = std::chrono::system_clock::to_time_t( current_time );
+        return time_to_FILETIME( time );
+#endif
     }
 }
 
-#endif
+//#endif

@@ -22,10 +22,7 @@
 #include "internal/bufferitem.hpp"
 
 #include "internal/cbufferinstream.hpp"
-
-#ifndef _WIN32
 #include "internal/dateutil.hpp"
-#endif
 
 using bit7z::BitPropVariant;
 using bit7z::BufferItem;
@@ -62,26 +59,15 @@ uint64_t BufferItem::size() const noexcept {
 }
 
 FILETIME BufferItem::creationTime() const noexcept { //-V524
-    return lastWriteTime();
+    return currentFileTime();
 }
 
 FILETIME BufferItem::lastAccessTime() const noexcept { //-V524
-    return lastWriteTime();
+    return currentFileTime();
 }
 
 FILETIME BufferItem::lastWriteTime() const noexcept {
-#ifdef _WIN32
-    FILETIME ft{};
-    SYSTEMTIME st{};
-
-    GetSystemTime( &st ); // gets current time
-    SystemTimeToFileTime( &st, &ft ); // converts to file time format
-    return ft;
-#else
-    auto current_time = std::chrono::system_clock::now();
-    std::time_t time = std::chrono::system_clock::to_time_t( current_time );
-    return time_to_FILETIME( time );
-#endif
+    return currentFileTime();
 }
 
 uint32_t BufferItem::attributes() const noexcept {

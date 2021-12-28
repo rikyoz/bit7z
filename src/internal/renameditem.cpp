@@ -21,6 +21,7 @@
 
 #include "internal/renameditem.hpp"
 
+#include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 
 using bit7z::BitInputArchive;
@@ -55,15 +56,18 @@ uint64_t RenamedItem::size() const {
 }
 
 FILETIME RenamedItem::creationTime() const {
-    return mInputArchive.itemProperty( mIndex, BitProperty::CTime ).getFileTime();
+    BitPropVariant creation_time = mInputArchive.itemProperty( mIndex, BitProperty::CTime );
+    return creation_time.isFileTime() ? creation_time.getFileTime() : currentFileTime();
 }
 
 FILETIME RenamedItem::lastAccessTime() const {
-    return mInputArchive.itemProperty( mIndex, BitProperty::ATime ).getFileTime();
+    BitPropVariant access_time = mInputArchive.itemProperty( mIndex, BitProperty::ATime );
+    return access_time.isFileTime() ? access_time.getFileTime() : currentFileTime();
 }
 
 FILETIME RenamedItem::lastWriteTime() const {
-    return mInputArchive.itemProperty( mIndex, BitProperty::MTime ).getFileTime();
+    BitPropVariant write_time = mInputArchive.itemProperty( mIndex, BitProperty::MTime );
+    return write_time.isFileTime() ? write_time.getFileTime() : currentFileTime();
 }
 
 uint32_t bit7z::RenamedItem::attributes() const {

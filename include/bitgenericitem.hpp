@@ -38,21 +38,6 @@ namespace bit7z {
             BIT7Z_NODISCARD virtual uint64_t size() const = 0;
 
             /**
-             * @return the item creation time.
-             */
-            BIT7Z_NODISCARD virtual FILETIME creationTime() const = 0;
-
-            /**
-             * @return the item last access time.
-             */
-            BIT7Z_NODISCARD virtual FILETIME lastAccessTime() const = 0;
-
-            /**
-             * @return the item last write time.
-             */
-            BIT7Z_NODISCARD virtual FILETIME lastWriteTime() const = 0;
-
-            /**
              * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
              */
             BIT7Z_NODISCARD virtual tstring name() const = 0;

@@ -23,6 +23,7 @@
 
 #include "bitexception.hpp"
 #include "biterror.hpp"
+#include "internal/dateutil.hpp"
 
 #ifdef _WIN32
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
@@ -384,6 +385,11 @@ FILETIME BitPropVariant::getFileTime() const {
                             make_error_code( BitError::RequestedWrongVariantType ) );
     }
     return filetime;
+}
+
+bit7z::time_type BitPropVariant::getTimePoint() const {
+    FILETIME ft = getFileTime();
+    return FILETIME_to_time_type( ft );
 }
 
 tstring BitPropVariant::toString() const {

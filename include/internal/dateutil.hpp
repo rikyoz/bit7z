@@ -19,20 +19,23 @@
 #ifndef DATEUTIL_HPP
 #define DATEUTIL_HPP
 
-#ifndef _WIN32
-
 #include <chrono>
 #include <ctime>
 
+#include "bitgenericitem.hpp"
 #include "bitwindows.hpp"
 #include "internal/fs.hpp"
 
 namespace bit7z {
+#ifndef _WIN32
     fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime );
 
     FILETIME time_to_FILETIME( const std::time_t& time );
-}
-
 #endif
+
+    time_type FILETIME_to_time_type( const FILETIME& fileTime );
+
+    FILETIME currentFileTime();
+}
 
 #endif //DATEUTIL_HPP

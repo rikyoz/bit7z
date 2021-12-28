@@ -69,17 +69,17 @@ namespace bit7z {
             /**
              * @return the item creation time.
              */
-            BIT7Z_NODISCARD FILETIME creationTime() const override;
+            BIT7Z_NODISCARD time_type creationTime() const;
 
             /**
              * @return the item last access time.
              */
-            BIT7Z_NODISCARD FILETIME lastAccessTime() const override;
+            BIT7Z_NODISCARD time_type lastAccessTime() const;
 
             /**
              * @return the item last write time.
              */
-            BIT7Z_NODISCARD FILETIME lastWriteTime() const override;
+            BIT7Z_NODISCARD time_type lastWriteTime() const;
 
             /**
              * @return the item attributes.

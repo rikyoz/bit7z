@@ -78,16 +78,19 @@ bool BitArchiveItem::isEncrypted() const {
     return is_encrypted.isBool() && is_encrypted.getBool();
 }
 
-FILETIME BitArchiveItem::creationTime() const {
-    return itemProperty( BitProperty::CTime ).getFileTime();
+time_type BitArchiveItem::creationTime() const {
+    BitPropVariant creation_time = itemProperty( BitProperty::CTime );
+    return creation_time.isFileTime() ? creation_time.getTimePoint() : time_type::clock::now();
 }
 
-FILETIME BitArchiveItem::lastAccessTime() const {
-    return itemProperty( BitProperty::ATime ).getFileTime();
+time_type BitArchiveItem::lastAccessTime() const {
+    BitPropVariant access_time = itemProperty( BitProperty::ATime );
+    return access_time.isFileTime() ? access_time.getTimePoint() : time_type::clock::now();
 }
 
-FILETIME BitArchiveItem::lastWriteTime() const {
-    return itemProperty( BitProperty::MTime ).getFileTime();
+time_type BitArchiveItem::lastWriteTime() const {
+    BitPropVariant write_time = itemProperty( BitProperty::MTime );
+    return write_time.isFileTime() ? write_time.getTimePoint() : time_type::clock::now();
 }
 
 uint32_t BitArchiveItem::attributes() const {

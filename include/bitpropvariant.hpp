@@ -19,6 +19,7 @@
 #ifndef BITPROPVARIANT_HPP
 #define BITPROPVARIANT_HPP
 
+#include <chrono>
 #include <cstdint>
 
 #include "bitdefines.hpp"
@@ -26,6 +27,8 @@
 #include "bitwindows.hpp"
 
 namespace bit7z {
+    using time_type = std::chrono::time_point<std::chrono::system_clock>;
+
     enum struct BitProperty : PROPID {
         NoProperty = 0,         ///<
         MainSubfile,            ///<
@@ -352,6 +355,12 @@ namespace bit7z {
              * (it throws an exception if the variant is not a filetime).
              */
             BIT7Z_NODISCARD FILETIME getFileTime() const;
+
+            /**
+             * @return the FILETIME value of this variant converted to std::time_point
+             * (it throws an exception if the variant is not a filetime).
+             */
+            BIT7Z_NODISCARD time_type getTimePoint() const;
 
             /**
              * @return the value of this variant converted from any supported type to std::wstring.
