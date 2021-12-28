@@ -31,6 +31,8 @@ namespace bit7z {
         }
     }
 
+    enum class FilterPolicy { Include, Exclude };
+
     /**
      * @brief The BitExtractor template class allows to extract the content of archives from supported input types.
      */
@@ -110,14 +112,15 @@ namespace bit7z {
              * @param out_dir       the output directory where extracted files will be put.
              */
             void extractMatching( Input in_file, const tstring& item_filter,
-                                  const tstring& out_dir = {} ) const {
+                                  const tstring& out_dir = {},
+                                  FilterPolicy policy = FilterPolicy::Include ) const {
                 using namespace filesystem;
 
                 if ( item_filter.empty() ) {
                     throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
-                extractMatchingFilter( in_file, out_dir, [ &item_filter ]( const tstring& item_path ) -> bool {
+                extractMatchingFilter( in_file, out_dir, policy, [ &item_filter ]( const tstring& item_path ) -> bool {
                     return fsutil::wildcardMatch( item_filter, item_path );
                 } );
             }
@@ -129,16 +132,18 @@ namespace bit7z {
              * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
              * @param out_buffer    the output buffer where to extract the file.
              */
-            void extractMatching( Input in_file, const tstring& item_filter, vector< byte_t >& out_buffer ) const {
+            void extractMatching( Input in_file, const tstring& item_filter, vector< byte_t >& out_buffer,
+                                  FilterPolicy policy = FilterPolicy::Include ) const {
                 using namespace filesystem;
 
                 if ( item_filter.empty() ) {
                     throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
-                extractMatchingFilter( in_file, out_buffer, [ &item_filter ]( const tstring& item_path ) -> bool {
-                    return fsutil::wildcardMatch( item_filter, item_path );
-                } );
+                extractMatchingFilter( in_file, out_buffer, policy,
+                                       [ &item_filter ]( const tstring& item_path ) -> bool {
+                                           return fsutil::wildcardMatch( item_filter, item_path );
+                                       } );
             }
 
             /**
@@ -171,6 +176,7 @@ namespace bit7z {
             }
 
 #ifdef BIT7Z_REGEX_MATCHING
+
             /**
              * @brief Extracts the files in the archive that match the given regex pattern to the chosen directory.
              *
@@ -181,13 +187,14 @@ namespace bit7z {
              * @param out_dir       the output directory where extracted files will be put.
              */
             void extractMatchingRegex( Input in_file, const tstring& regex,
-                                       const tstring& out_dir = {} ) const {
+                                       const tstring& out_dir = {},
+                                       FilterPolicy policy = FilterPolicy::Include ) const {
                 if ( regex.empty() ) {
                     throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
                 const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
-                extractMatchingFilter( in_file, out_dir, [ &regex_filter ]( const tstring& item_path ) -> bool {
+                extractMatchingFilter( in_file, out_dir, policy, [ &regex_filter ]( const tstring& item_path ) -> bool {
                     return std::regex_match( item_path, regex_filter );
                 } );
             }
@@ -201,15 +208,17 @@ namespace bit7z {
              * @param regex         the regex used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.
              */
-            void extractMatchingRegex( Input in_file, const tstring& regex, vector< byte_t >& out_buffer ) const {
+            void extractMatchingRegex( Input in_file, const tstring& regex, vector< byte_t >& out_buffer,
+                                       FilterPolicy policy = FilterPolicy::Include ) const {
                 if ( regex.empty() ) {
                     throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
                 }
 
                 const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
-                return extractMatchingFilter( in_file, out_buffer, [ &regex_filter ]( const tstring& item_path ) -> bool {
-                    return std::regex_match( item_path, regex_filter );
-                } );
+                return extractMatchingFilter( in_file, out_buffer, policy,
+                                              [ &regex_filter ]( const tstring& item_path ) -> bool {
+                                                  return std::regex_match( item_path, regex_filter );
+                                              } );
             }
 
 #endif
@@ -227,14 +236,21 @@ namespace bit7z {
             }
 
         private:
-            void extractMatchingFilter( Input in_file, const tstring& out_dir,
+            void extractMatchingFilter( Input in_file, const tstring& out_dir, FilterPolicy policy,
                                         const function< bool( const tstring& ) >& filter ) const {
                 BitInputArchive in_archive( *this, in_file );
 
                 vector< uint32_t > matched_indices;
-                //Searching for files inside the archive that match the given regex filter
+                bool should_include_matched_items = policy == FilterPolicy::Include;
+                //Searching for files inside the archive that match the given filter
                 for ( auto& item : in_archive ) {
-                    if ( filter( item.path() ) ) {
+                    bool item_matches = filter( item.path() );
+                    if ( item_matches == should_include_matched_items ) {
+                        /* Note: the if-condition is equivalent to an exclusive NOR (negated XOR) between
+                         *       item_matches and should_include_matched_items.
+                         *       It is true only if either:
+                         *       - the current item matches the filter, and we must include it; or
+                         *       - the current item doesn't match the filter, and we must exclude those that match. */
                         matched_indices.push_back( item.index() );
                     }
                 }
@@ -246,13 +262,17 @@ namespace bit7z {
                 in_archive.extract( out_dir, matched_indices );
             }
 
-            void extractMatchingFilter( Input in_file, vector< byte_t >& out_buffer,
+            void extractMatchingFilter( Input in_file, vector< byte_t >& out_buffer, FilterPolicy policy,
                                         const function< bool( const tstring& ) >& filter ) const {
                 BitInputArchive in_archive( *this, in_file );
 
-                //Searching for files inside the archive that match the given regex filter
+                bool should_extracted_matched_item = policy == FilterPolicy::Include;
+                //Searching for files inside the archive that match the given filter
                 for ( auto& item : in_archive ) {
-                    if ( filter( item.path() ) ) {
+                    bool item_matches = filter( item.path() );
+                    if ( item_matches == should_extracted_matched_item ) {
+                        /* Note: the if-condition is equivalent to an exclusive NOR (negated XOR) between
+                         *       item_matches and should_extracted_matched_item. */
                         in_archive.extract( out_buffer, item.index() );
                         return;
                     }
