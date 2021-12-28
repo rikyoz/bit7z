@@ -190,6 +190,7 @@ namespace bit7z {
         inline constexpr BitInOutFormat Xz( 0x0C, BIT7Z_STRING( ".xz" ), BitCompressionMethod::Lzma2,
                                             FormatFeatures::CompressionLevel );
         inline constexpr BitInFormat    Ppmd( 0x0D );
+        inline constexpr BitInFormat    Vhdx( 0xC4 );
         inline constexpr BitInFormat    COFF( 0xC6 );
         inline constexpr BitInFormat    Ext( 0xC7 );
         inline constexpr BitInFormat    VMDK( 0xC8 );
@@ -247,6 +248,7 @@ namespace bit7z {
                                  Lzma,      ///< LZMA Archive Format
                                  Lzma86,    ///< LZMA86 Archive Format
                                  Ppmd,      ///< PPMD Archive Format
+                                 Vhdx,      ///< VHDX Archive Format
                                  COFF,      ///< COFF Archive Format
                                  Ext,       ///< EXT Archive Format
                                  VMDK,      ///< VMDK Archive Format

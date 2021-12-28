@@ -50,6 +50,7 @@ namespace bit7z {
         const BitInOutFormat Xz( 0x0C, BIT7Z_STRING( ".xz" ), BitCompressionMethod::Lzma2,
                                  FormatFeatures::CompressionLevel );
         const BitInFormat Ppmd( 0x0D );
+        const BitInFormat Vhdx( 0xC4 );
         const BitInFormat COFF( 0xC6 );
         const BitInFormat Ext( 0xC7 );
         const BitInFormat VMDK( 0xC8 );

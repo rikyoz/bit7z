@@ -80,17 +80,18 @@ namespace bit7z {
 
 #ifndef ERROR_ALREADY_EXISTS
     // Win32 error codes (defined by both p7zip and 7-zip as equivalent to POSIX error codes)
-    constexpr auto ERROR_ALREADY_EXISTS   = EEXIST;
-    constexpr auto ERROR_DISK_FULL        = ENOSPC;
-    constexpr auto ERROR_FILE_EXISTS      = EEXIST;
-    constexpr auto ERROR_FILE_NOT_FOUND   = ENOENT;
-    constexpr auto ERROR_INVALID_FUNCTION = EINVAL;
-    constexpr auto ERROR_INVALID_HANDLE   = EBADF;
-    constexpr auto ERROR_OPEN_FAILED      = EIO;
-    constexpr auto ERROR_PATH_NOT_FOUND   = ENOENT;
-    constexpr auto ERROR_SEEK             = EIO;
-    constexpr auto ERROR_READ_FAULT       = EIO;
-    constexpr auto ERROR_WRITE_FAULT      = EIO;
+    constexpr auto ERROR_ALREADY_EXISTS    = EEXIST;
+    constexpr auto ERROR_DISK_FULL         = ENOSPC;
+    constexpr auto ERROR_FILE_EXISTS       = EEXIST;
+    constexpr auto ERROR_FILE_NOT_FOUND    = ENOENT;
+    constexpr auto ERROR_INVALID_PARAMETER = EINVAL;
+    constexpr auto ERROR_INVALID_FUNCTION  = EINVAL;
+    constexpr auto ERROR_INVALID_HANDLE    = EBADF;
+    constexpr auto ERROR_OPEN_FAILED       = EIO;
+    constexpr auto ERROR_PATH_NOT_FOUND    = ENOENT;
+    constexpr auto ERROR_SEEK              = EIO;
+    constexpr auto ERROR_READ_FAULT        = EIO;
+    constexpr auto ERROR_WRITE_FAULT       = EIO;
 
     // Win32 error codes (defined by p7zip with the same values as in Windows API)
     constexpr auto ERROR_NO_MORE_FILES = 0x100018;
