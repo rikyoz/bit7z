@@ -233,11 +233,9 @@ namespace bit7z {
 
                 vector< uint32_t > matched_indices;
                 //Searching for files inside the archive that match the given regex filter
-                uint32_t items_count = in_archive.itemsCount();
-                for ( uint32_t index = 0; index < items_count; ++index ) {
-                    BitPropVariant item_path = in_archive.itemProperty( index, BitProperty::Path );
-                    if ( item_path.isString() && filter( item_path.getString() ) ) {
-                        matched_indices.push_back( index );
+                for ( auto& item : in_archive ) {
+                    if ( filter( item.path() ) ) {
+                        matched_indices.push_back( item.index() );
                     }
                 }
 

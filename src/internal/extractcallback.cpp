@@ -75,6 +75,8 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
     return getOutStream( index, outStream, askExtractMode );
 } catch ( const BitException& ) {
     return E_OUTOFMEMORY;
+} catch ( const std::runtime_error& ) {
+    return E_ABORT;
 }
 
 COM_DECLSPEC_NOTHROW
