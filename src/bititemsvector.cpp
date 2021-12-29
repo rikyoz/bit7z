@@ -62,6 +62,8 @@ void BitItemsVector::indexItem( const FSItem& item, bool ignore_dirs ) {
         }
         FSIndexer indexer{ item };
         indexer.listDirectoryItems( mItems, true );
+    } else {
+        // No action needed
     }
 }
 

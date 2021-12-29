@@ -85,6 +85,8 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
         filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
     } else if ( !mRetainDirectories ) {
         filePath = filePath.filename();
+    } else {
+        // No action needed
     }
     mFilePathOnDisk = mDirectoryPath / filePath;
 
@@ -112,6 +114,8 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     } else if ( mRetainDirectories ) { // Directory, and we must retain it
         std::error_code ec;
         fs::create_directories( mFilePathOnDisk, ec );
+    } else {
+        // No action needed
     }
     return S_OK;
 }
