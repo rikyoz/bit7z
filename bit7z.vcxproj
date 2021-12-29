@@ -39,6 +39,11 @@
     <PlatformToolset>v142</PlatformToolset>
     <!-- MSVC++ 2019 toolset has version v142 -->
   </PropertyGroup>
+  <!-- Visual Studio 2022 (16.0) -->
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '17.0'">
+    <PlatformToolset>v143</PlatformToolset>
+    <!-- MSVC++ 2019 toolset has version v142 -->
+  </PropertyGroup>
   <!--
     End of: Switch the PlatformToolset based on the Visual Studio Version
   -->
@@ -202,7 +207,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;BIT7Z_AUTO_FORMAT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;WIN64;BIT7Z_AUTO_FORMAT;BIT7Z_REGEX_MATCHING;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -287,9 +292,10 @@
     <ClCompile Include="src\internal\cfileinstream.cpp" />
     <ClCompile Include="src\internal\cfileoutstream.cpp" />
     <ClCompile Include="src\internal\cfixedbufferoutstream.cpp" />
-    <ClCompile Include="src\internal\cmultivoloutstream.cpp" />
+    <ClCompile Include="src\internal\cmultivolumeoutstream.cpp" />
     <ClCompile Include="src\internal\cstdinstream.cpp" />
     <ClCompile Include="src\internal\cstdoutstream.cpp" />
+    <ClCompile Include="src\internal\cvolumeoutstream.cpp" />
     <ClCompile Include="src\internal\dateutil.cpp" />
     <ClCompile Include="src\internal\extractcallback.cpp" />
     <ClCompile Include="src\internal\fileextractcallback.cpp" />
@@ -303,6 +309,7 @@
     <ClCompile Include="src\internal\hresultcategory.cpp" />
     <ClCompile Include="src\internal\internalcategory.cpp" />
     <ClCompile Include="src\internal\opencallback.cpp" />
+    <ClCompile Include="src\internal\processeditem.cpp" />
     <ClCompile Include="src\internal\renameditem.cpp" />
     <ClCompile Include="src\internal\stdinputitem.cpp" />
     <ClCompile Include="src\internal\streamextractcallback.cpp" />
@@ -351,9 +358,10 @@
     <ClInclude Include="include\internal\cfileinstream.hpp" />
     <ClInclude Include="include\internal\cfileoutstream.hpp" />
     <ClInclude Include="include\internal\cfixedbufferoutstream.hpp" />
-    <ClInclude Include="include\internal\cmultivoloutstream.hpp" />
+    <ClInclude Include="include\internal\cmultivolumeoutstream.hpp" />
     <ClInclude Include="include\internal\cstdinstream.hpp" />
     <ClInclude Include="include\internal\cstdoutstream.hpp" />
+    <ClInclude Include="include\internal\cvolumeoutstream.hpp" />
     <ClInclude Include="include\internal\dateutil.hpp" />
     <ClInclude Include="include\internal\extractcallback.hpp" />
     <ClInclude Include="include\internal\fileextractcallback.hpp" />
@@ -370,6 +378,7 @@
     <ClInclude Include="include\internal\internalcategory.hpp" />
     <ClInclude Include="include\internal\itemsvector.hpp" />
     <ClInclude Include="include\internal\opencallback.hpp" />
+    <ClInclude Include="include\internal\processeditem.hpp" />
     <ClInclude Include="include\internal\renameditem.hpp" />
     <ClInclude Include="include\internal\stdinputitem.hpp" />
     <ClInclude Include="include\internal\streamextractcallback.hpp" />
