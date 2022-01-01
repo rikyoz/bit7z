@@ -78,7 +78,7 @@ namespace bit7z {
             /**
              * @return the HRESULT code associated with the exception object.
              */
-            HRESULT getErrorCode();
+            HRESULT getErrorCode() const;
 
         private:
             HRESULT mErrorCode;
