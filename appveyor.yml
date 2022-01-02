@@ -72,7 +72,7 @@ deploy:
   release: $(APPVEYOR_REPO_TAG_NAME)
   description: 'Binaries of Bit7z v%bit7z_version%'
   auth_token:
-    secure: lBNuN4sQkluR2FDE6eGP811Dm2ooRkvDnxRL8YFPp0wMzaSEDoDtmOR04wZDL+LX
+    secure: FXlhX+Nu9dabf4YLycMYx2cAZtJeEOqtRXQ3Qxky32fBQoyt+8xbSzyZFmv0e8ID
   artifact: /.*\.7z/
   draft: true
   prerelease: false
