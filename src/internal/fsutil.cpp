@@ -137,7 +137,7 @@ bool restore_symlink( const std::string& name ) {
     // Reading the path stored in the link file.
     std::string link_path;
     link_path.resize( MAX_PATHNAME_LEN );
-    ifs.getline( &link_path[ 0 ], MAX_PATHNAME_LEN );
+    ifs.getline( &link_path[ 0 ], MAX_PATHNAME_LEN ); // NOLINT(readability-container-data-pointer)
 
     if ( !ifs ) { // Error while reading the path, exiting.
         return false;
@@ -234,12 +234,15 @@ bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE
     if ( lstat( filePath.c_str(), &stat_info ) != 0 ) {
         return false;
     }
+
+    // File attributes
     fileMetadata.dwFileAttributes = S_ISDIR( stat_info.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
     if ( ( stat_info.st_mode & S_IWUSR ) == 0 ) {
         fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
     }
     fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( stat_info.st_mode & 0xFFFF ) << 16 );
 
+    // File times
     fileMetadata.ftCreationTime = time_to_FILETIME( stat_info.st_ctime );
     fileMetadata.ftLastAccessTime = time_to_FILETIME( stat_info.st_atime );
     fileMetadata.ftLastWriteTime = time_to_FILETIME( stat_info.st_mtime );

@@ -68,6 +68,7 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
     mAttributes = 0;
     mAreAttributesDefined = false;
 
+    // Get posix attributes
     BitPropVariant posixAttributes = input_archive.itemProperty( item_index, BitProperty::PosixAttrib );
     switch ( posixAttributes.type() ) {
         case BitPropVariantType::Empty:
@@ -82,7 +83,7 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
             throw BitException( "Could not load posix attributes of item", make_hresult_code( E_FAIL ) );
     }
 
-    // Get Attrib
+    // Get attributes
     BitPropVariant attributes = input_archive.itemProperty( item_index, BitProperty::Attrib );
     switch ( attributes.type() ) {
         case BitPropVariantType::Empty:
