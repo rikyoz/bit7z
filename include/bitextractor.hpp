@@ -110,6 +110,7 @@ namespace bit7z {
              * @param in_file       the input archive file.
              * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.
+             * @param policy        the filtering policy to be applied to the matched items.
              */
             void extractMatching( Input in_file, const tstring& item_filter,
                                   const tstring& out_dir = {},
@@ -131,6 +132,7 @@ namespace bit7z {
              * @param in_file       the input archive file.
              * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
              * @param out_buffer    the output buffer where to extract the file.
+             * @param policy        the filtering policy to be applied to the matched items.
              */
             void extractMatching( Input in_file, const tstring& item_filter, vector< byte_t >& out_buffer,
                                   FilterPolicy policy = FilterPolicy::Include ) const {
@@ -185,6 +187,7 @@ namespace bit7z {
              * @param in_file       the input archive file.
              * @param regex         the regex used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.
+             * @param policy        the filtering policy to be applied to the matched items.
              */
             void extractMatchingRegex( Input in_file, const tstring& regex,
                                        const tstring& out_dir = {},
@@ -207,6 +210,7 @@ namespace bit7z {
              * @param in_file       the input archive file.
              * @param regex         the regex used for matching the paths of files inside the archive.
              * @param out_dir       the output directory where extracted files will be put.
+             * @param policy        the filtering policy to be applied to the matched items.
              */
             void extractMatchingRegex( Input in_file, const tstring& regex, vector< byte_t >& out_buffer,
                                        FilterPolicy policy = FilterPolicy::Include ) const {
