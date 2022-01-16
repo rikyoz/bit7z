@@ -31,9 +31,11 @@ body:
         - v16.03
         - v16.04
         - v18.01
-        - v18.03
         - v18.05
+        - v18.06
         - v19.00
+        - v21.06
+        - v21.07
     validations:
       required: true
   - type: dropdown
