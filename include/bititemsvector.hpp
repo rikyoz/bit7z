@@ -143,7 +143,7 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD GenericInputItemVector::const_iterator cend() const noexcept;
 
-            virtual ~BitItemsVector();
+            ~BitItemsVector();
 
         private:
             GenericInputItemVector mItems;

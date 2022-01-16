@@ -70,7 +70,7 @@ namespace bit7z {
             /**
              * @brief Destructs the Bit7zLibrary object, freeing the loaded shared library.
              */
-            virtual ~Bit7zLibrary();
+            ~Bit7zLibrary();
 
             /**
              * @brief Initiates the 7-zip object needed to create a new archive or use an old one.
