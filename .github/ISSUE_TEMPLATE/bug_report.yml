@@ -15,10 +15,10 @@ body:
       label: bit7z version
       multiple: true
       options:
-        - 2.0
-        - 2.1
-        - 3.0.x
         - 3.1.x
+        - 3.0.x
+        - 2.1
+        - 2.0
     validations:
       required: true
   - type: dropdown
@@ -27,15 +27,15 @@ body:
       label: 7-zip version
       multiple: true
       options:
-        - v16.02
-        - v16.03
-        - v16.04
-        - v18.01
-        - v18.05
-        - v18.06
-        - v19.00
-        - v21.06
         - v21.07
+        - v21.06
+        - v19.00
+        - v18.06
+        - v18.05
+        - v18.01
+        - v16.04
+        - v16.03
+        - v16.02
     validations:
       required: true
   - type: dropdown
@@ -57,11 +57,11 @@ body:
       label: MSVC version
       multiple: true
       options:
-        - 2012
-        - 2013
-        - 2015
-        - 2017
         - 2019
+        - 2017
+        - 2015
+        - 2013
+        - 2012
     validations:
       required: true
   - type: dropdown
@@ -80,9 +80,9 @@ body:
       label: Which version of Windows are you using?
       multiple: true
       options:
-        - Windows 8
-        - Windows 8.1
         - Windows 10
+        - Windows 8.1
+        - Windows 8
     validations:
       required: false
   - type: textarea
