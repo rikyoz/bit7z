@@ -31,7 +31,7 @@ namespace bit7z {
     /**
      * @brief The BitArchiveReader class allows to read metadata of archives, as well as extract them.
      */
-    class BitArchiveReader : public BitAbstractArchiveOpener, public BitInputArchive {
+    class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputArchive {
         public:
             /**
              * @brief Constructs a BitArchiveReader object, opening the input file archive.

@@ -146,7 +146,7 @@ namespace bit7z {
     /**
      * @brief The BitPropVariant struct is a light extension to the WinAPI PROPVARIANT struct providing useful getters.
      */
-    struct BitPropVariant : public PROPVARIANT {
+    struct BitPropVariant final : public PROPVARIANT {
             /**
              * @brief Constructs an empty BitPropVariant object.
              */

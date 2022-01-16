@@ -37,7 +37,7 @@ namespace bit7z {
     /**
      * @brief The BitException class represents a generic exception thrown from the bit7z classes.
      */
-    class BitException : public system_error {
+    class BitException final : public system_error {
         public:
             using native_code_type = HRESULT;
 

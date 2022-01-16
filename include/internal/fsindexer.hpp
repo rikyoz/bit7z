@@ -31,7 +31,7 @@ namespace bit7z {
         using std::map;
         using std::unique_ptr;
 
-        class FSIndexer {
+        class FSIndexer final {
             public:
                 explicit FSIndexer( FSItem directory, tstring filter = {} );
 

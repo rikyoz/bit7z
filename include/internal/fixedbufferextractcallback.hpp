@@ -23,7 +23,7 @@
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {
-    class FixedBufferExtractCallback : public ExtractCallback {
+    class FixedBufferExtractCallback final : public ExtractCallback {
         public:
             FixedBufferExtractCallback( const BitInputArchive& inputArchive, byte_t* buffer, size_t size );
 

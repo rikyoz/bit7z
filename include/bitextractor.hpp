@@ -37,7 +37,7 @@ namespace bit7z {
      * @brief The BitExtractor template class allows to extract the content of archives from supported input types.
      */
     template< typename Input >
-    class BitExtractor : public BitAbstractArchiveOpener {
+    class BitExtractor final : public BitAbstractArchiveOpener {
         public:
             /**
              * @brief Constructs a BitExtractor object.

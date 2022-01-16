@@ -44,7 +44,7 @@ namespace bit7z {
      * @brief The BitItemsVector class represents a vector of generic input items, i.e., items that can come
      * from the filesystem, from memory buffers, or from standard streams.
      */
-    class BitItemsVector {
+    class BitItemsVector final {
         public:
             using value_type = GenericInputItemPtr;
 

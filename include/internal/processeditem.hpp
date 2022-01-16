@@ -24,7 +24,7 @@
 #include "internal/windows.hpp"
 
 namespace bit7z {
-    class ProcessedItem {
+    class ProcessedItem final {
         public:
             ProcessedItem();
 

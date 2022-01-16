@@ -26,7 +26,7 @@
 #include "bitwindows.hpp"
 
 namespace bit7z {
-    struct hresult_category_t : public std::error_category {
+    struct hresult_category_t final : public std::error_category {
         static_assert( sizeof( int ) >= sizeof( HRESULT ), "HRESULT type must be at least the size of int" );
 
         explicit hresult_category_t() = default;

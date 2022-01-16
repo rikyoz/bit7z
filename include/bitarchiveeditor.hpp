@@ -35,7 +35,7 @@ namespace bit7z {
      *
      * @note  Changes are applied to the archive only after calling the applyChanges() method.
      */
-    class BitArchiveEditor : public BitArchiveWriter {
+    class BitArchiveEditor final : public BitArchiveWriter {
         public:
             /**
              * @brief Constructs a BitArchiveEditor object, reading the given archive file path.

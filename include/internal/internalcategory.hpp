@@ -26,7 +26,7 @@
 
 namespace bit7z {
 
-    struct internal_category_t : public std::error_category {
+    struct internal_category_t final : public std::error_category {
         BIT7Z_NODISCARD const char* name() const noexcept override;
 
         BIT7Z_NODISCARD std::string message( int ev ) const noexcept override;

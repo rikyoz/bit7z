@@ -104,7 +104,7 @@ namespace bit7z {
      * @note Usually, the user of the library should not create new formats and, instead,
      * use the ones provided by the BitFormat namespace
      */
-    class BitInOutFormat : public BitInFormat {
+    class BitInOutFormat final : public BitInFormat {
         public:
             /**
              * @brief Constructs a BitInOutFormat object with an ID value, an extension and a set of supported features.

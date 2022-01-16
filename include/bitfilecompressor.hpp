@@ -42,7 +42,7 @@ namespace bit7z {
      * It let decide various properties of the produced archive file, such as the password
      * protection and the compression level desired.
      */
-    class BitFileCompressor : public BitCompressor< const tstring > {
+    class BitFileCompressor final : public BitCompressor< const tstring > {
         public:
             /**
              * @brief Constructs a BitFileCompressor object.

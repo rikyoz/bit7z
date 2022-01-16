@@ -28,7 +28,7 @@ namespace bit7z {
     using std::vector;
     using std::map;
 
-    class BufferExtractCallback : public ExtractCallback {
+    class BufferExtractCallback final : public ExtractCallback {
         public:
             BufferExtractCallback( const BitInputArchive& inputArchive,
                                    map< tstring, vector< byte_t > >& buffersMap );
