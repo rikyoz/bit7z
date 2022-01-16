@@ -54,3 +54,8 @@ CMakeSettings.json
 bit7z-cppcheck-build-dir/
 
 *.ctu-info
+
+# PVS-Studio files and directories
+.PVS-Studio/
+*.PVS-Studio.i
+pvs-studio-analyzer.stacktrace.txt
