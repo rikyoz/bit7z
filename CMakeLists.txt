@@ -140,130 +140,35 @@ set( SOURCES
      src/internal/util.cpp
      src/internal/windows.cpp )
 
-if( CMAKE_CONFIGURATION_TYPES ) # enable only debug/release configurations for generated VS project file
-    set( CMAKE_CONFIGURATION_TYPES Debug Release )
-    set( CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
-         "Reset the configurations to what we need" FORCE )
-endif()
+# library output file name options
+include(cmake/OutputOptions.cmake)
 
-if( NOT CMAKE_BUILD_TYPE ) # by default, use release build
-    set( CMAKE_BUILD_TYPE "Release" )
-endif()
+# filesystem library
+include(cmake/Filesystem.cmake)
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
-option( BIT7Z_VS_LIBNAME_OUTDIR_STYLE
-        "Force using Visual Studio output library name and directory structure convention" )
-
-# architecture-specific options
-set( ARCH_POSTFIX "" )
-if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( ARCH_DIR "x64" )
-    if( WIN32 )
-        add_definitions( -DWIN64 )
-    endif()
-    if( NOT GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
-        set( ARCH_POSTFIX 64 )
-    endif()
-else()
-    set( ARCH_DIR "x86" )
-endif()
-
-if( NOT GENERATOR_IS_MULTI_CONFIG AND BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
-    # forcing output directory to ${BIT7Z_DIR}/lib/${ARCH_DIR}/${CMAKE_BUILD_TYPE} (e.g. ./lib/x64/Release)
-    set( OUTPUT_DIR lib/${ARCH_DIR}/${CMAKE_BUILD_TYPE}/ )
-else()
-    # forcing output directory to ${BIT7Z_DIR}/lib/${ARCH_DIR}/ (e.g. ./lib/x64/)
-    # Note: Visual Studio will append ${CMAKE_BUILD_TYPE} to ${OUTPUT_DIR}.
-    set( OUTPUT_DIR lib/${ARCH_DIR}/ )
-endif()
-
-# Note: not applied in generated Visual Studio project files (e.g., .vcxproj)
-set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
-set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
-set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/${OUTPUT_DIR} )
-
-if( NOT GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
-    set( CMAKE_DEBUG_POSTFIX "_d" ) # debug library file name should end with "_d" (e.g. bit7z_d.lib)
-endif()
-
+# printing library and compiler information (useful for debugging)
 message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
 message( STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}" )
 message( STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}" )
 message( STATUS "Architecture: ${ARCH_DIR}" )
 message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
-
-# checking if compiler supports the standard filesystem library
-set( CMAKE_CXX_STANDARD 17 )
-include( CheckIncludeFileCXX )
-check_include_file_cxx( "filesystem" USE_STANDARD_FILESYSTEM )
-
-if( USE_STANDARD_FILESYSTEM )
-    include( CheckCXXSourceCompiles )
-    string( CONFIGURE [[
-        #include <cstdlib>
-        #include <filesystem>
-
-        int main() {
-            auto cwd = std::filesystem::current_path();
-            printf("%s", cwd.c_str());
-            return EXIT_SUCCESS;
-        }
-    ]] code @ONLY )
-    check_cxx_source_compiles( "${code}" STANDARD_FILESYSTEM_COMPILES )
-endif()
-
-if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES )
-    set( CMAKE_CXX_STANDARD 14 ) # if standard filesystem lib is not supported, revert to C++14 standard
-
-    if( NOT EXISTS ${EXTERNAL_LIBS_DIR}/ghc/filesystem.hpp )
-        include( ExternalProject )
-
-        # downloading ghc::filesystem as an alternative to std::filesystem
-        file( DOWNLOAD
-              https://raw.githubusercontent.com/gulrak/filesystem/master/include/ghc/filesystem.hpp
-              ${EXTERNAL_LIBS_DIR}/ghc/filesystem.hpp
-              SHOW_PROGRESS
-              TLS_VERIFY ON )
-    endif()
-    message( STATUS "Standard filesystem: NO (using ghc::filesystem)" )
-else()
-    message( STATUS "Standard filesystem: YES" )
-endif()
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
-
 message( STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}" )
 
+# library target options
 set( TARGET_NAME bit7z${ARCH_POSTFIX} )
 add_library( ${TARGET_NAME} STATIC )
-target_sources( ${TARGET_NAME}
-                PUBLIC ${PUBLIC_HEADERS}
-                PRIVATE ${HEADERS} ${SOURCES} )
+target_sources( ${TARGET_NAME} PUBLIC ${PUBLIC_HEADERS}
+                               PRIVATE ${HEADERS} ${SOURCES} )
 
-# 7-zip compilation macros
+target_include_directories( ${TARGET_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include/" ) # public includes
+target_include_directories( ${TARGET_NAME} PRIVATE "${EXTERNAL_LIBS_DIR}" "${7ZIP_SOURCE_DIR}/CPP/" ) # private includes
+
+# 7-zip compilation definitions
 target_compile_definitions( ${TARGET_NAME} PRIVATE UNICODE _UNICODE )
 if( WIN32 )
     target_compile_definitions( ${TARGET_NAME} PRIVATE _WINDOWS )
 endif()
-
-option( BIT7Z_AUTO_FORMAT "Enable or disable auto format detection" )
-message( STATUS "Auto format detection: ${BIT7Z_AUTO_FORMAT}" )
-if( BIT7Z_AUTO_FORMAT )
-    target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_AUTO_FORMAT )
-endif()
-
-option( BIT7Z_REGEX_MATCHING "Enable or disable regex matching of archived files" )
-message( STATUS "Regex matching extraction: ${BIT7Z_REGEX_MATCHING}" )
-if( BIT7Z_REGEX_MATCHING )
-    target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_REGEX_MATCHING )
-endif()
-
-option( BIT7Z_USE_STD_BYTE "Enable or disable using type safe byte type (like std::byte) for buffers" )
-message( STATUS "Use std::byte: ${BIT7Z_USE_STD_BYTE}" )
-if( BIT7Z_USE_STD_BYTE )
-    target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_USE_STD_BYTE )
-endif()
-
-target_include_directories( ${TARGET_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include/" ) # public includes
-target_include_directories( ${TARGET_NAME} PRIVATE "${EXTERNAL_LIBS_DIR}" "${7ZIP_SOURCE_DIR}/CPP/" ) # private includes
 
 if( UNIX )
     target_compile_definitions( ${TARGET_NAME} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
@@ -271,86 +176,8 @@ if( UNIX )
     target_link_libraries( ${TARGET_NAME} ${CMAKE_DL_LIBS} )
 endif()
 
-if( MSVC ) # compiler-specific options
-    # setting a pdb file name for debug builds (otherwise it is not generated!)
-    set_target_properties( ${TARGET_NAME} PROPERTIES COMPILE_PDB_NAME_DEBUG ${TARGET_NAME}${CMAKE_DEBUG_POSTFIX} )
+# bit7z build options
+include(cmake/BuildOptions.cmake)
 
-    # release builds should be optimized (e.g., for size)
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Os>" )
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Oi>" )
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/GS>" )
-    target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Gy>" )
-
-    option( BIT7Z_ANALYZE_CODE "Enable or disable code analysis" )
-    message( STATUS "Code analysis: ${BIT7Z_ANALYZE_CODE}" )
-    if( BIT7Z_ANALYZE_CODE )
-        target_compile_options( ${TARGET_NAME} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/analyze>" )
-    endif()
-
-    # remove CMake default warning level
-    string( REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
-    string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
-
-    # warning level option
-    target_compile_options( ${TARGET_NAME} PRIVATE /W4 )
-
-    # C++ standard conformance options of MSVC
-    target_compile_options( ${TARGET_NAME} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
-                            /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
-
-    if( CMAKE_GENERATOR MATCHES "Visual Studio" )
-        target_compile_options( ${TARGET_NAME} PRIVATE /MP$ENV{NUMBER_OF_PROCESSORS} )
-    endif()
-
-    # linker flags
-    set( CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} /nologo" )
-
-    # options only for specific MSVC versions
-    if( MSVC_VERSION GREATER_EQUAL 1910 ) # MSVC >= 15.0 (VS 2017)
-        target_compile_options( ${TARGET_NAME} PRIVATE /Zc:__cplusplus )
-        # treating warnings as errors
-        target_compile_options( ${TARGET_NAME} PRIVATE /WX )
-    else() # MSVC < 15.0 (i.e., <= VS 2015)
-        # ignoring C4127 warning
-        target_compile_options( ${TARGET_NAME} PRIVATE /wd4127 )
-    endif()
-
-    # static runtime option
-    option( BIT7Z_STATIC_RUNTIME "Enable or disable using /MT MSVC flag" )
-    message( STATUS "Static runtime: ${BIT7Z_STATIC_RUNTIME}" )
-    if( BIT7Z_STATIC_RUNTIME )
-        set( CompilerFlags
-             CMAKE_CXX_FLAGS_DEBUG
-             CMAKE_CXX_FLAGS_RELEASE
-             CMAKE_C_FLAGS_DEBUG
-             CMAKE_C_FLAGS_RELEASE )
-        foreach( CompilerFlag ${CompilerFlags} )
-            string( REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}" )
-            set( ${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "msvc compiler flags" FORCE )
-            message( STATUS "MSVC flags: ${CompilerFlag}:${${CompilerFlag}}" )
-        endforeach()
-    endif()
-elseif( MINGW )
-    target_compile_options( ${TARGET_NAME} PRIVATE -Wall )
-else()
-    target_compile_options( ${TARGET_NAME} PRIVATE -Wall -Wextra -Werror )
-endif()
-
-if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )
-    target_compile_options( ${TARGET_NAME} PRIVATE -Wno-inconsistent-missing-override )
-endif()
-
-if( APPLE )
-    set( CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>" )
-    set( CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>" )
-endif()
-
-if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
-    if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0 )
-        target_compile_options( ${TARGET_NAME} PRIVATE -Wno-missing-field-initializers )
-    endif()
-    if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 6.0 )
-        # GCC 6.0+ complains on 7-zip macros using misleading indentation, disabling the warning to make it compile.
-        target_compile_options( ${TARGET_NAME} PRIVATE -Wno-misleading-indentation )
-    endif()
-endif()
+# compiler-specific options
+include(cmake/CompilerOptions.cmake)
