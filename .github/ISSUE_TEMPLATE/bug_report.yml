@@ -15,6 +15,7 @@ body:
       label: bit7z version
       multiple: true
       options:
+        - 4.0.x beta
         - 3.1.x
         - 3.0.x
         - 2.1
@@ -80,6 +81,7 @@ body:
       label: Which version of Windows are you using?
       multiple: true
       options:
+        - Windows 11
         - Windows 10
         - Windows 8.1
         - Windows 8
