@@ -61,8 +61,6 @@ if( MSVC )
             message( STATUS "MSVC flags: ${CompilerFlag}:${${CompilerFlag}}" )
         endforeach()
     endif()
-elseif( MINGW )
-    target_compile_options( ${TARGET_NAME} PRIVATE -Wall )
 else()
     target_compile_options( ${TARGET_NAME} PRIVATE -Wall -Wextra -Werror )
 endif()
@@ -82,12 +80,31 @@ if( APPLE )
     set( CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>" )
 endif()
 
+# Extra warning flags for GCC
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
+    target_compile_options( ${TARGET_NAME} PRIVATE -Wshadow -Wcast-align -Wunused
+                            -Woverloaded-virtual -Wformat=2 -Wdouble-promotion -Wlogical-op )
+    if( NOT MINGW )
+        target_compile_options( ${TARGET_NAME} PRIVATE -Wnon-virtual-dtor )
+    else()
+        target_compile_options( ${TARGET_NAME} PRIVATE -Wno-error=non-virtual-dtor )
+        if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.0 )
+            target_compile_options( ${TARGET_NAME} PRIVATE -Wno-cast-function-type )
+        endif()
+    endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0 )
         target_compile_options( ${TARGET_NAME} PRIVATE -Wno-missing-field-initializers )
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 6.0 )
-        # GCC 6.0+ complains on 7-zip macros using misleading indentation, disabling the warning to make it compile.
-        target_compile_options( ${TARGET_NAME} PRIVATE -Wno-misleading-indentation )
+        target_compile_options( ${TARGET_NAME} PRIVATE
+                                # GCC 6.0+ complains on 7-zip macros using misleading indentation,
+                                # disabling the warning to make it compile.
+                                -Wno-misleading-indentation
+                                # Extra warning flags for GCC 6.0+
+                                -Wduplicated-cond -Wnull-dereference )
+    endif()
+    if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0 )
+        # Extra warning flags for GCC 7.0+
+        target_compile_options( ${TARGET_NAME} PRIVATE -Wduplicated-branches )
     endif()
 endif()
