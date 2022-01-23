@@ -59,3 +59,5 @@ bit7z-cppcheck-build-dir/
 .PVS-Studio/
 *.PVS-Studio.i
 pvs-studio-analyzer.stacktrace.txt
+
+.mailmap
