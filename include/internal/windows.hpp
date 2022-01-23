@@ -59,7 +59,7 @@ constexpr auto VARIANT_FALSE = static_cast< VARIANT_BOOL >( 0 );
 #define HRESULT_CODE( hr )    ((hr) & 0xFFFF)
 
 // Win32 APIs
-inline DWORD WINAPI GetLastError() { return errno; }
+inline DWORD WINAPI GetLastError() { return static_cast< DWORD >( errno ); }
 
 constexpr auto FACILITY_ERRNO = 0x800;
 constexpr auto FACILITY_WIN32 = 7;

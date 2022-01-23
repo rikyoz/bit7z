@@ -155,7 +155,7 @@ namespace bit7z {
             template< std::size_t N >
             void extract( std::array< byte_t, N >& buffer, uint32_t index = 0 ) const {
                 extract( buffer.data(), buffer.size(), index );
-            };
+            }
 
             /**
              * @brief Extracts a file to the pre-allocated output buffer.
@@ -168,7 +168,7 @@ namespace bit7z {
             template< std::size_t N >
             void extract( byte_t (&buffer)[ N ], uint32_t index = 0 ) const {
                 extract( buffer, N, index );
-            };
+            }
 
             /**
              * @brief Extracts a file to the pre-allocated output buffer.
