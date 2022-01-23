@@ -67,8 +67,14 @@ else()
     target_compile_options( ${TARGET_NAME} PRIVATE -Wall -Wextra -Werror )
 endif()
 
-if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )
-    target_compile_options( ${TARGET_NAME} PRIVATE -Wno-inconsistent-missing-override )
+# Extra warning flags for Clang
+if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
+    if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )
+        target_compile_options( ${TARGET_NAME} PRIVATE -Wno-inconsistent-missing-override )
+    endif()
+    if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 3.8 )
+        target_compile_options( ${TARGET_NAME} PRIVATE -Wdouble-promotion )
+    endif()
 endif()
 
 if( APPLE )
