@@ -20,8 +20,10 @@ if( MSVC )
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 
-    # warning level option
-    target_compile_options( ${TARGET_NAME} PRIVATE /W4 )
+    # warning flags (as suggested in https://lefticus.gitbooks.io/cpp-best-practices/)
+    target_compile_options( ${TARGET_NAME} PRIVATE /W4 /w14640 /w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296
+                            /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906
+                            /w14928 )
 
     # C++ standard conformance options of MSVC
     target_compile_options( ${TARGET_NAME} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
