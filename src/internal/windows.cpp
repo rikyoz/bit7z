@@ -25,6 +25,7 @@
 #include "internal/windows.hpp"
 
 #include <iostream>
+#include <cstring>
 
 
 size_t wcsnlen_s( const wchar_t* str, size_t max_size ) {

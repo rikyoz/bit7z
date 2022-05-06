@@ -22,6 +22,7 @@
 #ifndef _WIN32
 #include "internal/util.hpp"
 #include <codecvt>
+#include <locale>
 #include <sstream>
 
 using std::wostringstream;
