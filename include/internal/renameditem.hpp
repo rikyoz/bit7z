@@ -25,7 +25,7 @@
 namespace bit7z {
     class RenamedItem final : public GenericInputItem {
         public:
-            explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path );
+            explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path );
 
             BIT7Z_NODISCARD tstring name() const override;
 

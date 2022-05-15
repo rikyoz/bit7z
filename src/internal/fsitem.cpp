@@ -28,7 +28,6 @@
 #include "internal/fsutil.hpp"
 
 using bit7z::tstring;
-using bit7z::BitPropVariant;
 using namespace bit7z::filesystem;
 
 /* NOTES:

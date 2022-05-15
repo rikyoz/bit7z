@@ -30,8 +30,8 @@ using bit7z::RenamedItem;
 using bit7z::tstring;
 using namespace bit7z::filesystem;
 
-RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path )
-    : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ std::move( new_path ) } {}
+RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path )
+    : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ new_path } {}
 
 tstring RenamedItem::name() const {
     return mNewPath.filename().string< tchar >();
