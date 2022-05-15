@@ -21,10 +21,10 @@
 
 #include <cstdint>
 #include <limits>
+#include <string>
 #include <type_traits>
 
 #ifndef _WIN32
-#include <string>
 #include "internal/guiddef.hpp"
 #include "internal/windows.hpp"
 #endif
@@ -54,17 +54,14 @@
 #define BIT7Z_STDMETHOD_NOEXCEPT(method, ...) MY_STDMETHOD(method, __VA_ARGS__) noexcept override
 
 namespace bit7z {
-#ifdef _WIN32
-#define WIDEN( tstr ) tstr
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+// On Windows, with native strings enabled, strings are already wide!
+#   define WIDEN( tstr ) tstr
 #else
-    using std::string;
-    using std::wstring;
-
-    string narrow( const wchar_t* wideString );
-    wstring widen( const string& narrowString );
-
-#define WIDEN( tstr ) bit7z::widen(tstr)
+#   define WIDEN( tstr ) bit7z::widen(tstr)
 #endif
+    std::string narrow( const wchar_t* wideString, size_t size );
+    std::wstring widen( const std::string& narrowString );
 
     constexpr inline bool check_overflow( int64_t position, int64_t offset ) noexcept {
         return ( offset > 0 && position > (std::numeric_limits< int64_t >::max)() - offset ) ||

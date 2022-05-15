@@ -50,7 +50,7 @@ tstring fsutil::extension( const tstring& path ) {
 bool contains_dot_references( const fs::path& path ) {
     /* Note: here we suppose that path does not contain file names with a final dot (e.g., "foo.").
              This must be true on Windows, but not on Unix systems! */
-    const auto& native_path = path.native();
+    const auto& native_path = path.string< tchar >();
     return std::adjacent_find( native_path.begin(), native_path.end(), []( tchar a, tchar b ) {
         return a == BIT7Z_STRING( '.' ) && ( b == BIT7Z_STRING( '/' ) || b == BIT7Z_STRING( '\\') );
     } ) != native_path.end();

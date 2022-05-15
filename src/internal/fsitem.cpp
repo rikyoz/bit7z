@@ -101,11 +101,11 @@ FILETIME FSItem::lastWriteTime() const noexcept {
 
 tstring FSItem::name() const {
     BIT7Z_MAYBE_UNUSED std::error_code ec;
-    return fs::canonical( mFileEntry.path(), ec ).filename();
+    return fs::canonical( mFileEntry.path(), ec ).filename().string< tchar >();
 }
 
 tstring FSItem::path() const {
-    return mFileEntry.path();
+    return mFileEntry.path().string< tchar >();
 }
 
 /* NOTE:

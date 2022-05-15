@@ -39,7 +39,7 @@ FSIndexer::FSIndexer( FSItem directory, tstring filter)
 void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                     bool recursive,
                                     const fs::path& prefix ) {
-    auto path = mDirItem.path();
+    fs::path path = mDirItem.path();
     if ( !prefix.empty() ) {
         path = path / prefix;
     }

@@ -33,11 +33,11 @@ using std::vector;
 BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name ) : mBuffer{ buffer }, mBufferName{ name } {}
 
 tstring BufferItem::name() const {
-    return mBufferName.filename();
+    return mBufferName.filename().string< tchar >();
 }
 
 tstring BufferItem::path() const {
-    return mBufferName;
+    return mBufferName.string< tchar >();
 }
 
 fs::path BufferItem::inArchivePath() const {

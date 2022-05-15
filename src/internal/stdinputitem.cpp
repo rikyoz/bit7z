@@ -32,11 +32,11 @@ using std::istream;
 StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
 
 tstring StdInputItem::name() const {
-    return mStreamPath.filename();
+    return mStreamPath.filename().string< tchar >();
 }
 
 tstring StdInputItem::path() const {
-    return mStreamPath;
+    return mStreamPath.string< tchar >();
 }
 
 fs::path StdInputItem::inArchivePath() const {

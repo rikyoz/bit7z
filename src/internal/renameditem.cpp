@@ -33,9 +33,13 @@ using namespace bit7z::filesystem;
 RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path )
     : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ std::move( new_path ) } {}
 
-tstring RenamedItem::name() const { return mNewPath.filename(); }
+tstring RenamedItem::name() const {
+    return mNewPath.filename().string< tchar >();
+}
 
-tstring RenamedItem::path() const { return mNewPath; }
+tstring RenamedItem::path() const {
+    return mNewPath.string< tchar >();
+}
 
 fs::path RenamedItem::inArchivePath() const { return path(); }
 

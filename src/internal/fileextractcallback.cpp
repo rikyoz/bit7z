@@ -92,7 +92,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
 
     if ( !mInputArchive.isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
-            mHandler.fileCallback()( filePath );
+            mHandler.fileCallback()( filePath.string< tchar >() );
         }
 
         std::error_code ec;

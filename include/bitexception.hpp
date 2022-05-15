@@ -59,6 +59,10 @@ namespace bit7z {
              */
             BitException( const char* message, std::error_code code, const tstring& file );
 
+#if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+            BitException( const char* message, std::error_code code, const std::wstring& file );
+#endif
+
             /**
              * @brief Constructs a BitException object with the given message
              *

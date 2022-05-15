@@ -23,7 +23,7 @@
 
 #include "internal/formatdetect.hpp"
 
-#ifdef _WIN32
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 #include <cwctype> // for std::iswdigit
 #else
 #include <cctype> // for std::isdigit
@@ -516,12 +516,17 @@ namespace bit7z {
                             make_error_code( BitError::NoMatchingSignature ) );
     }
 
-#ifdef _WIN32
-#define is_digit(ch) std::iswdigit(ch) != 0
-#define to_lower std::towlower
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+#   define is_digit(ch) std::iswdigit(ch) != 0
+    const auto to_lower = std::towlower;
 #else
-#define is_digit(ch) std::isdigit(ch) != 0
-#define to_lower ::tolower  //Note: using std::tolower would be ambiguous (multiple definitions of std::tolower)
+    inline auto is_digit(unsigned char c) -> bool {
+        return std::isdigit(c) != 0;
+    };
+
+    inline auto to_lower(unsigned char c) -> char {
+        return static_cast< char >( std::tolower( c ) );
+    };
 #endif
 
     const BitInFormat& detectFormatFromExt( const tstring& in_file ) {

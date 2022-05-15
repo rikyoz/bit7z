@@ -19,29 +19,74 @@
  * along with bit7z; if not, see https://www.gnu.org/licenses/.
  */
 
-#ifndef _WIN32
 #include "internal/util.hpp"
-#include <codecvt>
 #include <locale>
-#include <sstream>
 
-using std::wostringstream;
-using std::ctype;
-using std::use_facet;
+#ifndef WIN32
+#include <codecvt>
 using convert_type = std::codecvt_utf8<wchar_t>;
+#endif
 
 using namespace bit7z;
 
-string bit7z::narrow( const wchar_t* wideString ) {
+std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
     if ( wideString == nullptr ) {
         return "";
     }
+#ifdef WIN32
+    int narrowStringSize = WideCharToMultiByte( CP_UTF8,
+                                                0,
+                                                wideString,
+                                                ( size != 0U ? static_cast<int>( size ) : -1 ),
+                                                nullptr,
+                                                0,
+                                                nullptr,
+                                                nullptr );
+    if ( narrowStringSize == 0 ) {
+        return "";
+    }
+
+    std::string result( narrowStringSize, 0 );
+    WideCharToMultiByte( CP_UTF8,
+                         0,
+                         wideString,
+                         -1,
+                         &result[0],  // NOLINT(readability-container-data-pointer)
+                         static_cast<int>( narrowStringSize ),
+                         nullptr,
+                         nullptr );
+    if ( size == 0U ) {
+        result.resize( narrowStringSize - 1 );
+    } //output is null-terminated
+    return result;
+#else
     std::wstring_convert<convert_type, wchar_t> converter;
-    return converter.to_bytes( wideString );
+    return converter.to_bytes( wideString, wideString + size );
+#endif
 }
 
-wstring bit7z::widen( const string& narrowString ) {
+std::wstring bit7z::widen( const std::string& narrowString ) {
+#ifdef WIN32
+    int wideStringSize = MultiByteToWideChar( CP_UTF8,
+                                              0,
+                                              narrowString.c_str(),
+                                              static_cast<int>( narrowString.size() ),
+                                              nullptr,
+                                              0 );
+    if ( wideStringSize == 0 ) {
+        return L"";
+    }
+
+    std::wstring result( wideStringSize, 0 );
+    MultiByteToWideChar( CP_UTF8,
+                         0,
+                         narrowString.c_str(),
+                         static_cast<int>( narrowString.size() ),
+                         &result[0], // NOLINT(readability-container-data-pointer)
+                         wideStringSize );
+    return result;
+#else
     std::wstring_convert<convert_type, wchar_t> converter;
     return converter.from_bytes( narrowString );
-}
 #endif
+}

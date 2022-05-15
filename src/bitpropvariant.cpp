@@ -25,11 +25,11 @@
 #include "biterror.hpp"
 #include "internal/dateutil.hpp"
 
-#ifdef _WIN32
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
 #include "internal/util.hpp"
-#define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr )
+#define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, SysStringLen( bstr ) )
 #endif
 
 constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVariant string";

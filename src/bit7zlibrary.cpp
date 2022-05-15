@@ -23,18 +23,21 @@
 
 #include "bitexception.hpp"
 #include "internal/windows.hpp"
+#include "internal/util.hpp"
 
-#ifndef _WIN32
-#include <dlfcn.h>
+#ifdef _WIN32
+#   define Bit7zLoadLibrary(lib_name) LoadLibraryW( WIDEN( (library_path) ).c_str() )
+#else
+#   include <dlfcn.h>
 
-#define LoadLibrary(lib_name) dlopen( lib_name, RTLD_LAZY )
-#define GetProcAddress dlsym
-#define FreeLibrary dlclose
+#   define Bit7zLoadLibrary(lib_name) dlopen( (lib_name).c_str(), RTLD_LAZY )
+#   define GetProcAddress dlsym
+#   define FreeLibrary dlclose
 #endif
 
 using namespace bit7z;
 
-Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( LoadLibrary( library_path.c_str() ) ) {
+Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadLibrary( library_path ) ) {
     if ( mLibrary == nullptr ) {
         throw BitException( "Failed to load 7-zip library",
 #ifdef _WIN32

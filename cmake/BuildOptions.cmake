@@ -17,3 +17,10 @@ message( STATUS "Use std::byte: ${BIT7Z_USE_STD_BYTE}" )
 if( BIT7Z_USE_STD_BYTE )
     target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_USE_STD_BYTE )
 endif()
+
+option( BIT7Z_USE_NATIVE_STRING "Enable or disable using the OS native string type
+                                 (e.g., std::wstring on Windows, std::string elsewhere)" )
+message( STATUS "Use native string: ${BIT7Z_USE_NATIVE_STRING}" )
+if( BIT7Z_USE_NATIVE_STRING )
+    target_compile_definitions( ${TARGET_NAME} PUBLIC BIT7Z_USE_NATIVE_STRING )
+endif()

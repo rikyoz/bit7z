@@ -49,7 +49,7 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index,
     tstring fullPath;
 
     if ( prop.isEmpty() ) {
-        fullPath = fs::path( kEmptyFileAlias ).native();
+        fullPath = kEmptyFileAlias;
     } else if ( prop.isString() ) {
         fullPath = prop.getString();
     } else {

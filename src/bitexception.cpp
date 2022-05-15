@@ -26,6 +26,9 @@
 #endif
 #include "internal/hresultcategory.hpp"
 #include "internal/windows.hpp"
+#if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+#include "internal/util.hpp"
+#endif
 
 std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };
@@ -46,6 +49,11 @@ BitException::BitException( const char* const message, std::error_code code, con
     : system_error( code, message ) {
     mFailedFiles.emplace_back( file, code );
 }
+
+#if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+BitException::BitException( const char* message, std::error_code code, const std::wstring& file )
+    : BitException( message, code, bit7z::narrow(file.c_str(), file.size()) ) {}
+#endif
 
 BitException::BitException( const std::string& message, std::error_code code )
     : system_error( code, message.c_str() ) {}

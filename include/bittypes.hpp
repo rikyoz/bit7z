@@ -64,7 +64,7 @@ namespace bit7z {
         };
     }
 
-#ifdef _WIN32 // Windows
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows
     using tchar = wchar_t;
 #define BIT7Z_STRING( str ) L##str
 #else // Unix
