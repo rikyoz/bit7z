@@ -47,7 +47,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
                              fs::path{ mDirItem.path() }.parent_path().empty() ||
                              mDirItem.inArchivePath().filename() != mDirItem.name();
     std::error_code ec;
-    for ( auto& current_entry : fs::directory_iterator( path, ec ) ) {
+    for ( const auto& current_entry : fs::directory_iterator( path, ec ) ) {
         auto search_path = include_root_path ? mDirItem.inArchivePath() : fs::path();
         if ( !prefix.empty() ) {
             search_path = search_path.empty() ? prefix : search_path / prefix;

@@ -141,7 +141,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
                                     IOutStream* out_stream,
                                     UpdateCallback* update_callback ) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Overwrite ) {
-        for ( auto& new_item : mNewItemsVector ) {
+        for ( const auto& new_item : mNewItemsVector ) {
             auto overwritten_item = mInputArchive->find( new_item->inArchivePath().string< tchar >() );
             if ( overwritten_item != mInputArchive->cend() ) {
                 mDeletedItems.insert( overwritten_item->index() );

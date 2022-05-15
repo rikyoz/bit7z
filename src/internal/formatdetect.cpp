@@ -474,7 +474,7 @@ namespace bit7z {
             file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
         }
 
-        for ( auto& sig : common_signatures_with_offset ) {
+        for ( const auto& sig : common_signatures_with_offset ) {
             stream->Seek( sig.offset, 0, nullptr );
             file_signature = readSignature( stream, sig.size );
             if ( file_signature == sig.signature ) {
