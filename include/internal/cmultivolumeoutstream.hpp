@@ -35,7 +35,6 @@ using std::wstring;
 
 namespace bit7z {
     class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
-
             // Size of a single volume.
             uint64_t mMaxVolumeSize;
 

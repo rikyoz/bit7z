@@ -39,6 +39,7 @@ namespace bit7z {
             BIT7Z_NODISCARD FILETIME modifiedTime() const;
 
             BIT7Z_NODISCARD bool isModifiedTimeDefined() const;
+
         private:
             fs::path mFilePath;
 

@@ -140,7 +140,6 @@ namespace bit7z {
              * @param out_stream    the standard ostream where to output the archive file.
              */
             void compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const;
-
     };
 }
 #endif // BITFILECOMPRESSOR_HPP

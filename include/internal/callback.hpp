@@ -49,7 +49,6 @@ namespace bit7z {
 
             const BitAbstractArchiveHandler& mHandler;
             const char* mErrorMessage;
-
     };
 }
 #endif // CALLBACK_HPP

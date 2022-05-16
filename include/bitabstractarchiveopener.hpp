@@ -61,7 +61,6 @@ namespace bit7z {
                                       const tstring& password = {} );
 
             ~BitAbstractArchiveOpener() override = default;
-
     };
 }
 

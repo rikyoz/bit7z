@@ -43,7 +43,8 @@ Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadL
 #ifdef _WIN32
                             last_error_code()
 #else
-                            std::make_error_code( std::errc::bad_file_descriptor ) //same behavior as boost::shared_library
+                            //same behavior as boost::shared_library
+                            std::make_error_code( std::errc::bad_file_descriptor )
 #endif
         );
     }
