@@ -15,7 +15,7 @@ environment:
   - compiler: msvc
     arch: x86
     flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
-    
+
   - compiler: msvc
     arch: x64
     flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
@@ -23,7 +23,7 @@ environment:
   - compiler: msvc_mt
     arch: x86
     flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
-    
+
   - compiler: msvc_mt
     arch: x64
     flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
@@ -32,29 +32,29 @@ environment:
     arch: x86
     flags:
     PATH: C:\mingw-w64\i686-8.1.0-posix-dwarf-rt_v6-rev0\mingw32\bin;$(PATH)
-    
+
   - compiler: mingw
     arch: x64
     flags:
     PATH: C:\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin;$(PATH)
-    
+
   - compiler: gcc
     arch: x86
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
-    
+
   - compiler: gcc
     arch: x64
     CC: /usr/bin/gcc-9
     CXX: /usr/bin/g++-9
-    
+
   - compiler: clang
     arch: x86
     flags: -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
     CC: /usr/bin/clang
     CXX: /usr/bin/clang++
-    
+
   - compiler: clang
     arch: x64
     CC: /usr/bin/clang
@@ -62,7 +62,7 @@ environment:
 
 matrix:
   fast_finish: true
-  
+
   exclude:
     - image: Visual Studio 2015
       compiler: mingw
@@ -94,7 +94,7 @@ matrix:
       compiler: msvc_mt
     - image: Ubuntu
       compiler: mingw
-      
+
 for:
 -
   matrix:
@@ -120,9 +120,9 @@ for:
     - cd build
 
   build_script:
-    - cmake .. -G "Ninja" $flags -DCMAKE_BUILD_TYPE=Release 
+    - cmake .. -G "Ninja" $flags -DCMAKE_BUILD_TYPE=Release
     - cmake --build . -j --config Release
-    - cmake .. -G "Ninja" $flags -DCMAKE_BUILD_TYPE=Debug 
+    - cmake .. -G "Ninja" $flags -DCMAKE_BUILD_TYPE=Debug
     - cmake --build . -j --config Debug
 
   after_build:
