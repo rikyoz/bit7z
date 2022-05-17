@@ -88,8 +88,10 @@ fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& searc
 }
 
 // A modified version of the code found here: https://stackoverflow.com/a/3300547
-bool w_match( tstring::const_iterator pattern_it, const tstring::const_iterator& pattern_end,
-              tstring::const_iterator str_it, const tstring::const_iterator& str_end ) {
+bool w_match( tstring::const_iterator pattern_it, // NOLINT(misc-no-recursion)
+              const tstring::const_iterator& pattern_end,
+              tstring::const_iterator str_it,
+              const tstring::const_iterator& str_end ) {
     for ( ; pattern_it != pattern_end; ++pattern_it ) {
         switch ( *pattern_it ) {
             case BIT7Z_STRING( '?' ):
@@ -119,7 +121,7 @@ bool w_match( tstring::const_iterator pattern_it, const tstring::const_iterator&
     return str_it == str_end;
 }
 
-bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) {
+bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) { // NOLINT(misc-no-recursion)
     if ( pattern.empty() ) {
         return wildcardMatch( BIT7Z_STRING( "*" ), str );
     }
