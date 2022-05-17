@@ -25,7 +25,6 @@
 
 #ifndef _WIN32
 #include <sys/stat.h>
-#include <cstdio>
 #include <unistd.h>
 
 #include "internal/dateutil.hpp"
@@ -164,7 +163,7 @@ static const mode_t global_umask = []() noexcept {
     // Restoring the umask.
     umask( current_umask );
 
-    return 0777 & ( ~current_umask );
+    return static_cast<int>( fs::perms::all ) & ( ~current_umask );
 }();
 #endif
 
@@ -181,11 +180,13 @@ bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
         return false;
     }
 
-    if ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        file_stat.st_mode = attributes >> 16u;
+    if ( ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) != 0 ) {
+        file_stat.st_mode = attributes >> 16U;
         if ( S_ISLNK( file_stat.st_mode ) ) {
             return restore_symlink( filePath );
-        } else if ( S_ISDIR( file_stat.st_mode ) ) {
+        }
+
+        if ( S_ISDIR( file_stat.st_mode ) ) {
             file_stat.st_mode |= ( S_IRUSR | S_IWUSR | S_IXUSR );
         } else if ( !S_ISREG( file_stat.st_mode ) ) {
             return true;
@@ -193,10 +194,13 @@ bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
     } else if ( S_ISLNK( file_stat.st_mode ) ) {
         return true;
     } else if ( !S_ISDIR( file_stat.st_mode ) && ( attributes & FILE_ATTRIBUTE_READONLY ) != 0 ) {
-        file_stat.st_mode &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
+        file_stat.st_mode &= ~( S_IWUSR | S_IWGRP | S_IWOTH );
     }
-    chmod( filePath.c_str(), file_stat.st_mode & global_umask );
-    return true;
+
+    fs::perms file_permissions = static_cast<fs::perms>( file_stat.st_mode & global_umask ) & fs::perms::mask;
+    std::error_code ec;
+    fs::permissions(filePath, file_permissions, ec);
+    return !ec;
 #endif
 }
 
