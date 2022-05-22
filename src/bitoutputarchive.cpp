@@ -65,8 +65,10 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& in_stream )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
-    mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
-    mInputArchiveItemsCount = mInputArchive->itemsCount();
+    if ( in_stream.good() ) {
+        mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
+        mInputArchiveItemsCount = mInputArchive->itemsCount();
+    }
 }
 
 void BitOutputArchive::addItems( const std::vector< tstring >& in_paths ) {
