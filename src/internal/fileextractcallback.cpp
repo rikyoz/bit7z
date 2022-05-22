@@ -36,8 +36,7 @@ FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
     : ExtractCallback( inputArchive ),
       mInFilePath( inputArchive.archivePath() ),
       mDirectoryPath( directoryPath ),
-      mRetainDirectories( inputArchive.handler().retainDirectories() ),
-      mCurrentItem() {}
+      mRetainDirectories( inputArchive.handler().retainDirectories() ) {}
 
 void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!

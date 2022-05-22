@@ -34,9 +34,9 @@ size_t wcsnlen_s( const wchar_t* str, size_t max_size ) {
         return 0;
     }
 
-    size_t result;
+    size_t result = 0;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    for ( result = 0; result < max_size && str[ result ] != L'\0'; ++result ) {
+    for (; result < max_size && str[ result ] != L'\0'; ++result ) {
         // continue;
     }
     return result;
@@ -107,7 +107,7 @@ BSTR SysAllocStringByteLen( LPCSTR str, UINT length ) {
 }
 
 void SysFreeString( BSTR bstrString ) { // NOLINT(readability-non-const-parameter)
-    if ( bstrString ) {
+    if ( bstrString != nullptr ) {
         // We must delete the original memory buffer, which starts from the BSTR length prefix
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         auto* bstr_buffer = reinterpret_cast< byte_t* >( bstrString ) - sizeof( bstr_prefix_t );

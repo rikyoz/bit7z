@@ -47,7 +47,8 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
 
 void extractArc( IInArchive* in_archive, const vector< uint32_t >& indices, ExtractCallback* extract_callback ) {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
-    const uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
+    const uint32_t num_items = indices.empty() ?
+                               std::numeric_limits< uint32_t >::max() : static_cast< uint32_t >( indices.size() );
 
     const HRESULT res = in_archive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
     if ( res != S_OK ) {
@@ -158,7 +159,7 @@ BitPropVariant BitInputArchive::itemProperty( uint32_t index, BitProperty proper
 }
 
 uint32_t BitInputArchive::itemsCount() const {
-    uint32_t items_count;
+    uint32_t items_count{};
     const HRESULT res = mInArchive->GetNumberOfItems( &items_count );
     if ( res != S_OK ) {
         throw BitException( "Could not retrieve the number of items in the archive", make_hresult_code( res ) );

@@ -40,7 +40,7 @@ STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* pro
         *processedSize = 0;
     }
 
-    UInt32 writtenSize;
+    UInt32 writtenSize{};
     RINOK( CStdOutStream::Write( data, size, &writtenSize ) )
 
     if ( writtenSize == 0 && size != 0 ) {

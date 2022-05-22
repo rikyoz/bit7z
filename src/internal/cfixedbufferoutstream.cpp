@@ -94,7 +94,7 @@ STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t current_index;
+    int64_t current_index{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
             current_index = 0;

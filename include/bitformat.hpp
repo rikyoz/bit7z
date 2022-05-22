@@ -71,6 +71,8 @@ namespace bit7z {
 
             BitInFormat& operator=( BitInFormat&& other ) = delete;
 
+            ~BitInFormat() = default;
+
             /**
              * @brief Constructs a BitInFormat object with the ID value used by the 7z SDK.
              * @param value  the value of the format in the 7z SDK.
@@ -129,6 +131,8 @@ namespace bit7z {
             BitInOutFormat( BitInOutFormat&& other ) = delete;
 
             BitInOutFormat& operator=( BitInOutFormat&& other ) = delete;
+
+            ~BitInOutFormat() = default;
 
             /**
              * @return the default file extension of the archive format

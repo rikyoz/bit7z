@@ -247,7 +247,7 @@ namespace bit7z {
                 vector< uint32_t > matched_indices;
                 bool should_include_matched_items = policy == FilterPolicy::Include;
                 //Searching for files inside the archive that match the given filter
-                for ( auto& item : in_archive ) {
+                for ( const auto& item : in_archive ) {
                     bool item_matches = filter( item.path() );
                     if ( item_matches == should_include_matched_items ) {
                         /* Note: the if-condition is equivalent to an exclusive NOR (negated XOR) between
@@ -272,7 +272,7 @@ namespace bit7z {
 
                 bool should_extracted_matched_item = policy == FilterPolicy::Include;
                 //Searching for files inside the archive that match the given filter
-                for ( auto& item : in_archive ) {
+                for ( const auto& item : in_archive ) {
                     bool item_matches = filter( item.path() );
                     if ( item_matches == should_extracted_matched_item ) {
                         /* Note: the if-condition is equivalent to an exclusive NOR (negated XOR) between
