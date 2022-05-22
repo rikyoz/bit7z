@@ -123,7 +123,7 @@ class BitInOutFormat final : public BitInFormat {
             : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
         //non-copyable
-        BitInOutFormat( const BitInFormat& other ) = delete;
+        BitInOutFormat( const BitInOutFormat& other ) = delete;
 
         BitInOutFormat& operator=( const BitInOutFormat& other ) = delete;
 
