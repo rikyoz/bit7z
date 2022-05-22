@@ -73,6 +73,6 @@ namespace bit7z {
     make_com( Args&&... args ) {
         return CMyComPtr<I>(new T(std::forward<Args>(args)...));
     }
-}
+}  // namespace bit7z
 
 #endif //UTIL_HPP

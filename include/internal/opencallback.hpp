@@ -72,5 +72,5 @@ namespace bit7z {
             std::wstring mSubArchiveName;
             FSItem mFileItem;
     };
-}
+}  // namespace bit7z
 #endif // OPENCALLBACK_HPP

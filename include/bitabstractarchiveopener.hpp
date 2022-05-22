@@ -62,6 +62,6 @@ namespace bit7z {
 
             ~BitAbstractArchiveOpener() override = default;
     };
-}
+}  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEOPENER_HPP

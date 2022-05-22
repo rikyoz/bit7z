@@ -296,7 +296,7 @@ namespace bit7z {
                                     Tar,        ///< TAR Archive Format
                                     GZip;       ///< GZIP Archive Format
 #endif
-    }
+    }  // namespace BitFormat
 
 
 #ifdef BIT7Z_AUTO_FORMAT
@@ -305,5 +305,5 @@ namespace bit7z {
 #define BIT7Z_DEFAULT_FORMAT
 #endif
 
-}
+}  // namespace bit7z
 #endif // BITFORMAT_HPP

@@ -57,6 +57,6 @@ namespace bit7z {
         private:
             ostream& mOutputStream;
     };
-}
+}  // namespace bit7z
 
 #endif // CSTDOUTSTREAM_HPP

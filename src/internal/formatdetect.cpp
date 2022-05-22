@@ -555,6 +555,6 @@ namespace bit7z {
         // The extension did not match any known format extension, delegating the decision to the client.
         return BitFormat::Auto;
     }
-}
+}  // namespace bit7z
 
 #endif

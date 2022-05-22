@@ -36,6 +36,6 @@ namespace bit7z {
 
     const std::error_category& internal_category() noexcept;
 
-}
+}  // namespace bit7z
 
 #endif //INTERNALCATEGORY_HPP

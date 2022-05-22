@@ -218,6 +218,6 @@ namespace bit7z {
             FileCallback mFileCallback;
             PasswordCallback mPasswordCallback;
     };
-}
+}  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEHANDLER_HPP

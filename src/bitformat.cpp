@@ -124,5 +124,5 @@ namespace bit7z {
         return mDefaultMethod;
     }
 
-}
+}  // namespace bit7z
 

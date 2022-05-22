@@ -62,7 +62,7 @@ namespace bit7z {
                 return std::to_wstring( std::forward< T >( t )) ;
             }
         };
-    }
+    }  // namespace
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows
     using tchar = wchar_t;
@@ -81,5 +81,5 @@ namespace bit7z {
     inline std::basic_string< tchar > to_tstring( T&& Arg ) {
         return string_traits< tchar >::convert_to_string( std::forward< T >( Arg ) );
     }
-}
+}  // namespace bit7z
 #endif // BITTYPES_HPP

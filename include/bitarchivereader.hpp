@@ -152,6 +152,6 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD bool isSolid() const;
     };
-}
+}  // namespace bit7z
 
 #endif // BITARCHIVEREADER_HPP

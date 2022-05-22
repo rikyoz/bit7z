@@ -39,6 +39,6 @@ namespace bit7z {
     };
 
     const std::error_category& hresult_category() noexcept;
-}
+}  // namespace bit7z
 
 #endif //HRESULTCATEGORY_HPP

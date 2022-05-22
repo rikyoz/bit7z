@@ -44,7 +44,7 @@ namespace bit7z {
 
         ~GenericInputItem() override = default;
     };
-}
+}  // namespace bit7z
 
 
 #endif //GENERICINPUTITEM_HPP

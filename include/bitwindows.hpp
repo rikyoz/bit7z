@@ -134,7 +134,7 @@ namespace bit7z {
             BSTR           bstrVal;
         };
     };
-}
+}  // namespace bit7z
 #endif
 
 #endif //BITWINDOWS_HPP

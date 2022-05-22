@@ -116,6 +116,6 @@ namespace bit7z {
                 output_archive.compressTo( out_stream );
             }
     };
-}
+}  // namespace bit7z
 
 #endif //BITCOMPRESSOR_HPP

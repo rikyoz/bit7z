@@ -56,6 +56,6 @@ namespace bit7z {
 
             friend class BitArchiveReader;
     };
-}
+}  // namespace bit7z
 
 #endif // BITARCHIVEITEMINFO_HPP

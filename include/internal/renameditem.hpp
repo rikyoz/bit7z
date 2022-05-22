@@ -54,5 +54,5 @@ namespace bit7z {
             uint32_t mIndex;
             const fs::path mNewPath;
     };
-}
+}  // namespace bit7z
 #endif //RENAMEDITEM_HPP

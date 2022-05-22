@@ -50,7 +50,7 @@ namespace bit7z {
     };
 
     std::error_code make_error_code( const BitError& e );
-}
+}  // namespace bit7z
 
 namespace std {
     template<>

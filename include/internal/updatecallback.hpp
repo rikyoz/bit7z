@@ -82,6 +82,6 @@ namespace bit7z {
             const BitOutputArchive& mOutputArchive;
             bool mNeedBeClosed;
     };
-}
+}  // namespace bit7z
 
 #endif // UPDATECALLBACK_HPP

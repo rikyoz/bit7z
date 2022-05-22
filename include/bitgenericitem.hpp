@@ -63,6 +63,6 @@ namespace bit7z {
 
             virtual ~BitGenericItem() = default;
     };
-}
+}  // namespace bit7z
 
 #endif //BITGENERICITEM_HPP

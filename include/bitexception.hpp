@@ -85,5 +85,5 @@ namespace bit7z {
         private:
             FailedFiles mFailedFiles;
     };
-}
+}  // namespace bit7z
 #endif // BITEXCEPTION_HPP

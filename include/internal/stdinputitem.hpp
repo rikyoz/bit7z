@@ -52,6 +52,6 @@ namespace bit7z {
             istream& mStream;
             const fs::path mStreamPath;
     };
-}
+}  // namespace bit7z
 
 #endif //STDINPUTITEM_HPP

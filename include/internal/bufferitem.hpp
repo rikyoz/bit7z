@@ -54,6 +54,6 @@ namespace bit7z {
             const vector< byte_t >& mBuffer;
             const fs::path mBufferName;
     };
-}
+}  // namespace bit7z
 
 #endif //BUFFERITEM_HPP

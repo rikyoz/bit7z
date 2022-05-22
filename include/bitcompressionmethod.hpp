@@ -32,6 +32,6 @@ namespace bit7z {
         Lzma2,
         Ppmd
     };
-}
+}  // namespace bit7z
 
 #endif // BITCOMPRESSIONMETHOD_HPP

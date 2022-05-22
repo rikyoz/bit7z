@@ -270,6 +270,6 @@ namespace bit7z {
 
             void updateInputIndices();
     };
-}
+}  // namespace bit7z
 
 #endif //BITOUTPUTARCHIVE_HPP

@@ -294,6 +294,6 @@ namespace bit7z {
              */
             BIT7Z_NODISCARD bool contains( const tstring& path ) const noexcept;
     };
-}
+}  // namespace bit7z
 
 #endif //BITINPUTARCHIVE_HPP

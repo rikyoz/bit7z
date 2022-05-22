@@ -102,6 +102,6 @@ namespace bit7z {
             explicit BitArchiveItem( uint32_t item_index ) noexcept;
     };
 
-}
+}  // namespace bit7z
 
 #endif // BITARCHIVEITEM_HPP

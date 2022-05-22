@@ -74,6 +74,6 @@ namespace bit7z {
                               const BitInOutFormat& format,
                               const tstring& password = {} );
     };
-}
+}  // namespace bit7z
 
 #endif //BITARCHIVEWRITER_HPP

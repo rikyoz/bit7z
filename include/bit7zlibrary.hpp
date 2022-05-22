@@ -94,6 +94,6 @@ namespace bit7z {
             HMODULE mLibrary;
             CreateObjectFunc mCreateObjectFunc;
     };
-}
+}  // namespace bit7z
 
 #endif // BIT7ZLIBRARY_HPP

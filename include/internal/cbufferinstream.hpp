@@ -54,6 +54,6 @@ namespace bit7z {
             const buffer_t& mBuffer;
             buffer_t::const_iterator mCurrentPosition;
     };
-}
+}  // namespace bit7z
 
 #endif // CBUFFERINSTREAM_HPP

@@ -43,6 +43,6 @@ namespace bit7z {
                 FSItem mDirItem;
                 tstring mFilter;
         };
-    }
-}
+    }  // namespace filesystem
+}  // namespace bit7z
 #endif // FSINDEXER_HPP

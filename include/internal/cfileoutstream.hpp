@@ -33,6 +33,6 @@ namespace bit7z {
         private:
             fs::ofstream mFileStream;
     };
-}
+}  // namespace bit7z
 
 #endif // CFILEOUTSTREAM_HPP

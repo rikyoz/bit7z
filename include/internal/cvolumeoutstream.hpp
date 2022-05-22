@@ -48,6 +48,6 @@ namespace bit7z {
 
             uint64_t mCurrentSize;
     };
-}
+}  // namespace bit7z
 
 #endif //CVOLUMEOUTSTREAM_HPP

@@ -71,6 +71,6 @@ namespace bit7z {
         return time_to_FILETIME( time );
 #endif
     }
-}
+}  // namespace bit7z
 
 //#endif

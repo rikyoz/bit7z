@@ -150,7 +150,7 @@ namespace bit7z {
 
             void indexItem( const FSItem& item, bool ignore_dirs );
     };
-}
+}  // namespace bit7z
 
 
 #endif //BITITEMSVECTOR_HPP

@@ -56,5 +56,5 @@ namespace bit7z {
             buffer_t& mBuffer;
             buffer_t::iterator mCurrentPosition;
     };
-}
+}  // namespace bit7z
 #endif // CBUFFEROUTSTREAM_HPP

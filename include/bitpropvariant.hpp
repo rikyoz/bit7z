@@ -448,6 +448,6 @@ namespace bit7z {
     bool operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 
     bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
-}
+}  // namespace bit7z
 
 #endif // BITPROPVARIANT_HPP

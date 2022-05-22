@@ -248,6 +248,6 @@ namespace bit7z {
             uint64_t mVolumeSize;
             uint32_t mThreadsCount;
     };
-}
+}  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVECREATOR_HPP

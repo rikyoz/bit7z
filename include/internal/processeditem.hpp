@@ -55,6 +55,6 @@ namespace bit7z {
 
             void loadModifiedTime( const BitInputArchive& input_archive, uint32_t item_index );
     };
-}
+}  // namespace bit7z
 
 #endif //PROCESSEDITEM_HPP

@@ -55,6 +55,6 @@ namespace bit7z {
 
             friend class BitInputArchive;
     };
-}
+}  // namespace bit7z
 
 #endif // BITARCHIVEITEMOFFSET_HPP

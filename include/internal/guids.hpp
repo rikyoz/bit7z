@@ -53,5 +53,5 @@ namespace bit7z {
         extern const GUID IID_IArchiveUpdateCallback;
         extern const GUID IID_IArchiveUpdateCallback2;
     }
-}
+}  // namespace bit7z
 #endif // GUIDS_HPP

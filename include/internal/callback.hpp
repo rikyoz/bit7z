@@ -50,5 +50,5 @@ namespace bit7z {
             const BitAbstractArchiveHandler& mHandler;
             const char* mErrorMessage;
     };
-}
+}  // namespace bit7z
 #endif // CALLBACK_HPP

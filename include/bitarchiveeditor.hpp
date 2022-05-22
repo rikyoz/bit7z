@@ -173,6 +173,6 @@ namespace bit7z {
 
             bool hasNewProperties( uint32_t index ) const noexcept override;
     };
-}
+}  // namespace bit7z
 
 #endif //BITARCHIVEEDITOR_HPP

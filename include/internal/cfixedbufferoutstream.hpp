@@ -57,5 +57,5 @@ namespace bit7z {
             size_t mBufferSize;
             int64_t mCurrentPosition;
     };
-}
+}  // namespace bit7z
 #endif // CFIXEDBUFFEROUTSTREAM_HPP

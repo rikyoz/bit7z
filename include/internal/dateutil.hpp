@@ -36,6 +36,6 @@ namespace bit7z {
     time_type FILETIME_to_time_type( const FILETIME& fileTime );
 
     FILETIME currentFileTime();
-}
+}  // namespace bit7z
 
 #endif //DATEUTIL_HPP

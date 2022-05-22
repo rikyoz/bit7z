@@ -79,6 +79,6 @@ namespace bit7z {
 
             UInt64 mNumErrors;
     };
-}
+}  // namespace bit7z
 
 #endif // EXTRACTCALLBACK_HPP

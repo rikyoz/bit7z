@@ -141,5 +141,5 @@ namespace bit7z {
              */
             void compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const;
     };
-}
+}  // namespace bit7z
 #endif // BITFILECOMPRESSOR_HPP

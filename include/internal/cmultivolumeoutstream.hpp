@@ -79,6 +79,6 @@ namespace bit7z {
 
             BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
     };
-}
+}  // namespace bit7z
 
 #endif // COUTMULTIVOLUMESTREAM_HPP

@@ -59,6 +59,6 @@ namespace bit7z {
 
                 void initAttributes( const fs::path& itemPath );
         };
-    }
-}
+    }  // namespace filesystem
+}  // namespace bit7z
 #endif // FSITEM_HPP

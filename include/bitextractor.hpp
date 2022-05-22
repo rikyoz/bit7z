@@ -285,6 +285,6 @@ namespace bit7z {
                 throw BitException( "Failed to extract items", make_error_code( BitError::NoMatchingItems ) );
             }
     };
-}
+}  // namespace bit7z
 
 #endif //BITEXTRACTOR_HPP

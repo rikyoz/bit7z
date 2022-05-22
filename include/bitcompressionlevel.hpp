@@ -32,6 +32,6 @@ namespace bit7z {
         Max = 7,     ///< Maximum compressing
         Ultra = 9    ///< Ultra compressing
     };
-}
+}  // namespace bit7z
 
 #endif // BITCOMPRESSIONLEVEL_HPP

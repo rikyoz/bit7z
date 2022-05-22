@@ -61,5 +61,5 @@ namespace bit7z {
 
             HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
     };
-}
+}  // namespace bit7z
 #endif // FILEEXTRACTCALLBACK_HPP

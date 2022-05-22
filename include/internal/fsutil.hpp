@@ -41,8 +41,9 @@ namespace bit7z {
 
             bool setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept;
 
-            BIT7Z_NODISCARD fs::path inArchivePath( const fs::path& file_path, const fs::path& search_path = fs::path() );
-        }
-    }
-}
+            BIT7Z_NODISCARD fs::path inArchivePath( const fs::path& file_path,
+                                                    const fs::path& search_path = fs::path() );
+        }  // namespace fsutil
+    }  // namespace filesystem
+}  // namespace bit7z
 #endif // FSUTIL_HPP
