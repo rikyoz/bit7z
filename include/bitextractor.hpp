@@ -99,7 +99,7 @@ namespace bit7z {
              * @param in_file   the input archive file.
              * @param out_map   the output map.
              */
-            void extract( Input in_file, map< tstring, vector< byte_t > >& out_map ) const {
+            void extract( Input in_file, std::map< tstring, vector< byte_t > >& out_map ) const {
                 BitInputArchive in_archive( *this, in_file );
                 in_archive.extract( out_map );
             }
