@@ -281,7 +281,7 @@ ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
         values.emplace_back( mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
-        const wchar_t* prop_name;
+        const wchar_t* prop_name; // NOLINT(cppcoreguidelines-init-variables)
         //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
@@ -292,7 +292,7 @@ ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
         values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
     }
     if ( mWordSize != 0 ) {
-        const wchar_t* prop_name;
+        const wchar_t* prop_name; // NOLINT(cppcoreguidelines-init-variables)
         //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0o" : L"0fb" );

@@ -27,7 +27,7 @@ HRESULT bit7z::seek( const buffer_t& buffer,
                      int64_t offset,
                      uint32_t seek_origin,
                      int64_t& new_position ) {
-    int64_t current_index;
+    int64_t current_index; // NOLINT(cppcoreguidelines-init-variables)
     switch ( seek_origin ) {
         case STREAM_SEEK_SET: {
             current_index = 0;

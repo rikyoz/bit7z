@@ -50,7 +50,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     mInputStream.clear();
 
-    std::ios_base::seekdir way;
+    std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             way = std::ios_base::beg;
