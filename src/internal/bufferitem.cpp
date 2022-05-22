@@ -29,7 +29,8 @@ using bit7z::byte_t;
 using bit7z::tstring;
 using std::vector;
 
-BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name ) : mBuffer{ buffer }, mBufferName{ name } {}
+BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name )
+    : mBuffer{ buffer }, mBufferName{ name } {}
 
 tstring BufferItem::name() const {
     return mBufferName.filename().string< tchar >();

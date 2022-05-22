@@ -42,7 +42,8 @@ using namespace bit7z::filesystem;
  *    (see inArchivePath() method). */
 
 FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
-    : mFileAttributeData(), mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
+    : mFileAttributeData(),
+      mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
     std::error_code ec;
     mFileEntry.assign( itemPath, ec );
     if ( ec ) {
@@ -58,7 +59,9 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
 }
 
 FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
-    : mFileEntry( std::move( entry ) ), mFileAttributeData(), mInArchivePath( fsutil::inArchivePath( mFileEntry.path(), searchPath ) ) {
+    : mFileEntry( std::move( entry ) ),
+      mFileAttributeData(),
+      mInArchivePath( fsutil::inArchivePath( mFileEntry.path(), searchPath ) ) {
     initAttributes( mFileEntry.path() );
 }
 

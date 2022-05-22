@@ -35,7 +35,8 @@ namespace bit7z {
 
             BIT7Z_NODISCARD bool wildcardMatch( const tstring& pattern, const tstring& str );
 
-            BIT7Z_NODISCARD bool getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept;
+            BIT7Z_NODISCARD bool getFileAttributesEx( const fs::path& filePath,
+                                                      WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept;
 
             bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept;
 

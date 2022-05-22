@@ -167,7 +167,9 @@ namespace bit7z {
              * @param recursive (optional) recursively search the files in the given directory
              *                  and all of its subdirectories.
              */
-            void addFiles( const tstring& in_dir, const tstring& filter = BIT7Z_STRING( "*.*" ), bool recursive = true );
+            void addFiles( const tstring& in_dir,
+                           const tstring& filter = BIT7Z_STRING( "*.*" ),
+                           bool recursive = true );
 
             /**
              * @brief Adds all the items inside the given directory path.

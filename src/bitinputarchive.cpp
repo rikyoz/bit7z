@@ -200,7 +200,7 @@ const BitAbstractArchiveHandler& BitInputArchive::handler() const noexcept {
 
 void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >& indices ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, out_dir );
-    extractArc( mInArchive, indices, callback);
+    extractArc( mInArchive, indices, callback );
 }
 
 void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) const {
@@ -236,7 +236,7 @@ void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
 
     const vector< uint32_t > indices( 1, index );
     auto extract_callback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, out_stream );
-    extractArc( mInArchive, indices, extract_callback);
+    extractArc( mInArchive, indices, extract_callback );
 }
 
 void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index ) const {
@@ -272,7 +272,7 @@ void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const
     }
 
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, out_map );
-    extractArc( mInArchive, files_indices, extract_callback);
+    extractArc( mInArchive, files_indices, extract_callback );
 }
 
 void BitInputArchive::test() const {
