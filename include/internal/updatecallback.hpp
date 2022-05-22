@@ -47,7 +47,8 @@ namespace bit7z {
 
             ~UpdateCallback() override;
 
-            MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) // NOLINT(modernize-use-noexcept)
+            // NOLINTNEXTLINE(modernize-use-noexcept)
+            MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
             HRESULT Finalize() noexcept;
 

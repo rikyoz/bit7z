@@ -36,6 +36,7 @@ FSIndexer::FSIndexer( FSItem directory, tstring filter)
 }
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
+// NOLINTNEXTLINE(misc-no-recursion)
 void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                     bool recursive,
                                     const fs::path& prefix ) {

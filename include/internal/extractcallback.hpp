@@ -43,7 +43,8 @@ namespace bit7z {
 
             ~ExtractCallback() override = default;
 
-            MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) // NOLINT(modernize-use-noexcept)
+            // NOLINTNEXTLINE(modernize-use-noexcept)
+            MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 
             // IProgress from IArchiveExtractCallback
             BIT7Z_STDMETHOD( SetTotal, UInt64 size );

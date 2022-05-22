@@ -61,6 +61,7 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
     return result;
 #else
     std::wstring_convert<convert_type, wchar_t> converter;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     return converter.to_bytes( wideString, wideString + size );
 #endif
 }

@@ -166,7 +166,7 @@ namespace bit7z {
              * @param index  the index of the file to be extracted.
              */
             template< std::size_t N >
-            void extract( byte_t (&buffer)[ N ], uint32_t index = 0 ) const {
+            void extract( byte_t (&buffer)[ N ], uint32_t index = 0 ) const { // NOLINT(modernize-avoid-c-arrays)
                 extract( buffer, N, index );
             }
 
