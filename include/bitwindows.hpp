@@ -20,7 +20,15 @@
 #define BITWINDOWS_HPP
 
 #ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
 #include <Windows.h>
+#include <propidl.h>
 #else
 /* We don't have the "Windows.h" header on Unix systems, so in theory, we could use the "MyWindows.h" of p7zip.
  * However, some of bit7z's public API headers need some Win32 API structs like PROPVARIANT and GUID.
