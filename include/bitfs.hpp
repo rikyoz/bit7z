@@ -41,9 +41,9 @@ namespace ghc {
 
 namespace fs {
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-    using namespace std::filesystem;
+using namespace std::filesystem;
 #else
-    using namespace ghc::filesystem;
+using namespace ghc::filesystem;
 #endif
 }
 

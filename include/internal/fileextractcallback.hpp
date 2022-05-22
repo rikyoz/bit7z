@@ -26,40 +26,40 @@
 #include "internal/processeditem.hpp"
 
 namespace bit7z {
-    using std::wstring;
+using std::wstring;
 
-    class FileExtractCallback final : public ExtractCallback {
-        public:
-            FileExtractCallback( const BitInputArchive& inputArchive,
-                                 const tstring& directoryPath );
+class FileExtractCallback final : public ExtractCallback {
+    public:
+        FileExtractCallback( const BitInputArchive& inputArchive,
+                             const tstring& directoryPath );
 
-            FileExtractCallback( const FileExtractCallback& ) = delete;
+        FileExtractCallback( const FileExtractCallback& ) = delete;
 
-            FileExtractCallback( FileExtractCallback&& ) = delete;
+        FileExtractCallback( FileExtractCallback&& ) = delete;
 
-            FileExtractCallback& operator=( const FileExtractCallback& ) = delete;
+        FileExtractCallback& operator=( const FileExtractCallback& ) = delete;
 
-            FileExtractCallback& operator=( FileExtractCallback&& ) = delete;
+        FileExtractCallback& operator=( FileExtractCallback&& ) = delete;
 
-            ~FileExtractCallback() override = default;
+        ~FileExtractCallback() override = default;
 
-            void throwException( HRESULT error ) override;
+        void throwException( HRESULT error ) override;
 
-        private:
-            fs::path mInFilePath;     // Input file path
-            fs::path mDirectoryPath;  // Output directory
-            fs::path mFilePathOnDisk; // Full path to the file on disk
-            bool mRetainDirectories;
+    private:
+        fs::path mInFilePath;     // Input file path
+        fs::path mDirectoryPath;  // Output directory
+        fs::path mFilePathOnDisk; // Full path to the file on disk
+        bool mRetainDirectories;
 
-            ProcessedItem mCurrentItem;
+        ProcessedItem mCurrentItem;
 
-            CMyComPtr< CFileOutStream > mFileOutStream;
+        CMyComPtr< CFileOutStream > mFileOutStream;
 
-            void finishOperation() override;
+        void finishOperation() override;
 
-            void releaseStream() override;
+        void releaseStream() override;
 
-            HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
-    };
+        HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
+};
 }  // namespace bit7z
 #endif // FILEEXTRACTCALLBACK_HPP

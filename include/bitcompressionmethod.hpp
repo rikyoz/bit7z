@@ -20,18 +20,18 @@
 #define BITCOMPRESSIONMETHOD_HPP
 
 namespace bit7z {
-    /**
-     * @brief The BitCompressionMethod enum represents the compression methods used by 7z when creating archives.
-     */
-    enum struct BitCompressionMethod {
-        Copy,
-        Deflate,
-        Deflate64,
-        BZip2,
-        Lzma,
-        Lzma2,
-        Ppmd
-    };
+/**
+ * @brief The BitCompressionMethod enum represents the compression methods used by 7z when creating archives.
+ */
+enum struct BitCompressionMethod {
+    Copy,
+    Deflate,
+    Deflate64,
+    BZip2,
+    Lzma,
+    Lzma2,
+    Ppmd
+};
 }  // namespace bit7z
 
 #endif // BITCOMPRESSIONMETHOD_HPP

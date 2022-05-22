@@ -24,15 +24,15 @@
 #include "internal/fs.hpp"
 
 namespace bit7z {
-    class CFileInStream final : public CStdInStream {
-        public:
-            explicit CFileInStream( const fs::path& filePath );
+class CFileInStream final : public CStdInStream {
+    public:
+        explicit CFileInStream( const fs::path& filePath );
 
-            void open( const fs::path& filePath );
+        void open( const fs::path& filePath );
 
-        private:
-            fs::ifstream mFileStream;
-    };
+    private:
+        fs::ifstream mFileStream;
+};
 }  // namespace bit7z
 
 #endif // CFILEINSTREAM_HPP

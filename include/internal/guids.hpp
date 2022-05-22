@@ -22,36 +22,36 @@
 #include "internal/guiddef.hpp"
 
 namespace bit7z {
-    extern "C" {
+extern "C" {
 #ifndef _MSVC_VER
-        extern const GUID IID_IUnknown;
+extern const GUID IID_IUnknown;
 #endif
 
-        // IStream.h
-        extern const GUID IID_ISequentialInStream;
-        extern const GUID IID_ISequentialOutStream;
-        extern const GUID IID_IInStream;
-        extern const GUID IID_IOutStream;
-        extern const GUID IID_IStreamGetSize;
-        extern const GUID IID_IStreamGetProps;
-        extern const GUID IID_IStreamGetProps2;
+// IStream.h
+extern const GUID IID_ISequentialInStream;
+extern const GUID IID_ISequentialOutStream;
+extern const GUID IID_IInStream;
+extern const GUID IID_IOutStream;
+extern const GUID IID_IStreamGetSize;
+extern const GUID IID_IStreamGetProps;
+extern const GUID IID_IStreamGetProps2;
 
-        // ICoder.h
-        extern const GUID IID_ICompressProgressInfo;
+// ICoder.h
+extern const GUID IID_ICompressProgressInfo;
 
-        // IPassword.h
-        extern const GUID IID_ICryptoGetTextPassword;
-        extern const GUID IID_ICryptoGetTextPassword2;
+// IPassword.h
+extern const GUID IID_ICryptoGetTextPassword;
+extern const GUID IID_ICryptoGetTextPassword2;
 
-        // IArchive.h
-        extern const GUID IID_ISetProperties;
-        extern const GUID IID_IInArchive;
-        extern const GUID IID_IOutArchive;
-        extern const GUID IID_IArchiveExtractCallback;
-        extern const GUID IID_IArchiveOpenVolumeCallback;
-        extern const GUID IID_IArchiveOpenSetSubArchiveName;
-        extern const GUID IID_IArchiveUpdateCallback;
-        extern const GUID IID_IArchiveUpdateCallback2;
-    }
+// IArchive.h
+extern const GUID IID_ISetProperties;
+extern const GUID IID_IInArchive;
+extern const GUID IID_IOutArchive;
+extern const GUID IID_IArchiveExtractCallback;
+extern const GUID IID_IArchiveOpenVolumeCallback;
+extern const GUID IID_IArchiveOpenSetSubArchiveName;
+extern const GUID IID_IArchiveUpdateCallback;
+extern const GUID IID_IArchiveUpdateCallback2;
+}
 }  // namespace bit7z
 #endif // GUIDS_HPP

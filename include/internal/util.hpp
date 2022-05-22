@@ -60,19 +60,21 @@ namespace bit7z {
 #else
 #   define WIDEN( tstr ) bit7z::widen(tstr)
 #endif
-    std::string narrow( const wchar_t* wideString, size_t size );
-    std::wstring widen( const std::string& narrowString );
 
-    constexpr inline bool check_overflow( int64_t position, int64_t offset ) noexcept {
-        return ( offset > 0 && position > (std::numeric_limits< int64_t >::max)() - offset ) ||
-               ( offset < 0 && position < (std::numeric_limits< int64_t >::min)() - offset );
-    }
+std::string narrow( const wchar_t* wideString, size_t size );
 
-    template<typename T, typename I = T, class... Args>
-    inline CMyComPtr<std::enable_if_t<std::is_base_of<CMyUnknownImp, T>::value && std::is_base_of<I, T>::value, I>>
-    make_com( Args&&... args ) {
-        return CMyComPtr<I>(new T(std::forward<Args>(args)...));
-    }
+std::wstring widen( const std::string& narrowString );
+
+constexpr inline bool check_overflow( int64_t position, int64_t offset ) noexcept {
+    return ( offset > 0 && position > ( std::numeric_limits< int64_t >::max )() - offset ) ||
+           ( offset < 0 && position < ( std::numeric_limits< int64_t >::min )() - offset );
+}
+
+template< typename T, typename I = T, class... Args >
+inline CMyComPtr< std::enable_if_t< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value, I>>
+make_com( Args&& ... args ) {
+    return CMyComPtr< I >( new T( std::forward< Args >( args )... ) );
+}
 }  // namespace bit7z
 
 #endif //UTIL_HPP

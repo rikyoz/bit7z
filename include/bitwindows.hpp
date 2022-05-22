@@ -57,91 +57,91 @@ using std::size_t;
 #define WINAPI
 
 namespace bit7z {
-    // Win32 type aliases
-    using HMODULE = void*;
-    using HRESULT = int;
-    using OLECHAR = wchar_t;
-    using BSTR = OLECHAR*;
-    using VARIANT_BOOL = short;
-    using VARTYPE = unsigned short;
+// Win32 type aliases
+using HMODULE = void*;
+using HRESULT = int;
+using OLECHAR = wchar_t;
+using BSTR = OLECHAR*;
+using VARIANT_BOOL = short;
+using VARTYPE = unsigned short;
 
-    using WORD = unsigned short;
-    using DWORD = unsigned int;
+using WORD = unsigned short;
+using DWORD = unsigned int;
 
-    using ULONG = unsigned int;
-    using PROPID = ULONG;
+using ULONG = unsigned int;
+using PROPID = ULONG;
 
-    // Error codes constants can be useful for bit7z's clients on Unix (since they don't have the Windows.h header)
+// Error codes constants can be useful for bit7z's clients on Unix (since they don't have the Windows.h header)
 
 #ifndef S_OK // silencing cppcheck warning on E_NOTIMPL, probably a bug of cppcheck.
-    // Win32 HRESULT error codes
-    constexpr auto S_OK                  = static_cast< HRESULT >( 0x00000000L );
-    constexpr auto S_FALSE               = static_cast< HRESULT >( 0x00000001L );
-    constexpr auto E_NOTIMPL             = static_cast< HRESULT >( 0x80004001L );
-    constexpr auto E_NOINTERFACE         = static_cast< HRESULT >( 0x80004002L );
-    constexpr auto E_ABORT               = static_cast< HRESULT >( 0x80004004L );
-    constexpr auto E_FAIL                = static_cast< HRESULT >( 0x80004005L );
-    constexpr auto STG_E_INVALIDFUNCTION = static_cast< HRESULT >( 0x80030001L );
-    constexpr auto E_OUTOFMEMORY         = static_cast< HRESULT >( 0x8007000EL );
-    constexpr auto E_INVALIDARG          = static_cast< HRESULT >( 0x80070057L );
+// Win32 HRESULT error codes
+constexpr auto S_OK = static_cast< HRESULT >( 0x00000000L );
+constexpr auto S_FALSE = static_cast< HRESULT >( 0x00000001L );
+constexpr auto E_NOTIMPL = static_cast< HRESULT >( 0x80004001L );
+constexpr auto E_NOINTERFACE = static_cast< HRESULT >( 0x80004002L );
+constexpr auto E_ABORT = static_cast< HRESULT >( 0x80004004L );
+constexpr auto E_FAIL = static_cast< HRESULT >( 0x80004005L );
+constexpr auto STG_E_INVALIDFUNCTION = static_cast< HRESULT >( 0x80030001L );
+constexpr auto E_OUTOFMEMORY = static_cast< HRESULT >( 0x8007000EL );
+constexpr auto E_INVALIDARG = static_cast< HRESULT >( 0x80070057L );
 #endif
 
 #ifndef ERROR_ALREADY_EXISTS
-    // Win32 error codes (defined by both p7zip and 7-zip as equivalent to POSIX error codes)
-    constexpr auto ERROR_ALREADY_EXISTS    = EEXIST;
-    constexpr auto ERROR_DISK_FULL         = ENOSPC;
-    constexpr auto ERROR_FILE_EXISTS       = EEXIST;
-    constexpr auto ERROR_FILE_NOT_FOUND    = ENOENT;
-    constexpr auto ERROR_INVALID_PARAMETER = EINVAL;
-    constexpr auto ERROR_INVALID_FUNCTION  = EINVAL;
-    constexpr auto ERROR_INVALID_HANDLE    = EBADF;
-    constexpr auto ERROR_OPEN_FAILED       = EIO;
-    constexpr auto ERROR_PATH_NOT_FOUND    = ENOENT;
-    constexpr auto ERROR_SEEK              = EIO;
-    constexpr auto ERROR_READ_FAULT        = EIO;
-    constexpr auto ERROR_WRITE_FAULT       = EIO;
+// Win32 error codes (defined by both p7zip and 7-zip as equivalent to POSIX error codes)
+constexpr auto ERROR_ALREADY_EXISTS = EEXIST;
+constexpr auto ERROR_DISK_FULL = ENOSPC;
+constexpr auto ERROR_FILE_EXISTS = EEXIST;
+constexpr auto ERROR_FILE_NOT_FOUND = ENOENT;
+constexpr auto ERROR_INVALID_PARAMETER = EINVAL;
+constexpr auto ERROR_INVALID_FUNCTION = EINVAL;
+constexpr auto ERROR_INVALID_HANDLE = EBADF;
+constexpr auto ERROR_OPEN_FAILED = EIO;
+constexpr auto ERROR_PATH_NOT_FOUND = ENOENT;
+constexpr auto ERROR_SEEK = EIO;
+constexpr auto ERROR_READ_FAULT = EIO;
+constexpr auto ERROR_WRITE_FAULT = EIO;
 
-    // Win32 error codes (defined by p7zip with the same values as in Windows API)
-    constexpr auto ERROR_NO_MORE_FILES = 0x100018;
-    constexpr auto ERROR_DIRECTORY     = 267;
+// Win32 error codes (defined by p7zip with the same values as in Windows API)
+constexpr auto ERROR_NO_MORE_FILES = 0x100018;
+constexpr auto ERROR_DIRECTORY = 267;
 #endif
 
-    // Win32 structs
-    struct FILETIME {
-        DWORD dwLowDateTime;
-        DWORD dwHighDateTime;
-    };
+// Win32 structs
+struct FILETIME {
+    DWORD dwLowDateTime;
+    DWORD dwHighDateTime;
+};
 
-    struct LARGE_INTEGER {
-        int64_t QuadPart;
-    };
+struct LARGE_INTEGER {
+    int64_t QuadPart;
+};
 
-    struct ULARGE_INTEGER {
-        uint64_t QuadPart;
-    };
+struct ULARGE_INTEGER {
+    uint64_t QuadPart;
+};
 
-    struct PROPVARIANT {
-        VARTYPE vt;
-        WORD    wReserved1;
-        WORD    wReserved2;
-        WORD    wReserved3;
-        union {
-            char           cVal;
-            unsigned char  bVal;
-            short          iVal;
-            unsigned short uiVal;
-            int            lVal;
-            unsigned int   ulVal;
-            int            intVal;
-            unsigned int   uintVal;
-            LARGE_INTEGER  hVal;
-            ULARGE_INTEGER uhVal;
-            VARIANT_BOOL   boolVal;
-            int            scode;
-            FILETIME       filetime;
-            BSTR           bstrVal;
-        };
+struct PROPVARIANT {
+    VARTYPE vt;
+    WORD wReserved1;
+    WORD wReserved2;
+    WORD wReserved3;
+    union {
+        char cVal;
+        unsigned char bVal;
+        short iVal;
+        unsigned short uiVal;
+        int lVal;
+        unsigned int ulVal;
+        int intVal;
+        unsigned int uintVal;
+        LARGE_INTEGER hVal;
+        ULARGE_INTEGER uhVal;
+        VARIANT_BOOL boolVal;
+        int scode;
+        FILETIME filetime;
+        BSTR bstrVal;
     };
+};
 }  // namespace bit7z
 #endif
 

@@ -26,40 +26,40 @@
 #include "bitformat.hpp"
 
 namespace bit7z {
-    using std::ostream;
+using std::ostream;
 
-    /**
-     * @brief The BitAbstractArchiveOpener abstract class represents a generic archive opener.
-     */
-    class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
-        public:
-            BitAbstractArchiveOpener( const BitAbstractArchiveOpener& ) = delete;
+/**
+ * @brief The BitAbstractArchiveOpener abstract class represents a generic archive opener.
+ */
+class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
+    public:
+        BitAbstractArchiveOpener( const BitAbstractArchiveOpener& ) = delete;
 
-            BitAbstractArchiveOpener( BitAbstractArchiveOpener&& ) = delete;
+        BitAbstractArchiveOpener( BitAbstractArchiveOpener&& ) = delete;
 
-            BitAbstractArchiveOpener& operator=( const BitAbstractArchiveOpener& ) = delete;
+        BitAbstractArchiveOpener& operator=( const BitAbstractArchiveOpener& ) = delete;
 
-            BitAbstractArchiveOpener& operator=( BitAbstractArchiveOpener&& ) = delete;
+        BitAbstractArchiveOpener& operator=( BitAbstractArchiveOpener&& ) = delete;
 
-            /**
-             * @return the archive format used by the archive opener.
-             */
-            BIT7Z_NODISCARD const BitInFormat& format() const noexcept override;
+        /**
+         * @return the archive format used by the archive opener.
+         */
+        BIT7Z_NODISCARD const BitInFormat& format() const noexcept override;
 
-            /**
-             * @return the archive format used by the archive opener.
-             */
-            BIT7Z_NODISCARD const BitInFormat& extractionFormat() const noexcept;
+        /**
+         * @return the archive format used by the archive opener.
+         */
+        BIT7Z_NODISCARD const BitInFormat& extractionFormat() const noexcept;
 
-        protected:
-            const BitInFormat& mFormat;
+    protected:
+        const BitInFormat& mFormat;
 
-            BitAbstractArchiveOpener( const Bit7zLibrary& lib,
-                                      const BitInFormat& format,
-                                      const tstring& password = {} );
+        BitAbstractArchiveOpener( const Bit7zLibrary& lib,
+                                  const BitInFormat& format,
+                                  const tstring& password = {} );
 
-            ~BitAbstractArchiveOpener() override = default;
-    };
+        ~BitAbstractArchiveOpener() override = default;
+};
 }  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEOPENER_HPP

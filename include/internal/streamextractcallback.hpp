@@ -25,31 +25,31 @@
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {
-    using std::ostream;
+using std::ostream;
 
-    class StreamExtractCallback final : public ExtractCallback {
-        public:
-            StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream );
+class StreamExtractCallback final : public ExtractCallback {
+    public:
+        StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream );
 
-            StreamExtractCallback( const StreamExtractCallback& ) = delete;
+        StreamExtractCallback( const StreamExtractCallback& ) = delete;
 
-            StreamExtractCallback( StreamExtractCallback&& ) = delete;
+        StreamExtractCallback( StreamExtractCallback&& ) = delete;
 
-            StreamExtractCallback& operator=( const StreamExtractCallback& ) = delete;
+        StreamExtractCallback& operator=( const StreamExtractCallback& ) = delete;
 
-            StreamExtractCallback& operator=( StreamExtractCallback&& ) = delete;
+        StreamExtractCallback& operator=( StreamExtractCallback&& ) = delete;
 
-            ~StreamExtractCallback() override = default;
+        ~StreamExtractCallback() override = default;
 
-            void throwException( HRESULT error ) override;
+        void throwException( HRESULT error ) override;
 
-        private:
-            ostream& mOutputStream;
-            CMyComPtr< IOutStream > mStdOutStream;
+    private:
+        ostream& mOutputStream;
+        CMyComPtr< IOutStream > mStdOutStream;
 
-            void releaseStream() override;
+        void releaseStream() override;
 
-            HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
-    };
+        HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
+};
 }  // namespace bit7z
 #endif // STREAMEXTRACTCALLBACK_HPP

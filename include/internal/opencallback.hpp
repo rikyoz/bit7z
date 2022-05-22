@@ -29,48 +29,50 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
-    using filesystem::FSItem;
+using filesystem::FSItem;
 
-    class OpenCallback final : public IArchiveOpenCallback,
-                               public IArchiveOpenVolumeCallback,
-                               public IArchiveOpenSetSubArchiveName,
-                               public ICryptoGetTextPassword,
-                               public Callback {
-        public:
-            explicit OpenCallback( const BitAbstractArchiveHandler& handler, const tstring& filename = BIT7Z_STRING( "." ) );
+class OpenCallback final : public IArchiveOpenCallback,
+                           public IArchiveOpenVolumeCallback,
+                           public IArchiveOpenSetSubArchiveName,
+                           public ICryptoGetTextPassword,
+                           public Callback {
+    public:
+        explicit OpenCallback( const BitAbstractArchiveHandler& handler,
+                               const tstring& filename = BIT7Z_STRING( "." ) );
 
-            OpenCallback( const OpenCallback& ) = delete;
+        OpenCallback( const OpenCallback& ) = delete;
 
-            OpenCallback( OpenCallback&& ) = delete;
+        OpenCallback( OpenCallback&& ) = delete;
 
-            OpenCallback& operator=( const OpenCallback& ) = delete;
+        OpenCallback& operator=( const OpenCallback& ) = delete;
 
-            OpenCallback& operator=( OpenCallback&& ) = delete;
+        OpenCallback& operator=( OpenCallback&& ) = delete;
 
-            ~OpenCallback() override = default;
+        ~OpenCallback() override = default;
 
-            MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword ) // NOLINT(modernize-use-noexcept)
+        // NOLINTNEXTLINE(modernize-use-noexcept)
+        MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword )
 
-            //IArchiveOpenCallback
-            BIT7Z_STDMETHOD_NOEXCEPT( SetTotal, const UInt64* files, const UInt64* bytes );
+        //IArchiveOpenCallback
+        BIT7Z_STDMETHOD_NOEXCEPT( SetTotal, const UInt64* files, const UInt64* bytes );
 
-            BIT7Z_STDMETHOD_NOEXCEPT( SetCompleted, const UInt64* files, const UInt64* bytes );
+        BIT7Z_STDMETHOD_NOEXCEPT( SetCompleted, const UInt64* files, const UInt64* bytes );
 
-            //IArchiveOpenVolumeCallback
-            BIT7Z_STDMETHOD( GetProperty, PROPID propID, PROPVARIANT* value );
+        //IArchiveOpenVolumeCallback
+        BIT7Z_STDMETHOD( GetProperty, PROPID propID, PROPVARIANT* value );
 
-            BIT7Z_STDMETHOD( GetStream, const wchar_t* name, IInStream** inStream );
+        BIT7Z_STDMETHOD( GetStream, const wchar_t* name, IInStream** inStream );
 
-            //IArchiveOpenSetSubArchiveName
-            BIT7Z_STDMETHOD( SetSubArchiveName, const wchar_t* name );
+        //IArchiveOpenSetSubArchiveName
+        BIT7Z_STDMETHOD( SetSubArchiveName, const wchar_t* name );
 
-            //ICryptoGetTextPassword
-            BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* password );
+        //ICryptoGetTextPassword
+        BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* password );
 
-        private:
-            bool mSubArchiveMode;
-            std::wstring mSubArchiveName;
-            FSItem mFileItem;
-    };
+    private:
+        bool mSubArchiveMode;
+        std::wstring mSubArchiveName;
+        FSItem mFileItem;
+};
 }  // namespace bit7z
 #endif // OPENCALLBACK_HPP

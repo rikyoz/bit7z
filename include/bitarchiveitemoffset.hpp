@@ -22,39 +22,39 @@
 #include "bitarchiveitem.hpp"
 
 namespace bit7z {
-    class BitInputArchive;
+class BitInputArchive;
 
-    /**
-     * @brief The BitArchiveItemOffset class represents an archived item but doesn't store its properties.
-     */
-    class BitArchiveItemOffset final : public BitArchiveItem {
-        public:
-            BitArchiveItemOffset& operator++() noexcept;
+/**
+ * @brief The BitArchiveItemOffset class represents an archived item but doesn't store its properties.
+ */
+class BitArchiveItemOffset final : public BitArchiveItem {
+    public:
+        BitArchiveItemOffset& operator++() noexcept;
 
-            BitArchiveItemOffset operator++( int ) noexcept;
+        BitArchiveItemOffset operator++( int ) noexcept;
 
-            bool operator==( const BitArchiveItemOffset& other ) const noexcept;
+        bool operator==( const BitArchiveItemOffset& other ) const noexcept;
 
-            bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
+        bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
 
-            /**
-             * @brief Gets the specified item property.
-             *
-             * @param property  the property to be retrieved.
-             *
-             * @return the value of the item property, if available, or an empty BitPropVariant.
-             */
-            BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
+        /**
+         * @brief Gets the specified item property.
+         *
+         * @param property  the property to be retrieved.
+         *
+         * @return the value of the item property, if available, or an empty BitPropVariant.
+         */
+        BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
 
-        private:
-            /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,
-             * to be CopyConstructible so that stl algorithms can be used with const_iterator! */
-            const BitInputArchive* mArc;
+    private:
+        /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,
+         * to be CopyConstructible so that stl algorithms can be used with const_iterator! */
+        const BitInputArchive* mArc;
 
-            BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
+        BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
 
-            friend class BitInputArchive;
-    };
+        friend class BitInputArchive;
+};
 }  // namespace bit7z
 
 #endif // BITARCHIVEITEMOFFSET_HPP

@@ -22,32 +22,32 @@
 #include "internal/cfileoutstream.hpp"
 
 namespace bit7z {
-    class CVolumeOutStream final : public CFileOutStream {
-        public:
-            explicit CVolumeOutStream( const tstring& volumeName );
+class CVolumeOutStream final : public CFileOutStream {
+    public:
+        explicit CVolumeOutStream( const tstring& volumeName );
 
-            BIT7Z_NODISCARD fs::path path() const;
+        BIT7Z_NODISCARD fs::path path() const;
 
-            BIT7Z_NODISCARD uint64_t currentOffset() const;
+        BIT7Z_NODISCARD uint64_t currentOffset() const;
 
-            BIT7Z_NODISCARD uint64_t currentSize() const;
+        BIT7Z_NODISCARD uint64_t currentSize() const;
 
-            void setCurrentSize( uint64_t currentSize );
+        void setCurrentSize( uint64_t currentSize );
 
-            // IOutStream
-            BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
+        // IOutStream
+        BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
 
-            BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-            BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+        BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 
-        private:
-            fs::path mPath;
+    private:
+        fs::path mPath;
 
-            uint64_t mCurrentOffset;
+        uint64_t mCurrentOffset;
 
-            uint64_t mCurrentSize;
-    };
+        uint64_t mCurrentSize;
+};
 }  // namespace bit7z
 
 #endif //CVOLUMEOUTSTREAM_HPP

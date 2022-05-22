@@ -27,33 +27,33 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
-    using std::vector;
+using std::vector;
 
-    class CBufferInStream final : public IInStream, public CMyUnknownImp {
-        public:
-            explicit CBufferInStream( const vector< byte_t >& in_buffer );
+class CBufferInStream final : public IInStream, public CMyUnknownImp {
+    public:
+        explicit CBufferInStream( const vector< byte_t >& in_buffer );
 
-            CBufferInStream( const CBufferInStream& ) = delete;
+        CBufferInStream( const CBufferInStream& ) = delete;
 
-            CBufferInStream( CBufferInStream&& ) = delete;
+        CBufferInStream( CBufferInStream&& ) = delete;
 
-            CBufferInStream& operator=( const CBufferInStream& ) = delete;
+        CBufferInStream& operator=( const CBufferInStream& ) = delete;
 
-            CBufferInStream& operator=( CBufferInStream&& ) = delete;
+        CBufferInStream& operator=( CBufferInStream&& ) = delete;
 
-            MY_UNKNOWN_DESTRUCTOR( ~CBufferInStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CBufferInStream() ) = default;
 
-            MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
+        MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
 
-            // IInStream
-            BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
+        // IInStream
+        BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
 
-            BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-        private:
-            const buffer_t& mBuffer;
-            buffer_t::const_iterator mCurrentPosition;
-    };
+    private:
+        const buffer_t& mBuffer;
+        buffer_t::const_iterator mCurrentPosition;
+};
 }  // namespace bit7z
 
 #endif // CBUFFERINSTREAM_HPP

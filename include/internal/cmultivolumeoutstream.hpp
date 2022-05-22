@@ -34,51 +34,51 @@ using std::vector;
 using std::wstring;
 
 namespace bit7z {
-    class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
-            // Size of a single volume.
-            uint64_t mMaxVolumeSize;
+class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
+        // Size of a single volume.
+        uint64_t mMaxVolumeSize;
 
-            // Common name prefix of every volume.
-            tstring mVolumePrefix;
+        // Common name prefix of every volume.
+        tstring mVolumePrefix;
 
-            // The current volume stream on which we are working.
-            size_t mCurrentVolumeIndex;
+        // The current volume stream on which we are working.
+        size_t mCurrentVolumeIndex;
 
-            // Offset from the beginning of the current volume stream (i.e., the one at mCurrentVolumeIndex).
-            uint64_t mCurrentVolumeOffset;
+        // Offset from the beginning of the current volume stream (i.e., the one at mCurrentVolumeIndex).
+        uint64_t mCurrentVolumeOffset;
 
-            // Offset from the beginning of the full output archive.
-            uint64_t mAbsoluteOffset;
+        // Offset from the beginning of the full output archive.
+        uint64_t mAbsoluteOffset;
 
-            // Total size of the output archive (sum of the volumes' sizes).
-            uint64_t mFullSize;
+        // Total size of the output archive (sum of the volumes' sizes).
+        uint64_t mFullSize;
 
-            vector< CMyComPtr< CVolumeOutStream > > mVolumes;
+        vector <CMyComPtr< CVolumeOutStream >> mVolumes;
 
-        public:
-            CMultiVolumeOutStream( uint64_t volSize, const tstring& archiveName );
+    public:
+        CMultiVolumeOutStream( uint64_t volSize, const tstring& archiveName );
 
-            CMultiVolumeOutStream( const CMultiVolumeOutStream& ) = delete;
+        CMultiVolumeOutStream( const CMultiVolumeOutStream& ) = delete;
 
-            CMultiVolumeOutStream( CMultiVolumeOutStream&& ) = delete;
+        CMultiVolumeOutStream( CMultiVolumeOutStream&& ) = delete;
 
-            CMultiVolumeOutStream& operator=( const CMultiVolumeOutStream& ) = delete;
+        CMultiVolumeOutStream& operator=( const CMultiVolumeOutStream& ) = delete;
 
-            CMultiVolumeOutStream& operator=( CMultiVolumeOutStream&& ) = delete;
+        CMultiVolumeOutStream& operator=( CMultiVolumeOutStream&& ) = delete;
 
-            MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeOutStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeOutStream() ) = default;
 
-            BIT7Z_NODISCARD UInt64 GetSize() const noexcept;
+        BIT7Z_NODISCARD UInt64 GetSize() const noexcept;
 
-            MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
+        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
-            // IOutStream
-            BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
+        // IOutStream
+        BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
 
-            BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-            BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
-    };
+        BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+};
 }  // namespace bit7z
 
 #endif // COUTMULTIVOLUMESTREAM_HPP

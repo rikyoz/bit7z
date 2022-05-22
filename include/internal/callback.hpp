@@ -27,28 +27,28 @@
 #include <Common/MyCom.h>
 
 constexpr auto kPasswordNotDefined = "Password is not defined";
-constexpr auto kEmptyFileAlias     = BIT7Z_STRING( "[Content]");
+constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 
 namespace bit7z {
-    class Callback : protected CMyUnknownImp {
-        public:
-            Callback( const Callback& ) = delete;
+class Callback : protected CMyUnknownImp {
+    public:
+        Callback( const Callback& ) = delete;
 
-            Callback( Callback&& ) = delete;
+        Callback( Callback&& ) = delete;
 
-            Callback& operator=( const Callback& ) = delete;
+        Callback& operator=( const Callback& ) = delete;
 
-            Callback& operator=( Callback&& ) = delete;
+        Callback& operator=( Callback&& ) = delete;
 
-            virtual ~Callback() = default;
+        virtual ~Callback() = default;
 
-            virtual void throwException( HRESULT error );
+        virtual void throwException( HRESULT error );
 
-        protected:
-            explicit Callback( const BitAbstractArchiveHandler& handler ); // Abstract class
+    protected:
+        explicit Callback( const BitAbstractArchiveHandler& handler ); // Abstract class
 
-            const BitAbstractArchiveHandler& mHandler;
-            const char* mErrorMessage;
-    };
+        const BitAbstractArchiveHandler& mHandler;
+        const char* mErrorMessage;
+};
 }  // namespace bit7z
 #endif // CALLBACK_HPP

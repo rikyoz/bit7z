@@ -29,32 +29,32 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
-    using std::istream;
+using std::istream;
 
-    class CStdInStream : public IInStream, public CMyUnknownImp {
-        public:
-            explicit CStdInStream( istream& inputStream );
+class CStdInStream : public IInStream, public CMyUnknownImp {
+    public:
+        explicit CStdInStream( istream& inputStream );
 
-            CStdInStream( const CStdInStream& ) = delete;
+        CStdInStream( const CStdInStream& ) = delete;
 
-            CStdInStream( CStdInStream&& ) = delete;
+        CStdInStream( CStdInStream&& ) = delete;
 
-            CStdInStream& operator=( const CStdInStream& ) = delete;
+        CStdInStream& operator=( const CStdInStream& ) = delete;
 
-            CStdInStream& operator=( CStdInStream&& ) = delete;
+        CStdInStream& operator=( CStdInStream&& ) = delete;
 
-            MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdInStream() ) = default;
+        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdInStream() ) = default;
 
-            MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
+        MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
 
-            // IInStream
-            BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
+        // IInStream
+        BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
 
-            BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-        private:
-            istream& mInputStream;
-    };
+    private:
+        istream& mInputStream;
+};
 }  // namespace bit7z
 
 #endif // CSTDINSTREAM_HPP

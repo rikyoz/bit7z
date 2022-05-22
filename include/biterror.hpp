@@ -24,37 +24,37 @@
 #include "bitdefines.hpp"
 
 namespace bit7z {
-    /**
-     * @brief The BitError enum struct values represent bit7z specific errors.
-     */
-    enum struct BitError {
-        Fail = 1,
-        FilterNotSpecified,
-        FormatFeatureNotSupported,
-        IndicesNotSpecified,
-        InvalidArchivePath,
-        InvalidOutputBufferSize,
-        InvalidCompressionMethod,
-        InvalidDictionarySize,
-        InvalidIndex,
-        InvalidWordSize,
-        ItemIsAFolder,
-        ItemMarkedAsDeleted,
-        NoMatchingExtension,
-        NoMatchingItems,
-        NoMatchingSignature,
-        NonEmptyOutputBuffer,
-        RequestedWrongVariantType,
-        UnsupportedOperation,
-        WrongUpdateMode
-    };
+/**
+ * @brief The BitError enum struct values represent bit7z specific errors.
+ */
+enum struct BitError {
+    Fail = 1,
+    FilterNotSpecified,
+    FormatFeatureNotSupported,
+    IndicesNotSpecified,
+    InvalidArchivePath,
+    InvalidOutputBufferSize,
+    InvalidCompressionMethod,
+    InvalidDictionarySize,
+    InvalidIndex,
+    InvalidWordSize,
+    ItemIsAFolder,
+    ItemMarkedAsDeleted,
+    NoMatchingExtension,
+    NoMatchingItems,
+    NoMatchingSignature,
+    NonEmptyOutputBuffer,
+    RequestedWrongVariantType,
+    UnsupportedOperation,
+    WrongUpdateMode
+};
 
-    std::error_code make_error_code( const BitError& e );
+std::error_code make_error_code( const BitError& e );
 }  // namespace bit7z
 
 namespace std {
-    template<>
-    struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public true_type {};
+template<>
+struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public true_type {};
 }
 
 

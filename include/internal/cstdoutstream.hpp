@@ -29,34 +29,34 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
-    using std::ostream;
+using std::ostream;
 
-    class CStdOutStream : public IOutStream, public CMyUnknownImp {
-        public:
-            explicit CStdOutStream( std::ostream& outputStream );
+class CStdOutStream : public IOutStream, public CMyUnknownImp {
+    public:
+        explicit CStdOutStream( std::ostream& outputStream );
 
-            CStdOutStream( const CStdOutStream& ) = delete;
+        CStdOutStream( const CStdOutStream& ) = delete;
 
-            CStdOutStream( CStdOutStream&& ) = delete;
+        CStdOutStream( CStdOutStream&& ) = delete;
 
-            CStdOutStream& operator=( const CStdOutStream& ) = delete;
+        CStdOutStream& operator=( const CStdOutStream& ) = delete;
 
-            CStdOutStream& operator=( CStdOutStream&& ) = delete;
+        CStdOutStream& operator=( CStdOutStream&& ) = delete;
 
-            MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdOutStream() ) = default;
+        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdOutStream() ) = default;
 
-            MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
+        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
-            // IOutStream
-            BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
+        // IOutStream
+        BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
 
-            BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-            BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+        BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 
-        private:
-            ostream& mOutputStream;
-    };
+    private:
+        ostream& mOutputStream;
+};
 }  // namespace bit7z
 
 #endif // CSTDOUTSTREAM_HPP

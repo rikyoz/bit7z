@@ -24,15 +24,15 @@
 #include "internal/fs.hpp"
 
 namespace bit7z {
-    class CFileOutStream : public CStdOutStream {
-        public:
-            explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
+class CFileOutStream : public CStdOutStream {
+    public:
+        explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
 
-            BIT7Z_NODISCARD bool fail();
+        BIT7Z_NODISCARD bool fail();
 
-        private:
-            fs::ofstream mFileStream;
-    };
+    private:
+        fs::ofstream mFileStream;
+};
 }  // namespace bit7z
 
 #endif // CFILEOUTSTREAM_HPP

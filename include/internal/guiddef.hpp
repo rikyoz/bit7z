@@ -35,9 +35,9 @@
 #include "internal/windows.hpp"
 
 struct GUID {
-    UInt32        Data1;
-    UInt16        Data2;
-    UInt16        Data3;
+    UInt32 Data1;
+    UInt16 Data2;
+    UInt16 Data3;
     unsigned char Data4[8];
 };
 
@@ -74,12 +74,12 @@ struct IUnknown {
 #endif
 
 namespace bit7z {
-    /**
-     * @return the GUID that identifies the file format in the 7z SDK.
-     */
-    inline GUID formatGUID( const BitInFormat& format ) {
-        return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, format.value(), 0x00, 0x00 } }; // NOLINT
-    }
+/**
+ * @return the GUID that identifies the file format in the 7z SDK.
+ */
+inline GUID formatGUID( const BitInFormat& format ) {
+    return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, format.value(), 0x00, 0x00 } }; // NOLINT
 }
+} // namespace bit7z
 
 #endif //GUIDDEF_HPP

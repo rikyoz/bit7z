@@ -26,11 +26,11 @@
 #include <fstream>
 
 namespace fs {
-    using namespace std::filesystem;
-    using ifstream = std::ifstream;
-    using ofstream = std::ofstream;
-    using fstream = std::fstream;
-}
+using namespace std::filesystem;
+using ifstream = std::ifstream;
+using ofstream = std::ofstream;
+using fstream = std::fstream;
+} // namespace fs
 #else
 #define GHC_WIN_WSTRING_STRING_TYPE
 #include <ghc/filesystem.hpp>
@@ -40,7 +40,7 @@ namespace fs {
     using ifstream = ghc::filesystem::ifstream;
     using ofstream = ghc::filesystem::ofstream;
     using fstream = ghc::filesystem::fstream;
-}
+} // namespace fs
 #endif
 
 #endif // FS_HPP

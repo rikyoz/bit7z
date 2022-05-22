@@ -23,28 +23,28 @@
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {
-    class FixedBufferExtractCallback final : public ExtractCallback {
-        public:
-            FixedBufferExtractCallback( const BitInputArchive& inputArchive, byte_t* buffer, size_t size );
+class FixedBufferExtractCallback final : public ExtractCallback {
+    public:
+        FixedBufferExtractCallback( const BitInputArchive& inputArchive, byte_t* buffer, size_t size );
 
-            FixedBufferExtractCallback( const FixedBufferExtractCallback& ) = delete;
+        FixedBufferExtractCallback( const FixedBufferExtractCallback& ) = delete;
 
-            FixedBufferExtractCallback( FixedBufferExtractCallback&& ) = delete;
+        FixedBufferExtractCallback( FixedBufferExtractCallback&& ) = delete;
 
-            FixedBufferExtractCallback& operator=( const FixedBufferExtractCallback& ) = delete;
+        FixedBufferExtractCallback& operator=( const FixedBufferExtractCallback& ) = delete;
 
-            FixedBufferExtractCallback& operator=( FixedBufferExtractCallback&& ) = delete;
+        FixedBufferExtractCallback& operator=( FixedBufferExtractCallback&& ) = delete;
 
-            ~FixedBufferExtractCallback() override = default;
+        ~FixedBufferExtractCallback() override = default;
 
-        private:
-            byte_t* mBuffer;
-            size_t mSize;
-            CMyComPtr< ISequentialOutStream > mOutMemStream;
+    private:
+        byte_t* mBuffer;
+        size_t mSize;
+        CMyComPtr< ISequentialOutStream > mOutMemStream;
 
-            void releaseStream() override;
+        void releaseStream() override;
 
-            HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
-    };
+        HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
+};
 }  // namespace bit7z
 #endif // FIXEDBUFFEREXTRACTCALLBACK_HPP

@@ -28,14 +28,16 @@
 
 namespace bit7z {
 #ifndef _WIN32
-    fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime );
 
-    FILETIME time_to_FILETIME( const std::time_t& time );
+fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime );
+
+FILETIME time_to_FILETIME( const std::time_t& time );
+
 #endif
 
-    time_type FILETIME_to_time_type( const FILETIME& fileTime );
+time_type FILETIME_to_time_type( const FILETIME& fileTime );
 
-    FILETIME currentFileTime();
+FILETIME currentFileTime();
 }  // namespace bit7z
 
 #endif //DATEUTIL_HPP

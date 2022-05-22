@@ -25,31 +25,31 @@
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {
-    using std::vector;
-    using std::map;
+using std::vector;
+using std::map;
 
-    class BufferExtractCallback final : public ExtractCallback {
-        public:
-            BufferExtractCallback( const BitInputArchive& inputArchive,
-                                   map< tstring, vector< byte_t > >& buffersMap );
+class BufferExtractCallback final : public ExtractCallback {
+    public:
+        BufferExtractCallback( const BitInputArchive& inputArchive,
+                               map< tstring, vector< byte_t > >& buffersMap );
 
-            BufferExtractCallback( const BufferExtractCallback& ) = delete;
+        BufferExtractCallback( const BufferExtractCallback& ) = delete;
 
-            BufferExtractCallback( BufferExtractCallback&& ) = delete;
+        BufferExtractCallback( BufferExtractCallback&& ) = delete;
 
-            BufferExtractCallback& operator=( const BufferExtractCallback& ) = delete;
+        BufferExtractCallback& operator=( const BufferExtractCallback& ) = delete;
 
-            BufferExtractCallback& operator=( BufferExtractCallback&& ) = delete;
+        BufferExtractCallback& operator=( BufferExtractCallback&& ) = delete;
 
-            ~BufferExtractCallback() override = default;
+        ~BufferExtractCallback() override = default;
 
-        private:
-            map< tstring, vector< byte_t > >& mBuffersMap;
-            CMyComPtr< ISequentialOutStream > mOutMemStream;
+    private:
+        map< tstring, vector< byte_t > >& mBuffersMap;
+        CMyComPtr< ISequentialOutStream > mOutMemStream;
 
-            void releaseStream() override;
+        void releaseStream() override;
 
-            HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
-    };
+        HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream, int32_t askExtractMode ) override;
+};
 }  // namespace bit7z
 #endif // BUFFEREXTRACTCALLBACK_HPP

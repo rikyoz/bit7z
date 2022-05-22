@@ -72,14 +72,14 @@ BitPropVariantType lookupType( VARTYPE type ) {
 }
 
 namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
-    /* Needed for comparing FILETIME objects in BitPropVariant */
-    inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
+/* Needed for comparing FILETIME objects in BitPropVariant */
+inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
 #ifdef _WIN32
-        return CompareFileTime( &ft1, &ft2 ) == 0;
+    return CompareFileTime( &ft1, &ft2 ) == 0;
 #else
-        return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
+    return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
 #endif
-    }
+}
 }
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {

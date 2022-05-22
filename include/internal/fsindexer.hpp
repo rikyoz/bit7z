@@ -26,22 +26,22 @@
 #include "internal/fsitem.hpp"
 
 namespace bit7z {
-    namespace filesystem {
-        using std::vector;
-        using std::unique_ptr;
+namespace filesystem {
+using std::vector;
+using std::unique_ptr;
 
-        class FSIndexer final {
-            public:
-                explicit FSIndexer( FSItem directory, tstring filter = {} );
+class FSIndexer final {
+    public:
+        explicit FSIndexer( FSItem directory, tstring filter = {} );
 
-                void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
-                                         bool recursive,
-                                         const fs::path& prefix = fs::path() );
+        void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
+                                 bool recursive,
+                                 const fs::path& prefix = fs::path() );
 
-            private:
-                FSItem mDirItem;
-                tstring mFilter;
-        };
-    }  // namespace filesystem
+    private:
+        FSItem mDirItem;
+        tstring mFilter;
+};
+}  // namespace filesystem
 }  // namespace bit7z
 #endif // FSINDEXER_HPP

@@ -23,11 +23,11 @@
 #include "internal/util.hpp"
 
 namespace bit7z {
-    HRESULT seek( const buffer_t& buffer,
-                  buffer_t::const_iterator current_position,
-                  int64_t offset,
-                  uint32_t seek_origin,
-                  int64_t& new_position );
+HRESULT seek( const buffer_t& buffer,
+              buffer_t::const_iterator current_position,
+              int64_t offset,
+              uint32_t seek_origin,
+              int64_t& new_position );
 }
 
 #endif //BUFFERUTIL_HPP

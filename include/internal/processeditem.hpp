@@ -24,37 +24,37 @@
 #include "internal/windows.hpp"
 
 namespace bit7z {
-    class ProcessedItem final {
-        public:
-            ProcessedItem();
+class ProcessedItem final {
+    public:
+        ProcessedItem();
 
-            void loadItemInfo( const BitInputArchive& input_archive, std::uint32_t item_index );
+        void loadItemInfo( const BitInputArchive& input_archive, std::uint32_t item_index );
 
-            BIT7Z_NODISCARD fs::path path() const ;
+        BIT7Z_NODISCARD fs::path path() const;
 
-            BIT7Z_NODISCARD uint32_t attributes() const;
+        BIT7Z_NODISCARD uint32_t attributes() const;
 
-            BIT7Z_NODISCARD bool areAttributesDefined() const;
+        BIT7Z_NODISCARD bool areAttributesDefined() const;
 
-            BIT7Z_NODISCARD FILETIME modifiedTime() const;
+        BIT7Z_NODISCARD FILETIME modifiedTime() const;
 
-            BIT7Z_NODISCARD bool isModifiedTimeDefined() const;
+        BIT7Z_NODISCARD bool isModifiedTimeDefined() const;
 
-        private:
-            fs::path mFilePath;
+    private:
+        fs::path mFilePath;
 
-            FILETIME mModifiedTime;
-            bool mIsModifiedTimeDefined;
+        FILETIME mModifiedTime;
+        bool mIsModifiedTimeDefined;
 
-            uint32_t mAttributes;
-            bool mAreAttributesDefined;
+        uint32_t mAttributes;
+        bool mAreAttributesDefined;
 
-            void loadFilePath( const BitInputArchive& input_archive, uint32_t item_index );
+        void loadFilePath( const BitInputArchive& input_archive, uint32_t item_index );
 
-            void loadAttributes( const BitInputArchive& input_archive, uint32_t item_index );
+        void loadAttributes( const BitInputArchive& input_archive, uint32_t item_index );
 
-            void loadModifiedTime( const BitInputArchive& input_archive, uint32_t item_index );
-    };
+        void loadModifiedTime( const BitInputArchive& input_archive, uint32_t item_index );
+};
 }  // namespace bit7z
 
 #endif //PROCESSEDITEM_HPP
