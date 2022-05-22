@@ -126,16 +126,16 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )
-    : mArchiveHandler{ handler } {
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+      mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
-    mDetectedFormat = &handler.format(); //if auto, detect the format from content, otherwise try passed format.
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream )
-    : mArchiveHandler{ handler } {
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+      mArchiveHandler{ handler } {
     auto std_stream = bit7z::make_com< CStdInStream, IInStream >( in_stream );
-    mDetectedFormat = &handler.format(); //if auto, detect the format from content, otherwise try passed format.
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), std_stream );
 }
 
