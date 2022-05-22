@@ -72,7 +72,7 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
     if ( propID == kpidIsAnti ) {
         prop = false;
     } else {
-        prop = mOutputArchive.outputItemProperty( index, static_cast< BitProperty >( propID ));
+        prop = mOutputArchive.outputItemProperty( index, static_cast< BitProperty >( propID ) );
     }
     *value = prop;
     prop.bstrVal = nullptr;

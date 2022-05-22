@@ -35,23 +35,23 @@
 #ifdef _WIN32
 #define MY_UNKNOWN_DESTRUCTOR(x) x
 #else
-#define MY_UNKNOWN_DESTRUCTOR(x) x override
+#define MY_UNKNOWN_DESTRUCTOR( x ) x override
 #endif
 
 // Some stream classes are non-final (e.g., CStdOutStream), so on Windows they must have a virtual destructor
 #ifdef _WIN32
 #define MY_UNKNOWN_VIRTUAL_DESTRUCTOR(x) virtual x
 #else
-#define MY_UNKNOWN_VIRTUAL_DESTRUCTOR(x) MY_UNKNOWN_DESTRUCTOR(x)
+#define MY_UNKNOWN_VIRTUAL_DESTRUCTOR( x ) MY_UNKNOWN_DESTRUCTOR(x)
 #endif
 
 #ifndef _WIN32
 #define COM_DECLSPEC_NOTHROW
 #endif
 
-#define MY_STDMETHOD(method, ...) HRESULT STDMETHODCALLTYPE method ( __VA_ARGS__ )
-#define BIT7Z_STDMETHOD(method, ...) COM_DECLSPEC_NOTHROW MY_STDMETHOD(method, __VA_ARGS__) override
-#define BIT7Z_STDMETHOD_NOEXCEPT(method, ...) MY_STDMETHOD(method, __VA_ARGS__) noexcept override
+#define MY_STDMETHOD( method, ... ) HRESULT STDMETHODCALLTYPE method ( __VA_ARGS__ )
+#define BIT7Z_STDMETHOD( method, ... ) COM_DECLSPEC_NOTHROW MY_STDMETHOD(method, __VA_ARGS__) override
+#define BIT7Z_STDMETHOD_NOEXCEPT( method, ... ) MY_STDMETHOD(method, __VA_ARGS__) noexcept override
 
 namespace bit7z {
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)

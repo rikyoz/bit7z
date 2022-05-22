@@ -27,17 +27,17 @@
 using bit7z::FixedBufferExtractCallback;
 using bit7z::byte_t;
 
-FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive &inputArchive,
-                                                        byte_t *buffer,
+FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive& inputArchive,
+                                                        byte_t* buffer,
                                                         size_t size )
-        : ExtractCallback( inputArchive ), mBuffer( buffer ), mSize( size ) {}
+    : ExtractCallback( inputArchive ), mBuffer( buffer ), mSize( size ) {}
 
 void FixedBufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
 HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index,
-                                                  ISequentialOutStream **outStream,
+                                                  ISequentialOutStream** outStream,
                                                   int32_t askExtractMode ) {
     using namespace NArchive::NExtract;
     if ( askExtractMode != NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {

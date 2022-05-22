@@ -66,18 +66,18 @@ std::string hresult_category_t::message( int ev ) const {
             return "Unable to perform requested operation.";
         case E_OUTOFMEMORY:
             return "Not enough memory resources are available to complete this operation.";
-        /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY and ERROR_NO_MORE_FILES
-         *       so we need to handle also these cases here. */
         case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
+            /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY and ERROR_NO_MORE_FILES
+             *       so we need to handle also these cases here. */
             return "The directory name is invalid.";
         case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return "There are no more files.";
-        /* Note: p7zip and 7-zip do not use a POSIX-equivalent error code for ERROR_NEGATIVE_SEEK, but rather
-         *       its Win32 value; both also use the FACILITY_WIN32 (7) as facility code for the corresponding
-         *       HRESULT_WIN32_ERROR_NEGATIVE_SEEK, so we cannot use 7-zip's HRESULT_FROM_WIN32 macro
-         *       since it uses another facility code, i.e., FACILITY_ERRNO (0x800).
-         *       Hence, we simply check for the final HRESULT code. */
         case HRESULT_WIN32_ERROR_NEGATIVE_SEEK:
+            /* Note: p7zip and 7-zip do not use a POSIX-equivalent error code for ERROR_NEGATIVE_SEEK, but rather
+             *       its Win32 value; both also use the FACILITY_WIN32 (7) as facility code for the corresponding
+             *       HRESULT_WIN32_ERROR_NEGATIVE_SEEK, so we cannot use 7-zip's HRESULT_FROM_WIN32 macro
+             *       since it uses another facility code, i.e., FACILITY_ERRNO (0x800).
+             *       Hence, we simply check for the final HRESULT code. */
             return "An attempt was made to move the file pointer before the beginning of the file.";
         case E_FAIL:
             return "Unspecified error";

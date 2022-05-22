@@ -28,7 +28,7 @@ using namespace std;
 using namespace NWindows;
 using namespace bit7z;
 
-constexpr auto kCannotOpenOutput   = "Cannot open output file";
+constexpr auto kCannotOpenOutput = "Cannot open output file";
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,

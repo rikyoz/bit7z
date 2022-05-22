@@ -28,7 +28,7 @@
 using namespace bit7z;
 
 CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer )
-: mBuffer( out_buffer ), mCurrentPosition{ mBuffer.begin() } {}
+    : mBuffer( out_buffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {

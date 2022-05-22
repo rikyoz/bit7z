@@ -120,18 +120,18 @@ const wchar_t* methodName( BitCompressionMethod method ) noexcept {
 BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
                                                       const BitInOutFormat& format,
                                                       tstring password,
-                                                      UpdateMode update_mode ) :
-        BitAbstractArchiveHandler( lib, std::move( password ) ),
-        mFormat( format ),
-        mUpdateMode( update_mode ),
-        mCompressionLevel( BitCompressionLevel::Normal ),
-        mCompressionMethod( format.defaultMethod() ),
-        mDictionarySize( 0 ),
-        mWordSize( 0 ),
-        mCryptHeaders( false ),
-        mSolidMode( false ),
-        mVolumeSize( 0 ),
-        mThreadsCount( 0 ) {}
+                                                      UpdateMode update_mode )
+    : BitAbstractArchiveHandler( lib, std::move( password ) ),
+      mFormat( format ),
+      mUpdateMode( update_mode ),
+      mCompressionLevel( BitCompressionLevel::Normal ),
+      mCompressionMethod( format.defaultMethod() ),
+      mDictionarySize( 0 ),
+      mWordSize( 0 ),
+      mCryptHeaders( false ),
+      mSolidMode( false ),
+      mVolumeSize( 0 ),
+      mThreadsCount( 0 ) {}
 
 const BitInFormat& BitAbstractArchiveCreator::format() const noexcept {
     return mFormat;

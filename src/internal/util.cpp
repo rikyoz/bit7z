@@ -24,7 +24,7 @@
 
 #ifndef WIN32
 #include <codecvt>
-using convert_type = std::codecvt_utf8<wchar_t>;
+using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
 
 using namespace bit7z;
@@ -60,7 +60,7 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
     } //output is null-terminated
     return result;
 #else
-    std::wstring_convert<convert_type, wchar_t> converter;
+    std::wstring_convert< convert_type, wchar_t > converter;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     return converter.to_bytes( wideString, wideString + size );
 #endif
@@ -87,7 +87,7 @@ std::wstring bit7z::widen( const std::string& narrowString ) {
                          wideStringSize );
     return result;
 #else
-    std::wstring_convert<convert_type, wchar_t> converter;
+    std::wstring_convert< convert_type, wchar_t > converter;
     return converter.from_bytes( narrowString );
 #endif
 }

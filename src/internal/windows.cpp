@@ -36,7 +36,7 @@ size_t wcsnlen_s( const wchar_t* str, size_t max_size ) {
 
     size_t result = 0;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    for (; result < max_size && str[ result ] != L'\0'; ++result ) {
+    for ( ; result < max_size && str[ result ] != L'\0'; ++result ) {
         // continue;
     }
     return result;

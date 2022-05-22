@@ -84,9 +84,9 @@ inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
-    vt         = VT_EMPTY;
+    vt = VT_EMPTY;
     wReserved1 = 0;
-    bstrVal    = nullptr;
+    bstrVal = nullptr;
 }
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
@@ -109,13 +109,13 @@ BitPropVariant::BitPropVariant( BitPropVariant&& other ) noexcept: PROPVARIANT( 
 }
 
 BitPropVariant::BitPropVariant( bool value ) noexcept: PROPVARIANT() {
-    vt         = VT_BOOL;
+    vt = VT_BOOL;
     wReserved1 = 0;
-    boolVal    = ( value ? VARIANT_TRUE : VARIANT_FALSE );
+    boolVal = ( value ? VARIANT_TRUE : VARIANT_FALSE );
 }
 
 BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
-    vt         = VT_BSTR;
+    vt = VT_BSTR;
     wReserved1 = 0;
     if ( value != nullptr ) {
         bstrVal = ::SysAllocString( value );
@@ -128,66 +128,66 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
 }
 
 BitPropVariant::BitPropVariant( const std::wstring& value ) : PROPVARIANT() {
-    vt         = VT_BSTR;
+    vt = VT_BSTR;
     wReserved1 = 0;
-    bstrVal    = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );
+    bstrVal = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );
     if ( bstrVal == nullptr ) {
         throw BitException( kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
     }
 }
 
 BitPropVariant::BitPropVariant( uint8_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_UI1;
+    vt = VT_UI1;
     wReserved1 = 0;
-    bVal       = value;
+    bVal = value;
 }
 
 BitPropVariant::BitPropVariant( uint16_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_UI2;
+    vt = VT_UI2;
     wReserved1 = 0;
-    uiVal      = value;
+    uiVal = value;
 }
 
 BitPropVariant::BitPropVariant( uint32_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_UI4;
+    vt = VT_UI4;
     wReserved1 = 0;
-    ulVal      = value;
+    ulVal = value;
 }
 
 BitPropVariant::BitPropVariant( uint64_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_UI8;
+    vt = VT_UI8;
     wReserved1 = 0;
     uhVal.QuadPart = value;
 }
 
 BitPropVariant::BitPropVariant( int8_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_I1;
+    vt = VT_I1;
     wReserved1 = 0;
-    cVal       = value;
+    cVal = value;
 }
 
 BitPropVariant::BitPropVariant( int16_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_I2;
+    vt = VT_I2;
     wReserved1 = 0;
-    iVal       = value;
+    iVal = value;
 }
 
 BitPropVariant::BitPropVariant( int32_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_I4;
+    vt = VT_I4;
     wReserved1 = 0;
-    lVal       = value;
+    lVal = value;
 }
 
 BitPropVariant::BitPropVariant( int64_t value ) noexcept: PROPVARIANT() {
-    vt         = VT_I8;
+    vt = VT_I8;
     wReserved1 = 0;
     hVal.QuadPart = value;
 }
 
 BitPropVariant::BitPropVariant( const FILETIME& value ) noexcept: PROPVARIANT() {
-    vt         = VT_FILETIME;
+    vt = VT_FILETIME;
     wReserved1 = 0;
-    filetime   = value;
+    filetime = value;
 }
 
 BitPropVariant::~BitPropVariant() {

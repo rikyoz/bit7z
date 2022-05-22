@@ -28,7 +28,7 @@ using bit7z::GenericInputItem;
 using bit7z::tstring;
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( FSItem directory, tstring filter)
+FSIndexer::FSIndexer( FSItem directory, tstring filter )
     : mDirItem( std::move( directory ) ), mFilter( std::move( filter ) ) {
     if ( !mDirItem.isDir() ) {
         throw BitException( "Invalid path", std::make_error_code( std::errc::not_a_directory ), mDirItem.name() );

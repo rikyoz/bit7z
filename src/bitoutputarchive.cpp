@@ -56,7 +56,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
                                     const std::vector< bit7z::byte_t >& in_buffer )
-    :  mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
+    : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     if ( !in_buffer.empty() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, in_buffer );
         mInputArchiveItemsCount = mInputArchive->itemsCount();

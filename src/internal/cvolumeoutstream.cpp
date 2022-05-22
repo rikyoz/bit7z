@@ -25,7 +25,7 @@ using bit7z::tstring;
 using bit7z::CVolumeOutStream;
 
 CVolumeOutStream::CVolumeOutStream( const tstring& volumeName )
-   : CFileOutStream( volumeName ), mPath{ volumeName }, mCurrentOffset{ 0 }, mCurrentSize{ 0 } {}
+    : CFileOutStream( volumeName ), mPath{ volumeName }, mCurrentOffset{ 0 }, mCurrentSize{ 0 } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {

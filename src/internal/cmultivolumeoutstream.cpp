@@ -25,13 +25,13 @@
 
 using namespace bit7z;
 
-CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, const tstring& archiveName ) :
-        mMaxVolumeSize( volSize ),
-        mVolumePrefix( archiveName + BIT7Z_STRING( "." ) ),
-        mCurrentVolumeIndex( 0 ),
-        mCurrentVolumeOffset( 0 ),
-        mAbsoluteOffset( 0 ),
-        mFullSize( 0 ) {}
+CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, const tstring& archiveName )
+    : mMaxVolumeSize( volSize ),
+      mVolumePrefix( archiveName + BIT7Z_STRING( "." ) ),
+      mCurrentVolumeIndex( 0 ),
+      mCurrentVolumeOffset( 0 ),
+      mAbsoluteOffset( 0 ),
+      mFullSize( 0 ) {}
 
 UInt64 CMultiVolumeOutStream::GetSize() const noexcept { return mFullSize; }
 
@@ -70,7 +70,7 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
                                                                   mMaxVolumeSize - volume->currentOffset() ) );
 
     /* Writing to the volume stream */
-    UInt32 writtenSize;
+    UInt32 writtenSize{};
     RINOK( volume->Write( data, writeSize, &writtenSize ) )
 
     /* Updating the offsets */

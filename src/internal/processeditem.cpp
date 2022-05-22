@@ -26,8 +26,7 @@
 using bit7z::ProcessedItem;
 
 ProcessedItem::ProcessedItem()
-    : mModifiedTime{}, mIsModifiedTimeDefined{ false }, mAttributes{ 0 }, mAreAttributesDefined{ false }
-{}
+    : mModifiedTime{}, mIsModifiedTimeDefined{ false }, mAttributes{ 0 }, mAreAttributesDefined{ false } {}
 
 void ProcessedItem::loadItemInfo( const BitInputArchive& input_archive, std::uint32_t item_index ) {
     loadFilePath( input_archive, item_index );

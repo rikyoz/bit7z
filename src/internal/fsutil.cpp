@@ -51,7 +51,7 @@ bool contains_dot_references( const fs::path& path ) {
              This must be true on Windows, but not on Unix systems! */
     const auto& native_path = path.string< tchar >();
     return std::adjacent_find( native_path.begin(), native_path.end(), []( tchar a, tchar b ) {
-        return a == BIT7Z_STRING( '.' ) && ( b == BIT7Z_STRING( '/' ) || b == BIT7Z_STRING( '\\') );
+        return a == BIT7Z_STRING( '.' ) && ( b == BIT7Z_STRING( '/' ) || b == BIT7Z_STRING( '\\' ) );
     } ) != native_path.end();
 }
 
@@ -129,6 +129,7 @@ bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) { // NO
 }
 
 #ifndef _WIN32
+
 bool restore_symlink( const std::string& name ) {
     std::ifstream ifs( name, std::ios::in | std::ios::binary );
     if ( !ifs.is_open() ) {
@@ -201,7 +202,7 @@ bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
 
     fs::perms file_permissions = static_cast<fs::perms>( file_stat.st_mode & global_umask ) & fs::perms::mask;
     std::error_code ec;
-    fs::permissions(filePath, file_permissions, ec);
+    fs::permissions( filePath, file_permissions, ec );
     return !ec;
 #endif
 }
