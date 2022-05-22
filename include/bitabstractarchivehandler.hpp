@@ -71,6 +71,8 @@ class BitAbstractArchiveHandler {
 
         BitAbstractArchiveHandler& operator=( BitAbstractArchiveHandler&& ) = delete;
 
+        virtual ~BitAbstractArchiveHandler() = default;
+
         /**
          * @return the Bit7zLibrary object used by the handler.
          */
@@ -207,8 +209,6 @@ class BitAbstractArchiveHandler {
         bool mRetainDirectories;
 
         explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib, tstring password = {} );
-
-        virtual ~BitAbstractArchiveHandler() = default;
 
     private:
         //CALLBACKS

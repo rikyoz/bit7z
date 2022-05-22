@@ -57,6 +57,8 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
 
         BitAbstractArchiveCreator& operator=( BitAbstractArchiveCreator&& ) = delete;
 
+        ~BitAbstractArchiveCreator() override = default;
+
         /**
          * @return the format used for creating/updating an archive.
          */
@@ -229,8 +231,6 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
                                    const BitInOutFormat& format,
                                    tstring password = {},
                                    UpdateMode update_mode = UpdateMode::None );
-
-        ~BitAbstractArchiveCreator() override = default;
 
         BIT7Z_NODISCARD ArchiveProperties archiveProperties() const;
 

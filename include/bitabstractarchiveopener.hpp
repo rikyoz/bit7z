@@ -41,6 +41,8 @@ class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
 
         BitAbstractArchiveOpener& operator=( BitAbstractArchiveOpener&& ) = delete;
 
+        ~BitAbstractArchiveOpener() override = default;
+
         /**
          * @return the archive format used by the archive opener.
          */
@@ -57,8 +59,6 @@ class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
         BitAbstractArchiveOpener( const Bit7zLibrary& lib,
                                   const BitInFormat& format,
                                   const tstring& password = {} );
-
-        ~BitAbstractArchiveOpener() override = default;
 };
 }  // namespace bit7z
 
