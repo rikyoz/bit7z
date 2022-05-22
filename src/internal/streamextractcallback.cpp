@@ -46,7 +46,8 @@ void StreamExtractCallback::releaseStream() {
 HRESULT StreamExtractCallback::getOutStream( uint32_t index,
                                              ISequentialOutStream** outStream,
                                              int32_t askExtractMode ) {
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
+    using namespace NArchive::NExtract;
+    if ( askExtractMode != NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
         return S_OK;
     }
 
@@ -66,7 +67,7 @@ HRESULT StreamExtractCallback::getOutStream( uint32_t index,
         mHandler.fileCallback()( fullPath );
     }
 
-    CMyComPtr< IOutStream > outStreamLoc = bit7z::make_com< CStdOutStream, IOutStream >( mOutputStream );
+    auto outStreamLoc = bit7z::make_com< CStdOutStream, IOutStream >( mOutputStream );
     mStdOutStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;

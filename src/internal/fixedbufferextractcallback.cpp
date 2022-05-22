@@ -24,7 +24,6 @@
 #include "internal/cfixedbufferoutstream.hpp"
 #include "internal/fs.hpp"
 
-using bit7z::BitInputArchive;
 using bit7z::FixedBufferExtractCallback;
 using bit7z::byte_t;
 
@@ -40,7 +39,8 @@ void FixedBufferExtractCallback::releaseStream() {
 HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index,
                                                   ISequentialOutStream **outStream,
                                                   int32_t askExtractMode ) {
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
+    using namespace NArchive::NExtract;
+    if ( askExtractMode != NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
         return S_OK;
     }
 
