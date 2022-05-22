@@ -20,6 +20,7 @@
  */
 
 #include "internal/bufferutil.hpp"
+#include "internal/windows.hpp"
 
 HRESULT bit7z::seek( const buffer_t& buffer,
                      buffer_t::const_iterator current_position,
