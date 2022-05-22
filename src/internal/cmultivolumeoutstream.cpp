@@ -41,7 +41,7 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
         *processedSize = 0;
     }
 
-    mCurrentVolumeIndex += ( mCurrentVolumeOffset / mMaxVolumeSize );
+    mCurrentVolumeIndex += static_cast< size_t >( mCurrentVolumeOffset / mMaxVolumeSize );
     mCurrentVolumeOffset = mCurrentVolumeOffset % mMaxVolumeSize;
 
     while ( mCurrentVolumeIndex >= mVolumes.size() ) {

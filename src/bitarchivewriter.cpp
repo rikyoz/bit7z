@@ -21,10 +21,7 @@
 
 #include "bitarchivewriter.hpp"
 
-using bit7z::BitArchiveWriter;
-using bit7z::byte_t;
-using bit7z::tstring;
-
+namespace bit7z {
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitAbstractArchiveCreator( lib, format ), BitOutputArchive( *this, tstring{} ) {}
 
@@ -48,3 +45,4 @@ BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
       BitOutputArchive( *this, in_stream ) {}
+} // namespace bit7z

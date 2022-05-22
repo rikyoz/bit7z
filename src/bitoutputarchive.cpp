@@ -28,14 +28,7 @@
 #include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
 
-using bit7z::BitAbstractArchiveHandler;
-using bit7z::BitOutputArchive;
-using bit7z::BitPropVariant;
-using bit7z::UpdateCallback;
-using bit7z::byte_t;
-using bit7z::tstring;
-using bit7z::input_index;
-
+namespace bit7z {
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     std::error_code ec;
@@ -317,3 +310,4 @@ uint32_t BitOutputArchive::indexInArchive( uint32_t index ) const noexcept {
 const BitAbstractArchiveHandler& BitOutputArchive::handler() const noexcept {
     return mArchiveCreator;
 }
+} // namespace bit7z

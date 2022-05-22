@@ -21,9 +21,7 @@
 
 #include "internal/genericinputitem.hpp"
 
-using bit7z::BitPropVariant;
-using bit7z::GenericInputItem;
-
+namespace bit7z {
 bool GenericInputItem::hasNewData() const noexcept {
     return true;
 }
@@ -57,3 +55,4 @@ BitPropVariant GenericInputItem::itemProperty( BitProperty propID ) const {
     }
     return prop;
 }
+} // namespace bit7z

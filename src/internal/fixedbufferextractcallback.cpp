@@ -24,9 +24,7 @@
 #include "internal/cfixedbufferoutstream.hpp"
 #include "internal/fs.hpp"
 
-using bit7z::FixedBufferExtractCallback;
-using bit7z::byte_t;
-
+namespace bit7z {
 FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive& inputArchive,
                                                         byte_t* buffer,
                                                         size_t size )
@@ -64,4 +62,5 @@ HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index,
     mOutMemStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;
+}
 }

@@ -28,10 +28,7 @@
 #include "internal/renameditem.hpp"
 #include "internal/stdinputitem.hpp"
 
-using bit7z::BitArchiveEditor;
-using bit7z::BitPropVariant;
-using bit7z::byte_t;
-using bit7z::tstring;
+namespace bit7z {
 using std::istream;
 
 BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
@@ -207,3 +204,4 @@ bool BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept {
     bool isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
     return mapped_index >= mInputArchiveItemsCount || isEditedItem;
 }
+} // namespace bit7z

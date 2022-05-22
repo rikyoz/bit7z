@@ -139,6 +139,10 @@ UINT SysStringLen( BSTR bstr );
 
 #endif
 
+#ifndef __HRESULT_FROM_WIN32
+#define __HRESULT_FROM_WIN32 HRESULT_FROM_WIN32 // NOLINT(bugprone-reserved-identifier)
+#endif
+
 /* For when we cannot include IStream.h */
 #ifndef HRESULT_WIN32_ERROR_NEGATIVE_SEEK
 #ifdef MY__E_ERROR_NEGATIVE_SEEK // 7-zip on Unix
@@ -147,7 +151,7 @@ constexpr auto FACILITY_CODE = FACILITY_ERRNO;
 constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY__E_ERROR_NEGATIVE_SEEK;
 #else //p7zip or 7-zip on Windows
 constexpr auto FACILITY_CODE = FACILITY_WIN32;
-constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK );
+constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK );
 #endif
 #endif
 

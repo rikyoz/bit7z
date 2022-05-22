@@ -115,9 +115,9 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in the stream classes functions.
         case HRESULT_WIN32_ERROR_NEGATIVE_SEEK:
             return std::make_error_condition( std::errc::invalid_argument );
-        case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
+        case __HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
-        case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
+        case __HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return std::make_error_condition( std::errc::no_such_file_or_directory );
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );

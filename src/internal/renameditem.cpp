@@ -24,10 +24,7 @@
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 
-using bit7z::RenamedItem;
-using bit7z::tstring;
-using namespace bit7z::filesystem;
-
+namespace bit7z {
 RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path )
     : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ new_path } {}
 
@@ -74,4 +71,5 @@ FILETIME RenamedItem::lastWriteTime() const {
 
 uint32_t bit7z::RenamedItem::attributes() const {
     return mInputArchive.itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
+}
 }

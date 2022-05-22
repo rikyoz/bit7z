@@ -23,8 +23,7 @@
 
 #include "bitexception.hpp"
 
-using bit7z::ProcessedItem;
-
+namespace bit7z {
 ProcessedItem::ProcessedItem()
     : mModifiedTime{}, mIsModifiedTimeDefined{ false }, mAttributes{ 0 }, mAreAttributesDefined{ false } {}
 
@@ -122,4 +121,5 @@ bool ProcessedItem::areAttributesDefined() const {
 
 bool ProcessedItem::isModifiedTimeDefined() const {
     return mIsModifiedTimeDefined;
+}
 }
