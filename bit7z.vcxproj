@@ -286,6 +286,7 @@
     <ClCompile Include="src\bitpropvariant.cpp" />
     <ClCompile Include="src\internal\bufferextractcallback.cpp" />
     <ClCompile Include="src\internal\bufferitem.cpp" />
+    <ClCompile Include="src\internal\bufferutil.cpp" />
     <ClCompile Include="src\internal\callback.cpp" />
     <ClCompile Include="src\internal\cbufferinstream.cpp" />
     <ClCompile Include="src\internal\cbufferoutstream.cpp" />
@@ -352,6 +353,7 @@
     <ClInclude Include="include\bitwindows.hpp" />
     <ClInclude Include="include\internal\bufferextractcallback.hpp" />
     <ClInclude Include="include\internal\bufferitem.hpp" />
+    <ClInclude Include="include\internal\bufferutil.hpp" />
     <ClInclude Include="include\internal\callback.hpp" />
     <ClInclude Include="include\internal\cbufferinstream.hpp" />
     <ClInclude Include="include\internal\cbufferoutstream.hpp" />

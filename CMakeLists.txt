@@ -54,6 +54,7 @@ set( PUBLIC_HEADERS
 set( HEADERS
      include/internal/bufferextractcallback.hpp
      include/internal/bufferitem.hpp
+     include/internal/bufferutil.hpp
      include/internal/callback.hpp
      include/internal/cbufferinstream.hpp
      include/internal/cbufferoutstream.hpp
@@ -109,6 +110,7 @@ set( SOURCES
      src/bitpropvariant.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferitem.cpp
+     src/internal/bufferutil.cpp
      src/internal/callback.cpp
      src/internal/cbufferinstream.cpp
      src/internal/cbufferoutstream.cpp
