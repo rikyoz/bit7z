@@ -45,7 +45,7 @@ std::string hresult_category_t::message( int ev ) const {
     if ( msgSize == 0 ) {
         return "Unknown error";
     }
-    /* Note: strings obtained using FormatMessageA have a trailing space and a \r\n pair of char.
+    /* Note: strings obtained using FormatMessageA have a trailing space, and a \r\n pair of char.
      *       Using the FORMAT_MESSAGE_MAX_WIDTH_MASK flag removes the ending \r\n but leaves the trailing space.
      *       For this reason, we create the resulting std::string by considering msgSize - 1 as string size! */
     std::string errorMessage( messageBuffer, msgSize - 1 );

@@ -66,7 +66,7 @@ BSTR AllocStringBuffer( LPCSTR str, uint64_t byte_length ) {
     // Maximum value that can be stored in the BSTR byte_length prefix.
     constexpr auto max_prefix_value = std::numeric_limits< bstr_prefix_t >::max();
 
-    // Max number of bytes that can be stored in the BSTR (excluding the termination character, and the byte_length prefix).
+    // Max number of bytes that can be stored in the BSTR (excluding the termination char, and the byte_length prefix).
     constexpr auto max_length = max_prefix_value - sizeof( OLECHAR ) - sizeof( bstr_prefix_t );
 
     if ( byte_length >= max_length ) { // Invalid byte_length parameter

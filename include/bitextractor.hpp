@@ -127,7 +127,7 @@ namespace bit7z {
             }
 
             /**
-             * @brief Extracts the first file in the archive that matches the given wildcard pattern to the output buffer.
+             * @brief Extracts to the output buffer the first file in the archive matching the given wildcard pattern.
              *
              * @param in_file       the input archive file.
              * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.

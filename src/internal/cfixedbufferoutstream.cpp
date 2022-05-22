@@ -119,7 +119,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
 
     int64_t new_index = current_index + offset;
 
-    // Making sure that the new_index value is between 0 and mBufferSize - 1
+    // Making sure the new_index value is between 0 and mBufferSize - 1
     if ( new_index < 0 ) {
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
     }
