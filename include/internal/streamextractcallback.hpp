@@ -25,8 +25,6 @@
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {
-    using std::vector;
-    using std::map;
     using std::ostream;
 
     class StreamExtractCallback final : public ExtractCallback {

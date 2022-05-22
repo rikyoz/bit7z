@@ -24,7 +24,6 @@
 #include "internal/cbufferinstream.hpp"
 #include "internal/dateutil.hpp"
 
-using bit7z::BitPropVariant;
 using bit7z::BufferItem;
 using bit7z::byte_t;
 using bit7z::tstring;

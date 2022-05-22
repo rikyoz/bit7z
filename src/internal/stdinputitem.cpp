@@ -24,7 +24,6 @@
 #include "internal/cstdinstream.hpp"
 #include "internal/dateutil.hpp"
 
-using bit7z::BitPropVariant;
 using bit7z::StdInputItem;
 using bit7z::tstring;
 using std::istream;

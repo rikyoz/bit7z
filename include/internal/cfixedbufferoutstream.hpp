@@ -27,8 +27,6 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
-    using std::vector;
-
     class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
         public:
             explicit CFixedBufferOutStream( byte_t* buffer, std::size_t size );

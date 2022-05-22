@@ -31,7 +31,6 @@ struct IOutStream;
 struct ISequentialOutStream;
 
 namespace bit7z {
-    using std::unique_ptr;
     using std::ostream;
 
     struct ArchiveProperties {

@@ -28,16 +28,9 @@
 #include "internal/renameditem.hpp"
 #include "internal/stdinputitem.hpp"
 
-using bit7z::Bit7zLibrary;
 using bit7z::BitArchiveEditor;
-using bit7z::BitError;
-using bit7z::BitException;
-using bit7z::BitInOutFormat;
-using bit7z::BitProperty;
 using bit7z::BitPropVariant;
-using bit7z::UpdateMode;
 using bit7z::byte_t;
-using bit7z::input_index;
 using bit7z::tstring;
 using std::istream;
 

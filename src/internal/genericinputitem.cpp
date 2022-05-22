@@ -22,7 +22,6 @@
 #include "internal/genericinputitem.hpp"
 
 using bit7z::BitPropVariant;
-using bit7z::BitProperty;
 using bit7z::GenericInputItem;
 
 bool GenericInputItem::hasNewData() const noexcept {

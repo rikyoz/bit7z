@@ -21,9 +21,7 @@
 
 #include "bitarchivewriter.hpp"
 
-using bit7z::Bit7zLibrary;
 using bit7z::BitArchiveWriter;
-using bit7z::BitInOutFormat;
 using bit7z::byte_t;
 using bit7z::tstring;
 

@@ -28,7 +28,6 @@
 namespace bit7z {
     namespace filesystem {
         using std::vector;
-        using std::map;
         using std::unique_ptr;
 
         class FSIndexer final {

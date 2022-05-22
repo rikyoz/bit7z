@@ -26,8 +26,6 @@
 #include "bitformat.hpp"
 
 namespace bit7z {
-    using std::vector;
-    using std::map;
     using std::ostream;
 
     /**
