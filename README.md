@@ -26,21 +26,21 @@ It supports compression and extraction to and from the filesystem or the memory,
 
 + **Compression** using the following archive formats: **7z**, XZ, **BZIP2**, **GZIP**, TAR, **ZIP**, and WIM.
 + **Extraction** of many archive formats: **7z**, AR, ARJ, **BZIP2**, CAB, CHM, CPIO, CramFS, DEB, DMG, EXT, FAT, GPT, **GZIP**, HFS, HXS, IHEX, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, QCOW2, **RAR**, **RAR5**, RPM, SquashFS, TAR, UDF, UEFI, VDI, VHD, VMDK, WIM, XAR, XZ, Z, and **ZIP**.
-+ **Reading metadata** of archives and of their content (from v3.x).
-+ **Testing** archives for errors (from v3.x).
-+ **Updating** existing file archives with new files (from v3.1.x).
-+ **Renaming**, **updating**, or **deleting** old items in existing file archives (from v4.0.x)
-+ **Compression and extraction _to and from_ memory** (from v2.x) and **C++ standard streams** (from v3.1.x).
-+ Compression using a **custom path aliases** for the items in the output archives (from v3.x)
-+ **Selective extraction** of only specified files/folders **using wildcards** (from v3.x) and **regexes** (from v3.1.x).
++ **Reading metadata** of archives and of their content.
++ **Testing** archives for errors.
++ **Updating** existing file archives with new files.
++ **Renaming**, **updating**, or **deleting** old items in existing file archives.
++ **Compression and extraction _to and from_ memory** and **C++ standard streams**.
++ Compression using **custom path aliases** for the items in the output archives.
++ **Selective extraction** of only specified files/folders **using wildcards** and **regexes**.
 + Creation of **encrypted archives** (strong AES-256 encryption &mdash; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
-+ Possibility to choose the **compression level** (if supported by the archive format), the **compression method** (from v3.1.x &mdash; [supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size** (from v3.1.x), and the **word size** (from v4.0.x).
-+ **Automatic input archive format detection** (from v3.1.x).
++ Possibility to choose the **compression level** (if supported by the archive format), the **compression method** ([supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size**, and the **word size**.
++ **Automatic input archive format detection**.
 + **Solid archives** (only for 7z).
-+ **Multi-volume archives** (from v2.1.x).
-+ **Operation callbacks**, that allow to obtain real time information about the ongoing operations (from v2.1.x).
-+ **Cancelling** or **pausing** the current operation (from v4.0.x).
++ **Multi-volume archives**.
++ **Operation callbacks** for obtaining real-time information about the ongoing operations.
++ **Canceling** or **pausing** the current operation.
 
 ### Notes
 
