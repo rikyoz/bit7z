@@ -384,6 +384,7 @@
     <ClInclude Include="include\internal\renameditem.hpp" />
     <ClInclude Include="include\internal\stdinputitem.hpp" />
     <ClInclude Include="include\internal\streamextractcallback.hpp" />
+    <ClInclude Include="include\internal\streamutil.hpp" />
     <ClInclude Include="include\internal\updatecallback.hpp" />
     <ClInclude Include="include\internal\util.hpp" />
     <ClInclude Include="include\internal\windows.hpp" />

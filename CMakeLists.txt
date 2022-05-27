@@ -84,6 +84,7 @@ set( HEADERS
      include/internal/renameditem.hpp
      include/internal/stdinputitem.hpp
      include/internal/streamextractcallback.hpp
+     include/internal/streamutil.hpp
      include/internal/updatecallback.hpp
      include/internal/util.hpp
      include/internal/windows.hpp )

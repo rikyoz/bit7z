@@ -21,6 +21,8 @@
 
 #include "internal/cstdinstream.hpp"
 
+#include "internal/streamutil.hpp"
+
 using namespace bit7z;
 
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
@@ -51,19 +53,7 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
     mInputStream.clear();
 
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
-    switch ( seekOrigin ) {
-        case STREAM_SEEK_SET:
-            way = std::ios_base::beg;
-            break;
-        case STREAM_SEEK_CUR:
-            way = std::ios_base::cur;
-            break;
-        case STREAM_SEEK_END:
-            way = std::ios_base::end;
-            break;
-        default:
-            return STG_E_INVALIDFUNCTION;
-    }
+    RINOK( to_seekdir( seekOrigin, way ) );
 
     /*if ( offset < 0 ) { // GZip uses negative offsets!
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
