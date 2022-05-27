@@ -72,7 +72,11 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
     *outStream = nullptr;
     releaseStream();
 
-    return getOutStream( index, outStream, askExtractMode );
+    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
+        return S_OK;
+    }
+
+    return getOutStream( index, outStream );
 } catch ( const BitException& ) {
     return E_OUTOFMEMORY;
 } catch ( const std::runtime_error& ) {

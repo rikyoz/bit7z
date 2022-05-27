@@ -67,11 +67,7 @@ void FileExtractCallback::throwException( HRESULT error ) {
     Callback::throwException( error );
 }
 
-HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream, Int32 askExtractMode ) {
-    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
-        return S_OK;
-    }
-
+HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
     try {
         mCurrentItem.loadItemInfo( mInputArchive, index );
     } catch ( const BitException& ex ) {

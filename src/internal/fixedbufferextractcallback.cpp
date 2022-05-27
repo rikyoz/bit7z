@@ -34,11 +34,8 @@ void FixedBufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index,
-                                                  ISequentialOutStream** outStream,
-                                                  int32_t askExtractMode ) {
-    using namespace NArchive::NExtract;
-    if ( askExtractMode != NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
+HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+    if ( mInputArchive.isItemFolder( index ) ) {
         return S_OK;
     }
 

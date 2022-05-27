@@ -72,7 +72,7 @@ class ExtractCallback : public Callback,
 
         virtual void releaseStream() = 0;
 
-        virtual HRESULT getOutStream( UInt32 index, ISequentialOutStream** outStream, int32_t askExtractMode ) = 0;
+        virtual HRESULT getOutStream( UInt32 index, ISequentialOutStream** outStream ) = 0;
 
         const BitInputArchive& mInputArchive;
 

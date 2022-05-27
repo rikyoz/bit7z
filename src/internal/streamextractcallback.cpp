@@ -43,11 +43,8 @@ void StreamExtractCallback::releaseStream() {
     mStdOutStream.Release();
 }
 
-HRESULT StreamExtractCallback::getOutStream( uint32_t index,
-                                             ISequentialOutStream** outStream,
-                                             int32_t askExtractMode ) {
-    using namespace NArchive::NExtract;
-    if ( askExtractMode != NAskMode::kExtract || mInputArchive.isItemFolder( index ) ) {
+HRESULT StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+    if ( mInputArchive.isItemFolder( index ) ) {
         return S_OK;
     }
 
