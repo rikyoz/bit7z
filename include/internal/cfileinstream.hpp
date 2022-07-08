@@ -19,6 +19,8 @@
 #ifndef CFILEINSTREAM_HPP
 #define CFILEINSTREAM_HPP
 
+#include <array>
+
 #include "bitdefines.hpp"
 #include "internal/cstdinstream.hpp"
 #include "internal/fs.hpp"
@@ -32,6 +34,8 @@ class CFileInStream final : public CStdInStream {
 
     private:
         fs::ifstream mFileStream;
+        static constexpr auto buffer_size = 1024 * 1024; // 1 MiB
+        std::array< char, buffer_size > mBuffer;
 };
 }  // namespace bit7z
 
