@@ -19,6 +19,8 @@
 #ifndef CFILEOUTSTREAM_HPP
 #define CFILEOUTSTREAM_HPP
 
+#include <array>
+
 #include "bitdefines.hpp"
 #include "internal/cstdoutstream.hpp"
 #include "internal/fs.hpp"
@@ -32,6 +34,9 @@ class CFileOutStream : public CStdOutStream {
 
     private:
         fs::ofstream mFileStream;
+
+        static constexpr auto buffer_size = 1024 * 1024; // 1 MiB
+        std::array< char, buffer_size > mBuffer;
 };
 }  // namespace bit7z
 
