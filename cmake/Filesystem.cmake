@@ -1,4 +1,9 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 # checking if compiler supports the standard filesystem library
+
 set( CMAKE_CXX_STANDARD 17 )
 include( CheckIncludeFileCXX )
 check_include_file_cxx( "filesystem" USE_STANDARD_FILESYSTEM )
