@@ -2,29 +2,24 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "bitexception.hpp"
 
-#include "bitwindows.hpp"
+#ifndef _WIN32
 #include "internal/internalcategory.hpp"
+#endif
 #include "internal/hresultcategory.hpp"
 #include "internal/windows.hpp"
+#if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+#include "internal/util.hpp"
+#endif
 
 std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };
@@ -36,6 +31,7 @@ std::error_code bit7z::last_error_code() noexcept {
 
 using bit7z::BitException;
 using bit7z::FailedFiles;
+using bit7z::tstring;
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
     : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
@@ -45,6 +41,11 @@ BitException::BitException( const char* const message, std::error_code code, con
     mFailedFiles.emplace_back( file, code );
 }
 
+#if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+BitException::BitException( const char* message, std::error_code code, const std::wstring& file )
+    : BitException( message, code, bit7z::narrow(file.c_str(), file.size()) ) {}
+#endif
+
 BitException::BitException( const std::string& message, std::error_code code )
     : system_error( code, message.c_str() ) {}
 
@@ -53,7 +54,7 @@ const FailedFiles& BitException::failedFiles() const noexcept {
 }
 
 BitException::native_code_type BitException::nativeCode() const noexcept {
-    const auto error = code();
+    const auto& error = code();
 #ifdef _WIN32
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
         return error.value();
@@ -64,7 +65,7 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
         return HRESULT_FROM_WIN32( static_cast< DWORD >( error.value() ) );
     }
 #endif
-    // POSIX error code (generic_category)
+    // POSIX error code (generic_category) or BitError code (internal_category)
     if ( error == std::errc::invalid_argument ) {
         return E_INVALIDARG;
     }
@@ -94,7 +95,7 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
     }
     return E_FAIL;
 #else // Unix
-    if ( error.category() == bit7z::hresult_category() ) {
+    if ( error.category() == bit7z::hresult_category() || error.category() == bit7z::internal_category() ) {
         return error.default_error_condition().value();
     }
     return error.value(); // On POSIX systems, std::system_category == std::generic_category

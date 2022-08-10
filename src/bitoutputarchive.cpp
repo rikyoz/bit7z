@@ -2,41 +2,24 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "bitoutputarchive.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/cbufferoutstream.hpp"
-#include "internal/cmultivoloutstream.hpp"
+#include "internal/cmultivolumeoutstream.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
 
-using bit7z::BitException;
-using bit7z::BitOutputArchive;
-using bit7z::BitAbstractArchiveCreator;
-using bit7z::BitAbstractArchiveHandler;
-using bit7z::BitPropVariant;
-using bit7z::UpdateCallback;
-using bit7z::byte_t;
-using bit7z::tstring;
-using bit7z::input_index;
-
+namespace bit7z {
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     std::error_code ec;
@@ -46,7 +29,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
                                 make_error_code( BitError::WrongUpdateMode ) );
         }
         if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
-            //Update mode is set but format does not support adding more files
+            //Update mode is set but format does not support adding more files.
             throw BitException( "Cannot update existing archive",
                                 make_error_code( BitError::FormatFeatureNotSupported ) );
         }
@@ -57,7 +40,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
                                     const std::vector< bit7z::byte_t >& in_buffer )
-    :  mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
+    : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     if ( !in_buffer.empty() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, in_buffer );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
@@ -66,8 +49,10 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& in_stream )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
-    mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
-    mInputArchiveItemsCount = mInputArchive->itemsCount();
+    if ( in_stream.good() ) {
+        mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
+        mInputArchiveItemsCount = mInputArchive->itemsCount();
+    }
 }
 
 void BitOutputArchive::addItems( const std::vector< tstring >& in_paths ) {
@@ -94,7 +79,7 @@ void BitOutputArchive::addFiles( const std::vector< tstring >& in_files ) {
     mNewItemsVector.indexPaths( in_files, true );
 }
 
-void BitOutputArchive::addFiles( const tstring& in_dir, bool recursive, const tstring& filter ) {
+void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, bool recursive ) {
     mNewItemsVector.indexDirectory( in_dir, filter, recursive );
 }
 
@@ -123,7 +108,7 @@ CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
 CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_archive,
                                                              bool updating_archive ) const {
     if ( mArchiveCreator.volumeSize() > 0 ) {
-        return bit7z::make_com< CMultiVolOutStream, IOutStream >( mArchiveCreator.volumeSize(), out_archive );
+        return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), out_archive );
     }
 
     fs::path out_path = out_archive;
@@ -131,22 +116,15 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
         out_path += ".tmp";
     }
 
-    auto file_out_stream = bit7z::make_com< CFileOutStream >( out_path, updating_archive );
-    if ( file_out_stream->fail() ) {
-        //Unknown error!
-        throw BitException( "Failed to create the output archive file",
-                            make_error_code( std::errc::io_error ),
-                            out_path.native() );
-    }
-    return CMyComPtr< IOutStream >{ file_out_stream };
+    return bit7z::make_com< CFileOutStream, IOutStream >( out_path, updating_archive );
 }
 
 void BitOutputArchive::compressOut( IOutArchive* out_arc,
                                     IOutStream* out_stream,
                                     UpdateCallback* update_callback ) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Overwrite ) {
-        for ( auto& new_item : mNewItemsVector ) {
-            auto overwritten_item = mInputArchive->find( new_item->inArchivePath() );
+        for ( const auto& new_item : mNewItemsVector ) {
+            auto overwritten_item = mInputArchive->find( new_item->inArchivePath().string< tchar >() );
             if ( overwritten_item != mInputArchive->cend() ) {
                 mDeletedItems.insert( overwritten_item->index() );
             }
@@ -182,7 +160,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
         /* NOTE: In the following instruction, we use the (dot) operator, not the -> (arrow) operator:
          *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
          *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
-        out_stream.Release(); //Releasing the output stream so that we can rename it as the original file
+        out_stream.Release(); //Releasing the output stream so that we can rename it as the original file.
 
 #if defined( __MINGW32__ ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
         /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
@@ -194,9 +172,9 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
         }
 #endif
 
-        //remove old file and rename tmp file (move file with overwriting)
+        //remove the old file and rename the temporary file (move file with overwriting)
         std::error_code error;
-        fs::rename( out_file + TSTRING( ".tmp" ), out_file, error );
+        fs::rename( out_file + BIT7Z_STRING( ".tmp" ), out_file, error );
         if ( error ) {
             throw BitException( "Failed to overwrite the old archive file", error, out_file );
         }
@@ -323,3 +301,4 @@ uint32_t BitOutputArchive::indexInArchive( uint32_t index ) const noexcept {
 const BitAbstractArchiveHandler& BitOutputArchive::handler() const noexcept {
     return mArchiveCreator;
 }
+} // namespace bit7z

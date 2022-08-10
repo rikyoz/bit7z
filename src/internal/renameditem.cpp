@@ -2,38 +2,30 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "internal/renameditem.hpp"
 
+#include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 
-using bit7z::RenamedItem;
-using bit7z::tstring;
-using bit7z::BitPropVariant;
-using namespace bit7z::filesystem;
+namespace bit7z {
+RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path )
+    : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ new_path } {}
 
-RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, tstring new_path )
-    : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ std::move( new_path ) } {}
+tstring RenamedItem::name() const {
+    return mNewPath.filename().string< tchar >();
+}
 
-tstring RenamedItem::name() const { return mNewPath.filename(); }
-
-tstring RenamedItem::path() const { return mNewPath; }
+tstring RenamedItem::path() const {
+    return mNewPath.string< tchar >();
+}
 
 fs::path RenamedItem::inArchivePath() const { return path(); }
 
@@ -54,17 +46,21 @@ uint64_t RenamedItem::size() const {
 }
 
 FILETIME RenamedItem::creationTime() const {
-    return mInputArchive.itemProperty( mIndex, BitProperty::CTime ).getFileTime();
+    BitPropVariant creation_time = mInputArchive.itemProperty( mIndex, BitProperty::CTime );
+    return creation_time.isFileTime() ? creation_time.getFileTime() : currentFileTime();
 }
 
 FILETIME RenamedItem::lastAccessTime() const {
-    return mInputArchive.itemProperty( mIndex, BitProperty::ATime ).getFileTime();
+    BitPropVariant access_time = mInputArchive.itemProperty( mIndex, BitProperty::ATime );
+    return access_time.isFileTime() ? access_time.getFileTime() : currentFileTime();
 }
 
 FILETIME RenamedItem::lastWriteTime() const {
-    return mInputArchive.itemProperty( mIndex, BitProperty::MTime ).getFileTime();
+    BitPropVariant write_time = mInputArchive.itemProperty( mIndex, BitProperty::MTime );
+    return write_time.isFileTime() ? write_time.getFileTime() : currentFileTime();
 }
 
 uint32_t bit7z::RenamedItem::attributes() const {
     return mInputArchive.itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
+}
 }

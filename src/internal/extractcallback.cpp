@@ -2,21 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "internal/extractcallback.hpp"
@@ -72,31 +63,38 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
     *outStream = nullptr;
     releaseStream();
 
-    return getOutStream( index, outStream, askExtractMode );
+    if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
+        return S_OK;
+    }
+
+    return getOutStream( index, outStream );
 } catch ( const BitException& ) {
     return E_OUTOFMEMORY;
+} catch ( const std::runtime_error& ) {
+    return E_ABORT;
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
-    constexpr auto kUnsupportedMethod  = "Unsupported Method";
-    constexpr auto kCRCFailed          = "CRC Failed";
-    constexpr auto kDataError          = "Data Error";
-    constexpr auto kUnknownError       = "Unknown Error";
+    using namespace NArchive::NExtract;
+    constexpr auto kUnsupportedMethod = "Unsupported Method";
+    constexpr auto kCRCFailed = "CRC Failed";
+    constexpr auto kDataError = "Data Error";
+    constexpr auto kUnknownError = "Unknown Error";
 
-    if ( operationResult != NArchive::NExtract::NOperationResult::kOK ) {
+    if ( operationResult != NOperationResult::kOK ) {
         mNumErrors++;
 
         switch ( operationResult ) {
-            case NArchive::NExtract::NOperationResult::kUnsupportedMethod:
+            case NOperationResult::kUnsupportedMethod:
                 mErrorMessage = kUnsupportedMethod;
                 break;
 
-            case NArchive::NExtract::NOperationResult::kCRCError:
+            case NOperationResult::kCRCError:
                 mErrorMessage = kCRCFailed;
                 break;
 
-            case NArchive::NExtract::NOperationResult::kDataError:
+            case NOperationResult::kDataError:
                 mErrorMessage = kDataError;
                 break;
 
@@ -112,11 +110,8 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
-    wstring pass;
+    std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
-        // You can ask real password here from user
-        // Password = GetPassword(OutStream);
-        // PasswordIsDefined = true;
         if ( mHandler.passwordCallback() ) {
             pass = WIDEN( mHandler.passwordCallback()() );
         }

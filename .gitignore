@@ -8,6 +8,7 @@
 *.txt.user
 *.lastcodeanalysissucceeded
 *.filters
+*.vcxproj
 *.vcxproj.user
 .qmake.stash
 *.a
@@ -52,3 +53,12 @@ CMakeSettings.json
 *.ruleset
 
 bit7z-cppcheck-build-dir/
+
+*.ctu-info
+
+# PVS-Studio files and directories
+.PVS-Studio/
+*.PVS-Studio.i
+pvs-studio-analyzer.stacktrace.txt
+
+.mailmap

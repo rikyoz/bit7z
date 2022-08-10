@@ -2,37 +2,25 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "bitarchiveeditor.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/bufferitem.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/renameditem.hpp"
 #include "internal/stdinputitem.hpp"
-#include "internal/updatecallback.hpp"
 
-using bit7z::BitArchiveEditor;
-using bit7z::BitException;
-using bit7z::BitInFormat;
-using bit7z::BitPropVariant;
-using bit7z::UpdateCallback;
+namespace bit7z {
+using std::istream;
 
 BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& in_file,
@@ -109,23 +97,26 @@ void BitArchiveEditor::deleteItem( uint32_t index ) {
 }
 
 void BitArchiveEditor::deleteItem( const tstring& item_path ) {
-    for ( const auto& archiveItem : *mInputArchive ) {
+    auto res = std::find_if( mInputArchive->cbegin(), mInputArchive->cend(), [ & ]( const auto& archiveItem ) {
         if ( archiveItem.path() == item_path ) {
             mEditedItems.erase( archiveItem.index() );
             mDeletedItems.insert( archiveItem.index() );
-            return;
+            return true;
         }
+        return false;
+    } );
+    if ( res == mInputArchive->cend() ) {
+        throw BitException( "Could not mark the item as deleted",
+                            std::make_error_code( std::errc::no_such_file_or_directory ), item_path );
     }
-    throw BitException( "Could not mark the item as deleted",
-                        std::make_error_code( std::errc::no_such_file_or_directory ), item_path );
 }
 
-void BitArchiveEditor::setUpdateMode( UpdateMode update_mode ) {
-    if ( update_mode == UpdateMode::None ) {
+void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
+    if ( mode == UpdateMode::None ) {
         throw BitException( "Cannot set update mode to UpdateMode::None",
                             make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitAbstractArchiveCreator::setUpdateMode( update_mode );
+    BitAbstractArchiveCreator::setUpdateMode( mode );
 }
 
 void BitArchiveEditor::applyChanges() {
@@ -154,11 +145,11 @@ uint32_t BitArchiveEditor::findItem( const tstring& item_path ) {
 
 void BitArchiveEditor::checkIndex( uint32_t index ) {
     if ( index >= mInputArchiveItemsCount ) {
-        throw BitException( "Cannot edit item at index " + std::to_string( index ),
+        throw BitException( "Cannot edit item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
     if ( mDeletedItems.find( index ) != mDeletedItems.cend() ) {
-        throw BitException( "Cannot edit item at index " + std::to_string( index ),
+        throw BitException( "Cannot edit item at the index " + std::to_string( index ),
                             make_error_code( BitError::ItemMarkedAsDeleted ) );
     }
 }
@@ -170,7 +161,7 @@ BitPropVariant BitArchiveEditor::itemProperty( input_index index, BitProperty pr
         if ( res != mEditedItems.end() ) {
             return res->second->itemProperty( propID );
         }
-        return mInputArchive->itemProperty( mapped_index, static_cast< BitProperty >( propID ));
+        return mInputArchive->itemProperty( mapped_index, static_cast< BitProperty >( propID ) );
     }
     return BitOutputArchive::itemProperty( index, propID );
 }
@@ -201,6 +192,7 @@ bool BitArchiveEditor::hasNewData( uint32_t index ) const noexcept {
 
 bool BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept {
     const auto mapped_index = static_cast< uint32_t >( itemInputIndex( index ) );
-    bool       isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
+    bool isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
     return mapped_index >= mInputArchiveItemsCount || isEditedItem;
 }
+} // namespace bit7z

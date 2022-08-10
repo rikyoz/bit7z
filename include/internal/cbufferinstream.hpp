@@ -1,61 +1,50 @@
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #ifndef CBUFFERINSTREAM_HPP
 #define CBUFFERINSTREAM_HPP
 
 #include "bittypes.hpp"
-#include "internal/guiddef.hpp"
 #include "internal/guids.hpp"
 #include "internal/util.hpp"
-#include "internal/windows.hpp"
 
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>
 
 namespace bit7z {
-    using std::vector;
+using std::vector;
 
-    class CBufferInStream final : public IInStream, public CMyUnknownImp {
-        public:
-            explicit CBufferInStream( const vector< byte_t >& in_buffer );
+class CBufferInStream final : public IInStream, public CMyUnknownImp {
+    public:
+        explicit CBufferInStream( const vector< byte_t >& in_buffer );
 
-            CBufferInStream( const CBufferInStream& ) = delete;
+        CBufferInStream( const CBufferInStream& ) = delete;
 
-            CBufferInStream( CBufferInStream&& ) = delete;
+        CBufferInStream( CBufferInStream&& ) = delete;
 
-            CBufferInStream& operator=( const CBufferInStream& ) = delete;
+        CBufferInStream& operator=( const CBufferInStream& ) = delete;
 
-            CBufferInStream& operator=( CBufferInStream&& ) = delete;
+        CBufferInStream& operator=( CBufferInStream&& ) = delete;
 
-            MY_UNKNOWN_DESTRUCTOR( ~CBufferInStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CBufferInStream() ) = default;
 
-            MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
+        MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
 
-            // IInStream
-            BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
+        // IInStream
+        BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
 
-            BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-        private:
-            const buffer_t& mBuffer;
-            buffer_t::const_iterator mCurrentPosition;
-    };
-}
+    private:
+        const buffer_t& mBuffer;
+        buffer_t::const_iterator mCurrentPosition;
+};
+}  // namespace bit7z
 
 #endif // CBUFFERINSTREAM_HPP

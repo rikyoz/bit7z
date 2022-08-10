@@ -2,27 +2,17 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "internal/updatecallback.hpp"
 
 #include "internal/cfileoutstream.hpp"
-#include "internal/genericinputitem.hpp"
 
 using namespace bit7z;
 
@@ -73,7 +63,7 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
     if ( propID == kpidIsAnti ) {
         prop = false;
     } else {
-        prop = mOutputArchive.outputItemProperty( index, static_cast< BitProperty >( propID ));
+        prop = mOutputArchive.outputItemProperty( index, static_cast< BitProperty >( propID ) );
     }
     *value = prop;
     prop.bstrVal = nullptr;
@@ -103,18 +93,18 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
     tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
-        //adding leading zeros for a total res length of 3 (e.g. volume 42 will have extension .042)
-        res.insert( res.begin(), 3 - res.length(), TSTRING( '0' ) );
+        //adding leading zeros for a total res length of 3 (e.g., volume 42 will have extension .042)
+        res.insert( res.begin(), 3 - res.length(), BIT7Z_STRING( '0' ) );
     }
 
-    tstring fileName = TSTRING( '.' ) + res;// + mVolExt;
-    auto stream = bit7z::make_com< CFileOutStream >( fileName );
+    tstring fileName = BIT7Z_STRING( '.' ) + res;// + mVolExt;
 
-    if ( stream->fail() ) {
-        return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
+    try {
+        auto stream = bit7z::make_com< CFileOutStream >( fileName );
+        *volumeStream = stream.Detach();
+    } catch ( const BitException& ex ) {
+        return ex.nativeCode();
     }
-
-    *volumeStream = stream.Detach();
     return S_OK;
 }
 

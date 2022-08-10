@@ -2,25 +2,17 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "internal/opencallback.hpp"
 
+#include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
 
 using namespace bit7z;
@@ -50,7 +42,7 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     if ( mSubArchiveMode ) {
         if ( propID == kpidName ) {
             prop = mSubArchiveName;
-            // case kpidSize:  prop = _subArchiveSize; break; // we don't use it for now
+            // case kpidSize: prop = _subArchiveSize; break; // we don't use it for now.
         }
     } else {
         switch ( propID ) {
@@ -103,11 +95,13 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
                 return S_FALSE;
             }
         }
-        auto inStreamTemp = bit7z::make_com< CFileInStream >( stream_path );
-        if ( inStreamTemp->fail() ) {
-            return HRESULT_FROM_WIN32( ERROR_OPEN_FAILED );
+
+        try {
+            auto inStreamTemp = bit7z::make_com< CFileInStream >( stream_path );
+            *inStream = inStreamTemp.Detach();
+        } catch ( const BitException& ex ) {
+            return ex.nativeCode();
         }
-        *inStream = inStreamTemp.Detach();
         return S_OK;
     } catch ( ... ) {
         return E_OUTOFMEMORY;
@@ -129,9 +123,6 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
-        // You can ask real password here from user
-        // Password = GetPassword(OutStream);
-        // PasswordIsDefined = true;
         if ( mHandler.passwordCallback() ) {
             pass = WIDEN( mHandler.passwordCallback()() );
         }

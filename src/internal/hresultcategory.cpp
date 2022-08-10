@@ -2,21 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "internal/hresultcategory.hpp"
@@ -32,7 +23,7 @@ const char* hresult_category_t::name() const noexcept {
 
 std::string hresult_category_t::message( int ev ) const {
 #ifdef _MSC_VER
-    // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors
+    // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors.
     return std::system_category().message( ev );
 #elif defined( __MINGW32__ )
     // MinGW supports FormatMessageA!
@@ -45,7 +36,7 @@ std::string hresult_category_t::message( int ev ) const {
     if ( msgSize == 0 ) {
         return "Unknown error";
     }
-    /* Note: strings obtained using FormatMessageA have a trailing space and a \r\n pair of char.
+    /* Note: strings obtained using FormatMessageA have a trailing space, and a \r\n pair of char.
      *       Using the FORMAT_MESSAGE_MAX_WIDTH_MASK flag removes the ending \r\n but leaves the trailing space.
      *       For this reason, we create the resulting std::string by considering msgSize - 1 as string size! */
     std::string errorMessage( messageBuffer, msgSize - 1 );
@@ -66,18 +57,23 @@ std::string hresult_category_t::message( int ev ) const {
             return "Unable to perform requested operation.";
         case E_OUTOFMEMORY:
             return "Not enough memory resources are available to complete this operation.";
-        /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY, ERROR_NO_MORE_FILES, and
-         *       ERROR_NEGATIVE_SEEK, so we need to handle also these cases here. */
         case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
+            /* Note: p7zip does not use POSIX-equivalent error codes for ERROR_DIRECTORY and ERROR_NO_MORE_FILES
+             *       so we need to handle also these cases here. */
             return "The directory name is invalid.";
         case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return "There are no more files.";
-        case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+        case HRESULT_WIN32_ERROR_NEGATIVE_SEEK:
+            /* Note: p7zip and 7-zip do not use a POSIX-equivalent error code for ERROR_NEGATIVE_SEEK, but rather
+             *       its Win32 value; both also use the FACILITY_WIN32 (7) as facility code for the corresponding
+             *       HRESULT_WIN32_ERROR_NEGATIVE_SEEK, so we cannot use 7-zip's HRESULT_FROM_WIN32 macro
+             *       since it uses another facility code, i.e., FACILITY_ERRNO (0x800).
+             *       Hence, we simply check for the final HRESULT code. */
             return "An attempt was made to move the file pointer before the beginning of the file.";
         case E_FAIL:
             return "Unspecified error";
         default:
-            if ( HRESULT_FACILITY( ev ) == FACILITY_WIN32 ) {
+            if ( HRESULT_FACILITY( ev ) == FACILITY_CODE ) {
                 // POSIX error code wrapped in a HRESULT value (e.g., through HRESULT_FROM_WIN32 macro)
                 return std::system_category().message( HRESULT_CODE( ev ) );
             }
@@ -88,7 +84,7 @@ std::string hresult_category_t::message( int ev ) const {
 
 std::error_condition hresult_category_t::default_error_condition( int ev ) const noexcept {
     switch ( static_cast< HRESULT >( ev ) ) {
-        // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors
+        // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors.
         case E_ABORT:
             return std::make_error_condition( std::errc::operation_canceled );
         case E_NOTIMPL:
@@ -98,7 +94,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         case HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ):
 #endif
         case E_NOINTERFACE:
-            // e.g., function implemented, parameters ok, but the requested functionality is not available
+            // e.g., function implemented, parameters ok, but the requested functionality is not available.
             return std::make_error_condition( std::errc::not_supported );
 #ifdef _WIN32
         case E_PENDING:
@@ -107,19 +103,19 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         case E_HANDLE:
 #endif
         case E_INVALIDARG:
-        case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in stream classes functions.
-        case HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK ):
+        case STG_E_INVALIDFUNCTION: // 7-zip uses this for wrong seekOrigin parameters in the stream classes functions.
+        case HRESULT_WIN32_ERROR_NEGATIVE_SEEK:
             return std::make_error_condition( std::errc::invalid_argument );
-        case HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
+        case __HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
-        case HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
+        case __HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
             return std::make_error_condition( std::errc::no_such_file_or_directory );
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );
         default:
-            if ( HRESULT_FACILITY( ev ) == FACILITY_WIN32 ) {
+            if ( HRESULT_FACILITY( ev ) == FACILITY_CODE ) {
 #ifndef __MINGW32__
-                /* Note: MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
+                /* MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
                  * However, on Windows ev is a Win32 error wrapped into a HRESULT (e.g., through HRESULT_FROM_WIN32).
                  * Hence, to avoid returning a wrong error_condition, this check is not performed on MinGW,
                  * and instead we rely on specific cases for most common Win32 error codes (see 'else' branch).
@@ -163,7 +159,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
     }
 }
 
-std::error_category& bit7z::hresult_category() noexcept {
-    static bit7z::hresult_category_t instance{};
+const std::error_category& bit7z::hresult_category() noexcept {
+    static const bit7z::hresult_category_t instance{};
     return instance;
 }

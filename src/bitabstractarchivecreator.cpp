@@ -2,25 +2,17 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "bitabstractarchivecreator.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 
 using namespace bit7z;
@@ -48,7 +40,7 @@ bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
 
 bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) noexcept {
     static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
-    static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e. 2^30 bytes
+    static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e., 2^30 bytes
     static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
 
     switch ( method ) {
@@ -119,18 +111,18 @@ const wchar_t* methodName( BitCompressionMethod method ) noexcept {
 BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
                                                       const BitInOutFormat& format,
                                                       tstring password,
-                                                      UpdateMode update_mode ) :
-        BitAbstractArchiveHandler( lib, std::move( password ) ),
-        mFormat( format ),
-        mUpdateMode( update_mode ),
-        mCompressionLevel( BitCompressionLevel::Normal ),
-        mCompressionMethod( format.defaultMethod() ),
-        mDictionarySize( 0 ),
-        mWordSize( 0 ),
-        mCryptHeaders( false ),
-        mSolidMode( false ),
-        mVolumeSize( 0 ),
-        mThreadsCount( 0 ) {}
+                                                      UpdateMode update_mode )
+    : BitAbstractArchiveHandler( lib, std::move( password ) ),
+      mFormat( format ),
+      mUpdateMode( update_mode ),
+      mCompressionLevel( BitCompressionLevel::Normal ),
+      mCompressionMethod( format.defaultMethod() ),
+      mDictionarySize( 0 ),
+      mWordSize( 0 ),
+      mCryptHeaders( false ),
+      mSolidMode( false ),
+      mVolumeSize( 0 ),
+      mThreadsCount( 0 ) {}
 
 const BitInFormat& BitAbstractArchiveCreator::format() const noexcept {
     return mFormat;
@@ -280,7 +272,7 @@ ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
         values.emplace_back( mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
-        const wchar_t* prop_name;
+        const wchar_t* prop_name; // NOLINT(cppcoreguidelines-init-variables)
         //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
@@ -291,7 +283,7 @@ ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
         values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
     }
     if ( mWordSize != 0 ) {
-        const wchar_t* prop_name;
+        const wchar_t* prop_name; // NOLINT(cppcoreguidelines-init-variables)
         //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
         if ( mFormat == BitFormat::SevenZip ) {
             prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0o" : L"0fb" );

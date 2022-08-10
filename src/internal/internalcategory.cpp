@@ -2,21 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "internal/internalcategory.hpp"
@@ -34,7 +25,7 @@ std::string internal_category_t::message( int ev ) const noexcept {
         case BitError::Fail:
             return "Unspecified error.";
         case BitError::FilterNotSpecified:
-            return "Item filter not specified.";
+            return "No item filter specified.";
         case BitError::FormatFeatureNotSupported:
             return "Feature not supported by the archive format.";
         case BitError::IndicesNotSpecified:
@@ -85,6 +76,7 @@ std::error_condition bit7z::internal_category_t::default_error_condition( int ev
         case BitError::InvalidDictionarySize:
         case BitError::InvalidIndex:
         case BitError::InvalidWordSize:
+        case BitError::ItemIsAFolder:
         case BitError::NonEmptyOutputBuffer:
             return std::make_error_condition( std::errc::invalid_argument );
         case BitError::NoMatchingItems:
@@ -92,12 +84,15 @@ std::error_condition bit7z::internal_category_t::default_error_condition( int ev
         case BitError::RequestedWrongVariantType:
         case BitError::UnsupportedOperation:
             return std::make_error_condition( std::errc::operation_not_supported );
+        case BitError::ItemMarkedAsDeleted:
+        case BitError::WrongUpdateMode:
+            return std::make_error_condition( std::errc::operation_not_permitted );
         default:
             return error_category::default_error_condition( ev );
     }
 }
 
-std::error_category& bit7z::internal_category() noexcept {
-    static internal_category_t instance{};
+const std::error_category& bit7z::internal_category() noexcept {
+    static const internal_category_t instance{};
     return instance;
 }

@@ -2,25 +2,17 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2021  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
 #include "bitinputarchive.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/bufferextractcallback.hpp"
 #include "internal/cbufferinstream.hpp"
@@ -46,7 +38,8 @@ CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* 
 
 void extractArc( IInArchive* in_archive, const vector< uint32_t >& indices, ExtractCallback* extract_callback ) {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
-    const uint32_t num_items = indices.empty() ? static_cast< uint32_t >( -1 ) : static_cast< uint32_t >( indices.size() );
+    const uint32_t num_items = indices.empty() ?
+                               std::numeric_limits< uint32_t >::max() : static_cast< uint32_t >( indices.size() );
 
     const HRESULT res = in_archive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
     if ( res != S_OK ) {
@@ -76,7 +69,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 #else
     GUID format_GUID = formatGUID( mArchiveHandler.format() );
 #endif
-    // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
+    // NOTE: CMyComPtr is still needed: if an error occurs, and an exception is thrown,
     // the IInArchive object is deleted automatically!
     CMyComPtr< IInArchive > in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
 
@@ -90,10 +83,10 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
     if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detected_by_signature ) {
         /* User wanted auto-detection of format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
-         * NOTE: If user specified explicitly a format (i.e. not BitFormat::Auto), this check is not performed
+         * NOTE: If user specified explicitly a format (i.e., not BitFormat::Auto), this check is not performed,
          *       and an exception is thrown (next if)!
          * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected
-         *         a wrong format, no further check can be done and an exception must be thrown (next if)! */
+         *         a wrong format, no further check can be done, and an exception must be thrown (next if)! */
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         format_GUID = formatGUID( *mDetectedFormat );
         in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
@@ -111,34 +104,30 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstring in_file )
     : mArchiveHandler{ handler }, mArchivePath{ std::move( in_file ) } {
 
-    auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
-    if ( file_stream->fail() ) {
-        //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions
-        throw BitException( "Failed to open the archive file",
-                            std::make_error_code( std::errc::io_error ), mArchivePath );
-    }
 #ifdef BIT7Z_AUTO_FORMAT
-    //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
+    //if auto, detect the format from extension (and try later from signature if it fails), otherwise try passed format.
     mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath )
                                                             : &handler.format() );
 #else
     mDetectedFormat = &handler.format();
 #endif
+
+    auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
     mInArchive = openArchiveStream( mArchivePath, file_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )
-    : mArchiveHandler{ handler } {
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+      mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
-    mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-    mInArchive = openArchiveStream( TSTRING( "." ), buf_stream );
+    mInArchive = openArchiveStream( BIT7Z_STRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream )
-    : mArchiveHandler{ handler } {
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+      mArchiveHandler{ handler } {
     auto std_stream = bit7z::make_com< CStdInStream, IInStream >( in_stream );
-    mDetectedFormat = &handler.format(); //if auto, detect format from content, otherwise try passed format
-    mInArchive = openArchiveStream( TSTRING( "." ), std_stream );
+    mInArchive = openArchiveStream( BIT7Z_STRING( "." ), std_stream );
 }
 
 BitPropVariant BitInputArchive::archiveProperty( BitProperty property ) const {
@@ -154,14 +143,14 @@ BitPropVariant BitInputArchive::itemProperty( uint32_t index, BitProperty proper
     BitPropVariant item_property;
     const HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve property for item at index " + std::to_string( index ),
+        throw BitException( "Could not retrieve property for item at the index " + std::to_string( index ),
                             make_hresult_code( res ) );
     }
     return item_property;
 }
 
 uint32_t BitInputArchive::itemsCount() const {
-    uint32_t items_count;
+    uint32_t items_count{};
     const HRESULT res = mInArchive->GetNumberOfItems( &items_count );
     if ( res != S_OK ) {
         throw BitException( "Could not retrieve the number of items in the archive", make_hresult_code( res ) );
@@ -203,18 +192,18 @@ const BitAbstractArchiveHandler& BitInputArchive::handler() const noexcept {
 
 void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >& indices ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, out_dir );
-    extractArc( mInArchive, indices, callback);
+    extractArc( mInArchive, indices, callback );
 }
 
 void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
@@ -228,29 +217,29 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) co
 void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
     const vector< uint32_t > indices( 1, index );
     auto extract_callback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, out_stream );
-    extractArc( mInArchive, indices, extract_callback);
+    extractArc( mInArchive, indices, extract_callback );
 }
 
 void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
-        throw BitException( "Cannot extract item at index " + std::to_string( index ),
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { //Consider only files, not folders
-        throw BitException( "Cannot extract item at index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
@@ -275,7 +264,7 @@ void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const
     }
 
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, out_map );
-    extractArc( mInArchive, files_indices, extract_callback);
+    extractArc( mInArchive, files_indices, extract_callback );
 }
 
 void BitInputArchive::test() const {
