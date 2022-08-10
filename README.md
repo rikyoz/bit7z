@@ -222,7 +222,7 @@ For more details, please check:
 - The [LICENSE](./LICENSE) file.
 - [Mozilla's MPL-2.0 FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/)
 
-Older versions (v3.1 or earlier) of bit7z were released under the [GNU General Public License v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+Older versions (v3.1 and earlier) of bit7z were released under the [GNU General Public License v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
 
 <br/>
 <div align="center">
