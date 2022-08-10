@@ -8,6 +8,7 @@
 *.txt.user
 *.lastcodeanalysissucceeded
 *.filters
+*.vcxproj
 *.vcxproj.user
 .qmake.stash
 *.a
