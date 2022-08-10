@@ -45,7 +45,7 @@ It supports compression and extraction to and from the filesystem or the memory,
 ### Notes
 
 The presence or not of some of the above features depends on the particular shared library used along with bit7z.<br/>
-For example, the 7z.dll should support all these features, while 7za.dll should support only the 7z file format, and the 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
+For example, the 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and the 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
 In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regexes_) are disabled by default, and macro defines must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
