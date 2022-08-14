@@ -190,18 +190,11 @@ On Unix systems (e.g., Linux, macOS), you should link your program _also_ with *
 
 ## :gear: Building bit7z
 
-### Using CMake
-
 ```bash
+cd <bit7z folder>
 mkdir build && cd build
 cmake ../ -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j --config Release
-```
-
-### Using MSBuild
-
-```bash
-msbuild bit7z.vcxproj /p:configuration=release
 ```
 
 A more detailed guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
