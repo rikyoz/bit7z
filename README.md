@@ -166,9 +166,9 @@ The newest bit7z v4 introduced some major breaking changes to the API. In partic
 
 - By default, the project now follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
     - The default string type is now `std::string` (instead of `std::wstring`) so that the library can be used in cross-platform projects more easily.
-    - `std::string`s will be considered UTF-8 encoded.
+    - Input `std::string`s will be considered as UTF-8 encoded.
     - You can still achieve the old behavior by using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
-- The old `BitExtractor` class was renamed to `BitFileExtractor`.
+- The old `BitExtractor` class is now called `BitFileExtractor`.
     - Now `BitExtractor` is just the name of a template class for all the extraction classes.
 
 ## :file_cabinet: Download
