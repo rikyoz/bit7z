@@ -228,6 +228,11 @@ void BitAbstractArchiveCreator::setUpdateMode( UpdateMode mode ) {
     mUpdateMode = mode;
 }
 
+void BitAbstractArchiveCreator::setUpdateMode( bool can_update ) {
+    // Same behavior as in bit7z v3 API.
+    setUpdateMode( can_update ? UpdateMode::Append : UpdateMode::None );
+}
+
 void BitAbstractArchiveCreator::setVolumeSize( uint64_t volume_size ) noexcept {
     mVolumeSize = volume_size;
 }

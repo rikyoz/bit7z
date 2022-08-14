@@ -200,6 +200,18 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         virtual void setUpdateMode( UpdateMode mode );
 
         /**
+         * @brief Sets whether the creator can update existing archives or not.
+         *
+         * @deprecated since 4.0. It is provided just for an easier transition from the old v3 API.
+         *
+         * @note If set to false, a subsequent compression operation may throw an exception
+         *       if it targets an existing archive.
+         *
+         * @param can_update if true, compressing operations will update existing archives.
+         */
+        void setUpdateMode( bool can_update );
+
+        /**
          * @brief Sets the volume_size (in bytes) of the output archive volumes.
          *
          * @note This setting has effects only when the destination archive is on the filesystem.
