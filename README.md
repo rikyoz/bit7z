@@ -160,6 +160,17 @@ try { //bit7z classes can throw BitException objects
 
 A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
+## :rocket: Upgrading from bit7z v3 to v4
+
+The newest bit7z v4 introduced some major breaking changes to the API. In particular:
+
+- By default, the project now follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
+    - The default string type is now `std::string` (instead of `std::wstring`) so that the library can be used in cross-platform projects more easily.
+    - `std::string`s will be considered UTF-8 encoded.
+    - You can still achieve the old behavior by using bit7z with the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
+- The old `BitExtractor` class was renamed to `BitFileExtractor`.
+    - Now `BitExtractor` is just the name of a template class for all the extraction classes.
+
 ## :file_cabinet: Download
 
 <div align="center">
