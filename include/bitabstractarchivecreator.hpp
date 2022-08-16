@@ -29,10 +29,13 @@ struct ArchiveProperties {
     vector< BitPropVariant > values;
 };
 
+/**
+ * @brief Enumeration representing how an archive creator should deal when the output archive already exists.
+ */
 enum struct UpdateMode {
-    None,
-    Append,
-    Overwrite
+    None, ///< The creator will throw an exception.
+    Append, ///< New items will be appended to the archive.
+    Overwrite ///< New items whose path already exists in the archive will be overwritten, other will be appended.
 };
 
 /**
