@@ -35,7 +35,8 @@ struct ArchiveProperties {
 enum struct UpdateMode {
     None, ///< The creator will throw an exception.
     Append, ///< New items will be appended to the archive.
-    Overwrite ///< New items whose path already exists in the archive will be overwritten, other will be appended.
+    Overwrite, ///< New items whose path already exists in the archive will be overwritten, other will be appended.
+    OverwriteArchive ///< The output archive will be deleted and recreated (unless it is a multi-volume archive, in which case an exception is thrown).
 };
 
 /**

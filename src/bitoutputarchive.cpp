@@ -33,8 +33,10 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
             throw BitException( "Cannot update existing archive",
                                 make_error_code( BitError::FormatFeatureNotSupported ) );
         }
-        mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
-        mInputArchiveItemsCount = mInputArchive->itemsCount();
+        if ( mArchiveCreator.updateMode() != UpdateMode::OverwriteArchive ) {
+            mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
+            mInputArchiveItemsCount = mInputArchive->itemsCount();
+        }
     }
 }
 
@@ -88,6 +90,14 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
+    if ( mArchiveCreator.updateMode() == UpdateMode::OverwriteArchive ) {
+        std::error_code error;
+        fs::remove( out_file, error );
+        if ( error ) {
+            throw BitException( "Failed to delete the old archive file", error, out_file );
+        }
+    }
+
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressToFile( out_file, update_callback );
 }
@@ -183,7 +193,11 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
 
 void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     if ( !out_buffer.empty() ) {
-        throw BitException( "Cannot compress to buffer", make_error_code( BitError::NonEmptyOutputBuffer ) );
+        if ( mArchiveCreator.updateMode() == UpdateMode::OverwriteArchive ) {
+            out_buffer.clear();
+        } else {
+            throw BitException( "Cannot compress to buffer", make_error_code( BitError::NonEmptyOutputBuffer ) );
+        }
     }
 
     CMyComPtr< IOutArchive > new_arc = initOutArchive();
