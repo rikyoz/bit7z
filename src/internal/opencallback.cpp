@@ -18,11 +18,6 @@
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-/* Most of this code is taken from the COpenCallback class in Client7z.cpp of the 7z SDK
- * Main changes made:
- *  + Use of wstring instead of UString (see Callback base interface)
- *  + Error messages are not showed (see comments in ExtractCallback) */
-
 OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const tstring& filename )
     : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
 
