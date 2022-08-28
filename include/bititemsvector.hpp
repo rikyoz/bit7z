@@ -134,7 +134,7 @@ class BitItemsVector final {
          */
         BIT7Z_NODISCARD GenericInputItemVector::const_iterator cend() const noexcept;
 
-        ~BitItemsVector();
+        ~BitItemsVector() = default;
 
     private:
         GenericInputItemVector mItems;

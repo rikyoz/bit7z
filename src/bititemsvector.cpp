@@ -98,5 +98,3 @@ GenericInputItemVector::const_iterator BitItemsVector::cbegin() const noexcept {
 GenericInputItemVector::const_iterator BitItemsVector::cend() const noexcept {
     return mItems.cend();
 }
-
-BitItemsVector::~BitItemsVector() = default;

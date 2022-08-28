@@ -21,8 +21,7 @@ using std::wstring;
 
 class FileExtractCallback final : public ExtractCallback {
     public:
-        FileExtractCallback( const BitInputArchive& inputArchive,
-                             const tstring& directoryPath );
+        FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath );
 
         FileExtractCallback( const FileExtractCallback& ) = delete;
 
