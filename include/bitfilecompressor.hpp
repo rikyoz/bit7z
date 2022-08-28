@@ -55,8 +55,8 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          * The items in the first argument must be the relative or absolute paths to files or
          * directories existing on the filesystem.
          *
-         * @param in_paths      a vector of paths.
-         * @param out_file   the path (relative or absolute) to the output archive file.
+         * @param in_paths  a vector of paths.
+         * @param out_file  the path (relative or absolute) to the output archive file.
          */
         void compress( const vector< tstring >& in_paths, const tstring& out_file ) const;
 
@@ -68,8 +68,8 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          * Each pair of the map must follow the following format:
          *  {L"path to file in the filesystem", L"alias path in the archive"}.
          *
-         * @param in_paths      a map of paths and corresponding aliases.
-         * @param out_file   the path (relative or absolute) to the output archive file.
+         * @param in_paths  a map of paths and corresponding aliases.
+         * @param out_file  the path (relative or absolute) to the output archive file.
          */
         void compress( const map< tstring, tstring >& in_paths, const tstring& out_file ) const;
 
@@ -78,8 +78,8 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          *
          * @note Any path to a directory or to a not-existing file will be ignored!
          *
-         * @param in_files      the path (relative or absolute) to the input files.
-         * @param out_file   the path (relative or absolute) to the output archive file.
+         * @param in_files  the path (relative or absolute) to the input files.
+         * @param out_file  the path (relative or absolute) to the output archive file.
          */
         void compressFiles( const vector< tstring >& in_files, const tstring& out_file ) const;
 
@@ -87,9 +87,9 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          * @brief Compresses the files contained in a directory.
          *
          * @param in_dir        the path (relative or absolute) to the input directory.
-         * @param out_file   the path (relative or absolute) to the output archive file.
-         * @param recursive     if true, it searches files inside the sub-folders of in_dir.
-         * @param filter        the filter to use when searching files inside in_dir.
+         * @param out_file      the path (relative or absolute) to the output archive file.
+         * @param recursive     (optional) if true, it searches files inside the sub-folders of in_dir.
+         * @param filter        (optional) the filter to use when searching files inside in_dir.
          */
         void compressFiles( const tstring& in_dir,
                             const tstring& out_file,
@@ -101,8 +101,8 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          *
          * @note This method is equivalent to compressFiles with filter set to L"".
          *
-         * @param in_dir        the path (relative or absolute) to the input directory.
-         * @param out_file   the path (relative or absolute) to the output archive file.
+         * @param in_dir    the path (relative or absolute) to the input directory.
+         * @param out_file  the path (relative or absolute) to the output archive file.
          */
         void compressDirectory( const tstring& in_dir, const tstring& out_file ) const;
 

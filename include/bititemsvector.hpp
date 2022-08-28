@@ -47,15 +47,13 @@ class BitItemsVector final {
          *                  empty string means "index all files".
          * @param recursive (optional) recursively index the given directory and all of its subdirectories.
          */
-        void indexDirectory( const fs::path& in_dir,
-                             const tstring& filter = {},
-                             bool recursive = true );
+        void indexDirectory( const fs::path& in_dir, const tstring& filter = {}, bool recursive = true );
 
         /**
          * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
          *
          * @param in_paths    the vector of filesystem paths.
-         * @param ignore_dirs if false, any directory path in the vector is also recursively indexed, and
+         * @param ignore_dirs (optional) if false, any directory path in the vector is also recursively indexed, and
          *                    the found files are added to the vector; otherwise, directory paths are ignored.
          */
         void indexPaths( const vector< tstring >& in_paths, bool ignore_dirs = false );
@@ -68,7 +66,7 @@ class BitItemsVector final {
          *
          * @param in_paths    map of filesystem paths with the corresponding user-defined path desired inside the
          *                    output archive.
-         * @param ignore_dirs if false, any directory path in the vector is also recursively indexed, and
+         * @param ignore_dirs (optional) if false, any directory path in the vector is also recursively indexed, and
          *                    the found files are added to the vector; otherwise, directory paths are ignored.
          */
         void indexPathsMap( const map< tstring, tstring >& in_paths, bool ignore_dirs = false );

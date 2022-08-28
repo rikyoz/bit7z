@@ -105,7 +105,8 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param out_dir       the output directory where extracted files will be put.
          * @param policy        the filtering policy to be applied to the matched items.
          */
-        void extractMatching( Input in_file, const tstring& item_filter,
+        void extractMatching( Input in_file,
+                              const tstring& item_filter,
                               const tstring& out_dir = {},
                               FilterPolicy policy = FilterPolicy::Include ) const {
             using namespace filesystem;
@@ -127,7 +128,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param out_buffer    the output buffer where to extract the file.
          * @param policy        the filtering policy to be applied to the matched items.
          */
-        void extractMatching( Input in_file, const tstring& item_filter, vector< byte_t >& out_buffer,
+        void extractMatching( Input in_file,
+                              const tstring& item_filter,
+                              vector< byte_t >& out_buffer,
                               FilterPolicy policy = FilterPolicy::Include ) const {
             using namespace filesystem;
 
@@ -148,7 +151,8 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param indices   the array of indices of the files in the archive that must be extracted.
          * @param out_dir   the output directory where the extracted files will be put.
          */
-        void extractItems( Input in_file, const vector< uint32_t >& indices,
+        void extractItems( Input in_file,
+                           const vector< uint32_t >& indices,
                            const tstring& out_dir = {} ) const {
             if ( indices.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );
@@ -182,7 +186,8 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param out_dir       the output directory where extracted files will be put.
          * @param policy        the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegex( Input in_file, const tstring& regex,
+        void extractMatchingRegex( Input in_file,
+                                   const tstring& regex,
                                    const tstring& out_dir = {},
                                    FilterPolicy policy = FilterPolicy::Include ) const {
             if ( regex.empty() ) {
@@ -205,7 +210,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param out_dir       the output directory where extracted files will be put.
          * @param policy        the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegex( Input in_file, const tstring& regex, vector< byte_t >& out_buffer,
+        void extractMatchingRegex( Input in_file,
+                                   const tstring& regex,
+                                   vector< byte_t >& out_buffer,
                                    FilterPolicy policy = FilterPolicy::Include ) const {
             if ( regex.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
@@ -233,7 +240,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
     private:
-        void extractMatchingFilter( Input in_file, const tstring& out_dir, FilterPolicy policy,
+        void extractMatchingFilter( Input in_file,
+                                    const tstring& out_dir,
+                                    FilterPolicy policy,
                                     const function< bool( const tstring& ) >& filter ) const {
             BitInputArchive in_archive( *this, in_file );
 
@@ -259,7 +268,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             in_archive.extract( out_dir, matched_indices );
         }
 
-        void extractMatchingFilter( Input in_file, vector< byte_t >& out_buffer, FilterPolicy policy,
+        void extractMatchingFilter( Input in_file,
+                                    vector< byte_t >& out_buffer,
+                                    FilterPolicy policy,
                                     const function< bool( const tstring& ) >& filter ) const {
             BitInputArchive in_archive( *this, in_file );
 
