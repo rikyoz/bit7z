@@ -98,3 +98,7 @@ GenericInputItemVector::const_iterator BitItemsVector::cbegin() const noexcept {
 GenericInputItemVector::const_iterator BitItemsVector::cend() const noexcept {
     return mItems.cend();
 }
+
+/* Note: separate declaration/definition of the default destructor is needed to use an incomplete type
+ *       for the unique_ptr objects stored in the vector. */
+BitItemsVector::~BitItemsVector() = default;
