@@ -31,6 +31,11 @@ struct GenericInputItem;
 using GenericInputItemPtr = std::unique_ptr< GenericInputItem >;
 using GenericInputItemVector = std::vector< GenericInputItemPtr >;
 
+struct IndexingOptions {
+    bool recursive = true;
+    bool retain_folder_structure = false;
+};
+
 /**
  * @brief The BitItemsVector class represents a vector of generic input items, i.e., items that can come
  * from the filesystem, from memory buffers, or from standard streams.
@@ -47,7 +52,7 @@ class BitItemsVector final {
          *                  empty string means "index all files".
          * @param recursive (optional) recursively index the given directory and all of its subdirectories.
          */
-        void indexDirectory( const fs::path& in_dir, const tstring& filter = {}, bool recursive = true );
+        void indexDirectory( const fs::path& in_dir, const tstring& filter = {}, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
@@ -56,7 +61,7 @@ class BitItemsVector final {
          * @param ignore_dirs (optional) if false, any directory path in the vector is also recursively indexed, and
          *                    the found files are added to the vector; otherwise, directory paths are ignored.
          */
-        void indexPaths( const vector< tstring >& in_paths, bool ignore_dirs = false );
+        void indexPaths( const vector< tstring >& in_paths, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given map of filesystem paths, adding to the vector all the files.
@@ -69,7 +74,7 @@ class BitItemsVector final {
          * @param ignore_dirs (optional) if false, any directory path in the vector is also recursively indexed, and
          *                    the found files are added to the vector; otherwise, directory paths are ignored.
          */
-        void indexPathsMap( const map< tstring, tstring >& in_paths, bool ignore_dirs = false );
+        void indexPathsMap( const map< tstring, tstring >& in_paths, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given file path, with an optional user-defined path to be used in output archives.
@@ -137,7 +142,7 @@ class BitItemsVector final {
     private:
         GenericInputItemVector mItems;
 
-        void indexItem( const FSItem& item, bool ignore_dirs );
+        void indexItem( const FSItem& item, bool recursive );
 };
 }  // namespace bit7z
 

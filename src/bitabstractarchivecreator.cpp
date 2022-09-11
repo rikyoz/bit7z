@@ -122,7 +122,9 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
       mCryptHeaders( false ),
       mSolidMode( false ),
       mVolumeSize( 0 ),
-      mThreadsCount( 0 ) {}
+      mThreadsCount( 0 ) {
+    mRetainDirectories = false;
+}
 
 const BitInFormat& BitAbstractArchiveCreator::format() const noexcept {
     return mFormat;

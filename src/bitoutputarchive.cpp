@@ -58,6 +58,8 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, st
 }
 
 void BitOutputArchive::addItems( const std::vector< tstring >& in_paths ) {
+    IndexingOptions options{};
+    options.retain_folder_structure = mArchiveCreator.retainDirectories();
     mNewItemsVector.indexPaths( in_paths );
 }
 
@@ -66,7 +68,7 @@ void BitOutputArchive::addItems( const std::map< tstring, tstring >& in_paths ) 
 }
 
 void BitOutputArchive::addFile( const tstring& in_file, const tstring& name ) {
-    mNewItemsVector.indexFile( in_file, name );
+    mNewItemsVector.indexFile( in_file, mArchiveCreator.retainDirectories() ? in_file : name );
 }
 
 void BitOutputArchive::addFile( const std::vector< byte_t >& in_buffer, const tstring& name ) {
@@ -78,15 +80,23 @@ void BitOutputArchive::addFile( std::istream& in_stream, const tstring& name ) {
 }
 
 void BitOutputArchive::addFiles( const std::vector< tstring >& in_files ) {
-    mNewItemsVector.indexPaths( in_files, true );
+    IndexingOptions options{};
+    options.recursive = false;
+    options.retain_folder_structure = mArchiveCreator.retainDirectories();
+    mNewItemsVector.indexPaths( in_files, options );
 }
 
 void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, bool recursive ) {
-    mNewItemsVector.indexDirectory( in_dir, filter, recursive );
+    IndexingOptions options{};
+    options.recursive = recursive;
+    options.retain_folder_structure = mArchiveCreator.retainDirectories();
+    mNewItemsVector.indexDirectory( in_dir, filter, options );
 }
 
 void BitOutputArchive::addDirectory( const tstring& in_dir ) {
-    mNewItemsVector.indexDirectory( in_dir );
+    IndexingOptions options{};
+    options.retain_folder_structure = mArchiveCreator.retainDirectories();
+    mNewItemsVector.indexDirectory( in_dir, "", options );
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
