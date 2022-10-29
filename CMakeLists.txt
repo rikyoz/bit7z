@@ -163,24 +163,25 @@ message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
 message( STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}" )
 
 # library target options
-set( TARGET_NAME bit7z${ARCH_POSTFIX} )
-add_library( ${TARGET_NAME} STATIC )
-target_sources( ${TARGET_NAME} PUBLIC ${PUBLIC_HEADERS}
-                               PRIVATE ${HEADERS} ${SOURCES} )
+set( LIB_TARGET bit7z${ARCH_POSTFIX} )
+add_library( ${LIB_TARGET} STATIC )
+target_sources( ${LIB_TARGET}
+                PUBLIC ${PUBLIC_HEADERS}
+                PRIVATE ${HEADERS} ${SOURCES} )
 
-target_include_directories( ${TARGET_NAME} PUBLIC "${PROJECT_SOURCE_DIR}/include/" ) # public includes
-target_include_directories( ${TARGET_NAME} PRIVATE "${EXTERNAL_LIBS_DIR}" "${7ZIP_SOURCE_DIR}/CPP/" ) # private includes
+target_include_directories( ${LIB_TARGET} PUBLIC "${PROJECT_SOURCE_DIR}/include/" ) # public includes
+target_include_directories( ${LIB_TARGET} PRIVATE "${EXTERNAL_LIBS_DIR}" "${7ZIP_SOURCE_DIR}/CPP/" ) # private includes
 
 # 7-zip compilation definitions
-target_compile_definitions( ${TARGET_NAME} PRIVATE UNICODE _UNICODE )
+target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
 if( WIN32 )
-    target_compile_definitions( ${TARGET_NAME} PRIVATE _WINDOWS )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE _WINDOWS )
 endif()
 
 if( UNIX )
-    target_compile_definitions( ${TARGET_NAME} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
+    target_compile_definitions( ${LIB_TARGET} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
                                 ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
-    target_link_libraries( ${TARGET_NAME} ${CMAKE_DL_LIBS} )
+    target_link_libraries( ${LIB_TARGET} ${CMAKE_DL_LIBS} )
 endif()
 
 # bit7z build options
