@@ -148,10 +148,10 @@ set( SOURCES
      src/internal/windows.cpp )
 
 # library output file name options
-include(cmake/OutputOptions.cmake)
+include( cmake/OutputOptions.cmake )
 
 # filesystem library
-include(cmake/Filesystem.cmake)
+include( cmake/Filesystem.cmake )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 # printing library and compiler information (useful for debugging)
@@ -185,7 +185,7 @@ if( UNIX )
 endif()
 
 # bit7z build options
-include(cmake/BuildOptions.cmake)
+include( cmake/BuildOptions.cmake )
 
 # compiler-specific options
-include(cmake/CompilerOptions.cmake)
+include( cmake/CompilerOptions.cmake )
