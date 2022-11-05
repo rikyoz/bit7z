@@ -28,3 +28,6 @@ message( STATUS "Use native string: ${BIT7Z_USE_NATIVE_STRING}" )
 if( BIT7Z_USE_NATIVE_STRING )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_USE_NATIVE_STRING )
 endif()
+
+option( BIT7Z_BUILD_TESTS "Enable or disable building the testing executable" )
+message( STATUS "Build tests: ${BIT7Z_BUILD_TESTS}" )

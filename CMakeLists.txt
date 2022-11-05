@@ -189,3 +189,8 @@ include( cmake/BuildOptions.cmake )
 
 # compiler-specific options
 include( cmake/CompilerOptions.cmake )
+
+if( BIT7Z_BUILD_TESTS )
+    # tests
+    add_subdirectory( test )
+endif()

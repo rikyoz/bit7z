@@ -13,11 +13,10 @@
 .qmake.stash
 *.a
 third_party/
+bin/
 build/
 out/
-test/files/
 pack/
-test/
 roadmap.txt
 gh-pages/
 doc/wiki/
@@ -25,7 +24,6 @@ doc/xml/
 doc/html/
 doc/rst/
 doc/md/
-test*/
 .vs/
 x64/
 \.idea/
