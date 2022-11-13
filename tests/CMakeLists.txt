@@ -35,7 +35,7 @@ set( SOURCE_FILES
 set( TESTS_TARGET bit7z${ARCH_POSTFIX}-tests )
 add_executable( ${TESTS_TARGET} ${SOURCE_FILES} )
 
-option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" )
+option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON )
 message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
 if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
     target_compile_definitions( ${TESTS_TARGET} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
