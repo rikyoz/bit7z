@@ -42,11 +42,16 @@ TEST_CASE( "Bit7zLibrary: Normal construction", "[bit7zlibrary]" ) {
     const auto lib_path = sevenzip_lib_path();
     INFO( "Library path: " << lib_path )
 
-    Bit7zLibrary lib{ lib_path };
+    REQUIRE_NOTHROW( Bit7zLibrary{ lib_path } );
+}
 
-    SECTION( "setLargePageMode" ) {
-        REQUIRE_NOTHROW( lib.setLargePageMode() );
-    }
+// Note: we are assuming that the 7-zip shared library was built with support to large pages.
+// This is usually true due to the default compilation flags of the 7-zip libraries.
+TEST_CASE( "Bit7zLibrary: Set large page mode", "[bit7zlibrary]" ) {
+    const auto lib_path = sevenzip_lib_path();
+
+    Bit7zLibrary lib{ lib_path };
+    REQUIRE_NOTHROW( lib.setLargePageMode() );
 }
 
 }
