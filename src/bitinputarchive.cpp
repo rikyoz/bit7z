@@ -95,12 +95,61 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     return in_archive.Detach();
 }
 
+
+bool isFileExists_ifstream(const std::string& name) {
+	std::ifstream f(name.c_str());
+	return f.good();
+}
+
+std::string dirpath(std::string fullPath)
+{
+	size_t index_1 = fullPath.find_last_of("/");
+	size_t index_2 = fullPath.find_last_of("\\");
+	if (index_1 == std::string::npos && index_2 == std::string::npos)
+		return fullPath;
+
+	size_t idx = 0;
+	if (index_1 == std::string::npos)
+	{
+		idx = index_2;
+	}
+	else if (index_2 == std::string::npos)
+	{
+		idx = index_1;
+	}
+	else
+	{
+		idx = (index_1 > index_2) ? index_1 : index_2;
+	}
+	std::string basename = fullPath.substr(0, idx + 1);
+	return basename;
+}
+
+std::string WString2String(const std::wstring& wstr) {
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.to_bytes(wstr);
+}
+
+std::wstring String2WString(const std::string& mbs) {
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+	return converter.from_bytes(mbs);
+}
+
+size_t getFielSize(const char* filepath) {
+	struct _stat info;
+	_stat(filepath, &info);
+	return info.st_size;
+}
+
+bool endwith(const wstring& in, const wstring& text) {
+	if (in.size() < text.size()) {
+		return false;
+	}
+	return in.substr(in.size() - text.size()) == text;
+}
+
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file ) {
-    auto* file_stream_spec = new CInFileStream;
-    CMyComPtr< IInStream > file_stream = file_stream_spec;
-    if ( !file_stream_spec->Open( in_file.c_str() ) ) {
-        throw BitException( L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED );
-    }
+   
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
     mDetectedFormat = ( handler.format() == BitFormat::Auto ?
@@ -108,8 +157,51 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 #else
     mDetectedFormat = &handler.format();
 #endif
+	CMyComPtr< IInStream > file_stream = nullptr;
+	if (*mDetectedFormat ==BitFormat::SevenZip &&  endwith(in_file,L"001")) {
+		std::string strFile = WString2String(in_file);
+ 		auto* file_stream_spec = new CMultiStream;
+ 		int nIndex = 1;
+ 		wstring curIndexFile = in_file;
+ 		do 
+ 		{
+ 			auto substream = new CInFileStream;
+ 			if (!substream->Open(curIndexFile.c_str())) {
+				throw BitException(L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED);
+ 			}
+
+			CMultiStream::CSubStreamInfo csi;
+			csi.Stream = substream;
+			csi.LocalPos = 0;
+			csi.Size = getFielSize(WString2String(curIndexFile).c_str());
+			file_stream_spec->Streams.Add(csi);
+
+			nIndex++;
+			char szNext[20];
+			sprintf(szNext, "%03d", nIndex);
+
+			std::string  file = strFile.substr(0, strFile.size()-3 ) + szNext;
+			if (!isFileExists_ifstream(file)) {
+				break;
+			}
+
+			curIndexFile = String2WString(file);
+		} while (1);
+ 
+ 		file_stream_spec->Init();
+		file_stream = file_stream_spec;
+	}
+	else {
+		auto* file_stream_spec = new CInFileStream;
+		file_stream = file_stream_spec;
+		if (!file_stream_spec->Open(in_file.c_str())) {
+			throw BitException(L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED);
+		}
+	}
+
     mInArchive = openArchiveStream( handler, in_file, file_stream );
 }
+
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const vector< byte_t >& in_buffer ) {
     auto* buf_stream_spec = new CBufInStream;
