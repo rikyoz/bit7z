@@ -184,7 +184,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 
 			nIndex++;
 			char szNext[20];
-			sprintf(szNext, "%03d", nIndex);
+			sprintf_s(szNext, "%03d", nIndex);
 
 			std::string  file = strFile.substr(0, strFile.size()-3 ) + szNext;
 			if (!isFileExists_ifstream(file)) {
