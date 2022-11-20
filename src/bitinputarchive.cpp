@@ -102,36 +102,6 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     return in_archive.Detach();
 }
 
-
-bool isFileExists_ifstream(const std::string& name) {
-	std::ifstream f(name.c_str());
-	return f.good();
-}
-
-std::string dirpath(std::string fullPath)
-{
-	size_t index_1 = fullPath.find_last_of("/");
-	size_t index_2 = fullPath.find_last_of("\\");
-	if (index_1 == std::string::npos && index_2 == std::string::npos)
-		return fullPath;
-
-	size_t idx = 0;
-	if (index_1 == std::string::npos)
-	{
-		idx = index_2;
-	}
-	else if (index_2 == std::string::npos)
-	{
-		idx = index_1;
-	}
-	else
-	{
-		idx = (index_1 > index_2) ? index_1 : index_2;
-	}
-	std::string basename = fullPath.substr(0, idx + 1);
-	return basename;
-}
-
 bool endwith(const wstring& in, const wstring& text) {
 	if (in.size() < text.size()) {
 		return false;
