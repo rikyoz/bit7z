@@ -105,3 +105,9 @@ bool w_match( const wchar_t* needle, const wchar_t* haystack, size_t max ) {
 bool fsutil::wildcardMatch( const wstring& pattern, const wstring& str ) {
     return w_match( pattern.empty() ? L"*" : pattern.c_str(), str.c_str(), str.size() );
 }
+
+uint64_t fsutil::fileSize( const wstring& path ) {
+    struct __stat64 info{};
+    _wstat64( path.c_str(), &info );
+    return info.st_size;
+}

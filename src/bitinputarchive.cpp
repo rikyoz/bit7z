@@ -25,6 +25,7 @@
 #include "../include/cstdinstream.hpp"
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
+#include "../include/fsutil.hpp"
 
 #include "Common/Common.h"
 #include "Common/MyCom.h"
@@ -131,22 +132,6 @@ std::string dirpath(std::string fullPath)
 	return basename;
 }
 
-std::string WString2String(const std::wstring& wstr) {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.to_bytes(wstr);
-}
-
-std::wstring String2WString(const std::string& mbs) {
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	return converter.from_bytes(mbs);
-}
-
-size_t getFielSize(const char* filepath) {
-	struct _stat info;
-	_stat(filepath, &info);
-	return info.st_size;
-}
-
 bool endwith(const wstring& in, const wstring& text) {
 	if (in.size() < text.size()) {
 		return false;
@@ -165,7 +150,6 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 #endif
 	CMyComPtr< IInStream > file_stream = nullptr;
 	if (*mDetectedFormat ==BitFormat::SevenZip &&  endwith(in_file,L"001")) {
-		std::string strFile = WString2String(in_file);
  		auto* file_stream_spec = new CMultiStream;
  		int nIndex = 1;
  		wstring curIndexFile = in_file;
@@ -179,19 +163,19 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 			CMultiStream::CSubStreamInfo csi;
 			csi.Stream = substream;
 			csi.LocalPos = 0;
-			csi.Size = getFielSize(WString2String(curIndexFile).c_str());
+			csi.Size = filesystem::fsutil::fileSize(curIndexFile);
 			file_stream_spec->Streams.Add(csi);
 
 			nIndex++;
-			char szNext[20];
-			sprintf_s(szNext, "%03d", nIndex);
+			wchar_t szNext[20];
+			swprintf_s(szNext, L"%03d", nIndex);
 
-			std::string  file = strFile.substr(0, strFile.size()-3 ) + szNext;
-			if (!isFileExists_ifstream(file)) {
+			std::wstring next_volume_path = in_file.substr(0, in_file.size()-3 ) + szNext;
+			if (!filesystem::fsutil::pathExists(next_volume_path)) {
 				break;
 			}
 
-			curIndexFile = String2WString(file);
+			curIndexFile = next_volume_path;
 		} while (1);
  
  		file_stream_spec->Init();
