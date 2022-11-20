@@ -119,18 +119,18 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 	if (*mDetectedFormat ==BitFormat::SevenZip && ends_with(in_file,L"001")) {
  		auto* file_stream_spec = new CMultiStream;
  		int nIndex = 1;
- 		wstring curIndexFile = in_file;
- 		do 
+ 		wstring current_volume_path = in_file;
+ 		do
  		{
  			auto substream = new CInFileStream;
- 			if (!substream->Open(curIndexFile.c_str())) {
+ 			if (!substream->Open( current_volume_path.c_str())) {
 				throw BitException(L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED);
  			}
 
 			CMultiStream::CSubStreamInfo csi;
 			csi.Stream = substream;
 			csi.LocalPos = 0;
-			csi.Size = filesystem::fsutil::fileSize(curIndexFile);
+			csi.Size = filesystem::fsutil::fileSize( current_volume_path);
 			file_stream_spec->Streams.Add(csi);
 
 			nIndex++;
@@ -142,7 +142,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 				break;
 			}
 
-			curIndexFile = next_volume_path;
+            current_volume_path = next_volume_path;
 		} while (1);
  
  		file_stream_spec->Init();
