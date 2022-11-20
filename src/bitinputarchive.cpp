@@ -26,9 +26,15 @@
 #include "../include/opencallback.hpp"
 #include "../include/extractcallback.hpp"
 
+#include "Common/Common.h"
 #include "Common/MyCom.h"
+#include "7zip/Archive/Common/MultiStream.h"
 #include "7zip/Common/FileStreams.h"
 #include "7zip/Common/StreamObjects.h"
+
+#include <codecvt>
+#include <fstream>
+#include <string>
 
 using namespace bit7z;
 using namespace NWindows;
