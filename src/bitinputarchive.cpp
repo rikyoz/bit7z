@@ -33,8 +33,6 @@
 #include "7zip/Common/FileStreams.h"
 #include "7zip/Common/StreamObjects.h"
 
-#include <codecvt>
-#include <fstream>
 #include <string>
 
 using namespace bit7z;
