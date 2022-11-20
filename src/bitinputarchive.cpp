@@ -116,7 +116,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     mDetectedFormat = &handler.format();
 #endif
 	CMyComPtr< IInStream > file_stream = nullptr;
-	if (*mDetectedFormat ==BitFormat::SevenZip && ends_with(in_file,L"001")) {
+	if ( ends_with(in_file,L"001") ) {
  		auto* file_stream_spec = new CMultiStream;
  		int nIndex = 1;
  		wstring current_volume_path = in_file;
