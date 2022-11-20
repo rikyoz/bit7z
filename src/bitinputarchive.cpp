@@ -102,8 +102,8 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     return in_archive.Detach();
 }
 
-bool ends_with(const wstring& str, const wstring& suffix) {
-    return str.size() >= suffix.size() && str.compare(str.size()-suffix.size(), suffix.size(), suffix) == 0;
+bool ends_with( const wstring& str, const wstring& suffix ) {
+    return str.size() >= suffix.size() && str.compare( str.size() - suffix.size(), suffix.size(), suffix ) == 0;
 }
 
 CMyComPtr< IInStream > initInputStream( const wstring& in_file ) {
