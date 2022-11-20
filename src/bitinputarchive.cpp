@@ -120,8 +120,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
  		auto* file_stream_spec = new CMultiStream;
  		int nIndex = 1;
  		wstring current_volume_path = in_file;
- 		do
- 		{
+ 		while ( filesystem::fsutil::pathExists( current_volume_path ) )	{
  			auto substream = new CInFileStream;
  			if (!substream->Open( current_volume_path.c_str())) {
 				throw BitException(L"Cannot open archive file '" + in_file + L"'", ERROR_OPEN_FAILED);
@@ -138,12 +137,8 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
 			swprintf_s(szNext, L"%03d", nIndex);
 
 			std::wstring next_volume_path = in_file.substr(0, in_file.size()-3 ) + szNext;
-			if (!filesystem::fsutil::pathExists(next_volume_path)) {
-				break;
-			}
-
             current_volume_path = next_volume_path;
-		} while (1);
+		}
  
  		file_stream_spec->Init();
 		file_stream = file_stream_spec;
