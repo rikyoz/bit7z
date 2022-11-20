@@ -102,11 +102,8 @@ IInArchive* BitInputArchive::openArchiveStream( const BitArchiveHandler& handler
     return in_archive.Detach();
 }
 
-bool endwith(const wstring& in, const wstring& text) {
-	if (in.size() < text.size()) {
-		return false;
-	}
-	return in.substr(in.size() - text.size()) == text;
+bool ends_with(const wstring& str, const wstring& suffix) {
+    return str.size() >= suffix.size() && str.compare(str.size()-suffix.size(), suffix.size(), suffix) == 0;
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file ) {
@@ -119,7 +116,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     mDetectedFormat = &handler.format();
 #endif
 	CMyComPtr< IInStream > file_stream = nullptr;
-	if (*mDetectedFormat ==BitFormat::SevenZip &&  endwith(in_file,L"001")) {
+	if (*mDetectedFormat ==BitFormat::SevenZip && ends_with(in_file,L"001")) {
  		auto* file_stream_spec = new CMultiStream;
  		int nIndex = 1;
  		wstring curIndexFile = in_file;
