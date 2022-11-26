@@ -104,9 +104,9 @@ bool ends_with( const wstring& str, const wstring& suffix ) {
     return str.size() >= suffix.size() && str.compare( str.size() - suffix.size(), suffix.size(), suffix ) == 0;
 }
 
-CMyComPtr< IInStream > initInputStream( const wstring& in_file ) {
+CMyComPtr< IInStream > initInputStream( const BitInFormat* format, const wstring& in_file ) {
     CMyComPtr< IInStream > file_stream = nullptr;
-    if ( ends_with( in_file, L"001" ) ) {
+    if ( *format != BitFormat::Split && ends_with( in_file, L"001" ) ) {
         auto* file_stream_spec = new CMultiStream;
         int nIndex = 1;
         wstring current_volume_path = in_file;
@@ -143,7 +143,6 @@ CMyComPtr< IInStream > initInputStream( const wstring& in_file ) {
 }
 
 BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstring& in_file ) {
-    CMyComPtr< IInStream > file_stream = initInputStream( in_file );
 
 #ifdef BIT7Z_AUTO_FORMAT
     //if auto, detect format from signature here (and try later from content if this fails), otherwise try passed format
@@ -153,6 +152,7 @@ BitInputArchive::BitInputArchive( const BitArchiveHandler& handler, const wstrin
     mDetectedFormat = &handler.format();
 #endif
 
+    CMyComPtr< IInStream > file_stream = initInputStream( mDetectedFormat, in_file );
     mInArchive = openArchiveStream( handler, in_file, file_stream );
 }
 
