@@ -60,7 +60,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, st
 void BitOutputArchive::addItems( const std::vector< tstring >& in_paths ) {
     IndexingOptions options{};
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
-    mNewItemsVector.indexPaths( in_paths );
+    mNewItemsVector.indexPaths( in_paths, options );
 }
 
 void BitOutputArchive::addItems( const std::map< tstring, tstring >& in_paths ) {
