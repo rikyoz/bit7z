@@ -18,12 +18,12 @@ using namespace bit7z;
 
 CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways )
     : CStdOutStream( mFileStream ), mFilePath{ filePath }, mBuffer{} {
-    std::error_code ec;
-    if ( !createAlways && fs::exists( filePath, ec ) ) {
-        if ( !ec ) { // the call to fs::exists succeeded, but filePath doesn't exist, and this is an error!
-            ec = std::make_error_code( std::errc::file_exists );
+    std::error_code error;
+    if ( !createAlways && fs::exists( filePath, error ) ) {
+        if ( !error ) {  // the call to fs::exists succeeded, but the filePath exists, and this is an error!
+            error = std::make_error_code( std::errc::file_exists );
         }
-        throw BitException( "Failed to create the output file", ec, filePath.native() );
+        throw BitException( "Failed to create the output file", error, filePath.native() );
     }
     mFileStream.open( filePath, std::ios::binary | std::ios::trunc );
     if ( mFileStream.fail() ) {
