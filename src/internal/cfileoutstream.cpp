@@ -16,7 +16,8 @@
 
 using namespace bit7z;
 
-CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways ) : CStdOutStream( mFileStream ), mBuffer{} {
+CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways )
+    : CStdOutStream( mFileStream ), mFilePath{ filePath }, mBuffer{} {
     std::error_code ec;
     if ( !createAlways && fs::exists( filePath, ec ) ) {
         if ( !ec ) { // the call to fs::exists succeeded, but filePath doesn't exist, and this is an error!
@@ -36,4 +37,11 @@ CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways ) : 
 
 bool CFileOutStream::fail() {
     return mFileStream.fail();
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) {
+    std::error_code error;
+    fs::resize_file( mFilePath, newSize, error );
+    return error ? E_FAIL : S_OK;
 }
