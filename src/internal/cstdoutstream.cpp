@@ -65,10 +65,23 @@ STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) {
+    if ( !mOutputStream ) {
+        return E_FAIL;
+    }
+
     const auto old_pos = mOutputStream.tellp();
     mOutputStream.seekp( 0, ostream::end );
 
-    const auto diff_pos = newSize - static_cast< uint64_t >( mOutputStream.tellp() );
+    if ( !mOutputStream ) {
+        return E_FAIL;
+    }
+
+    const auto current_pos = static_cast< uint64_t >( mOutputStream.tellp() );
+    if ( newSize < current_pos ) {
+        return E_FAIL;
+    }
+
+    const auto diff_pos = newSize - current_pos;
     if ( diff_pos > 0 ) {
         std::fill_n( std::ostream_iterator< char >( mOutputStream ), diff_pos, '\0' );
     }
