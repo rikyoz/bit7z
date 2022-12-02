@@ -23,7 +23,10 @@ class CFileOutStream : public CStdOutStream {
 
         BIT7Z_NODISCARD bool fail();
 
+        BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+
     private:
+        fs::path mFilePath;
         fs::ofstream mFileStream;
 
         static constexpr auto buffer_size = 1024 * 1024; // 1 MiB
