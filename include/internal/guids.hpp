@@ -14,7 +14,7 @@
 
 namespace bit7z {
 extern "C" {
-#ifndef _MSVC_VER
+#ifndef _MSC_VER
 extern const GUID IID_IUnknown;
 #endif
 
