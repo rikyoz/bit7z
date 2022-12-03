@@ -91,6 +91,10 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
     if( NOT MINGW )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wnon-virtual-dtor )
     else()
+        # Some versions of MinGW might complain that the library is too big when linking to it.
+        # Using -Wa,-mbig-obj fixes the linking error.
+        # (https://digitalkarabela.com/mingw-w64-how-to-fix-file-too-big-too-many-sections/).
+        target_compile_options( ${LIB_TARGET} PUBLIC -Wa,-mbig-obj )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wno-error=non-virtual-dtor )
         if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 8.0 )
             target_compile_options( ${LIB_TARGET} PRIVATE -Wno-cast-function-type )
