@@ -96,7 +96,7 @@ void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, b
 void BitOutputArchive::addDirectory( const tstring& in_dir ) {
     IndexingOptions options{};
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
-    mNewItemsVector.indexDirectory( in_dir, "", options );
+    mNewItemsVector.indexDirectory( in_dir, BIT7Z_STRING( "" ), options );
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
