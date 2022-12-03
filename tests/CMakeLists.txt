@@ -10,6 +10,10 @@ if( NOT EXISTS test_filesystem/folder/subfolder )
     file( MAKE_DIRECTORY test_filesystem/folder/subfolder )
 endif()
 
+set( CMAKE_CXX_STANDARD 11 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+message( STATUS "Language standard used for the tests: C++${CMAKE_CXX_STANDARD}" )
+
 # sources
 set( SOURCE_FILES
      # crc.cpp
