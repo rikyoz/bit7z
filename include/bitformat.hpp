@@ -32,15 +32,20 @@ enum struct FormatFeatures : unsigned {
 };
 
 template< typename E >
-inline constexpr auto to_underlying( E e ) noexcept {
-    return static_cast< std::underlying_type_t< E > >(e);
+using underlying_type_t = typename std::underlying_type< E >::type;
+
+template< typename E >
+inline constexpr auto to_underlying( E e ) noexcept -> underlying_type_t< E > {
+    return static_cast< underlying_type_t< E > >( e );
 }
 
 inline constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
     return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
 }
 
-inline constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
+using FormatFeaturesType = underlying_type_t< FormatFeatures >;
+
+inline constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeaturesType {
     return to_underlying( lhs ) & to_underlying( rhs );
 }
 
