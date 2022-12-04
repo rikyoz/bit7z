@@ -25,8 +25,8 @@ using namespace bit7z;
 TEST_CASE( "fsutil: Date conversion from std::time_t to FILETIME", "[fsutil][date functions]" ) {
     auto test_date = GENERATE( table< const char*, std::time_t, FILETIME >(
         {
-            { "21 December 2012, 12:00", 1356091200, { .dwLowDateTime = 3017121792, .dwHighDateTime = 30269298 } },
-            { "1 January 1970, 00:00",   0,          { .dwLowDateTime = 3577643008, .dwHighDateTime = 27111902 } }
+            { "21 December 2012, 12:00", 1356091200, { 3017121792, 30269298 } },
+            { "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } }
         }
     ) );
 
@@ -49,8 +49,8 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
 
     auto test_date = GENERATE( table< const char*, FILETIME, std::time_t >(
         {
-            { "21 December 2012, 12:00", { .dwLowDateTime = 3017121792, .dwHighDateTime = 30269298 }, 1356091200 },
-            { "1 January 1970, 00:00", { .dwLowDateTime = 3577643008, .dwHighDateTime = 27111902 }, 0 }
+            { "21 December 2012, 12:00", { 3017121792, 30269298 }, 1356091200 },
+            { "1 January 1970, 00:00", { 3577643008, 27111902 }, 0 }
         }
     ) );
 
