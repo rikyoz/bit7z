@@ -19,7 +19,7 @@ set( SOURCE_FILES
      # crc.cpp
      src/main.cpp
      # src/filesystem.cpp
-     # src/test_bitarchiveeditor.cpp
+     src/test_dateutil.cpp
      # src/test_bitarchivereader.cpp
      # src/test_bitexception.cpp
      # src/test_bitfilecompressor.cpp
