@@ -40,7 +40,7 @@ TEST_CASE( "Bit7zLibrary: Constructing from non-existing shared library", "[bit7
 
 TEST_CASE( "Bit7zLibrary: Normal construction", "[bit7zlibrary]" ) {
     const auto lib_path = sevenzip_lib_path();
-    INFO( "Library path: " << lib_path )
+    INFO( "Library path: " << fs::path{ lib_path }.string() )
 
     REQUIRE_NOTHROW( Bit7zLibrary{ lib_path } );
 }

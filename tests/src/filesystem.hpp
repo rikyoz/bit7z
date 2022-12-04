@@ -26,6 +26,8 @@
 #endif
 #endif
 
+#include <internal/fs.hpp>
+
 namespace bit7z {
 namespace test {
 namespace filesystem {
