@@ -18,7 +18,7 @@ message( STATUS "Language standard used for the tests: C++${CMAKE_CXX_STANDARD}"
 set( SOURCE_FILES
      # crc.cpp
      src/main.cpp
-     # src/filesystem.cpp
+     src/test_bit7zlibrary.cpp
      src/test_dateutil.cpp
      src/test_fsutil.cpp
      # src/test_bitexception.cpp
@@ -33,8 +33,7 @@ set( SOURCE_FILES
      # src/test_fsutil.cpp
      # src/test_fsitem.cpp
      # src/test_itemsvector.cpp
-     # src/test_windows.cpp
-     src/test_bit7zlibrary.cpp )
+     src/test_windows.cpp )
 
 set( TESTS_TARGET bit7z${ARCH_POSTFIX}-tests )
 add_executable( ${TESTS_TARGET} ${SOURCE_FILES} )
