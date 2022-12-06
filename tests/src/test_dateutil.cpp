@@ -30,14 +30,13 @@ TEST_CASE( "fsutil: Date conversion from std::time_t to FILETIME", "[fsutil][dat
         }
     ) );
 
-    SECTION( std::get< 0 >( test_date ) ) { // Date string as section title
-        std::time_t std_time = std::get< 1 >( test_date );
-        FILETIME file_time = std::get< 2 >( test_date );
+    DYNAMIC_SECTION( "Date: " << std::get< 0 >( test_date ) ) {
+        std::time_t input = std::get< 1 >( test_date );
+        FILETIME expected_output = std::get< 2 >( test_date );
 
-        auto result = time_to_FILETIME( std_time );
-
-        REQUIRE( result.dwHighDateTime == file_time.dwHighDateTime );
-        REQUIRE( result.dwLowDateTime == file_time.dwLowDateTime );
+        auto output = time_to_FILETIME( input );
+        REQUIRE( output.dwHighDateTime == expected_output.dwHighDateTime );
+        REQUIRE( output.dwLowDateTime == expected_output.dwLowDateTime );
     }
 }
 
@@ -50,28 +49,28 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
     auto test_date = GENERATE( table< const char*, FILETIME, std::time_t >(
         {
             { "21 December 2012, 12:00", { 3017121792, 30269298 }, 1356091200 },
-            { "1 January 1970, 00:00", { 3577643008, 27111902 }, 0 }
+            { "1 January 1970, 00:00",   { 3577643008, 27111902 }, 0 }
         }
     ) );
 
-    SECTION( std::get< 0 >( test_date ) ) { // Date string as section title
-        FILETIME file_time = std::get< 1 >( test_date );
-        std::time_t std_time = std::get< 2 >( test_date );
+    DYNAMIC_SECTION( "Date: " << std::get< 0 >( test_date ) ) {
+        FILETIME input = std::get< 1 >( test_date );
+        std::time_t expected_output = std::get< 2 >( test_date );
+
+        std::time_t output;
 
 #ifndef _WIN32
         SECTION( "FILETIME to std::filesystem::file_time_type" ) {
-            auto result = FILETIME_to_file_time_type( file_time );
-
-            auto time_result = std::time_t{ duration_cast< seconds >( result.time_since_epoch() ).count() };
-            REQUIRE( std_time == time_result );
+            auto result = FILETIME_to_file_time_type( input );
+            output = std::time_t{ duration_cast< seconds >( result.time_since_epoch() ).count() };
         }
 #endif
 
         SECTION( "FILETIME to bit7z::time_type" ) {
-            auto result = FILETIME_to_time_type( file_time );
-
-            auto time_result = bit7z::time_type::clock::to_time_t( result );
-            REQUIRE( std_time == time_result );
+            auto result = FILETIME_to_time_type( input );
+            output = bit7z::time_type::clock::to_time_t( result );
         }
+
+        REQUIRE( output == expected_output );
     }
 }
