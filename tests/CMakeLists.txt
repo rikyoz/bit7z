@@ -20,7 +20,7 @@ set( SOURCE_FILES
      src/main.cpp
      # src/filesystem.cpp
      src/test_dateutil.cpp
-     # src/test_bitarchivereader.cpp
+     src/test_fsutil.cpp
      # src/test_bitexception.cpp
      # src/test_bitfilecompressor.cpp
      # src/test_bitfileextractor.cpp
