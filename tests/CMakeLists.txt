@@ -55,6 +55,8 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     endif()
 endif()
 
+include( cmake/Sanitizers.cmake )
+
 # Catch2
 include( cmake/Catch2.cmake )
 target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
