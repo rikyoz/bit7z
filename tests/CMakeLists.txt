@@ -46,6 +46,14 @@ if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
 endif()
 
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} )
+if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
+    if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )
+        target_compile_options( ${TESTS_TARGET} PRIVATE -Wno-inconsistent-missing-override )
+    endif()
+    if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 3.8 )
+        target_compile_options( ${TESTS_TARGET} PRIVATE -Wdouble-promotion )
+    endif()
+endif()
 
 # Catch2
 include( cmake/Catch2.cmake )
