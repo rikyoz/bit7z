@@ -92,7 +92,7 @@ TEST_CASE( "winapi: Allocating from wide strings", "[winapi][string allocation]"
                               L"\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
     );
 
-    DYNAMIC_SECTION( "Testing L\"" << Catch::StringMaker< std::wstring >::convert( test_str ) << "\" wide string" ) {
+    DYNAMIC_SECTION( "Testing L" << Catch::StringMaker< std::wstring >::convert( test_str ) << " wide string" ) {
         std::wstring expected_string;
         BSTR result_string = nullptr;
 
@@ -135,7 +135,7 @@ TEST_CASE( "winapi: Allocating from narrow strings", "[winapi][string allocation
                               "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
     );
 
-    DYNAMIC_SECTION( "Testing \"" << Catch::StringMaker< std::string >::convert( test_str ) << "\" string" ) {
+    DYNAMIC_SECTION( "Testing " << Catch::StringMaker< std::string >::convert( test_str ) << " string" ) {
         BSTR result_string = nullptr;
         std::string expected_string;
 
