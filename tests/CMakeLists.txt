@@ -19,6 +19,7 @@ set( SOURCE_FILES
      # crc.cpp
      src/main.cpp
      src/test_bit7zlibrary.cpp
+     src/test_cbufferinstream.cpp
      src/test_dateutil.cpp
      src/test_fsutil.cpp
      # src/test_bitexception.cpp
