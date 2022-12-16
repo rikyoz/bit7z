@@ -19,21 +19,10 @@ set( SOURCE_FILES
      # crc.cpp
      src/main.cpp
      src/test_bit7zlibrary.cpp
+     src/test_bitexception.cpp
      src/test_cbufferinstream.cpp
      src/test_dateutil.cpp
      src/test_fsutil.cpp
-     # src/test_bitexception.cpp
-     # src/test_bitfilecompressor.cpp
-     # src/test_bitfileextractor.cpp
-     # src/test_bitmemcompressor.cpp
-     # src/test_bitmemextractor.cpp
-     # src/test_bitpropvariant.cpp
-     # src/test_bitstreamcompressor.cpp
-     # src/test_bitstreamextractor.cpp
-     # src/test_cbufferinstream.cpp
-     # src/test_fsutil.cpp
-     # src/test_fsitem.cpp
-     # src/test_itemsvector.cpp
      src/test_windows.cpp )
 
 set( TESTS_TARGET bit7z${ARCH_POSTFIX}-tests )
