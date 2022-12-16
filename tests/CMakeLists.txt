@@ -10,13 +10,8 @@ if( NOT EXISTS test_filesystem/folder/subfolder )
     file( MAKE_DIRECTORY test_filesystem/folder/subfolder )
 endif()
 
-set( CMAKE_CXX_STANDARD 11 )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
-message( STATUS "Language standard used for the tests: C++${CMAKE_CXX_STANDARD}" )
-
 # sources
 set( SOURCE_FILES
-     # crc.cpp
      src/main.cpp
      src/test_bit7zlibrary.cpp
      src/test_bitexception.cpp
@@ -36,6 +31,8 @@ if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
 endif()
 
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} )
+target_include_directories( ${TESTS_TARGET} PRIVATE "${EXTERNAL_LIBS_DIR}" "${7ZIP_SOURCE_DIR}/CPP/")
+
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )
         target_compile_options( ${TESTS_TARGET} PRIVATE -Wno-inconsistent-missing-override )
