@@ -20,6 +20,7 @@ set( SOURCE_FILES
      src/main.cpp
      src/test_bit7zlibrary.cpp
      src/test_bitexception.cpp
+     src/test_bitpropvariant.cpp
      src/test_cbufferinstream.cpp
      src/test_dateutil.cpp
      src/test_fsutil.cpp
