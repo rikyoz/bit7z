@@ -12,11 +12,11 @@
 
 #include "internal/cfixedbufferoutstream.hpp"
 
-#include <cstdint>
 #include <algorithm> //for std::copy_n
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "internal/util.hpp"
 
 using namespace bit7z;
 

@@ -14,6 +14,7 @@
 
 #include "internal/cbufferinstream.hpp"
 #include "internal/dateutil.hpp"
+#include "internal/util.hpp"
 
 using bit7z::BufferItem;
 using bit7z::byte_t;

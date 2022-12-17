@@ -12,7 +12,7 @@
 
 #include "bitoutputarchive.hpp"
 #include "internal/callback.hpp"
-#include "internal/util.hpp"
+#include "internal/macros.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>

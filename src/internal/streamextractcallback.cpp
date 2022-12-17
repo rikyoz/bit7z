@@ -14,6 +14,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cstdoutstream.hpp"
+#include "internal/util.hpp"
 
 using namespace std;
 using namespace NWindows;

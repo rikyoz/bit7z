@@ -21,6 +21,7 @@
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
+#include "internal/util.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"

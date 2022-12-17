@@ -14,6 +14,7 @@
 
 #include "internal/cbufferoutstream.hpp"
 #include "internal/fs.hpp"
+#include "internal/util.hpp"
 
 using namespace std;
 using namespace bit7z;
