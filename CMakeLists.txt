@@ -83,6 +83,7 @@ set( HEADERS
      include/internal/guids.hpp
      include/internal/hresultcategory.hpp
      include/internal/internalcategory.hpp
+     include/internal/macros.hpp
      include/internal/opencallback.hpp
      include/internal/processeditem.hpp
      include/internal/renameditem.hpp

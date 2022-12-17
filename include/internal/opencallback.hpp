@@ -13,7 +13,7 @@
 #include "bitabstractarchivehandler.hpp"
 #include "internal/callback.hpp"
 #include "internal/fsitem.hpp"
-#include "internal/util.hpp"
+#include "internal/macros.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/IPassword.h>

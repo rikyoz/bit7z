@@ -14,6 +14,7 @@
 
 #include "internal/cfixedbufferoutstream.hpp"
 #include "internal/fs.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
 FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive& inputArchive,

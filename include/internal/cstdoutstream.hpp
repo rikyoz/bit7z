@@ -14,7 +14,7 @@
 #include <cstdint>
 
 #include "internal/guids.hpp"
-#include "internal/util.hpp"
+#include "internal/macros.hpp"
 
 #include <7zip/IStream.h>
 #include <Common/MyCom.h>

@@ -17,9 +17,10 @@
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/util.hpp"
 
 using bit7z::tstring;
-using namespace bit7z::filesystem;
+using bit7z::filesystem::FSItem;
 
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what

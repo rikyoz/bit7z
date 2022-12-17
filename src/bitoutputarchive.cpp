@@ -18,6 +18,7 @@
 #include "internal/cmultivolumeoutstream.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )

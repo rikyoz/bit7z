@@ -92,6 +92,9 @@ bool w_match( tstring::const_iterator pattern_it, // NOLINT(misc-no-recursion)
                 ++str_it;
                 break;
             case BIT7Z_STRING( '*' ): {
+                while ( pattern_it + 1 != pattern_end && *( pattern_it + 1 ) == '*' ) {
+                    ++pattern_it;
+                }
                 if ( pattern_it + 1 == pattern_end ) {
                     return true;
                 }
