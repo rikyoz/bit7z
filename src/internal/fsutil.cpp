@@ -25,16 +25,18 @@ using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-tstring fsutil::filename( const tstring& path, bool ext ) {
-    const size_t start = path.find_last_of( BIT7Z_STRING( "/\\" ) ) + 1;
-    const size_t end = ext ? path.size() : path.find_last_of( BIT7Z_STRING( '.' ) );
-    return path.substr( start, end - start ); //RVO :)
+tstring fsutil::basename( const tstring& path ) {
+    return fs::path{ path }.stem().string< tchar >();
 }
 
-tstring fsutil::extension( const tstring& path ) {
-    tstring name = filename( path, true );
-    const size_t last_dot = name.find_last_of( BIT7Z_STRING( '.' ) );
-    return last_dot != tstring::npos ? name.substr( last_dot + 1 ) : tstring{};
+tstring fsutil::extension( const fs::path& path ) {
+    fs::path ext = path.extension();
+    if ( !ext.empty() ) {
+        // We don't want the leading dot of the extension!
+        tstring result = ext.string< tchar >();
+        return result.substr( 1 );
+    }
+    return ext.string< tchar >();
 }
 
 bool contains_dot_references( const fs::path& path ) {

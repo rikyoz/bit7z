@@ -29,11 +29,16 @@ bool BitArchiveItem::isDir() const {
     return !is_dir.isEmpty() && is_dir.getBool();
 }
 
+BIT7Z_NODISCARD
+inline auto filename( const fs::path& path ) -> tstring {
+    return path.filename().string< tchar >();
+}
+
 tstring BitArchiveItem::name() const {
     BitPropVariant name = itemProperty( BitProperty::Name );
     if ( name.isEmpty() ) {
         name = itemProperty( BitProperty::Path );
-        return name.isEmpty() ? tstring{} : fsutil::filename( name.getString(), true );
+        return name.isEmpty() ? tstring{} : filename( name.getString() );
     }
     return name.getString();
 }

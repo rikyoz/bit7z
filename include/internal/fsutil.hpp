@@ -20,9 +20,9 @@
 namespace bit7z {
 namespace filesystem {
 namespace fsutil {
-BIT7Z_NODISCARD tstring filename( const tstring& path, bool ext = false );
+BIT7Z_NODISCARD tstring basename( const tstring& path );
 
-BIT7Z_NODISCARD tstring extension( const tstring& path );
+BIT7Z_NODISCARD tstring extension( const fs::path& path );
 
 BIT7Z_NODISCARD bool wildcardMatch( const tstring& pattern, const tstring& str );
 
