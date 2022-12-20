@@ -50,6 +50,17 @@ using FileCallback = function< void( tstring ) >;
 using PasswordCallback = function< tstring() >;
 
 /**
+ * @brief Enumeration representing how a handler should deal when an output file already exists.
+ */
+enum struct OverwriteMode {
+    None = 0, ///< The handler will throw an exception if the output file or buffer already exists.
+    Overwrite, ///< The handler will overwrite the old file or buffer with the new one.
+    Skip, ///< The handler will skip writing to the output file or buffer.
+//TODO:    RenameOutput,
+//TODO:    RenameExisting
+};
+
+/**
  * @brief Abstract class representing a generic archive handler.
  */
 class BitAbstractArchiveHandler {
@@ -114,6 +125,11 @@ class BitAbstractArchiveHandler {
          * @return the current password callback.
          */
         BIT7Z_NODISCARD PasswordCallback passwordCallback() const;
+
+        /**
+         * @return the current overwrite mode.
+         */
+        BIT7Z_NODISCARD OverwriteMode overwriteMode() const;
 
         /**
          * @brief Sets up a password to be used by the archive handler.
@@ -194,12 +210,22 @@ class BitAbstractArchiveHandler {
          */
         void setPasswordCallback( const PasswordCallback& callback );
 
+        /**
+         * @brief Sets how the handler should behave when it tries to output to an existing file or buffer.
+         *
+         * @param mode  the overwrite modem to be used by the handler.
+         */
+        void setOverwriteMode( OverwriteMode mode );
+
     protected:
         const Bit7zLibrary& mLibrary;
         tstring mPassword;
         bool mRetainDirectories;
+        OverwriteMode mOverwriteMode;
 
-        explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib, tstring password = {} );
+        explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib,
+                                            tstring password = {},
+                                            OverwriteMode overwrite_mode = OverwriteMode::None );
 
     private:
         //CALLBACKS

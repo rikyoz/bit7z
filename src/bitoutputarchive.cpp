@@ -23,22 +23,32 @@
 namespace bit7z {
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
-    std::error_code ec;
-    if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
-        if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
-            throw BitException( "Cannot update existing archive",
-                                make_error_code( BitError::WrongUpdateMode ) );
-        }
-        if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
-            //Update mode is set but format does not support adding more files.
-            throw BitException( "Cannot update existing archive",
-                                make_error_code( BitError::FormatFeatureNotSupported ) );
-        }
-        if ( mArchiveCreator.updateMode() != UpdateMode::OverwriteArchive ) {
-            mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
-            mInputArchiveItemsCount = mInputArchive->itemsCount();
-        }
+    if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
+        return;
     }
+
+    if ( in_file.empty() ) { // No input file specified, so we are creating a totally new archive!
+        return;
+    }
+
+    std::error_code ec;
+    if ( !fs::exists( in_file, ec ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
+        return;
+    }
+
+    if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
+        throw BitException( "Cannot update existing archive",
+                            make_error_code( BitError::WrongUpdateMode ) );
+    }
+
+    if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+        //Update mode is set but format does not support adding more files.
+        throw BitException( "Cannot update existing archive",
+                            make_error_code( BitError::FormatFeatureNotSupported ) );
+    }
+
+    mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
+    mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
@@ -101,11 +111,17 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
-    if ( mArchiveCreator.updateMode() == UpdateMode::OverwriteArchive ) {
+    OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
+    if ( overwrite_mode == OverwriteMode::Overwrite ) {
         std::error_code error;
         fs::remove( out_file, error );
         if ( error ) {
             throw BitException( "Failed to delete the old archive file", error, out_file );
+        }
+    } else if ( overwrite_mode == OverwriteMode::Skip ) {
+        std::error_code error;
+        if ( fs::exists( out_file, error ) ) {
+            return;
         }
     }
 
@@ -145,9 +161,9 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
                                     UpdateCallback* update_callback ) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Overwrite ) {
         for ( const auto& new_item : mNewItemsVector ) {
-            auto overwritten_item = mInputArchive->find( new_item->inArchivePath().string< tchar >() );
-            if ( overwritten_item != mInputArchive->cend() ) {
-                mDeletedItems.insert( overwritten_item->index() );
+            auto updated_item = mInputArchive->find( new_item->inArchivePath().string< tchar >() );
+            if ( updated_item != mInputArchive->cend() ) {
+                mDeletedItems.insert( updated_item->index() );
             }
         }
     }
@@ -204,7 +220,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
 
 void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     if ( !out_buffer.empty() ) {
-        if ( mArchiveCreator.updateMode() == UpdateMode::OverwriteArchive ) {
+        if ( mArchiveCreator.overwriteMode() == OverwriteMode::Overwrite ) {
             out_buffer.clear();
         } else {
             throw BitException( "Cannot compress to buffer", make_error_code( BitError::NonEmptyOutputBuffer ) );

@@ -85,9 +85,26 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
         std::error_code ec;
         fs::create_directories( mFilePathOnDisk.parent_path(), ec );
 
-        if ( fs::exists( mFilePathOnDisk, ec ) && !fs::remove( mFilePathOnDisk, ec ) ) {
-            mErrorMessage = kCannotDeleteOutput;
-            return E_ABORT;
+        if ( fs::exists( mFilePathOnDisk, ec ) ) {
+            OverwriteMode overwrite_mode = mHandler.overwriteMode();
+
+            switch ( overwrite_mode ) {
+                case OverwriteMode::None: {
+                    mErrorMessage = kCannotDeleteOutput;
+                    return E_ABORT;
+                }
+                case OverwriteMode::Skip: {
+                    return S_OK;
+                }
+                case OverwriteMode::Overwrite:
+                default: {
+                    if ( !fs::remove( mFilePathOnDisk, ec ) ) {
+                        mErrorMessage = kCannotDeleteOutput;
+                        return E_ABORT;
+                    }
+                    break;
+                }
+            }
         }
 
         try {

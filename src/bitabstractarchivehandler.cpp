@@ -14,8 +14,13 @@
 
 using namespace bit7z;
 
-BitAbstractArchiveHandler::BitAbstractArchiveHandler( const Bit7zLibrary& lib, tstring password )
-    : mLibrary( lib ), mPassword( std::move( password ) ), mRetainDirectories( true ) {}
+BitAbstractArchiveHandler::BitAbstractArchiveHandler( const Bit7zLibrary& lib,
+                                                      tstring password,
+                                                      OverwriteMode overwrite_mode )
+    : mLibrary{ lib },
+      mPassword{ std::move( password ) },
+      mRetainDirectories{ true },
+      mOverwriteMode{ overwrite_mode } {}
 
 const Bit7zLibrary& BitAbstractArchiveHandler::library() const noexcept {
     return mLibrary;
@@ -53,6 +58,10 @@ PasswordCallback BitAbstractArchiveHandler::passwordCallback() const {
     return mPasswordCallback;
 }
 
+OverwriteMode BitAbstractArchiveHandler::overwriteMode() const {
+    return mOverwriteMode;
+}
+
 void BitAbstractArchiveHandler::setPassword( const tstring& password ) {
     mPassword = password;
 }
@@ -83,4 +92,8 @@ void BitAbstractArchiveHandler::setFileCallback( const FileCallback& callback ) 
 
 void BitAbstractArchiveHandler::setPasswordCallback( const PasswordCallback& callback ) {
     mPasswordCallback = callback;
+}
+
+void BitAbstractArchiveHandler::setOverwriteMode( OverwriteMode mode ) {
+    mOverwriteMode = mode;
 }
