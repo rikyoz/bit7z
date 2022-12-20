@@ -83,6 +83,11 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD uint64_t packSize() const;
 
         /**
+         * @return the CRC value of the item.
+         */
+        BIT7Z_NODISCARD uint32_t crc() const;
+
+        /**
          * @return true if and only if the item is encrypted.
          */
         BIT7Z_NODISCARD bool isEncrypted() const;

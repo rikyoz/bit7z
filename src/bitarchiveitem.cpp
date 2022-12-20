@@ -94,3 +94,8 @@ uint32_t BitArchiveItem::attributes() const {
     BitPropVariant attrib = itemProperty( BitProperty::Attrib );
     return attrib.isUInt32() ? attrib.getUInt32() : 0;
 }
+
+uint32_t BitArchiveItem::crc() const {
+    BitPropVariant crc = itemProperty( BitProperty::CRC );
+    return crc.isUInt32() ? crc.getUInt32() : 0;
+}
