@@ -36,7 +36,7 @@ enum struct UpdateMode {
     None, ///< The creator will throw an exception (unless the OverwriteMode is not None).
     Append, ///< The creator will append the new items to the existing archive.
     Update, ///< New items whose path already exists in the archive will overwrite the old ones, other will be appended.
-    Overwrite BIT7Z_DEPRECATED_MSG( "Since 4.0. Please use the UpdateMode::Update enumerator" ) = Update
+    BIT7Z_DEPRECATED_ENUMERATOR( Overwrite, Update, "Since v4.0; please use the UpdateMode::Update enumerator." )
 };
 
 /**

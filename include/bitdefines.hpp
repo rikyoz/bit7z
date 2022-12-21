@@ -93,4 +93,14 @@
 #endif
 #endif
 
+#ifndef BIT7Z_DEPRECATED_ENUMERATOR
+// Before v6.0, GCC didn't support deprecating single enumerators.
+#   if defined( __GNUC__ ) && !defined( __clang__ ) && __GNUC__ < 6
+#       define BIT7Z_DEPRECATED_ENUMERATOR( deprecated_value, new_value, msg ) deprecated_value = new_value
+#   else
+#       define BIT7Z_DEPRECATED_ENUMERATOR( deprecated_value, new_value, msg ) \
+                deprecated_value BIT7Z_DEPRECATED_MSG( msg ) = new_value
+#   endif
+#endif
+
 #endif //BITDEFINES_HPP
