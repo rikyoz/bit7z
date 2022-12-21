@@ -43,6 +43,9 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStrea
         fullPath = kEmptyFileAlias;
     } else if ( prop.isString() ) {
         fullPath = prop.getString();
+        if ( !mHandler.retainDirectories() ) {
+            fullPath = fs::path{ fullPath }.filename().string< tchar >();
+        }
     } else {
         return E_FAIL;
     }
