@@ -19,6 +19,8 @@
 using namespace std;
 using namespace bit7z;
 
+constexpr auto kCannotDeleteOutput = "Cannot erase output buffer";
+
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
                                               map< tstring, vector< byte_t > >& buffersMap )
     : ExtractCallback( inputArchive ),
@@ -49,8 +51,26 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStrea
         mHandler.fileCallback()( fullPath );
     }
 
-    //Note: using [] operator it creates the buffer if it does not exist already!
-    auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( mBuffersMap[ fullPath ] );
+    //Note: using [] operator it creates the buffer if it does not already exist!
+    auto& out_buffer = mBuffersMap[ fullPath ];
+    if ( !out_buffer.empty() ) {
+        switch ( mHandler.overwriteMode() ) {
+            case OverwriteMode::None: {
+                mErrorMessage = kCannotDeleteOutput;
+                return E_ABORT;
+            }
+            case OverwriteMode::Skip: {
+                return S_OK;
+            }
+            case OverwriteMode::Overwrite:
+            default: {
+                out_buffer.clear();
+                break;
+            }
+        }
+    }
+
+    auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( out_buffer );
     mOutMemStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;
