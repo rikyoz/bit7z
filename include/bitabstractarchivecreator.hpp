@@ -206,13 +206,14 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         /**
          * @brief Sets whether the creator can update existing archives or not.
          *
-         * @deprecated since 4.0. It is provided just for an easier transition from the old v3 API.
+         * @deprecated since v4.0; it is provided just for an easier transition from the old v3 API.
          *
          * @note If set to false, a subsequent compression operation may throw an exception
          *       if it targets an existing archive.
          *
          * @param can_update if true, compressing operations will update existing archives.
          */
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please use the overloaded function that takes an UpdateMode enumerator." )
         void setUpdateMode( bool can_update );
 
         /**
