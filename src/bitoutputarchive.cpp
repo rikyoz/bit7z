@@ -21,6 +21,7 @@
 #include "internal/util.hpp"
 
 namespace bit7z {
+
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )
     : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
     if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
@@ -31,8 +32,8 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
         return;
     }
 
-    std::error_code ec;
-    if ( !fs::exists( in_file, ec ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
+    std::error_code error;
+    if ( !fs::exists( in_file, error ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
         return;
     }
 
@@ -111,7 +112,7 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
-    OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
+    const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
     if ( overwrite_mode == OverwriteMode::Overwrite ) {
         std::error_code error;
         fs::remove( out_file, error );
@@ -133,8 +134,8 @@ CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     if ( mInputArchive == nullptr ) {
         const GUID format_GUID = formatGUID( mArchiveCreator.format() );
-        mArchiveCreator.library()
-                       .createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+        mArchiveCreator.library().createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
     } else {
         mInputArchive->initUpdatableArchive( &new_arc );
     }
@@ -184,7 +185,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
     // Note: if mInputArchive != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
     const bool updating_archive = mInputArchive != nullptr && mInputArchive->archivePath() == out_file;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    const CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, updating_archive );
     compressOut( new_arc, out_stream, update_callback );
 
@@ -227,14 +228,14 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
         }
     }
 
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    const CMyComPtr< IOutArchive > new_arc = initOutArchive();
     auto out_mem_stream = bit7z::make_com< CBufferOutStream, IOutStream >( out_buffer );
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& out_stream ) {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    const CMyComPtr< IOutArchive > new_arc = initOutArchive();
     auto out_std_stream = bit7z::make_com< CStdOutStream, IOutStream >( out_stream );
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_std_stream, update_callback );
@@ -247,6 +248,7 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
     }
 
     CMyComPtr< ISetProperties > set_properties;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     HRESULT res = out_archive->QueryInterface( ::IID_ISetProperties, reinterpret_cast< void** >( &set_properties ) );
     if ( res != S_OK ) {
         throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
@@ -295,11 +297,11 @@ HRESULT BitOutputArchive::itemStream( input_index index, ISequentialInStream** i
     const HRESULT res = new_item.getStream( inStream );
     if ( FAILED( res ) ) {
         auto path = new_item.path();
-        std::error_code ec;
-        if ( fs::exists( path, ec ) ) {
-            ec = std::make_error_code( std::errc::file_exists );
+        std::error_code error;
+        if ( fs::exists( path, error ) ) {
+            error = std::make_error_code( std::errc::file_exists );
         }
-        mFailedFiles.emplace_back( path, ec );
+        mFailedFiles.emplace_back( path, error );
     }
     return res;
 }
@@ -342,4 +344,5 @@ uint32_t BitOutputArchive::indexInArchive( uint32_t index ) const noexcept {
 const BitAbstractArchiveHandler& BitOutputArchive::handler() const noexcept {
     return mArchiveCreator;
 }
+
 } // namespace bit7z
