@@ -76,7 +76,7 @@ STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inSt
     RINOK( Finalize() )
 
     if ( mHandler.fileCallback() ) {
-        BitPropVariant filePath = mOutputArchive.outputItemProperty( index, BitProperty::Path );
+        const BitPropVariant filePath = mOutputArchive.outputItemProperty( index, BitProperty::Path );
         if ( filePath.isString() ) {
             mHandler.fileCallback()( filePath.getString() );
         }
@@ -98,7 +98,7 @@ STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream
         res.insert( res.begin(), 3 - res.length(), BIT7Z_STRING( '0' ) );
     }
 
-    tstring fileName = BIT7Z_STRING( '.' ) + res;// + mVolExt;
+    const tstring fileName = BIT7Z_STRING( '.' ) + res;// + mVolExt;
 
     try {
         auto stream = bit7z::make_com< CFileOutStream >( fileName );

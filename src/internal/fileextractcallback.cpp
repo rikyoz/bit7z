@@ -82,11 +82,11 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
             mHandler.fileCallback()( filePath.string< tchar >() );
         }
 
-        std::error_code ec;
-        fs::create_directories( mFilePathOnDisk.parent_path(), ec );
+        std::error_code error;
+        fs::create_directories( mFilePathOnDisk.parent_path(), error );
 
-        if ( fs::exists( mFilePathOnDisk, ec ) ) {
-            OverwriteMode overwrite_mode = mHandler.overwriteMode();
+        if ( fs::exists( mFilePathOnDisk, error ) ) {
+            const OverwriteMode overwrite_mode = mHandler.overwriteMode();
 
             switch ( overwrite_mode ) {
                 case OverwriteMode::None: {
@@ -98,7 +98,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
                 }
                 case OverwriteMode::Overwrite:
                 default: {
-                    if ( !fs::remove( mFilePathOnDisk, ec ) ) {
+                    if ( !fs::remove( mFilePathOnDisk, error ) ) {
                         mErrorMessage = kCannotDeleteOutput;
                         return E_ABORT;
                     }
@@ -116,8 +116,8 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
             return E_ABORT;
         }
     } else if ( mRetainDirectories ) { // Directory, and we must retain it
-        std::error_code ec;
-        fs::create_directories( mFilePathOnDisk, ec );
+        std::error_code error;
+        fs::create_directories( mFilePathOnDisk, error );
     } else {
         // No action needed
     }

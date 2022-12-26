@@ -211,7 +211,7 @@ class BitInputArchive {
         IInArchive* mInArchive;
         const BitInFormat* mDetectedFormat;
         const BitAbstractArchiveHandler& mArchiveHandler;
-        const tstring mArchivePath;
+        tstring mArchivePath;
 
     public:
         class const_iterator {

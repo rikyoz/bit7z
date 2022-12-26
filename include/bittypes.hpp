@@ -69,8 +69,8 @@ using tregex = std::basic_regex< tchar >;
 #endif
 
 template< typename T >
-inline std::basic_string< tchar > to_tstring( T&& Arg ) {
-    return string_traits< tchar >::convert_to_string( std::forward< T >( Arg ) );
+inline std::basic_string< tchar > to_tstring( T&& arg ) {
+    return string_traits< tchar >::convert_to_string( std::forward< T >( arg ) );
 }
 }  // namespace bit7z
 #endif // BITTYPES_HPP

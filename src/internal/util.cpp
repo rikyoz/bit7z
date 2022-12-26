@@ -47,7 +47,7 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
                          nullptr,
                          nullptr );
     if ( size == 0U ) {
-        result.resize( narrowStringSize - 1 );
+        result.resize( static_cast< size_t >( narrowStringSize - 1 ) );
     } //output is null-terminated
     return result;
 #else

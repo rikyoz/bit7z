@@ -88,7 +88,6 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
     int64_t current_index{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
-            current_index = 0;
             break;
         }
         case STREAM_SEEK_CUR: {
