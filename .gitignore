@@ -62,3 +62,5 @@ bit7z-cppcheck-build-dir/
 pvs-studio-analyzer.stacktrace.txt
 
 .mailmap
+
+*.dfo
