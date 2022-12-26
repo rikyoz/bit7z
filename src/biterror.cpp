@@ -14,6 +14,6 @@
 
 #include "internal/internalcategory.hpp"
 
-std::error_code bit7z::make_error_code( const bit7z::BitError& e ) {
-    return { static_cast< int >( e ), internal_category() };
+std::error_code bit7z::make_error_code( const bit7z::BitError& error ) {
+    return { static_cast< int >( error ), internal_category() };
 }

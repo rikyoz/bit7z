@@ -490,43 +490,43 @@ void BitPropVariant::internalClear() noexcept {
     uhVal.QuadPart = 0;
 }
 
-bool bit7z::operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept {
-    return !( a == b );
+bool bit7z::operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+    return !( lhs == rhs );
 }
 
-bool bit7z::operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept {
-    if ( a.vt != b.vt ) {
+bool bit7z::operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+    if ( lhs.vt != rhs.vt ) {
         return false;
     }
-    switch ( a.vt ) { //a.vt == b.vt
+    switch ( lhs.vt ) { //lhs.vt == rhs.vt
         case VT_EMPTY:
             return true;
         case VT_BOOL:
-            return a.boolVal == b.boolVal;
+            return lhs.boolVal == rhs.boolVal;
         case VT_BSTR:
-            return wcscmp( a.bstrVal, b.bstrVal ) == 0;
+            return wcscmp( lhs.bstrVal, rhs.bstrVal ) == 0;
         case VT_UI1:
-            return a.bVal == b.bVal;
+            return lhs.bVal == rhs.bVal;
         case VT_UI2:
-            return a.uiVal == b.uiVal;
+            return lhs.uiVal == rhs.uiVal;
         case VT_UINT:
-            return a.uintVal == b.uintVal;
+            return lhs.uintVal == rhs.uintVal;
         case VT_UI4:
-            return a.ulVal == b.ulVal;
+            return lhs.ulVal == rhs.ulVal;
         case VT_UI8:
-            return a.uhVal.QuadPart == b.uhVal.QuadPart;
+            return lhs.uhVal.QuadPart == rhs.uhVal.QuadPart;
         case VT_I1:
-            return a.cVal == b.cVal;
+            return lhs.cVal == rhs.cVal;
         case VT_I2:
-            return a.iVal == b.iVal;
+            return lhs.iVal == rhs.iVal;
         case VT_INT:
-            return a.intVal == b.intVal;
+            return lhs.intVal == rhs.intVal;
         case VT_I4:
-            return a.lVal == b.lVal;
+            return lhs.lVal == rhs.lVal;
         case VT_I8:
-            return a.hVal.QuadPart == b.hVal.QuadPart;
+            return lhs.hVal.QuadPart == rhs.hVal.QuadPart;
         case VT_FILETIME:
-            return a.filetime == b.filetime;
+            return lhs.filetime == rhs.filetime;
         default:
             return false;
     }

@@ -26,7 +26,7 @@ struct hresult_category_t final : public std::error_category {
 
     BIT7Z_NODISCARD std::string message( int ev ) const override;
 
-    BIT7Z_NODISCARD std::error_condition default_error_condition( int ev ) const noexcept override;
+    BIT7Z_NODISCARD std::error_condition default_error_condition( int error_value ) const noexcept override;
 };
 
 const std::error_category& hresult_category() noexcept;

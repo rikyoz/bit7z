@@ -436,9 +436,9 @@ struct BitPropVariant final : public PROPVARIANT {
         friend bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
 };
 
-bool operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
+bool operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept;
 
-bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
+bool operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept;
 }  // namespace bit7z
 
 #endif // BITPROPVARIANT_HPP

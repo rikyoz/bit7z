@@ -82,8 +82,8 @@ std::string hresult_category_t::message( int ev ) const {
 #endif
 }
 
-std::error_condition hresult_category_t::default_error_condition( int ev ) const noexcept {
-    switch ( static_cast< HRESULT >( ev ) ) {
+std::error_condition hresult_category_t::default_error_condition( int error_value ) const noexcept {
+    switch ( static_cast< HRESULT >( error_value ) ) {
         // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors.
         case E_ABORT:
             return std::make_error_condition( std::errc::operation_canceled );
@@ -113,10 +113,10 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );
         default:
-            if ( HRESULT_FACILITY( ev ) == FACILITY_CODE ) {
+            if ( HRESULT_FACILITY( error_value ) == FACILITY_CODE ) {
 #ifndef __MINGW32__
                 /* MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
-                 * However, on Windows ev is a Win32 error wrapped into a HRESULT (e.g., through HRESULT_FROM_WIN32).
+                 * However, on Windows error_value is a Win32 error wrapped into a HRESULT (e.g., through HRESULT_FROM_WIN32).
                  * Hence, to avoid returning a wrong error_condition, this check is not performed on MinGW,
                  * and instead we rely on specific cases for most common Win32 error codes (see 'else' branch).
                  *
@@ -124,14 +124,14 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
                  *         - std::generic_category() for Win32 errors that can be mapped to a POSIX error;
                  *         - std::system_category() otherwise.
                  *
-                 * Note 3: on Linux, most ev values returned by p7zip are POSIX error codes wrapped
+                 * Note 3: on Linux, most error_value values returned by p7zip are POSIX error codes wrapped
                  * into a HRESULT value, hence the following line will return the correct error_condition.
                  * Some error codes returned by p7zip are, however, equal to the Windows code: such cases are
                  * taken into account in specific cases above!
                  */
-                return std::system_category().default_error_condition( HRESULT_CODE( ev ) );
+                return std::system_category().default_error_condition( HRESULT_CODE( error_value ) );
 #else
-                switch ( HRESULT_CODE( ev ) ) {
+                switch ( HRESULT_CODE( error_value ) ) {
                     case ERROR_ACCESS_DENIED:
                         return std::make_error_condition( std::errc::permission_denied );
                     case ERROR_OPEN_FAILED:
@@ -155,7 +155,7 @@ std::error_condition hresult_category_t::default_error_condition( int ev ) const
             }
             /* E.g., E_FAIL
                Note: the resulting error_condition's category is std::hresult_category() */
-            return error_category::default_error_condition( ev );
+            return error_category::default_error_condition( error_value );
     }
 }
 

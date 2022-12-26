@@ -125,9 +125,9 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) {
     while ( !mVolumes.empty() ) {
         const fs::path volumePath = mVolumes.back()->path();
         mVolumes.pop_back();
-        std::error_code ec;
-        fs::remove( volumePath, ec );
-        if ( ec ) {
+        std::error_code error;
+        fs::remove( volumePath, error );
+        if ( error ) {
             return E_FAIL;
         }
     }
