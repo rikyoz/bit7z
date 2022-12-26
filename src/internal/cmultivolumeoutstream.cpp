@@ -50,7 +50,7 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
     }
 
     /* Getting the current volume stream. */
-    CMyComPtr< CVolumeOutStream >& volume = mVolumes[ mCurrentVolumeIndex ];
+    const CMyComPtr< CVolumeOutStream >& volume = mVolumes[ mCurrentVolumeIndex ];
 
     if ( mCurrentVolumeOffset != volume->currentOffset() ) {
         /* The offset we must write to is different from the last offset we wrote to. */
@@ -123,7 +123,7 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) {
         newSize -= volume->currentSize();
     }
     while ( !mVolumes.empty() ) {
-        fs::path volumePath = mVolumes.back()->path();
+        const fs::path volumePath = mVolumes.back()->path();
         mVolumes.pop_back();
         std::error_code ec;
         fs::remove( volumePath, ec );

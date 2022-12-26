@@ -379,8 +379,8 @@ FILETIME BitPropVariant::getFileTime() const {
 }
 
 bit7z::time_type BitPropVariant::getTimePoint() const {
-    FILETIME ft = getFileTime();
-    return FILETIME_to_time_type( ft );
+    const FILETIME file_time = getFileTime();
+    return FILETIME_to_time_type( file_time );
 }
 
 tstring BitPropVariant::toString() const {

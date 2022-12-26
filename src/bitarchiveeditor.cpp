@@ -192,7 +192,7 @@ bool BitArchiveEditor::hasNewData( uint32_t index ) const noexcept {
 
 bool BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept {
     const auto mapped_index = static_cast< uint32_t >( itemInputIndex( index ) );
-    bool isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
+    const bool isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
     return mapped_index >= mInputArchiveItemsCount || isEditedItem;
 }
 } // namespace bit7z

@@ -41,7 +41,7 @@ HRESULT StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStrea
     }
 
     // Get Name
-    BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
+    const BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
     tstring fullPath;
 
     if ( prop.isEmpty() ) {

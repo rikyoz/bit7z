@@ -32,7 +32,7 @@ HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index, ISequentialOut
     }
 
     // Get Name
-    BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
+    const BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
     tstring fullPath;
 
     if ( prop.isEmpty() ) {

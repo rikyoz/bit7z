@@ -25,14 +25,14 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
         return "";
     }
 #ifdef WIN32
-    int narrowStringSize = WideCharToMultiByte( CP_UTF8,
-                                                0,
-                                                wideString,
-                                                ( size != 0U ? static_cast<int>( size ) : -1 ),
-                                                nullptr,
-                                                0,
-                                                nullptr,
-                                                nullptr );
+    const int narrowStringSize = WideCharToMultiByte( CP_UTF8,
+                                                      0,
+                                                      wideString,
+                                                      ( size != 0U ? static_cast<int>( size ) : -1 ),
+                                                      nullptr,
+                                                      0,
+                                                      nullptr,
+                                                      nullptr );
     if ( narrowStringSize == 0 ) {
         return "";
     }
@@ -59,12 +59,12 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
 
 std::wstring bit7z::widen( const std::string& narrowString ) {
 #ifdef WIN32
-    int wideStringSize = MultiByteToWideChar( CP_UTF8,
-                                              0,
-                                              narrowString.c_str(),
-                                              static_cast<int>( narrowString.size() ),
-                                              nullptr,
-                                              0 );
+    const int wideStringSize = MultiByteToWideChar( CP_UTF8,
+                                                    0,
+                                                    narrowString.c_str(),
+                                                    static_cast<int>( narrowString.size() ),
+                                                    nullptr,
+                                                    0 );
     if ( wideStringSize == 0 ) {
         return L"";
     }

@@ -30,10 +30,10 @@ tstring fsutil::basename( const tstring& path ) {
 }
 
 tstring fsutil::extension( const fs::path& path ) {
-    fs::path ext = path.extension();
+    const fs::path ext = path.extension();
     if ( !ext.empty() ) {
         // We don't want the leading dot of the extension!
-        tstring result = ext.string< tchar >();
+        const tstring result = ext.string< tchar >();
         return result.substr( 1 );
     }
     return ext.string< tchar >();
