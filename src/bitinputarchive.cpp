@@ -10,6 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include "bitinputarchive.hpp"
 
 #include "biterror.hpp"
@@ -22,6 +26,7 @@
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/util.hpp"
+#include "internal/cmultivolumeinstream.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"
@@ -56,6 +61,10 @@ void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
     if ( res != S_OK ) {
         extract_callback->throwException( res );
     }
+}
+
+bool ends_with( const tstring& str, const tstring& suffix ) {
+    return str.size() >= suffix.size() && str.compare( str.size() - suffix.size(), suffix.size(), suffix ) == 0;
 }
 
 IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* in_stream ) {
@@ -113,7 +122,12 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
     mDetectedFormat = &handler.format();
 #endif
 
-    auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
+    CMyComPtr< IInStream > file_stream;
+    if ( *mDetectedFormat != BitFormat::Split && ends_with( mArchivePath, ".001" ) ) {
+        file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( mArchivePath );
+    } else {
+        file_stream = bit7z::make_com< CFileInStream, IInStream >( mArchivePath );
+    }
     mInArchive = openArchiveStream( mArchivePath, file_stream );
 }
 

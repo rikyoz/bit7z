@@ -65,9 +65,11 @@ set( HEADERS
      include/internal/cfileinstream.hpp
      include/internal/cfileoutstream.hpp
      include/internal/cfixedbufferoutstream.hpp
+     include/internal/cmultivolumeinstream.hpp
      include/internal/cmultivolumeoutstream.hpp
      include/internal/cstdinstream.hpp
      include/internal/cstdoutstream.hpp
+     include/internal/cvolumeinstream.hpp
      include/internal/cvolumeoutstream.hpp
      include/internal/dateutil.hpp
      include/internal/extractcallback.hpp
@@ -123,9 +125,11 @@ set( SOURCES
      src/internal/cfileinstream.cpp
      src/internal/cfileoutstream.cpp
      src/internal/cfixedbufferoutstream.cpp
+     src/internal/cmultivolumeinstream.cpp
      src/internal/cmultivolumeoutstream.cpp
      src/internal/cstdinstream.cpp
      src/internal/cstdoutstream.cpp
+     src/internal/cvolumeinstream.cpp
      src/internal/cvolumeoutstream.cpp
      src/internal/dateutil.cpp
      src/internal/extractcallback.cpp

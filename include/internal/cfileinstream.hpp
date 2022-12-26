@@ -17,7 +17,7 @@
 #include "internal/fs.hpp"
 
 namespace bit7z {
-class CFileInStream final : public CStdInStream {
+class CFileInStream : public CStdInStream {
     public:
         explicit CFileInStream( const fs::path& filePath );
 
