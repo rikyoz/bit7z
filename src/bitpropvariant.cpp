@@ -82,6 +82,7 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) { //until now, we've copied only the pointer to the string, hence we need a deep copy!
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
         if ( bstrVal == nullptr ) {

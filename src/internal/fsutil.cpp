@@ -212,7 +212,7 @@ bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftMo
     bool res = false;
     HANDLE hFile = ::CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
                                  OPEN_EXISTING, 0, nullptr );
-    if ( hFile != INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+    if ( hFile != INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
         res = ::SetFileTime( hFile, nullptr, nullptr, &ftModified ) != FALSE;
         CloseHandle( hFile );
     }
