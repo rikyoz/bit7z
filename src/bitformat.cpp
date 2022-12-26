@@ -16,7 +16,6 @@ using namespace std;
 
 namespace bit7z {
 
-#ifndef __cpp_inline_variables
 namespace BitFormat {
 #ifdef BIT7Z_AUTO_FORMAT
     const BitInFormat Auto( 0x00 );
@@ -93,8 +92,7 @@ namespace BitFormat {
     const BitInOutFormat GZip( 0xEF, BIT7Z_STRING( ".gz" ),
                                BitCompressionMethod::Deflate,
                                FormatFeatures::CompressionLevel );
-}
-#endif
+} // namespace BitFormat
 
 unsigned char BitInFormat::value() const noexcept {
     return mValue;
