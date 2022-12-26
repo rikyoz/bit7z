@@ -42,7 +42,7 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
                          0,
                          wideString,
                          -1,
-                         &result[0],  // NOLINT(readability-container-data-pointer)
+                         &result[ 0 ],  // NOLINT(readability-container-data-pointer)
                          static_cast<int>( narrowStringSize ),
                          nullptr,
                          nullptr );
@@ -74,7 +74,7 @@ std::wstring bit7z::widen( const std::string& narrowString ) {
                          0,
                          narrowString.c_str(),
                          static_cast<int>( narrowString.size() ),
-                         &result[0], // NOLINT(readability-container-data-pointer)
+                         &result[ 0 ], // NOLINT(readability-container-data-pointer)
                          wideStringSize );
     return result;
 #else

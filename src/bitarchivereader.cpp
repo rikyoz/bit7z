@@ -37,6 +37,14 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
 
+/*BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const BitArchiveReader& reader,
+                                    const BitInFormat& format,
+                                    const tstring& password,
+                                    size_t index )
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, reader ) {}*/
+
+
 map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
@@ -56,7 +64,7 @@ vector< BitArchiveItemInfo > BitArchiveReader::items() const {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
             // Yeah, I know, I cast property twice (here and in itemProperty), but the code is easier to read!
-            const auto property = static_cast<BitProperty>( j );
+            const auto property = static_cast< BitProperty >( j );
             const auto property_value = itemProperty( i, property );
             if ( !property_value.isEmpty() ) {
                 item.setProperty( property, property_value );
