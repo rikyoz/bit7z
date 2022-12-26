@@ -38,6 +38,7 @@ using namespace NArchive;
 
 CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
     CMyComPtr< IInArchive > arc_object;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     lib.createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &arc_object ) );
     return arc_object;
 }
@@ -333,7 +334,7 @@ BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() n
     return *this;
 }
 
-BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) noexcept {
+BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) noexcept { // NOLINT(cert-dcl21-cpp)
     const_iterator incremented = *this;
     ++( *this );
     return incremented;
