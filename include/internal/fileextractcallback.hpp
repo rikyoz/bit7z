@@ -45,7 +45,7 @@ class FileExtractCallback final : public ExtractCallback {
 
         CMyComPtr< CFileOutStream > mFileOutStream;
 
-        void finishOperation() override;
+        HRESULT finishOperation( OperationResult operation_result ) override;
 
         void releaseStream() override;
 

@@ -18,6 +18,27 @@
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
 
+using namespace NArchive::NExtract;
+
+enum struct ExtractMode {
+    Extract = NAskMode::kExtract,
+    Test = NAskMode::kTest,
+    Skip = NAskMode::kSkip
+};
+
+enum struct OperationResult {
+    Success = NOperationResult::kOK,
+    UnsupportedMethod = NOperationResult::kUnsupportedMethod,
+    DataError = NOperationResult::kDataError,
+    CRCError = NOperationResult::kCRCError,
+    Unavailable = NOperationResult::kUnavailable,
+    UnexpectedEnd = NOperationResult::kUnexpectedEnd,
+    DataAfterEnd = NOperationResult::kDataAfterEnd,
+    IsNotArc = NOperationResult::kIsNotArc,
+    HeadersError = NOperationResult::kHeadersError,
+    WrongPassword = NOperationResult::kWrongPassword
+};
+
 namespace bit7z {
 class ExtractCallback : public Callback,
                         public IArchiveExtractCallback,
@@ -59,7 +80,11 @@ class ExtractCallback : public Callback,
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
-        virtual void finishOperation();
+        inline ExtractMode extractMode() {
+            return mExtractMode;
+        }
+
+        virtual HRESULT finishOperation( OperationResult operation_result );
 
         virtual void releaseStream() = 0;
 
@@ -67,9 +92,8 @@ class ExtractCallback : public Callback,
 
         const BitInputArchive& mInputArchive;
 
-        bool mExtractMode;
-
-        UInt64 mNumErrors;
+    private:
+        ExtractMode mExtractMode;
 };
 }  // namespace bit7z
 
