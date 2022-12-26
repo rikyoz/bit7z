@@ -51,7 +51,7 @@ uint64_t CVolumeOutStream::currentOffset() const {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CVolumeOutStream::SetSize( UInt64 newSize ) {
-    RINOK( CStdOutStream::SetSize( newSize ) )
+    RINOK( CFileOutStream::SetSize( newSize ) )
     mCurrentSize = newSize;
     return S_OK;
 }
