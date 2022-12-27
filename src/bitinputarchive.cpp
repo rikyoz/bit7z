@@ -146,12 +146,6 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), std_stream );
 }
 
-/*BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, BitInputArchive& in_archive )
-    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
-      mArchiveHandler{ handler } {
-
-}*/
-
 BitPropVariant BitInputArchive::archiveProperty( BitProperty property ) const {
     BitPropVariant archive_property;
     const HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );

@@ -37,14 +37,6 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
 
-/*BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const BitArchiveReader& reader,
-                                    const BitInFormat& format,
-                                    const tstring& password,
-                                    size_t index )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, reader ) {}*/
-
-
 map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {

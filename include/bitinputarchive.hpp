@@ -56,8 +56,6 @@ class BitInputArchive {
          */
         BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream );
 
-        //BitInputArchive( const BitAbstractArchiveHandler& handler, BitInputArchive& in_archive );
-
         BitInputArchive( const BitInputArchive& ) = delete;
 
         BitInputArchive( BitInputArchive&& ) = delete;
