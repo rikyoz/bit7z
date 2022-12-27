@@ -48,6 +48,7 @@ using std::size_t;
 #define WINAPI
 
 namespace bit7z {
+
 // Win32 type aliases
 using HMODULE = void*;
 using HRESULT = int;
@@ -133,7 +134,9 @@ struct PROPVARIANT {
         BSTR bstrVal;
     };
 };
+
 }  // namespace bit7z
+
 #endif
 
 #endif //BITWINDOWS_HPP

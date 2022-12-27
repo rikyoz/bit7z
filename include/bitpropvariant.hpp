@@ -18,6 +18,7 @@
 #include "bitwindows.hpp"
 
 namespace bit7z {
+
 using time_type = std::chrono::time_point< std::chrono::system_clock >;
 
 enum struct BitProperty : PROPID {
@@ -431,14 +432,15 @@ struct BitPropVariant final : public PROPVARIANT {
     private:
         void internalClear() noexcept;
 
-        friend bool operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
+        friend bool operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept;
 
-        friend bool operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept;
+        friend bool operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept;
 };
 
 bool operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept;
 
 bool operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept;
+
 }  // namespace bit7z
 
 #endif // BITPROPVARIANT_HPP

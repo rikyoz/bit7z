@@ -17,6 +17,7 @@
 #include "internal/processeditem.hpp"
 
 namespace bit7z {
+
 using std::wstring;
 
 class FileExtractCallback final : public ExtractCallback {
@@ -51,5 +52,7 @@ class FileExtractCallback final : public ExtractCallback {
 
         HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream ) override;
 };
+
 }  // namespace bit7z
+
 #endif // FILEEXTRACTCALLBACK_HPP

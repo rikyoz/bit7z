@@ -13,6 +13,7 @@
 #include "internal/cfileoutstream.hpp"
 
 namespace bit7z {
+
 class CVolumeOutStream final : public CFileOutStream {
     public:
         explicit CVolumeOutStream( const tstring& volumeName );
@@ -39,6 +40,7 @@ class CVolumeOutStream final : public CFileOutStream {
 
         uint64_t mCurrentSize;
 };
+
 }  // namespace bit7z
 
 #endif //CVOLUMEOUTSTREAM_HPP

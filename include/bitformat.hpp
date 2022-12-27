@@ -19,6 +19,7 @@
 #include "bittypes.hpp"
 
 namespace bit7z {
+
 /**
  * @brief The FormatFeatures enum specifies the features supported by an archive file format.
  */
@@ -232,4 +233,5 @@ extern const BitInOutFormat Zip,        ///< ZIP Archive Format
 #endif
 
 }  // namespace bit7z
+
 #endif // BITFORMAT_HPP

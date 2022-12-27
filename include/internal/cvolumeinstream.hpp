@@ -13,6 +13,7 @@
 #include "internal/cfileinstream.hpp"
 
 namespace bit7z {
+
 class CVolumeInStream final : public CFileInStream {
     public:
         explicit CVolumeInStream( const tstring& volume_path, uint64_t global_offset );
@@ -26,6 +27,7 @@ class CVolumeInStream final : public CFileInStream {
 
         uint64_t mGlobalOffset;
 };
+
 }  // namespace bit7z
 
 #endif //CVOLUMEINSTREAM_HPP

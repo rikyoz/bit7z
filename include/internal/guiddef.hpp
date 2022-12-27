@@ -65,12 +65,14 @@ struct IUnknown {
 #endif
 
 namespace bit7z {
+
 /**
  * @return the GUID that identifies the file format in the 7z SDK.
  */
 inline GUID formatGUID( const BitInFormat& format ) {
     return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, format.value(), 0x00, 0x00 } }; // NOLINT
 }
+
 } // namespace bit7z
 
 #endif //GUIDDEF_HPP

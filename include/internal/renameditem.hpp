@@ -14,6 +14,7 @@
 #include "internal/genericinputitem.hpp"
 
 namespace bit7z {
+
 class RenamedItem final : public GenericInputItem {
     public:
         explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path );
@@ -45,5 +46,7 @@ class RenamedItem final : public GenericInputItem {
         uint32_t mIndex;
         const fs::path mNewPath;
 };
+
 }  // namespace bit7z
+
 #endif //RENAMEDITEM_HPP

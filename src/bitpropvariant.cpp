@@ -63,6 +63,7 @@ BitPropVariantType lookupType( VARTYPE type ) {
 }
 
 namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
+
 /* Needed for comparing FILETIME objects in BitPropVariant */
 inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
 #ifdef _WIN32
@@ -71,7 +72,8 @@ inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
     return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
 #endif
 }
-}
+
+} // namespace bit7z
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/

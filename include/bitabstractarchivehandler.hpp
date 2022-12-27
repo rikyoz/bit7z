@@ -17,6 +17,7 @@
 #include "bitdefines.hpp"
 
 namespace bit7z {
+
 using std::function;
 
 class BitInFormat;
@@ -235,6 +236,7 @@ class BitAbstractArchiveHandler {
         FileCallback mFileCallback;
         PasswordCallback mPasswordCallback;
 };
+
 }  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEHANDLER_HPP

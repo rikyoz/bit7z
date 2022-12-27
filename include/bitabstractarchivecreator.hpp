@@ -22,6 +22,7 @@ struct IOutStream;
 struct ISequentialOutStream;
 
 namespace bit7z {
+
 using std::ostream;
 
 struct ArchiveProperties {
@@ -255,6 +256,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         uint64_t mVolumeSize;
         uint32_t mThreadsCount;
 };
+
 }  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVECREATOR_HPP

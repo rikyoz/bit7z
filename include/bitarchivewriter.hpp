@@ -13,6 +13,7 @@
 #include "bitoutputarchive.hpp"
 
 namespace bit7z {
+
 /**
  * @brief The BitArchiveWriter class allows to create new archives or update old ones with new items.
  */
@@ -65,6 +66,7 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
                           const BitInOutFormat& format,
                           const tstring& password = {} );
 };
+
 }  // namespace bit7z
 
 #endif //BITARCHIVEWRITER_HPP

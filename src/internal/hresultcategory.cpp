@@ -116,7 +116,8 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
             if ( HRESULT_FACILITY( error_value ) == FACILITY_CODE ) {
 #ifndef __MINGW32__
                 /* MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
-                 * However, on Windows error_value is a Win32 error wrapped into a HRESULT (e.g., through HRESULT_FROM_WIN32).
+                 * However, on Windows error_value is a Win32 error wrapped into a HRESULT
+                 * (e.g., through HRESULT_FROM_WIN32).
                  * Hence, to avoid returning a wrong error_condition, this check is not performed on MinGW,
                  * and instead we rely on specific cases for most common Win32 error codes (see 'else' branch).
                  *

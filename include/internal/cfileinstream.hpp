@@ -17,6 +17,7 @@
 #include "internal/fs.hpp"
 
 namespace bit7z {
+
 class CFileInStream : public CStdInStream {
     public:
         explicit CFileInStream( const fs::path& filePath );
@@ -28,6 +29,7 @@ class CFileInStream : public CStdInStream {
         static constexpr auto buffer_size = 1024 * 1024; // 1 MiB
         std::array< char, buffer_size > mBuffer;
 };
+
 }  // namespace bit7z
 
 #endif // CFILEINSTREAM_HPP

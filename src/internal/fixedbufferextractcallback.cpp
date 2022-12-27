@@ -17,6 +17,7 @@
 #include "internal/util.hpp"
 
 namespace bit7z {
+
 FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive& inputArchive,
                                                         byte_t* buffer,
                                                         size_t size )
@@ -52,4 +53,5 @@ HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index, ISequentialOut
     *outStream = outStreamLoc.Detach();
     return S_OK;
 }
-}
+
+} // namespace bit7z

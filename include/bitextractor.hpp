@@ -18,11 +18,12 @@
 #include "bitinputarchive.hpp"
 
 namespace bit7z {
-namespace filesystem {
+
+namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
 bool wildcardMatch( const tstring& pattern, const tstring& str );
-}
-}
+} // namespace fsutil
+} // namespace filesystem
 
 enum class FilterPolicy { Include, Exclude };
 
@@ -289,6 +290,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             throw BitException( "Failed to extract items", make_error_code( BitError::NoMatchingItems ) );
         }
 };
+
 }  // namespace bit7z
 
 #endif //BITEXTRACTOR_HPP

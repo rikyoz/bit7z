@@ -146,6 +146,12 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), std_stream );
 }
 
+/*BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, BitInputArchive& in_archive )
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+      mArchiveHandler{ handler } {
+
+}*/
+
 BitPropVariant BitInputArchive::archiveProperty( BitProperty property ) const {
     BitPropVariant archive_property;
     const HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );
@@ -175,16 +181,17 @@ uint32_t BitInputArchive::itemsCount() const {
 }
 
 bool BitInputArchive::isItemFolder( uint32_t index ) const {
-    BitPropVariant is_item_folder = itemProperty( index, BitProperty::IsDir );
+    const BitPropVariant is_item_folder = itemProperty( index, BitProperty::IsDir );
     return !is_item_folder.isEmpty() && is_item_folder.getBool();
 }
 
 bool BitInputArchive::isItemEncrypted( uint32_t index ) const {
-    BitPropVariant is_item_encrypted = itemProperty( index, BitProperty::Encrypted );
+    const BitPropVariant is_item_encrypted = itemProperty( index, BitProperty::Encrypted );
     return is_item_encrypted.isBool() && is_item_encrypted.getBool();
 }
 
 HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 

@@ -13,6 +13,7 @@
 #include "bitcompressor.hpp"
 
 namespace bit7z {
+
 /**
  * @brief The BitMemCompressor class allows to compress memory buffers to the filesystem, to standard streams,
  *        or to other memory buffers.
@@ -21,5 +22,6 @@ namespace bit7z {
  * protection and the compression level desired.
  */
 using BitMemCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< const buffer_t >;
-}
+
+} // namespace bit7z
 #endif // BITMEMCOMPRESSOR_HPP

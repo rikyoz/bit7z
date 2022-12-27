@@ -13,8 +13,9 @@
 #include "internal/genericinputitem.hpp"
 #include "internal/windows.hpp"
 
-namespace bit7z {
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
+
 class FSItem final : public GenericInputItem {
     public:
         explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
@@ -50,6 +51,8 @@ class FSItem final : public GenericInputItem {
 
         void initAttributes( const fs::path& itemPath );
 };
+
 }  // namespace filesystem
 }  // namespace bit7z
+
 #endif // FSITEM_HPP

@@ -11,6 +11,7 @@
 #define BITCOMPRESSIONLEVEL_HPP
 
 namespace bit7z {
+
 /**
  * @brief The BitCompressionLevel enum represents the compression level used by 7z when creating archives.
  * @note It uses the same values as in the 7z SDK (https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
@@ -23,6 +24,7 @@ enum struct BitCompressionLevel {
     Max = 7,     ///< Maximum compressing
     Ultra = 9    ///< Ultra compressing
 };
+
 }  // namespace bit7z
 
 #endif // BITCOMPRESSIONLEVEL_HPP

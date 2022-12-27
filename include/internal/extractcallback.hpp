@@ -40,6 +40,7 @@ enum struct OperationResult {
 };
 
 namespace bit7z {
+
 class ExtractCallback : public Callback,
                         public IArchiveExtractCallback,
                         public ICompressProgressInfo,
@@ -95,6 +96,7 @@ class ExtractCallback : public Callback,
     private:
         ExtractMode mExtractMode;
 };
+
 }  // namespace bit7z
 
 #endif // EXTRACTCALLBACK_HPP

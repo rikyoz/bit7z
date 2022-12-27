@@ -15,6 +15,7 @@
 #include "bitarchivewriter.hpp"
 
 namespace bit7z {
+
 using std::vector;
 
 using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
@@ -26,7 +27,7 @@ using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
  *
  * @note  Changes are applied to the archive only after calling the applyChanges() method.
  */
-class BitArchiveEditor final : public BitArchiveWriter {
+class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
     public:
         /**
          * @brief Constructs a BitArchiveEditor object, reading the given archive file path.
@@ -164,6 +165,7 @@ class BitArchiveEditor final : public BitArchiveWriter {
 
         bool hasNewProperties( uint32_t index ) const noexcept override;
 };
+
 }  // namespace bit7z
 
 #endif //BITARCHIVEEDITOR_HPP

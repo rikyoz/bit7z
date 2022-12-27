@@ -13,6 +13,7 @@
 #include "bitpropvariant.hpp"
 
 namespace bit7z {
+
 /**
  * @bfrief The BitGenericItem interface class represents a generic item (either inside or outside an archive).
  */
@@ -54,6 +55,7 @@ class BitGenericItem {
 
         virtual ~BitGenericItem() = default;
 };
+
 }  // namespace bit7z
 
 #endif //BITGENERICITEM_HPP

@@ -134,8 +134,8 @@ CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     if ( mInputArchive == nullptr ) {
         const GUID format_GUID = formatGUID( mArchiveCreator.format() );
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-        mArchiveCreator.library().createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
+        mArchiveCreator.library() // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+                       .createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
     } else {
         mInputArchive->initUpdatableArchive( &new_arc );
     }

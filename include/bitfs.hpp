@@ -36,6 +36,6 @@ using namespace std::filesystem;
 #else
 using namespace ghc::filesystem;
 #endif
-}
+} // namespace fs
 
 #endif //BITFS_HPP

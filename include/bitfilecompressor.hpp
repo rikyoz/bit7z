@@ -17,13 +17,14 @@
 #include "bitcompressor.hpp"
 
 namespace bit7z {
+
 using std::vector;
 using std::map;
 using std::ostream;
 
 namespace filesystem {
 class FSItem;
-}
+} // namespace filesystem
 
 using namespace filesystem;
 
@@ -132,5 +133,6 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          */
         void compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const;
 };
+
 }  // namespace bit7z
 #endif // BITFILECOMPRESSOR_HPP

@@ -17,6 +17,7 @@
 #include "bitformat.hpp"
 
 namespace bit7z {
+
 using std::ostream;
 
 /**
@@ -51,6 +52,7 @@ class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
                                   const BitInFormat& format,
                                   const tstring& password = {} );
 };
+
 }  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEOPENER_HPP

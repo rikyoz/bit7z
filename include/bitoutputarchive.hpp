@@ -21,6 +21,7 @@
 struct ISequentialInStream;
 
 namespace bit7z {
+
 using std::istream;
 
 using DeletedItems = std::set< uint32_t >;
@@ -263,6 +264,7 @@ class BitOutputArchive {
 
         void updateInputIndices();
 };
+
 }  // namespace bit7z
 
 #endif //BITOUTPUTARCHIVE_HPP

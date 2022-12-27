@@ -19,6 +19,7 @@
 #include <7zip/IPassword.h>
 
 namespace bit7z {
+
 constexpr auto kUnsupportedOperation = "Unsupported operation";
 
 class UpdateCallback final : public Callback,
@@ -74,6 +75,7 @@ class UpdateCallback final : public Callback,
         const BitOutputArchive& mOutputArchive;
         bool mNeedBeClosed;
 };
+
 }  // namespace bit7z
 
 #endif // UPDATECALLBACK_HPP

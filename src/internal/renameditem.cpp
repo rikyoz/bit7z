@@ -15,7 +15,9 @@
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 
-namespace bit7z {
+using bit7z::RenamedItem;
+using bit7z::tstring;
+
 RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path )
     : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ new_path } {}
 
@@ -29,7 +31,7 @@ tstring RenamedItem::path() const {
 
 fs::path RenamedItem::inArchivePath() const { return path(); }
 
-HRESULT RenamedItem::getStream( ISequentialInStream** ) const noexcept {
+HRESULT RenamedItem::getStream( ISequentialInStream** /*inStream*/ ) const noexcept {
     return S_OK;
 }
 
@@ -60,7 +62,6 @@ FILETIME RenamedItem::lastWriteTime() const {
     return write_time.isFileTime() ? write_time.getFileTime() : currentFileTime();
 }
 
-uint32_t bit7z::RenamedItem::attributes() const {
+uint32_t RenamedItem::attributes() const {
     return mInputArchive.itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
-}
 }

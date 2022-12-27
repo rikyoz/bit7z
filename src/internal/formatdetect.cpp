@@ -514,11 +514,11 @@ const auto to_lower = std::towlower;
 
 inline auto is_digit( unsigned char c ) -> bool {
     return std::isdigit( c ) != 0;
-};
+}
 
 inline auto to_lower( unsigned char c ) -> char {
     return static_cast< char >( std::tolower( c ) );
-};
+}
 #endif
 
 const BitInFormat& detectFormatFromExt( const tstring& in_file ) {

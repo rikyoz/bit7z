@@ -15,6 +15,7 @@
 #include "internal/genericinputitem.hpp"
 
 namespace bit7z {
+
 using std::vector;
 
 class BufferItem final : public GenericInputItem {
@@ -45,6 +46,7 @@ class BufferItem final : public GenericInputItem {
         const vector< byte_t >& mBuffer;
         const fs::path mBufferName;
 };
+
 }  // namespace bit7z
 
 #endif //BUFFERITEM_HPP

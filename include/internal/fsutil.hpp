@@ -17,9 +17,10 @@
 #include "internal/fs.hpp"
 #include "internal/windows.hpp"
 
-namespace bit7z {
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 namespace fsutil {
+
 BIT7Z_NODISCARD tstring basename( const tstring& path );
 
 BIT7Z_NODISCARD tstring extension( const fs::path& path );
@@ -35,7 +36,9 @@ bool setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept;
 
 BIT7Z_NODISCARD fs::path inArchivePath( const fs::path& file_path,
                                         const fs::path& search_path = fs::path() );
+
 }  // namespace fsutil
 }  // namespace filesystem
 }  // namespace bit7z
+
 #endif // FSUTIL_HPP

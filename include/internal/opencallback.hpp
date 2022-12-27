@@ -20,6 +20,7 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
+
 using filesystem::FSItem;
 
 class OpenCallback final : public IArchiveOpenCallback,
@@ -65,5 +66,7 @@ class OpenCallback final : public IArchiveOpenCallback,
         std::wstring mSubArchiveName;
         FSItem mFileItem;
 };
+
 }  // namespace bit7z
+
 #endif // OPENCALLBACK_HPP

@@ -25,6 +25,7 @@ using std::vector;
 using std::wstring;
 
 namespace bit7z {
+
 class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Size of a single volume.
         uint64_t mMaxVolumeSize;
@@ -70,6 +71,7 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 };
+
 }  // namespace bit7z
 
 #endif // COUTMULTIVOLUMESTREAM_HPP

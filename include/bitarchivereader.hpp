@@ -19,6 +19,7 @@ struct IOutArchive;
 struct IArchiveExtractCallback;
 
 namespace bit7z {
+
 /**
  * @brief The BitArchiveReader class allows to read metadata of archives, as well as extract them.
  */
@@ -77,6 +78,12 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
                           std::istream& in_stream,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
+
+        /*BitArchiveReader( const Bit7zLibrary& lib,
+                          const BitArchiveReader& reader,
+                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+                          const tstring& password = {},
+                          size_t index = 0 );*/
 
         BitArchiveReader( const BitArchiveReader& ) = delete;
 
@@ -143,6 +150,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          */
         BIT7Z_NODISCARD bool isSolid() const;
 };
+
 }  // namespace bit7z
 
 #endif // BITARCHIVEREADER_HPP

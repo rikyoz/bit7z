@@ -49,6 +49,6 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 };
 
-}
+} // namespace bit7z
 
 #endif //CMULTIVOLUMEINSTREAM_HPP

@@ -23,6 +23,7 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
+
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 // On Windows, with native strings enabled, strings are already wide!
 #   define WIDEN( tstr ) tstr
@@ -44,6 +45,7 @@ inline CMyComPtr< std::enable_if_t< std::is_base_of< CMyUnknownImp, T >::value &
 make_com( Args&& ... args ) {
     return CMyComPtr< I >( new T( std::forward< Args >( args )... ) );
 }
+
 }  // namespace bit7z
 
 #endif //UTIL_HPP

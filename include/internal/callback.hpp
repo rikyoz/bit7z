@@ -21,6 +21,7 @@ constexpr auto kPasswordNotDefined = "Password is not defined";
 constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 
 namespace bit7z {
+
 class Callback : protected CMyUnknownImp {
     public:
         Callback( const Callback& ) = delete;
@@ -41,5 +42,7 @@ class Callback : protected CMyUnknownImp {
         const BitAbstractArchiveHandler& mHandler;
         const char* mErrorMessage;
 };
+
 }  // namespace bit7z
+
 #endif // CALLBACK_HPP

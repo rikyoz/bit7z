@@ -18,13 +18,14 @@
 #include "bitoutputarchive.hpp"
 
 namespace bit7z {
+
 using std::vector;
 
-namespace filesystem {
+namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
 tstring basename( const tstring& path );
-}
-}
+} // namespace fsutil
+} // namespace filesystem
 
 using namespace filesystem;
 
@@ -107,6 +108,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
             output_archive.compressTo( out_stream );
         }
 };
+
 }  // namespace bit7z
 
 #endif //BITCOMPRESSOR_HPP
