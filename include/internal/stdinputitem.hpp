@@ -42,7 +42,7 @@ class StdInputItem final : public GenericInputItem {
 
     private:
         istream& mStream;
-        const fs::path mStreamPath;
+        fs::path mStreamPath;
 };
 
 }  // namespace bit7z

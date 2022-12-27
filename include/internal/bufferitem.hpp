@@ -44,7 +44,7 @@ class BufferItem final : public GenericInputItem {
 
     private:
         const vector< byte_t >& mBuffer;
-        const fs::path mBufferName;
+        fs::path mBufferName;
 };
 
 }  // namespace bit7z

@@ -44,7 +44,7 @@ class RenamedItem final : public GenericInputItem {
     private:
         const BitInputArchive& mInputArchive;
         uint32_t mIndex;
-        const fs::path mNewPath;
+        fs::path mNewPath;
 };
 
 }  // namespace bit7z

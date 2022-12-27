@@ -94,7 +94,7 @@ class BitInFormat {
         bool operator!=( BitInFormat const& other ) const noexcept;
 
     private:
-        const unsigned char mValue;
+        unsigned char mValue;
 };
 
 /**
@@ -155,8 +155,8 @@ class BitInOutFormat final : public BitInFormat {
 
     private:
         const tchar* mExtension;
-        const BitCompressionMethod mDefaultMethod;
-        const FormatFeatures mFeatures;
+        BitCompressionMethod mDefaultMethod;
+        FormatFeatures mFeatures;
 };
 
 /**
