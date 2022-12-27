@@ -219,16 +219,16 @@ class BitAbstractArchiveHandler {
         void setOverwriteMode( OverwriteMode mode );
 
     protected:
-        const Bit7zLibrary& mLibrary;
-        tstring mPassword;
-        bool mRetainDirectories;
-        OverwriteMode mOverwriteMode;
-
         explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib,
                                             tstring password = {},
                                             OverwriteMode overwrite_mode = OverwriteMode::None );
 
     private:
+        const Bit7zLibrary& mLibrary;
+        tstring mPassword;
+        bool mRetainDirectories;
+        OverwriteMode mOverwriteMode;
+
         //CALLBACKS
         TotalCallback mTotalCallback;
         ProgressCallback mProgressCallback;

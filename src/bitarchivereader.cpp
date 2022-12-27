@@ -106,7 +106,7 @@ bool BitArchiveReader::hasEncryptedItems() const {
 }
 
 bool BitArchiveReader::isMultiVolume() const {
-    if ( mFormat == BitFormat::Split ) {
+    if ( extractionFormat() == BitFormat::Split ) {
         return true;
     }
     const BitPropVariant is_multi_volume = archiveProperty( BitProperty::IsVolume );

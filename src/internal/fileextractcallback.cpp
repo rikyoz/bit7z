@@ -69,7 +69,7 @@ void FileExtractCallback::throwException( HRESULT error ) {
 
 HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
     try {
-        mCurrentItem.loadItemInfo( mInputArchive, index );
+        mCurrentItem.loadItemInfo( inputArchive(), index );
     } catch ( const BitException& ex ) {
         mErrorMessage = ex.what();
         return E_FAIL;
@@ -85,7 +85,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     }
     mFilePathOnDisk = mDirectoryPath / filePath;
 
-    if ( !mInputArchive.isItemFolder( index ) ) { // File
+    if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
             mHandler.fileCallback()( filePath.string< tchar >() );
         }

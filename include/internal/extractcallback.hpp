@@ -20,6 +20,8 @@
 
 using namespace NArchive::NExtract;
 
+namespace bit7z {
+
 enum struct ExtractMode {
     Extract = NAskMode::kExtract,
     Test = NAskMode::kTest,
@@ -38,8 +40,6 @@ enum struct OperationResult {
     HeadersError = NOperationResult::kHeadersError,
     WrongPassword = NOperationResult::kWrongPassword
 };
-
-namespace bit7z {
 
 class ExtractCallback : public Callback,
                         public IArchiveExtractCallback,
@@ -81,8 +81,20 @@ class ExtractCallback : public Callback,
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
-        inline ExtractMode extractMode() {
+        inline ExtractMode extractMode() const {
             return mExtractMode;
+        }
+
+        inline bool isItemFolder( uint32_t index ) const {
+            return mInputArchive.isItemFolder( index );
+        }
+
+        inline BitPropVariant itemProperty( uint32_t index, BitProperty property ) const {
+            return mInputArchive.itemProperty( index, property );
+        }
+
+        inline const BitInputArchive& inputArchive() const {
+            return mInputArchive;
         }
 
         virtual HRESULT finishOperation( OperationResult operation_result );
@@ -91,9 +103,8 @@ class ExtractCallback : public Callback,
 
         virtual HRESULT getOutStream( UInt32 index, ISequentialOutStream** outStream ) = 0;
 
-        const BitInputArchive& mInputArchive;
-
     private:
+        const BitInputArchive& mInputArchive;
         ExtractMode mExtractMode;
 };
 

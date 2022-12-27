@@ -31,12 +31,12 @@ void BufferExtractCallback::releaseStream() {
 }
 
 HRESULT BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
-    if ( mInputArchive.isItemFolder( index ) ) {
+    if ( isItemFolder( index ) ) {
         return S_OK;
     }
 
     // Get Name
-    const BitPropVariant prop = mInputArchive.itemProperty( index, BitProperty::Path );
+    const BitPropVariant prop = itemProperty( index, BitProperty::Path );
     tstring fullPath;
 
     if ( prop.isEmpty() ) {

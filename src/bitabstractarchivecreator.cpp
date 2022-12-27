@@ -123,7 +123,7 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
       mSolidMode( false ),
       mVolumeSize( 0 ),
       mThreadsCount( 0 ) {
-    mRetainDirectories = false;
+    setRetainDirectories( false );
 }
 
 const BitInFormat& BitAbstractArchiveCreator::format() const noexcept {
@@ -175,7 +175,7 @@ void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password, bool crypt_headers ) {
-    mPassword = password;
+    BitAbstractArchiveHandler::setPassword( password );
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
 

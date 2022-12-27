@@ -234,8 +234,6 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         void setThreadsCount( uint32_t threads_count ) noexcept;
 
     protected:
-        const BitInOutFormat& mFormat;
-
         BitAbstractArchiveCreator( const Bit7zLibrary& lib,
                                    const BitInOutFormat& format,
                                    tstring password = {},
@@ -246,6 +244,8 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         friend class BitOutputArchive;
 
     private:
+        const BitInOutFormat& mFormat;
+
         UpdateMode mUpdateMode;
         BitCompressionLevel mCompressionLevel;
         BitCompressionMethod mCompressionMethod;
