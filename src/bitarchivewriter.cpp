@@ -13,6 +13,7 @@
 #include "bitarchivewriter.hpp"
 
 namespace bit7z {
+
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitAbstractArchiveCreator( lib, format ), BitOutputArchive( *this, tstring{} ) {}
 
@@ -36,4 +37,5 @@ BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
       BitOutputArchive( *this, in_stream ) {}
+
 } // namespace bit7z
