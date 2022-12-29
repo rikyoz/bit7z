@@ -242,8 +242,8 @@ void BitOutputArchive::compressTo( std::ostream& out_stream ) {
 }
 
 void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
-    ArchiveProperties properties = mArchiveCreator.archiveProperties();
-    if ( properties.names.empty() ) {
+    const ArchiveProperties properties = mArchiveCreator.archiveProperties();
+    if ( properties.empty() ) {
         return;
     }
 
@@ -253,8 +253,9 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
     if ( res != S_OK ) {
         throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
     }
-    res = set_properties->SetProperties( properties.names.data(), properties.values.data(),
-                                         static_cast< uint32_t >( properties.names.size() ) );
+    res = set_properties->SetProperties( properties.names(),
+                                         properties.values(),
+                                         static_cast< uint32_t >( properties.size() ) );
     if ( res != S_OK ) {
         throw BitException( "Cannot set properties of the archive", make_hresult_code( res ) );
     }

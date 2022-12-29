@@ -243,62 +243,54 @@ void BitAbstractArchiveCreator::setThreadsCount( uint32_t threads_count ) noexce
     mThreadsCount = threads_count;
 }
 
+const wchar_t* dictionaryPropertyName( const BitInOutFormat& format, BitCompressionMethod method ) {
+    if ( format == BitFormat::SevenZip ) {
+        return ( method == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
+    }
+    return ( method == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
+}
+
+const wchar_t* wordSizePropertyName( const BitInOutFormat& format, BitCompressionMethod method ) {
+    if ( format == BitFormat::SevenZip ) {
+        return ( method == BitCompressionMethod::Ppmd ? L"0o" : L"0fb" );
+    }
+    return ( method == BitCompressionMethod::Ppmd ? L"o" : L"fb" );
+}
+
 ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
     ArchiveProperties properties = {};
-    vector< const wchar_t* >& names = properties.names;
-    vector< BitPropVariant >& values = properties.values;
     if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HeaderEncryption ) ) {
-        names.emplace_back( L"he" );
-        values.emplace_back( true );
+        properties.setProperty( L"he", true );
     }
     if ( mFormat.hasFeature( FormatFeatures::CompressionLevel ) ) {
-        names.emplace_back( L"x" );
-        values.emplace_back( static_cast< uint32_t >( mCompressionLevel ) );
+        properties.setProperty( L"x", static_cast< uint32_t >( mCompressionLevel ) );
 
         if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) && mCompressionMethod != mFormat.defaultMethod() ) {
-            names.emplace_back( mFormat == BitFormat::SevenZip ? L"0" : L"m" );
-            values.emplace_back( methodName( mCompressionMethod ) );
+            properties.setProperty( mFormat == BitFormat::SevenZip ? L"0" : L"m", methodName( mCompressionMethod ) );
         }
     }
     if ( mFormat.hasFeature( FormatFeatures::SolidArchive ) ) {
-        names.emplace_back( L"s" );
-        values.emplace_back( mSolidMode );
+        properties.setProperty( L"s", mSolidMode );
 #ifndef _WIN32
         if ( mSolidMode ) {
             /* NOTE: Apparently, p7zip requires the filters to be set off for the solid compression to work.
                The most strange thing is... according to my tests this happens only in WSL!
                I've tested the same code on a Linux VM, and it works without disabling the filters! */
             // TODO: So, for now I disable them, but this will need further investigation!
-            names.push_back( L"f" );
-            values.emplace_back( false );
+            properties.setProperty( L"f", false );
         }
 #endif
     }
     if ( mThreadsCount != 0 ) {
-        names.emplace_back( L"mt" );
-        values.emplace_back( mThreadsCount );
+        properties.setProperty( L"mt", mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
-        const wchar_t* prop_name; // NOLINT(cppcoreguidelines-init-variables)
-        //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
-        if ( mFormat == BitFormat::SevenZip ) {
-            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
-        } else {
-            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
-        }
-        names.emplace_back( prop_name );
-        values.emplace_back( std::to_wstring( mDictionarySize ) + L"b" );
+        properties.setProperty( dictionaryPropertyName( mFormat, mCompressionMethod ),
+                                std::to_wstring( mDictionarySize ) + L"b" );
     }
     if ( mWordSize != 0 ) {
-        const wchar_t* prop_name; // NOLINT(cppcoreguidelines-init-variables)
-        //cannot optimize the following if-else, if we use std::wstring we have invalid pointers in names!
-        if ( mFormat == BitFormat::SevenZip ) {
-            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"0o" : L"0fb" );
-        } else {
-            prop_name = ( mCompressionMethod == BitCompressionMethod::Ppmd ? L"o" : L"fb" );
-        }
-        names.emplace_back( prop_name );
-        values.emplace_back( mWordSize );
+        properties.setProperty( wordSizePropertyName( mFormat, mCompressionMethod ), mWordSize );
     }
+    properties.addProperties( mExtraProperties );
     return properties;
 }

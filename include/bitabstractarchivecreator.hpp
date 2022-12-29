@@ -10,6 +10,7 @@
 #ifndef BITABSTRACTARCHIVECREATOR_HPP
 #define BITABSTRACTARCHIVECREATOR_HPP
 
+#include <map>
 #include <memory>
 
 #include "bitabstractarchivehandler.hpp"
@@ -25,9 +26,51 @@ namespace bit7z {
 
 using std::ostream;
 
-struct ArchiveProperties {
-    vector< const wchar_t* > names;
-    vector< BitPropVariant > values;
+class ArchiveProperties final {
+        vector< const wchar_t* > mNames{};
+        vector< BitPropVariant > mValues{};
+
+        template< typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
+        inline void setProperty( const wchar_t* name, T value ) {
+            mNames.emplace_back( name );
+            mValues.emplace_back( value );
+        }
+
+        template< typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
+        inline void setProperty( const wchar_t* name, const T& value ) {
+            mNames.emplace_back( name );
+            mValues.emplace_back( value );
+        }
+
+        void addProperties( const std::map< std::wstring, BitPropVariant >& other_properties ) {
+            for ( const auto& entry : other_properties ) {
+                mNames.emplace_back( entry.first.c_str() );
+                mValues.emplace_back( entry.second );
+            }
+        }
+
+        friend class BitAbstractArchiveCreator;
+
+    public:
+        BIT7Z_NODISCARD
+        inline bool empty() const {
+            return mNames.empty();
+        }
+
+        BIT7Z_NODISCARD
+        inline const wchar_t* const* names() const {
+            return mNames.data();
+        }
+
+        BIT7Z_NODISCARD
+        inline const PROPVARIANT* values() const {
+            return mValues.data();
+        }
+
+        BIT7Z_NODISCARD
+        size_t size() const {
+            return mNames.size();
+        }
 };
 
 /**
@@ -233,6 +276,34 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          */
         void setThreadsCount( uint32_t threads_count ) noexcept;
 
+        /**
+         * @brief Sets a property for the output archive format as described by the 7-zip documentation
+         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         *
+         * @tparam T    An integral type (i.e., a bool or an integer type).
+         *
+         * @param name  The string name of the property to be set.
+         * @param value The value to be used for the property.
+         */
+        template< std::size_t N, typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
+        void setFormatProperty( const wchar_t (&name)[N], T value ) noexcept { // NOLINT(*-avoid-c-arrays)
+            mExtraProperties[ name ] = value;
+        }
+
+        /**
+         * @brief Sets a property for the output archive format as described by the 7-zip documentation
+         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         *
+         * @tparam T    A non-integral type (i.e., a string).
+         *
+         * @param name  The string name of the property to be set.
+         * @param value The value to be used for the property.
+         */
+        template< std::size_t N, typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
+        void setFormatProperty( const wchar_t (&name)[N], const T& value ) noexcept { // NOLINT(*-avoid-c-arrays)
+            mExtraProperties[ name ] = value;
+        }
+
     protected:
         BitAbstractArchiveCreator( const Bit7zLibrary& lib,
                                    const BitInOutFormat& format,
@@ -255,6 +326,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         bool mSolidMode;
         uint64_t mVolumeSize;
         uint32_t mThreadsCount;
+        std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
 
 }  // namespace bit7z
