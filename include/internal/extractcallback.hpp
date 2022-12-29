@@ -81,18 +81,22 @@ class ExtractCallback : public Callback,
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
+        BIT7Z_NODISCARD
         inline ExtractMode extractMode() const {
             return mExtractMode;
         }
 
+        BIT7Z_NODISCARD
         inline bool isItemFolder( uint32_t index ) const {
             return mInputArchive.isItemFolder( index );
         }
 
+        BIT7Z_NODISCARD
         inline BitPropVariant itemProperty( uint32_t index, BitProperty property ) const {
             return mInputArchive.itemProperty( index, property );
         }
 
+        BIT7Z_NODISCARD
         inline const BitInputArchive& inputArchive() const {
             return mInputArchive;
         }
