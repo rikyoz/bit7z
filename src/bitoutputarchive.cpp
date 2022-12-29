@@ -119,7 +119,8 @@ void BitOutputArchive::compressTo( const tstring& out_file ) {
         if ( error ) {
             throw BitException( "Failed to delete the old archive file", error, out_file );
         }
-    } else if ( overwrite_mode == OverwriteMode::Skip ) {
+    }
+    if ( overwrite_mode == OverwriteMode::Skip ) { // Skipping if the output file already exists
         std::error_code error;
         if ( fs::exists( out_file, error ) ) {
             return;
