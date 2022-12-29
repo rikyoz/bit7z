@@ -17,6 +17,7 @@
 #include "internal/fs.hpp"
 
 namespace bit7z {
+
 class CFileOutStream : public CStdOutStream {
     public:
         explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
@@ -32,6 +33,7 @@ class CFileOutStream : public CStdOutStream {
         static constexpr auto buffer_size = 1024 * 1024; // 1 MiB
         std::array< char, buffer_size > mBuffer;
 };
+
 }  // namespace bit7z
 
 #endif // CFILEOUTSTREAM_HPP

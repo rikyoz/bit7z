@@ -10,10 +10,19 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "biterror.hpp"
+#include "internal/cvolumeinstream.hpp"
 
-#include "internal/internalcategory.hpp"
+using bit7z::CVolumeInStream;
 
-std::error_code bit7z::make_error_code( const bit7z::BitError& error ) {
-    return { static_cast< int >( error ), internal_category() };
+CVolumeInStream::CVolumeInStream( const bit7z::tstring& volume_path, uint64_t global_offset )
+    : CFileInStream{ volume_path }, mSize{ fs::file_size( volume_path ) }, mGlobalOffset{ global_offset } {}
+
+BIT7Z_NODISCARD
+uint64_t CVolumeInStream::globalOffset() const {
+    return mGlobalOffset;
+}
+
+BIT7Z_NODISCARD
+uint64_t CVolumeInStream::size() const {
+    return mSize;
 }

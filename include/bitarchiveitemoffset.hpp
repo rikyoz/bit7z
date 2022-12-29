@@ -13,6 +13,7 @@
 #include "bitarchiveitem.hpp"
 
 namespace bit7z {
+
 class BitInputArchive;
 
 /**
@@ -22,7 +23,7 @@ class BitArchiveItemOffset final : public BitArchiveItem {
     public:
         BitArchiveItemOffset& operator++() noexcept;
 
-        BitArchiveItemOffset operator++( int ) noexcept;
+        BitArchiveItemOffset operator++( int ) noexcept; // NOLINT(cert-dcl21-cpp)
 
         bool operator==( const BitArchiveItemOffset& other ) const noexcept;
 
@@ -46,6 +47,7 @@ class BitArchiveItemOffset final : public BitArchiveItem {
 
         friend class BitInputArchive;
 };
+
 }  // namespace bit7z
 
 #endif // BITARCHIVEITEMOFFSET_HPP

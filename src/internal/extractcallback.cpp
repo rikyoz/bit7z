@@ -20,11 +20,11 @@ using namespace bit7z;
 ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
     : Callback( inputArchive.handler() ),
       mInputArchive( inputArchive ),
-      mExtractMode( true ),
-      mNumErrors( 0 ) {}
+      mExtractMode( ExtractMode::Extract ) {}
 
-void ExtractCallback::finishOperation() {
+HRESULT ExtractCallback::finishOperation( OperationResult operation_result ) {
     releaseStream();
+    return operation_result != OperationResult::Success ? E_FAIL : S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -54,8 +54,8 @@ STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) noexcept {
     // in the future, we might use a switch to handle an event like onOperationStart(Operation o)
-    // with enum Operation{Extract, Test, Skip}
-    mExtractMode = ( askExtractMode == NArchive::NExtract::NAskMode::kExtract );
+    // with enum ExtractMode.
+    mExtractMode = static_cast< ExtractMode >( askExtractMode );
     return S_OK;
 }
 
@@ -83,19 +83,18 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     constexpr auto kDataError = "Data Error";
     constexpr auto kUnknownError = "Unknown Error";
 
-    if ( operationResult != NOperationResult::kOK ) {
-        mNumErrors++;
-
-        switch ( operationResult ) {
-            case NOperationResult::kUnsupportedMethod:
+    auto result = static_cast< OperationResult >( operationResult );
+    if ( result != OperationResult::Success ) {
+        switch ( result ) {
+            case OperationResult::UnsupportedMethod:
                 mErrorMessage = kUnsupportedMethod;
                 break;
 
-            case NOperationResult::kCRCError:
+            case OperationResult::CRCError:
                 mErrorMessage = kCRCFailed;
                 break;
 
-            case NOperationResult::kDataError:
+            case OperationResult::DataError:
                 mErrorMessage = kDataError;
                 break;
 
@@ -104,9 +103,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
         }
     }
 
-    finishOperation();
-
-    return mNumErrors > 0 ? E_FAIL : S_OK;
+    return finishOperation( result );
 }
 
 COM_DECLSPEC_NOTHROW

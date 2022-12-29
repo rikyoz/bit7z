@@ -10,6 +10,7 @@
 #ifndef BITABSTRACTARCHIVECREATOR_HPP
 #define BITABSTRACTARCHIVECREATOR_HPP
 
+#include <map>
 #include <memory>
 
 #include "bitabstractarchivehandler.hpp"
@@ -22,21 +23,64 @@ struct IOutStream;
 struct ISequentialOutStream;
 
 namespace bit7z {
+
 using std::ostream;
 
-struct ArchiveProperties {
-    vector< const wchar_t* > names;
-    vector< BitPropVariant > values;
+class ArchiveProperties final {
+        vector< const wchar_t* > mNames{};
+        vector< BitPropVariant > mValues{};
+
+        template< typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
+        inline void setProperty( const wchar_t* name, T value ) {
+            mNames.emplace_back( name );
+            mValues.emplace_back( value );
+        }
+
+        template< typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
+        inline void setProperty( const wchar_t* name, const T& value ) {
+            mNames.emplace_back( name );
+            mValues.emplace_back( value );
+        }
+
+        void addProperties( const std::map< std::wstring, BitPropVariant >& other_properties ) {
+            for ( const auto& entry : other_properties ) {
+                mNames.emplace_back( entry.first.c_str() );
+                mValues.emplace_back( entry.second );
+            }
+        }
+
+        friend class BitAbstractArchiveCreator;
+
+    public:
+        BIT7Z_NODISCARD
+        inline bool empty() const {
+            return mNames.empty();
+        }
+
+        BIT7Z_NODISCARD
+        inline const wchar_t* const* names() const {
+            return mNames.data();
+        }
+
+        BIT7Z_NODISCARD
+        inline const PROPVARIANT* values() const {
+            return mValues.data();
+        }
+
+        BIT7Z_NODISCARD
+        size_t size() const {
+            return mNames.size();
+        }
 };
 
 /**
  * @brief Enumeration representing how an archive creator should deal when the output archive already exists.
  */
 enum struct UpdateMode {
-    None, ///< The creator will throw an exception.
-    Append, ///< New items will be appended to the archive.
-    Overwrite, ///< New items whose path already exists in the archive will be overwritten, other will be appended.
-    OverwriteArchive ///< The output archive will be deleted and recreated (unless it is a multi-volume archive, in which case an exception is thrown).
+    None, ///< The creator will throw an exception (unless the OverwriteMode is not None).
+    Append, ///< The creator will append the new items to the existing archive.
+    Update, ///< New items whose path already exists in the archive will overwrite the old ones, other will be appended.
+    BIT7Z_DEPRECATED_ENUMERATOR( Overwrite, Update, "Since v4.0; please use the UpdateMode::Update enumerator." )
 };
 
 /**
@@ -206,13 +250,14 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         /**
          * @brief Sets whether the creator can update existing archives or not.
          *
-         * @deprecated since 4.0. It is provided just for an easier transition from the old v3 API.
+         * @deprecated since v4.0; it is provided just for an easier transition from the old v3 API.
          *
          * @note If set to false, a subsequent compression operation may throw an exception
          *       if it targets an existing archive.
          *
          * @param can_update if true, compressing operations will update existing archives.
          */
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please use the overloaded function that takes an UpdateMode enumerator." )
         void setUpdateMode( bool can_update );
 
         /**
@@ -231,9 +276,38 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          */
         void setThreadsCount( uint32_t threads_count ) noexcept;
 
-    protected:
-        const BitInOutFormat& mFormat;
+        /**
+         * @brief Sets a property for the output archive format as described by the 7-zip documentation
+         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         *
+         * @tparam T    An integral type (i.e., a bool or an integer type).
+         *
+         * @param name  The string name of the property to be set.
+         * @param value The value to be used for the property.
+         */
+        template< std::size_t N, typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
+        void setFormatProperty( const wchar_t (&name)[N], T value ) noexcept { // NOLINT(*-avoid-c-arrays)
+            mExtraProperties[ name ] = value;
+        }
 
+        /**
+         * @brief Sets a property for the output archive format as described by the 7-zip documentation
+         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         *
+         * @example Passing L"tm" with a false value while creating a .7z archive
+         * will disable storing the last modified timestamps of the compressed files.
+         *
+         * @tparam T    A non-integral type (i.e., a string).
+         *
+         * @param name  The string name of the property to be set.
+         * @param value The value to be used for the property.
+         */
+        template< std::size_t N, typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
+        void setFormatProperty( const wchar_t (&name)[N], const T& value ) noexcept { // NOLINT(*-avoid-c-arrays)
+            mExtraProperties[ name ] = value;
+        }
+
+    protected:
         BitAbstractArchiveCreator( const Bit7zLibrary& lib,
                                    const BitInOutFormat& format,
                                    tstring password = {},
@@ -244,6 +318,8 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         friend class BitOutputArchive;
 
     private:
+        const BitInOutFormat& mFormat;
+
         UpdateMode mUpdateMode;
         BitCompressionLevel mCompressionLevel;
         BitCompressionMethod mCompressionMethod;
@@ -253,7 +329,9 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         bool mSolidMode;
         uint64_t mVolumeSize;
         uint32_t mThreadsCount;
+        std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
+
 }  // namespace bit7z
 
 #endif // BITABSTRACTARCHIVECREATOR_HPP

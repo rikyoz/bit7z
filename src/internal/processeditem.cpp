@@ -14,7 +14,8 @@
 
 #include "bitexception.hpp"
 
-namespace bit7z {
+using bit7z::ProcessedItem;
+
 ProcessedItem::ProcessedItem()
     : mModifiedTime{}, mIsModifiedTimeDefined{ false }, mAttributes{ 0 }, mAreAttributesDefined{ false } {}
 
@@ -37,7 +38,7 @@ FILETIME ProcessedItem::modifiedTime() const {
 }
 
 void ProcessedItem::loadFilePath( const BitInputArchive& input_archive, uint32_t item_index ) {
-    BitPropVariant prop = input_archive.itemProperty( item_index, BitProperty::Path );
+    const BitPropVariant prop = input_archive.itemProperty( item_index, BitProperty::Path );
 
     switch ( prop.type() ) {
         case BitPropVariantType::Empty:
@@ -58,7 +59,7 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
     mAreAttributesDefined = false;
 
     // Get posix attributes
-    BitPropVariant posixAttributes = input_archive.itemProperty( item_index, BitProperty::PosixAttrib );
+    const BitPropVariant posixAttributes = input_archive.itemProperty( item_index, BitProperty::PosixAttrib );
     switch ( posixAttributes.type() ) {
         case BitPropVariantType::Empty:
             break;
@@ -73,7 +74,7 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
     }
 
     // Get attributes
-    BitPropVariant attributes = input_archive.itemProperty( item_index, BitProperty::Attrib );
+    const BitPropVariant attributes = input_archive.itemProperty( item_index, BitProperty::Attrib );
     switch ( attributes.type() ) {
         case BitPropVariantType::Empty:
             break;
@@ -89,7 +90,7 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
 }
 
 void ProcessedItem::loadModifiedTime( const BitInputArchive& input_archive, uint32_t item_index ) {
-    BitPropVariant modifiedTime = input_archive.itemProperty( item_index, BitProperty::MTime );
+    const BitPropVariant modifiedTime = input_archive.itemProperty( item_index, BitProperty::MTime );
 
     switch ( modifiedTime.type() ) {
         case BitPropVariantType::Empty:
@@ -112,5 +113,4 @@ bool ProcessedItem::areAttributesDefined() const {
 
 bool ProcessedItem::isModifiedTimeDefined() const {
     return mIsModifiedTimeDefined;
-}
 }

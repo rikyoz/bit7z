@@ -34,22 +34,30 @@ void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!
 }
 
-void FileExtractCallback::finishOperation() {
-    if ( mFileOutStream != nullptr ) {
-        if ( mFileOutStream->fail() ) {
-            ++mNumErrors; // SetOperationResult, which called releaseStream(), will return E_FAIL since mNumErrors > 0.
-            return;
-        }
-        mFileOutStream.Release(); // We need to release the file to change its modified time!
-
-        if ( mCurrentItem.isModifiedTimeDefined() ) {
-            filesystem::fsutil::setFileModifiedTime( mFilePathOnDisk, mCurrentItem.modifiedTime() );
-        }
+HRESULT FileExtractCallback::finishOperation( OperationResult operation_result ) {
+    const HRESULT result = operation_result != OperationResult::Success ? E_FAIL : S_OK;
+    if ( mFileOutStream == nullptr ) {
+        return result;
     }
 
-    if ( mExtractMode && mCurrentItem.areAttributesDefined() ) {
+    if ( mFileOutStream->fail() ) {
+        return E_FAIL;
+    }
+
+    mFileOutStream.Release(); // We need to release the file to change its modified time!
+
+    if ( extractMode() != ExtractMode::Extract ) { // No need to set attributes or modified time of the file.
+        return result;
+    }
+
+    if ( mCurrentItem.isModifiedTimeDefined() ) {
+        filesystem::fsutil::setFileModifiedTime( mFilePathOnDisk, mCurrentItem.modifiedTime() );
+    }
+
+    if ( mCurrentItem.areAttributesDefined() ) {
         filesystem::fsutil::setFileAttributes( mFilePathOnDisk, mCurrentItem.attributes() );
     }
+    return result;
 }
 
 void FileExtractCallback::throwException( HRESULT error ) {
@@ -61,7 +69,7 @@ void FileExtractCallback::throwException( HRESULT error ) {
 
 HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
     try {
-        mCurrentItem.loadItemInfo( mInputArchive, index );
+        mCurrentItem.loadItemInfo( inputArchive(), index );
     } catch ( const BitException& ex ) {
         mErrorMessage = ex.what();
         return E_FAIL;
@@ -77,17 +85,34 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     }
     mFilePathOnDisk = mDirectoryPath / filePath;
 
-    if ( !mInputArchive.isItemFolder( index ) ) { // File
+    if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
             mHandler.fileCallback()( filePath.string< tchar >() );
         }
 
-        std::error_code ec;
-        fs::create_directories( mFilePathOnDisk.parent_path(), ec );
+        std::error_code error;
+        fs::create_directories( mFilePathOnDisk.parent_path(), error );
 
-        if ( fs::exists( mFilePathOnDisk, ec ) && !fs::remove( mFilePathOnDisk, ec ) ) {
-            mErrorMessage = kCannotDeleteOutput;
-            return E_ABORT;
+        if ( fs::exists( mFilePathOnDisk, error ) ) {
+            const OverwriteMode overwrite_mode = mHandler.overwriteMode();
+
+            switch ( overwrite_mode ) {
+                case OverwriteMode::None: {
+                    mErrorMessage = kCannotDeleteOutput;
+                    return E_ABORT;
+                }
+                case OverwriteMode::Skip: {
+                    return S_OK;
+                }
+                case OverwriteMode::Overwrite:
+                default: {
+                    if ( !fs::remove( mFilePathOnDisk, error ) ) {
+                        mErrorMessage = kCannotDeleteOutput;
+                        return E_ABORT;
+                    }
+                    break;
+                }
+            }
         }
 
         try {
@@ -99,8 +124,8 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
             return E_ABORT;
         }
     } else if ( mRetainDirectories ) { // Directory, and we must retain it
-        std::error_code ec;
-        fs::create_directories( mFilePathOnDisk, ec );
+        std::error_code error;
+        fs::create_directories( mFilePathOnDisk, error );
     } else {
         // No action needed
     }

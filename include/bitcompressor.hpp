@@ -18,13 +18,14 @@
 #include "bitoutputarchive.hpp"
 
 namespace bit7z {
+
 using std::vector;
 
-namespace filesystem {
+namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
-tstring filename( const tstring& path, bool ext = false );
-}
-}
+tstring basename( const tstring& path );
+} // namespace fsutil
+} // namespace filesystem
 
 using namespace filesystem;
 
@@ -69,7 +70,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
             //There's probably some compile-time SFINAE alternative for C++14, but life is too short ;)
             if ( !std::is_same< Input, const tstring >::value ) {
 #endif
-                name = input_name.empty() ? fsutil::filename( out_file ) : input_name;
+                name = input_name.empty() ? fsutil::basename( out_file ) : input_name;
             }
 
             BitOutputArchive output_archive{ *this, out_file };
@@ -107,6 +108,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
             output_archive.compressTo( out_stream );
         }
 };
+
 }  // namespace bit7z
 
 #endif //BITCOMPRESSOR_HPP

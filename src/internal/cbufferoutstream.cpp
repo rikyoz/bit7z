@@ -34,7 +34,7 @@ STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     int64_t new_index{};
-    HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, new_index );
+    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, new_index );
 
     if ( res != S_OK ) {
         // new_index is not in the range [0, mBuffer.size]

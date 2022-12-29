@@ -18,6 +18,7 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
+
 using std::vector;
 
 class CBufferOutStream final : public IOutStream, public CMyUnknownImp {
@@ -47,5 +48,7 @@ class CBufferOutStream final : public IOutStream, public CMyUnknownImp {
         buffer_t& mBuffer;
         buffer_t::iterator mCurrentPosition;
 };
+
 }  // namespace bit7z
+
 #endif // CBUFFEROUTSTREAM_HPP

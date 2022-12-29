@@ -15,6 +15,7 @@
 #include "internal/windows.hpp"
 
 namespace bit7z {
+
 class ProcessedItem final {
     public:
         ProcessedItem();
@@ -46,6 +47,7 @@ class ProcessedItem final {
 
         void loadModifiedTime( const BitInputArchive& input_archive, uint32_t item_index );
 };
+
 }  // namespace bit7z
 
 #endif //PROCESSEDITEM_HPP

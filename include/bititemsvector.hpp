@@ -17,13 +17,14 @@
 #include "bittypes.hpp"
 
 namespace bit7z {
+
 using std::vector;
 using std::map;
 using std::unique_ptr;
 
 namespace filesystem {
 class FSItem;
-}
+} // namespace filesystem
 
 using filesystem::FSItem;
 
@@ -144,7 +145,7 @@ class BitItemsVector final {
 
         void indexItem( const FSItem& item, bool recursive );
 };
-}  // namespace bit7z
 
+}  // namespace bit7z
 
 #endif //BITITEMSVECTOR_HPP

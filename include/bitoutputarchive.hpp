@@ -21,6 +21,7 @@
 struct ISequentialInStream;
 
 namespace bit7z {
+
 using std::istream;
 
 using DeletedItems = std::set< uint32_t >;
@@ -207,6 +208,55 @@ class BitOutputArchive {
         virtual ~BitOutputArchive() = default;
 
     protected:
+        virtual BitPropVariant itemProperty( input_index index, BitProperty prop ) const;
+
+        virtual HRESULT itemStream( input_index index, ISequentialInStream** inStream ) const;
+
+        virtual bool hasNewData( uint32_t index ) const noexcept;
+
+        virtual bool hasNewProperties( uint32_t index ) const noexcept;
+
+        input_index itemInputIndex( uint32_t new_index ) const noexcept;
+
+        BitPropVariant outputItemProperty( uint32_t index, BitProperty propID ) const;
+
+        HRESULT outputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
+
+        uint32_t indexInArchive( uint32_t index ) const noexcept;
+
+        inline BitInputArchive* inputArchive() const {
+            return mInputArchive.get();
+        }
+
+        inline void setInputArchive( std::unique_ptr< BitInputArchive >&& input_archive ) {
+            mInputArchive = std::move( input_archive );
+        }
+
+        inline uint32_t inputArchiveItemsCount() const {
+            return mInputArchiveItemsCount;
+        }
+
+        inline void setDeletedIndex( uint32_t index ) {
+            mDeletedItems.insert( index );
+        }
+
+        inline bool isDeletedIndex( uint32_t index ) const {
+            return mDeletedItems.find( index ) != mDeletedItems.cend();
+        }
+
+        inline bool hasDeletedIndexes() const {
+            return !mDeletedItems.empty();
+        }
+
+        inline bool hasNewItems() const {
+            return mNewItemsVector.size() > 0;
+        }
+
+        friend class UpdateCallback;
+
+    private:
+        const BitAbstractArchiveCreator& mArchiveCreator;
+
         unique_ptr< BitInputArchive > mInputArchive;
         uint32_t mInputArchiveItemsCount;
 
@@ -228,27 +278,6 @@ class BitOutputArchive {
          * This vector is either empty, or it has size equal to itemsCount() (thanks to updateInputIndices()). */
         std::vector< input_index > mInputIndices;
 
-        virtual BitPropVariant itemProperty( input_index index, BitProperty prop ) const;
-
-        virtual HRESULT itemStream( input_index index, ISequentialInStream** inStream ) const;
-
-        virtual bool hasNewData( uint32_t index ) const noexcept;
-
-        virtual bool hasNewProperties( uint32_t index ) const noexcept;
-
-        input_index itemInputIndex( uint32_t new_index ) const noexcept;
-
-        BitPropVariant outputItemProperty( uint32_t index, BitProperty propID ) const;
-
-        HRESULT outputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
-
-        uint32_t indexInArchive( uint32_t index ) const noexcept;
-
-        friend class UpdateCallback;
-
-    private:
-        const BitAbstractArchiveCreator& mArchiveCreator;
-
         CMyComPtr< IOutArchive > initOutArchive() const;
 
         CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive, bool updating_archive ) const;
@@ -263,6 +292,7 @@ class BitOutputArchive {
 
         void updateInputIndices();
 };
+
 }  // namespace bit7z
 
 #endif //BITOUTPUTARCHIVE_HPP

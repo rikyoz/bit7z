@@ -63,6 +63,7 @@ BitPropVariantType lookupType( VARTYPE type ) {
 }
 
 namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
+
 /* Needed for comparing FILETIME objects in BitPropVariant */
 inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
 #ifdef _WIN32
@@ -71,7 +72,8 @@ inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
     return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
 #endif
 }
-}
+
+} // namespace bit7z
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
@@ -82,6 +84,7 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) { //until now, we've copied only the pointer to the string, hence we need a deep copy!
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
         if ( bstrVal == nullptr ) {
@@ -379,8 +382,8 @@ FILETIME BitPropVariant::getFileTime() const {
 }
 
 bit7z::time_type BitPropVariant::getTimePoint() const {
-    FILETIME ft = getFileTime();
-    return FILETIME_to_time_type( ft );
+    const FILETIME file_time = getFileTime();
+    return FILETIME_to_time_type( file_time );
 }
 
 tstring BitPropVariant::toString() const {
@@ -490,43 +493,43 @@ void BitPropVariant::internalClear() noexcept {
     uhVal.QuadPart = 0;
 }
 
-bool bit7z::operator!=( const BitPropVariant& a, const BitPropVariant& b ) noexcept {
-    return !( a == b );
+bool bit7z::operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+    return !( lhs == rhs );
 }
 
-bool bit7z::operator==( const BitPropVariant& a, const BitPropVariant& b ) noexcept {
-    if ( a.vt != b.vt ) {
+bool bit7z::operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+    if ( lhs.vt != rhs.vt ) {
         return false;
     }
-    switch ( a.vt ) { //a.vt == b.vt
+    switch ( lhs.vt ) { //lhs.vt == rhs.vt
         case VT_EMPTY:
             return true;
         case VT_BOOL:
-            return a.boolVal == b.boolVal;
+            return lhs.boolVal == rhs.boolVal;
         case VT_BSTR:
-            return wcscmp( a.bstrVal, b.bstrVal ) == 0;
+            return wcscmp( lhs.bstrVal, rhs.bstrVal ) == 0;
         case VT_UI1:
-            return a.bVal == b.bVal;
+            return lhs.bVal == rhs.bVal;
         case VT_UI2:
-            return a.uiVal == b.uiVal;
+            return lhs.uiVal == rhs.uiVal;
         case VT_UINT:
-            return a.uintVal == b.uintVal;
+            return lhs.uintVal == rhs.uintVal;
         case VT_UI4:
-            return a.ulVal == b.ulVal;
+            return lhs.ulVal == rhs.ulVal;
         case VT_UI8:
-            return a.uhVal.QuadPart == b.uhVal.QuadPart;
+            return lhs.uhVal.QuadPart == rhs.uhVal.QuadPart;
         case VT_I1:
-            return a.cVal == b.cVal;
+            return lhs.cVal == rhs.cVal;
         case VT_I2:
-            return a.iVal == b.iVal;
+            return lhs.iVal == rhs.iVal;
         case VT_INT:
-            return a.intVal == b.intVal;
+            return lhs.intVal == rhs.intVal;
         case VT_I4:
-            return a.lVal == b.lVal;
+            return lhs.lVal == rhs.lVal;
         case VT_I8:
-            return a.hVal.QuadPart == b.hVal.QuadPart;
+            return lhs.hVal.QuadPart == rhs.hVal.QuadPart;
         case VT_FILETIME:
-            return a.filetime == b.filetime;
+            return lhs.filetime == rhs.filetime;
         default:
             return false;
     }

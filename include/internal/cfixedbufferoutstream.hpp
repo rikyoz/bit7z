@@ -18,6 +18,7 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
+
 class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
     public:
         explicit CFixedBufferOutStream( byte_t* buffer, std::size_t size );
@@ -46,5 +47,7 @@ class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
         size_t mBufferSize;
         int64_t mCurrentPosition;
 };
+
 }  // namespace bit7z
+
 #endif // CFIXEDBUFFEROUTSTREAM_HPP

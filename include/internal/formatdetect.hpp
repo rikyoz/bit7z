@@ -17,10 +17,13 @@
 struct IInStream;
 
 namespace bit7z {
+
 const BitInFormat& detectFormatFromExt( const tstring& in_file );
 
 const BitInFormat& detectFormatFromSig( IInStream* stream );
-}
+
+} // namespace bit7z
+
 #endif
 
 #endif

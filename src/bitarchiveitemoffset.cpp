@@ -24,7 +24,7 @@ BitArchiveItemOffset& BitArchiveItemOffset::operator++() noexcept {
     return *this;
 }
 
-BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) noexcept {
+BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) noexcept { // NOLINT(cert-dcl21-cpp)
     BitArchiveItemOffset old_value = *this;
     ++( *this );
     return old_value;

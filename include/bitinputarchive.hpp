@@ -21,6 +21,7 @@ struct IInArchive;
 struct IOutArchive;
 
 namespace bit7z {
+
 using std::vector;
 
 /**
@@ -157,7 +158,7 @@ class BitInputArchive {
          * @param index  the index of the file to be extracted.
          */
         template< std::size_t N >
-        void extract( byte_t (& buffer)[N], uint32_t index = 0 ) const { // NOLINT(modernize-avoid-c-arrays)
+        void extract( byte_t (& buffer)[N], uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
             extract( buffer, N, index );
         }
 
@@ -211,21 +212,21 @@ class BitInputArchive {
         IInArchive* mInArchive;
         const BitInFormat* mDetectedFormat;
         const BitAbstractArchiveHandler& mArchiveHandler;
-        const tstring mArchivePath;
+        tstring mArchivePath;
 
     public:
         class const_iterator {
             public:
                 // iterator traits
-                using iterator_category = std::input_iterator_tag;
-                using value_type = BitArchiveItemOffset;
+                using iterator_category BIT7Z_MAYBE_UNUSED = std::input_iterator_tag;
+                using value_type BIT7Z_MAYBE_UNUSED = BitArchiveItemOffset;
                 using reference = const BitArchiveItemOffset&;
                 using pointer = const BitArchiveItemOffset*;
-                using difference_type = uint32_t; //so that count_if returns an uint32_t
+                using difference_type BIT7Z_MAYBE_UNUSED = uint32_t; //so that count_if returns an uint32_t
 
                 const_iterator& operator++() noexcept;
 
-                const_iterator operator++( int ) noexcept;
+                const_iterator operator++( int ) noexcept; // NOLINT(cert-dcl21-cpp)
 
                 bool operator==( const const_iterator& other ) const noexcept;
 
@@ -285,6 +286,7 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD bool contains( const tstring& path ) const noexcept;
 };
+
 }  // namespace bit7z
 
 #endif //BITINPUTARCHIVE_HPP

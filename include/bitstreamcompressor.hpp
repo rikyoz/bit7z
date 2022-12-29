@@ -13,6 +13,7 @@
 #include "bitcompressor.hpp"
 
 namespace bit7z {
+
 /**
  * @brief The BitStreamCompressor class allows to compress data from standard input streams to the filesystem,
  *        to memory buffers, or to standard output streams.
@@ -21,6 +22,7 @@ namespace bit7z {
  * protection and the compression level desired.
  */
 using BitStreamCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< istream >;
-}
+
+} // namespace bit7z
 
 #endif // BITSTREAMCOMPRESSOR_HPP

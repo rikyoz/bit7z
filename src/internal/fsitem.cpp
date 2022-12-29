@@ -36,16 +36,16 @@ using bit7z::filesystem::FSItem;
 FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     : mFileAttributeData(),
       mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
-    std::error_code ec;
-    mFileEntry.assign( itemPath, ec );
-    if ( ec ) {
-        throw BitException( "Cannot read file entry", ec, itemPath.native() );
+    std::error_code error;
+    mFileEntry.assign( itemPath, error );
+    if ( error ) {
+        throw BitException( "Cannot read file entry", error, itemPath.native() );
     }
-    if ( !mFileEntry.exists( ec ) ) { // NOLINT
-        if ( !ec ) { // call to "exists(ec)" succeeded
-            ec = std::make_error_code( std::errc::no_such_file_or_directory );
+    if ( !mFileEntry.exists( error ) ) { // NOLINT
+        if ( !error ) { // call to "exists(error)" succeeded
+            error = std::make_error_code( std::errc::no_such_file_or_directory );
         }
-        throw BitException( "Invalid path", ec, itemPath.native() );
+        throw BitException( "Invalid path", error, itemPath.native() );
     }
     initAttributes( itemPath );
 }
@@ -70,15 +70,15 @@ bool FSItem::isDots() const {
 }
 
 bool FSItem::isDir() const noexcept {
-    std::error_code ec;
-    const bool res = mFileEntry.is_directory( ec );
-    return !ec && res;
+    std::error_code error;
+    const bool res = mFileEntry.is_directory( error );
+    return !error && res;
 }
 
 uint64_t FSItem::size() const noexcept {
-    std::error_code ec;
-    const auto res = mFileEntry.file_size( ec );
-    return !ec ? res : 0;
+    std::error_code error;
+    const auto res = mFileEntry.file_size( error );
+    return !error ? res : 0;
 }
 
 FILETIME FSItem::creationTime() const noexcept {
@@ -94,8 +94,8 @@ FILETIME FSItem::lastWriteTime() const noexcept {
 }
 
 tstring FSItem::name() const {
-    BIT7Z_MAYBE_UNUSED std::error_code ec;
-    return fs::canonical( mFileEntry.path(), ec ).filename().string< tchar >();
+    BIT7Z_MAYBE_UNUSED std::error_code error;
+    return fs::canonical( mFileEntry.path(), error ).filename().string< tchar >();
 }
 
 tstring FSItem::path() const {

@@ -16,6 +16,7 @@
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {
+
 using std::vector;
 using std::map;
 
@@ -42,5 +43,6 @@ class BufferExtractCallback final : public ExtractCallback {
 
         HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream ) override;
 };
+
 }  // namespace bit7z
 #endif // BUFFEREXTRACTCALLBACK_HPP

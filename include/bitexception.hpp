@@ -18,6 +18,7 @@
 #include "bitwindows.hpp"
 
 namespace bit7z {
+
 using std::system_error;
 using FailedFiles = std::vector< std::pair< tstring, std::error_code > >;
 
@@ -76,5 +77,7 @@ class BitException final : public system_error {
     private:
         FailedFiles mFailedFiles;
 };
+
 }  // namespace bit7z
+
 #endif // BITEXCEPTION_HPP

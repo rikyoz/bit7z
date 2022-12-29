@@ -29,5 +29,11 @@ if( BIT7Z_USE_NATIVE_STRING )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_USE_NATIVE_STRING )
 endif()
 
+option( BIT7Z_GENERATE_PIC "Enable or disable generating Position Independent Code" )
+message( STATUS "Generate Position Independent Code: ${BIT7Z_GENERATE_PIC}" )
+if( BIT7Z_USE_NATIVE_STRING )
+    set_property( TARGET ${TARGET_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON )
+endif()
+
 option( BIT7Z_BUILD_TESTS "Enable or disable building the testing executable" )
 message( STATUS "Build tests: ${BIT7Z_BUILD_TESTS}" )

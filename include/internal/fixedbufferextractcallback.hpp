@@ -14,6 +14,7 @@
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {
+
 class FixedBufferExtractCallback final : public ExtractCallback {
     public:
         FixedBufferExtractCallback( const BitInputArchive& inputArchive, byte_t* buffer, size_t size );
@@ -37,5 +38,7 @@ class FixedBufferExtractCallback final : public ExtractCallback {
 
         HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream ) override;
 };
+
 }  // namespace bit7z
+
 #endif // FIXEDBUFFEREXTRACTCALLBACK_HPP

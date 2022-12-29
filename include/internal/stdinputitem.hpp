@@ -13,6 +13,7 @@
 #include "internal/genericinputitem.hpp"
 
 namespace bit7z {
+
 using std::istream;
 
 class StdInputItem final : public GenericInputItem {
@@ -41,8 +42,9 @@ class StdInputItem final : public GenericInputItem {
 
     private:
         istream& mStream;
-        const fs::path mStreamPath;
+        fs::path mStreamPath;
 };
+
 }  // namespace bit7z
 
 #endif //STDINPUTITEM_HPP

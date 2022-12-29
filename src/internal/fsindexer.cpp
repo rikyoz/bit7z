@@ -35,18 +35,18 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
     if ( !prefix.empty() ) {
         path = path / prefix;
     }
-    bool include_root_path = mFilter.empty() ||
-                             fs::path{ mDirItem.path() }.parent_path().empty() ||
-                             mDirItem.inArchivePath().filename() != mDirItem.name();
-    std::error_code ec;
-    for ( const auto& current_entry : fs::directory_iterator( path, ec ) ) {
+    const bool include_root_path = mFilter.empty() ||
+                                   fs::path{ mDirItem.path() }.parent_path().empty() ||
+                                   mDirItem.inArchivePath().filename() != mDirItem.name();
+    std::error_code error;
+    for ( const auto& current_entry : fs::directory_iterator( path, error ) ) {
         auto search_path = include_root_path ? mDirItem.inArchivePath() : fs::path();
         if ( !prefix.empty() ) {
             search_path = search_path.empty() ? prefix : search_path / prefix;
         }
 
-        FSItem current_item{ current_entry, search_path };
-        bool item_matches = fsutil::wildcardMatch( mFilter, current_item.name() );
+        const FSItem current_item{ current_entry, search_path };
+        const bool item_matches = fsutil::wildcardMatch( mFilter, current_item.name() );
         if ( item_matches ) {
             result.emplace_back( std::make_unique< FSItem >( current_item ) );
         }
@@ -55,7 +55,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
             //currentItem is a directory, and we must list it only if:
             // > indexing is done recursively
             // > indexing is not recursive, but the directory name matched the filter.
-            fs::path next_dir = prefix.empty() ? fs::path( current_item.name() ) : prefix / current_item.name();
+            const fs::path next_dir = prefix.empty() ? fs::path( current_item.name() ) : prefix / current_item.name();
             listDirectoryItems( result, true, next_dir );
         }
     }

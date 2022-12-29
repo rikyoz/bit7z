@@ -35,6 +35,7 @@ Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadL
         throw BitException( "Failed to load 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
     }
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
 
     if ( mCreateObjectFunc == nullptr ) {
@@ -57,6 +58,7 @@ void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* inter
 void Bit7zLibrary::setLargePageMode() {
     using SetLargePageMode = HRESULT ( WINAPI* )();
 
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     auto pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode" ) );
     if ( pSetLargePageMode == nullptr ) {
         throw BitException( "Failed to get SetLargePageMode function", ERROR_CODE( std::errc::invalid_seek ) );

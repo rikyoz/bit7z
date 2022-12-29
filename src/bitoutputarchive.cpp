@@ -21,29 +21,40 @@
 #include "internal/util.hpp"
 
 namespace bit7z {
+
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )
-    : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
-    std::error_code ec;
-    if ( !in_file.empty() && fs::exists( in_file, ec ) ) {
-        if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
-            throw BitException( "Cannot update existing archive",
-                                make_error_code( BitError::WrongUpdateMode ) );
-        }
-        if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
-            //Update mode is set but format does not support adding more files.
-            throw BitException( "Cannot update existing archive",
-                                make_error_code( BitError::FormatFeatureNotSupported ) );
-        }
-        if ( mArchiveCreator.updateMode() != UpdateMode::OverwriteArchive ) {
-            mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
-            mInputArchiveItemsCount = mInputArchive->itemsCount();
-        }
+    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+    if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
+        return;
     }
+
+    if ( in_file.empty() ) { // No input file specified, so we are creating a totally new archive!
+        return;
+    }
+
+    std::error_code error;
+    if ( !fs::exists( in_file, error ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
+        return;
+    }
+
+    if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
+        throw BitException( "Cannot update existing archive",
+                            make_error_code( BitError::WrongUpdateMode ) );
+    }
+
+    if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+        //Update mode is set but format does not support adding more files.
+        throw BitException( "Cannot update existing archive",
+                            make_error_code( BitError::FormatFeatureNotSupported ) );
+    }
+
+    mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
+    mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
                                     const std::vector< bit7z::byte_t >& in_buffer )
-    : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
+    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( !in_buffer.empty() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, in_buffer );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
@@ -51,7 +62,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
 }
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& in_stream )
-    : mInputArchiveItemsCount{ 0 }, mArchiveCreator{ creator } {
+    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( in_stream.good() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, in_stream );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
@@ -101,11 +112,18 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
-    if ( mArchiveCreator.updateMode() == UpdateMode::OverwriteArchive ) {
+    const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
+    if ( overwrite_mode == OverwriteMode::Overwrite ) {
         std::error_code error;
         fs::remove( out_file, error );
         if ( error ) {
             throw BitException( "Failed to delete the old archive file", error, out_file );
+        }
+    }
+    if ( overwrite_mode == OverwriteMode::Skip ) { // Skipping if the output file already exists
+        std::error_code error;
+        if ( fs::exists( out_file, error ) ) {
+            return;
         }
     }
 
@@ -117,7 +135,7 @@ CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     if ( mInputArchive == nullptr ) {
         const GUID format_GUID = formatGUID( mArchiveCreator.format() );
-        mArchiveCreator.library()
+        mArchiveCreator.library() // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
                        .createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
     } else {
         mInputArchive->initUpdatableArchive( &new_arc );
@@ -143,11 +161,11 @@ CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_
 void BitOutputArchive::compressOut( IOutArchive* out_arc,
                                     IOutStream* out_stream,
                                     UpdateCallback* update_callback ) {
-    if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Overwrite ) {
+    if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Update ) {
         for ( const auto& new_item : mNewItemsVector ) {
-            auto overwritten_item = mInputArchive->find( new_item->inArchivePath().string< tchar >() );
-            if ( overwritten_item != mInputArchive->cend() ) {
-                mDeletedItems.insert( overwritten_item->index() );
+            auto updated_item = mInputArchive->find( new_item->inArchivePath().string< tchar >() );
+            if ( updated_item != mInputArchive->cend() ) {
+                mDeletedItems.insert( updated_item->index() );
             }
         }
     }
@@ -168,7 +186,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
     // Note: if mInputArchive != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
     const bool updating_archive = mInputArchive != nullptr && mInputArchive->archivePath() == out_file;
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    const CMyComPtr< IOutArchive > new_arc = initOutArchive();
     CMyComPtr< IOutStream > out_stream = initOutFileStream( out_file, updating_archive );
     compressOut( new_arc, out_stream, update_callback );
 
@@ -204,39 +222,41 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
 
 void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     if ( !out_buffer.empty() ) {
-        if ( mArchiveCreator.updateMode() == UpdateMode::OverwriteArchive ) {
+        if ( mArchiveCreator.overwriteMode() == OverwriteMode::Overwrite ) {
             out_buffer.clear();
         } else {
             throw BitException( "Cannot compress to buffer", make_error_code( BitError::NonEmptyOutputBuffer ) );
         }
     }
 
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    const CMyComPtr< IOutArchive > new_arc = initOutArchive();
     auto out_mem_stream = bit7z::make_com< CBufferOutStream, IOutStream >( out_buffer );
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_mem_stream, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& out_stream ) {
-    CMyComPtr< IOutArchive > new_arc = initOutArchive();
+    const CMyComPtr< IOutArchive > new_arc = initOutArchive();
     auto out_std_stream = bit7z::make_com< CStdOutStream, IOutStream >( out_stream );
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( new_arc, out_std_stream, update_callback );
 }
 
 void BitOutputArchive::setArchiveProperties( IOutArchive* out_archive ) const {
-    ArchiveProperties properties = mArchiveCreator.archiveProperties();
-    if ( properties.names.empty() ) {
+    const ArchiveProperties properties = mArchiveCreator.archiveProperties();
+    if ( properties.empty() ) {
         return;
     }
 
     CMyComPtr< ISetProperties > set_properties;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     HRESULT res = out_archive->QueryInterface( ::IID_ISetProperties, reinterpret_cast< void** >( &set_properties ) );
     if ( res != S_OK ) {
         throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
     }
-    res = set_properties->SetProperties( properties.names.data(), properties.values.data(),
-                                         static_cast< uint32_t >( properties.names.size() ) );
+    res = set_properties->SetProperties( properties.names(),
+                                         properties.values(),
+                                         static_cast< uint32_t >( properties.size() ) );
     if ( res != S_OK ) {
         throw BitException( "Cannot set properties of the archive", make_hresult_code( res ) );
     }
@@ -279,11 +299,11 @@ HRESULT BitOutputArchive::itemStream( input_index index, ISequentialInStream** i
     const HRESULT res = new_item.getStream( inStream );
     if ( FAILED( res ) ) {
         auto path = new_item.path();
-        std::error_code ec;
-        if ( fs::exists( path, ec ) ) {
-            ec = std::make_error_code( std::errc::file_exists );
+        std::error_code error;
+        if ( fs::exists( path, error ) ) {
+            error = std::make_error_code( std::errc::file_exists );
         }
-        mFailedFiles.emplace_back( path, ec );
+        mFailedFiles.emplace_back( path, error );
     }
     return res;
 }
@@ -326,4 +346,5 @@ uint32_t BitOutputArchive::indexInArchive( uint32_t index ) const noexcept {
 const BitAbstractArchiveHandler& BitOutputArchive::handler() const noexcept {
     return mArchiveCreator;
 }
+
 } // namespace bit7z

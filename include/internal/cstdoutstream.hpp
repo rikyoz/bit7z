@@ -20,6 +20,7 @@
 #include <Common/MyCom.h>
 
 namespace bit7z {
+
 using std::ostream;
 
 class CStdOutStream : public IOutStream, public CMyUnknownImp {
@@ -48,6 +49,7 @@ class CStdOutStream : public IOutStream, public CMyUnknownImp {
     private:
         ostream& mOutputStream;
 };
+
 }  // namespace bit7z
 
 #endif // CSTDOUTSTREAM_HPP

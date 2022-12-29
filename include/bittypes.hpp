@@ -18,6 +18,7 @@
 #endif
 
 namespace bit7z {
+
 /**
  * @brief A type representing a byte (equivalent to an unsigned char).
  */
@@ -35,6 +36,7 @@ using buffer_t = std::vector< byte_t >;
 using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
 
 namespace { //private
+
 template< class Char >
 struct string_traits;
 
@@ -53,6 +55,7 @@ struct string_traits< wchar_t > {
         return std::to_wstring( std::forward< T >( t ) );
     }
 };
+
 }  // namespace
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows
@@ -69,8 +72,10 @@ using tregex = std::basic_regex< tchar >;
 #endif
 
 template< typename T >
-inline std::basic_string< tchar > to_tstring( T&& Arg ) {
-    return string_traits< tchar >::convert_to_string( std::forward< T >( Arg ) );
+inline std::basic_string< tchar > to_tstring( T&& arg ) {
+    return string_traits< tchar >::convert_to_string( std::forward< T >( arg ) );
 }
+
 }  // namespace bit7z
+
 #endif // BITTYPES_HPP

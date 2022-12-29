@@ -25,15 +25,20 @@ uint32_t BitArchiveItem::index() const noexcept {
 }
 
 bool BitArchiveItem::isDir() const {
-    BitPropVariant is_dir = itemProperty( BitProperty::IsDir );
+    const BitPropVariant is_dir = itemProperty( BitProperty::IsDir );
     return !is_dir.isEmpty() && is_dir.getBool();
+}
+
+BIT7Z_NODISCARD
+inline auto filename( const fs::path& path ) -> tstring {
+    return path.filename().string< tchar >();
 }
 
 tstring BitArchiveItem::name() const {
     BitPropVariant name = itemProperty( BitProperty::Name );
     if ( name.isEmpty() ) {
         name = itemProperty( BitProperty::Path );
-        return name.isEmpty() ? tstring{} : fsutil::filename( name.getString(), true );
+        return name.isEmpty() ? tstring{} : filename( name.getString() );
     }
     return name.getString();
 }
@@ -42,7 +47,7 @@ tstring BitArchiveItem::extension() const {
     if ( isDir() ) {
         return tstring{};
     }
-    BitPropVariant extension = itemProperty( BitProperty::Extension );
+    const BitPropVariant extension = itemProperty( BitProperty::Extension );
     return extension.isEmpty() ? fsutil::extension( name() ) : extension.getString();
 }
 
@@ -56,36 +61,41 @@ tstring BitArchiveItem::path() const {
 }
 
 uint64_t BitArchiveItem::size() const {
-    BitPropVariant size = itemProperty( BitProperty::Size );
+    const BitPropVariant size = itemProperty( BitProperty::Size );
     return size.isEmpty() ? 0 : size.getUInt64();
 }
 
 uint64_t BitArchiveItem::packSize() const {
-    BitPropVariant pack_size = itemProperty( BitProperty::PackSize );
+    const BitPropVariant pack_size = itemProperty( BitProperty::PackSize );
     return pack_size.isEmpty() ? 0 : pack_size.getUInt64();
 }
 
 bool BitArchiveItem::isEncrypted() const {
-    BitPropVariant is_encrypted = itemProperty( BitProperty::Encrypted );
+    const BitPropVariant is_encrypted = itemProperty( BitProperty::Encrypted );
     return is_encrypted.isBool() && is_encrypted.getBool();
 }
 
 time_type BitArchiveItem::creationTime() const {
-    BitPropVariant creation_time = itemProperty( BitProperty::CTime );
+    const BitPropVariant creation_time = itemProperty( BitProperty::CTime );
     return creation_time.isFileTime() ? creation_time.getTimePoint() : time_type::clock::now();
 }
 
 time_type BitArchiveItem::lastAccessTime() const {
-    BitPropVariant access_time = itemProperty( BitProperty::ATime );
+    const BitPropVariant access_time = itemProperty( BitProperty::ATime );
     return access_time.isFileTime() ? access_time.getTimePoint() : time_type::clock::now();
 }
 
 time_type BitArchiveItem::lastWriteTime() const {
-    BitPropVariant write_time = itemProperty( BitProperty::MTime );
+    const BitPropVariant write_time = itemProperty( BitProperty::MTime );
     return write_time.isFileTime() ? write_time.getTimePoint() : time_type::clock::now();
 }
 
 uint32_t BitArchiveItem::attributes() const {
-    BitPropVariant attrib = itemProperty( BitProperty::Attrib );
+    const BitPropVariant attrib = itemProperty( BitProperty::Attrib );
     return attrib.isUInt32() ? attrib.getUInt32() : 0;
+}
+
+uint32_t BitArchiveItem::crc() const {
+    const BitPropVariant crc = itemProperty( BitProperty::CRC );
+    return crc.isUInt32() ? crc.getUInt32() : 0;
 }

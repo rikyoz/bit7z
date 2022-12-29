@@ -16,8 +16,9 @@
 
 #include "internal/fsitem.hpp"
 
-namespace bit7z {
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
+
 using std::vector;
 using std::unique_ptr;
 
@@ -33,6 +34,8 @@ class FSIndexer final {
         FSItem mDirItem;
         tstring mFilter;
 };
+
 }  // namespace filesystem
 }  // namespace bit7z
+
 #endif // FSINDEXER_HPP

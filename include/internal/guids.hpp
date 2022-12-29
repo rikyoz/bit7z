@@ -13,6 +13,7 @@
 #include "internal/guiddef.hpp"
 
 namespace bit7z {
+
 extern "C" {
 #ifndef _MSC_VER
 extern const GUID IID_IUnknown;
@@ -44,5 +45,7 @@ extern const GUID IID_IArchiveOpenSetSubArchiveName;
 extern const GUID IID_IArchiveUpdateCallback;
 extern const GUID IID_IArchiveUpdateCallback2;
 }
+
 }  // namespace bit7z
+
 #endif // GUIDS_HPP

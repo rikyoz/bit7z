@@ -42,7 +42,7 @@ map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
         // Yeah, I know, I cast property twice (here and in archiveProperty), but the code is easier to read!
         const auto property = static_cast< BitProperty >( i );
-        BitPropVariant property_value = archiveProperty( property );
+        const BitPropVariant property_value = archiveProperty( property );
         if ( !property_value.isEmpty() ) {
             result[ property ] = property_value;
         }
@@ -56,8 +56,8 @@ vector< BitArchiveItemInfo > BitArchiveReader::items() const {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
             // Yeah, I know, I cast property twice (here and in itemProperty), but the code is easier to read!
-            const auto property = static_cast<BitProperty>( j );
-            BitPropVariant property_value = itemProperty( i, property );
+            const auto property = static_cast< BitProperty >( j );
+            const auto property_value = itemProperty( i, property );
             if ( !property_value.isEmpty() ) {
                 item.setProperty( property, property_value );
             }
@@ -98,19 +98,19 @@ bool BitArchiveReader::hasEncryptedItems() const {
 }
 
 bool BitArchiveReader::isMultiVolume() const {
-    if ( mFormat == BitFormat::Split ) {
+    if ( extractionFormat() == BitFormat::Split ) {
         return true;
     }
-    BitPropVariant is_multi_volume = archiveProperty( BitProperty::IsVolume );
+    const BitPropVariant is_multi_volume = archiveProperty( BitProperty::IsVolume );
     return is_multi_volume.isBool() && is_multi_volume.getBool();
 }
 
 bool BitArchiveReader::isSolid() const {
-    BitPropVariant is_solid = archiveProperty( BitProperty::Solid );
+    const BitPropVariant is_solid = archiveProperty( BitProperty::Solid );
     return is_solid.isBool() && is_solid.getBool();
 }
 
 uint32_t BitArchiveReader::volumesCount() const {
-    BitPropVariant volumes_count = archiveProperty( BitProperty::NumVolumes );
+    const BitPropVariant volumes_count = archiveProperty( BitProperty::NumVolumes );
     return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
 }

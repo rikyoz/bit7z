@@ -44,7 +44,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
-    RINOK( to_seekdir( seekOrigin, way ) );
+    RINOK( to_seekdir( seekOrigin, way ) )
 
     /*if ( offset < 0 ) { //Tar sometimes uses negative offsets
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;

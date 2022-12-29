@@ -28,6 +28,7 @@ class CMyComPtr;
 //! \endcond
 
 namespace bit7z {
+
 #ifdef _WIN32
 constexpr auto default_library = BIT7Z_STRING("7z.dll");
 #elif defined( __linux__ )
@@ -85,6 +86,7 @@ class Bit7zLibrary final {
         HMODULE mLibrary;
         CreateObjectFunc mCreateObjectFunc;
 };
+
 }  // namespace bit7z
 
 #endif // BIT7ZLIBRARY_HPP

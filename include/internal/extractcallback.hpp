@@ -18,7 +18,29 @@
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
 
+using namespace NArchive::NExtract;
+
 namespace bit7z {
+
+enum struct ExtractMode {
+    Extract = NAskMode::kExtract,
+    Test = NAskMode::kTest,
+    Skip = NAskMode::kSkip
+};
+
+enum struct OperationResult {
+    Success = NOperationResult::kOK,
+    UnsupportedMethod = NOperationResult::kUnsupportedMethod,
+    DataError = NOperationResult::kDataError,
+    CRCError = NOperationResult::kCRCError,
+    Unavailable = NOperationResult::kUnavailable,
+    UnexpectedEnd = NOperationResult::kUnexpectedEnd,
+    DataAfterEnd = NOperationResult::kDataAfterEnd,
+    IsNotArc = NOperationResult::kIsNotArc,
+    HeadersError = NOperationResult::kHeadersError,
+    WrongPassword = NOperationResult::kWrongPassword
+};
+
 class ExtractCallback : public Callback,
                         public IArchiveExtractCallback,
                         public ICompressProgressInfo,
@@ -59,18 +81,37 @@ class ExtractCallback : public Callback,
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
-        virtual void finishOperation();
+        BIT7Z_NODISCARD
+        inline ExtractMode extractMode() const {
+            return mExtractMode;
+        }
+
+        BIT7Z_NODISCARD
+        inline bool isItemFolder( uint32_t index ) const {
+            return mInputArchive.isItemFolder( index );
+        }
+
+        BIT7Z_NODISCARD
+        inline BitPropVariant itemProperty( uint32_t index, BitProperty property ) const {
+            return mInputArchive.itemProperty( index, property );
+        }
+
+        BIT7Z_NODISCARD
+        inline const BitInputArchive& inputArchive() const {
+            return mInputArchive;
+        }
+
+        virtual HRESULT finishOperation( OperationResult operation_result );
 
         virtual void releaseStream() = 0;
 
         virtual HRESULT getOutStream( UInt32 index, ISequentialOutStream** outStream ) = 0;
 
+    private:
         const BitInputArchive& mInputArchive;
-
-        bool mExtractMode;
-
-        UInt64 mNumErrors;
+        ExtractMode mExtractMode;
 };
+
 }  // namespace bit7z
 
 #endif // EXTRACTCALLBACK_HPP

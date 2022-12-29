@@ -13,9 +13,11 @@
 #include "bitextractor.hpp"
 
 namespace bit7z {
+
 /**
  * @brief The BitFileExtractor class allows to extract the content of archives on the filesystem.
  */
 using BitFileExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const tstring& >;
-}
+
+} // namespace bit7z
 #endif // BITFILEEXTRACTOR_HPP

@@ -52,12 +52,12 @@ time_type FILETIME_to_time_type( const FILETIME& fileTime ) {
 
 FILETIME currentFileTime() {
 #ifdef _WIN32
-    FILETIME ft{};
-    SYSTEMTIME st{};
+    FILETIME file_time{};
+    SYSTEMTIME system_time{};
 
-    GetSystemTime( &st ); // gets current time
-    SystemTimeToFileTime( &st, &ft ); // converts to file time format
-    return ft;
+    GetSystemTime( &system_time ); // gets current time
+    SystemTimeToFileTime( &system_time, &file_time ); // converts to file time format
+    return file_time;
 #else
     auto current_time = std::chrono::system_clock::now();
     std::time_t time = std::chrono::system_clock::to_time_t( current_time );

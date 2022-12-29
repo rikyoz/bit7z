@@ -88,7 +88,6 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
     int64_t current_index{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
-            current_index = 0;
             break;
         }
         case STREAM_SEEK_CUR: {
@@ -108,7 +107,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
         return E_INVALIDARG;
     }
 
-    int64_t new_index = current_index + offset;
+    const int64_t new_index = current_index + offset;
 
     // Making sure the new_index value is between 0 and mBufferSize - 1
     if ( new_index < 0 ) {

@@ -10,6 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include "bitinputarchive.hpp"
 
 #include "biterror.hpp"
@@ -22,6 +26,7 @@
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/util.hpp"
+#include "internal/cmultivolumeinstream.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"
@@ -33,6 +38,7 @@ using namespace NArchive;
 
 CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
     CMyComPtr< IInArchive > arc_object;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     lib.createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &arc_object ) );
     return arc_object;
 }
@@ -56,6 +62,10 @@ void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
     if ( res != S_OK ) {
         extract_callback->throwException( res );
     }
+}
+
+bool ends_with( const tstring& str, const tstring& suffix ) {
+    return str.size() >= suffix.size() && str.compare( str.size() - suffix.size(), suffix.size(), suffix ) == 0;
 }
 
 IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* in_stream ) {
@@ -113,7 +123,12 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
     mDetectedFormat = &handler.format();
 #endif
 
-    auto file_stream = bit7z::make_com< CFileInStream >( mArchivePath );
+    CMyComPtr< IInStream > file_stream;
+    if ( *mDetectedFormat != BitFormat::Split && ends_with( mArchivePath, ".001" ) ) {
+        file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( mArchivePath );
+    } else {
+        file_stream = bit7z::make_com< CFileInStream, IInStream >( mArchivePath );
+    }
     mInArchive = openArchiveStream( mArchivePath, file_stream );
 }
 
@@ -160,16 +175,17 @@ uint32_t BitInputArchive::itemsCount() const {
 }
 
 bool BitInputArchive::isItemFolder( uint32_t index ) const {
-    BitPropVariant is_item_folder = itemProperty( index, BitProperty::IsDir );
+    const BitPropVariant is_item_folder = itemProperty( index, BitProperty::IsDir );
     return !is_item_folder.isEmpty() && is_item_folder.getBool();
 }
 
 bool BitInputArchive::isItemEncrypted( uint32_t index ) const {
-    BitPropVariant is_item_encrypted = itemProperty( index, BitProperty::Encrypted );
+    const BitPropVariant is_item_encrypted = itemProperty( index, BitProperty::Encrypted );
     return is_item_encrypted.isBool() && is_item_encrypted.getBool();
 }
 
 HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
@@ -319,7 +335,7 @@ BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() n
     return *this;
 }
 
-BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) noexcept {
+BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) noexcept { // NOLINT(cert-dcl21-cpp)
     const_iterator incremented = *this;
     ++( *this );
     return incremented;

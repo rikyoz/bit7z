@@ -15,6 +15,7 @@
 #include "bitdefines.hpp"
 
 namespace bit7z {
+
 /**
  * @brief The BitError enum struct values represent bit7z specific errors.
  */
@@ -41,12 +42,15 @@ enum struct BitError {
 };
 
 std::error_code make_error_code( const BitError& e );
+
 }  // namespace bit7z
 
 namespace std {
+
 template<>
 struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public true_type {};
-}
+
+} // namespace std
 
 
 #endif //BITERROR_HPP

@@ -18,6 +18,7 @@
 #include "internal/fs.hpp"
 
 namespace bit7z {
+
 #ifndef _WIN32
 
 fs::file_time_type FILETIME_to_file_time_type( const FILETIME& fileTime );
@@ -29,6 +30,7 @@ FILETIME time_to_FILETIME( const std::time_t& time );
 time_type FILETIME_to_time_type( const FILETIME& fileTime );
 
 FILETIME currentFileTime();
+
 }  // namespace bit7z
 
 #endif //DATEUTIL_HPP
