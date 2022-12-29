@@ -294,6 +294,9 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
          * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
+         * @example Passing L"tm" with a false value while creating a .7z archive
+         * will disable storing the last modified timestamps of the compressed files.
+         *
          * @tparam T    A non-integral type (i.e., a string).
          *
          * @param name  The string name of the property to be set.
