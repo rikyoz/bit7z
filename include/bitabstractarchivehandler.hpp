@@ -214,7 +214,7 @@ class BitAbstractArchiveHandler {
         /**
          * @brief Sets how the handler should behave when it tries to output to an existing file or buffer.
          *
-         * @param mode  the overwrite modem to be used by the handler.
+         * @param mode  the overwrite mode to be used by the handler.
          */
         void setOverwriteMode( OverwriteMode mode );
 
