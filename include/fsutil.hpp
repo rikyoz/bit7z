@@ -34,6 +34,8 @@ namespace bit7z {
 
             bool renameFile( const wstring& old_name, const wstring& new_name );
 
+            uint64_t fileSize( const wstring& path );
+
             void normalizePath( wstring& path );
 
             wstring dirname( const wstring& path );

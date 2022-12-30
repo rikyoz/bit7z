@@ -50,6 +50,7 @@ set(SOURCE_FILES
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileFind.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileIO.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileName.cpp
+    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/7zip/Archive/Common/MultiStream.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/7zip/Common/FileStreams.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/IntToString.cpp
     ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/MyString.cpp

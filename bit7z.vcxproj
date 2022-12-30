@@ -273,6 +273,7 @@
     <ClCompile Include="lib\7zSDK\CPP\Windows\FileFind.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Windows\FileIO.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Windows\FileName.cpp" />
+    <ClCompile Include="lib\7zSDK\CPP\7zip\Archive\Common\MultiStream.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\7zip\Common\FileStreams.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Common\IntToString.cpp" />
     <ClCompile Include="lib\7zSDK\CPP\Common\MyString.cpp" />
