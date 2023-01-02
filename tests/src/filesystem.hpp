@@ -37,15 +37,16 @@ inline auto exe_path() -> fs::path {
     wchar_t path[MAX_PATH] = { 0 };
     GetModuleFileNameW( nullptr, path, MAX_PATH );
     return path;
-#else
-#ifdef __APPLE__
+#elif defined( __APPLE__ )
     char result[PROC_PIDPATHINFO_MAXSIZE];
     ssize_t result_size = proc_pidpath(getpid(), result, sizeof(result));
+    return result_size > 0 ? std::string( result, result_size ) : "";
 #else
     char result[PATH_MAX];
-    ssize_t result_size = readlink("/proc/self/exe", result, PATH_MAX);
-#endif
-    return result_size > 0 ? std::string(result, result_size) : "";
+    if ( realpath( "/proc/self/exe", result ) == nullptr ) {
+        result[ 0 ] = '\0';
+    }
+    return result;
 #endif
 }
 
