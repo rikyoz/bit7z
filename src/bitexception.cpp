@@ -12,9 +12,7 @@
 
 #include "bitexception.hpp"
 
-#ifndef _WIN32
 #include "internal/internalcategory.hpp"
-#endif
 #include "internal/hresultcategory.hpp"
 #include "internal/windows.hpp"
 #if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
@@ -42,8 +40,10 @@ BitException::BitException( const char* const message, std::error_code code, con
 }
 
 #if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+
 BitException::BitException( const char* message, std::error_code code, const std::wstring& file )
-    : BitException( message, code, bit7z::narrow(file.c_str(), file.size()) ) {}
+    : BitException( message, code, bit7z::narrow( file.c_str(), file.size() ) ) {}
+
 #endif
 
 BitException::BitException( const std::string& message, std::error_code code )
@@ -54,8 +54,15 @@ const FailedFiles& BitException::failedFiles() const noexcept {
 }
 
 BitException::native_code_type BitException::nativeCode() const noexcept {
-    const auto& error = code();
-#ifdef _WIN32
+#ifdef _WIN32 // On Windows, the native code must be a HRESULT value.
+    return hresultCode();
+#else // On Unix, the native code is a POSIX error code.
+    return posixCode();
+#endif
+}
+
+HRESULT BitException::hresultCode() const noexcept {
+    const std::error_code& error = code();
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
         return error.value();
     }
@@ -66,6 +73,9 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
     }
 #endif
     // POSIX error code (generic_category) or BitError code (internal_category)
+    if ( error == std::errc::bad_file_descriptor ) {
+        return HRESULT_FROM_WIN32( ERROR_INVALID_HANDLE );
+    }
     if ( error == std::errc::invalid_argument ) {
         return E_INVALIDARG;
     }
@@ -74,6 +84,9 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
     }
     if ( error == std::errc::function_not_supported ) {
         return E_NOTIMPL;
+    }
+    if ( error == std::errc::no_space_on_device ) {
+        return HRESULT_FROM_WIN32( ERROR_DISK_FULL );
     }
     if ( error == std::errc::no_such_file_or_directory ) {
         return HRESULT_FROM_WIN32( ERROR_PATH_NOT_FOUND );
@@ -90,14 +103,24 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
     if ( error == std::errc::operation_canceled ) {
         return E_ABORT;
     }
+#ifdef _WIN32
     if ( error == std::errc::permission_denied ) {
         return E_ACCESSDENIED;
     }
+#endif
     return E_FAIL;
-#else // Unix
+}
+
+int BitException::posixCode() const noexcept {
+    const auto& error = code();
+#ifdef _MSC_VER
+    if ( error.category() == bit7z::hresult_category() ||
+         error.category() == bit7z::internal_category() ||
+         error.category() == std::system_category() ) {
+#else
     if ( error.category() == bit7z::hresult_category() || error.category() == bit7z::internal_category() ) {
+#endif
         return error.default_error_condition().value();
     }
     return error.value(); // On POSIX systems, std::system_category == std::generic_category
-#endif
 }

@@ -31,7 +31,11 @@ std::error_code last_error_code() noexcept;
  */
 class BitException final : public system_error {
     public:
+#ifdef _WIN32
         using native_code_type = HRESULT;
+#else
+        using native_code_type = int;
+#endif
 
         /**
          * @brief Constructs a BitException object with the given message, and the specific files that failed.
@@ -56,7 +60,7 @@ class BitException final : public system_error {
 #endif
 
         /**
-         * @brief Constructs a BitException object with the given message
+         * @brief Constructs a BitException object with the given message.
          *
          * @param message   the message associated with the exception object.
          * @param code      the HRESULT code associated with the exception object.
@@ -64,9 +68,20 @@ class BitException final : public system_error {
         explicit BitException( const std::string& message, std::error_code code );
 
         /**
-         * @return the native error code (e.g., HRESULT) corresponding to the exception's std::error_code
+         * @return the native error code (e.g., HRESULT on Windows, int elsewhere)
+         * corresponding to the exception's std::error_code.
          */
         BIT7Z_NODISCARD native_code_type nativeCode() const noexcept;
+
+        /**
+         * @return the HRESULT error code corresponding to the exception's std::error_code.
+         */
+        BIT7Z_NODISCARD HRESULT hresultCode() const noexcept;
+
+        /**
+         * @return the POSIX error code corresponding to the exception's std::error_code.
+         */
+        BIT7Z_NODISCARD int posixCode() const noexcept;
 
         /**
          * @return the vector of files that caused the exception to be thrown, along with the corresponding
