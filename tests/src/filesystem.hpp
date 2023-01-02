@@ -18,12 +18,9 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-#else
-#include <climits> // for PATH_MAX
-#include <unistd.h> // for readlink (Linux) or getpid (macOS)
-#ifdef __APPLE__
+#elif defined( __APPLE__ )
 #include <libproc.h> // for proc_pidpath and PROC_PIDPATHINFO_MAXSIZE
-#endif
+#include <unistd.h> // for getpid
 #endif
 
 #include <internal/fs.hpp>
@@ -42,11 +39,9 @@ inline auto exe_path() -> fs::path {
     ssize_t result_size = proc_pidpath(getpid(), result, sizeof(result));
     return result_size > 0 ? std::string( result, result_size ) : "";
 #else
-    char result[PATH_MAX];
-    if ( realpath( "/proc/self/exe", result ) == nullptr ) {
-        result[ 0 ] = '\0';
-    }
-    return result;
+    std::error_code error;
+    fs::path result = fs::read_symlink( "/proc/self/exe", error );
+    return error ? "" : result;
 #endif
 }
 
