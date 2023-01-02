@@ -17,11 +17,11 @@
 //#define BIT7Z_USE_NATIVE_STRING
 
 #if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || ( defined( __cplusplus ) && __cplusplus >= 201703L )
-#define BIT7Z_CPP_STANDARD 17
+#   define BIT7Z_CPP_STANDARD 17
 #elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201402L ) || ( defined( __cplusplus ) && __cplusplus >= 201402L )
-#define BIT7Z_CPP_STANDARD 14
+#   define BIT7Z_CPP_STANDARD 14
 #else
-#define BIT7Z_CPP_STANDARD 11
+#   define BIT7Z_CPP_STANDARD 11
 #endif
 
 #if defined( __cpp_lib_filesystem )
@@ -81,16 +81,16 @@
 /* Compiler is using the C++11 standard, so we use the compiler specific attributes were possible.
  * Note: these macros are used in the public API, so we cannot assume that we are always using a C++14 compiler.*/
 #ifndef BIT7Z_DEPRECATED
-#if defined( __GNUC__ ) || defined( __clang__ )
-#   define BIT7Z_DEPRECATED __attribute__(( __deprecated__ ))
-#   define BIT7Z_DEPRECATED_MSG( msg ) __attribute__(( __deprecated__( msg ) ))
-#elif defined( _MSC_VER )
-#   define BIT7Z_DEPRECATED __declspec( deprecated )
-#   define BIT7Z_DEPRECATED_MSG( msg ) __declspec( deprecated( msg ) )
-#else
-#   define BIT7Z_DEPRECATED
-#   define BIT7Z_DEPRECATED_MSG( msg )
-#endif
+#   if defined( __GNUC__ ) || defined( __clang__ )
+#       define BIT7Z_DEPRECATED __attribute__(( __deprecated__ ))
+#       define BIT7Z_DEPRECATED_MSG( msg ) __attribute__(( __deprecated__( msg ) ))
+#   elif defined( _MSC_VER )
+#       define BIT7Z_DEPRECATED __declspec( deprecated )
+#       define BIT7Z_DEPRECATED_MSG( msg ) __declspec( deprecated( msg ) )
+#   else
+#       define BIT7Z_DEPRECATED
+#       define BIT7Z_DEPRECATED_MSG( msg )
+#   endif
 #endif
 
 #ifndef BIT7Z_DEPRECATED_ENUMERATOR
