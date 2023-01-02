@@ -90,7 +90,7 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
         case E_NOTIMPL:
             // e.g., function not implemented
             return std::make_error_condition( std::errc::function_not_supported );
-#ifdef __MINGW32__
+#ifdef _WIN32
         case HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ):
 #endif
         case E_NOINTERFACE:
@@ -108,8 +108,6 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
             return std::make_error_condition( std::errc::invalid_argument );
         case __HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
-        case __HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
-            return std::make_error_condition( std::errc::no_such_file_or_directory );
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );
         default:
@@ -142,7 +140,6 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
                         return std::make_error_condition( std::errc::io_error );
                     case ERROR_FILE_NOT_FOUND:
                     case ERROR_PATH_NOT_FOUND:
-                    case ERROR_NO_MORE_FILES:
                         return std::make_error_condition( std::errc::no_such_file_or_directory );
                     case ERROR_ALREADY_EXISTS:
                     case ERROR_FILE_EXISTS:
