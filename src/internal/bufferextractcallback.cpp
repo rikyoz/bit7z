@@ -10,8 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitexception.hpp"
 #include "internal/bufferextractcallback.hpp"
-
 #include "internal/cbufferoutstream.hpp"
 #include "internal/fs.hpp"
 #include "internal/util.hpp"
@@ -59,8 +59,7 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStrea
     if ( !out_buffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {
             case OverwriteMode::None: {
-                mErrorMessage = kCannotDeleteOutput;
-                return E_ABORT;
+                throw BitException( kCannotDeleteOutput, make_hresult_code( E_ABORT ) );
             }
             case OverwriteMode::Skip: {
                 return S_OK;

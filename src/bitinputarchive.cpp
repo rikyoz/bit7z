@@ -50,7 +50,12 @@ void extractArc( IInArchive* in_archive, const vector< uint32_t >& indices, Extr
 
     const HRESULT res = in_archive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
     if ( res != S_OK ) {
-        extract_callback->throwException( res );
+        const auto& errorException = extract_callback->errorException();
+        if ( errorException ) {
+            std::rethrow_exception( errorException );
+        } else {
+            throw BitException( "Could not extract the archive", make_hresult_code( res ) );
+        }
     }
 }
 
@@ -60,7 +65,12 @@ void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
                                              NExtract::NAskMode::kTest,
                                              extract_callback );
     if ( res != S_OK ) {
-        extract_callback->throwException( res );
+        const auto& errorException = extract_callback->errorException();
+        if ( errorException ) {
+            std::rethrow_exception( errorException );
+        } else {
+            throw BitException( "Could not test the archive", make_hresult_code( res ) );
+        }
     }
 }
 

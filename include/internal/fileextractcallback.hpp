@@ -34,8 +34,6 @@ class FileExtractCallback final : public ExtractCallback {
 
         ~FileExtractCallback() override = default;
 
-        void throwException( HRESULT error ) override;
-
     private:
         fs::path mInFilePath;     // Input file path
         fs::path mDirectoryPath;  // Output directory

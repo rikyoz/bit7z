@@ -33,8 +33,6 @@ class StreamExtractCallback final : public ExtractCallback {
 
         ~StreamExtractCallback() override = default;
 
-        void throwException( HRESULT error ) override;
-
     private:
         ostream& mOutputStream;
         CMyComPtr< IOutStream > mStdOutStream;

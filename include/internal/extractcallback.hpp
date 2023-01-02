@@ -78,6 +78,11 @@ class ExtractCallback : public Callback,
 
         BIT7Z_STDMETHOD( SetOperationResult, Int32 operationResult );
 
+        BIT7Z_NODISCARD
+        inline const std::exception_ptr& errorException() const {
+            return mErrorException;
+        }
+
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
@@ -110,6 +115,7 @@ class ExtractCallback : public Callback,
     private:
         const BitInputArchive& mInputArchive;
         ExtractMode mExtractMode;
+        std::exception_ptr mErrorException;
 };
 
 }  // namespace bit7z

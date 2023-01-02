@@ -12,7 +12,6 @@
 
 #include "internal/streamextractcallback.hpp"
 
-#include "bitexception.hpp"
 #include "internal/cstdoutstream.hpp"
 #include "internal/util.hpp"
 
@@ -23,13 +22,6 @@ using namespace bit7z;
 StreamExtractCallback::StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream )
     : ExtractCallback( inputArchive ),
       mOutputStream( outputStream ) {}
-
-void StreamExtractCallback::throwException( HRESULT error ) {
-    if ( !mOutputStream ) {
-        throw BitException( "Stream error", std::error_code( errno, std::generic_category() ) );
-    }
-    Callback::throwException( error );
-}
 
 void StreamExtractCallback::releaseStream() {
     mStdOutStream.Release();

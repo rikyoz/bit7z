@@ -69,9 +69,11 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
     }
 
     return getOutStream( index, outStream );
-} catch ( const BitException& ) {
-    return E_OUTOFMEMORY;
+} catch ( const BitException& ex ) {
+    mErrorException = std::make_exception_ptr( ex );
+    return ex.hresultCode();
 } catch ( const std::runtime_error& ) {
+    mErrorException = std::make_exception_ptr( BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) ) );
     return E_ABORT;
 }
 
@@ -87,19 +89,23 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     if ( result != OperationResult::Success ) {
         switch ( result ) {
             case OperationResult::UnsupportedMethod:
-                mErrorMessage = kUnsupportedMethod;
+                mErrorException = std::make_exception_ptr( BitException( kUnsupportedMethod,
+                                                                         make_hresult_code( E_FAIL ) ) );
                 break;
 
             case OperationResult::CRCError:
-                mErrorMessage = kCRCFailed;
+                mErrorException = std::make_exception_ptr( BitException( kCRCFailed,
+                                                                         make_hresult_code( E_FAIL ) ) );
                 break;
 
             case OperationResult::DataError:
-                mErrorMessage = kDataError;
+                mErrorException = std::make_exception_ptr( BitException( kDataError,
+                                                                         make_hresult_code( E_FAIL ) ) );
                 break;
 
             default:
-                mErrorMessage = kUnknownError;
+                mErrorException = std::make_exception_ptr( BitException( kUnknownError,
+                                                                         make_hresult_code( E_FAIL ) ) );
         }
     }
 
@@ -115,7 +121,8 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         }
 
         if ( pass.empty() ) {
-            mErrorMessage = kPasswordNotDefined;
+            mErrorException = std::make_exception_ptr( BitException( kPasswordNotDefined,
+                                                                     make_hresult_code( E_FAIL ) ) );
             return E_FAIL;
         }
     } else {

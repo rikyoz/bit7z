@@ -124,7 +124,6 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
         }
 
         if ( pass.empty() ) {
-            mErrorMessage = kPasswordNotDefined;
             return E_ABORT;
         }
     } else {

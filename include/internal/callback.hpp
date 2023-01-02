@@ -34,13 +34,10 @@ class Callback : protected CMyUnknownImp {
 
         virtual ~Callback() = default;
 
-        virtual void throwException( HRESULT error );
-
     protected:
         explicit Callback( const BitAbstractArchiveHandler& handler ); // Abstract class
 
         const BitAbstractArchiveHandler& mHandler;
-        const char* mErrorMessage;
 };
 
 }  // namespace bit7z

@@ -12,16 +12,6 @@
 
 #include "internal/callback.hpp"
 
-#include "bitexception.hpp"
-
 using namespace bit7z;
 
-Callback::Callback( const BitAbstractArchiveHandler& handler ) : mHandler( handler ), mErrorMessage( nullptr ) {}
-
-void Callback::throwException( HRESULT error ) {
-    if ( mErrorMessage != nullptr ) {
-        throw BitException( mErrorMessage, make_hresult_code( error ) );
-    }
-    throw BitException( "Failed operation", make_hresult_code( error ) );
-}
-
+Callback::Callback( const BitAbstractArchiveHandler& handler ) : mHandler( handler ) {}
