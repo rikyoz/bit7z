@@ -46,6 +46,16 @@ class BitItemsVector final {
     public:
         using value_type = GenericInputItemPtr;
 
+        BitItemsVector() = default;
+
+        BitItemsVector( const BitItemsVector& ) = default;
+
+        BitItemsVector( BitItemsVector&& ) = default;
+
+        BitItemsVector& operator=( const BitItemsVector& ) = default;
+
+        BitItemsVector& operator=( BitItemsVector&& ) = default;
+
         /**
          * @brief Indexes the given directory, adding to the vector all the files that match the wildcard filter.
          *
