@@ -28,7 +28,7 @@
 
 #include <internal/fs.hpp>
 
-namespace bit7z {
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
 
@@ -49,8 +49,8 @@ inline auto exe_path() -> fs::path {
 #endif
 }
 
-}
-}
-}
+} // namespace filesystem
+} // namespace test
+} // namespace bit7z
 
 #endif //FILESYSTEM_HPP

@@ -36,7 +36,7 @@ inline auto sevenzip_lib_path() -> tstring {
     return lib_path;
 }
 
-}
-}
+} // namespace test
+} // namespace bit7z
 
 #endif //SHARED_LIB_HPP

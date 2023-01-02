@@ -32,8 +32,8 @@ constexpr auto native_string = "ON";
 constexpr auto native_string = "OFF";
 #endif
 
-}
-}
-}
+} // namespace flags
+} // namespace test
+} // namespace bit7z
 
 #endif //FLAGS_HPP
