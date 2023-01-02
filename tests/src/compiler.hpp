@@ -39,6 +39,16 @@ constexpr auto name = "Unknown";
 constexpr auto name = "N/A";
 #endif
 
+#ifdef _LIBCPP_VERSION
+constexpr auto standard_library = "libc++";
+#elif defined( __GLIBCXX__ ) || defined( __GLIBCPP__ )
+constexpr auto standard_library = "libstdc++";
+#elif defined( _MSC_VER )
+constexpr auto standard_library = "Microsoft STL";
+#else
+constexpr auto standard_library = "Unknown";
+#endif
+
 // Compiler target architecture
 #if defined( _WIN64 ) || defined( __x86_64__ )
 constexpr auto target_arch = "x64";

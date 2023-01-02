@@ -24,7 +24,8 @@ int main( int argc, char* argv[] ) {
     std::cout << "[Compiler]" << std::endl;
     std::cout << "Name: " << compiler::name << std::endl;
     std::cout << "Version: " << compiler::version << std::endl;
-    std::cout << "Target Architecture: " << compiler::target_arch << std::endl << std::endl;
+    std::cout << "Target Architecture: " << compiler::target_arch << std::endl;
+    std::cout << "Standard Library: " << compiler::standard_library << std::endl << std::endl;
 
 #ifdef _WIN32
     std::cout << "[Runtime]" << std::endl;
