@@ -32,6 +32,6 @@ void CFileInStream::open( const fs::path& filePath ) {
         //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
         throw BitException( "Failed to open the archive file",
                             make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
-                            filePath.native() );
+                            filePath.string< tchar >() );
     }
 }

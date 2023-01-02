@@ -24,13 +24,13 @@ CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways )
             // the call to fs::exists succeeded, but the filePath exists, and this is an error!
             error = std::make_error_code( std::errc::file_exists );
         }
-        throw BitException( "Failed to create the output file", error, filePath.native() );
+        throw BitException( "Failed to create the output file", error, filePath.string< tchar >() );
     }
     mFileStream.open( filePath, std::ios::binary | std::ios::trunc );
     if ( mFileStream.fail() ) {
         throw BitException( "Failed to open the output file",
                             make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
-                            filePath.native() );
+                            filePath.string< tchar >() );
     }
 
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), buffer_size );

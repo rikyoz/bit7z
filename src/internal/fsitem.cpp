@@ -39,13 +39,13 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     std::error_code error;
     mFileEntry.assign( itemPath, error );
     if ( error ) {
-        throw BitException( "Cannot read file entry", error, itemPath.native() );
+        throw BitException( "Cannot read file entry", error, itemPath.string< tchar >() );
     }
     if ( !mFileEntry.exists( error ) ) { // NOLINT
         if ( !error ) { // call to "exists(error)" succeeded
             error = std::make_error_code( std::errc::no_such_file_or_directory );
         }
-        throw BitException( "Invalid path", error, itemPath.native() );
+        throw BitException( "Invalid path", error, itemPath.string< tchar >() );
     }
     initAttributes( itemPath );
 }
@@ -60,7 +60,7 @@ FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
 void FSItem::initAttributes( const fs::path& itemPath ) {
     if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
         //should not happen, but anyway...
-        throw BitException( "Could not retrieve file attributes", last_error_code(), itemPath.native() );
+        throw BitException( "Could not retrieve file attributes", last_error_code(), itemPath.string< tchar >() );
     }
 }
 
