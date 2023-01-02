@@ -36,7 +36,7 @@ constexpr auto name = "MSVC";
 constexpr auto version = STRING( _MSC_VER );
 #else
 constexpr auto name = "Unknown";
-constexpr auto name = "N/A";
+constexpr auto version = "N/A";
 #endif
 
 #ifdef _LIBCPP_VERSION
