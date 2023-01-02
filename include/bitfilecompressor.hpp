@@ -95,7 +95,7 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
         void compressFiles( const tstring& in_dir,
                             const tstring& out_file,
                             bool recursive = true,
-                            const tstring& filter = BIT7Z_STRING( "*.*" ) ) const;
+                            const tstring& filter = BIT7Z_STRING( "*" ) ) const;
 
         /**
          * @brief Compresses an entire directory.

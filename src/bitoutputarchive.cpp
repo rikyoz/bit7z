@@ -95,6 +95,7 @@ void BitOutputArchive::addFiles( const std::vector< tstring >& in_files ) {
     IndexingOptions options{};
     options.recursive = false;
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
+    options.only_files = true;
     mNewItemsVector.indexPaths( in_files, options );
 }
 
@@ -102,6 +103,7 @@ void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, b
     IndexingOptions options{};
     options.recursive = recursive;
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
+    options.only_files = true;
     mNewItemsVector.indexDirectory( in_dir, filter, options );
 }
 

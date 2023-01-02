@@ -62,7 +62,12 @@ void BitFileCompressor::compressFiles( const tstring& in_dir, const tstring& out
 }
 
 void BitFileCompressor::compressDirectory( const tstring& in_dir, const tstring& out_file ) const {
-    compressFiles( in_dir, out_file, true, tstring{} );
+    if ( !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+        throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
+    }
+    BitOutputArchive output_archive{ *this, out_file };
+    output_archive.addDirectory( in_dir );
+    output_archive.compressTo( out_file );
 }
 
 /* from filesystem to stream */

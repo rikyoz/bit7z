@@ -35,6 +35,7 @@ using GenericInputItemVector = std::vector< GenericInputItemPtr >;
 struct IndexingOptions {
     bool recursive = true;
     bool retain_folder_structure = false;
+    bool only_files = false;
 };
 
 /**
@@ -143,7 +144,7 @@ class BitItemsVector final {
     private:
         GenericInputItemVector mItems;
 
-        void indexItem( const FSItem& item, bool recursive );
+        void indexItem( const FSItem& item, IndexingOptions options );
 };
 
 }  // namespace bit7z

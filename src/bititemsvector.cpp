@@ -27,32 +27,32 @@ void BitItemsVector::indexDirectory( const fs::path& in_dir, const tstring& filt
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
         mItems.emplace_back( std::make_unique< FSItem >( dir_item ) );
     }
-    FSIndexer indexer{ dir_item, filter };
+    FSIndexer indexer{ dir_item, filter, options.only_files };
     indexer.listDirectoryItems( mItems, options.recursive );
 }
 
 void BitItemsVector::indexPaths( const vector< tstring >& in_paths, IndexingOptions options ) {
     for ( const auto& file_path : in_paths ) {
         const FSItem item{ file_path, options.retain_folder_structure ? file_path : BIT7Z_STRING( "" ) };
-        indexItem( item, options.recursive );
+        indexItem( item, options );
     }
 }
 
 void BitItemsVector::indexPathsMap( const map< tstring, tstring >& in_paths, IndexingOptions options ) {
     for ( const auto& file_pair : in_paths ) {
         const FSItem item{ fs::path( file_pair.first ), fs::path( file_pair.second ) };
-        indexItem( item, options.recursive );
+        indexItem( item, options );
     }
 }
 
-void BitItemsVector::indexItem( const FSItem& item, bool recursive ) {
+void BitItemsVector::indexItem( const FSItem& item, IndexingOptions options ) {
     if ( !item.isDir() ) {
         mItems.emplace_back( std::make_unique< FSItem >( item ) );
-    } else if ( recursive ) { //item is a directory
+    } else if ( options.recursive ) { //item is a directory
         if ( !item.inArchivePath().empty() ) {
             mItems.emplace_back( std::make_unique< FSItem >( item ) );
         }
-        FSIndexer indexer{ item };
+        FSIndexer indexer{ item, {}, options.only_files };
         indexer.listDirectoryItems( mItems, true );
     } else {
         // No action needed

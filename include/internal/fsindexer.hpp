@@ -24,7 +24,7 @@ using std::unique_ptr;
 
 class FSIndexer final {
     public:
-        explicit FSIndexer( FSItem directory, tstring filter = {} );
+        explicit FSIndexer( FSItem directory, tstring filter = {}, bool only_files = false );
 
         void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                  bool recursive,
@@ -33,6 +33,7 @@ class FSIndexer final {
     private:
         FSItem mDirItem;
         tstring mFilter;
+        bool mOnlyFiles;
 };
 
 }  // namespace filesystem
