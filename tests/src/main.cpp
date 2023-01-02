@@ -16,7 +16,9 @@
 #include <iostream>
 
 #include "compiler.hpp"
+#include "filesystem.hpp"
 #include "flags.hpp"
+#include "shared_lib.hpp"
 
 int main( int argc, char* argv[] ) {
     using namespace bit7z::test;
@@ -27,10 +29,13 @@ int main( int argc, char* argv[] ) {
     std::cout << "Target Architecture: " << compiler::target_arch << std::endl;
     std::cout << "Standard Library: " << compiler::standard_library << std::endl << std::endl;
 
-#ifdef _WIN32
     std::cout << "[Runtime]" << std::endl;
-    std::cout << "Code page: " << GetACP() << std::endl << std::endl;
+    std::cout << "Executable path: " << filesystem::exe_path().string() << std::endl;
+    std::cout << "7-zip shared library: " << sevenzip_lib_path() << std::endl;
+#ifdef _WIN32
+    std::cout << "Code page: " << GetACP() << std::endl;
 #endif
+    std::cout << std::endl;
 
     std::cout << "[Flags]" << std::endl;
     std::cout << "BIT7Z_AUTO_FORMAT: " << flags::auto_format << std::endl;
