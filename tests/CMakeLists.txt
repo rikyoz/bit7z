@@ -23,7 +23,10 @@ if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
 endif()
 
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} )
-target_include_directories( ${TESTS_TARGET} PRIVATE "${EXTERNAL_LIBS_DIR}" "${7ZIP_SOURCE_DIR}/CPP/")
+target_include_directories( ${TESTS_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
+                                                    "${PROJECT_SOURCE_DIR}/src"
+                                                    "${EXTERNAL_LIBS_DIR}"
+                                                    "${7ZIP_SOURCE_DIR}/CPP/" )
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )

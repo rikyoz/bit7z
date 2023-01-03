@@ -12,14 +12,11 @@
 
 #include <catch2/catch.hpp>
 
-#include <bitexception.hpp>
-
-#include <bit7zlibrary.hpp>
+#include <bit7z/bitexception.hpp>
 #include <internal/windows.hpp>
 
 #include <iostream>
 
-using bit7z::Bit7zLibrary;
 using bit7z::BitException;
 
 struct portable_error_test {

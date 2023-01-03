@@ -15,8 +15,10 @@
 
 #include <catch2/catch.hpp>
 
-#include <bitpropvariant.hpp>
+#include <bit7z/bitpropvariant.hpp>
+#ifndef _WIN32
 #include <internal/windows.hpp> // for VT_ enum constants
+#endif
 
 #include <cstdint>
 #include <map>
