@@ -39,9 +39,9 @@ CMultiVolumeInStream::CMultiVolumeInStream( const tstring& first_volume ) : mCur
 }
 
 const CMyComPtr< CVolumeInStream >& CMultiVolumeInStream::currentVolume() {
-    uint64_t left = 0;
-    uint64_t right = mVolumes.size();
-    uint64_t midpoint = right / 2;
+    size_t left = 0;
+    size_t right = mVolumes.size();
+    size_t midpoint = right / 2;
     while ( true ) {
         auto& volume = mVolumes[ midpoint ];
         if ( mCurrentPosition < volume->globalOffset() ) {
@@ -124,7 +124,7 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
 }
 
 void CMultiVolumeInStream::addVolume( const bit7z::tstring& volume_path ) {
-    size_t global_offset = 0;
+    uint64_t global_offset = 0;
     if ( !mVolumes.empty() ) {
         const auto& last_stream = mVolumes.back();
         global_offset = last_stream->globalOffset() + last_stream->size();
