@@ -134,7 +134,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
 #endif
 
     CMyComPtr< IInStream > file_stream;
-    if ( *mDetectedFormat != BitFormat::Split && ends_with( mArchivePath, ".001" ) ) {
+    if ( *mDetectedFormat != BitFormat::Split && ends_with( mArchivePath, BIT7Z_STRING( ".001" ) ) ) {
         file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( mArchivePath );
     } else {
         file_stream = bit7z::make_com< CFileInStream, IInStream >( mArchivePath );

@@ -371,8 +371,12 @@ auto get_value( const BitPropVariant& variant ) -> T {
 }
 
 // BitPropVariant's toString uses std::to_string, so here we use another way to convert integers to string
-auto uint_to_string( uint64_t value ) -> std::string {
-    std::ostringstream stream;
+auto uint_to_tstring( uint64_t value ) -> tstring {
+#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
+    std::wstringstream stream;
+#else
+    std::stringstream stream;
+#endif
     stream << std::dec << uint64_t{ value };
     return stream.str();
 }
@@ -401,7 +405,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     }
 
     REQUIRE( get_value< TestType >( prop_variant ) == value );
-    REQUIRE( prop_variant.toString() == uint_to_string( value ) );
+    REQUIRE( prop_variant.toString() == uint_to_tstring( value ) );
 
     REQUIRE( prop_variant.type() == variant_type< TestType >() );
     REQUIRE( !prop_variant.isEmpty() );
@@ -453,8 +457,12 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     REQUIRE( prop_variant.isEmpty() );
 }
 
-auto int_to_string( int64_t value ) -> std::string {
-    std::ostringstream stream;
+auto int_to_tstring( int64_t value ) -> tstring {
+#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
+    std::wstringstream stream;
+#else
+    std::stringstream stream;
+#endif
     stream << std::dec << int64_t{ value };
     return stream.str();
 }
@@ -487,7 +495,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
     }
 
     REQUIRE( get_value< TestType >( prop_variant ) == value );
-    REQUIRE( prop_variant.toString() == int_to_string( value ) );
+    REQUIRE( prop_variant.toString() == int_to_tstring( value ) );
 
     REQUIRE( prop_variant.type() == variant_type< TestType >() );
     REQUIRE( !prop_variant.isEmpty() );
