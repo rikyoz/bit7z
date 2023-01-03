@@ -26,7 +26,7 @@ It supports compression and extraction to and from the filesystem or the memory,
 
 + **Compression** using the following archive formats: **7z**, XZ, **BZIP2**, **GZIP**, TAR, **ZIP**, and WIM.
 + **Extraction** of many archive formats: **7z**, AR, ARJ, **BZIP2**, CAB, CHM, CPIO, CramFS, DEB, DMG, EXT, FAT, GPT, **GZIP**, HFS, HXS, IHEX, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, QCOW2, **RAR**, **RAR5**, RPM, SquashFS, TAR, UDF, UEFI, VDI, VHD, VMDK, WIM, XAR, XZ, Z, and **ZIP**.
-+ **Reading metadata** of archives and of their content.
++ **Reading metadata** of archives and their content.
 + **Testing** archives for errors.
 + **Updating** existing file archives with new files.
 + **Renaming**, **updating**, or **deleting** old items in existing file archives.
@@ -39,15 +39,15 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Automatic input archive format detection**.
 + **Solid archives** (only for 7z).
 + **Multi-volume archives**.
-+ **Operation callbacks** for obtaining real-time information about the ongoing operations.
++ **Operation callbacks** for obtaining real-time information about ongoing operations.
 + **Canceling** or **pausing** the current operation.
 
 ### Notes
 
 The presence or not of some of the above features depends on the particular shared library used along with bit7z.<br/>
-For example, the 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and the 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
+For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and the 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
-In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regexes_) are disabled by default, and macro defines must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regexes_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## :fire: Getting Started (Library Usage)
 
@@ -163,12 +163,12 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 
 The newest bit7z v4 introduced some major breaking changes to the API. In particular:
 
-- By default, the project now follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
-    - The default string type is now `std::string` (instead of `std::wstring`) so that the library can be used in cross-platform projects more easily.
-    - Input `std::string`s will be considered as UTF-8 encoded.
-    - You can still achieve the old behavior by using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
-- The old `BitExtractor` class is now called `BitFileExtractor`.
-    - Now `BitExtractor` is just the name of a template class for all the extraction classes.
++ By default, the project now follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
+  + The default string type is now `std::string` (instead of `std::wstring`) so that the library can be used in cross-platform projects more easily.
+  + Input `std::string`s will be considered as UTF-8 encoded.
+  + You can still achieve the old behavior by using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
++ The old `BitExtractor` class is now called `BitFileExtractor`.
+  + Now `BitExtractor` is just the name of a template class for all the extraction classes.
 
 ## :file_cabinet: Download
 
@@ -186,17 +186,16 @@ You can also clone/download this repository and build the library by yourself (p
 
 ## :toolbox: Requirements
 
-+ **Operating System:** Windows, Linux, macOS<strong><sup>1</sup></strong>.
++ **Operating System:** Windows, Linux, macOS<strong>[^1]</strong>.
 + **Architecture:** x86, x86_64.
-+ **Compiler:** MSVC 2015 or later<strong><sup>2</sup></strong>, MinGW v6.4 or later, GCC v4.9 or later, Clang 3.5 or later.
-+ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix<strong><sup>3</sup></strong>.
++ **Compiler:** MSVC 2015 or later<strong>[^2]</strong>, MinGW v6.4 or later, GCC v4.9 or later, Clang 3.5 or later.
++ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix<strong>[^3]</strong>.
 
-**<sup>1</sup>** On Windows, you should link your program _also_ with *oleaut32* (e.g., `-lbit7z -loleaut32`).<br/>
-On Unix systems (e.g., Linux, macOS), you should link your program _also_ with *dl* (e.g., `-lbit7z -ldl`).
+[^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
 
-**<sup>2</sup>** MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.1.x.
+[^2]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.1.x.
 
-**<sup>3</sup>** bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
+[^3]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
 ## :gear: Building bit7z
 
@@ -212,7 +211,7 @@ A more detailed guide on how to build this library is available [here](https://g
 ## :coffee: Donate
 
 If you have found this project helpful, please consider supporting me with a small donation so that I can keep improving it!
-Thank you! :)
+Thank you! :) :pray:
 
 <div align="center">
 <a href='https://github.com/sponsors/rikyoz' target='_blank' title="Support the Maintainer via GitHub Sponsors"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Sponsor%20the%20Maintainer-fafbfc?logo=GitHub%20Sponsors' border='0' alt='Sponsor me on GitHub' /></a> <a href='https://ko-fi.com/G2G1LS1P' target='_blank' title="Support this project via Ko-Fi"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-red?logo=ko-fi&logoColor=white' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC" title="Support this project via PayPal"><img src="https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI0ZGRiIgZD0iTTcuMDc2IDIxLjMzN0gyLjQ3YS42NDEuNjQxIDAgMCAxLS42MzMtLjc0TDQuOTQ0LjkwMUM1LjAyNi4zODIgNS40NzQgMCA1Ljk5OCAwaDcuNDZjMi41NyAwIDQuNTc4LjU0MyA1LjY5IDEuODEgMS4wMSAxLjE1IDEuMzA0IDIuNDIgMS4wMTIgNC4yODctLjAyMy4xNDMtLjA0Ny4yODgtLjA3Ny40MzctLjk4MyA1LjA1LTQuMzQ5IDYuNzk3LTguNjQ3IDYuNzk3aC0yLjE5Yy0uNTI0IDAtLjk2OC4zODItMS4wNS45bC0xLjEyIDcuMTA2em0xNC4xNDYtMTQuNDJhMy4zNSAzLjM1IDAgMCAwLS42MDctLjU0MWMtLjAxMy4wNzYtLjAyNi4xNzUtLjA0MS4yNTQtLjkzIDQuNzc4LTQuMDA1IDcuMjAxLTkuMTM4IDcuMjAxaC0yLjE5YS41NjMuNTYzIDAgMCAwLS41NTYuNDc5bC0xLjE4NyA3LjUyN2gtLjUwNmwtLjI0IDEuNTE2YS41Ni41NiAwIDAgMCAuNTU0LjY0N2gzLjg4MmMuNDYgMCAuODUtLjMzNC45MjItLjc4OC4wNi0uMjYuNzYtNC44NTIuODE2LTUuMDlhLjkzMi45MzIgMCAwIDEgLjkyMy0uNzg4aC41OGMzLjc2IDAgNi43MDUtMS41MjggNy41NjUtNS45NDYuMzYtMS44NDcuMTc0LTMuMzg4LS43NzctNC40NzF6Ii8+PC9zdmc+&logoColor=white" alt="Donations" height='24' style='border:0px;height:24px;'></a>
@@ -222,12 +221,14 @@ Thank you! :)
 
 This project is licensed under the terms of the [Mozilla Public License v2.0](https://www.mozilla.org/en-US/MPL/2.0/).<br/>
 For more details, please check:
-- The [LICENSE](./LICENSE) file.
-- [Mozilla's MPL-2.0 FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/)
 
-Older versions (v3.1 and earlier) of bit7z were released under the [GNU General Public License v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
++ The [LICENSE](./LICENSE) file.
++ [Mozilla's MPL-2.0 FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/)
+
+Older versions (v3.2 and earlier) of bit7z were released under the [GNU General Public License v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
 
 <br/>
 <div align="center">
 Copyright &copy; 2014 - 2022 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)
 </div>
+<br/>
