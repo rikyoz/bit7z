@@ -22,6 +22,10 @@ if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
     target_compile_definitions( ${TESTS_TARGET} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
 endif()
 
+# Avoiding linking unnecessary libraries.
+# The main project's CMakeLists.txt should provide the needed libraries to link!
+set( CMAKE_CXX_STANDARD_LIBRARIES "" )
+
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} )
 target_include_directories( ${TESTS_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
                                                     "${PROJECT_SOURCE_DIR}/src"

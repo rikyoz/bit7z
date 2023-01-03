@@ -188,12 +188,13 @@ target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include
 target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
 if( WIN32 )
     target_compile_definitions( ${LIB_TARGET} PRIVATE _WINDOWS )
+    target_link_libraries( ${LIB_TARGET} PUBLIC oleaut32 )
 endif()
 
 if( UNIX )
     target_compile_definitions( ${LIB_TARGET} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
-                                ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
-    target_link_libraries( ${LIB_TARGET} ${CMAKE_DL_LIBS} )
+                                                      ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
+    target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
 
 # bit7z build options
