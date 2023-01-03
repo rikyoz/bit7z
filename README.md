@@ -45,7 +45,7 @@ It supports compression and extraction to and from the filesystem or the memory,
 ### Notes
 
 The presence or not of some of the above features depends on the particular shared library used along with bit7z.<br/>
-For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and the 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
+For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
 In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regexes_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
@@ -56,7 +56,7 @@ Below are a few examples that show how to use some of the main features of bit7z
 ### :open_file_folder: Extracting files from an archive
 
 ```cpp
-#include "bitfileextractor.hpp"
+#include <bit7z/bitfileextractor.hpp>
 
 try { //bit7z classes can throw BitException objects
     using namespace bit7z;
@@ -83,7 +83,7 @@ try { //bit7z classes can throw BitException objects
 ### :briefcase: Compressing files into an archive
 
 ```cpp
-#include "bitfilecompressor.hpp"
+#include <bit7z/bitfilecompressor.hpp>
 
 try { //bit7z classes can throw BitException objects
     using namespace bit7z;
@@ -124,7 +124,7 @@ try { //bit7z classes can throw BitException objects
 ### :bookmark_tabs: Reading archive metadata
 
 ```cpp
-#include "bitarchivereader.hpp"
+#include <bit7z/bitarchivereader.hpp>
 
 try { //bit7z classes can throw BitException objects
     using namespace bit7z;
@@ -193,7 +193,7 @@ You can also clone/download this repository and build the library by yourself (p
 
 [^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
 
-[^2]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.1.x.
+[^2]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.x.
 
 [^3]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
@@ -225,7 +225,7 @@ For more details, please check:
 + The [LICENSE](./LICENSE) file.
 + [Mozilla's MPL-2.0 FAQ](https://www.mozilla.org/en-US/MPL/2.0/FAQ/)
 
-Older versions (v3.2 and earlier) of bit7z were released under the [GNU General Public License v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
+Older versions (v3.x and earlier) of bit7z were released under the [GNU General Public License v2](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html).
 
 <br/>
 <div align="center">
