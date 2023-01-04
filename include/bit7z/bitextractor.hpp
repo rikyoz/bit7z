@@ -248,16 +248,16 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             BitInputArchive in_archive( *this, in_file );
 
             vector< uint32_t > matched_indices;
-            bool should_include_matched_items = policy == FilterPolicy::Include;
-            //Searching for files inside the archive that match the given filter
+            const bool should_extract_matched_items = policy == FilterPolicy::Include;
+            // Searching for files inside the archive that match the given filter
             for ( const auto& item : in_archive ) {
-                bool item_matches = filter( item.path() );
-                if ( item_matches == should_include_matched_items ) {
-                    /* Note: the if-condition is equivalent to an exclusive NOR (negated XOR) between
-                     *       item_matches and should_include_matched_items.
-                     *       It is true only if either:
-                     *       - the current item matches the filter, and we must include it; or
-                     *       - the current item doesn't match the filter, and we must exclude those that match. */
+                const bool item_matches = filter( item.path() );
+                if ( item_matches == should_extract_matched_items ) {
+                    /* The if-condition is equivalent to an exclusive NOR (negated XOR) between
+                     * item_matches and should_extract_matched_items.
+                     * In other words, it is true only if the current item either:
+                     *  - matches the filter, and we must include any matching item; or
+                     *  - doesn't match the filter, and we must exclude those that match. */
                     matched_indices.push_back( item.index() );
                 }
             }
@@ -275,13 +275,13 @@ class BitExtractor final : public BitAbstractArchiveOpener {
                                     const function< bool( const tstring& ) >& filter ) const {
             BitInputArchive in_archive( *this, in_file );
 
-            bool should_extracted_matched_item = policy == FilterPolicy::Include;
-            //Searching for files inside the archive that match the given filter
+            const bool should_extract_matched_item = policy == FilterPolicy::Include;
+            // Searching for files inside the archive that match the given filter
             for ( const auto& item : in_archive ) {
-                bool item_matches = filter( item.path() );
-                if ( item_matches == should_extracted_matched_item ) {
-                    /* Note: the if-condition is equivalent to an exclusive NOR (negated XOR) between
-                     *       item_matches and should_extracted_matched_item. */
+                const bool item_matches = filter( item.path() );
+                if ( item_matches == should_extract_matched_item ) {
+                    /* The if-condition is equivalent to an exclusive NOR (negated XOR) between
+                     *  item_matches and should_extract_matched_item. */
                     in_archive.extract( out_buffer, item.index() );
                     return;
                 }

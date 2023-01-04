@@ -68,7 +68,7 @@ class ArchiveProperties final {
         }
 
         BIT7Z_NODISCARD
-        size_t size() const {
+        inline size_t size() const {
             return mNames.size();
         }
 };

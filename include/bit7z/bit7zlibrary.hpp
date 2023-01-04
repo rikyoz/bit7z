@@ -30,7 +30,7 @@ class CMyComPtr;
 namespace bit7z {
 
 #ifdef _WIN32
-constexpr auto default_library = BIT7Z_STRING("7z.dll");
+constexpr auto default_library = BIT7Z_STRING( "7z.dll" );
 #elif defined( __linux__ )
 constexpr auto default_library = "/usr/lib/p7zip/7z.so"; // Default installation path of the p7zip shared library.
 #else
