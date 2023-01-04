@@ -29,7 +29,7 @@ class FSItem;
 using namespace filesystem;
 
 /**
- * @brief The BitFileCompressor class allows to compress files and directories into file archives.
+ * @brief The BitFileCompressor class allows compressing files and directories into file archives.
  *
  * It let decide various properties of the produced archive file, such as the password
  * protection and the compression level desired.
@@ -48,7 +48,7 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          */
         BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format );
 
-        /* Compression from file system to file system */
+        /* Compression from the file system to the file system. */
 
         /**
          * @brief Compresses the given files or directories.
@@ -66,8 +66,8 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          *
          * The items in the first argument must be the relative or absolute paths to files or
          * directories existing on the filesystem.
-         * Each pair of the map must follow the following format:
-         *  {L"path to file in the filesystem", L"alias path in the archive"}.
+         * Each pair in the map must follow the following format:
+         *  {"path to file in the filesystem", "alias path in the archive"}.
          *
          * @param in_paths  a map of paths and corresponding aliases.
          * @param out_file  the path (relative or absolute) to the output archive file.
@@ -107,7 +107,7 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          */
         void compressDirectory( const tstring& in_dir, const tstring& out_file ) const;
 
-        /* Compression from file system to standard stream */
+        /* Compression from the file system to standard streams. */
 
         /**
          * @brief Compresses the given files or directories.
@@ -125,8 +125,8 @@ class BitFileCompressor final : public BitCompressor< const tstring > {
          *
          * The items in the first argument must be the relative or absolute paths to files or
          * directories existing on the filesystem.
-         * Each pair of the map must follow the following format:
-         *  {L"path to file in the filesystem", L"alias path in the archive"}.
+         * Each pair in the map must follow the following format:
+         *  {"path to file in the filesystem", "alias path in the archive"}.
          *
          * @param in_paths      a map of paths and corresponding aliases.
          * @param out_stream    the standard ostream where to output the archive file.

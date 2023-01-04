@@ -284,7 +284,7 @@ struct BitPropVariant final : public PROPVARIANT {
 
         /**
          * @return the boolean value of this variant
-         * (it throws an exception if the variant is not a boolean).
+         * (it throws an exception if the variant is not a boolean value).
          */
         BIT7Z_NODISCARD bool getBool() const;
 
@@ -360,62 +360,62 @@ struct BitPropVariant final : public PROPVARIANT {
         BIT7Z_NODISCARD tstring toString() const;
 
         /**
-         * @return true if this variant is empty, false otherwise.
+         * @return a boolean value indicating whether the variant is empty.
          */
         BIT7Z_NODISCARD bool isEmpty() const noexcept;
 
         /**
-         * @return true if this variant is a boolean, false otherwise.
+         * @return a boolean value indicating whether the variant is a boolean value.
          */
         BIT7Z_NODISCARD bool isBool() const noexcept;
 
         /**
-         * @return true if this variant is a string, false otherwise.
+         * @return a boolean value indicating whether the variant is a string.
          */
         BIT7Z_NODISCARD bool isString() const noexcept;
 
         /**
-         * @return true if this variant is an 8-bit unsigned integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8-bit unsigned integer.
          */
         BIT7Z_NODISCARD bool isUInt8() const noexcept;
 
         /**
-         * @return true if this variant is an 8 or 16-bit unsigned integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8 or 16-bit unsigned integer.
          */
         BIT7Z_NODISCARD bool isUInt16() const noexcept;
 
         /**
-         * @return true if this variant is an 8, 16 or 32-bit unsigned integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8, 16 or 32-bit unsigned integer.
          */
         BIT7Z_NODISCARD bool isUInt32() const noexcept;
 
         /**
-         * @return true if this variant is an 8, 16, 32 or 64-bit unsigned integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8, 16, 32 or 64-bit unsigned integer.
          */
         BIT7Z_NODISCARD bool isUInt64() const noexcept;
 
         /**
-         * @return true if this variant is an 8-bit integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8-bit integer.
          */
         BIT7Z_NODISCARD bool isInt8() const noexcept;
 
         /**
-         * @return true if this variant is an 8 or 16-bit integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8 or 16-bit integer.
          */
         BIT7Z_NODISCARD bool isInt16() const noexcept;
 
         /**
-         * @return true if this variant is an 8, 16 or 32-bit integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8, 16 or 32-bit integer.
          */
         BIT7Z_NODISCARD bool isInt32() const noexcept;
 
         /**
-         * @return true if this variant is an 8, 16, 32 or 64-bit integer, false otherwise.
+         * @return a boolean value indicating whether the variant is an 8, 16, 32 or 64-bit integer.
          */
         BIT7Z_NODISCARD bool isInt64() const noexcept;
 
         /**
-         * @return true if this variant is a FILETIME structure, false otherwise.
+         * @return a boolean value indicating whether the variant is a FILETIME structure.
          */
         BIT7Z_NODISCARD bool isFileTime() const noexcept;
 

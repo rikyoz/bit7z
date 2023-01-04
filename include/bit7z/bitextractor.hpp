@@ -28,7 +28,7 @@ bool wildcardMatch( const tstring& pattern, const tstring& str );
 enum class FilterPolicy { Include, Exclude };
 
 /**
- * @brief The BitExtractor template class allows to extract the content of archives from supported input types.
+ * @brief The BitExtractor template class allows extracting the content of archives from supported input types.
  */
 template< typename Input >
 class BitExtractor final : public BitAbstractArchiveOpener {
@@ -42,7 +42,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          *
          * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
          * argument has default value BitFormat::Auto (automatic format detection of the in_file archive).
-         * Otherwise, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available)
+         * Otherwise, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
          * @param lib       the 7z library to use.

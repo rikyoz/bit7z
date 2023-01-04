@@ -13,9 +13,9 @@
 #ifndef BITFS_HPP
 #define BITFS_HPP
 
-/* Header for forward declaring fs namespace */
+/* Header for forward declaring fs namespace. */
 
-#include "bitdefines.hpp" /* it defines BIT7Z_USE_STANDARD_FILESYSTEM */
+#include "bitdefines.hpp" /* For BIT7Z_USE_STANDARD_FILESYSTEM */
 
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 #include <filesystem>

@@ -32,13 +32,13 @@ namespace bit7z {
 #ifdef _WIN32
 constexpr auto default_library = BIT7Z_STRING("7z.dll");
 #elif defined( __linux__ )
-constexpr auto default_library = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip shared library
+constexpr auto default_library = "/usr/lib/p7zip/7z.so"; // Default installation path of the p7zip shared library.
 #else
 constexpr auto default_library = "./7z.so";
 #endif
 
 /**
- * @brief The Bit7zLibrary class allows the access to the basic functionalities provided by the 7z DLLs.
+ * @brief The Bit7zLibrary class allows accessing the basic functionalities provided by the 7z DLLs.
  */
 class Bit7zLibrary final {
     public:
@@ -67,7 +67,7 @@ class Bit7zLibrary final {
         /**
          * @brief Initiates the 7-zip object needed to create a new archive or use an old one.
          *
-         * @note Usually this method should not be called directly by users of the bit7z library.
+         * @note Usually, this method should not be called directly by users of the bit7z library.
          *
          * @param format_ID     GUID of the archive format (see BitInFormat's guid() method).
          * @param interface_ID  ID of the archive interface to be requested (IID_IInArchive or IID_IOutArchive).

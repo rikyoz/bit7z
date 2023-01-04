@@ -21,7 +21,7 @@ using std::vector;
 using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
 
 /**
- * @brief The BitArchiveEditor class allows to create new file archives or update old ones.
+ * @brief The BitArchiveEditor class allows creating new file archives or updating old ones.
  *        Update operations supported are the addition of new items,
  *        as well as renaming/updating/deleting old items;
  *
@@ -70,7 +70,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         void renameItem( uint32_t index, const tstring& new_path );
 
         /**
-         * @brief Requests to change the path of the item from old_path to new_path.
+         * @brief Requests to change the path of the item from old_path to the new_path.
          *
          * @param old_path the old path (in the archive) of the item to be renamed.
          * @param new_path the new path (in the archive) desired for the item.

@@ -126,7 +126,7 @@ class BitOutputArchive {
         void addFile( const tstring& in_file, const tstring& name = {} );
 
         /**
-         * @brief Adds the given buffer file, using the given name as path when compressed in the output archive.
+         * @brief Adds the given buffer file, using the given name as a path when compressed in the output archive.
          *
          * @param in_buffer the buffer containing the file to be added to the output archive.
          * @param name      user-defined path to be used inside the output archive.
@@ -134,7 +134,7 @@ class BitOutputArchive {
         void addFile( const vector< byte_t >& in_buffer, const tstring& name );
 
         /**
-         * @brief Adds the given standard input stream, using the given name as path when compressed
+         * @brief Adds the given standard input stream, using the given name as a path when compressed
          *        in the output archive.
          *
          * @param in_stream
@@ -195,7 +195,7 @@ class BitOutputArchive {
         void compressTo( ostream& out_stream );
 
         /**
-         * @return the total number of item added to the output archive object.
+         * @return the total number of items added to the output archive object.
          */
         uint32_t itemsCount() const;
 

@@ -92,13 +92,13 @@ class BitAbstractArchiveHandler {
         BIT7Z_NODISCARD tstring password() const;
 
         /**
-         * @return true if the directory structure must be preserved while extracting or compressing
-         *         the archive, false otherwise.
+         * @return a boolean value indicating whether the directory structure must be preserved while extracting
+         * or compressing the archive.
          */
         BIT7Z_NODISCARD bool retainDirectories() const noexcept;
 
         /**
-         * @return true if a password is defined, false otherwise.
+         * @return a boolean value indicating whether a password is defined or not.
          */
         BIT7Z_NODISCARD bool isPasswordDefined() const noexcept;
 
@@ -128,7 +128,7 @@ class BitAbstractArchiveHandler {
         BIT7Z_NODISCARD PasswordCallback passwordCallback() const;
 
         /**
-         * @return the current overwrite mode.
+         * @return the current OverwriteMode.
          */
         BIT7Z_NODISCARD OverwriteMode overwriteMode() const;
 
@@ -138,7 +138,7 @@ class BitAbstractArchiveHandler {
          * The password will be used to encrypt/decrypt archives by using the default
          * cryptographic method of the archive format.
          *
-         * @note Calling setPassword when the input archive is not encrypted does not have effect on
+         * @note Calling setPassword when the input archive is not encrypted does not have any effect on
          * the extraction process.
          *
          * @note Calling setPassword when the output format doesn't support archive encryption
@@ -147,7 +147,7 @@ class BitAbstractArchiveHandler {
          *
          * @note After a password has been set, it will be used for every subsequent operation.
          * To disable the use of the password, you need to call the clearPassword method, which is equivalent
-         * to call setPassword(L"").
+         * to calling setPassword(L"").
          *
          * @param password  the password to be used.
          */
@@ -163,7 +163,7 @@ class BitAbstractArchiveHandler {
         void clearPassword() noexcept;
 
         /**
-         * @brief Sets whether methods output will preserve the input's directory structure or not.
+         * @brief Sets whether the operations' output will preserve the input's directory structure or not.
          *
          * @param retain  the setting for preserving or not the input directory structure
          */
@@ -214,7 +214,7 @@ class BitAbstractArchiveHandler {
         /**
          * @brief Sets how the handler should behave when it tries to output to an existing file or buffer.
          *
-         * @param mode  the overwrite mode to be used by the handler.
+         * @param mode  the OverwriteMode to be used by the handler.
          */
         void setOverwriteMode( OverwriteMode mode );
 

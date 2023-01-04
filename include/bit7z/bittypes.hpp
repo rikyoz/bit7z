@@ -58,10 +58,10 @@ struct string_traits< wchar_t > {
 
 }  // namespace
 
-#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows with native strings
 using tchar = wchar_t;
 #define BIT7Z_STRING( str ) L##str
-#else // Unix
+#else // Unix, and Windows with non-native strings
 using tchar = char;
 #define BIT7Z_STRING( str ) str
 #endif

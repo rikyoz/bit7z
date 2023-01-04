@@ -60,7 +60,7 @@
 #   define BIT7Z_DEPRECATED_MSG( msg ) [[deprecated( msg )]]
 #endif
 
-/* Compiler is using at most the C++14 standard, so we use the compiler specific attributes/defines were possible. */
+/* Compiler is using at most the C++14 standard, so we use the compiler-specific attributes/defines were possible. */
 #ifndef BIT7Z_NODISCARD
 #   if defined( __GNUC__ ) || defined(__clang__)
 #       define BIT7Z_NODISCARD __attribute__(( warn_unused_result ))
@@ -78,7 +78,7 @@
 #   endif
 #endif
 
-/* Compiler is using the C++11 standard, so we use the compiler specific attributes were possible.
+/* Compiler is using the C++11 standard, so we use the compiler-specific attributes were possible.
  * Note: these macros are used in the public API, so we cannot assume that we are always using a C++14 compiler.*/
 #ifndef BIT7Z_DEPRECATED
 #   if defined( __GNUC__ ) || defined( __clang__ )

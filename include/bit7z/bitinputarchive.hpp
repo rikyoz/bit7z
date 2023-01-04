@@ -246,7 +246,7 @@ class BitInputArchive {
 
         /**
          * @return an iterator to the first element of the archive. If the archive is empty,
-         *         the returned iterator will be equal to end().
+         *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD const_iterator begin() const noexcept;
 
@@ -258,7 +258,7 @@ class BitInputArchive {
 
         /**
          * @return an iterator to the first element of the archive. If the archive is empty,
-         *         the returned iterator will be equal to end().
+         *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD const_iterator cbegin() const noexcept;
 
@@ -273,7 +273,8 @@ class BitInputArchive {
          *
          * @param path the path to be searched in the archive.
          *
-         * @return an iterator to the item with the given path, or an iterator equal to end() if no item is found.
+         * @return an iterator to the item with the given path, or an iterator equal to the end() iterator
+         * if no item is found.
          */
         BIT7Z_NODISCARD const_iterator find( const tstring& path ) const noexcept;
 

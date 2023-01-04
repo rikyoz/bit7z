@@ -30,7 +30,7 @@ tstring basename( const tstring& path );
 using namespace filesystem;
 
 /**
- * @brief The BitCompressor template class allows to compress files into archives.
+ * @brief The BitCompressor template class allows compressing files into archives.
  *
  * It let decide various properties of the produced archive file, such as the password
  * protection and the compression level desired.

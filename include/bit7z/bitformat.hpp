@@ -83,13 +83,13 @@ class BitInFormat {
 
         /**
          * @param other  the target object to compare to.
-         * @return true if this format is equal to "other".
+         * @return a boolean value indicating whether this format is equal to the "other" or not.
          */
         bool operator==( BitInFormat const& other ) const noexcept;
 
         /**
          * @param other  the target object to compare to.
-         * @return true if this format is not equal to "other".
+         * @return a boolean value indicating whether this format is different from the "other" or not.
          */
         bool operator!=( BitInFormat const& other ) const noexcept;
 

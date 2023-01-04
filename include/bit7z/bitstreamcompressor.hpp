@@ -15,7 +15,7 @@
 namespace bit7z {
 
 /**
- * @brief The BitStreamCompressor class allows to compress data from standard input streams to the filesystem,
+ * @brief The BitStreamCompressor class allows compressing data from standard input streams to the filesystem,
  *        to memory buffers, or to standard output streams.
  *
  * It let decide various properties of the produced archive file, such as the password

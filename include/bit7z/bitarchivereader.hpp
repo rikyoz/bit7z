@@ -21,7 +21,7 @@ struct IArchiveExtractCallback;
 namespace bit7z {
 
 /**
- * @brief The BitArchiveReader class allows to read metadata of archives, as well as extract them.
+ * @brief The BitArchiveReader class allows reading metadata of archives, as well as extracting them.
  */
 class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputArchive {
     public:
@@ -30,7 +30,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          *
          * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
          * argument has default value BitFormat::Auto (automatic format detection of the input archive).
-         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available)
+         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
          * @param lib       the 7z library used.
@@ -48,7 +48,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          *
          * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
          * argument has default value BitFormat::Auto (automatic format detection of the input archive).
-         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available)
+         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
          * @param lib       the 7z library used.
@@ -66,7 +66,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          *
          * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
          * argument has default value BitFormat::Auto (automatic format detection of the input archive).
-         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available)
+         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
          * @param lib       the 7z library used.

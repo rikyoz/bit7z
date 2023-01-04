@@ -21,9 +21,9 @@
 #include <Windows.h>
 #include <propidl.h>
 #else
-/* We don't have the "Windows.h" header on Unix systems, so in theory, we could use the "MyWindows.h" of p7zip.
+/* We don't have the "Windows.h" header on Unix systems, so in theory, we could use the "MyWindows.h" of p7zip/7-zip.
  * However, some of bit7z's public API headers need some Win32 API structs like PROPVARIANT and GUID.
- * Hence, it would result in the leak of p7zip headers, making bit7z's clients dependent on them.
+ * Hence, it would result in the leak of p7zip/7-zip headers, making bit7z's clients dependent on them.
  * Also, (publicly) forward declaring them and then (internally) using the "MyWindows.h" is impossible:
  * the two different declarations would conflict, making the compilation fail.
  *
@@ -63,10 +63,10 @@ using DWORD = unsigned int;
 using ULONG = unsigned int;
 using PROPID = ULONG;
 
-// Error codes constants can be useful for bit7z's clients on Unix (since they don't have the Windows.h header)
+// Error codes constants can be useful for bit7z's clients on Unix (since they don't have the Windows.h header).
 
-#ifndef S_OK // silencing cppcheck warning on E_NOTIMPL, probably a bug of cppcheck.
-// Win32 HRESULT error codes
+#ifndef S_OK // Silencing cppcheck warning on E_NOTIMPL, probably a bug of cppcheck.
+// Win32 HRESULT error codes.
 constexpr auto S_OK = static_cast< HRESULT >( 0x00000000L );
 constexpr auto S_FALSE = static_cast< HRESULT >( 0x00000001L );
 constexpr auto E_NOTIMPL = static_cast< HRESULT >( 0x80004001L );
@@ -79,7 +79,7 @@ constexpr auto E_INVALIDARG = static_cast< HRESULT >( 0x80070057L );
 #endif
 
 #ifndef ERROR_ALREADY_EXISTS
-// Win32 error codes (defined by both p7zip and 7-zip as equivalent to POSIX error codes)
+// Win32 error codes (defined by both p7zip and 7-zip as equivalent to POSIX error codes).
 constexpr auto ERROR_ALREADY_EXISTS = EEXIST;
 constexpr auto ERROR_DISK_FULL = ENOSPC;
 constexpr auto ERROR_FILE_EXISTS = EEXIST;
@@ -93,12 +93,12 @@ constexpr auto ERROR_SEEK = EIO;
 constexpr auto ERROR_READ_FAULT = EIO;
 constexpr auto ERROR_WRITE_FAULT = EIO;
 
-// Win32 error codes (defined by p7zip with the same values as in Windows API)
+// Win32 error codes (defined by p7zip with the same values as in Windows API).
 constexpr auto ERROR_NO_MORE_FILES = 0x100018;
 constexpr auto ERROR_DIRECTORY = 267;
 #endif
 
-// Win32 structs
+// Win32 structs.
 struct FILETIME {
     DWORD dwLowDateTime;
     DWORD dwHighDateTime;

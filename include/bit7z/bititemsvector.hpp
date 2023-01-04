@@ -99,7 +99,7 @@ class BitItemsVector final {
         void indexFile( const tstring& in_file, const tstring& name = {} );
 
         /**
-         * @brief Indexes the given buffer, using the given name as path when compressed in archives.
+         * @brief Indexes the given buffer, using the given name as a path when compressed in archives.
          *
          * @param in_buffer the buffer containing the file to be indexed in the vector.
          * @param name      user-defined path to be used inside archives.
@@ -107,7 +107,7 @@ class BitItemsVector final {
         void indexBuffer( const vector< byte_t >& in_buffer, const tstring& name );
 
         /**
-         * @brief Indexes the given standard input stream, using the given name as path when compressed in archives.
+         * @brief Indexes the given standard input stream, using the given name as a path when compressed in archives.
          *
          * @param in_stream the standard input stream of the file to be indexed in the vector.
          * @param name      user-defined path to be used inside archives.
@@ -127,7 +127,7 @@ class BitItemsVector final {
 
         /**
          * @return an iterator to the first element of the vector. If the vector is empty,
-         *         the returned iterator will be equal to end().
+         *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD GenericInputItemVector::const_iterator begin() const noexcept;
 
@@ -139,7 +139,7 @@ class BitItemsVector final {
 
         /**
          * @return an iterator to the first element of the vector. If the vector is empty,
-         *         the returned iterator will be equal to end().
+         *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD GenericInputItemVector::const_iterator cbegin() const noexcept;
 
