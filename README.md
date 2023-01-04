@@ -174,22 +174,27 @@ The newest bit7z v4 introduced some major breaking changes to the API. In partic
 
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img alt="Github All Releases" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Latest%20Release&logo=github&style=social" height='36' style='border:0;height:36px;'/></a>
+<img alt="GitHub All Releases" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Latest%20Release&logo=github&style=social" height='36' style='border:0;height:36px;'/></a>
 <br/>
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img alt="Github All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout&label=Total%20Downloads&logo=icloud&logoColor=white"/></a>
+<img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout&label=Total%20Downloads&logo=icloud&logoColor=white"/></a>
 </div>
 
-Each released package contains a _precompiled version_ of bit7z (both in _debug_ and _release_ mode) and the _public API headers_ needed to use the library in your program; packages are available for both _x86_ and _x64_ architectures.
+Each released package contains:
+
++ A _precompiled version_ of bit7z (both in _debug_ and _release_ mode);
++ The _public API headers_ needed to use the library in your program;
+
+Packages are available for both _x86_ and _x64_ architectures.
 
 You can also clone/download this repository and build the library by yourself (please, read the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## :toolbox: Requirements
 
-+ **Operating System:** Windows, Linux, macOS<strong>[^1]</strong>.
++ **Operating System:** Windows, Linux, macOS[^1].
 + **Architecture:** x86, x86_64.
-+ **Compiler:** MSVC 2015 or later<strong>[^2]</strong>, MinGW v6.4 or later, GCC v4.9 or later, Clang 3.5 or later.
-+ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix<strong>[^3]</strong>.
++ **Compiler:** MSVC 2015 or later[^2], MinGW v6.4 or later, GCC v4.9 or later, Clang 3.5 or later.
++ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix[^3].
 
 [^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
 
