@@ -25,7 +25,14 @@ bool wildcardMatch( const tstring& pattern, const tstring& str );
 } // namespace fsutil
 } // namespace filesystem
 
-enum class FilterPolicy { Include, Exclude };
+/**
+ * @brief Enumeration representing the policy according to which the extractor should handle
+ * the items that match the pattern given by the user.
+ */
+enum struct FilterPolicy {
+    Include, ///< Extract the items that match the pattern.
+    Exclude  ///< Do not extract the items that match the pattern.
+};
 
 /**
  * @brief The BitExtractor template class allows extracting the content of archives from supported input types.
@@ -146,11 +153,11 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         /**
-         * @brief Extracts the specified items in the given archive to the chosen directory.
+         * @brief Extracts the specified items from the given archive to the chosen directory.
          *
          * @param in_file   the input archive file.
-         * @param indices   the array of indices of the files in the archive that must be extracted.
-         * @param out_dir   the output directory where the extracted files will be put.
+         * @param indices   the indices of the files in the archive that should be extracted.
+         * @param out_dir   the output directory where the extracted files will be placed.
          */
         void extractItems( Input in_file,
                            const vector< uint32_t >& indices,

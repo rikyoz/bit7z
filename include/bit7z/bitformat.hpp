@@ -101,15 +101,15 @@ class BitInFormat {
  * @brief The BitInOutFormat class specifies a format available for creating new archives and extract old ones.
  *
  * @note Usually, the user of the library should not create new formats and, instead,
- * use the ones provided by the BitFormat namespace
+ * use the ones provided by the BitFormat namespace.
  */
 class BitInOutFormat final : public BitInFormat {
     public:
         /**
          * @brief Constructs a BitInOutFormat object with an ID value, an extension and a set of supported features.
          *
-         * @param value         the value of the format in the 7z SDK
-         * @param ext           the default file extension of the archive format
+         * @param value         the value of the format in the 7z SDK.
+         * @param ext           the default file extension of the archive format.
          * @param defaultMethod the default method used for compressing the archive format.
          * @param features      the set of features supported by the archive format
          */
@@ -132,19 +132,21 @@ class BitInOutFormat final : public BitInFormat {
         ~BitInOutFormat() = default;
 
         /**
-         * @return the default file extension of the archive format
+         * @return the default file extension of the archive format.
          */
         BIT7Z_NODISCARD const tchar* extension() const noexcept;
 
         /**
-         * @return the bitset of the features supported by the format
+         * @return the bitset of the features supported by the format.
          */
         BIT7Z_NODISCARD FormatFeatures features() const noexcept;
 
         /**
-         * @brief Checks if the format has a specific feature (see FormatFeatures enum)
-         * @param feature   feature to be checked
-         * @return true if the format has the feature, false otherwise
+         * @brief Checks if the format has a specific feature (see FormatFeatures enum).
+         *
+         * @param feature   feature to be checked.
+         *
+         * @return a boolean value indicating whether the format has the given feature.
          */
         BIT7Z_NODISCARD bool hasFeature( FormatFeatures feature ) const noexcept;
 
