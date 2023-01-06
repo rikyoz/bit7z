@@ -38,13 +38,13 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
     }
 
     if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
-        throw BitException( "Cannot update existing archive",
+        throw BitException( "Cannot update the existing archive",
                             make_error_code( BitError::WrongUpdateMode ) );
     }
 
     if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
-        //Update mode is set but format does not support adding more files.
-        throw BitException( "Cannot update existing archive",
+        //Update mode is set, but the format does not support adding more files.
+        throw BitException( "Cannot update the existing archive",
                             make_error_code( BitError::FormatFeatureNotSupported ) );
     }
 
@@ -183,7 +183,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
 }
 
 void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) {
-    // Note: if mInputArchive != nullptr, new_arc will actually point to the same IInArchive object used by old_arc
+    // Note: if mInputArchive != nullptr, new_arc will actually point to the same IInArchive object used by the old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
     const bool updating_archive = mInputArchive != nullptr && mInputArchive->archivePath() == out_file;
     const CMyComPtr< IOutArchive > new_arc = initOutArchive();
@@ -193,7 +193,7 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
     if ( updating_archive ) { //we updated the input archive
         auto close_result = mInputArchive->close();
         if ( close_result != S_OK ) {
-            throw BitException( "Failed to close the opened archive", make_hresult_code( close_result ),
+            throw BitException( "Failed to close the archive", make_hresult_code( close_result ),
                                 mInputArchive->archivePath() );
         }
         /* NOTE: In the following instruction, we use the (dot) operator, not the -> (arrow) operator:

@@ -48,7 +48,7 @@ void BitItemsVector::indexPathsMap( const map< tstring, tstring >& in_paths, Ind
 void BitItemsVector::indexItem( const FSItem& item, IndexingOptions options ) {
     if ( !item.isDir() ) {
         mItems.emplace_back( std::make_unique< FSItem >( item ) );
-    } else if ( options.recursive ) { //item is a directory
+    } else if ( options.recursive ) { // The item is a directory
         if ( !item.inArchivePath().empty() ) {
             mItems.emplace_back( std::make_unique< FSItem >( item ) );
         }

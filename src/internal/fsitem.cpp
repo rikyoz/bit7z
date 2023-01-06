@@ -24,13 +24,12 @@ using bit7z::filesystem::FSItem;
 
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what
- *    the user passes as path parameter in the constructor. If it is a directory, it doesn't contain a trailing / or \
- *    character, to use the method FindFirstFile without problems (as requested by that WinAPI function).
- * 2) mSearchPath contains the search path in which the item was found (e.g., if FSIndexer is searching items in
+ *    the user passes as the path parameter in the constructor.
+ * 2) mSearchPath contains the search path in which the item was found (e.g., if FSIndexer is searching for items in
  *    "foo/bar/", each FSItem created for the elements it found will have mSearchPath == "foo/bar").
  *    As in mPath, mSearchPath does not contain trailing / or \! *
  * 3) mInArchivePath is the path of the item in the archive. If not already given (i.e., the user doesn't want to custom
- *    the path of the file in the archive), the path in the archive is calculated form mPath and mSearchPath
+ *    the path of the file in the archive), the path in the archive is calculated from mPath and mSearchPath
  *    (see inArchivePath() method). */
 
 FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )

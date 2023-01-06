@@ -67,7 +67,6 @@ class BitOutputArchive {
          */
         explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file = {} );
 
-
         /**
          * @brief Constructs a BitOutputArchive object, opening an input file archive from the given buffer.
          *
@@ -80,7 +79,6 @@ class BitOutputArchive {
          * @param in_buffer the buffer containing an input archive file.
          */
         BitOutputArchive( const BitAbstractArchiveCreator& creator, const vector< byte_t >& in_buffer );
-
 
         /**
          * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
@@ -205,6 +203,9 @@ class BitOutputArchive {
          */
         const BitAbstractArchiveHandler& handler() const noexcept;
 
+        /**
+         * @brief Default destructor.
+         */
         virtual ~BitOutputArchive() = default;
 
     protected:

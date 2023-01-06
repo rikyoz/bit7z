@@ -82,7 +82,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
-        // Detecting format of the input file
+        // Detecting the format of the input file
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         detected_by_signature = true;
     }
@@ -102,7 +102,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 
 #ifdef BIT7Z_AUTO_FORMAT
     if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detected_by_signature ) {
-        /* User wanted auto-detection of format, an extension was detected but opening failed, so we try a more
+        /* User wanted auto-detection of the format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e., not BitFormat::Auto), this check is not performed,
          *       and an exception is thrown (next if)!
@@ -143,14 +143,14 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstr
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )
-    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream )
-    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto std_stream = bit7z::make_com< CStdInStream, IInStream >( in_stream );
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), std_stream );
