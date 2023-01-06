@@ -114,19 +114,17 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
-    const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
-    if ( overwrite_mode == OverwriteMode::Overwrite ) {
-        std::error_code error;
-        fs::remove( out_file, error );
-        if ( error ) {
-            throw BitException( "Failed to delete the old archive file", error, out_file );
-        }
-    }
-    if ( overwrite_mode == OverwriteMode::Skip ) { // Skipping if the output file already exists
-        std::error_code error;
-        if ( fs::exists( out_file, error ) ) {
+    std::error_code error;
+    if ( fs::exists( out_file, error ) ) {
+        const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
+        if ( overwrite_mode == OverwriteMode::Skip ) { // Skipping if the output file already exists
             return;
         }
+        if ( overwrite_mode == OverwriteMode::Overwrite && !fs::remove( out_file, error ) ) {
+            throw BitException( "Failed to delete the old archive file", error, out_file );
+        }
+        // Note: if overwrite_mode is OverwriteMode::None, an exception will be thrown by the CFileOutStream constructor
+        // called by the initOutFileStream function.
     }
 
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
@@ -224,7 +222,11 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
 
 void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {
     if ( !out_buffer.empty() ) {
-        if ( mArchiveCreator.overwriteMode() == OverwriteMode::Overwrite ) {
+        const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
+        if ( overwrite_mode == OverwriteMode::Skip ) {
+            return;
+        }
+        if ( overwrite_mode == OverwriteMode::Overwrite ) {
             out_buffer.clear();
         } else {
             throw BitException( "Cannot compress to buffer", make_error_code( BitError::NonEmptyOutputBuffer ) );
