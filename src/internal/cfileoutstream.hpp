@@ -20,9 +20,11 @@ namespace bit7z {
 
 class CFileOutStream : public CStdOutStream {
     public:
-        explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
+        explicit CFileOutStream( fs::path filePath, bool createAlways = false );
 
-        BIT7Z_NODISCARD bool fail();
+        BIT7Z_NODISCARD const fs::path& path() const;
+
+        BIT7Z_NODISCARD bool fail() const;
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 

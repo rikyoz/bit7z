@@ -113,24 +113,6 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
     mNewItemsVector.indexDirectory( in_dir, BIT7Z_STRING( "" ), options );
 }
 
-void BitOutputArchive::compressTo( const tstring& out_file ) {
-    std::error_code error;
-    if ( fs::exists( out_file, error ) ) {
-        const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
-        if ( overwrite_mode == OverwriteMode::Skip ) { // Skipping if the output file already exists
-            return;
-        }
-        if ( overwrite_mode == OverwriteMode::Overwrite && !fs::remove( out_file, error ) ) {
-            throw BitException( "Failed to delete the old archive file", error, out_file );
-        }
-        // Note: if overwrite_mode is OverwriteMode::None, an exception will be thrown by the CFileOutStream constructor
-        // called by the initOutFileStream function.
-    }
-
-    auto update_callback = bit7z::make_com< UpdateCallback >( *this );
-    compressToFile( out_file, update_callback );
-}
-
 CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
     CMyComPtr< IOutArchive > new_arc;
     if ( mInputArchive == nullptr ) {
@@ -144,7 +126,7 @@ CMyComPtr< IOutArchive > BitOutputArchive::initOutArchive() const {
     return new_arc;
 }
 
-CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const tstring& out_archive,
+CMyComPtr< IOutStream > BitOutputArchive::initOutFileStream( const fs::path& out_archive,
                                                              bool updating_archive ) const {
     if ( mArchiveCreator.volumeSize() > 0 ) {
         return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), out_archive );
@@ -165,7 +147,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
         for ( const auto& new_item : mNewItemsVector ) {
             auto updated_item = mInputArchive->find( new_item->inArchivePath().string< tchar >() );
             if ( updated_item != mInputArchive->cend() ) {
-                mDeletedItems.insert( updated_item->index() );
+                setDeletedIndex( updated_item->index() );
             }
         }
     }
@@ -182,7 +164,7 @@ void BitOutputArchive::compressOut( IOutArchive* out_arc,
     }
 }
 
-void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* update_callback ) {
+void BitOutputArchive::compressToFile( const fs::path& out_file, UpdateCallback* update_callback ) {
     // Note: if mInputArchive != nullptr, new_arc will actually point to the same IInArchive object used by the old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
     const bool updating_archive = mInputArchive != nullptr && mInputArchive->archivePath() == out_file;
@@ -213,11 +195,31 @@ void BitOutputArchive::compressToFile( const tstring& out_file, UpdateCallback* 
 
         //remove the old file and rename the temporary file (move file with overwriting)
         std::error_code error;
-        fs::rename( out_file + BIT7Z_STRING( ".tmp" ), out_file, error );
+        fs::path tmp_file = out_file;
+        tmp_file += ".tmp";
+        fs::rename( tmp_file, out_file, error );
         if ( error ) {
-            throw BitException( "Failed to overwrite the old archive file", error, out_file );
+            throw BitException( "Failed to overwrite the old archive file", error, out_file.string< tchar >() );
         }
     }
+}
+
+void BitOutputArchive::compressTo( const tstring& out_file ) {
+    std::error_code error;
+    if ( fs::exists( out_file, error ) ) {
+        const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
+        if ( overwrite_mode == OverwriteMode::Skip ) { // Skipping if the output file already exists
+            return;
+        }
+        if ( overwrite_mode == OverwriteMode::Overwrite && !fs::remove( out_file, error ) ) {
+            throw BitException( "Failed to delete the old archive file", error, out_file );
+        }
+        // Note: if overwrite_mode is OverwriteMode::None, an exception will be thrown by the CFileOutStream constructor
+        // called by the initOutFileStream function.
+    }
+
+    auto update_callback = bit7z::make_com< UpdateCallback >( *this );
+    compressToFile( out_file, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {

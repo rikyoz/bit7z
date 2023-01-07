@@ -31,7 +31,7 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         uint64_t mMaxVolumeSize;
 
         // Common name prefix of every volume.
-        tstring mVolumePrefix;
+        fs::path mVolumePrefix;
 
         // The current volume stream on which we are working.
         size_t mCurrentVolumeIndex;
@@ -39,7 +39,7 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Offset from the beginning of the current volume stream (i.e., the one at mCurrentVolumeIndex).
         uint64_t mCurrentVolumeOffset;
 
-        // Offset from the beginning of the full output archive.
+        // Offset from the beginning of the whole output archive.
         uint64_t mAbsoluteOffset;
 
         // Total size of the output archive (sum of the volumes' sizes).
@@ -48,7 +48,7 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         vector <CMyComPtr< CVolumeOutStream >> mVolumes;
 
     public:
-        CMultiVolumeOutStream( uint64_t volSize, const tstring& archiveName );
+        CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName );
 
         CMultiVolumeOutStream( const CMultiVolumeOutStream& ) = delete;
 

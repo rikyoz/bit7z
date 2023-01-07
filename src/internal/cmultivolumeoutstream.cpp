@@ -10,6 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <utility>
+
 #include "internal/cmultivolumeoutstream.hpp"
 
 #include "bitexception.hpp"
@@ -17,9 +19,9 @@
 
 using namespace bit7z;
 
-CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, const tstring& archiveName )
+CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName )
     : mMaxVolumeSize( volSize ),
-      mVolumePrefix( archiveName + BIT7Z_STRING( "." ) ),
+      mVolumePrefix( std::move( archiveName ) ),
       mCurrentVolumeIndex( 0 ),
       mCurrentVolumeOffset( 0 ),
       mAbsoluteOffset( 0 ),
@@ -40,10 +42,11 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
         /* The current volume stream still doesn't exist, so we need to create it. */
         tstring name = to_tstring( static_cast< uint64_t >( mCurrentVolumeIndex ) + 1 );
         name.insert( 0, 3 - name.length(), L'0' );
-        name.insert( 0, mVolumePrefix );
 
+        fs::path volume_path = mVolumePrefix;
+        volume_path += BIT7Z_STRING( "." ) + name;
         try {
-            mVolumes.emplace_back( make_com< CVolumeOutStream >( name ) );
+            mVolumes.emplace_back( make_com< CVolumeOutStream >( volume_path ) );
         } catch ( const BitException& ex ) {
             return ex.nativeCode();
         }
@@ -70,7 +73,7 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
     mAbsoluteOffset += writtenSize;
 
     if ( mAbsoluteOffset > mFullSize ) {
-        /* We wrote beyond the old known full size of output archive, updating it. */
+        /* We wrote beyond the old known full size of the output archive, updating it. */
         mFullSize = mAbsoluteOffset;
     }
 

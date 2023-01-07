@@ -281,9 +281,9 @@ class BitOutputArchive {
 
         CMyComPtr< IOutArchive > initOutArchive() const;
 
-        CMyComPtr< IOutStream > initOutFileStream( const tstring& out_archive, bool updating_archive ) const;
+        CMyComPtr< IOutStream > initOutFileStream( const fs::path& out_archive, bool updating_archive ) const;
 
-        void compressToFile( const tstring& out_file, UpdateCallback* update_callback );
+        void compressToFile( const fs::path& out_file, UpdateCallback* update_callback );
 
         void compressOut( IOutArchive* out_arc,
                           IOutStream* out_stream,
