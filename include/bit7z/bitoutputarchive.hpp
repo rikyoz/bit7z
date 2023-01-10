@@ -55,6 +55,14 @@ class UpdateCallback;
 class BitOutputArchive {
     public:
         /**
+         * @brief Constructs a BitOutputArchive object for a completely new archive.
+         *
+          * @param creator  the reference to the BitAbstractArchiveCreator object containing all the settings to
+         *                  be used for creating the new archive.
+         */
+        explicit BitOutputArchive( const BitAbstractArchiveCreator& creator );
+
+        /**
          * @brief Constructs a BitOutputArchive object, opening an (optional) input file archive.
          *
          * If a non-empty input file path is passed, the corresponding archive will be opened and
@@ -65,7 +73,7 @@ class BitOutputArchive {
          *                be used for creating the new archive and reading the (optional) input archive.
          * @param in_file (optional) the path to an input archive file.
          */
-        explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file = {} );
+        explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, const tstring& in_file );
 
         /**
          * @brief Constructs a BitOutputArchive object, opening an input file archive from the given buffer.
@@ -282,6 +290,12 @@ class BitOutputArchive {
         CMyComPtr< IOutArchive > initOutArchive() const;
 
         CMyComPtr< IOutStream > initOutFileStream( const fs::path& out_archive, bool updating_archive ) const;
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+        BitOutputArchive( const BitAbstractArchiveCreator& creator, fs::path in_arc );
+#else
+        BitOutputArchive( const BitAbstractArchiveCreator& creator, const fs::path& in_arc );
+#endif
 
         void compressToFile( const fs::path& out_file, UpdateCallback* update_callback );
 

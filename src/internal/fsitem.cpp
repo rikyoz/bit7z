@@ -36,7 +36,8 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     : mFileAttributeData(),
       mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
     std::error_code error;
-    mFileEntry.assign( itemPath, error );
+
+    mFileEntry.assign( FORMAT_LONG_PATH( itemPath ), error );
     if ( error ) {
         throw BitException( "Cannot read file entry", error, itemPath.string< tchar >() );
     }
@@ -46,7 +47,7 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
         }
         throw BitException( "Invalid path", error, itemPath.string< tchar >() );
     }
-    initAttributes( itemPath );
+    initAttributes( mFileEntry.path() );
 }
 
 FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )

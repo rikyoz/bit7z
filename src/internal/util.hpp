@@ -41,7 +41,7 @@ constexpr inline bool check_overflow( int64_t position, int64_t offset ) noexcep
 }
 
 template< typename T, typename I = T, class... Args >
-inline CMyComPtr< std::enable_if_t< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value, I>>
+inline CMyComPtr< std::enable_if_t< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value, I > >
 make_com( Args&& ... args ) {
     return CMyComPtr< I >( new T( std::forward< Args >( args )... ) );
 }

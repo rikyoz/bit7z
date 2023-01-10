@@ -20,10 +20,10 @@
 using bit7z::CMultiVolumeInStream;
 using bit7z::CVolumeInStream;
 
-CMultiVolumeInStream::CMultiVolumeInStream( const tstring& first_volume ) : mCurrentPosition{ 0 }, mTotalSize{ 0 } {
+CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& first_volume ) : mCurrentPosition{ 0 }, mTotalSize{ 0 } {
     constexpr size_t volume_digits = 3u;
     size_t volume_index = 1u;
-    tstring volume_path = first_volume;
+    fs::path volume_path = first_volume;
     while ( fs::exists( volume_path ) ) {
         addVolume( volume_path );
 
@@ -34,7 +34,7 @@ CMultiVolumeInStream::CMultiVolumeInStream( const tstring& first_volume ) : mCur
                                volume_digits - volume_ext.length(),
                                BIT7Z_STRING( '0' ) );
         }
-        volume_path.replace( volume_path.size() - volume_digits, volume_digits, volume_ext );
+        volume_path.replace_extension( volume_ext );
     }
 }
 
@@ -123,7 +123,7 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
     return S_OK;
 }
 
-void CMultiVolumeInStream::addVolume( const bit7z::tstring& volume_path ) {
+void CMultiVolumeInStream::addVolume( const fs::path& volume_path ) {
     uint64_t global_offset = 0;
     if ( !mVolumes.empty() ) {
         const auto& last_stream = mVolumes.back();

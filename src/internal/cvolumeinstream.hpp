@@ -16,7 +16,7 @@ namespace bit7z {
 
 class CVolumeInStream final : public CFileInStream {
     public:
-        explicit CVolumeInStream( const tstring& volume_path, uint64_t global_offset );
+        explicit CVolumeInStream( const fs::path& volume_path, uint64_t global_offset );
 
         BIT7Z_NODISCARD uint64_t globalOffset() const;
 

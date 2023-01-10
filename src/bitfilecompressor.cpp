@@ -15,6 +15,7 @@
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitoutputarchive.hpp"
+#include "internal/fs.hpp"
 
 using namespace std;
 using namespace bit7z;

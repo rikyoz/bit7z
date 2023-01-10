@@ -512,16 +512,16 @@ const BitInFormat& detectFormatFromSig( IInStream* stream ) {
 const auto to_lower = std::towlower;
 #else
 
-inline auto is_digit( unsigned char c ) -> bool {
-    return std::isdigit( c ) != 0;
+inline auto is_digit( unsigned char character ) -> bool {
+    return std::isdigit( character ) != 0;
 }
 
-inline auto to_lower( unsigned char c ) -> char {
-    return static_cast< char >( std::tolower( c ) );
+inline auto to_lower( unsigned char character ) -> char {
+    return static_cast< char >( std::tolower( character ) );
 }
 #endif
 
-const BitInFormat& detectFormatFromExt( const tstring& in_file ) {
+const BitInFormat& detectFormatFromExt( const fs::path& in_file ) {
     tstring ext = filesystem::fsutil::extension( in_file );
     if ( ext.empty() ) {
         throw BitException( "Failed to detect the archive format from the extension",
@@ -535,14 +535,14 @@ const BitInFormat& detectFormatFromExt( const tstring& in_file ) {
         return *format;
     }
 
-    // Detecting multi-volume archives extension
+    // Detecting multi-volume archives extensions
     if ( ( ext[ 0 ] == BIT7Z_STRING( 'r' ) || ext[ 0 ] == BIT7Z_STRING( 'z' ) ) &&
          ( ext.size() == 3 && is_digit( ext[ 1 ] ) && is_digit( ext[ 2 ] ) ) ) {
         // Extension follows the format zXX or rXX, where X is a number in range [0-9]
         return ext[ 0 ] == BIT7Z_STRING( 'r' ) ? BitFormat::Rar : BitFormat::Zip;
     }
 
-    // Note: iso, img and ima extensions can be associated with different formats -> detect by signature.
+    // Note: iso, img, and ima file extensions can be associated with different formats -> detect by signature.
 
     // The extension did not match any known format extension, delegating the decision to the client.
     return BitFormat::Auto;

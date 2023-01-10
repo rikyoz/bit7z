@@ -16,24 +16,41 @@
 #include "bitexception.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z {
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, tstring in_file )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator )
+    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {}
+
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const tstring& in_file )
+    : BitOutputArchive( creator, fs::path{ in_file } ) {}
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, fs::path in_arc )
+#else
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const fs::path& in_arc )
+#endif
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
         return;
     }
 
-    if ( in_file.empty() ) { // No input file specified, so we are creating a totally new archive!
+    if ( in_arc.empty() ) { // No input file specified, so we are creating a totally new archive!
         return;
     }
 
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( filesystem::fsutil::should_format_long_path( in_arc ) ) {
+        in_arc = filesystem::fsutil::format_long_path( in_arc );
+    }
+#endif
+
     std::error_code error;
-    if ( !fs::exists( in_file, error ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
+    if ( !fs::exists( in_arc, error ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
         return;
     }
 
@@ -48,7 +65,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, ts
                             make_error_code( BitError::FormatFeatureNotSupported ) );
     }
 
-    mInputArchive = std::make_unique< BitInputArchive >( creator, std::move( in_file ) );
+    mInputArchive = std::make_unique< BitInputArchive >( creator, in_arc );
     mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
 
@@ -183,18 +200,16 @@ void BitOutputArchive::compressToFile( const fs::path& out_file, UpdateCallback*
          *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
         out_stream.Release(); //Releasing the output stream so that we can rename it as the original file.
 
+        std::error_code error;
 #if defined( __MINGW32__ ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
         /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
          * existing destination file (as it should). So we explicitly remove it before! */
-        std::error_code ec;
-        fs::remove( out_file, ec );
-        if ( ec ) {
-            throw BitException( "Failed to delete the old archive file", ec, out_file );
+        if ( !fs::remove( out_file, error ) ) {
+            throw BitException( "Failed to delete the old archive file", error, out_file.string< tchar >() );
         }
 #endif
 
         //remove the old file and rename the temporary file (move file with overwriting)
-        std::error_code error;
         fs::path tmp_file = out_file;
         tmp_file += ".tmp";
         fs::rename( tmp_file, out_file, error );
@@ -205,13 +220,15 @@ void BitOutputArchive::compressToFile( const fs::path& out_file, UpdateCallback*
 }
 
 void BitOutputArchive::compressTo( const tstring& out_file ) {
+    using namespace bit7z::filesystem;
+    const fs::path out_path = FORMAT_LONG_PATH( out_file );
     std::error_code error;
-    if ( fs::exists( out_file, error ) ) {
+    if ( fs::exists( out_path, error ) ) {
         const OverwriteMode overwrite_mode = mArchiveCreator.overwriteMode();
         if ( overwrite_mode == OverwriteMode::Skip ) { // Skipping if the output file already exists
             return;
         }
-        if ( overwrite_mode == OverwriteMode::Overwrite && !fs::remove( out_file, error ) ) {
+        if ( overwrite_mode == OverwriteMode::Overwrite && !fs::remove( out_path, error ) ) {
             throw BitException( "Failed to delete the old archive file", error, out_file );
         }
         // Note: if overwrite_mode is OverwriteMode::None, an exception will be thrown by the CFileOutStream constructor
@@ -219,7 +236,7 @@ void BitOutputArchive::compressTo( const tstring& out_file ) {
     }
 
     auto update_callback = bit7z::make_com< UpdateCallback >( *this );
-    compressToFile( out_file, update_callback );
+    compressToFile( out_path, update_callback );
 }
 
 void BitOutputArchive::compressTo( std::vector< byte_t >& out_buffer ) {

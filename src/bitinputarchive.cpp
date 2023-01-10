@@ -23,6 +23,7 @@
 #include "internal/cfileinstream.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/util.hpp"
@@ -74,11 +75,7 @@ void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
     }
 }
 
-bool ends_with( const tstring& str, const tstring& suffix ) {
-    return str.size() >= suffix.size() && str.compare( str.size() - suffix.size(), suffix.size(), suffix ) == 0;
-}
-
-IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* in_stream ) {
+IInArchive* BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -116,30 +113,45 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( "Failed to open the archive", make_hresult_code( res ), name );
+        throw BitException( "Failed to open the archive", make_hresult_code( res ), name.string< tchar >() );
     }
 
     return in_archive.Detach();
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstring in_file )
-    : mArchiveHandler{ handler }, mArchivePath{ std::move( in_file ) } {
-
 #ifdef BIT7Z_AUTO_FORMAT
-    //if auto, detect the format from extension (and try later from signature if it fails), otherwise try passed format.
-    mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath )
-                                                            : &handler.format() );
+#   define DETECT_FORMAT( format, arc_path ) ( format == BitFormat::Auto ? &detectFormatFromExt( arc_path ) : &format )
 #else
-    mDetectedFormat = &handler.format();
+#   define DETECT_FORMAT( format, arc_path ) &format
+#endif
+
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& in_file )
+    : BitInputArchive( handler, fs::path{ in_file } ) {}
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path )
+    : mDetectedFormat{ nullptr },
+#else
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arc_path )
+    : mDetectedFormat{ DETECT_FORMAT( handler.format(), arc_path ) },
+#endif
+      mArchiveHandler{ handler },
+      mArchivePath{ arc_path.string< tchar >() } {
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( filesystem::fsutil::should_format_long_path( arc_path ) ) {
+        arc_path = filesystem::fsutil::format_long_path( arc_path );
+    }
+    mDetectedFormat = DETECT_FORMAT( handler.format(), arc_path );
 #endif
 
     CMyComPtr< IInStream > file_stream;
-    if ( *mDetectedFormat != BitFormat::Split && ends_with( mArchivePath, BIT7Z_STRING( ".001" ) ) ) {
-        file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( mArchivePath );
+    if ( *mDetectedFormat != BitFormat::Split && arc_path.extension() == ".001" ) {
+        file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( arc_path );
     } else {
-        file_stream = bit7z::make_com< CFileInStream, IInStream >( mArchivePath );
+        file_stream = bit7z::make_com< CFileInStream, IInStream >( arc_path );
     }
-    mInArchive = openArchiveStream( mArchivePath, file_stream );
+    mInArchive = openArchiveStream( arc_path, file_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )

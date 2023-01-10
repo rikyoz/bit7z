@@ -15,6 +15,7 @@
 #include "bitabstractarchivehandler.hpp"
 #include "bitarchiveitemoffset.hpp"
 #include "bitformat.hpp"
+#include "bitfs.hpp"
 
 struct IInStream;
 struct IInArchive;
@@ -32,11 +33,24 @@ class BitInputArchive {
         /**
          * @brief Constructs a BitInputArchive object, opening the input file archive.
          *
-         * @param handler the reference to the BitAbstractArchiveHandler object containing all the settings to
-         *                be used for reading the input archive
-         * @param in_file the path to the input archive file
+         * @param handler   the reference to the BitAbstractArchiveHandler object containing all the settings to
+         *                  be used for reading the input archive
+         * @param in_file   the path to the input archive file
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler, tstring in_file );
+        BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& in_file );
+
+        /**
+         * @brief Constructs a BitInputArchive object, opening the input file archive.
+         *
+         * @param handler   the reference to the BitAbstractArchiveHandler object containing all the settings to
+         *                  be used for reading the input archive
+         * @param arc_path  the path to the input archive file
+         */
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+        BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path );
+#else
+        BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arc_path );
+#endif
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive given in the input buffer.
@@ -196,7 +210,7 @@ class BitInputArchive {
         void test() const;
 
     protected:
-        IInArchive* openArchiveStream( const tstring& name, IInStream* in_stream );
+        IInArchive* openArchiveStream( const fs::path& name, IInStream* in_stream );
 
         HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
 

@@ -37,6 +37,19 @@ bool setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept;
 BIT7Z_NODISCARD fs::path inArchivePath( const fs::path& file_path,
                                         const fs::path& search_path = fs::path() );
 
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+
+BIT7Z_NODISCARD auto should_format_long_path( const fs::path& path ) -> bool;
+
+BIT7Z_NODISCARD auto format_long_path( const fs::path& path ) -> fs::path;
+
+#   define FORMAT_LONG_PATH( path ) \
+        filesystem::fsutil::should_format_long_path( path ) ? filesystem::fsutil::format_long_path( path ) : path
+
+#else
+#   define FORMAT_LONG_PATH( path ) path
+#endif
+
 }  // namespace fsutil
 }  // namespace filesystem
 }  // namespace bit7z

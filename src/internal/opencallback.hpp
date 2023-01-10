@@ -30,7 +30,7 @@ class OpenCallback final : public IArchiveOpenCallback,
                            public Callback {
     public:
         explicit OpenCallback( const BitAbstractArchiveHandler& handler,
-                               const tstring& filename = BIT7Z_STRING( "." ) );
+                               const fs::path& filename = BIT7Z_STRING( "." ) );
 
         OpenCallback( const OpenCallback& ) = delete;
 

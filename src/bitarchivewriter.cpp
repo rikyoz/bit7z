@@ -11,6 +11,7 @@
  */
 
 #include "bitarchivewriter.hpp"
+#include "internal/fs.hpp"
 
 namespace bit7z {
 

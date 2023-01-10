@@ -19,6 +19,7 @@
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
+using namespace bit7z::filesystem;
 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
@@ -70,6 +71,12 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
         // No action needed
     }
     mFilePathOnDisk = mDirectoryPath / filePath;
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( fsutil::should_format_long_path( mFilePathOnDisk ) ) {
+        mFilePathOnDisk = fsutil::format_long_path( mFilePathOnDisk );
+    }
+#endif
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {

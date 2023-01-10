@@ -19,7 +19,7 @@
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const tstring& filename )
+OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const fs::path& filename )
     : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
 
 COM_DECLSPEC_NOTHROW
