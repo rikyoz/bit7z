@@ -56,6 +56,7 @@ set( PUBLIC_HEADERS
 
 # header files
 set( HEADERS
+     src/internal/archiveproperties.hpp
      src/internal/bufferextractcallback.hpp
      src/internal/bufferitem.hpp
      src/internal/bufferutil.hpp

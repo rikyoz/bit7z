@@ -26,52 +26,7 @@ namespace bit7z {
 
 using std::ostream;
 
-class ArchiveProperties final {
-        vector< const wchar_t* > mNames{};
-        vector< BitPropVariant > mValues{};
-
-        template< typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
-        inline void setProperty( const wchar_t* name, T value ) {
-            mNames.emplace_back( name );
-            mValues.emplace_back( value );
-        }
-
-        template< typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
-        inline void setProperty( const wchar_t* name, const T& value ) {
-            mNames.emplace_back( name );
-            mValues.emplace_back( value );
-        }
-
-        void addProperties( const std::map< std::wstring, BitPropVariant >& other_properties ) {
-            for ( const auto& entry : other_properties ) {
-                mNames.emplace_back( entry.first.c_str() );
-                mValues.emplace_back( entry.second );
-            }
-        }
-
-        friend class BitAbstractArchiveCreator;
-
-    public:
-        BIT7Z_NODISCARD
-        inline bool empty() const {
-            return mNames.empty();
-        }
-
-        BIT7Z_NODISCARD
-        inline const wchar_t* const* names() const {
-            return mNames.data();
-        }
-
-        BIT7Z_NODISCARD
-        inline const PROPVARIANT* values() const {
-            return mValues.data();
-        }
-
-        BIT7Z_NODISCARD
-        inline size_t size() const {
-            return mNames.size();
-        }
-};
+class ArchiveProperties;
 
 /**
  * @brief Enumeration representing how an archive creator should deal when the output archive already exists.

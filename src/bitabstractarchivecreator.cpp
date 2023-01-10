@@ -14,6 +14,7 @@
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "internal/archiveproperties.hpp"
 
 using namespace bit7z;
 

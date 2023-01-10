@@ -14,6 +14,7 @@
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "internal/archiveproperties.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
 #include "internal/fsutil.hpp"
