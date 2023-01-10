@@ -32,11 +32,13 @@ struct GenericInputItem;
 using GenericInputItemPtr = std::unique_ptr< GenericInputItem >;
 using GenericInputItemVector = std::vector< GenericInputItemPtr >;
 
+/** @cond **/
 struct IndexingOptions {
     bool recursive = true;
     bool retain_folder_structure = false;
     bool only_files = false;
 };
+/** @endcond **/
 
 /**
  * @brief The BitItemsVector class represents a vector of generic input items, i.e., items that can come
@@ -62,16 +64,17 @@ class BitItemsVector final {
          * @param in_dir    the directory to be indexed.
          * @param filter    (optional) the wildcard filter to be used for indexing;
          *                  empty string means "index all files".
-         * @param recursive (optional) recursively index the given directory and all of its subdirectories.
+         * @param options   (optional) the settings to be used while indexing the given directory
+         *                  and all of its subdirectories.
          */
         void indexDirectory( const fs::path& in_dir, const tstring& filter = {}, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
          *
-         * @param in_paths    the vector of filesystem paths.
-         * @param ignore_dirs (optional) if false, any directory path in the vector is also recursively indexed, and
-         *                    the found files are added to the vector; otherwise, directory paths are ignored.
+         * @param in_paths  the vector of filesystem paths.
+         * @param options   (optional) the settings to be used while indexing the given directory
+         *                  and all of its subdirectories.
          */
         void indexPaths( const vector< tstring >& in_paths, IndexingOptions options = {} );
 
@@ -81,10 +84,10 @@ class BitItemsVector final {
          * @note Map keys represent the filesystem paths to be indexed; the corresponding mapped values are
          * the user-defined (possibly different) paths wanted inside archives.
          *
-         * @param in_paths    map of filesystem paths with the corresponding user-defined path desired inside the
-         *                    output archive.
-         * @param ignore_dirs (optional) if false, any directory path in the vector is also recursively indexed, and
-         *                    the found files are added to the vector; otherwise, directory paths are ignored.
+         * @param in_paths  map of filesystem paths with the corresponding user-defined path desired inside the
+         *                  output archive.
+         * @param options   (optional) the settings to be used while indexing the given directory
+         *                  and all of its subdirectories.
          */
         void indexPathsMap( const map< tstring, tstring >& in_paths, IndexingOptions options = {} );
 

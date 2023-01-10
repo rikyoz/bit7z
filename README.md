@@ -1,8 +1,7 @@
-<h1 align="center">
-bit7z
-</h1>
+<h1 align="center">bit7z</h1>
+
 <h3 align="center">A C++ static library offering a clean and simple interface to the 7-zip shared libraries</h3>
-<p align="center">
+<div align="center">
   <a href="#dart-supported-features" title="List of Features Supported by the Library">Supported Features</a> •
   <a href="#fire-getting-started-library-usage" title="Basic Source Code Examples">Getting Started</a> •
   <a href="#file_cabinet-download" title="Download Pre-compiled Packages">Download</a> •
@@ -10,19 +9,19 @@ bit7z
   <a href="#gear-building-bit7z" title="Building the Library">Building</a> •
   <a href="#coffee-donate" title="Support the Project">Donate</a> •
   <a href="#page_with_curl-license" title="Project License">License</a>
-</p>
-<p align="center">
-  <a href="https://github.com/rikyoz/bit7z/releases" title="Latest Stable GitHub Release"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>&emsp14;<img src="https://img.shields.io/badge/-C++14/17-3F63B3.svg?style=flat&logo=C%2B%2B&logoColor=white" alt="C++14/17" title="C++ Standards Used: C++14/17">&emsp14;<img src="https://img.shields.io/badge/-Windows-6E46A2.svg?style=flat&logo=windows-11&logoColor=white" alt="Windows" title="Supported Platform: Windows">&emsp14;<img src="https://img.shields.io/badge/-Linux-9C2A91.svg?style=flat&logo=linux&logoColor=white" alt="Linux" title="Supported Platform: Linux">&emsp14;<img src="https://img.shields.io/badge/-macOS-red.svg?style=flat&logo=apple&logoColor=white" alt="macOS" title="Supported Platform: macOS">&emsp14;<img src="https://img.shields.io/badge/-x86%20&middot;%20x64-orange.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHZpZXdCb3g9IjAgMCA5NDIgOTQyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNTc5LjEgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk1LjlWODk0aC0uMXpNNTc5LjEgNDh2NzcuNUg2NzVWNDhhNDggNDggMCAwIDAtOTUuOSAwek00MjMgNDh2NzcuNWg5NlY0OGE0OCA0OCAwIDAgMC05NiAwek00MjMgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk2Vjg5NHpNMjY3IDQ4djc3LjVoOTUuOVY0OGE0OCA0OCAwIDAgMC05NS45IDB6TTI2NyA4OTRhNDggNDggMCAwIDAgOTYgMHYtNzcuNWgtOTZWODk0ek0wIDYyN2E0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05NS45SDQ4QTQ4IDQ4IDAgMCAwIDAgNjI3ek04OTQgNTc5LjFoLTc3LjVWNjc1SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTAgNDcxYTQ4IDQ4IDAgMCAwIDQ4IDQ4aDc3LjV2LTk2SDQ4YTQ4IDQ4IDAgMCAwLTQ4IDQ4ek04OTQgNDIzaC03Ny41djk2SDg5NGE0OCA0OCAwIDAgMCAwLTk2ek0wIDMxNWE0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05Nkg0OGE0OCA0OCAwIDAgMC00OCA0OHpNODk0IDI2N2gtNzcuNXY5NS45SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTE3MS42IDcyMC40YTUwIDUwIDAgMCAwIDUwIDUwaDQ5OC44YTUwIDUwIDAgMCAwIDUwLTUwVjIyMS42YTUwIDUwIDAgMCAwLTUwLTUwSDIyMS42YTUwIDUwIDAgMCAwLTUwIDUwdjQ5OC44eiIvPjwvc3ZnPg==" alt="x86, x64" title="Supported CPU Architectures: x86, x64">&emsp14;<a href="#donations" title="Donate"><img src="https://img.shields.io/badge/-donate-yellow.svg?style=flat&logo=paypal&logoColor=white" alt="donate"></a>&emsp14;<a href="https://github.com/rikyoz/bit7z/wiki" title="Project Documentation"><img src="https://img.shields.io/badge/-docs-green.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGRhdGEtbmFtZT0iTGF5ZXIgMSIgdmlld0JveD0iMCAwIDEwNS4zIDEyMi45Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiNmZmYiIGQ9Ik0xNy41IDBIMTAydjk0LjJjLS4xIDIuNy0zLjUgMi43LTcuMiAyLjZIMTYuM2E5LjIgOS4yIDAgMCAwIDAgMTguNEg5OHYtOS44aDcuMlYxMThhNC4yIDQuMiAwIDAgMS00LjEgNC4xSDE2LjZDNy41IDEyNS41IDAgMTE4IDAgMTA4LjhWMTcuNUExNy42IDE3LjYgMCAwIDEgMTcuNSAwWm0tMS4zIDEwOGg3NS4yYTEuNCAxLjQgMCAwIDEgMS40IDEuM3YuOGExLjQgMS40IDAgMCAxLTEuNCAxLjRIMTYuMmExLjQgMS40IDAgMCAxLTEuMy0xLjR2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFptMC03LjJoNzUuMmExLjQgMS40IDAgMCAxIDEuNCAxLjR2LjhhMS40IDEuNCAwIDAgMS0xLjQgMS40SDE2LjJBMS40IDEuNCAwIDAgMSAxNSAxMDN2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFoiLz48L3N2Zz4=" alt="docs"></a>&emsp14;<a href="https://ci.appveyor.com/project/rikyoz/bit7z" title="AppVeyor CI Build Status"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat&logo=appveyor&logoColor=white&label=" alt="Build status"></a>
+</div>
+<div align="center" style="margin-top:1em;">
+  <a href="https://github.com/rikyoz/bit7z/releases" title="Latest Stable GitHub Release"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>&thinsp;<img src="https://img.shields.io/badge/-C++14/17-3F63B3.svg?style=flat&logo=C%2B%2B&logoColor=white" alt="C++14/17" title="C++ Standards Used: C++14/17">&thinsp;<img src="https://img.shields.io/badge/-Windows-6E46A2.svg?style=flat&logo=windows-11&logoColor=white" alt="Windows" title="Supported Platform: Windows">&thinsp;<img src="https://img.shields.io/badge/-Linux-9C2A91.svg?style=flat&logo=linux&logoColor=white" alt="Linux" title="Supported Platform: Linux">&thinsp;<img src="https://img.shields.io/badge/-macOS-red.svg?style=flat&logo=apple&logoColor=white" alt="macOS" title="Supported Platform: macOS">&thinsp;<img src="https://img.shields.io/badge/-x86%20&middot;%20x64-orange.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHZpZXdCb3g9IjAgMCA5NDIgOTQyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNTc5LjEgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk1LjlWODk0aC0uMXpNNTc5LjEgNDh2NzcuNUg2NzVWNDhhNDggNDggMCAwIDAtOTUuOSAwek00MjMgNDh2NzcuNWg5NlY0OGE0OCA0OCAwIDAgMC05NiAwek00MjMgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk2Vjg5NHpNMjY3IDQ4djc3LjVoOTUuOVY0OGE0OCA0OCAwIDAgMC05NS45IDB6TTI2NyA4OTRhNDggNDggMCAwIDAgOTYgMHYtNzcuNWgtOTZWODk0ek0wIDYyN2E0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05NS45SDQ4QTQ4IDQ4IDAgMCAwIDAgNjI3ek04OTQgNTc5LjFoLTc3LjVWNjc1SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTAgNDcxYTQ4IDQ4IDAgMCAwIDQ4IDQ4aDc3LjV2LTk2SDQ4YTQ4IDQ4IDAgMCAwLTQ4IDQ4ek04OTQgNDIzaC03Ny41djk2SDg5NGE0OCA0OCAwIDAgMCAwLTk2ek0wIDMxNWE0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05Nkg0OGE0OCA0OCAwIDAgMC00OCA0OHpNODk0IDI2N2gtNzcuNXY5NS45SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTE3MS42IDcyMC40YTUwIDUwIDAgMCAwIDUwIDUwaDQ5OC44YTUwIDUwIDAgMCAwIDUwLTUwVjIyMS42YTUwIDUwIDAgMCAwLTUwLTUwSDIyMS42YTUwIDUwIDAgMCAwLTUwIDUwdjQ5OC44eiIvPjwvc3ZnPg==" alt="x86, x64" title="Supported CPU Architectures: x86, x64">&thinsp;<a href="#donations" title="Donate"><img src="https://img.shields.io/badge/-donate-yellow.svg?style=flat&logo=paypal&logoColor=white" alt="donate"></a>&thinsp;<a href="https://github.com/rikyoz/bit7z/wiki" title="Project Documentation"><img src="https://img.shields.io/badge/-docs-green.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGRhdGEtbmFtZT0iTGF5ZXIgMSIgdmlld0JveD0iMCAwIDEwNS4zIDEyMi45Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiNmZmYiIGQ9Ik0xNy41IDBIMTAydjk0LjJjLS4xIDIuNy0zLjUgMi43LTcuMiAyLjZIMTYuM2E5LjIgOS4yIDAgMCAwIDAgMTguNEg5OHYtOS44aDcuMlYxMThhNC4yIDQuMiAwIDAgMS00LjEgNC4xSDE2LjZDNy41IDEyNS41IDAgMTE4IDAgMTA4LjhWMTcuNUExNy42IDE3LjYgMCAwIDEgMTcuNSAwWm0tMS4zIDEwOGg3NS4yYTEuNCAxLjQgMCAwIDEgMS40IDEuM3YuOGExLjQgMS40IDAgMCAxLTEuNCAxLjRIMTYuMmExLjQgMS40IDAgMCAxLTEuMy0xLjR2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFptMC03LjJoNzUuMmExLjQgMS40IDAgMCAxIDEuNCAxLjR2LjhhMS40IDEuNCAwIDAgMS0xLjQgMS40SDE2LjJBMS40IDEuNCAwIDAgMSAxNSAxMDN2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFoiLz48L3N2Zz4=" alt="docs"></a>&thinsp;<a href="https://ci.appveyor.com/project/rikyoz/bit7z" title="AppVeyor CI Build Status"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat&logo=appveyor&logoColor=white&label=" alt="Build status"></a>
   <br>
-  <img src="https://img.shields.io/badge/MSVC%202015+-flag.svg?color=555555&style=flat&logo=visual%20studio&logoColor=white" alt="MSVC 2015+" title="Supported Windows Compiler: MSVC 2015 or later">&emsp14;<img src="https://img.shields.io/badge/MinGW%206.4+%20-flag.svg?color=555555&style=flat&logo=windows&logoColor=white" alt="MinGW 6.4+" title="Supported Windows Compiler: MinGW 6.4 or later">&emsp14;<img src="https://img.shields.io/badge/GCC%204.9+-flag.svg?color=555555&style=flat&logo=gnu&logoColor=white" alt="GCC 4.9+" title="Supported Unix Compiler: GCC 4.9 or later">&emsp14;<img src="https://img.shields.io/badge/Clang%203.5+-flag.svg?color=555555&style=flat&logo=llvm&logoColor=white" alt="Clang 3.5+" title="Supported Unix Compiler: Clang 3.5 or later">&emsp14;<img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/rikyoz/bit7z?label=Code%20Quality&logo=codefactor&logoColor=white">&emsp14;<a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE" title="Project License: MPLv2"><img src="https://img.shields.io/badge/-MPL--2.0-lightgrey.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgaW1hZ2UtcmVuZGVyaW5nPSJvcHRpbWl6ZVF1YWxpdHkiIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiB2aWV3Qm94PSIwIDAgNTEyIDQzMCIgeG1sbnM6dj0iaHR0cHM6Ly92ZWN0YS5pby9uYW5vIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzUgMGg0NDJjMTkgMCAzNSAxNiAzNSAzNXYzMDBjMCAxOS0xNiAzNS0zNSAzNWgtNjlsLTExLTIyaDgyYzUgMCAxMC00IDEwLTEwVjk3SDI1djI0MWMwIDYgNCAxMCA5IDEwaDgxbC05IDE4LTIgNEgzNWMtMTkgMC0zNS0xNi0zNS0zNVYzNUMwIDE2IDE2IDAgMzUgMHptMjI5IDE1MWM1IDIgOSA1IDEzIDkgOSA3IDEwIDkgMjMgOWwxNCAyYzggMyAxMyAxMCAxNSAxOCAyIDcgMSAxNCA0IDIxIDIgNyA3IDEyIDExIDE4IDMgNSA0IDkgNSAxM2EyNSAyNSAwIDAgMS03IDI0bC05IDlhMjYgMjYgMCAwIDAtMiAxMWMwIDUgMCAxMC0zIDE3YTMyIDMyIDAgMCAxLTIwIDE2Yy02IDItMTQgMC0xOCAyaC0xYy04IDMtMTUgMTItMjMgMTVhMzEgMzEgMCAwIDEtMTAgMmwtOS0yaC0xYy00LTEtOC00LTEyLTgtMy0zLTctNi0xMi04aC03bC0xMS0xYy01LTEtOC0zLTEyLTZhMzMgMzMgMCAwIDEtOC0xMGMtMy03LTMtMTItMy0xNyAwLTkgMC0xMS03LTE2LTgtOC0xNC0xNi0xMi0yOCAyLTYgNS0xMiAxMS0yMGEzNyAzNyAwIDAgMCA2LTExYzMtNiAyLTEzIDMtMjAgMi04IDctMTUgMTUtMThsMTUtM2MxMiAwIDE0LTIgMjMtOWE0MSA0MSAwIDAgMSAxMy05IDI3IDI3IDAgMCAxIDE2IDB6bTg3IDI1N2wtMjQtNC0xMSAyMWgtMWMtNSA2LTkgNi0xMyAzcy03LTExLTktMTV2LTJsLTI1LTQ3YTMgMyAwIDAgMSAxLTRsOS01IDEwLTlhMyAzIDAgMCAxIDIgMGM3IDAgMTQtMSAxOS0zIDYtMiAxMS01IDE2LTExaDRsMSAxIDI5IDU1YzIgNSA1IDExIDIgMTYtMSAzLTQgNS05IDRoLTF6bS0xNjYtNGwtMjQgNGgtMWMtNSAxLTgtMS05LTRsLTEtOCAzLTggMjktNTYgMS0xYzEtMSAzIDAgNCAxIDQgNiAxMCA5IDE1IDExIDYgMiAxMyAzIDIwIDJsMiAxIDEwIDkgOSA1YTMgMyAwIDAgMSAxIDRsLTI1IDQ3djFhMzkgMzkgMCAwIDEtOSAxNmMtNCAzLTggMy0xMy0zaC0xbC0xMS0yMXptMTAwLTIwM2E1MSA1MSAwIDAgMC04MCA0MiA1MSA1MSAwIDEgMCAxMDIgMCA1MiA1MiAwIDAgMC03LTI2IDUxIDUxIDAgMCAwLTE1LTE2ek00NDQgMzlhMTcgMTcgMCAxIDEgMCAzNCAxNyAxNyAwIDAgMSAwLTM0em0tMTE2IDBhMTcgMTcgMCAxIDEgMCAzNCAxNyAxNyAwIDAgMSAwLTM0em01OCAwYTE3IDE3IDAgMSAxIDAgMzQgMTcgMTcgMCAwIDEgMC0zNHoiLz48L3N2Zz4=" alt="License"></a>
-</p>
+  <img src="https://img.shields.io/badge/MSVC%202015+-flag.svg?color=555555&style=flat&logo=visual%20studio&logoColor=white" alt="MSVC 2015+" title="Supported Windows Compiler: MSVC 2015 or later">&thinsp;<img src="https://img.shields.io/badge/MinGW%206.4+%20-flag.svg?color=555555&style=flat&logo=windows&logoColor=white" alt="MinGW 6.4+" title="Supported Windows Compiler: MinGW 6.4 or later">&thinsp;<img src="https://img.shields.io/badge/GCC%204.9+-flag.svg?color=555555&style=flat&logo=gnu&logoColor=white" alt="GCC 4.9+" title="Supported Unix Compiler: GCC 4.9 or later">&thinsp;<img src="https://img.shields.io/badge/Clang%203.5+-flag.svg?color=555555&style=flat&logo=llvm&logoColor=white" alt="Clang 3.5+" title="Supported Unix Compiler: Clang 3.5 or later">&thinsp;<img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/rikyoz/bit7z?label=Code%20Quality&logo=codefactor&logoColor=white">&thinsp;<a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE" title="Project License: MPLv2"><img src="https://img.shields.io/badge/-MPL--2.0-lightgrey.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGwtcnVsZT0iZXZlbm9kZCIgaW1hZ2UtcmVuZGVyaW5nPSJvcHRpbWl6ZVF1YWxpdHkiIHNoYXBlLXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiB2aWV3Qm94PSIwIDAgNTEyIDQzMCIgeG1sbnM6dj0iaHR0cHM6Ly92ZWN0YS5pby9uYW5vIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMzUgMGg0NDJjMTkgMCAzNSAxNiAzNSAzNXYzMDBjMCAxOS0xNiAzNS0zNSAzNWgtNjlsLTExLTIyaDgyYzUgMCAxMC00IDEwLTEwVjk3SDI1djI0MWMwIDYgNCAxMCA5IDEwaDgxbC05IDE4LTIgNEgzNWMtMTkgMC0zNS0xNi0zNS0zNVYzNUMwIDE2IDE2IDAgMzUgMHptMjI5IDE1MWM1IDIgOSA1IDEzIDkgOSA3IDEwIDkgMjMgOWwxNCAyYzggMyAxMyAxMCAxNSAxOCAyIDcgMSAxNCA0IDIxIDIgNyA3IDEyIDExIDE4IDMgNSA0IDkgNSAxM2EyNSAyNSAwIDAgMS03IDI0bC05IDlhMjYgMjYgMCAwIDAtMiAxMWMwIDUgMCAxMC0zIDE3YTMyIDMyIDAgMCAxLTIwIDE2Yy02IDItMTQgMC0xOCAyaC0xYy04IDMtMTUgMTItMjMgMTVhMzEgMzEgMCAwIDEtMTAgMmwtOS0yaC0xYy00LTEtOC00LTEyLTgtMy0zLTctNi0xMi04aC03bC0xMS0xYy01LTEtOC0zLTEyLTZhMzMgMzMgMCAwIDEtOC0xMGMtMy03LTMtMTItMy0xNyAwLTkgMC0xMS03LTE2LTgtOC0xNC0xNi0xMi0yOCAyLTYgNS0xMiAxMS0yMGEzNyAzNyAwIDAgMCA2LTExYzMtNiAyLTEzIDMtMjAgMi04IDctMTUgMTUtMThsMTUtM2MxMiAwIDE0LTIgMjMtOWE0MSA0MSAwIDAgMSAxMy05IDI3IDI3IDAgMCAxIDE2IDB6bTg3IDI1N2wtMjQtNC0xMSAyMWgtMWMtNSA2LTkgNi0xMyAzcy03LTExLTktMTV2LTJsLTI1LTQ3YTMgMyAwIDAgMSAxLTRsOS01IDEwLTlhMyAzIDAgMCAxIDIgMGM3IDAgMTQtMSAxOS0zIDYtMiAxMS01IDE2LTExaDRsMSAxIDI5IDU1YzIgNSA1IDExIDIgMTYtMSAzLTQgNS05IDRoLTF6bS0xNjYtNGwtMjQgNGgtMWMtNSAxLTgtMS05LTRsLTEtOCAzLTggMjktNTYgMS0xYzEtMSAzIDAgNCAxIDQgNiAxMCA5IDE1IDExIDYgMiAxMyAzIDIwIDJsMiAxIDEwIDkgOSA1YTMgMyAwIDAgMSAxIDRsLTI1IDQ3djFhMzkgMzkgMCAwIDEtOSAxNmMtNCAzLTggMy0xMy0zaC0xbC0xMS0yMXptMTAwLTIwM2E1MSA1MSAwIDAgMC04MCA0MiA1MSA1MSAwIDEgMCAxMDIgMCA1MiA1MiAwIDAgMC03LTI2IDUxIDUxIDAgMCAwLTE1LTE2ek00NDQgMzlhMTcgMTcgMCAxIDEgMCAzNCAxNyAxNyAwIDAgMSAwLTM0em0tMTE2IDBhMTcgMTcgMCAxIDEgMCAzNCAxNyAxNyAwIDAgMSAwLTM0em01OCAwYTE3IDE3IDAgMSAxIDAgMzQgMTcgMTcgMCAwIDEgMC0zNHoiLz48L3N2Zz4=" alt="License"></a>
+</div>
 
-## :zap: Introduction
+## ⚡️ Introduction
 
 **bit7z** is a _cross-platform_ C++ static library that allows the _compression/extraction of archive files_ through a _clean_ and _simple_ wrapper interface to the dynamic libraries from the [7-zip](https://www.7-zip.org/ "7-zip Project Homepage") project.<br/>
 It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
 
-## :dart: Supported Features
+## 🎯 Supported Features
 
 + **Compression** using the following archive formats: **7z**, XZ, **BZIP2**, **GZIP**, TAR, **ZIP**, and WIM.
 + **Extraction** of many archive formats: **7z**, AR, ARJ, **BZIP2**, CAB, CHM, CPIO, CramFS, DEB, DMG, EXT, FAT, GPT, **GZIP**, HFS, HXS, IHEX, ISO, LZH, LZMA, MBR, MSI, NSIS, NTFS, QCOW2, **RAR**, **RAR5**, RPM, SquashFS, TAR, UDF, UEFI, VDI, VHD, VMDK, WIM, XAR, XZ, Z, and **ZIP**.
@@ -49,11 +48,11 @@ For example, 7z.dll should support all these features, 7za.dll should work only 
 
 In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regexes_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
-## :fire: Getting Started (Library Usage)
+## 🔥 Getting Started (Library Usage)
 
 Below are a few examples that show how to use some of the main features of bit7z.
 
-### :open_file_folder: Extracting files from an archive
+### 📂 Extracting files from an archive
 
 ```cpp
 #include <bit7z/bitfileextractor.hpp>
@@ -80,7 +79,7 @@ try { //bit7z classes can throw BitException objects
 } catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
-### :briefcase: Compressing files into an archive
+### 💼 Compressing files into an archive
 
 ```cpp
 #include <bit7z/bitfilecompressor.hpp>
@@ -121,7 +120,7 @@ try { //bit7z classes can throw BitException objects
 } catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
 ```
 
-### :bookmark_tabs: Reading archive metadata
+### 📑 Reading archive metadata
 
 ```cpp
 #include <bit7z/bitarchivereader.hpp>
@@ -159,7 +158,7 @@ try { //bit7z classes can throw BitException objects
 
 A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
-## :rocket: Upgrading from bit7z v3 to v4
+## 🚀 Upgrading from bit7z v3 to v4
 
 The newest bit7z v4 introduced some major breaking changes to the API. In particular:
 
@@ -170,7 +169,7 @@ The newest bit7z v4 introduced some major breaking changes to the API. In partic
 + The old `BitExtractor` class is now called `BitFileExtractor`.
   + Now `BitExtractor` is just the name of a template class for all the extraction classes.
 
-## :file_cabinet: Download
+## 🗄 Download
 
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
@@ -189,7 +188,7 @@ Packages are available for both _x86_ and _x64_ architectures.
 
 You can also clone/download this repository and build the library by yourself (please, read the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
-## :toolbox: Requirements
+## 🧰 Requirements
 
 + **Operating System:** Windows, Linux, macOS[^1].
 + **Architecture:** x86, x86_64.
@@ -202,7 +201,7 @@ You can also clone/download this repository and build the library by yourself (p
 
 [^3]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
-## :gear: Building bit7z
+## ⚙️ Building bit7z
 
 ```bash
 cd <bit7z folder>
@@ -213,7 +212,7 @@ cmake --build . -j --config Release
 
 A more detailed guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
-## :coffee: Donate
+## ☕️ Donate
 
 If you have found this project helpful, please consider supporting me with a small donation so that I can keep improving it!
 Thank you! :pray:
@@ -222,7 +221,7 @@ Thank you! :pray:
 <a href='https://github.com/sponsors/rikyoz' target='_blank' title="Support the Maintainer via GitHub Sponsors"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Sponsor%20the%20Maintainer-fafbfc?logo=GitHub%20Sponsors' border='0' alt='Sponsor me on GitHub' /></a> <a href='https://ko-fi.com/G2G1LS1P' target='_blank' title="Support this project via Ko-Fi"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-red?logo=ko-fi&logoColor=white' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC" title="Support this project via PayPal"><img src="https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&logoColor=white" alt="Donations" height='24' style='border:0px;height:24px;'></a>
 </div>
 
-## :scroll: License
+## 📜 License
 
 This project is licensed under the terms of the [Mozilla Public License v2.0](https://www.mozilla.org/en-US/MPL/2.0/).<br/>
 For more details, please check:

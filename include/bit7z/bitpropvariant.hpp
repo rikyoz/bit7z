@@ -21,6 +21,9 @@ namespace bit7z {
 
 using time_type = std::chrono::time_point< std::chrono::system_clock >;
 
+/**
+ * @brief The BitProperty enum represents the archive/item properties that 7-zip can read or write.
+ */
 enum struct BitProperty : PROPID {
     NoProperty = 0,         ///<
     MainSubfile,            ///<
@@ -120,6 +123,9 @@ enum struct BitProperty : PROPID {
     CopyLink                ///<
 };
 
+/**
+ * @brief The BitPropVariantType enum represents the possible types that a BitPropVariant can store.
+ */
 enum struct BitPropVariantType : uint32_t {
     Empty,      ///< Empty BitPropVariant type
     Bool,       ///< Boolean BitPropVariant type

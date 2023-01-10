@@ -54,8 +54,9 @@ class BitCompressor : public BitAbstractArchiveCreator {
         /**
          * @brief Compresses a single file.
          *
-         * @param in_file  the file to be compressed.
-         * @param out_file the path (relative or absolute) to the output archive file.
+         * @param in_file       the file to be compressed.
+         * @param out_file      the path (relative or absolute) to the output archive file.
+         * @param input_name    (optional) the name to give to the compressed file inside the output archive.
          */
         void compressFile( Input& in_file,
                            const tstring& out_file,

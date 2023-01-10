@@ -32,10 +32,9 @@ enum class byte_t : unsigned char {}; //same as std::byte_t
 using byte_t = unsigned char;
 #endif
 
+/** @cond */
 using buffer_t = std::vector< byte_t >;
 using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
-
-namespace { //private
 
 template< class Char >
 struct string_traits;
@@ -55,8 +54,7 @@ struct string_traits< wchar_t > {
         return std::to_wstring( std::forward< T >( t ) );
     }
 };
-
-}  // namespace
+/** @endcond */
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows with native strings
 using tchar = wchar_t;

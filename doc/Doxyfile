@@ -47,7 +47,7 @@ PROJECT_NAME           = bit7z
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = v3.1.1
+PROJECT_NUMBER         = v4.0.0-rc
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -89,7 +89,7 @@ CREATE_SUBDIRS         = NO
 # Minimum value: 0, maximum value: 8, default value: 8.
 # This tag requires that the tag CREATE_SUBDIRS is set to YES.
 
-CREATE_SUBDIRS_LEVEL   = 8
+# CREATE_SUBDIRS_LEVEL   = 8
 
 # If the ALLOW_UNICODE_NAMES tag is set to YES, doxygen will allow non-ASCII
 # characters to appear in the names of generated files. If set to NO, non-ASCII
@@ -156,7 +156,7 @@ ABBREVIATE_BRIEF       = "The $name class" \
 # description.
 # The default value is: NO.
 
-ALWAYS_DETAILED_SEC    = NO
+ALWAYS_DETAILED_SEC    = YES
 
 # If the INLINE_INHERITED_MEMB tag is set to YES, doxygen will show all
 # inherited members of a class in the documentation of that class as if those
@@ -171,7 +171,7 @@ INLINE_INHERITED_MEMB  = YES
 # shortest path that makes the file name unique will be used
 # The default value is: YES.
 
-FULL_PATH_NAMES        = NO
+FULL_PATH_NAMES        = YES
 
 # The STRIP_FROM_PATH tag can be used to strip a user-defined part of the path.
 # Stripping is only done if one of the specified strings matches the left-hand
@@ -192,7 +192,7 @@ STRIP_FROM_PATH        = ..
 # specify the list of include paths that are normally passed to the compiler
 # using the -I flag.
 
-STRIP_FROM_INC_PATH    =
+STRIP_FROM_INC_PATH    = ../include
 
 # If the SHORT_NAMES tag is set to YES, doxygen will generate much shorter (but
 # less readable) file names. This can be useful is your file systems doesn't
@@ -379,7 +379,7 @@ AUTOLINK_SUPPORT       = YES
 # diagrams that involve STL classes more complete and accurate.
 # The default value is: NO.
 
-BUILTIN_STL_SUPPORT    = NO
+BUILTIN_STL_SUPPORT    = YES
 
 # If you use Microsoft's C++/CLI language, you should set this option to YES to
 # enable parsing support.
@@ -578,14 +578,14 @@ HIDE_UNDOC_CLASSES     = YES
 # documentation.
 # The default value is: NO.
 
-HIDE_FRIEND_COMPOUNDS  = NO
+HIDE_FRIEND_COMPOUNDS  = YES
 
 # If the HIDE_IN_BODY_DOCS tag is set to YES, doxygen will hide any
 # documentation blocks found inside the body of a function. If set to NO, these
 # blocks will be appended to the function's detailed documentation block.
 # The default value is: NO.
 
-HIDE_IN_BODY_DOCS      = NO
+HIDE_IN_BODY_DOCS      = YES
 
 # The INTERNAL_DOCS tag determines if documentation that is typed after a
 # \internal command is included. If the tag is set to NO then the documentation
@@ -647,7 +647,7 @@ SHOW_GROUPED_MEMB_INC  = NO
 # files with double quotes in the documentation rather than with sharp brackets.
 # The default value is: NO.
 
-FORCE_LOCAL_INCLUDES   = YES
+FORCE_LOCAL_INCLUDES   = NO
 
 # If the INLINE_INFO tag is set to YES then a tag [inline] is inserted in the
 # documentation for inline members.
@@ -719,20 +719,20 @@ GENERATE_TODOLIST      = YES
 # list. This list is created by putting \test commands in the documentation.
 # The default value is: YES.
 
-GENERATE_TESTLIST      = YES
+GENERATE_TESTLIST      = NO
 
 # The GENERATE_BUGLIST tag can be used to enable (YES) or disable (NO) the bug
 # list. This list is created by putting \bug commands in the documentation.
 # The default value is: YES.
 
-GENERATE_BUGLIST       = YES
+GENERATE_BUGLIST       = NO
 
 # The GENERATE_DEPRECATEDLIST tag can be used to enable (YES) or disable (NO)
 # the deprecated list. This list is created by putting \deprecated commands in
 # the documentation.
 # The default value is: YES.
 
-GENERATE_DEPRECATEDLIST= YES
+GENERATE_DEPRECATEDLIST= NO
 
 # The ENABLED_SECTIONS tag can be used to enable conditional documentation
 # sections, marked by \if <section_label> ... \endif and \cond <section_label>
@@ -763,7 +763,7 @@ SHOW_USED_FILES        = YES
 # (if specified).
 # The default value is: YES.
 
-SHOW_FILES             = NO
+SHOW_FILES             = YES
 
 # Set the SHOW_NAMESPACES tag to NO to disable the generation of the Namespaces
 # page. This will remove the Namespaces entry from the Quick Index and from the
@@ -846,7 +846,7 @@ WARN_IF_DOC_ERROR      = YES
 # parameters have no documentation without warning.
 # The default value is: YES.
 
-WARN_IF_INCOMPLETE_DOC = YES
+# WARN_IF_INCOMPLETE_DOC = YES
 
 # This WARN_NO_PARAMDOC option can be enabled to get warnings for functions that
 # are documented, but have no documentation for their parameters or return
@@ -886,7 +886,7 @@ WARN_FORMAT            = "$file:$line: $text"
 # See also: WARN_FORMAT
 # The default value is: at line $line of file $file.
 
-WARN_LINE_FORMAT       = "at line $line of file $file"
+# WARN_LINE_FORMAT       = "at line $line of file $file"
 
 # The WARN_LOGFILE tag can be used to specify a file to which warning and error
 # messages should be written. If left blank the output is written to standard
@@ -943,7 +943,7 @@ FILE_PATTERNS          = bit*.hpp
 # be searched for input files as well.
 # The default value is: NO.
 
-RECURSIVE              = NO
+RECURSIVE              = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
@@ -952,8 +952,11 @@ RECURSIVE              = NO
 # Note that relative paths are relative to the directory from which doxygen is
 # run.
 
-EXCLUDE                = lib \
-                         ../include/bitguids.hpp
+EXCLUDE                = ../lib \
+                         ../src \
+                         ../third_party \
+                         ../include/bit7z/bitwindows.hpp \
+                         ../include/bit7z/bitguids.hpp
 
 # The EXCLUDE_SYMLINKS tag can be used to select whether or not files or
 # directories that are symbolic links (a Unix file system feature) are excluded
@@ -1176,7 +1179,7 @@ IGNORE_PREFIX          =
 # If the GENERATE_HTML tag is set to YES, doxygen will generate HTML output
 # The default value is: YES.
 
-GENERATE_HTML          = YES
+GENERATE_HTML          = NO
 
 # The HTML_OUTPUT tag is used to specify where the HTML docs will be put. If a
 # relative path is entered the value of OUTPUT_DIRECTORY will be put in front of
@@ -1211,7 +1214,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = header.html
+HTML_HEADER            =
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard
@@ -1246,9 +1249,7 @@ HTML_STYLESHEET        =
 # list). For an example see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_STYLESHEET  = doxygen-awesome-css/doxygen-awesome.css \
-                         doxygen-awesome-css/doxygen-awesome-sidebar-only.css \
-                         doxygen-awesome-sidebar-only-darkmode-toggle.css
+HTML_EXTRA_STYLESHEET  =
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1258,9 +1259,7 @@ HTML_EXTRA_STYLESHEET  = doxygen-awesome-css/doxygen-awesome.css \
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = doxygen-awesome-css/doxygen-awesome-darkmode-toggle.js \
-                         doxygen-awesome-css/doxygen-awesome-paragraph-link.js \
-                         doxygen-awesome-css/doxygen-awesome-fragment-copy-button.js
+HTML_EXTRA_FILES       =
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
@@ -1361,7 +1360,7 @@ DOCSET_FEEDNAME        = "Doxygen generated docs"
 # (such as a company or product suite) can be grouped.
 # This tag requires that the tag GENERATE_DOCSET is set to YES.
 
-DOCSET_FEEDURL         =
+# DOCSET_FEEDURL         =
 
 # This tag specifies a string that should uniquely identify the documentation
 # set bundle. This should be a reverse domain-name style string, e.g.
@@ -1603,7 +1602,7 @@ EXT_LINKS_IN_WINDOW    = NO
 # The default value is: YES.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-OBFUSCATE_EMAILS       = YES
+# OBFUSCATE_EMAILS       = YES
 
 # If the HTML_FORMULA_FORMAT option is set to svg, doxygen will use the pdf2svg
 # tool (see https://github.com/dawbarton/pdf2svg) or inkscape (see
@@ -1662,7 +1661,7 @@ USE_MATHJAX            = NO
 # The default value is: MathJax_2.
 # This tag requires that the tag USE_MATHJAX is set to YES.
 
-MATHJAX_VERSION        = MathJax_2
+# MATHJAX_VERSION        = MathJax_2
 
 # When MathJax is enabled you can set the default output format to be used for
 # the MathJax output. For more details about the output format see MathJax
@@ -2287,7 +2286,7 @@ SKIP_FUNCTION_MACROS   = YES
 # the path). If a tag file is not located in the directory in which doxygen is
 # run, you must also specify the path to the tagfile here.
 
-TAGFILES               =
+TAGFILES               = "cppreference/cppreference-doxygen-web.tag.xml=http://en.cppreference.com/w/"
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create a
 # tag file that is based on the input files it reads. See section "Linking to
@@ -2340,7 +2339,7 @@ HIDE_UNDOC_RELATIONS   = YES
 # set to NO
 # The default value is: NO.
 
-HAVE_DOT               = NO
+HAVE_DOT               = YES
 
 # The DOT_NUM_THREADS specifies the number of dot invocations doxygen is allowed
 # to run in parallel. When set to 0 doxygen will base this on the number of
@@ -2453,7 +2452,7 @@ DOT_WRAP_THRESHOLD     = 17
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-TEMPLATE_RELATIONS     = NO
+TEMPLATE_RELATIONS     = YES
 
 # If the INCLUDE_GRAPH, ENABLE_PREPROCESSING and SEARCH_INCLUDES tags are set to
 # YES then doxygen will generate a graph for each documented file showing the
@@ -2518,7 +2517,7 @@ DIRECTORY_GRAPH        = YES
 # Minimum value: 1, maximum value: 25, default value: 1.
 # This tag requires that the tag DIRECTORY_GRAPH is set to YES.
 
-DIR_GRAPH_MAX_DEPTH    = 1
+# DIR_GRAPH_MAX_DEPTH    = 1
 
 # The DOT_IMAGE_FORMAT tag can be used to set the image format of the images
 # generated by dot. For an explanation of the image formats see the section
@@ -2533,7 +2532,7 @@ DIR_GRAPH_MAX_DEPTH    = 1
 # The default value is: png.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_IMAGE_FORMAT       = png
+DOT_IMAGE_FORMAT       = svg
 
 # If DOT_IMAGE_FORMAT is set to svg, then this option can be set to YES to
 # enable generation of interactive SVG images that allow zooming and panning.
@@ -2624,7 +2623,7 @@ MAX_DOT_GRAPH_DEPTH    = 0
 # The default value is: NO.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_TRANSPARENT        = NO
+DOT_TRANSPARENT        = YES
 
 # Set the DOT_MULTI_TARGETS tag to YES to allow dot to generate multiple output
 # files in one run (i.e. multiple -o and -T options on the command line). This

@@ -27,6 +27,9 @@ template< typename T >
 class CMyComPtr;
 //! \endcond
 
+/**
+ * @brief The main namespace of the bit7z library.
+ */
 namespace bit7z {
 
 #ifdef _WIN32

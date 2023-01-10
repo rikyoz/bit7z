@@ -63,3 +63,7 @@ pvs-studio-analyzer.stacktrace.txt
 
 .mailmap
 *.ini
+
+doc/doxygen-awesome-css
+
+doc/cppreference/

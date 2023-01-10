@@ -215,7 +215,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          *
          * @param in_file       the input archive file.
          * @param regex         the regex used for matching the paths of files inside the archive.
-         * @param out_dir       the output directory where extracted files will be put.
+         * @param out_buffer    the output buffer where the extracted file will be put.
          * @param policy        the filtering policy to be applied to the matched items.
          */
         void extractMatchingRegex( Input in_file,
