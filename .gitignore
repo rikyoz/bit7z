@@ -19,11 +19,13 @@ out/
 pack/
 roadmap.txt
 gh-pages/
-doc/wiki/
-doc/xml/
-doc/html/
-doc/rst/
-doc/md/
+docs/cppreference/
+docs/doxygen-awesome-css
+docs/wiki/
+docs/xml/
+docs/html/
+docs/rst/
+docs/md/
 .vs/
 x64/
 \.idea/
@@ -63,7 +65,3 @@ pvs-studio-analyzer.stacktrace.txt
 
 .mailmap
 *.ini
-
-doc/doxygen-awesome-css
-
-doc/cppreference/
