@@ -20,7 +20,7 @@
 namespace bit7z {
 
 /**
- * @brief A type representing a byte (equivalent to an unsigned char).
+ * @brief A type representing a byte.
  */
 #ifdef BIT7Z_USE_STD_BYTE
 #if __cpp_lib_byte
@@ -56,7 +56,10 @@ struct string_traits< wchar_t > {
 };
 /** @endcond */
 
-#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows with native strings
+/**
+ * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tchar` is an alias of `wchar_t`.
+ */
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows with native strings
 using tchar = wchar_t;
 #define BIT7Z_STRING( str ) L##str
 #else // Unix, and Windows with non-native strings
@@ -64,8 +67,17 @@ using tchar = char;
 #define BIT7Z_STRING( str ) str
 #endif
 
+/**
+ * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tstring` is equivalent to a `std::wstring`.
+ * Otherwise, it is equivalent to a `std::string` (default alias).
+ */
 using tstring = std::basic_string< tchar >;
+
 #ifdef BIT7Z_REGEX_MATCHING
+/**
+ * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tregex` is equivalent to a `std::wregex`.
+ * Otherwise, it is equivalent to a `std::regex` (default alias).
+ */
 using tregex = std::basic_regex< tchar >;
 #endif
 

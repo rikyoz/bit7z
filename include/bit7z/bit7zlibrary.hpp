@@ -22,10 +22,10 @@ struct IOutArchive;
 struct GUID;
 #endif
 
-//! \cond IGNORE_BLOCK_IN_DOXYGEN
+//! @cond IGNORE_BLOCK_IN_DOXYGEN
 template< typename T >
 class CMyComPtr;
-//! \endcond
+//! @endcond
 
 /**
  * @brief The main namespace of the bit7z library.

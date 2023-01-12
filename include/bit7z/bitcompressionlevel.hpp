@@ -14,7 +14,7 @@ namespace bit7z {
 
 /**
  * @brief The BitCompressionLevel enum represents the compression level used by 7z when creating archives.
- * @note It uses the same values as in the 7z SDK (https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
+ * @note It uses the same values as used by [7-zip](https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
  */
 enum struct BitCompressionLevel {
     None = 0,    ///< Copy mode (no compression)

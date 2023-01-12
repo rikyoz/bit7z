@@ -19,6 +19,9 @@
 
 namespace bit7z {
 
+/**
+ * @brief A type representing a time point measured using the system clock.
+ */
 using time_type = std::chrono::time_point< std::chrono::system_clock >;
 
 /**
