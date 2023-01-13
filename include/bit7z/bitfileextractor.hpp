@@ -15,7 +15,7 @@
 namespace bit7z {
 
 /**
- * @brief The BitFileExtractor class allows extracting the content of archives on the filesystem.
+ * @brief BitFileExtractor is an alias for specialization of BitExtractor, which allows extracting filesystem archives.
  */
 using BitFileExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const tstring& >;
 

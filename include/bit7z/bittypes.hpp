@@ -68,15 +68,15 @@ using tchar = char;
 #endif
 
 /**
- * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tstring` is equivalent to a `std::wstring`.
- * Otherwise, it is equivalent to a `std::string` (default alias).
+ * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tstring` is equivalent to a std::wstring.
+ * Otherwise, it is equivalent to a std::string (default alias).
  */
 using tstring = std::basic_string< tchar >;
 
 #ifdef BIT7Z_REGEX_MATCHING
 /**
- * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tregex` is equivalent to a `std::wregex`.
- * Otherwise, it is equivalent to a `std::regex` (default alias).
+ * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tregex` is equivalent to a std::wregex.
+ * Otherwise, it is equivalent to a std::regex (default alias).
  */
 using tregex = std::basic_regex< tchar >;
 #endif

@@ -32,6 +32,10 @@ class CMyComPtr;
  */
 namespace bit7z {
 
+/**
+ * @brief The default file path for the 7-zip shared library to be used by bit7z
+ * in case the user doesn't pass a path to the constructor of the Bit7zLibrary class.
+ */
 #ifdef _WIN32
 constexpr auto default_library = BIT7Z_STRING( "7z.dll" );
 #elif defined( __linux__ )
@@ -72,8 +76,9 @@ class Bit7zLibrary final {
          *
          * @note Usually, this method should not be called directly by users of the bit7z library.
          *
-         * @param format_ID     GUID of the archive format (see BitInFormat's guid() method).
-         * @param interface_ID  ID of the archive interface to be requested (IID_IInArchive or IID_IOutArchive).
+         * @param format_ID     Pointer to the GUID of the archive format (see BitInFormat's guid() method).
+         * @param interface_ID  Pointer to the GUID of the archive interface to be requested
+         *                      (IID_IInArchive or IID_IOutArchive).
          * @param out_object    Pointer to a CMyComPtr of an object implementing the requested interface.
          */
         void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;

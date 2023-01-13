@@ -166,8 +166,10 @@ class BitInOutFormat final : public BitInFormat {
  */
 namespace BitFormat {
 #ifdef BIT7Z_AUTO_FORMAT
-// Available only when compiling bit7z using the BIT7Z_AUTO_FORMAT preprocessor define
-extern const BitInFormat Auto;      ///< Automatic Format Detection
+/**
+ * @brief Automatic Format Detection (available only when compiling bit7z using the `BIT7Z_AUTO_FORMAT` option).
+ */
+extern const BitInFormat Auto;
 #endif
 extern const BitInFormat Rar,       ///< RAR Archive Format
                          Arj,       ///< ARJ Archive Format

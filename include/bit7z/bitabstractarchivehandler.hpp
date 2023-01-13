@@ -180,7 +180,7 @@ class BitAbstractArchiveHandler {
          * @brief Sets the function to be called when the processed size of the ongoing operation is updated.
          *
          * @note The completion percentage of the current operation can be obtained by calculating
-         * static_cast<int>( ( 100.0 * processed_size ) / total_size ).
+         * `static_cast<int>( ( 100.0 * processed_size ) / total_size )`.
          *
          * @param callback  the progress callback to be used.
          */
@@ -191,7 +191,7 @@ class BitAbstractArchiveHandler {
          * ongoing operation are known.
          *
          * @note The ratio percentage of a compression operation can be obtained by calculating
-         * static_cast<int>( ( 100.0 * output_size ) / input_size ).
+         * `static_cast<int>( ( 100.0 * output_size ) / input_size )`.
          *
          * @param callback  the ratio callback to be used.
          */

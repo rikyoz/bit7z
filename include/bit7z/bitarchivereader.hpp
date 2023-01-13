@@ -28,9 +28,9 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @brief Constructs a BitArchiveReader object, opening the input file archive.
          *
-         * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
+         * @note When bit7z is compiled using the `BIT7Z_AUTO_FORMAT` option, the format
          * argument has default value BitFormat::Auto (automatic format detection of the input archive).
-         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
+         * On the contrary, when `BIT7Z_AUTO_FORMAT` is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
          * @param lib       the 7z library used.
@@ -46,9 +46,9 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @brief Constructs a BitArchiveReader object, opening the archive in the input buffer.
          *
-         * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
+         * @note When bit7z is compiled using the `BIT7Z_AUTO_FORMAT` option, the format
          * argument has default value BitFormat::Auto (automatic format detection of the input archive).
-         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
+         * On the contrary, when `BIT7Z_AUTO_FORMAT` is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
          * @param lib       the 7z library used.
@@ -64,9 +64,9 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @brief Constructs a BitArchiveReader object, opening the archive from the standard input stream.
          *
-         * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
+         * @note When bit7z is compiled using the `BIT7Z_AUTO_FORMAT` option, the format
          * argument has default value BitFormat::Auto (automatic format detection of the input archive).
-         * On the contrary, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
+         * On the contrary, when `BIT7Z_AUTO_FORMAT` is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
          * @param lib       the 7z library used.
