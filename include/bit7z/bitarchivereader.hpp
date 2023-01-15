@@ -145,6 +145,8 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         BIT7Z_NODISCARD bool isSolid() const;
 };
 
+using BitArchiveInfo BIT7Z_MAYBE_UNUSED BIT7Z_DEPRECATED_MSG("Since v4.0; please use BitArchiveReader.") = BitArchiveReader;
+
 }  // namespace bit7z
 
 #endif // BITARCHIVEREADER_HPP
