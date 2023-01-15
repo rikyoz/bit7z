@@ -15,13 +15,13 @@
 namespace bit7z {
 
 /**
- * @brief The BitStreamCompressor class allows compressing data from standard input streams to the filesystem,
- *        to memory buffers, or to standard output streams.
+ * @brief BitStreamCompressor allows compressing data from standard input streams.
+ * The compressed archives can be saved to the filesystem, standard streams, or memory buffers.
  *
- * It let decide various properties of the produced archive file, such as the password
+ * It let decide various properties of the produced archive, such as the password
  * protection and the compression level desired.
  */
-using BitStreamCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< istream >;
+using BitStreamCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< std::istream& >;
 
 } // namespace bit7z
 

@@ -58,7 +58,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param out_file      the path (relative or absolute) to the output archive file.
          * @param input_name    (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input& in_file,
+        void compressFile( Input in_file,
                            const tstring& out_file,
                            const tstring& input_name = {} ) const {
             /* Note: if in_file is a filesystem path (i.e., its type is const tstring&), we can deduce the archived
@@ -66,10 +66,10 @@ class BitCompressor : public BitAbstractArchiveCreator {
              * we use the filename (without extension) of the output file path. */
             tstring name;
 #ifdef __cpp_if_constexpr
-            if constexpr ( !std::is_same_v< Input, const tstring > ) {
+            if constexpr ( !std::is_same_v< Input, const tstring& > ) {
 #else
             //There's probably some compile-time SFINAE alternative for C++14, but life is too short ;)
-            if ( !std::is_same< Input, const tstring >::value ) {
+            if ( !std::is_same< Input, const tstring& >::value ) {
 #endif
                 name = input_name.empty() ? fsutil::basename( out_file ) : input_name;
             }
@@ -86,7 +86,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param out_buffer  the buffer going to contain the output archive.
          * @param input_name  (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input& in_file,
+        void compressFile( Input in_file,
                            vector< byte_t >& out_buffer,
                            const tstring& input_name = {} ) const {
             BitOutputArchive output_archive{ *this, out_buffer };
@@ -101,7 +101,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param out_stream  the output stream.
          * @param input_name  (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input& in_file,
+        void compressFile( Input in_file,
                            ostream& out_stream,
                            const tstring& input_name = {} ) const {
             BitOutputArchive output_archive{ *this };

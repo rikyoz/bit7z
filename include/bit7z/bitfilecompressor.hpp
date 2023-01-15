@@ -29,12 +29,13 @@ class FSItem;
 using namespace filesystem;
 
 /**
- * @brief The BitFileCompressor class allows compressing files and directories into file archives.
+ * @brief The BitFileCompressor class allows compressing files and directories.
+ * The compressed archives can be saved to the filesystem, standard streams, or memory buffers.
  *
- * It let decide various properties of the produced archive file, such as the password
+ * It let decide various properties of the produced archive, such as the password
  * protection and the compression level desired.
  */
-class BitFileCompressor final : public BitCompressor< const tstring > {
+class BitFileCompressor final : public BitCompressor< const tstring& > {
     public:
         /**
          * @brief Constructs a BitFileCompressor object.
