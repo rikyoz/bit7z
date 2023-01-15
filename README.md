@@ -4,7 +4,7 @@
 
 <!--
   Notes:
-  - The div is needed to center the sections list (Doxygen doesn't center p elements)
+  - The div is needed to center the section list (Doxygen doesn't center p elements)
   - The p is needed so that GitHub applies some margins between the sections and the badges.
 -->
 <div align="center">
@@ -19,7 +19,7 @@
   </p>
 </div>
 
-<!-- Note: the style attribute is ignored by GitHub, but it's used by Doxygen. -->
+<!-- Note: the style attribute is ignored by GitHub, but it is used by Doxygen. -->
 <div align="center" style="margin-top:1em">
   <a href="https://github.com/rikyoz/bit7z/releases" title="Latest Stable GitHub Release"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>&thinsp;<img src="https://img.shields.io/badge/-C++14/17-3F63B3.svg?style=flat&logo=C%2B%2B&logoColor=white" alt="C++14/17" title="C++ Standards Used: C++14/17">&thinsp;<img src="https://img.shields.io/badge/-Windows-6E46A2.svg?style=flat&logo=windows-11&logoColor=white" alt="Windows" title="Supported Platform: Windows">&thinsp;<img src="https://img.shields.io/badge/-Linux-9C2A91.svg?style=flat&logo=linux&logoColor=white" alt="Linux" title="Supported Platform: Linux">&thinsp;<img src="https://img.shields.io/badge/-macOS-red.svg?style=flat&logo=apple&logoColor=white" alt="macOS" title="Supported Platform: macOS">&thinsp;<img src="https://img.shields.io/badge/-x86%20&middot;%20x64-orange.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHZpZXdCb3g9IjAgMCA5NDIgOTQyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNTc5LjEgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk1LjlWODk0aC0uMXpNNTc5LjEgNDh2NzcuNUg2NzVWNDhhNDggNDggMCAwIDAtOTUuOSAwek00MjMgNDh2NzcuNWg5NlY0OGE0OCA0OCAwIDAgMC05NiAwek00MjMgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk2Vjg5NHpNMjY3IDQ4djc3LjVoOTUuOVY0OGE0OCA0OCAwIDAgMC05NS45IDB6TTI2NyA4OTRhNDggNDggMCAwIDAgOTYgMHYtNzcuNWgtOTZWODk0ek0wIDYyN2E0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05NS45SDQ4QTQ4IDQ4IDAgMCAwIDAgNjI3ek04OTQgNTc5LjFoLTc3LjVWNjc1SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTAgNDcxYTQ4IDQ4IDAgMCAwIDQ4IDQ4aDc3LjV2LTk2SDQ4YTQ4IDQ4IDAgMCAwLTQ4IDQ4ek04OTQgNDIzaC03Ny41djk2SDg5NGE0OCA0OCAwIDAgMCAwLTk2ek0wIDMxNWE0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05Nkg0OGE0OCA0OCAwIDAgMC00OCA0OHpNODk0IDI2N2gtNzcuNXY5NS45SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTE3MS42IDcyMC40YTUwIDUwIDAgMCAwIDUwIDUwaDQ5OC44YTUwIDUwIDAgMCAwIDUwLTUwVjIyMS42YTUwIDUwIDAgMCAwLTUwLTUwSDIyMS42YTUwIDUwIDAgMCAwLTUwIDUwdjQ5OC44eiIvPjwvc3ZnPg==" alt="x86, x64" title="Supported CPU Architectures: x86, x64">&thinsp;<a href="#donations" title="Donate"><img src="https://img.shields.io/badge/-donate-yellow.svg?style=flat&logo=paypal&logoColor=white" alt="donate"></a>&thinsp;<a href="https://github.com/rikyoz/bit7z/wiki" title="Project Documentation"><img src="https://img.shields.io/badge/-docs-green.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGRhdGEtbmFtZT0iTGF5ZXIgMSIgdmlld0JveD0iMCAwIDEwNS4zIDEyMi45Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiNmZmYiIGQ9Ik0xNy41IDBIMTAydjk0LjJjLS4xIDIuNy0zLjUgMi43LTcuMiAyLjZIMTYuM2E5LjIgOS4yIDAgMCAwIDAgMTguNEg5OHYtOS44aDcuMlYxMThhNC4yIDQuMiAwIDAgMS00LjEgNC4xSDE2LjZDNy41IDEyNS41IDAgMTE4IDAgMTA4LjhWMTcuNUExNy42IDE3LjYgMCAwIDEgMTcuNSAwWm0tMS4zIDEwOGg3NS4yYTEuNCAxLjQgMCAwIDEgMS40IDEuM3YuOGExLjQgMS40IDAgMCAxLTEuNCAxLjRIMTYuMmExLjQgMS40IDAgMCAxLTEuMy0xLjR2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFptMC03LjJoNzUuMmExLjQgMS40IDAgMCAxIDEuNCAxLjR2LjhhMS40IDEuNCAwIDAgMS0xLjQgMS40SDE2LjJBMS40IDEuNCAwIDAgMSAxNSAxMDN2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFoiLz48L3N2Zz4=" alt="docs"></a>&thinsp;<a href="https://ci.appveyor.com/project/rikyoz/bit7z" title="AppVeyor CI Build Status"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat&logo=appveyor&logoColor=white&label=" alt="Build status"></a>
   <br>
@@ -41,7 +41,7 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Renaming**, **updating**, or **deleting** old items in existing file archives.
 + **Compression and extraction _to and from_ memory** and **C++ standard streams**.
 + Compression using **custom path aliases** for the items in the output archives.
-+ **Selective extraction** of only specified files/folders **using wildcards** and **regexes**.
++ **Selective extraction** of only specified files/folders **using wildcards** and **regular expressions**.
 + Creation of **encrypted archives** (strong AES-256 encryption &mdash; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
 + Possibility to choose the **compression level** (if supported by the archive format), the **compression method** ([supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size**, and the **word size**.
@@ -54,9 +54,9 @@ It supports compression and extraction to and from the filesystem or the memory,
 ### Notes
 
 The presence or not of some of the above features depends on the particular shared library used along with bit7z.<br/>
-For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please see this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
+For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please check this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
-In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regexes_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regular expressions_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## 🔥 Getting Started (Library Usage)
 
@@ -178,6 +178,7 @@ The newest bit7z v4 introduced some major breaking changes to the API. In partic
   + On Windows, you can still achieve the old behavior by using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
 + The old `BitExtractor` class is now called `BitFileExtractor`.
   + Now `BitExtractor` is just the name of a template class for all the extraction classes.
++ The `ProgressCallback` now must return a `bool` value indicating whether the current operation can continue (`true`) or not (`false`).
 
 ## 💾 Download
 
@@ -194,7 +195,7 @@ The newest bit7z v4 introduced some major breaking changes to the API. In partic
 
 Each released package contains:
 
-+ A _precompiled version_ of bit7z (both in _debug_ and _release_ mode);
++ A _pre-compiled version_ of bit7z (both in _debug_ and _release_ mode);
 + The _public API headers_ needed to use the library in your program;
 
 Packages are available for both _x86_ and _x64_ architectures.
@@ -246,6 +247,6 @@ Older versions (v3.x and earlier) of bit7z were released under the [GNU General 
 
 <br/>
 <div align="center">
-Copyright &copy; 2014 - 2022 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)
+Copyright &copy; 2014 - 2023 Riccardo Ostani (<a href="https://github.com/rikyoz">@rikyoz</a>)
 </div>
 <br/>
