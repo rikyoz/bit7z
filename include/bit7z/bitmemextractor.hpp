@@ -15,7 +15,7 @@
 namespace bit7z {
 
 /**
- * @brief BitMemExtractor allows extracting the content of in-memory archives.
+ * @brief The BitMemExtractor alias allows extracting the content of in-memory archives.
  */
 using BitMemExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const std::vector< byte_t >& >;
 

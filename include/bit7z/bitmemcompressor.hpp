@@ -15,7 +15,7 @@
 namespace bit7z {
 
 /**
- * @brief BitMemCompressor allows compressing memory buffers.
+ * @brief The BitMemCompressor alias allows compressing memory buffers.
  * The compressed archives can be saved to the filesystem, standard streams, or memory buffers.
  *
  * It let decide various properties of the produced archive, such as the password

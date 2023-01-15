@@ -15,7 +15,7 @@
 namespace bit7z {
 
 /**
- * @brief BitStreamCompressor allows compressing data from standard input streams.
+ * @brief The BitStreamCompressor alias allows compressing data from standard input streams.
  * The compressed archives can be saved to the filesystem, standard streams, or memory buffers.
  *
  * It let decide various properties of the produced archive, such as the password
