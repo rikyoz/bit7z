@@ -278,11 +278,11 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             input_archive.extract( out_dir, matched_indices );
         }
 
-        void extractMatchingFilter( Input in_arch,
+        void extractMatchingFilter( Input in_archive,
                                     vector< byte_t >& out_buffer,
                                     FilterPolicy policy,
                                     const function< bool( const tstring& ) >& filter ) const {
-            BitInputArchive input_archive( *this, in_arch );
+            BitInputArchive input_archive( *this, in_archive );
 
             const bool should_extract_matched_item = policy == FilterPolicy::Include;
             // Searching for files inside the archive that match the given filter

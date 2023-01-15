@@ -23,7 +23,6 @@
 #include "internal/cfileinstream.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
-#include "internal/fsutil.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/util.hpp"
@@ -31,6 +30,10 @@
 
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"
+#endif
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+#include "internal/fsutil.hpp"
 #endif
 
 using namespace bit7z;

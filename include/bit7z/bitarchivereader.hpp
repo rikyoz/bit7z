@@ -33,13 +33,13 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * On the contrary, when `BIT7Z_AUTO_FORMAT` is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
-         * @param lib       the 7z library used.
-         * @param in_file   the input archive file path.
-         * @param format    the input archive format.
-         * @param password  the password needed for opening the input archive.
+         * @param lib           the 7z library used.
+         * @param in_archive    the path to the archive to be read.
+         * @param format        the format of the input archive.
+         * @param password      the password needed for opening the input archive.
          */
         BitArchiveReader( const Bit7zLibrary& lib,
-                          const tstring& in_file,
+                          const tstring& in_archive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
@@ -51,13 +51,13 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * On the contrary, when `BIT7Z_AUTO_FORMAT` is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
-         * @param lib       the 7z library used.
-         * @param in_buffer the input buffer containing the archive.
-         * @param format    the input archive format.
-         * @param password  the password needed for opening the input archive.
+         * @param lib           the 7z library used.
+         * @param in_archive    the input buffer containing the archive to be read.
+         * @param format        the format of the input archive.
+         * @param password      the password needed for opening the input archive.
          */
         BitArchiveReader( const Bit7zLibrary& lib,
-                          const vector< byte_t >& in_buffer,
+                          const vector< byte_t >& in_archive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
@@ -69,13 +69,13 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * On the contrary, when `BIT7Z_AUTO_FORMAT` is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
-         * @param lib       the 7z library used.
-         * @param in_stream the standard input stream of the archive.
-         * @param format    the input archive format.
-         * @param password  the password needed for opening the input archive.
+         * @param lib           the 7z library used.
+         * @param in_archive    the standard input stream of the archive to be read.
+         * @param format        the format of the input archive.
+         * @param password      the password needed for opening the input archive.
          */
         BitArchiveReader( const Bit7zLibrary& lib,
-                          std::istream& in_stream,
+                          std::istream& in_archive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 

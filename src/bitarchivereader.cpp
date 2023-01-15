@@ -20,22 +20,22 @@
 using namespace bit7z;
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const tstring& in_file,
+                                    const tstring& in_archive,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_file ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const vector< byte_t >& in_buffer,
+                                    const vector< byte_t >& in_archive,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_buffer ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    std::istream& in_stream,
+                                    std::istream& in_archive,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_stream ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
 
 map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     map< BitProperty, BitPropVariant > result;
