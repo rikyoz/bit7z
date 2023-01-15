@@ -163,19 +163,22 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 The newest bit7z v4 introduced some major breaking changes to the API. In particular:
 
 + By default, the project now follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
-  + The default string type is now `std::string` (instead of `std::wstring`) so that the library can be used in cross-platform projects more easily.
+  + The default string type is `std::string` (instead of `std::wstring`) so that the library can be used in cross-platform projects more easily (this version introduced Linux/macOS support too).
   + Input `std::string`s will be considered as UTF-8 encoded.
-  + You can still achieve the old behavior by using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
+  + On Windows, you can still achieve the old behavior by using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
 + The old `BitExtractor` class is now called `BitFileExtractor`.
   + Now `BitExtractor` is just the name of a template class for all the extraction classes.
 
 ## 💾 Download
 
 <div align="center">
+<a href="https://github.com/rikyoz/bit7z/releases">
+<img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?include_prereleases&sort=semver&label=Latest%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
+&nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img alt="GitHub All Releases" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Latest%20Release&logo=github&style=social" height='36' style='border:0;height:36px;'/></a>
+<img alt="GitHub Stable Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Stable%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
 <br/>
-<a href="https://github.com/rikyoz/bit7z/releases/latest">
+<a href="https://github.com/rikyoz/bit7z/releases">
 <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout&label=Total%20Downloads&logo=icloud&logoColor=white"/></a>
 </div>
 
@@ -218,7 +221,7 @@ If you have found this project helpful, please consider supporting me with a sma
 Thank you! :pray:
 
 <div align="center">
-<a href='https://github.com/sponsors/rikyoz' target='_blank' title="Support the Maintainer via GitHub Sponsors"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Sponsor%20the%20Maintainer-fafbfc?logo=GitHub%20Sponsors' border='0' alt='Sponsor me on GitHub' /></a> <a href='https://ko-fi.com/G2G1LS1P' target='_blank' title="Support this project via Ko-Fi"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-red?logo=ko-fi&logoColor=white' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a> <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC" title="Support this project via PayPal"><img src="https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&logoColor=white" alt="Donations" height='24' style='border:0px;height:24px;'></a>
+<a href='https://github.com/sponsors/rikyoz' target='_blank' title="Support the Maintainer via GitHub Sponsors"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Sponsor%20the%20Maintainer-fafbfc?logo=GitHub%20Sponsors' border='0' alt='Sponsor me on GitHub' /></a>&thinsp;<a href='https://ko-fi.com/G2G1LS1P' target='_blank' title="Support this project via Ko-Fi"><img height='24' style='border:0px;height:24px;' src='https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-red?logo=ko-fi&logoColor=white' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>&thinsp;<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=NTZF5G7LRXDRC" title="Support this project via PayPal"><img src="https://img.shields.io/badge/-Donate%20on%20PayPal-yellow.svg?logo=paypal&logoColor=white" alt="Donations" height='24' style='border:0px;height:24px;'></a>
 </div>
 
 ## 📜 License
