@@ -169,7 +169,7 @@ The newest bit7z v4 introduced some major breaking changes to the API. In partic
 + The old `BitExtractor` class is now called `BitFileExtractor`.
   + Now `BitExtractor` is just the name of a template class for all the extraction classes.
 
-## 🗄 Download
+## 💾 Download
 
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases/latest">
