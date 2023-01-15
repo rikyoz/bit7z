@@ -59,9 +59,7 @@ HRESULT FileExtractCallback::finishOperation( OperationResult operation_result )
     return result;
 }
 
-HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
-    mCurrentItem.loadItemInfo( inputArchive(), index );
-
+fs::path FileExtractCallback::getCurrentItemPath() const {
     fs::path filePath = mCurrentItem.path();
     if ( filePath.empty() ) {
         filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
@@ -70,6 +68,13 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     } else {
         // No action needed
     }
+    return filePath;
+}
+
+HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+    mCurrentItem.loadItemInfo( inputArchive(), index );
+
+    auto filePath = getCurrentItemPath();
     mFilePathOnDisk = mDirectoryPath / filePath;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )

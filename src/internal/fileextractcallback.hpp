@@ -48,6 +48,8 @@ class FileExtractCallback final : public ExtractCallback {
 
         void releaseStream() override;
 
+        fs::path getCurrentItemPath() const;
+
         HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream ) override;
 };
 

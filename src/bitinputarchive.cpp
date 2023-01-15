@@ -137,7 +137,6 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
 #endif
       mArchiveHandler{ handler },
       mArchivePath{ arc_path.string< tchar >() } {
-
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
     if ( filesystem::fsutil::should_format_long_path( arc_path ) ) {
         arc_path = filesystem::fsutil::format_long_path( arc_path );
