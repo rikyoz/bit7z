@@ -25,7 +25,7 @@ BitFileCompressor::BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFor
 
 /* from filesystem to filesystem */
 
-void BitFileCompressor::compress( const vector< tstring >& in_paths, const tstring& out_file ) const {
+void BitFileCompressor::compress( const std::vector< tstring >& in_paths, const tstring& out_file ) const {
     if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
@@ -34,7 +34,7 @@ void BitFileCompressor::compress( const vector< tstring >& in_paths, const tstri
     output_archive.compressTo( out_file );
 }
 
-void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, const tstring& out_file ) const {
+void BitFileCompressor::compress( const std::map< tstring, tstring >& in_paths, const tstring& out_file ) const {
     if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
@@ -43,7 +43,7 @@ void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, const
     output_archive.compressTo( out_file );
 }
 
-void BitFileCompressor::compressFiles( const vector< tstring >& in_files, const tstring& out_file ) const {
+void BitFileCompressor::compressFiles( const std::vector< tstring >& in_files, const tstring& out_file ) const {
     if ( in_files.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
@@ -73,7 +73,7 @@ void BitFileCompressor::compressDirectory( const tstring& in_dir, const tstring&
 
 /* from filesystem to stream */
 
-void BitFileCompressor::compress( const vector< tstring >& in_paths, ostream& out_stream ) const {
+void BitFileCompressor::compress( const std::vector< tstring >& in_paths, std::ostream& out_stream ) const {
     if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
@@ -82,7 +82,7 @@ void BitFileCompressor::compress( const vector< tstring >& in_paths, ostream& ou
     output_archive.compressTo( out_stream );
 }
 
-void BitFileCompressor::compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const {
+void BitFileCompressor::compress( const std::map< tstring, tstring >& in_paths, std::ostream& out_stream ) const {
     if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }

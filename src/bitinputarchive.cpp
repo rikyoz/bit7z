@@ -156,7 +156,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
     mInArchive = openArchiveStream( arc_path, file_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const std::vector< byte_t >& in_buffer )
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
@@ -231,12 +231,12 @@ const BitAbstractArchiveHandler& BitInputArchive::handler() const noexcept {
     return mArchiveHandler;
 }
 
-void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >& indices ) const {
+void BitInputArchive::extract( const tstring& out_dir, const std::vector< uint32_t >& indices ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, out_dir );
     extractArc( mInArchive, indices, callback );
 }
 
-void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) const {
+void BitInputArchive::extract( std::vector< byte_t >& out_buffer, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
@@ -255,7 +255,7 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) co
     out_buffer = std::move( buffers_map.begin()->second );
 }
 
-void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
+void BitInputArchive::extract( std::ostream& out_stream, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
@@ -295,7 +295,7 @@ void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index 
     extractArc( mInArchive, indices, extract_callback );
 }
 
-void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const {
+void BitInputArchive::extract( std::map< tstring, std::vector< byte_t > >& out_map ) const {
     const uint32_t number_items = itemsCount();
     vector< uint32_t > files_indices;
     for ( uint32_t i = 0; i < number_items; ++i ) {

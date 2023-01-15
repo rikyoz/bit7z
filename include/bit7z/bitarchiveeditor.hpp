@@ -93,7 +93,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param in_buffer the buffer containing the new data for the item.
          */
-        void updateItem( uint32_t index, const vector< byte_t >& in_buffer );
+        void updateItem( uint32_t index, const std::vector< byte_t >& in_buffer );
 
         /**
          * @brief Requests to update the content of the item at the specified index
@@ -102,7 +102,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param in_stream the stream of new data for the item.
          */
-        void updateItem( uint32_t index, istream& in_stream );
+        void updateItem( uint32_t index, std::istream& in_stream );
 
         /**
          * @brief Requests to update the content of the item at the specified path
@@ -120,7 +120,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param item_path the path (in the archive) of the item to be updated.
          * @param in_buffer the buffer containing the new data for the item.
          */
-        void updateItem( const tstring& item_path, const vector< byte_t >& in_buffer );
+        void updateItem( const tstring& item_path, const std::vector< byte_t >& in_buffer );
 
         /**
          * @brief Requests to update the content of the item at the specified path

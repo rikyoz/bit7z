@@ -49,7 +49,7 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param password      (optional) the password needed to read the input archive.
          */
         BitArchiveWriter( const Bit7zLibrary& lib,
-                          const vector< byte_t >& in_archive,
+                          const std::vector< byte_t >& in_archive,
                           const BitInOutFormat& format,
                           const tstring& password = {} );
 

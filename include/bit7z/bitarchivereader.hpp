@@ -57,7 +57,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @param password      the password needed for opening the input archive.
          */
         BitArchiveReader( const Bit7zLibrary& lib,
-                          const vector< byte_t >& in_archive,
+                          const std::vector< byte_t >& in_archive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 

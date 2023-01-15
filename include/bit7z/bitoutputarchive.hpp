@@ -86,7 +86,7 @@ class BitOutputArchive {
          *                  be used for creating the new archive and reading the (optional) input archive.
          * @param in_buffer the buffer containing an input archive file.
          */
-        BitOutputArchive( const BitAbstractArchiveCreator& creator, const vector< byte_t >& in_buffer );
+        BitOutputArchive( const BitAbstractArchiveCreator& creator, const std::vector< byte_t >& in_buffer );
 
         /**
          * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
@@ -110,7 +110,7 @@ class BitOutputArchive {
          *
          * @param in_paths the vector of filesystem paths.
          */
-        void addItems( const vector< tstring >& in_paths );
+        void addItems( const std::vector< tstring >& in_paths );
 
         /**
          * @brief Adds all the items that can be found by indexing the keys of the given map of filesystem paths;
@@ -119,7 +119,7 @@ class BitOutputArchive {
          * @param in_paths map of filesystem paths with the corresponding user-defined path desired inside the
          *                 output archive.
          */
-        void addItems( const map< tstring, tstring >& in_paths );
+        void addItems( const std::map< tstring, tstring >& in_paths );
 
         /**
          * @brief Adds the given file path, with an optional user-defined path to be used in the output archive.
@@ -137,7 +137,7 @@ class BitOutputArchive {
          * @param in_buffer the buffer containing the file to be added to the output archive.
          * @param name      user-defined path to be used inside the output archive.
          */
-        void addFile( const vector< byte_t >& in_buffer, const tstring& name );
+        void addFile( const std::vector< byte_t >& in_buffer, const tstring& name );
 
         /**
          * @brief Adds the given standard input stream, using the given name as a path when compressed
@@ -146,7 +146,7 @@ class BitOutputArchive {
          * @param in_stream
          * @param name
          */
-        void addFile( istream& in_stream, const tstring& name );
+        void addFile( std::istream& in_stream, const tstring& name );
 
         /**
          * @brief Adds all the files in the given vector of filesystem paths.
@@ -155,7 +155,7 @@ class BitOutputArchive {
          *
          * @param in_files the vector of paths to files.
          */
-        void addFiles( const vector< tstring >& in_files );
+        void addFiles( const std::vector< tstring >& in_files );
 
         /**
          * @brief Adds all the files inside the given directory path that match the given wildcard filter.
@@ -198,7 +198,7 @@ class BitOutputArchive {
          *
          * @param out_stream the output standard stream.
          */
-        void compressTo( ostream& out_stream );
+        void compressTo( std::ostream& out_stream );
 
         /**
          * @return the total number of items added to the output archive object.

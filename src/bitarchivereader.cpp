@@ -26,7 +26,7 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const vector< byte_t >& in_archive,
+                                    const std::vector< byte_t >& in_archive,
                                     const BitInFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}

@@ -162,7 +162,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param out_dir       the output directory where the extracted files will be placed.
          */
         void extractItems( Input in_archive,
-                           const vector< uint32_t >& indices,
+                           const std::vector< uint32_t >& indices,
                            const tstring& out_dir = {} ) const {
             if ( indices.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );

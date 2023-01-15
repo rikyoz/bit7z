@@ -70,7 +70,7 @@ void BitArchiveEditor::updateItem( uint32_t index, const std::vector< byte_t >& 
     mEditedItems[ index ] = std::make_unique< BufferItem >( in_buffer, item_name.getString() );
 }
 
-void BitArchiveEditor::updateItem( uint32_t index, istream& in_stream ) {
+void BitArchiveEditor::updateItem( uint32_t index, std::istream& in_stream ) {
     checkIndex( index );
     auto item_name = inputArchive()->itemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< StdInputItem >( in_stream, item_name.getString() );

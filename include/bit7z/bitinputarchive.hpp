@@ -59,7 +59,7 @@ class BitInputArchive {
          *                  be used for reading the input archive
          * @param in_buffer the buffer containing the input archive
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer );
+        BitInputArchive( const BitAbstractArchiveHandler& handler, const std::vector< byte_t >& in_buffer );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive by reading the given input stream.
@@ -140,7 +140,7 @@ class BitInputArchive {
          * @param out_dir   the output directory where the extracted files will be put.
          * @param indices   the array of indices of the files in the archive that must be extracted.
          */
-        void extract( const tstring& out_dir, const vector< uint32_t >& indices = {} ) const;
+        void extract( const tstring& out_dir, const std::vector< uint32_t >& indices = {} ) const;
 
         /**
          * @brief Extracts a file to the output buffer.
@@ -148,7 +148,7 @@ class BitInputArchive {
          * @param out_buffer   the output buffer where the content of the archive will be put.
          * @param index        the index of the file to be extracted.
          */
-        void extract( vector< byte_t >& out_buffer, uint32_t index = 0 ) const;
+        void extract( std::vector< byte_t >& out_buffer, uint32_t index = 0 ) const;
 
         /**
          * @brief Extracts a file to the pre-allocated output buffer.
@@ -200,7 +200,7 @@ class BitInputArchive {
          *
          * @param out_map   the output map.
          */
-        void extract( std::map< tstring, vector< byte_t > >& out_map ) const;
+        void extract( std::map< tstring, std::vector< byte_t > >& out_map ) const;
 
         /**
          * @brief Tests the archive without extracting its content.

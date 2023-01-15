@@ -76,7 +76,7 @@ class BitItemsVector final {
          * @param options   (optional) the settings to be used while indexing the given directory
          *                  and all of its subdirectories.
          */
-        void indexPaths( const vector< tstring >& in_paths, IndexingOptions options = {} );
+        void indexPaths( const std::vector< tstring >& in_paths, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given map of filesystem paths, adding to the vector all the files.
@@ -89,7 +89,7 @@ class BitItemsVector final {
          * @param options   (optional) the settings to be used while indexing the given directory
          *                  and all of its subdirectories.
          */
-        void indexPathsMap( const map< tstring, tstring >& in_paths, IndexingOptions options = {} );
+        void indexPathsMap( const std::map< tstring, tstring >& in_paths, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given file path, with an optional user-defined path to be used in output archives.
@@ -107,7 +107,7 @@ class BitItemsVector final {
          * @param in_buffer the buffer containing the file to be indexed in the vector.
          * @param name      user-defined path to be used inside archives.
          */
-        void indexBuffer( const vector< byte_t >& in_buffer, const tstring& name );
+        void indexBuffer( const std::vector< byte_t >& in_buffer, const tstring& name );
 
         /**
          * @brief Indexes the given standard input stream, using the given name as a path when compressed in archives.

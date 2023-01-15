@@ -60,7 +60,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param in_paths  a vector of paths.
          * @param out_file  the path (relative or absolute) to the output archive file.
          */
-        void compress( const vector< tstring >& in_paths, const tstring& out_file ) const;
+        void compress( const std::vector< tstring >& in_paths, const tstring& out_file ) const;
 
         /**
          * @brief Compresses the given files or directories using the specified aliases.
@@ -73,7 +73,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param in_paths  a map of paths and corresponding aliases.
          * @param out_file  the path (relative or absolute) to the output archive file.
          */
-        void compress( const map< tstring, tstring >& in_paths, const tstring& out_file ) const;
+        void compress( const std::map< tstring, tstring >& in_paths, const tstring& out_file ) const;
 
         /**
          * @brief Compresses a group of files.
@@ -83,7 +83,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param in_files  the path (relative or absolute) to the input files.
          * @param out_file  the path (relative or absolute) to the output archive file.
          */
-        void compressFiles( const vector< tstring >& in_files, const tstring& out_file ) const;
+        void compressFiles( const std::vector< tstring >& in_files, const tstring& out_file ) const;
 
         /**
          * @brief Compresses the files contained in a directory.
@@ -119,7 +119,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param in_paths      a vector of paths.
          * @param out_stream    the standard ostream where the archive will be output.
          */
-        void compress( const vector< tstring >& in_paths, ostream& out_stream ) const;
+        void compress( const std::vector< tstring >& in_paths, std::ostream& out_stream ) const;
 
         /**
          * @brief Compresses the given files or directories using the specified aliases.
@@ -132,7 +132,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param in_paths      a map of paths and corresponding aliases.
          * @param out_stream    the standard ostream where to output the archive file.
          */
-        void compress( const map< tstring, tstring >& in_paths, ostream& out_stream ) const;
+        void compress( const std::map< tstring, tstring >& in_paths, std::ostream& out_stream ) const;
 };
 
 }  // namespace bit7z

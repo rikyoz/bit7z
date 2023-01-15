@@ -21,7 +21,7 @@ namespace bit7z {
  * It let decide various properties of the produced archive, such as the password
  * protection and the compression level desired.
  */
-using BitMemCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< const vector< byte_t >& >;
+using BitMemCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< const std::vector< byte_t >& >;
 
 } // namespace bit7z
 #endif // BITMEMCOMPRESSOR_HPP
