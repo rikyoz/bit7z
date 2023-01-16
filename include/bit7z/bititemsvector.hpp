@@ -120,7 +120,7 @@ class BitItemsVector final {
         /**
          * @return the size of the items vector.
          */
-        BIT7Z_NODISCARD size_t size() const;
+        BIT7Z_NODISCARD std::size_t size() const;
 
         /**
          * @param index the index of the desired item in the vector.

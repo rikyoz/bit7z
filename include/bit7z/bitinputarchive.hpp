@@ -299,25 +299,25 @@ class BitInputArchive {
          * @return an iterator to the first element of the archive. If the archive is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
-        BIT7Z_NODISCARD const_iterator begin() const noexcept;
+        BIT7Z_NODISCARD BitInputArchive::const_iterator begin() const noexcept;
 
         /**
          * @return an iterator to the element following the last element of the archive.
          *         This element acts as a placeholder; attempting to access it results in undefined behavior.
          */
-        BIT7Z_NODISCARD const_iterator end() const noexcept;
+        BIT7Z_NODISCARD BitInputArchive::const_iterator end() const noexcept;
 
         /**
          * @return an iterator to the first element of the archive. If the archive is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
-        BIT7Z_NODISCARD const_iterator cbegin() const noexcept;
+        BIT7Z_NODISCARD BitInputArchive::const_iterator cbegin() const noexcept;
 
         /**
          * @return an iterator to the element following the last element of the archive.
          *         This element acts as a placeholder; attempting to access it results in undefined behavior.
          */
-        BIT7Z_NODISCARD const_iterator cend() const noexcept;
+        BIT7Z_NODISCARD BitInputArchive::const_iterator cend() const noexcept;
 
         /**
          * @brief Find an item in the archive that has the given path.
@@ -327,7 +327,7 @@ class BitInputArchive {
          * @return an iterator to the item with the given path, or an iterator equal to the end() iterator
          * if no item is found.
          */
-        BIT7Z_NODISCARD const_iterator find( const tstring& path ) const noexcept;
+        BIT7Z_NODISCARD BitInputArchive::const_iterator find( const tstring& path ) const noexcept;
 
         /**
          * @brief Find if there is an item in the archive that has the given path.
