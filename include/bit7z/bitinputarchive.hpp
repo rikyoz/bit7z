@@ -229,6 +229,9 @@ class BitInputArchive {
         tstring mArchivePath;
 
     public:
+        /**
+         * @brief An iterator for the elements contained in an archive.
+         */
         class const_iterator {
             public:
                 // iterator traits
@@ -238,16 +241,50 @@ class BitInputArchive {
                 using pointer = const BitArchiveItemOffset*;
                 using difference_type BIT7Z_MAYBE_UNUSED = uint32_t; //so that count_if returns an uint32_t
 
+                /**
+                 * @brief Advances the iterator to the next element in the archive.
+                 *
+                 * @return the iterator pointing to the next element in the archive.
+                 */
                 const_iterator& operator++() noexcept;
 
+                /**
+                 * @brief Advances the iterator to the next element in the archive.
+                 *
+                 * @return the iterator before the advancement.
+                 */
                 const_iterator operator++( int ) noexcept; // NOLINT(cert-dcl21-cpp)
 
+                /**
+                 * @brief Compares the iterator with another iterator.
+                 *
+                 * @param other Another iterator.
+                 *
+                 * @return whether the two iterators point to the same element in the archive or not.
+                 */
                 bool operator==( const const_iterator& other ) const noexcept;
 
+                /**
+                 * @brief Compares the iterator with another iterator.
+                 *
+                 * @param other Another iterator.
+                 *
+                 * @return whether the two iterators point to the different elements in the archive or not.
+                 */
                 bool operator!=( const const_iterator& other ) const noexcept;
 
+                /**
+                 * @brief Accesses the pointed-to element in the archive.
+                 *
+                 * @return a reference to the pointed-to element in the archive.
+                 */
                 reference operator*() noexcept;
 
+                /**
+                 * @brief Accesses the pointed-to element in the archive.
+                 *
+                 * @return a pointer to the pointed-to element in the archive.
+                 */
                 pointer operator->() noexcept;
 
             private:
