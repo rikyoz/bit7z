@@ -35,6 +35,13 @@ namespace bit7z {
 /**
  * @brief The default file path for the 7-zip shared library to be used by bit7z
  * in case the user doesn't pass a path to the constructor of the Bit7zLibrary class.
+ *
+ * @note On Windows, the default library is "7z.dll", and it is searched following the Win32 API rules
+ * (https://learn.microsoft.com/en-us/windows/win32/dlls/dynamic-link-library-search-order).
+ *
+ * @note On Linux, the default library is the absolute path to the "7z.so" installed by p7zip.
+ *
+ * @note In all other cases, the value will be the relative path to a "7z.so" in the working directory of the program.
  */
 #ifdef _WIN32
 constexpr auto default_library = BIT7Z_STRING( "7z.dll" );
