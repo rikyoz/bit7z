@@ -208,3 +208,8 @@ if( BIT7Z_BUILD_TESTS )
     # tests
     add_subdirectory( tests )
 endif()
+
+if( BIT7Z_BUILD_DOCS )
+    # docs
+    add_subdirectory( docs )
+endif()
