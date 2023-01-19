@@ -43,7 +43,9 @@ namespace bit7z {
  *
  * @note In all other cases, the value will be the relative path to a "7z.so" in the working directory of the program.
  */
-#ifdef _WIN32
+#ifdef __DOXYGEN__
+constexpr auto default_library = "<platform-dependent value>";
+#elif defined( _WIN32 )
 constexpr auto default_library = BIT7Z_STRING( "7z.dll" );
 #elif defined( __linux__ )
 constexpr auto default_library = "/usr/lib/p7zip/7z.so"; // Default installation path of the p7zip shared library.
