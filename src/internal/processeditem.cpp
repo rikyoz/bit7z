@@ -14,6 +14,7 @@
 
 #include "bitexception.hpp"
 
+using bit7z::BitInputArchive;
 using bit7z::ProcessedItem;
 
 ProcessedItem::ProcessedItem()
