@@ -15,6 +15,7 @@
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 
+using bit7z::BitInputArchive;
 using bit7z::RenamedItem;
 using bit7z::tstring;
 
