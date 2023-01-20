@@ -61,26 +61,47 @@ Below are a few examples that show how to use some of the main features of bit7z
 ```cpp
 #include <bit7z/bitfileextractor.hpp>
 
-try { //bit7z classes can throw BitException objects
+try { // bit7z classes can throw BitException objects
     using namespace bit7z;
 
     Bit7zLibrary lib{ "7za.dll" };
     BitFileExtractor extractor{ lib, BitFormat::SevenZip };
 
-    //extracting a simple archive
+    // Extracting a simple archive
     extractor.extract( "path/to/archive.7z", "out/dir/" );
 
-    //extracting a specific file
+    // Extracting a specific file
     extractor.extractMatching( "path/to/archive.7z", "file.pdf", "out/dir/" );
 
-    //extracting the first file of an archive to a buffer
+    // Extracting the first file of an archive to a buffer
     std::vector< byte_t > buffer;
     extractor.extract( "path/to/archive.7z", buffer );
 
-    //extracting an encrypted archive
+    // Extracting an encrypted archive
     extractor.setPassword( "password" );
     extractor.extract( "path/to/another/archive.7z", "out/dir/" );
-} catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
+} catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
+```
+
+Alternatively, if you only need to work on a single archive:
+
+```cpp
+#include <bit7z/bitarchivereader.hpp>
+
+try { // bit7z classes can throw BitException objects
+    using namespace bit7z;
+
+    Bit7zLibrary lib{ "7z.dll" };
+
+    // Opening the archive
+    BitArchiveReader reader{lib, "path/to/archive.gz", BitFormat::GZip };
+
+    // Testing the archive
+    reader.test();
+
+    // Extracting the archive
+    reader.extract( "out/dir/" );
+} catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
 ### 💼 Compressing files into an archive
@@ -88,7 +109,7 @@ try { //bit7z classes can throw BitException objects
 ```cpp
 #include <bit7z/bitfilecompressor.hpp>
 
-try { //bit7z classes can throw BitException objects
+try { // bit7z classes can throw BitException objects
     using namespace bit7z;
 
     Bit7zLibrary lib{ "7z.dll" };
@@ -96,32 +117,52 @@ try { //bit7z classes can throw BitException objects
 
     std::vector< std::string > files = { "path/to/file1.jpg", "path/to/file2.pdf" };
 
-    //creating a simple zip archive
+    // Creating a simple zip archive
     compressor.compress( files, "output_archive.zip" );
 
-    //creating a zip archive with a custom directory structure
+    // Creating a zip archive with a custom directory structure
     std::map< std::string, std::string > files_map = {
         { "path/to/file1.jpg", "alias/path/file1.jpg" },
         { "path/to/file2.pdf", "alias/path/file2.pdf" }
     };
     compressor.compress( files_map, "output_archive2.zip" );
 
-    //compressing a directory
+    // Compressing a directory
     compressor.compressDirectory( "dir/path/", "dir_archive.zip" );
 
-    //creating an encrypted zip archive of two files
+    // Creating an encrypted zip archive of two files
     compressor.setPassword( "password" );
     compressor.compressFiles( files, "protected_archive.zip" );
 
-    //updating an existing zip archive
+    // Updating an existing zip archive
     compressor.setUpdateMode( UpdateMode::Append );
     compressor.compressFiles( files, "existing_archive.zip" );
 
-    //compressing a single file into a buffer
-    std::vector< byte_t > buffer;
+    // Compressing a single file into a buffer
+    std::vector< bit7z::byte_t > buffer;
     BitFileCompressor compressor2{ lib, BitFormat::BZip2 };
     compressor2.compressFile( files[0], buffer );
-} catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
+} catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
+```
+
+Alternatively, if you only need to work on a single archive:
+
+```cpp
+#include <bit7z/bitarchivewriter.hpp>
+
+try { // bit7z classes can throw BitException objects
+    using namespace bit7z;
+
+    Bit7zLibrary lib{ "7z.dll" };
+    BitArchiveWriter writer{lib, BitFormat::SevenZip };
+
+    // Adding the items to be compressed (no compression is performed here)
+    writer.addFile( "path/to/file.txt" );
+    writer.addDirectory( "path/to/dir/" );
+
+    // Compressing the added items to the output archive
+    writer.compressTo( "output.7z" );
+} catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
 ### 📑 Reading archive metadata
@@ -129,35 +170,36 @@ try { //bit7z classes can throw BitException objects
 ```cpp
 #include <bit7z/bitarchivereader.hpp>
 
-try { //bit7z classes can throw BitException objects
+try { // bit7z classes can throw BitException objects
     using namespace bit7z;
 
     Bit7zLibrary lib{ "7za.dll" };
     BitArchiveReader arc{ lib, "archive.7z", BitFormat::SevenZip };
 
-    //printing archive metadata
-    cout << "Archive properties" << endl;
-    cout << " Items count: "   << arc.itemsCount() << endl;
-    cout << " Folders count: " << arc.foldersCount() << endl;
-    cout << " Files count: "   << arc.filesCount() << endl;
-    cout << " Size: "          << arc.size() << endl;
-    cout << " Packed size: "   << arc.packSize() << endl;
-    cout << endl;
+    // Printing archive metadata
+    std::cout << "Archive properties" << std::endl;
+    std::cout << "  Items count: "   << arc.itemsCount() << std::endl;
+    std::cout << "  Folders count: " << arc.foldersCount() << std::endl;
+    std::cout << "  Files count: "   << arc.filesCount() << std::endl;
+    std::cout << "  Size: "          << arc.size() << std::endl;
+    std::cout << "  Packed size: "   << arc.packSize() << std::endl;
+    std::cout << std::endl;
 
-    //printing archive items metadata
-    cout << "Archive items";
+    // Printing the metadata of the archived items
+    std::cout << "Archived items";
     auto arc_items = arc.items();
     for ( auto& item : arc_items ) {
-        cout << endl;
-        cout << " Item index: "   << item.index() << endl;
-        cout << "  Name: "        << item.name() << endl;
-        cout << "  Extension: "   << item.extension() << endl;
-        cout << "  Path: "        << item.path() << endl;
-        cout << "  IsDir: "       << item.isDir() << endl;
-        cout << "  Size: "        << item.size() << endl;
-        cout << "  Packed size: " << item.packSize() << endl;
+        std::cout << std::endl;
+        std::cout << "  Item index: "   << item.index() << std::endl;
+        std::cout << "    Name: "        << item.name() << std::endl;
+        std::cout << "    Extension: "   << item.extension() << std::endl;
+        std::cout << "    Path: "        << item.path() << std::endl;
+        std::cout << "    IsDir: "       << item.isDir() << std::endl;
+        std::cout << "    Size: "        << item.size() << std::endl;
+        std::cout << "    Packed size: " << item.packSize() << std::endl;
+        std::cout << "    CRC: "         << item.crc() << std::endl;
     }
-} catch ( const bit7z::BitException& ex ) { /* do something with ex.what()...*/ }
+} catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
 A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
