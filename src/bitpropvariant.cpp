@@ -2,26 +2,28 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "../include/bitpropvariant.hpp"
+#include "bitpropvariant.hpp"
 
-#include "../include/bitexception.hpp"
+#include "bitexception.hpp"
+#include "biterror.hpp"
+#include "internal/dateutil.hpp"
+
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows
+#define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
+#else
+#include "internal/util.hpp"
+#define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, SysStringLen( bstr ) )
+#endif
+
+constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
 
 using namespace bit7z;
 
@@ -52,13 +54,26 @@ BitPropVariantType lookupType( VARTYPE type ) {
         case VT_I8:
             return BitPropVariantType::Int64;
         case VT_FILETIME:
-            return BitPropVariantType::Filetime;
+            return BitPropVariantType::FileTime;
         default:
-            // this is very unlikely to happen:
-            // properties types used in archives are the ones supported by PropertyType enum class
-            throw BitException( "Property type not supported", E_INVALIDARG );
+            /* This is unlikely to happen since properties types used in archives
+             * are the ones supported by PropertyType enum class.*/
+            throw BitException( "Property type not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
 }
+
+namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
+
+/* Needed for comparing FILETIME objects in BitPropVariant */
+inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
+#ifdef _WIN32
+    return CompareFileTime( &ft1, &ft2 ) == 0;
+#else
+    return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
+#endif
+}
+
+} // namespace bit7z
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
@@ -68,16 +83,17 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
 }
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
-    if ( vt == VT_BSTR ) { //until now, I've copied only the pointer to the string, hence we need a copy!
+    if ( vt == VT_BSTR ) { //until now, we've copied only the pointer to the string, hence we need a deep copy!
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
-        if ( !bstrVal ) {
-            throw BitException( "Could not allocate memory for BitPropVariant string" );
+        if ( bstrVal == nullptr ) {
+            throw BitException( kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
         }
     }
 }
 
-BitPropVariant::BitPropVariant( BitPropVariant&& other ) NOEXCEPT : PROPVARIANT( other ) {
+BitPropVariant::BitPropVariant( BitPropVariant&& other ) noexcept: PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) {
         /* this and other share the pointer to the same string, but now the string belongs to this!
          * Hence, if we set the other.bstrVal to nullptr, we prevent the bstrVal from being destroyed when
@@ -86,7 +102,7 @@ BitPropVariant::BitPropVariant( BitPropVariant&& other ) NOEXCEPT : PROPVARIANT(
     }
 }
 
-BitPropVariant::BitPropVariant( bool value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( bool value ) noexcept: PROPVARIANT() {
     vt = VT_BOOL;
     wReserved1 = 0;
     boolVal = ( value ? VARIANT_TRUE : VARIANT_FALSE );
@@ -97,72 +113,72 @@ BitPropVariant::BitPropVariant( const wchar_t* value ) : PROPVARIANT() {
     wReserved1 = 0;
     if ( value != nullptr ) {
         bstrVal = ::SysAllocString( value );
-        if ( !bstrVal ) {
-            throw BitException( "Could not allocate memory for BitPropVariant string" );
+        if ( bstrVal == nullptr ) {
+            throw BitException( kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
         }
     } else {
         bstrVal = nullptr;
     }
 }
 
-BitPropVariant::BitPropVariant( const wstring& value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( const std::wstring& value ) : PROPVARIANT() {
     vt = VT_BSTR;
     wReserved1 = 0;
-    bstrVal = ::SysAllocStringLen( value.data(), static_cast< unsigned int >( value.size() ) );
-    if ( !bstrVal ) {
-        throw BitException( "Could not allocate memory for BitPropVariant string" );
+    bstrVal = ::SysAllocStringLen( value.c_str(), static_cast< unsigned int >( value.size() ) );
+    if ( bstrVal == nullptr ) {
+        throw BitException( kCannotAllocateString, std::make_error_code( std::errc::not_enough_memory ) );
     }
 }
 
-BitPropVariant::BitPropVariant( uint8_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( uint8_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI1;
     wReserved1 = 0;
     bVal = value;
 }
 
-BitPropVariant::BitPropVariant( uint16_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( uint16_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI2;
     wReserved1 = 0;
     uiVal = value;
 }
 
-BitPropVariant::BitPropVariant( uint32_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( uint32_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI4;
     wReserved1 = 0;
     ulVal = value;
 }
 
-BitPropVariant::BitPropVariant( uint64_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( uint64_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI8;
     wReserved1 = 0;
     uhVal.QuadPart = value;
 }
 
-BitPropVariant::BitPropVariant( int8_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( int8_t value ) noexcept: PROPVARIANT() {
     vt = VT_I1;
     wReserved1 = 0;
     cVal = value;
 }
 
-BitPropVariant::BitPropVariant( int16_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( int16_t value ) noexcept: PROPVARIANT() {
     vt = VT_I2;
     wReserved1 = 0;
     iVal = value;
 }
 
-BitPropVariant::BitPropVariant( int32_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( int32_t value ) noexcept: PROPVARIANT() {
     vt = VT_I4;
     wReserved1 = 0;
     lVal = value;
 }
 
-BitPropVariant::BitPropVariant( int64_t value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( int64_t value ) noexcept: PROPVARIANT() {
     vt = VT_I8;
     wReserved1 = 0;
     hVal.QuadPart = value;
 }
 
-BitPropVariant::BitPropVariant( const FILETIME& value ) : PROPVARIANT() {
+BitPropVariant::BitPropVariant( const FILETIME& value ) noexcept: PROPVARIANT() {
     vt = VT_FILETIME;
     wReserved1 = 0;
     filetime = value;
@@ -172,13 +188,13 @@ BitPropVariant::~BitPropVariant() {
     internalClear();
 }
 
-BitPropVariant& BitPropVariant::operator=( const BitPropVariant& other ) NOEXCEPT {
+BitPropVariant& BitPropVariant::operator=( const BitPropVariant& other ) {
     BitPropVariant tmp( other ); //copy construct a tmp variable
     *this = std::move( tmp ); //move assign to this
     return *this;
 }
 
-BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) NOEXCEPT {
+BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
     if ( this != &other ) {
         internalClear();
         vt = other.vt;
@@ -223,6 +239,8 @@ BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) NOEXCEPT {
             case VT_FILETIME:
                 filetime = other.filetime;
                 break;
+            default: //type not supported
+                break;
         }
     }
     return *this;
@@ -230,25 +248,26 @@ BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) NOEXCEPT {
 
 bool BitPropVariant::getBool() const {
     if ( vt != VT_BOOL ) {
-        throw BitException( "BitPropVariant is not a bool" );
+        throw BitException( "BitPropVariant is not a bool", make_error_code( BitError::RequestedWrongVariantType ) );
     }
-    return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings
+    return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings.
 }
 
-wstring BitPropVariant::getString() const {
+tstring BitPropVariant::getString() const {
     if ( vt != VT_BSTR ) {
-        throw BitException( "BitPropVariant is not a string" );
+        throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
     }
     //Note: a nullptr BSTR is semantically equivalent to an empty string!
-    return bstrVal == nullptr ? L"" : wstring( bstrVal, SysStringLen( bstrVal ) );
+    return bstrVal == nullptr ? tstring{} : BSTR_TO_TSTRING( bstrVal );
 }
 
 uint8_t BitPropVariant::getUInt8() const {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
-        default:
-            throw BitException( "BitPropVariant is not a 8-bits unsigned integer" );
+        default: // not an 8-bits unsigned integer.
+            throw BitException( "BitPropVariant is not an 8-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -258,8 +277,9 @@ uint16_t BitPropVariant::getUInt16() const {
             return bVal;
         case VT_UI2:
             return uiVal;
-        default:
-            throw BitException( "BitPropVariant is not a 16-bits unsigned integer" );
+        default: // not a 16-bits unsigned integer.
+            throw BitException( "BitPropVariant is not a 16-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -273,8 +293,9 @@ uint32_t BitPropVariant::getUInt32() const {
             return uintVal;
         case VT_UI4:
             return ulVal;
-        default:
-            throw BitException( "BitPropVariant is not a 32-bits unsigned integer" );
+        default: // not a 32-bits unsigned integer.
+            throw BitException( "BitPropVariant is not a 32-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -290,8 +311,9 @@ uint64_t BitPropVariant::getUInt64() const {
             return ulVal;
         case VT_UI8:
             return uhVal.QuadPart;
-        default:
-            throw BitException( "BitPropVariant is not a 64-bits unsigned integer" );
+        default: // not a 64-bits unsigned integer.
+            throw BitException( "BitPropVariant is not a 64-bits unsigned integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -299,8 +321,9 @@ int8_t BitPropVariant::getInt8() const {
     switch ( vt ) {
         case VT_I1:
             return cVal;
-        default:
-            throw BitException( "BitPropVariant is not a 8-bits integer" );
+        default: // not an 8-bits integer.
+            throw BitException( "BitPropVariant is not an 8-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -310,8 +333,9 @@ int16_t BitPropVariant::getInt16() const {
             return cVal;
         case VT_I2:
             return iVal;
-        default:
-            throw BitException( "BitPropVariant is not a 16-bits integer" );
+        default: // not a 16-bits integer.
+            throw BitException( "BitPropVariant is not a 16-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -325,8 +349,9 @@ int32_t BitPropVariant::getInt32() const {
             return intVal;
         case VT_I4:
             return lVal;
-        default:
-            throw BitException( "BitPropVariant is not a 32-bits integer" );
+        default: // not a 32-bits integer.
+            throw BitException( "BitPropVariant is not a 32-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
@@ -342,95 +367,106 @@ int64_t BitPropVariant::getInt64() const {
             return lVal;
         case VT_I8:
             return hVal.QuadPart;
-        default:
-            throw BitException( "BitPropVariant is not a 64-bits integer" );
+        default: // not a 64-bits integer.
+            throw BitException( "BitPropVariant is not a 64-bits integer",
+                                make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
-FILETIME BitPropVariant::getFiletime() const {
+FILETIME BitPropVariant::getFileTime() const {
     if ( vt != VT_FILETIME ) {
-        throw BitException( "BitPropVariant is not a FILETIME" );
+        throw BitException( "BitPropVariant is not a FILETIME",
+                            make_error_code( BitError::RequestedWrongVariantType ) );
     }
     return filetime;
 }
 
-wstring BitPropVariant::toString() const {
-    switch ( vt ) {
-        case VT_BOOL:
-            return boolVal ? L"true" : L"false";
-        case VT_BSTR:
-            return wstring( bstrVal, SysStringLen( bstrVal ) );
-        case VT_UI1:
-            return std::to_wstring( bVal );
-        case VT_UI2:
-            return std::to_wstring( uiVal );
-        case VT_UINT:
-            return std::to_wstring( uintVal );
-        case VT_UI4:
-            return std::to_wstring( ulVal );
-        case VT_UI8:
-            return std::to_wstring( uhVal.QuadPart );
-        case VT_I1:
-            return std::to_wstring( cVal );
-        case VT_I2:
-            return std::to_wstring( iVal );
-        case VT_INT:
-            return std::to_wstring( intVal );
-        case VT_I4:
-            return std::to_wstring( lVal );
-        case VT_I8:
-            return std::to_wstring( hVal.QuadPart );
-        case VT_FILETIME:
-            return std::to_wstring( filetime.dwHighDateTime ) + L", " + std::to_wstring( filetime.dwLowDateTime );
-    }
-    throw BitException( L"BitPropVariant type not supported (vt: " + std::to_wstring( vt ) + L")" );
+bit7z::time_type BitPropVariant::getTimePoint() const {
+    const FILETIME file_time = getFileTime();
+    return FILETIME_to_time_type( file_time );
 }
 
-bool BitPropVariant::isEmpty() const {
+tstring BitPropVariant::toString() const {
+    switch ( vt ) {
+        case VT_BOOL:
+            return boolVal == VARIANT_TRUE ? BIT7Z_STRING( "true" ) : BIT7Z_STRING( "false" );
+        case VT_BSTR:
+            return BSTR_TO_TSTRING( bstrVal );
+        case VT_UI1:
+            return to_tstring( bVal );
+        case VT_UI2:
+            return to_tstring( uiVal );
+        case VT_UINT:
+            return to_tstring( uintVal );
+        case VT_UI4:
+            return to_tstring( ulVal );
+        case VT_UI8:
+            return to_tstring( uhVal.QuadPart );
+        case VT_I1:
+            return to_tstring( cVal );
+        case VT_I2:
+            return to_tstring( iVal );
+        case VT_INT:
+            return to_tstring( intVal );
+        case VT_I4:
+            return to_tstring( lVal );
+        case VT_I8:
+            return to_tstring( hVal.QuadPart );
+        case VT_FILETIME:
+            return to_tstring( filetime.dwHighDateTime ) + BIT7Z_STRING( ", " ) + to_tstring( filetime.dwLowDateTime );
+        case VT_EMPTY:
+            return tstring{};
+        default: //type not supported
+            throw BitException( "BitPropVariant type code " + std::to_string( vt ) + " not supported.",
+                                make_error_code( BitError::UnsupportedOperation ) );
+    }
+}
+
+bool BitPropVariant::isEmpty() const noexcept {
     return vt == VT_EMPTY;
 }
 
-bool BitPropVariant::isBool() const {
+bool BitPropVariant::isBool() const noexcept {
     return vt == VT_BOOL;
 }
 
-bool BitPropVariant::isString() const {
+bool BitPropVariant::isString() const noexcept {
     return vt == VT_BSTR;
 }
 
-bool BitPropVariant::isUInt8() const {
+bool BitPropVariant::isUInt8() const noexcept {
     return vt == VT_UI1;
 }
 
-bool BitPropVariant::isUInt16() const {
+bool BitPropVariant::isUInt16() const noexcept {
     return vt == VT_UI2 || vt == VT_UI1;
 }
 
-bool BitPropVariant::isUInt32() const {
+bool BitPropVariant::isUInt32() const noexcept {
     return vt == VT_UI4 || vt == VT_UINT || vt == VT_UI2 || vt == VT_UI1;
 }
 
-bool BitPropVariant::isUInt64() const {
+bool BitPropVariant::isUInt64() const noexcept {
     return vt == VT_UI8 || vt == VT_UI4 || vt == VT_UINT || vt == VT_UI2 || vt == VT_UI1;
 }
 
-bool BitPropVariant::isInt8() const {
+bool BitPropVariant::isInt8() const noexcept {
     return vt == VT_I1;
 }
 
-bool BitPropVariant::isInt16() const {
+bool BitPropVariant::isInt16() const noexcept {
     return vt == VT_I2 || vt == VT_I1;
 }
 
-bool BitPropVariant::isInt32() const {
+bool BitPropVariant::isInt32() const noexcept {
     return vt == VT_I4 || vt == VT_INT || vt == VT_I2 || vt == VT_I1;
 }
 
-bool BitPropVariant::isInt64() const {
+bool BitPropVariant::isInt64() const noexcept {
     return vt == VT_I8 || vt == VT_I4 || vt == VT_INT || vt == VT_I2 || vt == VT_I1;
 }
 
-bool BitPropVariant::isFiletime() const {
+bool BitPropVariant::isFileTime() const noexcept {
     return vt == VT_FILETIME;
 }
 
@@ -438,7 +474,7 @@ BitPropVariantType BitPropVariant::type() const {
     return lookupType( vt );
 }
 
-void BitPropVariant::clear() {
+void BitPropVariant::clear() noexcept {
     if ( vt == VT_EMPTY ) {
         return;
     }
@@ -446,7 +482,7 @@ void BitPropVariant::clear() {
     vt = VT_EMPTY;
 }
 
-void BitPropVariant::internalClear() {
+void BitPropVariant::internalClear() noexcept {
     if ( vt == VT_BSTR && bstrVal != nullptr ) {
         ::SysFreeString( bstrVal ); //this was a string: since it is not needed anymore, we must free it!
         bstrVal = nullptr;
@@ -457,43 +493,43 @@ void BitPropVariant::internalClear() {
     uhVal.QuadPart = 0;
 }
 
-bool bit7z::operator!=( const BitPropVariant& a, const BitPropVariant& b ) {
-    return !( a == b );
+bool bit7z::operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+    return !( lhs == rhs );
 }
 
-bool bit7z::operator==( const BitPropVariant& a, const BitPropVariant& b ) {
-    if ( a.vt != b.vt ) {
+bool bit7z::operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+    if ( lhs.vt != rhs.vt ) {
         return false;
     }
-    switch ( a.vt ) { //a.vt == b.vt
+    switch ( lhs.vt ) { //lhs.vt == rhs.vt
         case VT_EMPTY:
             return true;
         case VT_BOOL:
-            return a.boolVal == b.boolVal;
+            return lhs.boolVal == rhs.boolVal;
         case VT_BSTR:
-            return wcscmp( a.bstrVal, b.bstrVal ) == 0;
+            return wcscmp( lhs.bstrVal, rhs.bstrVal ) == 0;
         case VT_UI1:
-            return a.bVal == b.bVal;
+            return lhs.bVal == rhs.bVal;
         case VT_UI2:
-            return a.uiVal == b.uiVal;
+            return lhs.uiVal == rhs.uiVal;
         case VT_UINT:
-            return a.uintVal == b.uintVal;
+            return lhs.uintVal == rhs.uintVal;
         case VT_UI4:
-            return a.ulVal == b.ulVal;
+            return lhs.ulVal == rhs.ulVal;
         case VT_UI8:
-            return a.uhVal.QuadPart == b.uhVal.QuadPart;
+            return lhs.uhVal.QuadPart == rhs.uhVal.QuadPart;
         case VT_I1:
-            return a.cVal == b.cVal;
+            return lhs.cVal == rhs.cVal;
         case VT_I2:
-            return a.iVal == b.iVal;
+            return lhs.iVal == rhs.iVal;
         case VT_INT:
-            return a.intVal == b.intVal;
+            return lhs.intVal == rhs.intVal;
         case VT_I4:
-            return a.lVal == b.lVal;
+            return lhs.lVal == rhs.lVal;
         case VT_I8:
-            return a.hVal.QuadPart == b.hVal.QuadPart;
+            return lhs.hVal.QuadPart == rhs.hVal.QuadPart;
         case VT_FILETIME:
-            return CompareFileTime( &a.filetime, &b.filetime ) == 0;
+            return lhs.filetime == rhs.filetime;
         default:
             return false;
     }

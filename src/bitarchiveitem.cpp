@@ -2,94 +2,100 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 /*
- * bit7z - A C++ static library to interface with the 7-zip DLLs.
- * Copyright (c) 2014-2019  Riccardo Ostani - All Rights Reserved.
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * Bit7z is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with bit7z; if not, see https://www.gnu.org/licenses/.
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "../include/bitarchiveitem.hpp"
+#include "bitarchiveitem.hpp"
 
-#include "../include/bitexception.hpp"
-#include "../include/fsutil.hpp"
+#include "internal/fsutil.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-BitArchiveItem::BitArchiveItem( uint32_t item_index ) : mItemIndex( item_index ) {}
+BitArchiveItem::BitArchiveItem( uint32_t item_index ) noexcept
+    : mItemIndex( item_index ) {}
 
-BitArchiveItem::~BitArchiveItem() {}
-
-uint32_t BitArchiveItem::index() const {
+uint32_t BitArchiveItem::index() const noexcept {
     return mItemIndex;
 }
 
 bool BitArchiveItem::isDir() const {
-    BitPropVariant propvar = getProperty( BitProperty::IsDir );
-    return !propvar.isEmpty() && propvar.getBool();
+    const BitPropVariant is_dir = itemProperty( BitProperty::IsDir );
+    return !is_dir.isEmpty() && is_dir.getBool();
 }
 
-wstring BitArchiveItem::name() const {
-    BitPropVariant propvar = getProperty( BitProperty::Name );
-    if ( propvar.isEmpty() ) {
-        propvar = getProperty( BitProperty::Path );
-        return propvar.isEmpty() ? L"" : fsutil::filename( propvar.getString(), true );
+BIT7Z_NODISCARD
+inline auto filename( const fs::path& path ) -> tstring {
+    return path.filename().string< tchar >();
+}
+
+tstring BitArchiveItem::name() const {
+    BitPropVariant name = itemProperty( BitProperty::Name );
+    if ( name.isEmpty() ) {
+        name = itemProperty( BitProperty::Path );
+        return name.isEmpty() ? tstring{} : filename( name.getString() );
     }
-    return propvar.getString();
+    return name.getString();
 }
 
-wstring BitArchiveItem::extension() const {
+tstring BitArchiveItem::extension() const {
     if ( isDir() ) {
-        return L"";
+        return tstring{};
     }
-    BitPropVariant propvar = getProperty( BitProperty::Extension );
-    return propvar.isEmpty() ? fsutil::extension( name() ) : propvar.getString();
+    const BitPropVariant extension = itemProperty( BitProperty::Extension );
+    return extension.isEmpty() ? fsutil::extension( name() ) : extension.getString();
 }
 
-wstring BitArchiveItem::path() const {
-    BitPropVariant propvar = getProperty( BitProperty::Path );
-    if ( propvar.isEmpty() ) {
-        propvar = getProperty( BitProperty::Name );
-        return propvar.isEmpty() ? L"" : propvar.getString();
+tstring BitArchiveItem::path() const {
+    BitPropVariant path = itemProperty( BitProperty::Path );
+    if ( path.isEmpty() ) {
+        path = itemProperty( BitProperty::Name );
+        return path.isEmpty() ? tstring{} : path.getString();
     }
-    return propvar.getString();
+    return path.getString();
 }
 
 uint64_t BitArchiveItem::size() const {
-    BitPropVariant propvar = getProperty( BitProperty::Size );
-    return propvar.isEmpty() ? 0 : propvar.getUInt64();
+    const BitPropVariant size = itemProperty( BitProperty::Size );
+    return size.isEmpty() ? 0 : size.getUInt64();
 }
 
 uint64_t BitArchiveItem::packSize() const {
-    BitPropVariant propvar = getProperty( BitProperty::PackSize );
-    return propvar.isEmpty() ? 0 : propvar.getUInt64();
+    const BitPropVariant pack_size = itemProperty( BitProperty::PackSize );
+    return pack_size.isEmpty() ? 0 : pack_size.getUInt64();
 }
 
 bool BitArchiveItem::isEncrypted() const {
-    BitPropVariant propvar = getProperty( BitProperty::Encrypted );
-    return propvar.isBool() && propvar.getBool();
+    const BitPropVariant is_encrypted = itemProperty( BitProperty::Encrypted );
+    return is_encrypted.isBool() && is_encrypted.getBool();
 }
 
-BitPropVariant BitArchiveItem::getProperty( BitProperty property ) const {
-    auto prop_it = mItemProperties.find( property );
-    return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
+time_type BitArchiveItem::creationTime() const {
+    const BitPropVariant creation_time = itemProperty( BitProperty::CTime );
+    return creation_time.isFileTime() ? creation_time.getTimePoint() : time_type::clock::now();
 }
 
-map< BitProperty, BitPropVariant > BitArchiveItem::itemProperties() const {
-    return mItemProperties;
+time_type BitArchiveItem::lastAccessTime() const {
+    const BitPropVariant access_time = itemProperty( BitProperty::ATime );
+    return access_time.isFileTime() ? access_time.getTimePoint() : time_type::clock::now();
 }
 
-void BitArchiveItem::setProperty( BitProperty property, const BitPropVariant& value ) {
-    mItemProperties[ property ] = value;
+time_type BitArchiveItem::lastWriteTime() const {
+    const BitPropVariant write_time = itemProperty( BitProperty::MTime );
+    return write_time.isFileTime() ? write_time.getTimePoint() : time_type::clock::now();
+}
+
+uint32_t BitArchiveItem::attributes() const {
+    const BitPropVariant attrib = itemProperty( BitProperty::Attrib );
+    return attrib.isUInt32() ? attrib.getUInt32() : 0;
+}
+
+uint32_t BitArchiveItem::crc() const {
+    const BitPropVariant crc = itemProperty( BitProperty::CRC );
+    return crc.isUInt32() ? crc.getUInt32() : 0;
 }

@@ -1,191 +1,215 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-project(bit7z)
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-# headers
-set(HEADER_FILES
-    ${PROJECT_SOURCE_DIR}/include/bit7z.hpp
-    ${PROJECT_SOURCE_DIR}/include/bit7zlibrary.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitarchivecreator.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitarchivehandler.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitarchiveinfo.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitarchiveitem.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitarchiveopener.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitcompressionlevel.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitcompressionmethod.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitcompressor.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitexception.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitextractor.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitformat.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitguids.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitinputarchive.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitmemcompressor.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitmemextractor.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitpropvariant.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitstreamcompressor.hpp
-    ${PROJECT_SOURCE_DIR}/include/bitstreamextractor.hpp
-    ${PROJECT_SOURCE_DIR}/include/bittypes.hpp
-    ${PROJECT_SOURCE_DIR}/include/bufferextractcallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/bufferupdatecallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/callback.hpp
-    ${PROJECT_SOURCE_DIR}/include/cbufoutstream.hpp
-    ${PROJECT_SOURCE_DIR}/include/cmultivoloutstream.hpp
-    ${PROJECT_SOURCE_DIR}/include/cstdinstream.hpp
-    ${PROJECT_SOURCE_DIR}/include/cstdoutstream.hpp
-    ${PROJECT_SOURCE_DIR}/include/extractcallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/fileextractcallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/fileupdatecallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/fsindexer.hpp
-    ${PROJECT_SOURCE_DIR}/include/fsitem.hpp
-    ${PROJECT_SOURCE_DIR}/include/fsutil.hpp
-    ${PROJECT_SOURCE_DIR}/include/opencallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/streamextractcallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/streamupdatecallback.hpp
-    ${PROJECT_SOURCE_DIR}/include/updatecallback.hpp
-)
+cmake_minimum_required( VERSION 3.11 )
 
-# sources
-set(SOURCE_FILES
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/C/Alloc.c
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileDir.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileFind.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileIO.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Windows/FileName.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/7zip/Archive/Common/MultiStream.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/7zip/Common/FileStreams.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/IntToString.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/MyString.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/Common/MyVector.cpp
-    ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/7zip/Common/StreamObjects.cpp
-    ${PROJECT_SOURCE_DIR}/src/bit7zlibrary.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitarchivecreator.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitarchivehandler.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitarchiveinfo.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitarchiveitem.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitarchiveopener.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitcompressor.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitexception.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitextractor.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitformat.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitguids.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitinputarchive.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitmemcompressor.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitmemextractor.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitpropvariant.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitstreamcompressor.cpp
-    ${PROJECT_SOURCE_DIR}/src/bitstreamextractor.cpp
-    ${PROJECT_SOURCE_DIR}/src/bufferextractcallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/bufferupdatecallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/callback.cpp
-    ${PROJECT_SOURCE_DIR}/src/cbufoutstream.cpp
-    ${PROJECT_SOURCE_DIR}/src/cmultivoloutstream.cpp
-    ${PROJECT_SOURCE_DIR}/src/cstdinstream.cpp
-    ${PROJECT_SOURCE_DIR}/src/cstdoutstream.cpp
-    ${PROJECT_SOURCE_DIR}/src/extractcallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/fileextractcallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/fileupdatecallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/fsindexer.cpp
-    ${PROJECT_SOURCE_DIR}/src/fsitem.cpp
-    ${PROJECT_SOURCE_DIR}/src/fsutil.cpp
-    ${PROJECT_SOURCE_DIR}/src/opencallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/streamextractcallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/streamupdatecallback.cpp
-    ${PROJECT_SOURCE_DIR}/src/updatecallback.cpp
-)
+project( bit7z
+         VERSION 4.0.0
+         DESCRIPTION "A C++ static library offering a clean and simple interface to the 7-zip/p7zip shared libraries"
+         HOMEPAGE_URL "https://github.com/rikyoz/bit7z/" )
+set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
 
-# enable only debug/release configurations for generated VS project file
-if(CMAKE_CONFIGURATION_TYPES)
-    set(CMAKE_CONFIGURATION_TYPES Debug Release)
-    set(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
-        "Reset the configurations to what we need"
-        FORCE)
+cmake_policy( SET CMP0022 NEW )
+if( POLICY CMP0076 )
+    cmake_policy( SET CMP0076 NEW )
 endif()
 
-# by default, use release build
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Release")
-  message(STATUS "Build type not specified: using Release by default.")
+set( EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party )
+set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip )
+
+# public headers
+set( PUBLIC_HEADERS
+     include/bit7z/bit7z.hpp
+     include/bit7z/bit7zlibrary.hpp
+     include/bit7z/bitabstractarchivecreator.hpp
+     include/bit7z/bitabstractarchivehandler.hpp
+     include/bit7z/bitabstractarchiveopener.hpp
+     include/bit7z/bitarchiveeditor.hpp
+     include/bit7z/bitarchiveitem.hpp
+     include/bit7z/bitarchiveiteminfo.hpp
+     include/bit7z/bitarchiveitemoffset.hpp
+     include/bit7z/bitarchivereader.hpp
+     include/bit7z/bitarchivewriter.hpp
+     include/bit7z/bitcompressionlevel.hpp
+     include/bit7z/bitcompressionmethod.hpp
+     include/bit7z/bitcompressor.hpp
+     include/bit7z/bitdefines.hpp
+     include/bit7z/biterror.hpp
+     include/bit7z/bitexception.hpp
+     include/bit7z/bitextractor.hpp
+     include/bit7z/bitfilecompressor.hpp
+     include/bit7z/bitfileextractor.hpp
+     include/bit7z/bitformat.hpp
+     include/bit7z/bitfs.hpp
+     include/bit7z/bitgenericitem.hpp
+     include/bit7z/bitinputarchive.hpp
+     include/bit7z/bititemsvector.hpp
+     include/bit7z/bitmemcompressor.hpp
+     include/bit7z/bitmemextractor.hpp
+     include/bit7z/bitoutputarchive.hpp
+     include/bit7z/bitpropvariant.hpp
+     include/bit7z/bitstreamcompressor.hpp
+     include/bit7z/bitstreamextractor.hpp
+     include/bit7z/bittypes.hpp
+     include/bit7z/bitwindows.hpp )
+
+# header files
+set( HEADERS
+     src/internal/archiveproperties.hpp
+     src/internal/bufferextractcallback.hpp
+     src/internal/bufferitem.hpp
+     src/internal/bufferutil.hpp
+     src/internal/callback.hpp
+     src/internal/cbufferinstream.hpp
+     src/internal/cbufferoutstream.hpp
+     src/internal/cfileinstream.hpp
+     src/internal/cfileoutstream.hpp
+     src/internal/cfixedbufferoutstream.hpp
+     src/internal/cmultivolumeinstream.hpp
+     src/internal/cmultivolumeoutstream.hpp
+     src/internal/cstdinstream.hpp
+     src/internal/cstdoutstream.hpp
+     src/internal/cvolumeinstream.hpp
+     src/internal/cvolumeoutstream.hpp
+     src/internal/dateutil.hpp
+     src/internal/extractcallback.hpp
+     src/internal/fileextractcallback.hpp
+     src/internal/fixedbufferextractcallback.hpp
+     src/internal/formatdetect.hpp
+     src/internal/fsindexer.hpp
+     src/internal/fsitem.hpp
+     src/internal/fsutil.hpp
+     src/internal/fs.hpp
+     src/internal/genericinputitem.hpp
+     src/internal/guiddef.hpp
+     src/internal/guids.hpp
+     src/internal/hresultcategory.hpp
+     src/internal/internalcategory.hpp
+     src/internal/macros.hpp
+     src/internal/opencallback.hpp
+     src/internal/processeditem.hpp
+     src/internal/renameditem.hpp
+     src/internal/stdinputitem.hpp
+     src/internal/streamextractcallback.hpp
+     src/internal/streamutil.hpp
+     src/internal/updatecallback.hpp
+     src/internal/util.hpp
+     src/internal/windows.hpp )
+
+# source files
+set( SOURCES
+     src/bit7zlibrary.cpp
+     src/bitabstractarchivecreator.cpp
+     src/bitabstractarchivehandler.cpp
+     src/bitabstractarchiveopener.cpp
+     src/bitarchiveeditor.cpp
+     src/bitarchiveitem.cpp
+     src/bitarchiveiteminfo.cpp
+     src/bitarchiveitemoffset.cpp
+     src/bitarchivereader.cpp
+     src/bitarchivewriter.cpp
+     src/biterror.cpp
+     src/bitexception.cpp
+     src/bitfilecompressor.cpp
+     src/bitformat.cpp
+     src/bitinputarchive.cpp
+     src/bititemsvector.cpp
+     src/bitoutputarchive.cpp
+     src/bitpropvariant.cpp
+     src/internal/bufferextractcallback.cpp
+     src/internal/bufferitem.cpp
+     src/internal/bufferutil.cpp
+     src/internal/callback.cpp
+     src/internal/cbufferinstream.cpp
+     src/internal/cbufferoutstream.cpp
+     src/internal/cfileinstream.cpp
+     src/internal/cfileoutstream.cpp
+     src/internal/cfixedbufferoutstream.cpp
+     src/internal/cmultivolumeinstream.cpp
+     src/internal/cmultivolumeoutstream.cpp
+     src/internal/cstdinstream.cpp
+     src/internal/cstdoutstream.cpp
+     src/internal/cvolumeinstream.cpp
+     src/internal/cvolumeoutstream.cpp
+     src/internal/dateutil.cpp
+     src/internal/extractcallback.cpp
+     src/internal/fileextractcallback.cpp
+     src/internal/fixedbufferextractcallback.cpp
+     src/internal/formatdetect.cpp
+     src/internal/fsindexer.cpp
+     src/internal/fsitem.cpp
+     src/internal/fsutil.cpp
+     src/internal/genericinputitem.cpp
+     src/internal/guids.cpp
+     src/internal/hresultcategory.cpp
+     src/internal/internalcategory.cpp
+     src/internal/opencallback.cpp
+     src/internal/processeditem.cpp
+     src/internal/renameditem.cpp
+     src/internal/stdinputitem.cpp
+     src/internal/streamextractcallback.cpp
+     src/internal/updatecallback.cpp
+     src/internal/util.cpp
+     src/internal/windows.cpp )
+
+# library output file name options
+include( cmake/OutputOptions.cmake )
+
+# filesystem library
+include( cmake/Filesystem.cmake )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+
+# printing library and compiler information (useful for debugging)
+message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
+message( STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}" )
+message( STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}" )
+message( STATUS "Architecture: ${ARCH_DIR}" )
+message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
+message( STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}" )
+
+# library target options
+set( LIB_TARGET bit7z${ARCH_POSTFIX} )
+add_library( ${LIB_TARGET} STATIC )
+target_sources( ${LIB_TARGET}
+                PUBLIC ${PUBLIC_HEADERS}
+                PRIVATE ${HEADERS} ${SOURCES} )
+
+# public includes
+target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
+                                                 "$<INSTALL_INTERFACE:include>" )
+
+# private includes
+target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
+                                                  "${PROJECT_SOURCE_DIR}/src"
+                                                  "${EXTERNAL_LIBS_DIR}"
+                                                  "${7ZIP_SOURCE_DIR}/CPP/" )
+
+# 7-zip compilation definitions
+target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
+if( WIN32 )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE _WINDOWS )
+    target_link_libraries( ${LIB_TARGET} PUBLIC oleaut32 )
 endif()
 
-# debug library file name must end with "_d" (e.g. bit7z_d.lib)
-set(CMAKE_DEBUG_POSTFIX "_d")
-
-# per-architecture options
-if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-    message(STATUS "Architecture: x86")
-    set(ARCH_POSTFIX "")
-    set(ARCH_DIR "x86")
-else()
-    message(STATUS "Architecture: x64")
-    set(ARCH_POSTFIX 64)
-    set(ARCH_DIR "x64")
-    add_definitions(-DWIN64)
+if( UNIX )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
+                                                      ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
+    target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
 
-# forcing output directory to ${BIT7Z_DIR}/bin/${ARCH_DIR}/ (e.g. ./bin/x64/)
-set(OUTPUT_DIR ${PROJECT_SOURCE_DIR}/bin/${ARCH_DIR}/)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})
-foreach( OUTPUT_CONFIG ${CMAKE_CONFIGURATION_TYPES} )
-    string( TOUPPER ${OUTPUT_CONFIG} OUTPUT_CONFIG )
-    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
-    set(CMAKE_LIBRARY_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_${OUTPUT_CONFIG} ${OUTPUT_DIR})
-endforeach()
+# bit7z build options
+include( cmake/BuildOptions.cmake )
 
-# c++11 required
-set(CMAKE_CXX_STANDARD 11)
+# compiler-specific options
+include( cmake/CompilerOptions.cmake )
 
-set(TARGET_NAME bit7z${ARCH_POSTFIX})
-
-add_library(${TARGET_NAME} STATIC ${SOURCE_FILES} ${HEADER_FILES})
-
-# macros
-target_compile_definitions(${TARGET_NAME} PUBLIC UNICODE _UNICODE _7Z_VOL _WINDOWS)
-if(BIT7Z_AUTO_FORMAT)
-    target_compile_definitions(${TARGET_NAME} PUBLIC BIT7Z_AUTO_FORMAT)
-endif()
-if(BIT7Z_REGEX_MATCHING)
-    target_compile_definitions(${TARGET_NAME} PUBLIC BIT7Z_REGEX_MATCHING)
+if( BIT7Z_BUILD_TESTS )
+    # tests
+    add_subdirectory( tests )
 endif()
 
-# includes
-target_include_directories(${TARGET_NAME} PUBLIC
-        ${PROJECT_SOURCE_DIR}/include/
-)
-
-target_include_directories(${TARGET_NAME} PRIVATE
-        ${PROJECT_SOURCE_DIR}/lib/7zSDK/CPP/
-)
-
-# compiler options
-if(MSVC)
-    # setting pdb file name for debug builds (otherwise it is not generated!)
-    set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_PDB_NAME_DEBUG ${TARGET_NAME}${CMAKE_DEBUG_POSTFIX})
-    # release builds should be optimized also for size
-    target_compile_options(${TARGET_NAME} PRIVATE "$<$<CONFIG:RELEASE>:/Os>")
-    # remove default warning level
-    string (REGEX REPLACE "/W[0-4]" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-    string (REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-    # warning level
-    target_compile_options(${TARGET_NAME} PRIVATE /W4 /WX)
-    # standard conformance options of MSVC
-    target_compile_options(${TARGET_NAME} PRIVATE /Zc:rvalueCast /Zc:inline)
-    # standard conformance options for MSVC > 2013 (i.e. >= 2015)
-    if(MSVC_VERSION GREATER 1800) 
-        target_compile_options(${TARGET_NAME} PRIVATE /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding)
-    endif()
-    # static runtime option
-    if(STATIC_RUNTIME)
-        set(CompilerFlags
-            CMAKE_CXX_FLAGS_DEBUG
-            CMAKE_CXX_FLAGS_RELEASE
-            CMAKE_C_FLAGS_DEBUG
-            CMAKE_C_FLAGS_RELEASE)
-        foreach(CompilerFlag ${CompilerFlags})
-            string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
-            set(${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "msvc compiler flags" FORCE)
-            message("MSVC flags: ${CompilerFlag}:${${CompilerFlag}}")
-        endforeach()
-    endif()
+if( BIT7Z_BUILD_DOCS )
+    # docs
+    add_subdirectory( docs )
 endif()
