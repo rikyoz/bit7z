@@ -176,9 +176,9 @@ for:
   after_build:
     - cd ..
     - mkdir "pkg/bit7z/lib/"
-    - mkdir "pkg/bit7z/include/"
+    - mkdir "pkg/bit7z/include/bit7z/"
     - ps: Copy-Item -Path lib\* -Destination pkg\bit7z\lib\ -Recurse
-    - copy include\bit*.hpp pkg\bit7z\include\
+    - copy include\bit7z\bit*.hpp pkg\bit7z\include\bit7z\
     - copy README.md pkg\bit7z\
     - copy LICENSE pkg\bit7z\
     - echo %bit7z_version% %compiler_tag% > "pkg/bit7z/BUILD.txt"
