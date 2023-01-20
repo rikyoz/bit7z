@@ -206,12 +206,12 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 
 ## 🚀 Upgrading from bit7z v3 to v4
 
-The newest bit7z v4 introduced some major breaking changes to the API. In particular:
+The newest bit7z v4 introduced some significant breaking changes to the API. In particular:
 
 + By default, the project now follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
-  + The default string type is `std::string` (instead of `std::wstring`) so that the library can be used in cross-platform projects more easily (this version introduced Linux/macOS support too).
+  + The default string type is `std::string` (instead of `std::wstring`), so users can use the library in cross-platform projects more easily (v4 introduced Linux/macOS support too).
   + Input `std::string`s will be considered as UTF-8 encoded.
-  + On Windows, you can still achieve the old behavior by using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
+  + You can still achieve the old behavior on Windows using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
 + The old `BitExtractor` class is now called `BitFileExtractor`.
   + Now `BitExtractor` is just the name of a template class for all the extraction classes.
 + The `ProgressCallback` now must return a `bool` value indicating whether the current operation can continue (`true`) or not (`false`).
