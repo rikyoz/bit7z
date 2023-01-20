@@ -11,8 +11,8 @@
  */
 #include <catch2/catch.hpp>
 
-#include <bit7zlibrary.hpp>
-#include <bitexception.hpp>
+#include <bit7z/bit7zlibrary.hpp>
+#include <bit7z/bitexception.hpp>
 
 #include "shared_lib.hpp"
 

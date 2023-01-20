@@ -19,6 +19,7 @@
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
+using namespace bit7z::filesystem;
 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
@@ -58,9 +59,7 @@ HRESULT FileExtractCallback::finishOperation( OperationResult operation_result )
     return result;
 }
 
-HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
-    mCurrentItem.loadItemInfo( inputArchive(), index );
-
+fs::path FileExtractCallback::getCurrentItemPath() const {
     fs::path filePath = mCurrentItem.path();
     if ( filePath.empty() ) {
         filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
@@ -69,7 +68,20 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     } else {
         // No action needed
     }
+    return filePath;
+}
+
+HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+    mCurrentItem.loadItemInfo( inputArchive(), index );
+
+    auto filePath = getCurrentItemPath();
     mFilePathOnDisk = mDirectoryPath / filePath;
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( fsutil::should_format_long_path( mFilePathOnDisk ) ) {
+        mFilePathOnDisk = fsutil::format_long_path( mFilePathOnDisk );
+    }
+#endif
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {

@@ -12,7 +12,7 @@
 
 #include <catch2/catch.hpp>
 
-#include <bitformat.hpp>
+#include <bit7z/bitformat.hpp>
 #include <internal/fsutil.hpp>
 
 #include <vector>

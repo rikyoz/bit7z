@@ -31,8 +31,13 @@ int main( int argc, char* argv[] ) {
 
     std::cout << "[Runtime]" << std::endl;
     std::cout << "Executable path: " << filesystem::exe_path().string() << std::endl;
-    std::cout << "7-zip shared library: " << sevenzip_lib_path() << std::endl;
+    std::cout << "7-zip shared library: ";
 #ifdef _WIN32
+#   ifdef BIT7Z_USE_NATIVE_STRING
+    std::wcout << sevenzip_lib_path() << std::endl;
+#   else
+    std::cout << sevenzip_lib_path() << std::endl;
+#   endif
     std::cout << "Code page: " << GetACP() << std::endl;
 #endif
     std::cout << std::endl;

@@ -10,7 +10,7 @@
 #ifndef SHARED_LIB_HPP
 #define SHARED_LIB_HPP
 
-#include <bittypes.hpp>
+#include <bit7z/bittypes.hpp>
 
 #ifndef BIT7Z_USE_SYSTEM_7ZIP
 #include "filesystem.hpp"

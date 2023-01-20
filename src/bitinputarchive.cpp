@@ -32,6 +32,10 @@
 #include "internal/formatdetect.hpp"
 #endif
 
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+#include "internal/fsutil.hpp"
+#endif
+
 using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
@@ -74,15 +78,11 @@ void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
     }
 }
 
-bool ends_with( const tstring& str, const tstring& suffix ) {
-    return str.size() >= suffix.size() && str.compare( str.size() - suffix.size(), suffix.size(), suffix ) == 0;
-}
-
-IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* in_stream ) {
+IInArchive* BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_stream ) {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
-        // Detecting format of the input file
+        // Detecting the format of the input file
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         detected_by_signature = true;
     }
@@ -102,7 +102,7 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 
 #ifdef BIT7Z_AUTO_FORMAT
     if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detected_by_signature ) {
-        /* User wanted auto-detection of format, an extension was detected but opening failed, so we try a more
+        /* User wanted auto-detection of the format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e., not BitFormat::Auto), this check is not performed,
          *       and an exception is thrown (next if)!
@@ -116,41 +116,55 @@ IInArchive* BitInputArchive::openArchiveStream( const tstring& name, IInStream* 
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( "Failed to open the archive", make_hresult_code( res ), name );
+        throw BitException( "Failed to open the archive", make_hresult_code( res ), name.string< tchar >() );
     }
 
     return in_archive.Detach();
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, tstring in_file )
-    : mArchiveHandler{ handler }, mArchivePath{ std::move( in_file ) } {
-
 #ifdef BIT7Z_AUTO_FORMAT
-    //if auto, detect the format from extension (and try later from signature if it fails), otherwise try passed format.
-    mDetectedFormat = ( handler.format() == BitFormat::Auto ? &detectFormatFromExt( mArchivePath )
-                                                            : &handler.format() );
+#   define DETECT_FORMAT( format, arc_path ) ( format == BitFormat::Auto ? &detectFormatFromExt( arc_path ) : &format )
 #else
-    mDetectedFormat = &handler.format();
+#   define DETECT_FORMAT( format, arc_path ) &format
+#endif
+
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& in_file )
+    : BitInputArchive( handler, fs::path{ in_file } ) {}
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path )
+    : mDetectedFormat{ nullptr },
+#else
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arc_path )
+    : mDetectedFormat{ DETECT_FORMAT( handler.format(), arc_path ) },
+#endif
+      mArchiveHandler{ handler },
+      mArchivePath{ arc_path.string< tchar >() } {
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( filesystem::fsutil::should_format_long_path( arc_path ) ) {
+        arc_path = filesystem::fsutil::format_long_path( arc_path );
+    }
+    mDetectedFormat = DETECT_FORMAT( handler.format(), arc_path );
 #endif
 
     CMyComPtr< IInStream > file_stream;
-    if ( *mDetectedFormat != BitFormat::Split && ends_with( mArchivePath, ".001" ) ) {
-        file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( mArchivePath );
+    if ( *mDetectedFormat != BitFormat::Split && arc_path.extension() == ".001" ) {
+        file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( arc_path );
     } else {
-        file_stream = bit7z::make_com< CFileInStream, IInStream >( mArchivePath );
+        file_stream = bit7z::make_com< CFileInStream, IInStream >( arc_path );
     }
-    mInArchive = openArchiveStream( mArchivePath, file_stream );
+    mInArchive = openArchiveStream( arc_path, file_stream );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const vector< byte_t >& in_buffer )
-    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const std::vector< byte_t >& in_buffer )
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto buf_stream = bit7z::make_com< CBufferInStream, IInStream >( in_buffer );
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), buf_stream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& in_stream )
-    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try passed format.
+    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto std_stream = bit7z::make_com< CStdInStream, IInStream >( in_stream );
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), std_stream );
@@ -217,12 +231,12 @@ const BitAbstractArchiveHandler& BitInputArchive::handler() const noexcept {
     return mArchiveHandler;
 }
 
-void BitInputArchive::extract( const tstring& out_dir, const vector< uint32_t >& indices ) const {
+void BitInputArchive::extract( const tstring& out_dir, const std::vector< uint32_t >& indices ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, out_dir );
     extractArc( mInArchive, indices, callback );
 }
 
-void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) const {
+void BitInputArchive::extract( std::vector< byte_t >& out_buffer, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
@@ -241,7 +255,7 @@ void BitInputArchive::extract( vector< byte_t >& out_buffer, uint32_t index ) co
     out_buffer = std::move( buffers_map.begin()->second );
 }
 
-void BitInputArchive::extract( ostream& out_stream, uint32_t index ) const {
+void BitInputArchive::extract( std::ostream& out_stream, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
@@ -281,7 +295,7 @@ void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index 
     extractArc( mInArchive, indices, extract_callback );
 }
 
-void BitInputArchive::extract( map< tstring, vector< byte_t > >& out_map ) const {
+void BitInputArchive::extract( std::map< tstring, std::vector< byte_t > >& out_map ) const {
     const uint32_t number_items = itemsCount();
     vector< uint32_t > files_indices;
     for ( uint32_t i = 0; i < number_items; ++i ) {
