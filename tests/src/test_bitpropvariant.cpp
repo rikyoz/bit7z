@@ -49,23 +49,40 @@ const auto test_tstring = BIT7Z_STRING( "abcdefghijklmnopqrstuvwxyz0123456789" )
 const auto test_input_encoding = L"\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3"; // ウォルグライモン
 const auto test_output_encoding = BIT7Z_STRING( "\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3" ); // ウォルグライモン
 
+void check_variant_type( const BitPropVariant& prop_variant, BitPropVariantType type ) {
+    REQUIRE( prop_variant.type() == type );
+    REQUIRE( prop_variant.isEmpty() == ( type == BitPropVariantType::Empty ) );
+    REQUIRE( prop_variant.isBool() == ( type == BitPropVariantType::Bool ) );
+    REQUIRE( prop_variant.isString() == ( type == BitPropVariantType::String ) );
+    REQUIRE( prop_variant.isUInt8() == ( type == BitPropVariantType::UInt8 ||
+                                         type == BitPropVariantType::UInt16 ||
+                                         type == BitPropVariantType::UInt32 ||
+                                         type == BitPropVariantType::UInt64 ) );
+    REQUIRE( prop_variant.isUInt16() == ( type == BitPropVariantType::UInt16 ||
+                                          type == BitPropVariantType::UInt32 ||
+                                          type == BitPropVariantType::UInt64 ) );
+    REQUIRE( prop_variant.isUInt32() == ( type == BitPropVariantType::UInt32 ||
+                                          type == BitPropVariantType::UInt64 ) );
+    REQUIRE( prop_variant.isUInt64() == ( type == BitPropVariantType::UInt64 ) );
+    REQUIRE( prop_variant.isInt8() == ( type == BitPropVariantType::Int8 ||
+                                        type == BitPropVariantType::Int16 ||
+                                        type == BitPropVariantType::Int32 ||
+                                        type == BitPropVariantType::Int64 ) );
+    REQUIRE( prop_variant.isInt16() == ( type == BitPropVariantType::Int16 ||
+                                         type == BitPropVariantType::Int32 ||
+                                         type == BitPropVariantType::Int64 ) );
+    REQUIRE( prop_variant.isInt32() == ( type == BitPropVariantType::Int32 ||
+                                         type == BitPropVariantType::Int64 ) );
+    REQUIRE( prop_variant.isInt64() == ( type == BitPropVariantType::Int64 ) );
+    REQUIRE( prop_variant.isFileTime() == ( type == BitPropVariantType::FileTime ) );
+}
+
 TEST_CASE( "BitPropVariant: Empty variant", "[BitPropVariant][empty]" ) {
     BitPropVariant prop_variant;
     REQUIRE( prop_variant.vt == VT_EMPTY );
-    REQUIRE( prop_variant.isEmpty() );
     REQUIRE( prop_variant.toString().empty() );
-    REQUIRE( !prop_variant.isBool() );
-    REQUIRE( !prop_variant.isString() );
-    REQUIRE( !prop_variant.isUInt8() );
-    REQUIRE( !prop_variant.isUInt16() );
-    REQUIRE( !prop_variant.isUInt32() );
-    REQUIRE( !prop_variant.isUInt64() );
-    REQUIRE( !prop_variant.isInt8() );
-    REQUIRE( !prop_variant.isInt16() );
-    REQUIRE( !prop_variant.isInt32() );
-    REQUIRE( !prop_variant.isInt64() );
-    REQUIRE( !prop_variant.isFileTime() );
-    REQUIRE( prop_variant.type() == BitPropVariantType::Empty );
+
+    check_variant_type( prop_variant, BitPropVariantType::Empty );
     REQUIRE_THROWS( prop_variant.getBool() );
     REQUIRE_THROWS( prop_variant.getString() );
     REQUIRE_THROWS( prop_variant.getUInt8() );
@@ -77,7 +94,6 @@ TEST_CASE( "BitPropVariant: Empty variant", "[BitPropVariant][empty]" ) {
     REQUIRE_THROWS( prop_variant.getInt32() );
     REQUIRE_THROWS( prop_variant.getInt64() );
     REQUIRE_THROWS( prop_variant.getFileTime() );
-    REQUIRE( prop_variant.toString().empty() );
     REQUIRE_NOTHROW( prop_variant.clear() );
     REQUIRE( prop_variant.isEmpty() ); // still empty after clear
 }
@@ -143,19 +159,7 @@ TEST_CASE( "BitPropVariant: Boolean variant", "[BitPropVariant][boolean]" ) {
         REQUIRE( prop_variant.toString() == BIT7Z_STRING( "false" ) );
     }
 
-    REQUIRE( prop_variant.type() == BitPropVariantType::Bool );
-    REQUIRE( !prop_variant.isEmpty() );
-    REQUIRE( prop_variant.isBool() );
-    REQUIRE( !prop_variant.isString() );
-    REQUIRE( !prop_variant.isUInt8() );
-    REQUIRE( !prop_variant.isUInt16() );
-    REQUIRE( !prop_variant.isUInt32() );
-    REQUIRE( !prop_variant.isUInt64() );
-    REQUIRE( !prop_variant.isInt8() );
-    REQUIRE( !prop_variant.isInt16() );
-    REQUIRE( !prop_variant.isInt32() );
-    REQUIRE( !prop_variant.isInt64() );
-    REQUIRE( !prop_variant.isFileTime() );
+    check_variant_type( prop_variant, BitPropVariantType::Bool );
     REQUIRE_THROWS( prop_variant.getString() );
     REQUIRE_THROWS( prop_variant.getUInt8() );
     REQUIRE_THROWS( prop_variant.getUInt16() );
@@ -265,19 +269,7 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
         REQUIRE( encoded_tstring == test_output_encoding );
     }
 
-    REQUIRE( prop_variant.type() == BitPropVariantType::String );
-    REQUIRE( !prop_variant.isEmpty() );
-    REQUIRE( !prop_variant.isBool() );
-    REQUIRE( prop_variant.isString() );
-    REQUIRE( !prop_variant.isUInt8() );
-    REQUIRE( !prop_variant.isUInt16() );
-    REQUIRE( !prop_variant.isUInt32() );
-    REQUIRE( !prop_variant.isUInt64() );
-    REQUIRE( !prop_variant.isInt8() );
-    REQUIRE( !prop_variant.isInt16() );
-    REQUIRE( !prop_variant.isInt32() );
-    REQUIRE( !prop_variant.isInt64() );
-    REQUIRE( !prop_variant.isFileTime() );
+    check_variant_type( prop_variant, BitPropVariantType::String );
     REQUIRE_THROWS( prop_variant.getBool() );
     REQUIRE_THROWS( prop_variant.getUInt8() );
     REQUIRE_THROWS( prop_variant.getUInt16() );
@@ -621,19 +613,7 @@ TEST_CASE( "BitPropVariant: FILETIME variant", "[BitPropVariant][FILETIME]" ) {
     auto result = prop_variant.getFileTime();
     REQUIRE( std::memcmp( &result, &value, sizeof( FILETIME ) ) == 0 );
 
-    REQUIRE( prop_variant.type() == BitPropVariantType::FileTime );
-    REQUIRE( !prop_variant.isEmpty() );
-    REQUIRE( !prop_variant.isBool() );
-    REQUIRE( !prop_variant.isString() );
-    REQUIRE( !prop_variant.isInt8() );
-    REQUIRE( !prop_variant.isInt16() );
-    REQUIRE( !prop_variant.isInt32() );
-    REQUIRE( !prop_variant.isInt64() );
-    REQUIRE( !prop_variant.isUInt8() );
-    REQUIRE( !prop_variant.isUInt16() );
-    REQUIRE( !prop_variant.isUInt32() );
-    REQUIRE( !prop_variant.isUInt64() );
-    REQUIRE( prop_variant.isFileTime() );
+    check_variant_type( prop_variant, BitPropVariantType::FileTime );
     REQUIRE_THROWS( prop_variant.getString() );
     REQUIRE_THROWS( prop_variant.getBool() );
     REQUIRE_THROWS( prop_variant.getUInt8() );
