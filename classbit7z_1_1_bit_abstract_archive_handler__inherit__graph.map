@@ -1,0 +1,12 @@
+<map id="BitAbstractArchiveHandler" name="BitAbstractArchiveHandler">
+<area shape="rect" id="node1" title="Abstract class representing a generic archive handler." alt="" coords="5,132,179,157"/>
+<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="228,85,399,111"/>
+<area shape="rect" id="node8" href="$classbit7z_1_1_bit_abstract_archive_opener.html" title="The BitAbstractArchiveOpener abstract class represents a generic archive opener." alt="" coords="228,156,399,181"/>
+<area shape="rect" id="node3" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="769,77,921,117"/>
+<area shape="rect" id="node5" href="$classbit7z_1_1_bit_archive_writer.html" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="471,5,585,31"/>
+<area shape="rect" id="node7" href="$classbit7z_1_1_bit_compressor.html" title="The BitCompressor template class allows compressing files into archives." alt="" coords="448,55,608,80"/>
+<area shape="rect" id="node4" href="$classbit7z_1_1_bit_file_compressor.html" title="The BitFileCompressor class allows compressing files and directories." alt="" coords="971,84,1100,109"/>
+<area shape="rect" id="node6" href="$classbit7z_1_1_bit_archive_editor.html" title="The BitArchiveEditor class allows creating new file archives or updating old ones." alt="" coords="788,5,903,31"/>
+<area shape="rect" id="node9" href="$classbit7z_1_1_bit_archive_reader.html" title="The BitArchiveReader class allows reading metadata of archives, as well as extracting them." alt="" coords="467,205,589,231"/>
+<area shape="rect" id="node10" href="$classbit7z_1_1_bit_extractor.html" title="The BitExtractor template class allows extracting the content of archives from supported input types." alt="" coords="457,156,599,181"/>
+</map>

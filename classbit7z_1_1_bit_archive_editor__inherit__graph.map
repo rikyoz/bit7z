@@ -1,0 +1,7 @@
+<map id="BitArchiveEditor" name="BitArchiveEditor">
+<area shape="rect" id="node1" title="The BitArchiveEditor class allows creating new file archives or updating old ones." alt="" coords="119,225,233,251"/>
+<area shape="rect" id="node2" href="$classbit7z_1_1_bit_archive_writer.html" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="119,152,233,177"/>
+<area shape="rect" id="node3" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="7,79,177,104"/>
+<area shape="rect" id="node4" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,179,31"/>
+<area shape="rect" id="node5" href="$classbit7z_1_1_bit_output_archive.html" title="The BitOutputArchive class, given a creator object, allows creating new archives." alt="" coords="202,79,321,104"/>
+</map>

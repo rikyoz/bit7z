@@ -1,0 +1,6 @@
+<map id="BitArchiveReader" name="BitArchiveReader">
+<area shape="rect" id="node1" title="The BitArchiveReader class allows reading metadata of archives, as well as extracting them." alt="" coords="113,152,234,177"/>
+<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_opener.html" title="The BitAbstractArchiveOpener abstract class represents a generic archive opener." alt="" coords="7,79,177,104"/>
+<area shape="rect" id="node3" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,179,31"/>
+<area shape="rect" id="node4" href="$classbit7z_1_1_bit_input_archive.html" title="The BitInputArchive class, given a handler object, allows reading/extracting the content of archives." alt="" coords="202,79,310,104"/>
+</map>

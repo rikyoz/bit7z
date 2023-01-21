@@ -1,0 +1,5 @@
+<map id="BitCompressor&lt; Input &gt;" name="BitCompressor&lt; Input &gt;">
+<area shape="rect" id="node1" title="The BitCompressor template class allows compressing files into archives." alt="" coords="12,152,172,177"/>
+<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="7,79,177,104"/>
+<area shape="rect" id="node3" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,179,31"/>
+</map>

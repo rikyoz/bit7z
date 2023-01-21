@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classbit7z_1_1_bit_generic_item.html" title="The BitGenericItem interface class represents a generic item (either inside or outside an archive)." alt="" coords="5,31,113,56"/>
+<area shape="rect" id="node2" href="$classbit7z_1_1_bit_archive_item.html" title="The BitArchiveItem class represents a generic item inside an archive." alt="" coords="161,31,267,56"/>
+<area shape="rect" id="node3" href="$classbit7z_1_1_bit_archive_item_info.html" title="The BitArchiveItemInfo class represents an archived item and that stores all its properties for later..." alt="" coords="321,5,447,31"/>
+<area shape="rect" id="node4" href="$classbit7z_1_1_bit_archive_item_offset.html" title="The BitArchiveItemOffset class represents an archived item but doesn&#39;t store its properties." alt="" coords="315,55,453,80"/>
+</map>

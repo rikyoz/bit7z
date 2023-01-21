@@ -1,0 +1,9 @@
+<map id="BitAbstractArchiveCreator" name="BitAbstractArchiveCreator">
+<area shape="rect" id="node1" title="Abstract class representing a generic archive creator." alt="" coords="72,80,243,105"/>
+<area shape="rect" id="node3" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="5,243,157,283"/>
+<area shape="rect" id="node5" href="$classbit7z_1_1_bit_archive_writer.html" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="261,155,376,180"/>
+<area shape="rect" id="node7" href="$classbit7z_1_1_bit_compressor.html" title="The BitCompressor template class allows compressing files into archives." alt="" coords="77,155,237,180"/>
+<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="71,5,244,31"/>
+<area shape="rect" id="node4" href="$classbit7z_1_1_bit_file_compressor.html" title="The BitFileCompressor class allows compressing files and directories." alt="" coords="17,332,146,357"/>
+<area shape="rect" id="node6" href="$classbit7z_1_1_bit_archive_editor.html" title="The BitArchiveEditor class allows creating new file archives or updating old ones." alt="" coords="261,250,376,275"/>
+</map>
