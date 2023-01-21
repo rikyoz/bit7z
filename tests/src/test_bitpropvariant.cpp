@@ -429,15 +429,15 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
 
     TestType value = GENERATE( 0, 42, std::numeric_limits< TestType >::max() );
 
-    SECTION( "Using the constructor" ) {
+    SECTION( "Using the unsigned integer constructor" ) {
         prop_variant = BitPropVariant( value );
     }
 
-    SECTION( "Manually setting" ) {
+    SECTION( "Manually setting the unsigned integer value" ) {
         manually_set_variant( prop_variant, value );
     }
 
-    SECTION( "Assignment" ) {
+    SECTION( "Assigning the unsigned integer value" ) {
         prop_variant = value;
     }
 
@@ -520,15 +520,15 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
                                42,
                                std::numeric_limits< TestType >::max() );
 
-    SECTION( "Using the constructor" ) {
+    SECTION( "Using the signed integer constructor" ) {
         prop_variant = BitPropVariant( value );
     }
 
-    SECTION( "Manually setting" ) {
+    SECTION( "Manually setting the signed integer value" ) {
         manually_set_variant( prop_variant, value );
     }
 
-    SECTION( "Assignment" ) {
+    SECTION( "Assigning the signed integer value" ) {
         prop_variant = value;
     }
 
