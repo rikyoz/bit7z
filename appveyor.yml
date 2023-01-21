@@ -144,9 +144,13 @@ for:
       - image: Visual Studio 2015
       - image: Visual Studio 2017
       - image: Visual Studio 2019
+      - image: Visual Studio 2022
 
   init:
-    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if NOT "%compiler%"=="mingw" (
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2022" if NOT "%compiler%"=="mingw" (
+        call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch:x86=amd64_x86%
+      )
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" (
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch:x86=amd64_x86%
       )
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (
@@ -176,9 +180,9 @@ for:
   after_build:
     - cd ..
     - mkdir "pkg/bit7z/lib/"
-    - mkdir "pkg/bit7z/include/"
+    - mkdir "pkg/bit7z/include/bit7z/"
     - ps: Copy-Item -Path lib\* -Destination pkg\bit7z\lib\ -Recurse
-    - copy include\bit*.hpp pkg\bit7z\include\
+    - copy include\bit7z\bit*.hpp pkg\bit7z\include\bit7z\
     - copy README.md pkg\bit7z\
     - copy LICENSE pkg\bit7z\
     - echo %bit7z_version% %compiler_tag% > "pkg/bit7z/BUILD.txt"
