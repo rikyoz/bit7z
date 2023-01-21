@@ -144,9 +144,13 @@ for:
       - image: Visual Studio 2015
       - image: Visual Studio 2017
       - image: Visual Studio 2019
+      - image: Visual Studio 2022
 
   init:
-    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" if NOT "%compiler%"=="mingw" (
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2022" if NOT "%compiler%"=="mingw" (
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch:x86=amd64_x86%
+      )
+    - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2019" (
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" %arch:x86=amd64_x86%
       )
     - if "%APPVEYOR_BUILD_WORKER_IMAGE%"=="Visual Studio 2017" (
