@@ -226,9 +226,6 @@ The newest bit7z v4 introduced some significant breaking changes to the API. In 
 <div align="center">
 <a href="https://github.com/rikyoz/bit7z/releases">
 <img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?include_prereleases&sort=semver&label=Latest%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
-&emsp;&emsp;
-<a href="https://github.com/rikyoz/bit7z/releases/latest">
-<img alt="GitHub Stable Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?label=Stable%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
 <br/>
 <a href="https://github.com/rikyoz/bit7z/releases">
 <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout&label=Total%20Downloads&logo=icloud&logoColor=white"/></a>
@@ -241,7 +238,7 @@ Each released package contains:
 
 Packages are available for both _x86_ and _x64_ architectures.
 
-You can also clone/download this repository and build the library by yourself (please, read the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+You can also clone/download this repository and build the library yourself (please, read the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## 🧰 Requirements
 
