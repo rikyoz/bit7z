@@ -63,7 +63,7 @@ auto fsutil::inArchivePath( const fs::path& file_path, const fs::path& search_pa
     }
 
     if ( file_path.is_absolute() || contains_dot_references( file_path ) ) {
-        // Note: in this case if the file was found while indexing a directory passed by the user, we need to retain
+        // Note: in this case, if the file was found while indexing a directory passed by the user, we need to retain
         // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
         if ( search_path.empty() ) {
             return filename;
@@ -71,7 +71,7 @@ auto fsutil::inArchivePath( const fs::path& file_path, const fs::path& search_pa
         return search_path / filename;
     }
 
-    // Here, path is relative and without ./ or ../ => e.g. foo/bar/test.txt
+    // Here, the path is relative and without ./ or ../ => e.g. foo/bar/test.txt
 
     if ( !search_path.empty() ) {
         // The item was found while indexing a directory
@@ -164,6 +164,7 @@ static const mode_t global_umask = []() noexcept {
 
     return static_cast<int>( fs::perms::all ) & ( ~current_umask );
 }();
+
 #endif
 
 auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool {

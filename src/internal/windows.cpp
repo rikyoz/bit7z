@@ -51,7 +51,7 @@ using bstr_prefix_t = uint32_t;
  *     allocated by 7-zip (which uses malloc). Never mix new/delete and malloc/free.
  *   - We use calloc instead of malloc, so that we do not have to manually add the termination character at the end.
  *   - The length parameter is an uint64_t, instead of the UINT parameter used in the WinAPI interface.
- *     This allows to avoid unsigned integer wrap around in SysAllocStringLen.
+ *     This allows avoiding unsigned integer wrap around in SysAllocStringLen.
  * */
 auto AllocStringBuffer( LPCSTR str, uint64_t byte_length ) -> BSTR {
     // Maximum value that can be stored in the BSTR byte_length prefix.

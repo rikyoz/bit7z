@@ -105,7 +105,7 @@ auto FSItem::path() const -> tstring {
 /* NOTE:
  * inArchivePath() returns the path that should be used inside the archive when compressing the item, i.e., the path
  * relative to the 'root' of the archive.
- * This is needed to behave like 7-zip and retaining the directory structure when creating new archives.
+ * This is needed to behave like 7-zip and retain the directory structure when creating new archives.
  *
  * In particular, 7-zip behaves differently according to the kind of paths that are passed to it:
  * + absolute paths (e.g. "C:\foo\bar\test.txt"):

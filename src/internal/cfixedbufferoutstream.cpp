@@ -102,7 +102,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if the sum between current_index and offset would result in an integer overflow or underflow
+    // Checking if the sum between the current_index and offset would result in an integer overflow or underflow
     if ( check_overflow( current_index, offset ) ) {
         return E_INVALIDARG;
     }

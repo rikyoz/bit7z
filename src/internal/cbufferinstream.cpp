@@ -67,7 +67,7 @@ STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* new
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, new_index );
 
     if ( res != S_OK ) {
-        // new_index is not in the range [0, mBuffer.size]
+        // The new_index is not in the range [0, mBuffer.size]
         return res;
     }
 

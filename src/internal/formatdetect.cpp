@@ -55,7 +55,7 @@ auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(mis
 
 namespace bit7z {
 /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
- *       format, however the ifs are faster and have less memory footprint. */
+ *       format, but the ifs are faster and have less memory footprint. */
 auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> bool {
     switch ( str_hash( ext.c_str() ) ) {
         case str_hash( BIT7Z_STRING( "7z" ) ):

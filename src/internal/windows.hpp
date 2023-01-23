@@ -131,7 +131,7 @@ auto SysStringLen( BSTR bstr ) -> UINT;
 #endif
 
 #ifndef __HRESULT_FROM_WIN32
-#define __HRESULT_FROM_WIN32 HRESULT_FROM_WIN32 // NOLINT(bugprone-reserved-identifier)
+#define __HRESULT_FROM_WIN32 HRESULT_FROM_WIN32 // NOLINT(bugprone-reserved-identifier,cert-dcl37-c,cert-dcl51-cpp)
 #endif
 
 /* For when we cannot include IStream.h */
