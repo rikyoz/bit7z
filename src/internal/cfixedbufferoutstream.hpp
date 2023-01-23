@@ -33,7 +33,7 @@ class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
 
         MY_UNKNOWN_DESTRUCTOR( ~CFixedBufferOutStream() ) = default;
 
-        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
+        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept, modernize-use-trailing-return-type)
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );

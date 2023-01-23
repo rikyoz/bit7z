@@ -56,7 +56,7 @@ class ExtractCallback : public Callback,
 
         ~ExtractCallback() override = default;
 
-        // NOLINTNEXTLINE(modernize-use-noexcept)
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
         MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 
         // IProgress from IArchiveExtractCallback

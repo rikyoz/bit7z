@@ -37,7 +37,7 @@ class CStdInStream : public IInStream, public CMyUnknownImp {
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdInStream() ) = default;
 
-        MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
+        MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept, modernize-use-trailing-return-type)
 
         // IInStream
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
