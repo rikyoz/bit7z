@@ -109,7 +109,7 @@ body:
   - type: dropdown
     id: operating_system
     attributes:
-      label: Which operating systems are you targeting?
+      label: Operating system
       multiple: true
       options:
         - Windows
@@ -120,7 +120,7 @@ body:
   - type: input
     id: os_version
     attributes:
-      label: Operating System Versions
+      label: Operating system versions
       description: Which operating system versions are you targeting?
       placeholder: ex. Windows 11, Ubuntu 22.04, macOS Monterey, ...
     validations:
