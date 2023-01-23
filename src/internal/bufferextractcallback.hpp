@@ -29,9 +29,9 @@ class BufferExtractCallback final : public ExtractCallback {
 
         BufferExtractCallback( BufferExtractCallback&& ) = delete;
 
-        BufferExtractCallback& operator=( const BufferExtractCallback& ) = delete;
+        auto operator=( const BufferExtractCallback& ) -> BufferExtractCallback& = delete;
 
-        BufferExtractCallback& operator=( BufferExtractCallback&& ) = delete;
+        auto operator=( BufferExtractCallback&& ) -> BufferExtractCallback& = delete;
 
         ~BufferExtractCallback() override = default;
 
