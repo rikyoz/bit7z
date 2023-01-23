@@ -91,7 +91,7 @@ body:
   - type: input
     id: compiler_version
     attributes:
-      label: Compiler Versions
+      label: Compiler versions
       description: What compiler versions are you using?
       placeholder: ex. GCC 7, MSVC 2022, Clang 12, ...
     validations:
