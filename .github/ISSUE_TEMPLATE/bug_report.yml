@@ -25,6 +25,26 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: compilation_options
+    attributes:
+      label: Compilation options
+      multiple: true
+      options:
+        - `BIT7Z_ANALYZE_CODE`
+        - `BIT7Z_AUTO_FORMAT`
+        - `BIT7Z_AUTO_PREFIX_LONG_PATHS`
+        - `BIT7Z_BUILD_TESTS`
+        - `BIT7Z_BUILD_DOCS`
+        - `BIT7Z_GENERATE_PIC`
+        - `BIT7Z_LINK_LIBCPP`
+        - `BIT7Z_REGEX_MATCHING`
+        - `BIT7Z_STATIC_RUNTIME`
+        - `BIT7Z_USE_NATIVE_STRING`
+        - `BIT7Z_USE_STD_BYTE`
+        - `BIT7Z_VS_LIBNAME_OUTDIR_STYLE`
+    validations:
+      required: false
+  - type: dropdown
     id: sevenzip
     attributes:
       label: 7-zip version
@@ -44,16 +64,16 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: sevenzip-dll
+    id: sevenzip_shared_lib
     attributes:
-      label: 7-zip DLL used
+      label: 7-zip shared library used
       multiple: true
       options:
-        - 7z.dll
-        - 7za.dll
-        - 7zra.dll
-        - 7zxa.dll
-        - 7zxr.dll
+        - 7z.dll / 7z.so
+        - 7za.dll / 7za.so
+        - 7zra.dll / 7zra.so
+        - 7zxa.dll / 7zxa.so
+        - 7zxr.dll / 7zxr.so
     validations:
       required: true
   - type: dropdown
