@@ -45,22 +45,22 @@ class ArchiveProperties final {
 
     public:
         BIT7Z_NODISCARD
-        inline bool empty() const {
+        inline auto empty() const -> bool {
             return mNames.empty();
         }
 
         BIT7Z_NODISCARD
-        inline const wchar_t* const* names() const {
+        inline auto names() const -> const wchar_t* const* {
             return mNames.data();
         }
 
         BIT7Z_NODISCARD
-        inline const PROPVARIANT* values() const {
+        inline auto values() const -> const PROPVARIANT* {
             return mValues.data();
         }
 
         BIT7Z_NODISCARD
-        inline size_t size() const {
+        inline auto size() const -> size_t {
             return mNames.size();
         }
 };

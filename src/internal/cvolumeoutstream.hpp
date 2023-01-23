@@ -18,9 +18,9 @@ class CVolumeOutStream final : public CFileOutStream {
     public:
         explicit CVolumeOutStream( const fs::path& volumeName );
 
-        BIT7Z_NODISCARD uint64_t currentOffset() const;
+        BIT7Z_NODISCARD auto currentOffset() const -> uint64_t;
 
-        BIT7Z_NODISCARD uint64_t currentSize() const;
+        BIT7Z_NODISCARD auto currentSize() const -> uint64_t;
 
         void setCurrentSize( uint64_t currentSize );
 

@@ -31,9 +31,9 @@ class CStdInStream : public IInStream, public CMyUnknownImp {
 
         CStdInStream( CStdInStream&& ) = delete;
 
-        CStdInStream& operator=( const CStdInStream& ) = delete;
+        auto operator=( const CStdInStream& ) -> CStdInStream& = delete;
 
-        CStdInStream& operator=( CStdInStream&& ) = delete;
+        auto operator=( CStdInStream&& ) -> CStdInStream& = delete;
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdInStream() ) = default;
 

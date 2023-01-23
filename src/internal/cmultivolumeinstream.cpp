@@ -38,7 +38,7 @@ CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& first_volume ) : mCu
     }
 }
 
-const CMyComPtr< CVolumeInStream >& CMultiVolumeInStream::currentVolume() {
+auto CMultiVolumeInStream::currentVolume() -> const CMyComPtr< CVolumeInStream >& {
     size_t left = 0;
     size_t right = mVolumes.size();
     size_t midpoint = right / 2;

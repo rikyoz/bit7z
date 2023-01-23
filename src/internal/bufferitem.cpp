@@ -24,44 +24,44 @@ using std::vector;
 BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name )
     : mBuffer{ buffer }, mBufferName{ name } {}
 
-tstring BufferItem::name() const {
+auto BufferItem::name() const -> tstring {
     return mBufferName.filename().string< tchar >();
 }
 
-tstring BufferItem::path() const {
+auto BufferItem::path() const -> tstring {
     return mBufferName.string< tchar >();
 }
 
-fs::path BufferItem::inArchivePath() const {
+auto BufferItem::inArchivePath() const -> fs::path {
     return mBufferName;
 }
 
-HRESULT BufferItem::getStream( ISequentialInStream** inStream ) const {
+auto BufferItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     auto inStreamLoc = bit7z::make_com< CBufferInStream, ISequentialInStream >( mBuffer );
     *inStream = inStreamLoc.Detach();
     return S_OK;
 }
 
-bool BufferItem::isDir() const noexcept {
+auto BufferItem::isDir() const noexcept -> bool {
     return false;
 }
 
-uint64_t BufferItem::size() const noexcept {
+auto BufferItem::size() const noexcept -> uint64_t {
     return sizeof( byte_t ) * static_cast< uint64_t >( mBuffer.size() );
 }
 
-FILETIME BufferItem::creationTime() const noexcept { //-V524
+auto BufferItem::creationTime() const noexcept -> FILETIME { //-V524
     return currentFileTime();
 }
 
-FILETIME BufferItem::lastAccessTime() const noexcept { //-V524
+auto BufferItem::lastAccessTime() const noexcept -> FILETIME { //-V524
     return currentFileTime();
 }
 
-FILETIME BufferItem::lastWriteTime() const noexcept {
+auto BufferItem::lastWriteTime() const noexcept -> FILETIME {
     return currentFileTime();
 }
 
-uint32_t BufferItem::attributes() const noexcept {
+auto BufferItem::attributes() const noexcept -> uint32_t {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }

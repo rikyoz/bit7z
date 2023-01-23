@@ -20,19 +20,19 @@ struct ISequentialInStream;
 namespace bit7z {
 
 struct GenericInputItem : public BitGenericItem {
-    BIT7Z_NODISCARD virtual fs::path inArchivePath() const = 0;
+    BIT7Z_NODISCARD virtual auto inArchivePath() const -> fs::path = 0;
 
-    BIT7Z_NODISCARD virtual HRESULT getStream( ISequentialInStream** inStream ) const = 0;
+    BIT7Z_NODISCARD virtual auto getStream( ISequentialInStream** inStream ) const -> HRESULT = 0;
 
-    BIT7Z_NODISCARD virtual FILETIME creationTime() const = 0;
+    BIT7Z_NODISCARD virtual auto creationTime() const -> FILETIME = 0;
 
-    BIT7Z_NODISCARD virtual FILETIME lastAccessTime() const = 0;
+    BIT7Z_NODISCARD virtual auto lastAccessTime() const -> FILETIME = 0;
 
-    BIT7Z_NODISCARD virtual FILETIME lastWriteTime() const = 0;
+    BIT7Z_NODISCARD virtual auto lastWriteTime() const -> FILETIME = 0;
 
-    BIT7Z_NODISCARD virtual bool hasNewData() const noexcept;
+    BIT7Z_NODISCARD virtual auto hasNewData() const noexcept -> bool;
 
-    BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty propID ) const override;
+    BIT7Z_NODISCARD auto itemProperty( BitProperty propID ) const -> BitPropVariant override;
 
     ~GenericInputItem() override = default;
 };

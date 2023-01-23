@@ -31,18 +31,23 @@ namespace bit7z {
 #   define WIDEN( tstr ) bit7z::widen(tstr)
 #endif
 
-std::string narrow( const wchar_t* wideString, size_t size );
+auto narrow( const wchar_t* wideString, size_t size ) -> std::string;
 
-std::wstring widen( const std::string& narrowString );
+auto widen( const std::string& narrowString ) -> std::wstring;
 
-constexpr inline bool check_overflow( int64_t position, int64_t offset ) noexcept {
+constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
     return ( offset > 0 && position > ( std::numeric_limits< int64_t >::max )() - offset ) ||
            ( offset < 0 && position < ( std::numeric_limits< int64_t >::min )() - offset );
 }
 
+template< bool B >
+using bool_constant = std::integral_constant< bool, B >; // like C++17's std::bool_constant
+
+template< typename T, typename I = T >
+using is_com_type = bool_constant< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value >;
+
 template< typename T, typename I = T, class... Args >
-inline CMyComPtr< std::enable_if_t< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value, I > >
-make_com( Args&& ... args ) {
+inline auto make_com( Args&& ... args ) -> CMyComPtr< typename std::enable_if< is_com_type< T, I >::value, I >::type > {
     return CMyComPtr< I >( new T( std::forward< Args >( args )... ) );
 }
 

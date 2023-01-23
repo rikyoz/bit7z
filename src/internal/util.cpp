@@ -20,7 +20,7 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 
 using namespace bit7z;
 
-std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
+auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
     if ( wideString == nullptr ) {
         return "";
     }
@@ -57,7 +57,7 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
 #endif
 }
 
-std::wstring bit7z::widen( const std::string& narrowString ) {
+auto bit7z::widen( const std::string& narrowString ) -> std::wstring {
 #ifdef WIN32
     const int wideStringSize = MultiByteToWideChar( CP_UTF8,
                                                     0,

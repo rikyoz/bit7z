@@ -18,11 +18,11 @@ CVolumeInStream::CVolumeInStream( const fs::path& volume_path, uint64_t global_o
     : CFileInStream{ volume_path }, mSize{ fs::file_size( volume_path ) }, mGlobalOffset{ global_offset } {}
 
 BIT7Z_NODISCARD
-uint64_t CVolumeInStream::globalOffset() const {
+auto CVolumeInStream::globalOffset() const -> uint64_t {
     return mGlobalOffset;
 }
 
 BIT7Z_NODISCARD
-uint64_t CVolumeInStream::size() const {
+auto CVolumeInStream::size() const -> uint64_t {
     return mSize;
 }

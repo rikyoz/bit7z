@@ -33,16 +33,16 @@ class UpdateCallback final : public Callback,
 
         UpdateCallback( UpdateCallback&& ) = delete;
 
-        UpdateCallback& operator=( const UpdateCallback& ) = delete;
+        auto operator=( const UpdateCallback& ) -> UpdateCallback& = delete;
 
-        UpdateCallback& operator=( UpdateCallback&& ) = delete;
+        auto operator=( UpdateCallback&& ) -> UpdateCallback& = delete;
 
         ~UpdateCallback() override;
 
         // NOLINTNEXTLINE(modernize-use-noexcept)
         MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
 
-        HRESULT Finalize() noexcept;
+        auto Finalize() noexcept -> HRESULT;
 
         // IProgress from IArchiveUpdateCallback2
         BIT7Z_STDMETHOD( SetTotal, UInt64 size );

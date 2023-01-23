@@ -48,7 +48,7 @@ static inline uint64_t bswap64 (uint64_t x) {
 }
 #endif
 
-uint64_t constexpr str_hash( bit7z::tchar const* input ) {
+auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(misc-no-recursion)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381;
 }
@@ -56,7 +56,7 @@ uint64_t constexpr str_hash( bit7z::tchar const* input ) {
 namespace bit7z {
 /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
  *       format, however the ifs are faster and have less memory footprint. */
-bool findFormatByExtension( const tstring& ext, const BitInFormat** format ) {
+auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> bool {
     switch ( str_hash( ext.c_str() ) ) {
         case str_hash( BIT7Z_STRING( "7z" ) ):
             *format = &BitFormat::SevenZip;
@@ -244,7 +244,7 @@ bool findFormatByExtension( const tstring& ext, const BitInFormat** format ) {
 /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
  *         format. However, the switch case is faster and has less memory footprint. */
-bool findFormatBySignature( uint64_t signature, const BitInFormat** format ) noexcept {
+auto findFormatBySignature( uint64_t signature, const BitInFormat** format ) noexcept -> bool {
     constexpr auto RarSignature = 0x526172211A070000ULL; // R  a  r  !  1A 07 00
     constexpr auto Rar5Signature = 0x526172211A070100ULL; // R  a  r  !  1A 07 01 00
     constexpr auto SevenZipSignature = 0x377ABCAF271C0000ULL; // 7  z  BC AF 27 1C
@@ -442,13 +442,13 @@ const OffsetSignature common_signatures_with_offset[] = {
     { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }     // S  EF
 };
 
-uint64_t readSignature( IInStream* stream, uint32_t size ) noexcept {
+auto readSignature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
     uint64_t signature = 0;
     stream->Read( &signature, size, nullptr );
     return bswap64( signature );
 }
 
-const BitInFormat& detectFormatFromSig( IInStream* stream ) {
+auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
     constexpr auto SIGNATURE_SIZE = 8U;
     constexpr auto BASE_SIGNATURE_MASK = 0xFFFFFFFFFFFFFFFFULL;
     constexpr auto BYTE_SHIFT = 8ULL;
@@ -521,7 +521,7 @@ inline auto to_lower( unsigned char character ) -> char {
 }
 #endif
 
-const BitInFormat& detectFormatFromExt( const fs::path& in_file ) {
+auto detectFormatFromExt( const fs::path& in_file ) -> const BitInFormat& {
     tstring ext = filesystem::fsutil::extension( in_file );
     if ( ext.empty() ) {
         throw BitException( "Failed to detect the archive format from the extension",

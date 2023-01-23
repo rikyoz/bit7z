@@ -40,9 +40,9 @@ class Callback : protected CMyUnknownImp {
 
         Callback( Callback&& ) = delete;
 
-        Callback& operator=( const Callback& ) = delete;
+        auto operator=( const Callback& ) -> Callback& = delete;
 
-        Callback& operator=( Callback&& ) = delete;
+        auto operator=( Callback&& ) -> Callback& = delete;
 
         CALLBACK_DESTRUCTOR( ~Callback() ) = default;
 

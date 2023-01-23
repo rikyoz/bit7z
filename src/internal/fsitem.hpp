@@ -22,27 +22,27 @@ class FSItem final : public GenericInputItem {
 
         explicit FSItem( fs::directory_entry entry, const fs::path& searchPath );
 
-        BIT7Z_NODISCARD bool isDots() const;
+        BIT7Z_NODISCARD auto isDots() const -> bool;
 
-        BIT7Z_NODISCARD bool isDir() const noexcept override;
+        BIT7Z_NODISCARD auto isDir() const noexcept -> bool override;
 
-        BIT7Z_NODISCARD uint64_t size() const noexcept override;
+        BIT7Z_NODISCARD auto size() const noexcept -> uint64_t override;
 
-        BIT7Z_NODISCARD FILETIME creationTime() const noexcept override;
+        BIT7Z_NODISCARD auto creationTime() const noexcept -> FILETIME override;
 
-        BIT7Z_NODISCARD FILETIME lastAccessTime() const noexcept override;
+        BIT7Z_NODISCARD auto lastAccessTime() const noexcept -> FILETIME override;
 
-        BIT7Z_NODISCARD FILETIME lastWriteTime() const noexcept override;
+        BIT7Z_NODISCARD auto lastWriteTime() const noexcept -> FILETIME override;
 
-        BIT7Z_NODISCARD tstring name() const override;
+        BIT7Z_NODISCARD auto name() const -> tstring override;
 
-        BIT7Z_NODISCARD tstring path() const override;
+        BIT7Z_NODISCARD auto path() const -> tstring override;
 
-        BIT7Z_NODISCARD fs::path inArchivePath() const override;
+        BIT7Z_NODISCARD auto inArchivePath() const -> fs::path override;
 
-        BIT7Z_NODISCARD uint32_t attributes() const noexcept override;
+        BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
 
-        BIT7Z_NODISCARD HRESULT getStream( ISequentialInStream** inStream ) const override;
+        BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const -> HRESULT override;
 
     private:
         fs::directory_entry mFileEntry;

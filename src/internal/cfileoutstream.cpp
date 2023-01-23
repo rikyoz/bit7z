@@ -38,7 +38,7 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), buffer_size );
 }
 
-bool CFileOutStream::fail() const {
+auto CFileOutStream::fail() const -> bool {
     return mFileStream.fail();
 }
 
@@ -49,6 +49,6 @@ STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) {
     return error ? E_FAIL : S_OK;
 }
 
-const fs::path& CFileOutStream::path() const {
+auto CFileOutStream::path() const -> const fs::path& {
     return mFilePath;
 }

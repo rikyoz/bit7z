@@ -27,9 +27,9 @@ class StreamExtractCallback final : public ExtractCallback {
 
         StreamExtractCallback( StreamExtractCallback&& ) = delete;
 
-        StreamExtractCallback& operator=( const StreamExtractCallback& ) = delete;
+        auto operator=( const StreamExtractCallback& ) -> StreamExtractCallback& = delete;
 
-        StreamExtractCallback& operator=( StreamExtractCallback&& ) = delete;
+        auto operator=( StreamExtractCallback&& ) -> StreamExtractCallback& = delete;
 
         ~StreamExtractCallback() override = default;
 
@@ -39,7 +39,7 @@ class StreamExtractCallback final : public ExtractCallback {
 
         void releaseStream() override;
 
-        HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream ) override;
+        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
 }  // namespace bit7z

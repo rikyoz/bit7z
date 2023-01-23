@@ -25,11 +25,11 @@ using namespace std;
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-tstring fsutil::basename( const tstring& path ) {
+auto fsutil::basename( const tstring& path ) -> tstring {
     return fs::path{ path }.stem().string< tchar >();
 }
 
-tstring fsutil::extension( const fs::path& path ) {
+auto fsutil::extension( const fs::path& path ) -> tstring {
     const fs::path ext = path.extension();
     if ( !ext.empty() ) {
         // We don't want the leading dot of the extension!
@@ -39,7 +39,7 @@ tstring fsutil::extension( const fs::path& path ) {
     return ext.string< tchar >();
 }
 
-bool contains_dot_references( const fs::path& path ) {
+auto contains_dot_references( const fs::path& path ) -> bool {
     /* Note: here we suppose that path does not contain file names with a final dot (e.g., "foo.").
              This must be true on Windows, but not on Unix systems! */
     const auto& native_path = path.string< tchar >();
@@ -48,7 +48,7 @@ bool contains_dot_references( const fs::path& path ) {
     } ) != native_path.end();
 }
 
-fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& search_path ) {
+auto fsutil::inArchivePath( const fs::path& file_path, const fs::path& search_path ) -> fs::path {
     /* Note: the following algorithm tries to emulate the behavior of 7-zip when dealing with
              paths of items in archives. */
 
@@ -81,10 +81,10 @@ fs::path fsutil::inArchivePath( const fs::path& file_path, const fs::path& searc
 }
 
 // A modified version of the code found here: https://stackoverflow.com/a/3300547
-bool w_match( tstring::const_iterator pattern_it, // NOLINT(misc-no-recursion)
+auto w_match( tstring::const_iterator pattern_it, // NOLINT(misc-no-recursion)
               const tstring::const_iterator& pattern_end,
               tstring::const_iterator str_it,
-              const tstring::const_iterator& str_end ) {
+              const tstring::const_iterator& str_end ) -> bool {
     for ( ; pattern_it != pattern_end; ++pattern_it ) {
         switch ( *pattern_it ) {
             case BIT7Z_STRING( '?' ):
@@ -117,7 +117,7 @@ bool w_match( tstring::const_iterator pattern_it, // NOLINT(misc-no-recursion)
     return str_it == str_end;
 }
 
-bool fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) { // NOLINT(misc-no-recursion)
+auto fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) -> bool { // NOLINT(misc-no-recursion)
     if ( pattern.empty() ) {
         return wildcardMatch( BIT7Z_STRING( "*" ), str );
     }
@@ -166,7 +166,7 @@ static const mode_t global_umask = []() noexcept {
 }();
 #endif
 
-bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept {
+auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
@@ -203,7 +203,7 @@ bool fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
 #endif
 }
 
-bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept {
+auto fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
@@ -225,7 +225,7 @@ bool fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftMo
 #endif
 }
 
-bool fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept {
+auto fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }

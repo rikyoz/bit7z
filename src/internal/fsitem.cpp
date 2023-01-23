@@ -64,41 +64,41 @@ void FSItem::initAttributes( const fs::path& itemPath ) {
     }
 }
 
-bool FSItem::isDots() const {
+auto FSItem::isDots() const -> bool {
     const auto filename = mFileEntry.path().filename();
     return ( filename == "." || filename == ".." );
 }
 
-bool FSItem::isDir() const noexcept {
+auto FSItem::isDir() const noexcept -> bool {
     std::error_code error;
     const bool res = mFileEntry.is_directory( error );
     return !error && res;
 }
 
-uint64_t FSItem::size() const noexcept {
+auto FSItem::size() const noexcept -> uint64_t {
     std::error_code error;
     const auto res = mFileEntry.file_size( error );
     return !error ? res : 0;
 }
 
-FILETIME FSItem::creationTime() const noexcept {
+auto FSItem::creationTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftCreationTime;
 }
 
-FILETIME FSItem::lastAccessTime() const noexcept {
+auto FSItem::lastAccessTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftLastAccessTime;
 }
 
-FILETIME FSItem::lastWriteTime() const noexcept {
+auto FSItem::lastWriteTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftLastWriteTime;
 }
 
-tstring FSItem::name() const {
+auto FSItem::name() const -> tstring {
     BIT7Z_MAYBE_UNUSED std::error_code error;
     return fs::canonical( mFileEntry.path(), error ).filename().string< tchar >();
 }
 
-tstring FSItem::path() const {
+auto FSItem::path() const -> tstring {
     return mFileEntry.path().string< tchar >();
 }
 
@@ -120,15 +120,15 @@ tstring FSItem::path() const {
  *   the file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
  *
  * If the mInArchivePath is already given (i.e., the user wants a custom mapping of files), this one is returned.*/
-fs::path FSItem::inArchivePath() const {
+auto FSItem::inArchivePath() const -> fs::path {
     return mInArchivePath;
 }
 
-uint32_t FSItem::attributes() const noexcept {
+auto FSItem::attributes() const noexcept -> uint32_t {
     return mFileAttributeData.dwFileAttributes;
 }
 
-HRESULT FSItem::getStream( ISequentialInStream** inStream ) const {
+auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     if ( isDir() ) {
         return S_OK;
     }

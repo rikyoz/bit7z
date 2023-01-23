@@ -50,7 +50,7 @@ constexpr auto VARIANT_FALSE = static_cast< VARIANT_BOOL >( 0 );
 #define HRESULT_CODE( hr )    ((hr) & 0xFFFF)
 
 // Win32 APIs
-inline DWORD WINAPI GetLastError() { return static_cast< DWORD >( errno ); }
+inline auto WINAPI GetLastError() -> DWORD { return static_cast< DWORD >( errno ); }
 
 constexpr auto FACILITY_ERRNO = 0x800;
 constexpr auto FACILITY_WIN32 = 7;
@@ -116,17 +116,17 @@ enum STREAM_SEEK {
 #endif
 
 // String-related Win32 API functions (implemented in windows.cpp)
-BSTR SysAllocStringByteLen( LPCSTR psz, UINT len );
+auto SysAllocStringByteLen( LPCSTR psz, UINT len ) -> BSTR;
 
-BSTR SysAllocStringLen( const OLECHAR*, UINT );
+auto SysAllocStringLen( const OLECHAR*, UINT ) -> BSTR;
 
-BSTR SysAllocString( const OLECHAR* str );
+auto SysAllocString( const OLECHAR* str ) -> BSTR;
 
 void SysFreeString( BSTR bstr );
 
-UINT SysStringByteLen( BSTR bstr );
+auto SysStringByteLen( BSTR bstr ) -> UINT;
 
-UINT SysStringLen( BSTR bstr );
+auto SysStringLen( BSTR bstr ) -> UINT;
 
 #endif
 

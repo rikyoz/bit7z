@@ -54,13 +54,13 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
         CMultiVolumeOutStream( CMultiVolumeOutStream&& ) = delete;
 
-        CMultiVolumeOutStream& operator=( const CMultiVolumeOutStream& ) = delete;
+        auto operator=( const CMultiVolumeOutStream& ) -> CMultiVolumeOutStream& = delete;
 
-        CMultiVolumeOutStream& operator=( CMultiVolumeOutStream&& ) = delete;
+        auto operator=( CMultiVolumeOutStream&& ) -> CMultiVolumeOutStream& = delete;
 
         MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeOutStream() ) = default;
 
-        BIT7Z_NODISCARD UInt64 GetSize() const noexcept;
+        BIT7Z_NODISCARD auto GetSize() const noexcept -> UInt64;
 
         MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 

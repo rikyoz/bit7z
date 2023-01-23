@@ -50,9 +50,9 @@ class ExtractCallback : public Callback,
 
         ExtractCallback( ExtractCallback&& ) = delete;
 
-        ExtractCallback& operator=( const ExtractCallback& ) = delete;
+        auto operator=( const ExtractCallback& ) -> ExtractCallback& = delete;
 
-        ExtractCallback& operator=( ExtractCallback&& ) = delete;
+        auto operator=( ExtractCallback&& ) -> ExtractCallback& = delete;
 
         ~ExtractCallback() override = default;
 
@@ -79,7 +79,7 @@ class ExtractCallback : public Callback,
         BIT7Z_STDMETHOD( SetOperationResult, Int32 operationResult );
 
         BIT7Z_NODISCARD
-        inline const std::exception_ptr& errorException() const {
+        inline auto errorException() const -> const std::exception_ptr& {
             return mErrorException;
         }
 
@@ -87,30 +87,30 @@ class ExtractCallback : public Callback,
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
         BIT7Z_NODISCARD
-        inline ExtractMode extractMode() const {
+        inline auto extractMode() const -> ExtractMode {
             return mExtractMode;
         }
 
         BIT7Z_NODISCARD
-        inline bool isItemFolder( uint32_t index ) const {
+        inline auto isItemFolder( uint32_t index ) const -> bool {
             return mInputArchive.isItemFolder( index );
         }
 
         BIT7Z_NODISCARD
-        inline BitPropVariant itemProperty( uint32_t index, BitProperty property ) const {
+        inline auto itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant {
             return mInputArchive.itemProperty( index, property );
         }
 
         BIT7Z_NODISCARD
-        inline const BitInputArchive& inputArchive() const {
+        inline auto inputArchive() const -> const BitInputArchive& {
             return mInputArchive;
         }
 
-        virtual HRESULT finishOperation( OperationResult operation_result );
+        virtual auto finishOperation( OperationResult operation_result ) -> HRESULT;
 
         virtual void releaseStream() = 0;
 
-        virtual HRESULT getOutStream( UInt32 index, ISequentialOutStream** outStream ) = 0;
+        virtual auto getOutStream( UInt32 index, ISequentialOutStream** outStream ) -> HRESULT = 0;
 
     private:
         const BitInputArchive& mInputArchive;

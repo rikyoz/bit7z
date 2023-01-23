@@ -27,7 +27,7 @@ void StreamExtractCallback::releaseStream() {
     mStdOutStream.Release();
 }
 
-HRESULT StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+auto StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }

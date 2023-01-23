@@ -26,7 +26,7 @@ UpdateCallback::~UpdateCallback() {
     Finalize();
 }
 
-HRESULT UpdateCallback::Finalize() noexcept {
+auto UpdateCallback::Finalize() noexcept -> HRESULT {
     if ( mNeedBeClosed ) {
         mNeedBeClosed = false;
     }

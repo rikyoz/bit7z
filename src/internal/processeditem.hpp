@@ -22,15 +22,15 @@ class ProcessedItem final {
 
         void loadItemInfo( const BitInputArchive& input_archive, std::uint32_t item_index );
 
-        BIT7Z_NODISCARD fs::path path() const;
+        BIT7Z_NODISCARD auto path() const -> fs::path;
 
-        BIT7Z_NODISCARD uint32_t attributes() const;
+        BIT7Z_NODISCARD auto attributes() const -> uint32_t;
 
-        BIT7Z_NODISCARD bool areAttributesDefined() const;
+        BIT7Z_NODISCARD auto areAttributesDefined() const -> bool;
 
-        BIT7Z_NODISCARD FILETIME modifiedTime() const;
+        BIT7Z_NODISCARD auto modifiedTime() const -> FILETIME;
 
-        BIT7Z_NODISCARD bool isModifiedTimeDefined() const;
+        BIT7Z_NODISCARD auto isModifiedTimeDefined() const -> bool;
 
     private:
         fs::path mFilePath;

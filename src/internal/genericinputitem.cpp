@@ -13,11 +13,11 @@
 #include "internal/genericinputitem.hpp"
 
 namespace bit7z {
-bool GenericInputItem::hasNewData() const noexcept {
+auto GenericInputItem::hasNewData() const noexcept -> bool {
     return true;
 }
 
-BitPropVariant GenericInputItem::itemProperty( BitProperty propID ) const {
+auto GenericInputItem::itemProperty( BitProperty propID ) const -> BitPropVariant {
     BitPropVariant prop;
     switch ( propID ) {
         case BitProperty::Path:

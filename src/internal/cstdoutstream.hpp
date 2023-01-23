@@ -31,9 +31,9 @@ class CStdOutStream : public IOutStream, public CMyUnknownImp {
 
         CStdOutStream( CStdOutStream&& ) = delete;
 
-        CStdOutStream& operator=( const CStdOutStream& ) = delete;
+        auto operator=( const CStdOutStream& ) -> CStdOutStream& = delete;
 
-        CStdOutStream& operator=( CStdOutStream&& ) = delete;
+        auto operator=( CStdOutStream&& ) -> CStdOutStream& = delete;
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdOutStream() ) = default;
 

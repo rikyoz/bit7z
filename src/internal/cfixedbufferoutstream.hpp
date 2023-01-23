@@ -27,9 +27,9 @@ class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
 
         CFixedBufferOutStream( CFixedBufferOutStream&& ) = delete;
 
-        CFixedBufferOutStream& operator=( const CFixedBufferOutStream& ) = delete;
+        auto operator=( const CFixedBufferOutStream& ) -> CFixedBufferOutStream& = delete;
 
-        CFixedBufferOutStream& operator=( CFixedBufferOutStream&& ) = delete;
+        auto operator=( CFixedBufferOutStream&& ) -> CFixedBufferOutStream& = delete;
 
         MY_UNKNOWN_DESTRUCTOR( ~CFixedBufferOutStream() ) = default;
 

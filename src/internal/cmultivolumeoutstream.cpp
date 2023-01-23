@@ -27,7 +27,7 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archive
       mAbsoluteOffset( 0 ),
       mFullSize( 0 ) {}
 
-UInt64 CMultiVolumeOutStream::GetSize() const noexcept { return mFullSize; }
+auto CMultiVolumeOutStream::GetSize() const noexcept -> UInt64 { return mFullSize; }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {

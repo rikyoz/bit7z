@@ -22,7 +22,7 @@ ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
       mInputArchive( inputArchive ),
       mExtractMode( ExtractMode::Extract ) {}
 
-HRESULT ExtractCallback::finishOperation( OperationResult operation_result ) {
+auto ExtractCallback::finishOperation( OperationResult operation_result ) -> HRESULT {
     releaseStream();
     return operation_result != OperationResult::Success ? E_FAIL : S_OK;
 }

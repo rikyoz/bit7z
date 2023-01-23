@@ -19,9 +19,9 @@ struct IInStream;
 
 namespace bit7z {
 
-const BitInFormat& detectFormatFromExt( const fs::path& in_file );
+auto detectFormatFromExt( const fs::path& in_file ) -> const BitInFormat&;
 
-const BitInFormat& detectFormatFromSig( IInStream* stream );
+auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat&;
 
 } // namespace bit7z
 

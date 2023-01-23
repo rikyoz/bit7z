@@ -25,7 +25,7 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
 
         std::vector< CMyComPtr< CVolumeInStream > > mVolumes;
 
-        const CMyComPtr< CVolumeInStream >& currentVolume();
+        auto currentVolume() -> const CMyComPtr< CVolumeInStream >&;
 
         void addVolume( const fs::path& volume_path );
 
@@ -36,9 +36,9 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
 
         CMultiVolumeInStream( CMultiVolumeInStream&& ) = delete;
 
-        CMultiVolumeInStream& operator=( const CMultiVolumeInStream& ) = delete;
+        auto operator=( const CMultiVolumeInStream& ) -> CMultiVolumeInStream& = delete;
 
-        CMultiVolumeInStream& operator=( CMultiVolumeInStream&& ) = delete;
+        auto operator=( CMultiVolumeInStream&& ) -> CMultiVolumeInStream& = delete;
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CMultiVolumeInStream() ) = default;
 

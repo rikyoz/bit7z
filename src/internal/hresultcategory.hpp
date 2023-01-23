@@ -23,14 +23,14 @@ struct hresult_category_t final : public std::error_category {
 
     explicit hresult_category_t() = default;
 
-    BIT7Z_NODISCARD const char* name() const noexcept override;
+    BIT7Z_NODISCARD auto name() const noexcept -> const char* override;
 
-    BIT7Z_NODISCARD std::string message( int ev ) const override;
+    BIT7Z_NODISCARD auto message( int ev ) const -> std::string override;
 
-    BIT7Z_NODISCARD std::error_condition default_error_condition( int error_value ) const noexcept override;
+    BIT7Z_NODISCARD auto default_error_condition( int error_value ) const noexcept -> std::error_condition override;
 };
 
-const std::error_category& hresult_category() noexcept;
+auto hresult_category() noexcept -> const std::error_category&;
 
 }  // namespace bit7z
 

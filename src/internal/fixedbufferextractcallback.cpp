@@ -27,7 +27,7 @@ void FixedBufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-HRESULT FixedBufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+auto FixedBufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }

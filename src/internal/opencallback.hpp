@@ -36,9 +36,9 @@ class OpenCallback final : public IArchiveOpenCallback,
 
         OpenCallback( OpenCallback&& ) = delete;
 
-        OpenCallback& operator=( const OpenCallback& ) = delete;
+        auto operator=( const OpenCallback& ) -> OpenCallback& = delete;
 
-        OpenCallback& operator=( OpenCallback&& ) = delete;
+        auto operator=( OpenCallback&& ) -> OpenCallback& = delete;
 
         ~OpenCallback() override = default;
 

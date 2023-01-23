@@ -29,9 +29,9 @@ class CBufferInStream final : public IInStream, public CMyUnknownImp {
 
         CBufferInStream( CBufferInStream&& ) = delete;
 
-        CBufferInStream& operator=( const CBufferInStream& ) = delete;
+        auto operator=( const CBufferInStream& ) -> CBufferInStream& = delete;
 
-        CBufferInStream& operator=( CBufferInStream&& ) = delete;
+        auto operator=( CBufferInStream&& ) -> CBufferInStream& = delete;
 
         MY_UNKNOWN_DESTRUCTOR( ~CBufferInStream() ) = default;
 

@@ -33,7 +33,7 @@ void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!
 }
 
-HRESULT FileExtractCallback::finishOperation( OperationResult operation_result ) {
+auto FileExtractCallback::finishOperation( OperationResult operation_result ) -> HRESULT {
     const HRESULT result = operation_result != OperationResult::Success ? E_FAIL : S_OK;
     if ( mFileOutStream == nullptr ) {
         return result;
@@ -59,7 +59,7 @@ HRESULT FileExtractCallback::finishOperation( OperationResult operation_result )
     return result;
 }
 
-fs::path FileExtractCallback::getCurrentItemPath() const {
+auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
     fs::path filePath = mCurrentItem.path();
     if ( filePath.empty() ) {
         filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
@@ -71,7 +71,7 @@ fs::path FileExtractCallback::getCurrentItemPath() const {
     return filePath;
 }
 
-HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
