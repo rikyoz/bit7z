@@ -59,7 +59,7 @@ body:
   - type: dropdown
     id: compiler
     attributes:
-      label: Compiler
+      label: Compilers
       multiple: true
       options:
         - MSVC
@@ -89,7 +89,7 @@ body:
   - type: dropdown
     id: operating_system
     attributes:
-      label: Which operating system are you using?
+      label: Which operating systems are you targeting?
       multiple: true
       options:
         - Windows
@@ -101,7 +101,7 @@ body:
     id: os_version
     attributes:
       label: Operating System Versions
-      description: What operating system versions are you using?
+      description: Which operating system versions are you targeting?
       placeholder: ex. Windows 11, Ubuntu 22.04, macOS Monterey, ...
     validations:
       required: false
