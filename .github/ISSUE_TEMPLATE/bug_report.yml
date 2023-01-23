@@ -15,7 +15,9 @@ body:
       label: bit7z version
       multiple: true
       options:
-        - 4.0.x beta
+        - 4.0.x RC
+        - 4.0.x Beta
+        - 3.2.x
         - 3.1.x
         - 3.0.x
         - 2.1
@@ -28,6 +30,8 @@ body:
       label: 7-zip version
       multiple: true
       options:
+        - v22.01
+        - v22.00
         - v21.07
         - v21.06
         - v19.00
@@ -53,19 +57,25 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: msvc-version
+    id: compiler
     attributes:
-      label: MSVC version
+      label: Compiler
       multiple: true
       options:
-        - 2022
-        - 2019
-        - 2017
-        - 2015
-        - 2013
-        - 2012
+        - MSVC
+        - MinGW
+        - GCC
+        - Clang
     validations:
       required: true
+  - type: input
+    id: compiler_version
+    attributes:
+      label: Compiler Versions
+      description: What compiler versions are you using?
+      placeholder: ex. GCC 7, MSVC 2022, Clang 12, ...
+    validations:
+      required: false
   - type: dropdown
     id: architecture
     attributes:
@@ -77,15 +87,22 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: windows-version
+    id: operating_system
     attributes:
-      label: Which version of Windows are you using?
+      label: Which operating system are you using?
       multiple: true
       options:
-        - Windows 11
-        - Windows 10
-        - Windows 8.1
-        - Windows 8
+        - Windows
+        - Linux
+        - macOS
+    validations:
+      required: true
+  - type: input
+    id: os_version
+    attributes:
+      label: Operating System Versions
+      description: What operating system versions are you using?
+      placeholder: ex. Windows 11, Ubuntu 22.04, macOS Monterey, ...
     validations:
       required: false
   - type: textarea
