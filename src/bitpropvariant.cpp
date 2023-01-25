@@ -58,7 +58,7 @@ auto lookupType( VARTYPE type ) -> BitPropVariantType {
         default:
             /* This is unlikely to happen since properties types used in archives
              * are the ones supported by PropertyType enum class.*/
-            throw BitException( "Property type not supported", std::make_error_code( std::errc::invalid_argument ) );
+            throw BitException( "Property type is not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
 }
 
