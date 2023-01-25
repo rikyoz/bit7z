@@ -33,6 +33,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, co
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, fs::path in_arc )
 #else
+
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const fs::path& in_arc )
 #endif
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {

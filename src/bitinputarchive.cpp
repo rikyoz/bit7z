@@ -88,7 +88,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
     }
     GUID format_GUID = formatGUID( *mDetectedFormat );
 #else
-    GUID format_GUID = formatGUID( mArchiveHandler.format() );
+    const GUID format_GUID = formatGUID( mArchiveHandler.format() );
 #endif
     // NOTE: CMyComPtr is still needed: if an error occurs, and an exception is thrown,
     // the IInArchive object is deleted automatically!
@@ -98,6 +98,9 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
     auto open_callback = bit7z::make_com< OpenCallback, IArchiveOpenCallback >( mArchiveHandler, name );
 
     // Trying to open the file with the detected format
+#ifndef BIT7Z_AUTO_FORMAT
+    const
+#endif
     HRESULT res = in_archive->Open( in_stream, nullptr, open_callback );
 
 #ifdef BIT7Z_AUTO_FORMAT
