@@ -47,68 +47,68 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
 
         BitAbstractArchiveCreator( BitAbstractArchiveCreator&& ) = delete;
 
-        BitAbstractArchiveCreator& operator=( const BitAbstractArchiveCreator& ) = delete;
+        auto operator=( const BitAbstractArchiveCreator& ) -> BitAbstractArchiveCreator& = delete;
 
-        BitAbstractArchiveCreator& operator=( BitAbstractArchiveCreator&& ) = delete;
+        auto operator=( BitAbstractArchiveCreator&& ) -> BitAbstractArchiveCreator& = delete;
 
         ~BitAbstractArchiveCreator() override = default;
 
         /**
          * @return the format used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD const BitInFormat& format() const noexcept override;
+        BIT7Z_NODISCARD auto format() const noexcept -> const BitInFormat& override;
 
         /**
          * @return the format used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD const BitInOutFormat& compressionFormat() const noexcept;
+        BIT7Z_NODISCARD auto compressionFormat() const noexcept -> const BitInOutFormat&;
 
         /**
          * @return whether the creator crypts also the headers of archives or not.
          */
-        BIT7Z_NODISCARD bool cryptHeaders() const noexcept;
+        BIT7Z_NODISCARD auto cryptHeaders() const noexcept -> bool;
 
         /**
          * @return the compression level used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD BitCompressionLevel compressionLevel() const noexcept;
+        BIT7Z_NODISCARD auto compressionLevel() const noexcept -> BitCompressionLevel;
 
         /**
          * @return the compression method used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD BitCompressionMethod compressionMethod() const noexcept;
+        BIT7Z_NODISCARD auto compressionMethod() const noexcept -> BitCompressionMethod;
 
         /**
          * @return the dictionary size used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD uint32_t dictionarySize() const noexcept;
+        BIT7Z_NODISCARD auto dictionarySize() const noexcept -> uint32_t;
 
         /**
          * @return the word size used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD uint32_t wordSize() const noexcept;
+        BIT7Z_NODISCARD auto wordSize() const noexcept -> uint32_t;
 
         /**
          * @return whether the archive creator uses solid compression or not.
          */
-        BIT7Z_NODISCARD bool solidMode() const noexcept;
+        BIT7Z_NODISCARD auto solidMode() const noexcept -> bool;
 
         /**
          * @return the update mode used when updating existing archives.
          */
-        BIT7Z_NODISCARD UpdateMode updateMode() const noexcept;
+        BIT7Z_NODISCARD auto updateMode() const noexcept -> UpdateMode;
 
         /**
          * @return the volume size (in bytes) used when creating multi-volume archives
          *         (a 0 value means that all files are going in a single archive).
          */
-        BIT7Z_NODISCARD uint64_t volumeSize() const noexcept;
+        BIT7Z_NODISCARD auto volumeSize() const noexcept -> uint64_t;
 
         /**
          * @return the number of threads used when creating/updating an archive
          *         (a 0 value means that it will use the 7-zip default value).
          */
-        BIT7Z_NODISCARD uint32_t threadsCount() const noexcept;
+        BIT7Z_NODISCARD auto threadsCount() const noexcept -> uint32_t;
 
         /**
          * @brief Sets up a password for the output archives.
@@ -268,7 +268,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
                                    tstring password = {},
                                    UpdateMode update_mode = UpdateMode::None );
 
-        BIT7Z_NODISCARD ArchiveProperties archiveProperties() const;
+        BIT7Z_NODISCARD auto archiveProperties() const -> ArchiveProperties;
 
         friend class BitOutputArchive;
 

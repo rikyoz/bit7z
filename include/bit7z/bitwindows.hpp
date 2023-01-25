@@ -21,6 +21,7 @@
 #include <Windows.h>
 #include <propidl.h>
 #else
+
 /* We don't have the "Windows.h" header on Unix systems, so in theory, we could use the "MyWindows.h" of p7zip/7-zip.
  * However, some of bit7z's public API headers need some Win32 API structs like PROPVARIANT and GUID.
  * Hence, it would result in the leak of p7zip/7-zip headers, making bit7z's clients dependent on them.

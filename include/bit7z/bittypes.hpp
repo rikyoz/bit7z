@@ -42,7 +42,7 @@ struct string_traits;
 template<>
 struct string_traits< char > {
     template< class T >
-    static inline std::string convert_to_string( T&& t ) {
+    static inline auto convert_to_string( T&& t ) -> std::string {
         return std::to_string( std::forward< T >( t ) );
     }
 };
@@ -50,7 +50,7 @@ struct string_traits< char > {
 template<>
 struct string_traits< wchar_t > {
     template< class T >
-    static inline std::wstring convert_to_string( T&& t ) {
+    static inline auto convert_to_string( T&& t ) -> std::wstring {
         return std::to_wstring( std::forward< T >( t ) );
     }
 };
@@ -82,7 +82,7 @@ using tregex = std::basic_regex< tchar >;
 #endif
 
 template< typename T >
-inline std::basic_string< tchar > to_tstring( T&& arg ) {
+inline auto to_tstring( T&& arg ) -> std::basic_string< tchar > {
     return string_traits< tchar >::convert_to_string( std::forward< T >( arg ) );
 }
 

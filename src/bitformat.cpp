@@ -94,31 +94,31 @@ namespace BitFormat {
                                FormatFeatures::CompressionLevel );
 } // namespace BitFormat
 
-unsigned char BitInFormat::value() const noexcept {
+auto BitInFormat::value() const noexcept -> unsigned char {
     return mValue;
 }
 
-bool BitInFormat::operator==( const BitInFormat& other ) const noexcept {
+auto BitInFormat::operator==( const BitInFormat& other ) const noexcept -> bool {
     return mValue == other.value();
 }
 
-bool BitInFormat::operator!=( const BitInFormat& other ) const noexcept {
+auto BitInFormat::operator!=( const BitInFormat& other ) const noexcept -> bool {
     return !( *this == other );
 }
 
-const tchar* BitInOutFormat::extension() const noexcept {
+auto BitInOutFormat::extension() const noexcept -> const tchar* {
     return mExtension;
 }
 
-FormatFeatures BitInOutFormat::features() const noexcept {
+auto BitInOutFormat::features() const noexcept -> FormatFeatures {
     return mFeatures;
 }
 
-bool BitInOutFormat::hasFeature( FormatFeatures feature ) const noexcept {
+auto BitInOutFormat::hasFeature( FormatFeatures feature ) const noexcept -> bool {
     return ( mFeatures & feature ) != 0;
 }
 
-BitCompressionMethod BitInOutFormat::defaultMethod() const noexcept {
+auto BitInOutFormat::defaultMethod() const noexcept -> BitCompressionMethod {
     return mDefaultMethod;
 }
 

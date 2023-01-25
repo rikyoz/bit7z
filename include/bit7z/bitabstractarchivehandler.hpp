@@ -70,67 +70,67 @@ class BitAbstractArchiveHandler {
 
         BitAbstractArchiveHandler( BitAbstractArchiveHandler&& ) = delete;
 
-        BitAbstractArchiveHandler& operator=( const BitAbstractArchiveHandler& ) = delete;
+        auto operator=( const BitAbstractArchiveHandler& ) -> BitAbstractArchiveHandler& = delete;
 
-        BitAbstractArchiveHandler& operator=( BitAbstractArchiveHandler&& ) = delete;
+        auto operator=( BitAbstractArchiveHandler&& ) -> BitAbstractArchiveHandler& = delete;
 
         virtual ~BitAbstractArchiveHandler() = default;
 
         /**
          * @return the Bit7zLibrary object used by the handler.
          */
-        BIT7Z_NODISCARD const Bit7zLibrary& library() const noexcept;
+        BIT7Z_NODISCARD auto library() const noexcept -> const Bit7zLibrary&;
 
         /**
          * @return the format used by the handler for extracting or compressing.
          */
-        BIT7Z_NODISCARD virtual const BitInFormat& format() const = 0;
+        BIT7Z_NODISCARD virtual auto format() const -> const BitInFormat& = 0;
 
         /**
          * @return the password used to open, extract, or encrypt the archive.
          */
-        BIT7Z_NODISCARD tstring password() const;
+        BIT7Z_NODISCARD auto password() const -> tstring;
 
         /**
          * @return a boolean value indicating whether the directory structure must be preserved while extracting
          * or compressing the archive.
          */
-        BIT7Z_NODISCARD bool retainDirectories() const noexcept;
+        BIT7Z_NODISCARD auto retainDirectories() const noexcept -> bool;
 
         /**
          * @return a boolean value indicating whether a password is defined or not.
          */
-        BIT7Z_NODISCARD bool isPasswordDefined() const noexcept;
+        BIT7Z_NODISCARD auto isPasswordDefined() const noexcept -> bool;
 
         /**
          * @return the current total callback.
          */
-        BIT7Z_NODISCARD TotalCallback totalCallback() const;
+        BIT7Z_NODISCARD auto totalCallback() const -> TotalCallback;
 
         /**
          * @return the current progress callback.
          */
-        BIT7Z_NODISCARD ProgressCallback progressCallback() const;
+        BIT7Z_NODISCARD auto progressCallback() const -> ProgressCallback;
 
         /**
          * @return the current ratio callback.
          */
-        BIT7Z_NODISCARD RatioCallback ratioCallback() const;
+        BIT7Z_NODISCARD auto ratioCallback() const -> RatioCallback;
 
         /**
          * @return the current file callback.
          */
-        BIT7Z_NODISCARD FileCallback fileCallback() const;
+        BIT7Z_NODISCARD auto fileCallback() const -> FileCallback;
 
         /**
          * @return the current password callback.
          */
-        BIT7Z_NODISCARD PasswordCallback passwordCallback() const;
+        BIT7Z_NODISCARD auto passwordCallback() const -> PasswordCallback;
 
         /**
          * @return the current OverwriteMode.
          */
-        BIT7Z_NODISCARD OverwriteMode overwriteMode() const;
+        BIT7Z_NODISCARD auto overwriteMode() const -> OverwriteMode;
 
         /**
          * @brief Sets up a password to be used by the archive handler.

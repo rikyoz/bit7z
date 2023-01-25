@@ -46,9 +46,9 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
 
         BitArchiveEditor( BitArchiveEditor&& ) = delete;
 
-        BitArchiveEditor& operator=( const BitArchiveEditor& ) = delete;
+        auto operator=( const BitArchiveEditor& ) -> BitArchiveEditor& = delete;
 
-        BitArchiveEditor& operator=( BitArchiveEditor&& ) = delete;
+        auto operator=( BitArchiveEditor&& ) -> BitArchiveEditor& = delete;
 
         ~BitArchiveEditor() override;
 
@@ -153,17 +153,17 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
     private:
         EditedItems mEditedItems;
 
-        uint32_t findItem( const tstring& item_path );
+        auto findItem( const tstring& item_path ) -> uint32_t;
 
         void checkIndex( uint32_t index );
 
-        BitPropVariant itemProperty( input_index index, BitProperty propID ) const override;
+        auto itemProperty( input_index index, BitProperty propID ) const -> BitPropVariant override;
 
-        HRESULT itemStream( input_index index, ISequentialInStream** inStream ) const override;
+        auto itemStream( input_index index, ISequentialInStream** inStream ) const -> HRESULT override;
 
-        bool hasNewData( uint32_t index ) const noexcept override;
+        auto hasNewData( uint32_t index ) const noexcept -> bool override;
 
-        bool hasNewProperties( uint32_t index ) const noexcept override;
+        auto hasNewProperties( uint32_t index ) const noexcept -> bool override;
 };
 
 }  // namespace bit7z

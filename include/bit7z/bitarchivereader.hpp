@@ -83,9 +83,9 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
 
         BitArchiveReader( BitArchiveReader&& ) = delete;
 
-        BitArchiveReader& operator=( const BitArchiveReader& ) = delete;
+        auto operator=( const BitArchiveReader& ) -> BitArchiveReader& = delete;
 
-        BitArchiveReader& operator=( BitArchiveReader&& ) = delete;
+        auto operator=( BitArchiveReader&& ) -> BitArchiveReader& = delete;
 
         /**
          * @brief BitArchiveReader destructor.
@@ -97,52 +97,52 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @return a map of all the available (i.e., non-empty) archive properties and their respective values.
          */
-        BIT7Z_NODISCARD map< BitProperty, BitPropVariant > archiveProperties() const;
+        BIT7Z_NODISCARD auto archiveProperties() const -> map< BitProperty, BitPropVariant >;
 
         /**
          * @return a vector of all the archive items as BitArchiveItem objects.
          */
-        BIT7Z_NODISCARD vector< BitArchiveItemInfo > items() const;
+        BIT7Z_NODISCARD auto items() const -> vector< BitArchiveItemInfo >;
 
         /**
          * @return the number of folders contained in the archive.
          */
-        BIT7Z_NODISCARD uint32_t foldersCount() const;
+        BIT7Z_NODISCARD auto foldersCount() const -> uint32_t;
 
         /**
          * @return the number of files contained in the archive.
          */
-        BIT7Z_NODISCARD uint32_t filesCount() const;
+        BIT7Z_NODISCARD auto filesCount() const -> uint32_t;
 
         /**
          * @return the total uncompressed size of the archive content.
          */
-        BIT7Z_NODISCARD uint64_t size() const;
+        BIT7Z_NODISCARD auto size() const -> uint64_t;
 
         /**
          * @return the total compressed size of the archive content.
          */
-        BIT7Z_NODISCARD uint64_t packSize() const;
+        BIT7Z_NODISCARD auto packSize() const -> uint64_t;
 
         /**
          * @return true if and only if the archive has at least one encrypted item.
          */
-        BIT7Z_NODISCARD bool hasEncryptedItems() const;
+        BIT7Z_NODISCARD auto hasEncryptedItems() const -> bool;
 
         /**
          * @return the number of volumes composing the archive.
          */
-        BIT7Z_NODISCARD uint32_t volumesCount() const;
+        BIT7Z_NODISCARD auto volumesCount() const -> uint32_t;
 
         /**
          * @return true if and only if the archive is composed by multiple volumes.
          */
-        BIT7Z_NODISCARD bool isMultiVolume() const;
+        BIT7Z_NODISCARD auto isMultiVolume() const -> bool;
 
         /**
          * @return true if and only if the archive was created using solid compression.
          */
-        BIT7Z_NODISCARD bool isSolid() const;
+        BIT7Z_NODISCARD auto isSolid() const -> bool;
 };
 
 using BitArchiveInfo BIT7Z_MAYBE_UNUSED BIT7Z_DEPRECATED_MSG("Since v4.0; please use BitArchiveReader.") = BitArchiveReader;

@@ -75,28 +75,28 @@ void BitItemsVector::indexStream( std::istream& in_stream, const tstring& name )
     mItems.emplace_back( std::make_unique< StdInputItem >( in_stream, name ) );
 }
 
-size_t BitItemsVector::size() const {
+auto BitItemsVector::size() const -> size_t {
     return mItems.size();
 }
 
-const GenericInputItem& BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const {
+auto BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const -> const GenericInputItem& {
     // Note: here index is expected to be correct!
     return *mItems[ index ];
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::begin() const noexcept {
+auto BitItemsVector::begin() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cbegin();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::end() const noexcept {
+auto BitItemsVector::end() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cend();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::cbegin() const noexcept {
+auto BitItemsVector::cbegin() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cbegin();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::cend() const noexcept {
+auto BitItemsVector::cend() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cend();
 }
 

@@ -19,25 +19,25 @@ using namespace bit7z;
 BitArchiveItemOffset::BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept
     : BitArchiveItem( item_index ), mArc( &item_arc ) {}
 
-BitArchiveItemOffset& BitArchiveItemOffset::operator++() noexcept {
+auto BitArchiveItemOffset::operator++() noexcept -> BitArchiveItemOffset& {
     ++mItemIndex;
     return *this;
 }
 
-BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) noexcept { // NOLINT(cert-dcl21-cpp)
+auto BitArchiveItemOffset::operator++( int ) noexcept -> BitArchiveItemOffset { // NOLINT(cert-dcl21-cpp)
     BitArchiveItemOffset old_value = *this;
     ++( *this );
     return old_value;
 }
 
-bool BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const noexcept {
+auto BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const noexcept -> bool {
     return mItemIndex == other.mItemIndex;
 }
 
-bool BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const noexcept {
+auto BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const noexcept -> bool {
     return !( *this == other );
 }
 
-BitPropVariant BitArchiveItemOffset::itemProperty( BitProperty property ) const {
+auto BitArchiveItemOffset::itemProperty( BitProperty property ) const -> BitPropVariant {
     return mArc != nullptr ? mArc->itemProperty( mItemIndex, property ) : BitPropVariant();
 }

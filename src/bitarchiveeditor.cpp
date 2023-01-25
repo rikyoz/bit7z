@@ -155,7 +155,7 @@ void BitArchiveEditor::checkIndex( uint32_t index ) {
     }
 }
 
-BitPropVariant BitArchiveEditor::itemProperty( input_index index, BitProperty propID ) const {
+auto BitArchiveEditor::itemProperty( input_index index, BitProperty propID ) const -> BitPropVariant {
     const auto mapped_index = static_cast< uint32_t >( index );
     if ( mapped_index < inputArchiveItemsCount() ) {
         auto res = mEditedItems.find( mapped_index );
@@ -167,7 +167,7 @@ BitPropVariant BitArchiveEditor::itemProperty( input_index index, BitProperty pr
     return BitOutputArchive::itemProperty( index, propID );
 }
 
-HRESULT BitArchiveEditor::itemStream( input_index index, ISequentialInStream** inStream ) const {
+auto BitArchiveEditor::itemStream( input_index index, ISequentialInStream** inStream ) const -> HRESULT {
     const auto mapped_index = static_cast< uint32_t >( index );
     if ( mapped_index < inputArchiveItemsCount() ) { //old item in the archive
         auto res = mEditedItems.find( mapped_index );
@@ -179,7 +179,7 @@ HRESULT BitArchiveEditor::itemStream( input_index index, ISequentialInStream** i
     return BitOutputArchive::itemStream( index, inStream );
 }
 
-bool BitArchiveEditor::hasNewData( uint32_t index ) const noexcept {
+auto BitArchiveEditor::hasNewData( uint32_t index ) const noexcept -> bool {
     const auto mapped_index = static_cast< uint32_t >( itemInputIndex( index ) );
     if ( mapped_index >= inputArchiveItemsCount() ) {
         return true; //new item
@@ -191,7 +191,7 @@ bool BitArchiveEditor::hasNewData( uint32_t index ) const noexcept {
     return false;
 }
 
-bool BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept {
+auto BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept -> bool {
     const auto mapped_index = static_cast< uint32_t >( itemInputIndex( index ) );
     const bool isEditedItem = mEditedItems.find( mapped_index ) != mEditedItems.end();
     return mapped_index >= inputArchiveItemsCount() || isEditedItem;

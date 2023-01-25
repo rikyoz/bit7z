@@ -19,11 +19,11 @@
 #include "internal/util.hpp"
 #endif
 
-std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
+auto bit7z::make_hresult_code( HRESULT res ) noexcept -> std::error_code {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };
 }
 
-std::error_code bit7z::last_error_code() noexcept {
+auto bit7z::last_error_code() noexcept -> std::error_code {
     return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
 }
 
@@ -42,11 +42,11 @@ BitException::BitException( const char* const message, std::error_code code, con
 BitException::BitException( const std::string& message, std::error_code code )
     : system_error( code, message.c_str() ) {}
 
-const FailedFiles& BitException::failedFiles() const noexcept {
+auto BitException::failedFiles() const noexcept -> const FailedFiles& {
     return mFailedFiles;
 }
 
-BitException::native_code_type BitException::nativeCode() const noexcept {
+auto BitException::nativeCode() const noexcept -> BitException::native_code_type {
 #ifdef _WIN32 // On Windows, the native code must be a HRESULT value.
     return hresultCode();
 #else // On Unix, the native code is a POSIX error code.
@@ -54,7 +54,7 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
 #endif
 }
 
-HRESULT BitException::hresultCode() const noexcept {
+auto BitException::hresultCode() const noexcept -> HRESULT {
     const std::error_code& error = code();
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
         return error.value();
@@ -104,7 +104,7 @@ HRESULT BitException::hresultCode() const noexcept {
     return E_FAIL;
 }
 
-int BitException::posixCode() const noexcept {
+auto BitException::posixCode() const noexcept -> int {
     const auto& error = code();
 #ifdef _MSC_VER
     if ( error.category() == bit7z::hresult_category() ||

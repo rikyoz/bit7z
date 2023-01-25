@@ -74,16 +74,16 @@ class BitInputArchive {
 
         BitInputArchive( BitInputArchive&& ) = delete;
 
-        BitInputArchive& operator=( const BitInputArchive& ) = delete;
+        auto operator=( const BitInputArchive& ) -> BitInputArchive& = delete;
 
-        BitInputArchive& operator=( BitInputArchive&& ) = delete;
+        auto operator=( BitInputArchive&& ) -> BitInputArchive& = delete;
 
         virtual ~BitInputArchive();
 
         /**
          * @return the detected format of the file.
          */
-        BIT7Z_NODISCARD const BitInFormat& detectedFormat() const noexcept;
+        BIT7Z_NODISCARD auto detectedFormat() const noexcept -> const BitInFormat&;
 
         /**
          * @brief Gets the specified archive property.
@@ -92,7 +92,7 @@ class BitInputArchive {
          *
          * @return the current value of the archive property or an empty BitPropVariant if no value is specified.
          */
-        BIT7Z_NODISCARD BitPropVariant archiveProperty( BitProperty property ) const;
+        BIT7Z_NODISCARD auto archiveProperty( BitProperty property ) const -> BitPropVariant;
 
         /**
          * @brief Gets the specified property of an item in the archive.
@@ -103,36 +103,36 @@ class BitInputArchive {
          * @return the current value of the item property or an empty BitPropVariant if the item has no value for
          * the property.
          */
-        BIT7Z_NODISCARD BitPropVariant itemProperty( uint32_t index, BitProperty property ) const;
+        BIT7Z_NODISCARD auto itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant;
 
         /**
          * @return the number of items contained in the archive.
          */
-        BIT7Z_NODISCARD uint32_t itemsCount() const;
+        BIT7Z_NODISCARD auto itemsCount() const -> uint32_t;
 
         /**
          * @param index the index of an item in the archive.
          *
          * @return true if and only if the item at the given index is a folder.
          */
-        BIT7Z_NODISCARD bool isItemFolder( uint32_t index ) const;
+        BIT7Z_NODISCARD auto isItemFolder( uint32_t index ) const -> bool;
 
         /**
          * @param index the index of an item in the archive.
          *
          * @return true if and only if the item at the given index is encrypted.
          */
-        BIT7Z_NODISCARD bool isItemEncrypted( uint32_t index ) const;
+        BIT7Z_NODISCARD auto isItemEncrypted( uint32_t index ) const -> bool;
 
         /**
          * @return the path to the archive (the empty string for buffer/stream archives).
          */
-        BIT7Z_NODISCARD const tstring& archivePath() const noexcept;
+        BIT7Z_NODISCARD auto archivePath() const noexcept -> const tstring&;
 
         /**
          * @return the BitAbstractArchiveHandler object containing the settings for reading the archive.
          */
-        BIT7Z_NODISCARD const BitAbstractArchiveHandler& handler() const noexcept;
+        BIT7Z_NODISCARD auto handler() const noexcept -> const BitAbstractArchiveHandler&;
 
         /**
          * @brief Extracts the specified items to the chosen directory.
@@ -210,11 +210,11 @@ class BitInputArchive {
         void test() const;
 
     protected:
-        IInArchive* openArchiveStream( const fs::path& name, IInStream* in_stream );
+        auto openArchiveStream( const fs::path& name, IInStream* in_stream ) -> IInArchive*;
 
-        HRESULT initUpdatableArchive( IOutArchive** newArc ) const;
+        auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
 
-        BIT7Z_NODISCARD HRESULT close() const noexcept;
+        BIT7Z_NODISCARD auto close() const noexcept -> HRESULT;
 
         friend class BitAbstractArchiveOpener;
 
@@ -246,14 +246,14 @@ class BitInputArchive {
                  *
                  * @return the iterator pointing to the next element in the archive.
                  */
-                const_iterator& operator++() noexcept;
+                auto operator++() noexcept -> const_iterator&;
 
                 /**
                  * @brief Advances the iterator to the next element in the archive.
                  *
                  * @return the iterator before the advancement.
                  */
-                const_iterator operator++( int ) noexcept; // NOLINT(cert-dcl21-cpp)
+                auto operator++( int ) noexcept -> const_iterator; // NOLINT(cert-dcl21-cpp)
 
                 /**
                  * @brief Compares the iterator with another iterator.
@@ -262,7 +262,7 @@ class BitInputArchive {
                  *
                  * @return whether the two iterators point to the same element in the archive or not.
                  */
-                bool operator==( const const_iterator& other ) const noexcept;
+                auto operator==( const const_iterator& other ) const noexcept -> bool;
 
                 /**
                  * @brief Compares the iterator with another iterator.
@@ -271,21 +271,21 @@ class BitInputArchive {
                  *
                  * @return whether the two iterators point to the different elements in the archive or not.
                  */
-                bool operator!=( const const_iterator& other ) const noexcept;
+                auto operator!=( const const_iterator& other ) const noexcept -> bool;
 
                 /**
                  * @brief Accesses the pointed-to element in the archive.
                  *
                  * @return a reference to the pointed-to element in the archive.
                  */
-                reference operator*() noexcept;
+                auto operator*() noexcept -> reference;
 
                 /**
                  * @brief Accesses the pointed-to element in the archive.
                  *
                  * @return a pointer to the pointed-to element in the archive.
                  */
-                pointer operator->() noexcept;
+                auto operator->() noexcept -> pointer;
 
             private:
                 BitArchiveItemOffset mItemOffset;
@@ -299,25 +299,25 @@ class BitInputArchive {
          * @return an iterator to the first element of the archive. If the archive is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
-        BIT7Z_NODISCARD BitInputArchive::const_iterator begin() const noexcept;
+        BIT7Z_NODISCARD auto begin() const noexcept -> BitInputArchive::const_iterator;
 
         /**
          * @return an iterator to the element following the last element of the archive.
          *         This element acts as a placeholder; attempting to access it results in undefined behavior.
          */
-        BIT7Z_NODISCARD BitInputArchive::const_iterator end() const noexcept;
+        BIT7Z_NODISCARD auto end() const noexcept -> BitInputArchive::const_iterator;
 
         /**
          * @return an iterator to the first element of the archive. If the archive is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
-        BIT7Z_NODISCARD BitInputArchive::const_iterator cbegin() const noexcept;
+        BIT7Z_NODISCARD auto cbegin() const noexcept -> BitInputArchive::const_iterator;
 
         /**
          * @return an iterator to the element following the last element of the archive.
          *         This element acts as a placeholder; attempting to access it results in undefined behavior.
          */
-        BIT7Z_NODISCARD BitInputArchive::const_iterator cend() const noexcept;
+        BIT7Z_NODISCARD auto cend() const noexcept -> BitInputArchive::const_iterator;
 
         /**
          * @brief Find an item in the archive that has the given path.
@@ -327,7 +327,7 @@ class BitInputArchive {
          * @return an iterator to the item with the given path, or an iterator equal to the end() iterator
          * if no item is found.
          */
-        BIT7Z_NODISCARD BitInputArchive::const_iterator find( const tstring& path ) const noexcept;
+        BIT7Z_NODISCARD auto find( const tstring& path ) const noexcept -> BitInputArchive::const_iterator;
 
         /**
          * @brief Find if there is an item in the archive that has the given path.
@@ -336,7 +336,7 @@ class BitInputArchive {
          *
          * @return true if and only if an item with the given path exists in the archive.
          */
-        BIT7Z_NODISCARD bool contains( const tstring& path ) const noexcept;
+        BIT7Z_NODISCARD auto contains( const tstring& path ) const noexcept -> bool;
 };
 
 }  // namespace bit7z

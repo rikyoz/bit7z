@@ -21,13 +21,13 @@ class BitInputArchive;
  */
 class BitArchiveItemOffset final : public BitArchiveItem {
     public:
-        BitArchiveItemOffset& operator++() noexcept;
+        auto operator++() noexcept -> BitArchiveItemOffset&;
 
-        BitArchiveItemOffset operator++( int ) noexcept; // NOLINT(cert-dcl21-cpp)
+        auto operator++( int ) noexcept -> BitArchiveItemOffset; // NOLINT(cert-dcl21-cpp)
 
-        bool operator==( const BitArchiveItemOffset& other ) const noexcept;
+        auto operator==( const BitArchiveItemOffset& other ) const noexcept -> bool;
 
-        bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
+        auto operator!=( const BitArchiveItemOffset& other ) const noexcept -> bool;
 
         /**
          * @brief Gets the specified item property.
@@ -36,7 +36,7 @@ class BitArchiveItemOffset final : public BitArchiveItem {
          *
          * @return the value of the item property, if available, or an empty BitPropVariant.
          */
-        BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
+        BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
     private:
         /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,

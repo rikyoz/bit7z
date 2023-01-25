@@ -40,7 +40,7 @@ inline constexpr auto to_underlying( E e ) noexcept -> underlying_type_t< E > {
     return static_cast< underlying_type_t< E > >( e );
 }
 
-inline constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
+inline constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {
     return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
 }
 
@@ -61,12 +61,12 @@ class BitInFormat {
         //non-copyable
         BitInFormat( const BitInFormat& other ) = delete;
 
-        BitInFormat& operator=( const BitInFormat& other ) = delete;
+        auto operator=( const BitInFormat& other ) -> BitInFormat& = delete;
 
         //non-movable
         BitInFormat( BitInFormat&& other ) = delete;
 
-        BitInFormat& operator=( BitInFormat&& other ) = delete;
+        auto operator=( BitInFormat&& other ) -> BitInFormat& = delete;
 
         ~BitInFormat() = default;
 
@@ -79,19 +79,19 @@ class BitInFormat {
         /**
          * @return the value of the format in the 7z SDK.
          */
-        BIT7Z_NODISCARD unsigned char value() const noexcept;
+        BIT7Z_NODISCARD auto value() const noexcept -> unsigned char;
 
         /**
          * @param other  the target object to compare to.
          * @return a boolean value indicating whether this format is equal to the "other" or not.
          */
-        bool operator==( BitInFormat const& other ) const noexcept;
+        auto operator==( BitInFormat const& other ) const noexcept -> bool;
 
         /**
          * @param other  the target object to compare to.
          * @return a boolean value indicating whether this format is different from the "other" or not.
          */
-        bool operator!=( BitInFormat const& other ) const noexcept;
+        auto operator!=( BitInFormat const& other ) const noexcept -> bool;
 
     private:
         unsigned char mValue;

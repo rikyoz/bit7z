@@ -40,7 +40,7 @@ using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
 
-CMyComPtr< IInArchive > initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) {
+auto initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) -> CMyComPtr< IInArchive > {
     CMyComPtr< IInArchive > arc_object;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     lib.createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &arc_object ) );
@@ -78,7 +78,7 @@ void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
     }
 }
 
-IInArchive* BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_stream ) {
+auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_stream ) -> IInArchive* {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detected_by_signature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -170,7 +170,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
     mInArchive = openArchiveStream( BIT7Z_STRING( "." ), std_stream );
 }
 
-BitPropVariant BitInputArchive::archiveProperty( BitProperty property ) const {
+auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant archive_property;
     const HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archive_property );
     if ( res != S_OK ) {
@@ -179,7 +179,7 @@ BitPropVariant BitInputArchive::archiveProperty( BitProperty property ) const {
     return archive_property;
 }
 
-BitPropVariant BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const {
+auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant {
     BitPropVariant item_property;
     const HRESULT res = mInArchive->GetProperty( index, static_cast<PROPID>( property ), &item_property );
     if ( res != S_OK ) {
@@ -189,7 +189,7 @@ BitPropVariant BitInputArchive::itemProperty( uint32_t index, BitProperty proper
     return item_property;
 }
 
-uint32_t BitInputArchive::itemsCount() const {
+auto BitInputArchive::itemsCount() const -> uint32_t {
     uint32_t items_count{};
     const HRESULT res = mInArchive->GetNumberOfItems( &items_count );
     if ( res != S_OK ) {
@@ -198,22 +198,22 @@ uint32_t BitInputArchive::itemsCount() const {
     return items_count;
 }
 
-bool BitInputArchive::isItemFolder( uint32_t index ) const {
+auto BitInputArchive::isItemFolder( uint32_t index ) const -> bool {
     const BitPropVariant is_item_folder = itemProperty( index, BitProperty::IsDir );
     return !is_item_folder.isEmpty() && is_item_folder.getBool();
 }
 
-bool BitInputArchive::isItemEncrypted( uint32_t index ) const {
+auto BitInputArchive::isItemEncrypted( uint32_t index ) const -> bool {
     const BitPropVariant is_item_encrypted = itemProperty( index, BitProperty::Encrypted );
     return is_item_encrypted.isBool() && is_item_encrypted.getBool();
 }
 
-HRESULT BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const {
+auto BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
-const BitInFormat& BitInputArchive::detectedFormat() const noexcept {
+auto BitInputArchive::detectedFormat() const noexcept -> const BitInFormat& {
 #ifdef BIT7Z_AUTO_FORMAT
     // Defensive programming: for how the archive format is detected,
     // a correct BitInputArchive instance should have a non-null mDetectedFormat!
@@ -223,11 +223,11 @@ const BitInFormat& BitInputArchive::detectedFormat() const noexcept {
 #endif
 }
 
-const tstring& BitInputArchive::archivePath() const noexcept {
+auto BitInputArchive::archivePath() const noexcept -> const tstring& {
     return mArchivePath;
 }
 
-const BitAbstractArchiveHandler& BitInputArchive::handler() const noexcept {
+auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandler& {
     return mArchiveHandler;
 }
 
@@ -314,7 +314,7 @@ void BitInputArchive::test() const {
     testArc( mInArchive, extract_callback );
 }
 
-HRESULT BitInputArchive::close() const noexcept {
+auto BitInputArchive::close() const noexcept -> HRESULT {
     return mInArchive->Close();
 }
 
@@ -325,59 +325,60 @@ BitInputArchive::~BitInputArchive() {
     }
 }
 
-BitInputArchive::const_iterator BitInputArchive::begin() const noexcept {
+auto BitInputArchive::begin() const noexcept -> BitInputArchive::const_iterator {
     return const_iterator{ 0, *this };
 }
 
-BitInputArchive::const_iterator BitInputArchive::end() const noexcept {
+auto BitInputArchive::end() const noexcept -> BitInputArchive::const_iterator {
     //Note: we do not use itemsCount() since it can throw an exception and end() is marked as noexcept!
     uint32_t items_count = 0;
     mInArchive->GetNumberOfItems( &items_count );
     return const_iterator{ items_count, *this };
 }
 
-BitInputArchive::const_iterator BitInputArchive::cbegin() const noexcept {
+auto BitInputArchive::cbegin() const noexcept -> BitInputArchive::const_iterator {
     return begin();
 }
 
-BitInputArchive::const_iterator BitInputArchive::cend() const noexcept {
+auto BitInputArchive::cend() const noexcept -> BitInputArchive::const_iterator {
     return end();
 }
 
-BitInputArchive::const_iterator BitInputArchive::find( const tstring& path ) const noexcept {
+auto BitInputArchive::find( const tstring& path ) const noexcept -> BitInputArchive::const_iterator {
     return std::find_if( begin(), end(), [ &path ]( auto& old_item ) {
         return old_item.path() == path;
     } );
 }
 
-bool BitInputArchive::contains( const tstring& path ) const noexcept {
+auto BitInputArchive::contains( const tstring& path ) const noexcept -> bool {
     return find( path ) != end();
 }
 
-BitInputArchive::const_iterator& BitInputArchive::const_iterator::operator++() noexcept {
+auto BitInputArchive::const_iterator::operator++() noexcept -> BitInputArchive::const_iterator& {
     ++mItemOffset;
     return *this;
 }
 
-BitInputArchive::const_iterator BitInputArchive::const_iterator::operator++( int ) noexcept { // NOLINT(cert-dcl21-cpp)
+// NOLINTNEXTLINE(cert-dcl21-cpp)
+auto BitInputArchive::const_iterator::operator++( int ) noexcept -> BitInputArchive::const_iterator {
     const_iterator incremented = *this;
     ++( *this );
     return incremented;
 }
 
-bool BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const noexcept {
+auto BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const noexcept -> bool {
     return mItemOffset == other.mItemOffset;
 }
 
-bool BitInputArchive::const_iterator::operator!=( const BitInputArchive::const_iterator& other ) const noexcept {
+auto BitInputArchive::const_iterator::operator!=( const BitInputArchive::const_iterator& other ) const noexcept -> bool {
     return !( *this == other );
 }
 
-BitInputArchive::const_iterator::reference BitInputArchive::const_iterator::operator*() noexcept {
+auto BitInputArchive::const_iterator::operator*() noexcept -> BitInputArchive::const_iterator::reference {
     return mItemOffset;
 }
 
-BitInputArchive::const_iterator::pointer BitInputArchive::const_iterator::operator->() noexcept {
+auto BitInputArchive::const_iterator::operator->() noexcept -> BitInputArchive::const_iterator::pointer {
     return &mItemOffset;
 }
 

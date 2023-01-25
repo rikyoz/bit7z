@@ -62,9 +62,9 @@ class Bit7zLibrary final {
 
         Bit7zLibrary( Bit7zLibrary&& ) = delete;
 
-        Bit7zLibrary& operator=( const Bit7zLibrary& ) = delete;
+        auto operator=( const Bit7zLibrary& ) -> Bit7zLibrary& = delete;
 
-        Bit7zLibrary& operator=( Bit7zLibrary&& ) = delete;
+        auto operator=( Bit7zLibrary&& ) -> Bit7zLibrary& = delete;
 
         /**
          * @brief Constructs a Bit7zLibrary object by loading the specified 7zip shared library.

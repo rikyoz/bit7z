@@ -37,7 +37,7 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
 
-map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
+auto BitArchiveReader::archiveProperties() const -> map< BitProperty, BitPropVariant > {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
         // Yeah, I know, I cast property twice (here and in archiveProperty), but the code is easier to read!
@@ -50,7 +50,7 @@ map< BitProperty, BitPropVariant > BitArchiveReader::archiveProperties() const {
     return result;
 }
 
-vector< BitArchiveItemInfo > BitArchiveReader::items() const {
+auto BitArchiveReader::items() const -> vector< BitArchiveItemInfo > {
     vector< BitArchiveItemInfo > result;
     for ( uint32_t i = 0; i < itemsCount(); ++i ) {
         BitArchiveItemInfo item( i );
@@ -67,29 +67,29 @@ vector< BitArchiveItemInfo > BitArchiveReader::items() const {
     return result;
 }
 
-uint32_t BitArchiveReader::foldersCount() const {
+auto BitArchiveReader::foldersCount() const -> uint32_t {
     return std::count_if( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return item.isDir();
     } );
 }
 
-uint32_t BitArchiveReader::filesCount() const {
+auto BitArchiveReader::filesCount() const -> uint32_t {
     return itemsCount() - foldersCount(); //I'm lazy :)
 }
 
-uint64_t BitArchiveReader::size() const {
+auto BitArchiveReader::size() const -> uint64_t {
     return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.size();
     } );
 }
 
-uint64_t BitArchiveReader::packSize() const {
+auto BitArchiveReader::packSize() const -> uint64_t {
     return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
         return item.isDir() ? accumulator : accumulator + item.packSize();
     } );
 }
 
-bool BitArchiveReader::hasEncryptedItems() const {
+auto BitArchiveReader::hasEncryptedItems() const -> bool {
     /* Note: simple encryption (i.e., not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
     return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
@@ -97,7 +97,7 @@ bool BitArchiveReader::hasEncryptedItems() const {
     } );
 }
 
-bool BitArchiveReader::isMultiVolume() const {
+auto BitArchiveReader::isMultiVolume() const -> bool {
     if ( extractionFormat() == BitFormat::Split ) {
         return true;
     }
@@ -105,12 +105,12 @@ bool BitArchiveReader::isMultiVolume() const {
     return is_multi_volume.isBool() && is_multi_volume.getBool();
 }
 
-bool BitArchiveReader::isSolid() const {
+auto BitArchiveReader::isSolid() const -> bool {
     const BitPropVariant is_solid = archiveProperty( BitProperty::Solid );
     return is_solid.isBool() && is_solid.getBool();
 }
 
-uint32_t BitArchiveReader::volumesCount() const {
+auto BitArchiveReader::volumesCount() const -> uint32_t {
     const BitPropVariant volumes_count = archiveProperty( BitProperty::NumVolumes );
     return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
 }

@@ -23,7 +23,7 @@ using std::vector;
 
 namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
-tstring basename( const tstring& path );
+auto basename( const tstring& path ) -> tstring;
 } // namespace fsutil
 } // namespace filesystem
 

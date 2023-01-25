@@ -101,9 +101,9 @@ class BitOutputArchive {
 
         BitOutputArchive( BitOutputArchive&& ) = delete;
 
-        BitOutputArchive& operator=( const BitOutputArchive& ) = delete;
+        auto operator=( const BitOutputArchive& ) -> BitOutputArchive& = delete;
 
-        BitOutputArchive& operator=( BitOutputArchive&& ) = delete;
+        auto operator=( BitOutputArchive&& ) -> BitOutputArchive& = delete;
 
         /**
          * @brief Adds all the items that can be found by indexing the given vector of filesystem paths.
@@ -203,13 +203,13 @@ class BitOutputArchive {
         /**
          * @return the total number of items added to the output archive object.
          */
-        uint32_t itemsCount() const;
+        auto itemsCount() const -> uint32_t;
 
         /**
          * @return a constant reference to the BitAbstractArchiveHandler object containing the
          *         settings for writing the output archive.
          */
-        const BitAbstractArchiveHandler& handler() const noexcept;
+        auto handler() const noexcept -> const BitAbstractArchiveHandler&;
 
         /**
          * @brief Default destructor.
@@ -217,23 +217,23 @@ class BitOutputArchive {
         virtual ~BitOutputArchive() = default;
 
     protected:
-        virtual BitPropVariant itemProperty( input_index index, BitProperty prop ) const;
+        virtual auto itemProperty( input_index index, BitProperty prop ) const -> BitPropVariant;
 
-        virtual HRESULT itemStream( input_index index, ISequentialInStream** inStream ) const;
+        virtual auto itemStream( input_index index, ISequentialInStream** inStream ) const -> HRESULT;
 
-        virtual bool hasNewData( uint32_t index ) const noexcept;
+        virtual auto hasNewData( uint32_t index ) const noexcept -> bool;
 
-        virtual bool hasNewProperties( uint32_t index ) const noexcept;
+        virtual auto hasNewProperties( uint32_t index ) const noexcept -> bool;
 
-        input_index itemInputIndex( uint32_t new_index ) const noexcept;
+        auto itemInputIndex( uint32_t new_index ) const noexcept -> input_index;
 
-        BitPropVariant outputItemProperty( uint32_t index, BitProperty propID ) const;
+        auto outputItemProperty( uint32_t index, BitProperty propID ) const -> BitPropVariant;
 
-        HRESULT outputItemStream( uint32_t index, ISequentialInStream** inStream ) const;
+        auto outputItemStream( uint32_t index, ISequentialInStream** inStream ) const -> HRESULT;
 
-        uint32_t indexInArchive( uint32_t index ) const noexcept;
+        auto indexInArchive( uint32_t index ) const noexcept -> uint32_t;
 
-        inline BitInputArchive* inputArchive() const {
+        inline auto inputArchive() const -> BitInputArchive* {
             return mInputArchive.get();
         }
 
@@ -241,7 +241,7 @@ class BitOutputArchive {
             mInputArchive = std::move( input_archive );
         }
 
-        inline uint32_t inputArchiveItemsCount() const {
+        inline auto inputArchiveItemsCount() const -> uint32_t {
             return mInputArchiveItemsCount;
         }
 
@@ -249,15 +249,15 @@ class BitOutputArchive {
             mDeletedItems.insert( index );
         }
 
-        inline bool isDeletedIndex( uint32_t index ) const {
+        inline auto isDeletedIndex( uint32_t index ) const -> bool {
             return mDeletedItems.find( index ) != mDeletedItems.cend();
         }
 
-        inline bool hasDeletedIndexes() const {
+        inline auto hasDeletedIndexes() const -> bool {
             return !mDeletedItems.empty();
         }
 
-        inline bool hasNewItems() const {
+        inline auto hasNewItems() const -> bool {
             return mNewItemsVector.size() > 0;
         }
 
@@ -287,9 +287,9 @@ class BitOutputArchive {
          * This vector is either empty, or it has size equal to itemsCount() (thanks to updateInputIndices()). */
         std::vector< input_index > mInputIndices;
 
-        CMyComPtr< IOutArchive > initOutArchive() const;
+        auto initOutArchive() const -> CMyComPtr< IOutArchive >;
 
-        CMyComPtr< IOutStream > initOutFileStream( const fs::path& out_archive, bool updating_archive ) const;
+        auto initOutFileStream( const fs::path& out_archive, bool updating_archive ) const -> CMyComPtr< IOutStream >;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
         BitOutputArchive( const BitAbstractArchiveCreator& creator, fs::path in_arc );

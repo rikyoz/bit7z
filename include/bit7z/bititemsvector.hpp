@@ -54,9 +54,9 @@ class BitItemsVector final {
 
         BitItemsVector( BitItemsVector&& ) = default;
 
-        BitItemsVector& operator=( const BitItemsVector& ) = default;
+        auto operator=( const BitItemsVector& ) -> BitItemsVector& = default;
 
-        BitItemsVector& operator=( BitItemsVector&& ) = default;
+        auto operator=( BitItemsVector&& ) -> BitItemsVector& = default;
 
         /**
          * @brief Indexes the given directory, adding to the vector all the files that match the wildcard filter.
@@ -120,37 +120,37 @@ class BitItemsVector final {
         /**
          * @return the size of the items vector.
          */
-        BIT7Z_NODISCARD std::size_t size() const;
+        BIT7Z_NODISCARD auto size() const -> std::size_t;
 
         /**
          * @param index the index of the desired item in the vector.
          * @return a constant reference to the GenericInputItem at the given index.
          */
-        const GenericInputItem& operator[]( GenericInputItemVector::size_type index ) const;
+        auto operator[]( GenericInputItemVector::size_type index ) const -> const GenericInputItem&;
 
         /**
          * @return an iterator to the first element of the vector. If the vector is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
-        BIT7Z_NODISCARD GenericInputItemVector::const_iterator begin() const noexcept;
+        BIT7Z_NODISCARD auto begin() const noexcept -> GenericInputItemVector::const_iterator;
 
         /**
          * @return an iterator to the element following the last element of the vector.
          *         This element acts as a placeholder; attempting to access it results in undefined behavior.
          */
-        BIT7Z_NODISCARD GenericInputItemVector::const_iterator end() const noexcept;
+        BIT7Z_NODISCARD auto end() const noexcept -> GenericInputItemVector::const_iterator;
 
         /**
          * @return an iterator to the first element of the vector. If the vector is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
-        BIT7Z_NODISCARD GenericInputItemVector::const_iterator cbegin() const noexcept;
+        BIT7Z_NODISCARD auto cbegin() const noexcept -> GenericInputItemVector::const_iterator;
 
         /**
          * @return an iterator to the element following the last element of the vector.
          *         This element acts as a placeholder; attempting to access it results in undefined behavior.
          */
-        BIT7Z_NODISCARD GenericInputItemVector::const_iterator cend() const noexcept;
+        BIT7Z_NODISCARD auto cend() const noexcept -> GenericInputItemVector::const_iterator;
 
         ~BitItemsVector();
 

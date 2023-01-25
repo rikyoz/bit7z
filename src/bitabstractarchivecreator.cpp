@@ -18,7 +18,7 @@
 
 using namespace bit7z;
 
-bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) noexcept {
+auto isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) noexcept -> bool {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return format == BitFormat::SevenZip || format == BitFormat::Zip || format == BitFormat::Tar ||
@@ -39,7 +39,7 @@ bool isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
     }
 }
 
-bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) noexcept {
+auto isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) noexcept -> bool {
     static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
     static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e., 2^30 bytes
     static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
@@ -57,7 +57,7 @@ bool isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_siz
     }
 }
 
-bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method, uint32_t word_size ) noexcept {
+auto isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method, uint32_t word_size ) noexcept -> bool {
     static constexpr auto MIN_LZMA_WORD_SIZE = 5u;
     static constexpr auto MAX_LZMA_WORD_SIZE = 273u;
     static constexpr auto MIN_PPMD_WORD_SIZE = 2u;
@@ -88,7 +88,7 @@ bool isValidWordSize( const BitInOutFormat& format, BitCompressionMethod method,
     }
 }
 
-const wchar_t* methodName( BitCompressionMethod method ) noexcept {
+auto methodName( BitCompressionMethod method ) noexcept -> const wchar_t* {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return L"Copy";
@@ -127,47 +127,47 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
     setRetainDirectories( false );
 }
 
-const BitInFormat& BitAbstractArchiveCreator::format() const noexcept {
+auto BitAbstractArchiveCreator::format() const noexcept -> const BitInFormat& {
     return mFormat;
 }
 
-const BitInOutFormat& BitAbstractArchiveCreator::compressionFormat() const noexcept {
+auto BitAbstractArchiveCreator::compressionFormat() const noexcept -> const BitInOutFormat& {
     return mFormat;
 }
 
-bool BitAbstractArchiveCreator::cryptHeaders() const noexcept {
+auto BitAbstractArchiveCreator::cryptHeaders() const noexcept -> bool {
     return mCryptHeaders;
 }
 
-BitCompressionLevel BitAbstractArchiveCreator::compressionLevel() const noexcept {
+auto BitAbstractArchiveCreator::compressionLevel() const noexcept -> BitCompressionLevel {
     return mCompressionLevel;
 }
 
-BitCompressionMethod BitAbstractArchiveCreator::compressionMethod() const noexcept {
+auto BitAbstractArchiveCreator::compressionMethod() const noexcept -> BitCompressionMethod {
     return mCompressionMethod;
 }
 
-uint32_t BitAbstractArchiveCreator::dictionarySize() const noexcept {
+auto BitAbstractArchiveCreator::dictionarySize() const noexcept -> uint32_t {
     return mDictionarySize;
 }
 
-uint32_t BitAbstractArchiveCreator::wordSize() const noexcept {
+auto BitAbstractArchiveCreator::wordSize() const noexcept -> uint32_t {
     return mWordSize;
 }
 
-bool BitAbstractArchiveCreator::solidMode() const noexcept {
+auto BitAbstractArchiveCreator::solidMode() const noexcept -> bool {
     return mSolidMode;
 }
 
-UpdateMode BitAbstractArchiveCreator::updateMode() const noexcept {
+auto BitAbstractArchiveCreator::updateMode() const noexcept -> UpdateMode {
     return mUpdateMode;
 }
 
-uint64_t BitAbstractArchiveCreator::volumeSize() const noexcept {
+auto BitAbstractArchiveCreator::volumeSize() const noexcept -> uint64_t {
     return mVolumeSize;
 }
 
-uint32_t BitAbstractArchiveCreator::threadsCount() const noexcept {
+auto BitAbstractArchiveCreator::threadsCount() const noexcept -> uint32_t {
     return mThreadsCount;
 }
 
@@ -244,21 +244,21 @@ void BitAbstractArchiveCreator::setThreadsCount( uint32_t threads_count ) noexce
     mThreadsCount = threads_count;
 }
 
-const wchar_t* dictionaryPropertyName( const BitInOutFormat& format, BitCompressionMethod method ) {
+auto dictionaryPropertyName( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {
     if ( format == BitFormat::SevenZip ) {
         return ( method == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
     }
     return ( method == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
 }
 
-const wchar_t* wordSizePropertyName( const BitInOutFormat& format, BitCompressionMethod method ) {
+auto wordSizePropertyName( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {
     if ( format == BitFormat::SevenZip ) {
         return ( method == BitCompressionMethod::Ppmd ? L"0o" : L"0fb" );
     }
     return ( method == BitCompressionMethod::Ppmd ? L"o" : L"fb" );
 }
 
-ArchiveProperties BitAbstractArchiveCreator::archiveProperties() const {
+auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
     ArchiveProperties properties = {};
     if ( mCryptHeaders && mFormat.hasFeature( FormatFeatures::HeaderEncryption ) ) {
         properties.setProperty( L"he", true );

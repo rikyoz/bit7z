@@ -27,7 +27,7 @@ constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVar
 
 using namespace bit7z;
 
-BitPropVariantType lookupType( VARTYPE type ) {
+auto lookupType( VARTYPE type ) -> BitPropVariantType {
     switch ( type ) {
         case VT_EMPTY:
             return BitPropVariantType::Empty;
@@ -65,7 +65,7 @@ BitPropVariantType lookupType( VARTYPE type ) {
 namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
 
 /* Needed for comparing FILETIME objects in BitPropVariant */
-inline bool operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept {
+inline auto operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept -> bool {
 #ifdef _WIN32
     return CompareFileTime( &ft1, &ft2 ) == 0;
 #else
@@ -188,13 +188,13 @@ BitPropVariant::~BitPropVariant() {
     internalClear();
 }
 
-BitPropVariant& BitPropVariant::operator=( const BitPropVariant& other ) {
+auto BitPropVariant::operator=( const BitPropVariant& other ) -> BitPropVariant& {
     BitPropVariant tmp( other ); //copy construct a tmp variable
     *this = std::move( tmp ); //move assign to this
     return *this;
 }
 
-BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
+auto BitPropVariant::operator=( BitPropVariant&& other ) noexcept -> BitPropVariant& {
     if ( this != &other ) {
         internalClear();
         vt = other.vt;
@@ -246,14 +246,14 @@ BitPropVariant& BitPropVariant::operator=( BitPropVariant&& other ) noexcept {
     return *this;
 }
 
-bool BitPropVariant::getBool() const {
+auto BitPropVariant::getBool() const -> bool {
     if ( vt != VT_BOOL ) {
         throw BitException( "BitPropVariant is not a bool", make_error_code( BitError::RequestedWrongVariantType ) );
     }
     return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings.
 }
 
-tstring BitPropVariant::getString() const {
+auto BitPropVariant::getString() const -> tstring {
     if ( vt != VT_BSTR ) {
         throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
     }
@@ -261,7 +261,7 @@ tstring BitPropVariant::getString() const {
     return bstrVal == nullptr ? tstring{} : BSTR_TO_TSTRING( bstrVal );
 }
 
-uint8_t BitPropVariant::getUInt8() const {
+auto BitPropVariant::getUInt8() const -> uint8_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -271,7 +271,7 @@ uint8_t BitPropVariant::getUInt8() const {
     }
 }
 
-uint16_t BitPropVariant::getUInt16() const {
+auto BitPropVariant::getUInt16() const -> uint16_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -283,7 +283,7 @@ uint16_t BitPropVariant::getUInt16() const {
     }
 }
 
-uint32_t BitPropVariant::getUInt32() const {
+auto BitPropVariant::getUInt32() const -> uint32_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -299,7 +299,7 @@ uint32_t BitPropVariant::getUInt32() const {
     }
 }
 
-uint64_t BitPropVariant::getUInt64() const {
+auto BitPropVariant::getUInt64() const -> uint64_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -317,7 +317,7 @@ uint64_t BitPropVariant::getUInt64() const {
     }
 }
 
-int8_t BitPropVariant::getInt8() const {
+auto BitPropVariant::getInt8() const -> int8_t {
     switch ( vt ) {
         case VT_I1:
             return cVal;
@@ -327,7 +327,7 @@ int8_t BitPropVariant::getInt8() const {
     }
 }
 
-int16_t BitPropVariant::getInt16() const {
+auto BitPropVariant::getInt16() const -> int16_t {
     switch ( vt ) {
         case VT_I1:
             return cVal;
@@ -339,7 +339,7 @@ int16_t BitPropVariant::getInt16() const {
     }
 }
 
-int32_t BitPropVariant::getInt32() const {
+auto BitPropVariant::getInt32() const -> int32_t {
     switch ( vt ) {
         case VT_I1:
             return cVal;
@@ -355,7 +355,7 @@ int32_t BitPropVariant::getInt32() const {
     }
 }
 
-int64_t BitPropVariant::getInt64() const {
+auto BitPropVariant::getInt64() const -> int64_t {
     switch ( vt ) {
         case VT_I1:
             return cVal;
@@ -373,7 +373,7 @@ int64_t BitPropVariant::getInt64() const {
     }
 }
 
-FILETIME BitPropVariant::getFileTime() const {
+auto BitPropVariant::getFileTime() const -> FILETIME {
     if ( vt != VT_FILETIME ) {
         throw BitException( "BitPropVariant is not a FILETIME",
                             make_error_code( BitError::RequestedWrongVariantType ) );
@@ -381,12 +381,12 @@ FILETIME BitPropVariant::getFileTime() const {
     return filetime;
 }
 
-bit7z::time_type BitPropVariant::getTimePoint() const {
+auto BitPropVariant::getTimePoint() const -> bit7z::time_type {
     const FILETIME file_time = getFileTime();
     return FILETIME_to_time_type( file_time );
 }
 
-tstring BitPropVariant::toString() const {
+auto BitPropVariant::toString() const -> tstring {
     switch ( vt ) {
         case VT_BOOL:
             return boolVal == VARIANT_TRUE ? BIT7Z_STRING( "true" ) : BIT7Z_STRING( "false" );
@@ -422,55 +422,55 @@ tstring BitPropVariant::toString() const {
     }
 }
 
-bool BitPropVariant::isEmpty() const noexcept {
+auto BitPropVariant::isEmpty() const noexcept -> bool {
     return vt == VT_EMPTY;
 }
 
-bool BitPropVariant::isBool() const noexcept {
+auto BitPropVariant::isBool() const noexcept -> bool {
     return vt == VT_BOOL;
 }
 
-bool BitPropVariant::isString() const noexcept {
+auto BitPropVariant::isString() const noexcept -> bool {
     return vt == VT_BSTR;
 }
 
-bool BitPropVariant::isUInt8() const noexcept {
+auto BitPropVariant::isUInt8() const noexcept -> bool {
     return vt == VT_UI1;
 }
 
-bool BitPropVariant::isUInt16() const noexcept {
+auto BitPropVariant::isUInt16() const noexcept -> bool {
     return vt == VT_UI2 || vt == VT_UI1;
 }
 
-bool BitPropVariant::isUInt32() const noexcept {
+auto BitPropVariant::isUInt32() const noexcept -> bool {
     return vt == VT_UI4 || vt == VT_UINT || vt == VT_UI2 || vt == VT_UI1;
 }
 
-bool BitPropVariant::isUInt64() const noexcept {
+auto BitPropVariant::isUInt64() const noexcept -> bool {
     return vt == VT_UI8 || vt == VT_UI4 || vt == VT_UINT || vt == VT_UI2 || vt == VT_UI1;
 }
 
-bool BitPropVariant::isInt8() const noexcept {
+auto BitPropVariant::isInt8() const noexcept -> bool {
     return vt == VT_I1;
 }
 
-bool BitPropVariant::isInt16() const noexcept {
+auto BitPropVariant::isInt16() const noexcept -> bool {
     return vt == VT_I2 || vt == VT_I1;
 }
 
-bool BitPropVariant::isInt32() const noexcept {
+auto BitPropVariant::isInt32() const noexcept -> bool {
     return vt == VT_I4 || vt == VT_INT || vt == VT_I2 || vt == VT_I1;
 }
 
-bool BitPropVariant::isInt64() const noexcept {
+auto BitPropVariant::isInt64() const noexcept -> bool {
     return vt == VT_I8 || vt == VT_I4 || vt == VT_INT || vt == VT_I2 || vt == VT_I1;
 }
 
-bool BitPropVariant::isFileTime() const noexcept {
+auto BitPropVariant::isFileTime() const noexcept -> bool {
     return vt == VT_FILETIME;
 }
 
-BitPropVariantType BitPropVariant::type() const {
+auto BitPropVariant::type() const -> BitPropVariantType {
     return lookupType( vt );
 }
 
@@ -493,11 +493,11 @@ void BitPropVariant::internalClear() noexcept {
     uhVal.QuadPart = 0;
 }
 
-bool bit7z::operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+auto bit7z::operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
     return !( lhs == rhs );
 }
 
-bool bit7z::operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept {
+auto bit7z::operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
     if ( lhs.vt != rhs.vt ) {
         return false;
     }
