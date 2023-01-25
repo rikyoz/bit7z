@@ -56,7 +56,7 @@ auto lookupType( VARTYPE type ) -> BitPropVariantType {
         case VT_FILETIME:
             return BitPropVariantType::FileTime;
         default:
-            /* This is unlikely to happen since properties types used in archives
+            /* This is unlikely to happen since the property types used in archives
              * are the ones supported by PropertyType enum class.*/
             throw BitException( "Property type is not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
@@ -95,7 +95,7 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
 
 BitPropVariant::BitPropVariant( BitPropVariant&& other ) noexcept: PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) {
-        /* this and other share the pointer to the same string, but now the string belongs to this!
+        /* this object and "other" share the pointer to the same string, but now the string belongs to this!
          * Hence, if we set the other.bstrVal to nullptr, we prevent the bstrVal from being destroyed when
          * the other object is deleted! */
         other.bstrVal = nullptr;
@@ -239,7 +239,7 @@ auto BitPropVariant::operator=( BitPropVariant&& other ) noexcept -> BitPropVari
             case VT_FILETIME:
                 filetime = other.filetime;
                 break;
-            default: //type not supported
+            default: // The type is not supported
                 break;
         }
     }
@@ -250,7 +250,7 @@ auto BitPropVariant::getBool() const -> bool {
     if ( vt != VT_BOOL ) {
         throw BitException( "BitPropVariant is not a bool", make_error_code( BitError::RequestedWrongVariantType ) );
     }
-    return boolVal != VARIANT_FALSE; //simply returning boolVal should work but this prevents some compiler warnings.
+    return boolVal != VARIANT_FALSE; //simply returning boolVal should work, but this prevents some compiler warnings.
 }
 
 auto BitPropVariant::getString() const -> tstring {
@@ -416,7 +416,7 @@ auto BitPropVariant::toString() const -> tstring {
             return to_tstring( filetime.dwHighDateTime ) + BIT7Z_STRING( ", " ) + to_tstring( filetime.dwLowDateTime );
         case VT_EMPTY:
             return tstring{};
-        default: //type not supported
+        default: // The type is not supported
             throw BitException( "BitPropVariant type code " + std::to_string( vt ) + " not supported.",
                                 make_error_code( BitError::UnsupportedOperation ) );
     }
