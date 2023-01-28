@@ -68,7 +68,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          */
         void extract( Input in_archive, const tstring& out_dir = {} ) const {
             BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_dir );
+            input_archive.extractTo( out_dir );
         }
 
         /**
@@ -80,7 +80,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          */
         void extract( Input in_archive, vector< byte_t >& out_buffer, uint32_t index = 0 ) const {
             BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_buffer, index );
+            input_archive.extractTo( out_buffer, index );
         }
 
         /**
@@ -92,7 +92,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          */
         void extract( Input in_archive, std::ostream& out_stream, uint32_t index = 0 ) const {
             BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_stream, index );
+            input_archive.extractTo( out_stream, index );
         }
 
         /**
@@ -104,7 +104,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          */
         void extract( Input in_archive, std::map< tstring, vector< byte_t > >& out_map ) const {
             BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_map );
+            input_archive.extractTo( out_map );
         }
 
         /**
@@ -181,7 +181,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
                                     make_error_code( BitError::InvalidIndex ) );
             }
 
-            input_archive.extract( out_dir, indices );
+            input_archive.extractTo( out_dir, indices );
         }
 
 #ifdef BIT7Z_REGEX_MATCHING
@@ -275,7 +275,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
                 throw BitException( "Cannot extract items", make_error_code( BitError::NoMatchingItems ) );
             }
 
-            input_archive.extract( out_dir, matched_indices );
+            input_archive.extractTo( out_dir, matched_indices );
         }
 
         void extractMatchingFilter( Input in_archive,
@@ -291,7 +291,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
                 if ( item_matches == should_extract_matched_item ) {
                     /* The if-condition is equivalent to an exclusive NOR (negated XOR) between
                      *  item_matches and should_extract_matched_item. */
-                    input_archive.extract( out_buffer, item.index() );
+                    input_archive.extractTo( out_buffer, item.index() );
                     return;
                 }
             }

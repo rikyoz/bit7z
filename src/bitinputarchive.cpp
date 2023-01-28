@@ -234,12 +234,12 @@ auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandle
     return mArchiveHandler;
 }
 
-void BitInputArchive::extract( const tstring& out_dir, const std::vector< uint32_t >& indices ) const {
+void BitInputArchive::extractTo( const tstring& out_dir, const std::vector< uint32_t >& indices ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, out_dir );
     extractArc( mInArchive, indices, callback );
 }
 
-void BitInputArchive::extract( std::vector< byte_t >& out_buffer, uint32_t index ) const {
+void BitInputArchive::extractTo( std::vector< byte_t >& out_buffer, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
@@ -258,7 +258,7 @@ void BitInputArchive::extract( std::vector< byte_t >& out_buffer, uint32_t index
     out_buffer = std::move( buffers_map.begin()->second );
 }
 
-void BitInputArchive::extract( std::ostream& out_stream, uint32_t index ) const {
+void BitInputArchive::extractTo( std::ostream& out_stream, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
@@ -275,7 +275,7 @@ void BitInputArchive::extract( std::ostream& out_stream, uint32_t index ) const 
     extractArc( mInArchive, indices, extract_callback );
 }
 
-void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index ) const {
+void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t index ) const {
     const uint32_t number_items = itemsCount();
     if ( index >= number_items ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
@@ -298,7 +298,7 @@ void BitInputArchive::extract( byte_t* buffer, std::size_t size, uint32_t index 
     extractArc( mInArchive, indices, extract_callback );
 }
 
-void BitInputArchive::extract( std::map< tstring, std::vector< byte_t > >& out_map ) const {
+void BitInputArchive::extractTo( std::map< tstring, std::vector< byte_t > >& out_map ) const {
     const uint32_t number_items = itemsCount();
     vector< uint32_t > files_indices;
     for ( uint32_t i = 0; i < number_items; ++i ) {

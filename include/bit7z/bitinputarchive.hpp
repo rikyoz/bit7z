@@ -134,13 +134,23 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto handler() const noexcept -> const BitAbstractArchiveHandler&;
 
+        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        inline void extract( const tstring& out_dir, const std::vector< uint32_t >& indices = {} ) const {
+            extractTo( out_dir, indices );
+        }
+
         /**
          * @brief Extracts the specified items to the chosen directory.
          *
          * @param out_dir   the output directory where the extracted files will be put.
          * @param indices   the array of indices of the files in the archive that must be extracted.
          */
-        void extract( const tstring& out_dir, const std::vector< uint32_t >& indices = {} ) const;
+        void extractTo( const tstring& out_dir, const std::vector< uint32_t >& indices = {} ) const;
+
+        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        inline void extract( std::vector< byte_t >& out_buffer, uint32_t index = 0 ) const {
+            extractTo( out_buffer, index );
+        }
 
         /**
          * @brief Extracts a file to the output buffer.
@@ -148,19 +158,12 @@ class BitInputArchive {
          * @param out_buffer   the output buffer where the content of the archive will be put.
          * @param index        the index of the file to be extracted.
          */
-        void extract( std::vector< byte_t >& out_buffer, uint32_t index = 0 ) const;
+        void extractTo( std::vector< byte_t >& out_buffer, uint32_t index = 0 ) const;
 
-        /**
-         * @brief Extracts a file to the pre-allocated output buffer.
-         *
-         * @tparam N     the size of the output buffer (it must be equal to the unpacked size
-         *               of the item to be extracted).
-         * @param buffer the pre-allocated output buffer.
-         * @param index  the index of the file to be extracted.
-         */
         template< std::size_t N >
+        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         void extract( std::array< byte_t, N >& buffer, uint32_t index = 0 ) const {
-            extract( buffer.data(), buffer.size(), index );
+            extractTo( buffer.data(), buffer.size(), index );
         }
 
         /**
@@ -172,8 +175,32 @@ class BitInputArchive {
          * @param index  the index of the file to be extracted.
          */
         template< std::size_t N >
+        void extractTo( std::array< byte_t, N >& buffer, uint32_t index = 0 ) const {
+            extractTo( buffer.data(), buffer.size(), index );
+        }
+
+        template< std::size_t N >
+        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         void extract( byte_t (& buffer)[N], uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
-            extract( buffer, N, index );
+            extractTo( buffer, N, index );
+        }
+
+        /**
+         * @brief Extracts a file to the pre-allocated output buffer.
+         *
+         * @tparam N     the size of the output buffer (it must be equal to the unpacked size
+         *               of the item to be extracted).
+         * @param buffer the pre-allocated output buffer.
+         * @param index  the index of the file to be extracted.
+         */
+        template< std::size_t N >
+        void extractTo( byte_t (& buffer)[N], uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+            extractTo( buffer, N, index );
+        }
+
+        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        inline void extract( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const {
+            extractTo( buffer, size, index );
         }
 
         /**
@@ -184,7 +211,12 @@ class BitInputArchive {
          *               of the item to be extracted).
          * @param index  the index of the file to be extracted.
          */
-        void extract( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const;
+        void extractTo( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const;
+
+        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        inline void extract( std::ostream& out_stream, uint32_t index = 0 ) const {
+            extractTo( out_stream, index );
+        }
 
         /**
          * @brief Extracts a file to the output stream.
@@ -192,7 +224,12 @@ class BitInputArchive {
          * @param out_stream   the (binary) stream where the content of the archive will be put.
          * @param index        the index of the file to be extracted.
          */
-        void extract( std::ostream& out_stream, uint32_t index = 0 ) const;
+        void extractTo( std::ostream& out_stream, uint32_t index = 0 ) const;
+
+        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        inline void extract( std::map< tstring, std::vector< byte_t > >& out_map ) const {
+            extractTo( out_map );
+        }
 
         /**
          * @brief Extracts the content of the archive to a map of memory buffers, where the keys are the paths
@@ -200,7 +237,7 @@ class BitInputArchive {
          *
          * @param out_map   the output map.
          */
-        void extract( std::map< tstring, std::vector< byte_t > >& out_map ) const;
+        void extractTo( std::map< tstring, std::vector< byte_t > >& out_map ) const;
 
         /**
          * @brief Tests the archive without extracting its content.

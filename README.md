@@ -94,13 +94,13 @@ try { // bit7z classes can throw BitException objects
     Bit7zLibrary lib{ "7z.dll" };
 
     // Opening the archive
-    BitArchiveReader reader{lib, "path/to/archive.gz", BitFormat::GZip };
+    BitArchiveReader archive{ lib, "path/to/archive.gz", BitFormat::GZip };
 
     // Testing the archive
-    reader.test();
+    archive.test();
 
     // Extracting the archive
-    reader.extract( "out/dir/" );
+    archive.extractTo( "out/dir/" );
 } catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
@@ -154,14 +154,14 @@ try { // bit7z classes can throw BitException objects
     using namespace bit7z;
 
     Bit7zLibrary lib{ "7z.dll" };
-    BitArchiveWriter writer{lib, BitFormat::SevenZip };
+    BitArchiveWriter archive{ lib, BitFormat::SevenZip };
 
     // Adding the items to be compressed (no compression is performed here)
-    writer.addFile( "path/to/file.txt" );
-    writer.addDirectory( "path/to/dir/" );
+    archive.addFile( "path/to/file.txt" );
+    archive.addDirectory( "path/to/dir/" );
 
     // Compressing the added items to the output archive
-    writer.compressTo( "output.7z" );
+    archive.compressTo( "output.7z" );
 } catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
