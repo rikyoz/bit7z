@@ -407,22 +407,6 @@ struct OffsetSignature {
     const BitInFormat& format;
 };
 
-const OffsetSignature common_signatures_with_offset[] = { // NOLINT(*-avoid-c-arrays)
-    { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // -  l  h
-    { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // N  T  F  S  20 20 20 20
-    { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // N  u  l  l  s  o  f  t
-    { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // C  o  m  p  r  e  s  s
-    { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 7F 10 DA BE
-    { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // u  s  t  a  r
-    // Note: since GPT files contain also the FAT signature, GPT must be checked before!
-    { 0x4546492050415254, 0x200, 8, BitFormat::GPT },    // E  F  I  20 P  A  R  T
-    { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat },    // U  AA
-    { 0x4244000000000000, 0x400, 2, BitFormat::Hfs },    // B  D
-    { 0x482B000400000000, 0x400, 4, BitFormat::Hfs },    // H  +  00 04
-    { 0x4858000500000000, 0x400, 4, BitFormat::Hfs },    // H  X  00 05
-    { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }     // S  EF
-};
-
 #if defined(_WIN32)
 #define bswap64 _byteswap_uint64
 #elif defined(__GNUC__) || defined(__clang__)
@@ -464,6 +448,22 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
         signature_mask <<= BYTE_SHIFT;    // left shifting the mask of 1 byte, so that
         file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
     }
+
+    static constexpr OffsetSignature common_signatures_with_offset[] = { // NOLINT(*-avoid-c-arrays)
+        { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // -  l  h
+        { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // N  T  F  S  20 20 20 20
+        { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // N  u  l  l  s  o  f  t
+        { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // C  o  m  p  r  e  s  s
+        { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 7F 10 DA BE
+        { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // u  s  t  a  r
+        // Note: since GPT files contain also the FAT signature, GPT must be checked before!
+        { 0x4546492050415254, 0x200, 8, BitFormat::GPT },    // E  F  I  20 P  A  R  T
+        { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat },    // U  AA
+        { 0x4244000000000000, 0x400, 2, BitFormat::Hfs },    // B  D
+        { 0x482B000400000000, 0x400, 4, BitFormat::Hfs },    // H  +  00 04
+        { 0x4858000500000000, 0x400, 4, BitFormat::Hfs },    // H  X  00 05
+        { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }     // S  EF
+    };
 
     for ( const auto& sig : common_signatures_with_offset ) {
         stream->Seek( sig.offset, 0, nullptr );
