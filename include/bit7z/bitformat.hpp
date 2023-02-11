@@ -122,24 +122,26 @@ class BitInOutFormat final : public BitInFormat {
         //non-copyable
         BitInOutFormat( const BitInOutFormat& other ) = delete;
 
-        BitInOutFormat& operator=( const BitInOutFormat& other ) = delete;
+        auto operator=( const BitInOutFormat& other ) -> BitInOutFormat& = delete;
 
         //non-movable
         BitInOutFormat( BitInOutFormat&& other ) = delete;
 
-        BitInOutFormat& operator=( BitInOutFormat&& other ) = delete;
+        auto operator=( BitInOutFormat&& other ) -> BitInOutFormat& = delete;
 
         ~BitInOutFormat() = default;
 
         /**
          * @return the default file extension of the archive format.
          */
-        BIT7Z_NODISCARD const tchar* extension() const noexcept;
+        BIT7Z_NODISCARD
+        auto extension() const noexcept -> const tchar*;
 
         /**
          * @return the bitset of the features supported by the format.
          */
-        BIT7Z_NODISCARD FormatFeatures features() const noexcept;
+        BIT7Z_NODISCARD
+        auto features() const noexcept -> FormatFeatures;
 
         /**
          * @brief Checks if the format has a specific feature (see FormatFeatures enum).
@@ -148,12 +150,14 @@ class BitInOutFormat final : public BitInFormat {
          *
          * @return a boolean value indicating whether the format has the given feature.
          */
-        BIT7Z_NODISCARD bool hasFeature( FormatFeatures feature ) const noexcept;
+        BIT7Z_NODISCARD
+        auto hasFeature( FormatFeatures feature ) const noexcept -> bool;
 
         /**
          * @return the default method used for compressing the archive format.
          */
-        BIT7Z_NODISCARD BitCompressionMethod defaultMethod() const noexcept;
+        BIT7Z_NODISCARD
+        auto defaultMethod() const noexcept -> BitCompressionMethod;
 
     private:
         const tchar* mExtension;
