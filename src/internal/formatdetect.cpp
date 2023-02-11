@@ -29,25 +29,6 @@
 
 #include <7zip/IStream.h>
 
-#if defined(_WIN32)
-#define bswap64 _byteswap_uint64
-#elif defined(__GNUC__) || defined(__clang__)
-//Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
-//      for checking compiler version or using _has_builtin macro!
-#define bswap64 __builtin_bswap64
-#else
-static inline uint64_t bswap64 (uint64_t x) {
-    return  ((x << 56) & 0xff00000000000000ULL) |
-            ((x << 40) & 0x00ff000000000000ULL) |
-            ((x << 24) & 0x0000ff0000000000ULL) |
-            ((x << 8)  & 0x000000ff00000000ULL) |
-            ((x >> 8)  & 0x00000000ff000000ULL) |
-            ((x >> 24) & 0x0000000000ff0000ULL) |
-            ((x >> 40) & 0x000000000000ff00ULL) |
-            ((x >> 56) & 0x00000000000000ffULL);
-}
-#endif
-
 auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(misc-no-recursion)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381;
@@ -426,7 +407,7 @@ struct OffsetSignature {
     const BitInFormat& format;
 };
 
-const OffsetSignature common_signatures_with_offset[] = {
+const OffsetSignature common_signatures_with_offset[] = { // NOLINT(*-avoid-c-arrays)
     { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // -  l  h
     { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // N  T  F  S  20 20 20 20
     { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // N  u  l  l  s  o  f  t
@@ -441,6 +422,25 @@ const OffsetSignature common_signatures_with_offset[] = {
     { 0x4858000500000000, 0x400, 4, BitFormat::Hfs },    // H  X  00 05
     { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }     // S  EF
 };
+
+#if defined(_WIN32)
+#define bswap64 _byteswap_uint64
+#elif defined(__GNUC__) || defined(__clang__)
+//Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
+//      for checking compiler version or using _has_builtin macro!
+#define bswap64 __builtin_bswap64
+#else
+static inline uint64_t bswap64( uint64_t x ) {
+    return  ((x << 56) & 0xff00000000000000ULL) |
+            ((x << 40) & 0x00ff000000000000ULL) |
+            ((x << 24) & 0x0000ff0000000000ULL) |
+            ((x << 8)  & 0x000000ff00000000ULL) |
+            ((x >> 8)  & 0x00000000ff000000ULL) |
+            ((x >> 24) & 0x0000000000ff0000ULL) |
+            ((x >> 40) & 0x000000000000ff00ULL) |
+            ((x >> 56) & 0x00000000000000ffULL);
+}
+#endif
 
 auto readSignature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
     uint64_t signature = 0;
