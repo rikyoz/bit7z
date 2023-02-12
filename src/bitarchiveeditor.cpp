@@ -131,7 +131,7 @@ void BitArchiveEditor::applyChanges() {
     setInputArchive( std::make_unique< BitInputArchive >( *this, archive_path ) );
 }
 
-uint32_t BitArchiveEditor::findItem( const tstring& item_path ) {
+auto BitArchiveEditor::findItem( const tstring& item_path ) -> uint32_t {
     auto archiveItem = inputArchive()->find( item_path );
     if ( archiveItem == inputArchive()->cend() ) {
         throw BitException( "Cannot find the file in the archive",
