@@ -20,7 +20,7 @@ auto internal_category_t::name() const noexcept -> const char* {
     return "bit7z";
 }
 
-auto internal_category_t::message( int error_value ) const noexcept -> std::string {
+auto internal_category_t::message( int error_value ) const -> std::string {
     switch ( static_cast< BitError >( error_value ) ) {
         case BitError::Fail:
             return "Unspecified error.";

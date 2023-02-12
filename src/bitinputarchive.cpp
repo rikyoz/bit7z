@@ -126,7 +126,8 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
 }
 
 #ifdef BIT7Z_AUTO_FORMAT
-#   define DETECT_FORMAT( format, arc_path ) ( format == BitFormat::Auto ? &detectFormatFromExt( arc_path ) : &format )
+#   define DETECT_FORMAT( format, arc_path ) \
+        ( (format) == BitFormat::Auto ? &detectFormatFromExt( arc_path ) : &(format) )
 #else
 #   define DETECT_FORMAT( format, arc_path ) &format
 #endif
