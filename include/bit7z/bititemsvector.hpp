@@ -129,26 +129,26 @@ class BitItemsVector final {
         auto operator[]( GenericInputItemVector::size_type index ) const -> const GenericInputItem&;
 
         /**
-         * @return an iterator to the first element of the vector. If the vector is empty,
+         * @return an iterator to the first element of the vector; if the vector is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD auto begin() const noexcept -> GenericInputItemVector::const_iterator;
 
         /**
-         * @return an iterator to the element following the last element of the vector.
-         *         This element acts as a placeholder; attempting to access it results in undefined behavior.
+         * @return an iterator to the element following the last element of the vector;
+         *         this element acts as a placeholder: attempting to access it results in undefined behavior.
          */
         BIT7Z_NODISCARD auto end() const noexcept -> GenericInputItemVector::const_iterator;
 
         /**
-         * @return an iterator to the first element of the vector. If the vector is empty,
+         * @return an iterator to the first element of the vector; if the vector is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD auto cbegin() const noexcept -> GenericInputItemVector::const_iterator;
 
         /**
-         * @return an iterator to the element following the last element of the vector.
-         *         This element acts as a placeholder; attempting to access it results in undefined behavior.
+         * @return an iterator to the element following the last element of the vector;
+         *         this element acts as a placeholder: attempting to access it results in undefined behavior.
          */
         BIT7Z_NODISCARD auto cend() const noexcept -> GenericInputItemVector::const_iterator;
 

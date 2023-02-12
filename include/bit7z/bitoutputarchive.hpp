@@ -36,7 +36,7 @@ using DeletedItems = std::set< uint32_t >;
  * UpdateCallback uses indices in the range [0, BitOutputArchive::itemsCount() - 1]
  *
  * Now, if the user doesn't delete any item in the input archive, itemsCount()
- * is just equal to <n. of items in the input archive> + <n. of newly added items>.
+ * is just equal to <n° of items in the input archive> + <n° of newly added items>.
  * In this case, an input_index value is just equal to the index used by UpdateCallback.
  *
  * On the contrary, if the user wants to delete an item in the input archive, the value

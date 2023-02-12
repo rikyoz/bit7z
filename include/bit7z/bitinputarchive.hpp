@@ -333,26 +333,26 @@ class BitInputArchive {
         };
 
         /**
-         * @return an iterator to the first element of the archive. If the archive is empty,
+         * @return an iterator to the first element of the archive; if the archive is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD auto begin() const noexcept -> BitInputArchive::const_iterator;
 
         /**
-         * @return an iterator to the element following the last element of the archive.
-         *         This element acts as a placeholder; attempting to access it results in undefined behavior.
+         * @return an iterator to the element following the last element of the archive;
+         *         this element acts as a placeholder: attempting to access it results in undefined behavior.
          */
         BIT7Z_NODISCARD auto end() const noexcept -> BitInputArchive::const_iterator;
 
         /**
-         * @return an iterator to the first element of the archive. If the archive is empty,
+         * @return an iterator to the first element of the archive; if the archive is empty,
          *         the returned iterator will be equal to the end() iterator.
          */
         BIT7Z_NODISCARD auto cbegin() const noexcept -> BitInputArchive::const_iterator;
 
         /**
-         * @return an iterator to the element following the last element of the archive.
-         *         This element acts as a placeholder; attempting to access it results in undefined behavior.
+         * @return an iterator to the element following the last element of the archive;
+         *         this element acts as a placeholder: attempting to access it results in undefined behavior.
          */
         BIT7Z_NODISCARD auto cend() const noexcept -> BitInputArchive::const_iterator;
 

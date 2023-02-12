@@ -349,7 +349,7 @@ auto BitOutputArchive::itemInputIndex( uint32_t new_index ) const noexcept -> in
     if ( index < mInputIndices.size() ) {
         return mInputIndices[ index ];
     }
-    // if we are here, the user didn't delete any item, so an input_index is essentially equivalent to new_index
+    // if we are here, the user didn't delete any item, so the input_index is essentially equivalent to the new_index
     return static_cast< input_index >( new_index );
 }
 
