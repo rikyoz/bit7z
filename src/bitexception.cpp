@@ -15,9 +15,6 @@
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
 #include "internal/windows.hpp"
-#if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
-#include "internal/util.hpp"
-#endif
 
 auto bit7z::make_hresult_code( HRESULT res ) noexcept -> std::error_code {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };

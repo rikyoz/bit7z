@@ -20,7 +20,6 @@
 #include "internal/bufferutil.hpp"
 
 #include <algorithm> //for std::copy_n
-#include <cstdint>
 
 using namespace bit7z;
 

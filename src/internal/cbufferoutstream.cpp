@@ -13,7 +13,6 @@
 #include "internal/cbufferoutstream.hpp"
 #include "internal/bufferutil.hpp"
 
-#include <cstdint>
 #include <algorithm> //for std::copy_n
 
 using namespace bit7z;
