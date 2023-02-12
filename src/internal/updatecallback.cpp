@@ -94,7 +94,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
     tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
-        //adding leading zeros for a total res length of 3 (e.g., volume 42 will have extension .042)
+        // Adding leading zeros for a total res length of 3 (e.g., volume 42 will have the extension .042)
         res.insert( res.begin(), 3 - res.length(), BIT7Z_STRING( '0' ) );
     }
 

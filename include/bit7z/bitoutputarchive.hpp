@@ -275,13 +275,13 @@ class BitOutputArchive {
         mutable FailedFiles mFailedFiles;
 
         /* mInputIndices:
-         *   Position i = index in range [0, itemsCount() - 1] used by UpdateCallback.
-         *   Value at pos. i = corresponding index in the input archive (type input_index).
+         *  - Position i = index in range [0, itemsCount() - 1] used by UpdateCallback.
+         *  - Value at position i = corresponding index in the input archive (type input_index).
          *
          * If there are some deleted items, then i != mInputIndices[i]
          * (at least for values of i greater than the index of the first deleted item).
          *
-         * Otherwise, if there are no deleted items, mInputIndices is empty, and itemInputIndex(i)
+         * Otherwise, if there are no deleted items, the vector is empty, and itemInputIndex(i)
          * will return input_index with value i.
          *
          * This vector is either empty, or it has size equal to itemsCount() (thanks to updateInputIndices()). */

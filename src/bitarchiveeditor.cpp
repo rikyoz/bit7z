@@ -37,7 +37,7 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
         throw BitException( "Could not open archive", make_error_code( BitError::InvalidArchivePath ) );
     }
 
-    /* Note: if we are here, a non-empty in_file was specified, but BitOutputArchive constructor
+    /* Note: if we are here, a non-empty in_file was specified, but the BitOutputArchive constructor
      *       left a nullptr mInputArchive.
      *       This means that in_file doesn't exist (see BitOutputArchive's constructor).
      *       There's no need to check again for its existence (e.g., using fs::exists). */

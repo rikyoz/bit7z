@@ -102,21 +102,20 @@ auto FSItem::path() const -> tstring {
     return mFileEntry.path().string< tchar >();
 }
 
-/* NOTE:
- * inArchivePath() returns the path that should be used inside the archive when compressing the item, i.e., the path
- * relative to the 'root' of the archive.
+/* Note: inArchivePath() returns the path that should be used inside the archive when compressing the item,
+ * i.e., the path relative to the 'root' of the archive.
  * This is needed to behave like 7-zip and retain the directory structure when creating new archives.
  *
  * In particular, 7-zip behaves differently according to the kind of paths that are passed to it:
- * + absolute paths (e.g. "C:\foo\bar\test.txt"):
+ * + Absolute paths (e.g. "C:\foo\bar\test.txt"):
  *   the file is compressed without any directory structure (e.g. "test.txt"), unless it was inside a directory passed
  *   by the user and scanned by FSIndexer: in this case only the directory structure is retained.
  *
- * + relative paths containing current dir or outside references (e.g. containing a "./" or "../" substring,
+ * + Relative paths containing current dir or outside references (e.g. containing a "./" or "../" substring,
  *   like in "../foo/bar/test.txt"):
  *   same as absolute paths (e.g. "test.txt").
  *
- * + relative paths (e.g. "foo/bar/test.txt"):
+ * + Relative paths (e.g. "foo/bar/test.txt"):
  *   the file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
  *
  * If the mInArchivePath is already given (i.e., the user wants a custom mapping of files), this one is returned.*/
