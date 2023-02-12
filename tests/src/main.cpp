@@ -11,7 +11,7 @@
  */
 
 #define CATCH_CONFIG_RUNNER
-#include <catch2/catch.hpp> //IMPORTANT: it must be included before any other include!
+#include <catch2/catch.hpp> //IMPORTANT: it must be included before any other includes!
 
 #include <iostream>
 
@@ -32,12 +32,12 @@ int main( int argc, char* argv[] ) {
     std::cout << "[Runtime]" << std::endl;
     std::cout << "Executable path: " << filesystem::exe_path().string() << std::endl;
     std::cout << "7-zip shared library: ";
-#ifdef _WIN32
-#   ifdef BIT7Z_USE_NATIVE_STRING
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
     std::wcout << sevenzip_lib_path() << std::endl;
-#   else
+#else
     std::cout << sevenzip_lib_path() << std::endl;
-#   endif
+#endif
+#ifdef _WIN32
     std::cout << "Code page: " << GetACP() << std::endl;
 #endif
     std::cout << std::endl;
