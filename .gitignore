@@ -33,6 +33,7 @@
 bin/
 build/
 cmake-*/
+docker/
 docs/html/
 docs/md/
 docs/rst/
