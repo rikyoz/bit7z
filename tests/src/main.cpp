@@ -20,14 +20,20 @@
 #include "flags.hpp"
 #include "shared_lib.hpp"
 
-int main( int argc, char* argv[] ) {
+auto main( int argc, char* argv[] ) -> int {
     using namespace bit7z::test;
 
     std::cout << "[Compiler]" << std::endl;
     std::cout << "Name: " << compiler::name << std::endl;
     std::cout << "Version: " << compiler::version << std::endl;
-    std::cout << "Target Architecture: " << compiler::target_arch << std::endl;
-    std::cout << "Standard Library: " << compiler::standard_library << std::endl << std::endl;
+    std::cout << "Target Architecture: " << compiler::target_arch << std::endl << std::endl;
+
+    std::cout << "[Standard Library]" << std::endl;
+    std::cout << "Name: " << compiler::standard_library << std::endl;
+#ifdef _LIBCPP_VERSION
+    std::cout << "Version: " << STRING( _LIBCPP_VERSION ) << std::endl;
+#endif
+    std::cout << std::endl;
 
     std::cout << "[Runtime]" << std::endl;
     std::cout << "Executable path: " << filesystem::exe_path().string() << std::endl;
