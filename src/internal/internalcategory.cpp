@@ -53,9 +53,9 @@ auto internal_category_t::message( int error_value ) const noexcept -> std::stri
         case BitError::NoMatchingSignature:
             return "No known signature found.";
         case BitError::NonEmptyOutputBuffer:
-            return "Output buffer is not empty.";
+            return "The output buffer is not empty.";
         case BitError::RequestedWrongVariantType:
-            return "Requested wrong variant type.";
+            return "Requested the wrong variant type.";
         case BitError::UnsupportedOperation:
             return "Unsupported operation.";
         case BitError::WrongUpdateMode:

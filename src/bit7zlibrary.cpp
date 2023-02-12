@@ -32,7 +32,7 @@ using namespace bit7z;
 
 Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadLibrary( library_path ) ) {
     if ( mLibrary == nullptr ) {
-        throw BitException( "Failed to load 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
+        throw BitException( "Failed to load the 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
