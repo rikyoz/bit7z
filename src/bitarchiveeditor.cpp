@@ -98,14 +98,16 @@ void BitArchiveEditor::deleteItem( uint32_t index ) {
 }
 
 void BitArchiveEditor::deleteItem( const tstring& item_path ) {
-    auto res = std::find_if( inputArchive()->cbegin(), inputArchive()->cend(), [ & ]( const auto& archiveItem ) {
-        if ( archiveItem.path() == item_path ) {
-            mEditedItems.erase( archiveItem.index() );
-            setDeletedIndex( archiveItem.index() );
-            return true;
-        }
-        return false;
-    } );
+    auto res = std::find_if( inputArchive()->cbegin(), inputArchive()->cend(),
+                             // Note: we don't use auto for the parameter type to support compilation with GCC 4.9
+                             [ &, this ]( const BitArchiveItemOffset& archiveItem ) {
+                                 if ( archiveItem.path() == item_path ) {
+                                     mEditedItems.erase( archiveItem.index() );
+                                     setDeletedIndex( archiveItem.index() );
+                                     return true;
+                                 }
+                                 return false;
+                             } );
     if ( res == inputArchive()->cend() ) {
         throw BitException( "Could not mark the item as deleted",
                             std::make_error_code( std::errc::no_such_file_or_directory ), item_path );

@@ -23,6 +23,7 @@
 #include <map>
 #include <limits>
 #include <sstream>
+#include <cstring>
 
 #if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 

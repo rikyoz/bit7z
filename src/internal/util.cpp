@@ -14,8 +14,14 @@
 #include <locale>
 
 #ifndef WIN32
+#if !defined( __clang__ ) && defined(__GNUC__) && __GNUC__ < 5
+// GCC 4.9 doesn't have the <codecvt> header; as a workaround,
+// we use GHC filesystem's utility functions for string conversions.
+#include "internal/fs.hpp"
+#else
 #include <codecvt>
 using convert_type = std::codecvt_utf8< wchar_t >;
+#endif
 #endif
 
 using namespace bit7z;
@@ -50,6 +56,8 @@ auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
         result.resize( static_cast< size_t >( narrowStringSize - 1 ) );
     } //output is null-terminated
     return result;
+#elif !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ < 5
+    return fs::detail::toUtf8( wideString );
 #else
     std::wstring_convert< convert_type, wchar_t > converter;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -77,6 +85,8 @@ auto bit7z::widen( const std::string& narrowString ) -> std::wstring {
                          &result[ 0 ], // NOLINT(readability-container-data-pointer)
                          wideStringSize );
     return result;
+#elif !defined( __clang__ ) && defined(__GNUC__) && __GNUC__ < 5
+    return fs::detail::fromUtf8< std::wstring >( narrowString );
 #else
     std::wstring_convert< convert_type, wchar_t > converter;
     return converter.from_bytes( narrowString );

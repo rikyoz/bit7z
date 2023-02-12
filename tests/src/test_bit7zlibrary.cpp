@@ -12,7 +12,10 @@
 #include <catch2/catch.hpp>
 
 #include <bit7z/bit7zlibrary.hpp>
+
+#if !defined(__GNUC__) || __GNUC__ >= 5
 #include <bit7z/bitexception.hpp>
+#endif
 
 #include "shared_lib.hpp"
 
@@ -29,7 +32,7 @@ TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bi
                             Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& ex ) -> bool {
                                 return std::strcmp( ex.code().category().name(), "HRESULT" );
                             }, "Error code should be E_FAIL" ) );
-#else
+#elif !defined(__GNUC__) || __GNUC__ >= 5
     REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
                             BitException,
                             Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& ex ) -> bool {
@@ -54,5 +57,5 @@ TEST_CASE( "Bit7zLibrary: Set large page mode", "[bit7zlibrary]" ) {
     REQUIRE_NOTHROW( lib.setLargePageMode() );
 }
 
-}
-}
+} // namespace test
+} // namespace bit7z

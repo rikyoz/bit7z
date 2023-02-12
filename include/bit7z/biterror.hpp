@@ -45,7 +45,9 @@ auto make_error_code( const BitError& e ) -> std::error_code;
 
 }  // namespace bit7z
 
+namespace std {
 template<>
-struct BIT7Z_MAYBE_UNUSED std::is_error_code_enum< bit7z::BitError > : public true_type {};
+struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public true_type {};
+} // namespace std
 
 #endif //BITERROR_HPP

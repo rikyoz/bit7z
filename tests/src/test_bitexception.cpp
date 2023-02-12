@@ -10,6 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#if !defined(__GNUC__) || __GNUC__ >= 5
+
 #include <catch2/catch.hpp>
 
 #include <bit7z/bitexception.hpp>
@@ -248,3 +250,5 @@ TEST_CASE( "BitException: Checking if failed files are moved to the exception co
     // Note: BitException should have cleared failed_files so it is again usable!
     REQUIRE( failed_files.empty() ); // NOLINT(bugprone-use-after-move)
 }
+
+#endif

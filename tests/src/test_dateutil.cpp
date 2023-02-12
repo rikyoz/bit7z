@@ -10,6 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#if !defined(__GNUC__) || __GNUC__ >= 5
 #include <catch2/catch.hpp>
 
 #include <internal/dateutil.hpp>
@@ -74,3 +75,4 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
         REQUIRE( output == expected_output );
     }
 }
+#endif

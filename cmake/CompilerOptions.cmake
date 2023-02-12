@@ -101,7 +101,10 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
         endif()
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0 )
-        target_compile_options( ${LIB_TARGET} PRIVATE -Wno-missing-field-initializers )
+        target_compile_options( ${LIB_TARGET} PRIVATE
+                                -Wno-missing-field-initializers
+                                -Wno-shadow
+                                -Wno-unused-parameter )
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 6.0 )
         target_compile_options( ${LIB_TARGET} PRIVATE

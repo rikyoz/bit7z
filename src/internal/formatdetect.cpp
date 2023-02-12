@@ -37,10 +37,8 @@
  * @return The hash integer.
  */
 auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(misc-no-recursion)
-    constexpr auto hash = 5381;
-    constexpr auto magic = 33;
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    return *input != 0 ? static_cast< uint64_t >( *input ) + magic * str_hash( input + 1 ) : hash;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, *-magic-numbers)
+    return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381;
 }
 
 namespace bit7z {
