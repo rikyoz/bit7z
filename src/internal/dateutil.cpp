@@ -55,8 +55,8 @@ auto currentFileTime() -> FILETIME {
     FILETIME file_time{};
     SYSTEMTIME system_time{};
 
-    GetSystemTime( &system_time ); // gets current time
-    SystemTimeToFileTime( &system_time, &file_time ); // converts to file time format
+    GetSystemTime( &system_time ); // Getting the current time as a SYSTEMTIME struct.
+    SystemTimeToFileTime( &system_time, &file_time ); // Converting it to the FILETIME struct format.
     return file_time;
 #else
     auto current_time = std::chrono::system_clock::now();

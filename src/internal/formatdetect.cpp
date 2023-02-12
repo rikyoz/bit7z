@@ -29,6 +29,13 @@
 
 #include <7zip/IStream.h>
 
+/**
+ * @brief Constexpr recursive implementation of the djb2 hashing function.
+ *
+ * @param input The C string to be hashed.
+ *
+ * @return The hash integer.
+ */
 auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(misc-no-recursion)
     constexpr auto hash = 5381;
     constexpr auto magic = 33;
@@ -521,6 +528,7 @@ inline auto is_digit( unsigned char character ) -> bool {
 inline auto to_lower( unsigned char character ) -> char {
     return static_cast< char >( std::tolower( character ) );
 }
+
 #endif
 
 auto detectFormatFromExt( const fs::path& in_file ) -> const BitInFormat& {

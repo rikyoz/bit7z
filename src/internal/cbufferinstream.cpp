@@ -42,10 +42,10 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     size_t remaining = mBuffer.cend() - mCurrentPosition;
     if ( remaining > static_cast< size_t >( size ) ) {
         /* Remaining buffer still to read is bigger than the buffer size requested by the user,
-         * so we need to read just "size" number of bytes. */
+         * so we need to read just a "size" number of bytes. */
         remaining = static_cast< size_t >( size );
     }
-    /* else, the user requested to read a number of bytes greater than or equal to the number
+    /* Else, the user requested to read a number of bytes greater than or equal to the number
      * of remaining bytes to be read from the buffer.
      * So we just read all the remaining bytes, not more or less. */
 

@@ -162,7 +162,7 @@ const win32_error_test win32_tests[] = { // NOLINT(cert-err58-cpp, *-avoid-c-arr
     { ERROR_TEST( ERROR_NOT_SUPPORTED ) },
     { ERROR_TEST( ERROR_INVALID_PARAMETER ) },
     { ERROR_TEST( ERROR_OUTOFMEMORY ) },
-    // ERROR_DIRECTORY should correspond to errc::not_a_directory, however MSVC maps it to errc::invalid_argument
+    // ERROR_DIRECTORY should correspond to errc::not_a_directory; however, MSVC maps it to errc::invalid_argument
     //{ ERROR_TEST( ERROR_DIRECTORY ) },
     { ERROR_TEST( ERROR_NEGATIVE_SEEK ) }, //ERROR_NEGATIVE_SEEK is not POSIX on p7zip
 #endif
