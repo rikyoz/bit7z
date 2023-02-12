@@ -10,6 +10,10 @@
 #ifndef COMPILER_HPP
 #define COMPILER_HPP
 
+#if defined( _LIBCPP_VERSION ) || defined( _MSC_VER )
+#include <ostream>
+#endif
+
 #define STRING2( x ) #x
 #define STRING( x ) STRING2(x)
 #define VER_STRING( major, minor, patch ) STRING(major) "." STRING(minor) "." STRING(patch)
@@ -41,12 +45,36 @@ constexpr auto version = "N/A";
 
 #ifdef _LIBCPP_VERSION
 constexpr auto standard_library = "libc++";
-#elif defined( __GLIBCXX__ ) || defined( __GLIBCPP__ )
+const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
+    constexpr auto libcpp_major = _LIBCPP_VERSION / 1000;
+    constexpr auto libcpp_minor = ( _LIBCPP_VERSION % 1000 ) / 100;
+    return out << libcpp_major << "." << libcpp_minor;
+};
+#elif defined( _GLIBCXX_RELEASE ) || defined( __GLIBCXX__ ) || defined( __GLIBCPP__ )
 constexpr auto standard_library = "libstdc++";
+#   if defined( _GLIBCXX_RELEASE )
+constexpr auto standard_library_version = _GLIBCXX_RELEASE;
+#   elif defined( __GLIBCXX__ )
+constexpr auto standard_library_version = __GLIBCXX__;
+#   elif defined( __GLIBCPP__ )
+constexpr auto standard_library_version = __GLIBCPP__;
+#   else
+constexpr auto standard_library_version = __GNUC__;
+#   endif
 #elif defined( _MSC_VER )
 constexpr auto standard_library = "Microsoft STL";
+const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
+#   if _MSC_VER >= 1900
+    constexpr auto msvc_major = _MSC_VER / 100 - 5;
+#   else
+    constexpr auto msvc_major = _MSC_VER / 100 - 6;
+#   endif
+    constexpr auto msvc_minor = _MSC_VER % 100;
+    return out << msvc_major << "." << msvc_minor;
+};
 #else
 constexpr auto standard_library = "Unknown";
+constexpr auto standard_library_version = "N/A";
 #endif
 
 // Compiler target architecture
