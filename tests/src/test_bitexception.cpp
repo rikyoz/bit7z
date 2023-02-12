@@ -29,7 +29,7 @@ struct portable_error_test {
 #define ERROR_TEST( code ) #code, code
 #define HRESULT_WIN32_TEST( code ) #code, HRESULT_FROM_WIN32( code )
 
-const portable_error_test hresult_tests[] = { // NOLINT(cert-err58-cpp, *-avoid-c-arrays)
+constexpr portable_error_test hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( E_ABORT ), "Operation aborted", std::errc::operation_canceled },
     { ERROR_TEST( E_NOTIMPL ), "Not implemented", std::errc::function_not_supported },
     { ERROR_TEST( E_NOINTERFACE ), "No such interface supported", std::errc::not_supported },
@@ -156,7 +156,7 @@ struct win32_error_test {
     DWORD error;
 };
 
-const win32_error_test win32_tests[] = { // NOLINT(cert-err58-cpp, *-avoid-c-arrays)
+constexpr win32_error_test win32_tests[] = { // NOLINT(*-avoid-c-arrays)
 #ifdef _WIN32
     { ERROR_TEST( ERROR_FILE_NOT_FOUND ) },
     { ERROR_TEST( ERROR_NOT_SUPPORTED ) },
@@ -211,7 +211,7 @@ struct hresult_error_test {
     const char* message;
 };
 
-const hresult_error_test unmapped_hresult_tests[] = { // NOLINT(cert-err58-cpp, *-avoid-c-arrays)
+constexpr hresult_error_test unmapped_hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     // Tests for HRESULT values without a POSIX error counterpart
     { ERROR_TEST( E_FAIL ), "Unspecified error" },
 #ifdef _WIN32
