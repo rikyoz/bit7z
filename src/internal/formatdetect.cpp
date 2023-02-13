@@ -233,52 +233,52 @@ auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> 
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
  *         format. However, the switch case is faster and has less memory footprint. */
 auto findFormatBySignature( uint64_t signature, const BitInFormat** format ) noexcept -> bool {
-    constexpr auto RarSignature = 0x526172211A070000ULL; // R a r ! 1A 07 00
-    constexpr auto Rar5Signature = 0x526172211A070100ULL; // R a r ! 1A 07 01 00
-    constexpr auto SevenZipSignature = 0x377ABCAF271C0000ULL; // 7 z BC AF 27 1C
-    constexpr auto BZip2Signature = 0x425A680000000000ULL; // B Z h
-    constexpr auto GZipSignature = 0x1F8B080000000000ULL; // 1F 8B 08
-    constexpr auto WimSignature = 0x4D5357494D000000ULL; // M S W I M 00 00 00
-    constexpr auto XzSignature = 0xFD377A585A000000ULL; // FD 7 z X Z 00
-    constexpr auto ZipSignature = 0x504B000000000000ULL; // P K
-    constexpr auto APMSignature = 0x4552000000000000ULL; // E R
-    constexpr auto ArjSignature = 0x60EA000000000000ULL; // ` EA
-    constexpr auto CabSignature = 0x4D53434600000000ULL; // M S C F 00 00 00 00
-    constexpr auto ChmSignature = 0x4954534603000000ULL; // I T S F 03
-    constexpr auto CompoundSignature = 0xD0CF11E0A1B11AE1ULL; // D0 CF 11 E0 A1 B1 1A E1
-    constexpr auto CpioSignature1 = 0xC771000000000000ULL; // C7 q
-    constexpr auto CpioSignature2 = 0x71C7000000000000ULL; // q C7
-    constexpr auto CpioSignature3 = 0x3037303730000000ULL; // 0 7 0 7 0
-    constexpr auto DebSignature = 0x213C617263683E00ULL; // ! < a r c h > 0A
-    constexpr auto ElfSignature = 0x7F454C4600000000ULL; // 7F E L F
-    constexpr auto PeSignature = 0x4D5A000000000000ULL; // M Z
-    constexpr auto FlvSignature = 0x464C560100000000ULL; // F L V 01
+    constexpr auto RarSignature = 0x526172211A070000ULL; // Rar! 0x1A 0x07 0x00
+    constexpr auto Rar5Signature = 0x526172211A070100ULL; // Rar! 0x1A 0x07 0x01 0x00
+    constexpr auto SevenZipSignature = 0x377ABCAF271C0000ULL; // 7z 0xBC 0xAF 0x27 0x1C
+    constexpr auto BZip2Signature = 0x425A680000000000ULL; // BZh
+    constexpr auto GZipSignature = 0x1F8B080000000000ULL; // 0x1F 0x8B 0x08
+    constexpr auto WimSignature = 0x4D5357494D000000ULL; // MSWIM 0x00 0x00 0x00
+    constexpr auto XzSignature = 0xFD377A585A000000ULL; // 0xFD 7zXZ 0x00
+    constexpr auto ZipSignature = 0x504B000000000000ULL; // PK
+    constexpr auto APMSignature = 0x4552000000000000ULL; // ER
+    constexpr auto ArjSignature = 0x60EA000000000000ULL; // `EA
+    constexpr auto CabSignature = 0x4D53434600000000ULL; // MSCF 0x00 0x00 0x00 0x00
+    constexpr auto ChmSignature = 0x4954534603000000ULL; // ITSF 0x03
+    constexpr auto CompoundSignature = 0xD0CF11E0A1B11AE1ULL; // 0xD0 0xCF 0x11 0xE0 0xA1 0xB1 0x1A 0xE1
+    constexpr auto CpioSignature1 = 0xC771000000000000ULL; // 0xC7 q
+    constexpr auto CpioSignature2 = 0x71C7000000000000ULL; // q 0xC7
+    constexpr auto CpioSignature3 = 0x3037303730000000ULL; // 07070
+    constexpr auto DebSignature = 0x213C617263683E00ULL; // !<arch>0A
+    constexpr auto ElfSignature = 0x7F454C4600000000ULL; // 0x7F ELF
+    constexpr auto PeSignature = 0x4D5A000000000000ULL; // MZ
+    constexpr auto FlvSignature = 0x464C560100000000ULL; // FLV 0x01
     constexpr auto LzmaSignature = 0x5D00000000000000ULL; //
     constexpr auto Lzma86Signature = 0x015D000000000000ULL; //
-    constexpr auto MachoSignature1 = 0xCEFAEDFE00000000ULL; // CE FA ED FE
-    constexpr auto MachoSignature2 = 0xCFFAEDFE00000000ULL; // CF FA ED FE
-    constexpr auto MachoSignature3 = 0xFEEDFACE00000000ULL; // FE ED FA CE
-    constexpr auto MachoSignature4 = 0xFEEDFACF00000000ULL; // FE ED FA CF
-    constexpr auto MubSignature1 = 0xCAFEBABE00000000ULL; // CA FE BA BE 00 00 00
-    constexpr auto MubSignature2 = 0xB9FAF10E00000000ULL; // B9 FA F1 0E
-    constexpr auto MslzSignature = 0x535A444488F02733ULL; // S Z D D 88 F0 ' 3
-    constexpr auto PpmdSignature = 0x8FAFAC8400000000ULL; // 8F AF AC 84
-    constexpr auto QCowSignature = 0x514649FB00000000ULL; // Q F I FB 00 00 00
-    constexpr auto RpmSignature = 0xEDABEEDB00000000ULL; // ED AB EE DB
-    constexpr auto SquashFSSignature1 = 0x7371736800000000ULL; // s q s h
-    constexpr auto SquashFSSignature2 = 0x6873717300000000ULL; // h s q s
-    constexpr auto SquashFSSignature3 = 0x7368737100000000ULL; // s h s q
-    constexpr auto SquashFSSignature4 = 0x7173687300000000ULL; // q s h s
-    constexpr auto SwfSignature = 0x4657530000000000ULL; // F W S
-    constexpr auto SwfcSignature1 = 0x4357530000000000ULL; // C W S
-    constexpr auto SwfcSignature2 = 0x5A57530000000000ULL; // Z W S
-    constexpr auto TESignature = 0x565A000000000000ULL; // V Z
-    constexpr auto VMDKSignature = 0x4B444D0000000000ULL; // K D M V
+    constexpr auto MachoSignature1 = 0xCEFAEDFE00000000ULL; // 0xCE 0xFA 0xED 0xFE
+    constexpr auto MachoSignature2 = 0xCFFAEDFE00000000ULL; // 0xCF 0xFA 0xED 0xFE
+    constexpr auto MachoSignature3 = 0xFEEDFACE00000000ULL; // 0xFE 0xED 0xFA 0xCE
+    constexpr auto MachoSignature4 = 0xFEEDFACF00000000ULL; // 0xFE 0xED 0xFA 0xCF
+    constexpr auto MubSignature1 = 0xCAFEBABE00000000ULL; // 0xCA 0xFE 0xBA 0xBE 0x00 0x00 0x00
+    constexpr auto MubSignature2 = 0xB9FAF10E00000000ULL; // 0xB9 0xFA 0xF1 0x0E
+    constexpr auto MslzSignature = 0x535A444488F02733ULL; // SZDD 0x88 0xF0 '3
+    constexpr auto PpmdSignature = 0x8FAFAC8400000000ULL; // 0x8F 0xAF 0xAC 0x84
+    constexpr auto QCowSignature = 0x514649FB00000000ULL; // QFI 0xFB 0x00 0x00 0x00
+    constexpr auto RpmSignature = 0xEDABEEDB00000000ULL; // 0xED 0xAB 0xEE 0xDB
+    constexpr auto SquashFSSignature1 = 0x7371736800000000ULL; // sqsh
+    constexpr auto SquashFSSignature2 = 0x6873717300000000ULL; // hsqs
+    constexpr auto SquashFSSignature3 = 0x7368737100000000ULL; // shsq
+    constexpr auto SquashFSSignature4 = 0x7173687300000000ULL; // qshs
+    constexpr auto SwfSignature = 0x4657530000000000ULL; // FWS
+    constexpr auto SwfcSignature1 = 0x4357530000000000ULL; // CWS
+    constexpr auto SwfcSignature2 = 0x5A57530000000000ULL; // ZWS
+    constexpr auto TESignature = 0x565A000000000000ULL; // VZ
+    constexpr auto VMDKSignature = 0x4B444D0000000000ULL; // KDMV
     constexpr auto VDISignature = 0x3C3C3C2000000000ULL; // Alternatively 0x7F10DABE at offset 0x40
-    constexpr auto VhdSignature = 0x636F6E6563746978ULL; // c o n e c t i x
-    constexpr auto XarSignature = 0x78617221001C0000ULL; // x a r ! 00 1C
-    constexpr auto ZSignature1 = 0x1F9D000000000000ULL; // 1F 9D
-    constexpr auto ZSignature2 = 0x1FA0000000000000ULL; // 1F A0
+    constexpr auto VhdSignature = 0x636F6E6563746978ULL; // conectix
+    constexpr auto XarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
+    constexpr auto ZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
+    constexpr auto ZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
 
     switch ( signature ) {
         case RarSignature:
@@ -457,19 +457,19 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
     }
 
     static constexpr OffsetSignature common_signatures_with_offset[] = { // NOLINT(*-avoid-c-arrays)
-        { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // - l h
-        { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // N T F S 20 20 20 20
-        { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // N u l l s o f t
-        { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // C o m p r e s s
-        { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 7F 10 DA BE
-        { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // u s t a r
+        { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // -lh
+        { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // NTFS 0x20 0x20 0x20 0x20
+        { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // Nullsoft
+        { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // Compress
+        { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 0x7F 0x10 0xDA 0xBE
+        { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // ustar
         // Note: since GPT files contain also the FAT signature, GPT must be checked before!
-        { 0x4546492050415254, 0x200, 8, BitFormat::GPT },    // E F I 20 P A R T
-        { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat },    // U AA
-        { 0x4244000000000000, 0x400, 2, BitFormat::Hfs },    // B D
-        { 0x482B000400000000, 0x400, 4, BitFormat::Hfs },    // H + 00 04
-        { 0x4858000500000000, 0x400, 4, BitFormat::Hfs },    // H X 00 05
-        { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }     // S EF
+        { 0x4546492050415254, 0x200, 8, BitFormat::GPT },    // EFI 0x20 PART
+        { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat },    // U 0xAA
+        { 0x4244000000000000, 0x400, 2, BitFormat::Hfs },    // BD
+        { 0x482B000400000000, 0x400, 4, BitFormat::Hfs },    // H+ 0x00 0x04
+        { 0x4858000500000000, 0x400, 4, BitFormat::Hfs },   // HX 0x00 0x05
+        { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }    // S 0xEF
     };
 
     for ( const auto& sig : common_signatures_with_offset ) {
