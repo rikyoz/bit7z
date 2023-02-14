@@ -24,7 +24,7 @@ using namespace bit7z;
 #ifdef __cpp_if_constexpr
 
 template< class T, class U >
-constexpr bool cmp_less( T t, U u ) noexcept {
+constexpr auto cmp_less( T t, U u ) noexcept -> bool {
     using UT = std::make_unsigned_t< T >;
     using UU = std::make_unsigned_t< U >;
     if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
@@ -61,12 +61,12 @@ cmp_less( T t, U u ) noexcept {
 #endif
 
 template< class T, class U >
-constexpr bool cmp_greater( T t, U u ) noexcept {
+constexpr auto cmp_greater( T t, U u ) noexcept -> bool {
     return cmp_less( u, t );
 }
 
 template< class T, class U >
-constexpr bool cmp_greater_equal( T t, U u ) noexcept {
+constexpr auto cmp_greater_equal( T t, U u ) noexcept -> bool {
     return !cmp_less( t, u );
 }
 
@@ -102,7 +102,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if the sum between current_index and offset would result in an integer overflow or underflow
+    // Checking if the sum between the current_index and offset would result in an integer overflow or underflow
     if ( check_overflow( current_index, offset ) ) {
         return E_INVALIDARG;
     }

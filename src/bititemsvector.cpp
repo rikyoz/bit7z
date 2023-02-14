@@ -27,32 +27,32 @@ void BitItemsVector::indexDirectory( const fs::path& in_dir, const tstring& filt
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
         mItems.emplace_back( std::make_unique< FSItem >( dir_item ) );
     }
-    FSIndexer indexer{ dir_item, filter };
+    FSIndexer indexer{ dir_item, filter, options.only_files };
     indexer.listDirectoryItems( mItems, options.recursive );
 }
 
-void BitItemsVector::indexPaths( const vector< tstring >& in_paths, IndexingOptions options ) {
+void BitItemsVector::indexPaths( const std::vector< tstring >& in_paths, IndexingOptions options ) {
     for ( const auto& file_path : in_paths ) {
         const FSItem item{ file_path, options.retain_folder_structure ? file_path : BIT7Z_STRING( "" ) };
-        indexItem( item, options.recursive );
+        indexItem( item, options );
     }
 }
 
-void BitItemsVector::indexPathsMap( const map< tstring, tstring >& in_paths, IndexingOptions options ) {
+void BitItemsVector::indexPathsMap( const std::map< tstring, tstring >& in_paths, IndexingOptions options ) {
     for ( const auto& file_pair : in_paths ) {
         const FSItem item{ fs::path( file_pair.first ), fs::path( file_pair.second ) };
-        indexItem( item, options.recursive );
+        indexItem( item, options );
     }
 }
 
-void BitItemsVector::indexItem( const FSItem& item, bool recursive ) {
+void BitItemsVector::indexItem( const FSItem& item, IndexingOptions options ) {
     if ( !item.isDir() ) {
         mItems.emplace_back( std::make_unique< FSItem >( item ) );
-    } else if ( recursive ) { //item is a directory
+    } else if ( options.recursive ) { // The item is a directory
         if ( !item.inArchivePath().empty() ) {
             mItems.emplace_back( std::make_unique< FSItem >( item ) );
         }
-        FSIndexer indexer{ item };
+        FSIndexer indexer{ item, {}, options.only_files };
         indexer.listDirectoryItems( mItems, true );
     } else {
         // No action needed
@@ -75,28 +75,28 @@ void BitItemsVector::indexStream( std::istream& in_stream, const tstring& name )
     mItems.emplace_back( std::make_unique< StdInputItem >( in_stream, name ) );
 }
 
-size_t BitItemsVector::size() const {
+auto BitItemsVector::size() const -> size_t {
     return mItems.size();
 }
 
-const GenericInputItem& BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const {
+auto BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const -> const GenericInputItem& {
     // Note: here index is expected to be correct!
     return *mItems[ index ];
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::begin() const noexcept {
+auto BitItemsVector::begin() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cbegin();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::end() const noexcept {
+auto BitItemsVector::end() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cend();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::cbegin() const noexcept {
+auto BitItemsVector::cbegin() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cbegin();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::cend() const noexcept {
+auto BitItemsVector::cend() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cend();
 }
 

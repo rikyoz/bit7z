@@ -19,12 +19,12 @@ using std::map;
 
 BitArchiveItemInfo::BitArchiveItemInfo( uint32_t item_index ) : BitArchiveItem( item_index ) {}
 
-BitPropVariant BitArchiveItemInfo::itemProperty( BitProperty property ) const {
+auto BitArchiveItemInfo::itemProperty( BitProperty property ) const -> BitPropVariant {
     auto prop_it = mItemProperties.find( property );
     return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
 }
 
-map< BitProperty, BitPropVariant > BitArchiveItemInfo::itemProperties() const {
+auto BitArchiveItemInfo::itemProperties() const -> map< BitProperty, BitPropVariant > {
     return mItemProperties;
 }
 

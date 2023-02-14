@@ -13,11 +13,11 @@
 #include "internal/bufferutil.hpp"
 #include "internal/windows.hpp"
 
-HRESULT bit7z::seek( const buffer_t& buffer,
-                     const buffer_t::const_iterator& current_position,
-                     int64_t offset,
-                     uint32_t seek_origin,
-                     int64_t& new_position ) {
+auto bit7z::seek( const buffer_t& buffer,
+                  const buffer_t::const_iterator& current_position,
+                  int64_t offset,
+                  uint32_t seek_origin,
+                  int64_t& new_position ) -> HRESULT {
     int64_t current_index; // NOLINT(cppcoreguidelines-init-variables)
     switch ( seek_origin ) {
         case STREAM_SEEK_SET: {

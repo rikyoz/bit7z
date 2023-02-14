@@ -16,11 +16,11 @@
 
 using bit7z::internal_category_t;
 
-const char* internal_category_t::name() const noexcept {
+auto internal_category_t::name() const noexcept -> const char* {
     return "bit7z";
 }
 
-std::string internal_category_t::message( int error_value ) const noexcept {
+auto internal_category_t::message( int error_value ) const -> std::string {
     switch ( static_cast< BitError >( error_value ) ) {
         case BitError::Fail:
             return "Unspecified error.";
@@ -53,9 +53,9 @@ std::string internal_category_t::message( int error_value ) const noexcept {
         case BitError::NoMatchingSignature:
             return "No known signature found.";
         case BitError::NonEmptyOutputBuffer:
-            return "Output buffer is not empty.";
+            return "The output buffer is not empty.";
         case BitError::RequestedWrongVariantType:
-            return "Requested wrong variant type.";
+            return "Requested the wrong variant type.";
         case BitError::UnsupportedOperation:
             return "Unsupported operation.";
         case BitError::WrongUpdateMode:
@@ -65,7 +65,7 @@ std::string internal_category_t::message( int error_value ) const noexcept {
     }
 }
 
-std::error_condition bit7z::internal_category_t::default_error_condition( int error_value ) const noexcept {
+auto bit7z::internal_category_t::default_error_condition( int error_value ) const noexcept -> std::error_condition {
     switch ( static_cast< BitError >( error_value ) ) {
         case BitError::FilterNotSpecified:
         case BitError::FormatFeatureNotSupported:
@@ -92,7 +92,7 @@ std::error_condition bit7z::internal_category_t::default_error_condition( int er
     }
 }
 
-const std::error_category& bit7z::internal_category() noexcept {
+auto bit7z::internal_category() noexcept -> const std::error_category& {
     static const internal_category_t instance{};
     return instance;
 }

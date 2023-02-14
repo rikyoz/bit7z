@@ -11,6 +11,7 @@
  */
 
 #include "bitarchivewriter.hpp"
+#include "internal/fs.hpp"
 
 namespace bit7z {
 
@@ -18,24 +19,24 @@ BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib, const BitInOutForma
     : BitAbstractArchiveCreator( lib, format ), BitOutputArchive( *this, tstring{} ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
-                                    const tstring& in_file,
+                                    const tstring& in_archive,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
-      BitOutputArchive( *this, in_file ) {}
+      BitOutputArchive( *this, in_archive ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
-                                    const std::vector< byte_t >& in_buffer,
+                                    const std::vector< byte_t >& in_archive,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
-      BitOutputArchive( *this, in_buffer ) {}
+      BitOutputArchive( *this, in_archive ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
-                                    std::istream& in_stream,
+                                    std::istream& in_archive,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
-      BitOutputArchive( *this, in_stream ) {}
+      BitOutputArchive( *this, in_archive ) {}
 
 } // namespace bit7z

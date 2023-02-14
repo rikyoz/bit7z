@@ -20,7 +20,6 @@
 #include "internal/bufferutil.hpp"
 
 #include <algorithm> //for std::copy_n
-#include <cstdint>
 
 using namespace bit7z;
 
@@ -42,10 +41,10 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     size_t remaining = mBuffer.cend() - mCurrentPosition;
     if ( remaining > static_cast< size_t >( size ) ) {
         /* Remaining buffer still to read is bigger than the buffer size requested by the user,
-         * so we need to read just "size" number of bytes. */
+         * so we need to read just a "size" number of bytes. */
         remaining = static_cast< size_t >( size );
     }
-    /* else, the user requested to read a number of bytes greater than or equal to the number
+    /* Else, the user requested to read a number of bytes greater than or equal to the number
      * of remaining bytes to be read from the buffer.
      * So we just read all the remaining bytes, not more or less. */
 
@@ -67,7 +66,7 @@ STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* new
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, new_index );
 
     if ( res != S_OK ) {
-        // new_index is not in the range [0, mBuffer.size]
+        // The new_index is not in the range [0, mBuffer.size]
         return res;
     }
 

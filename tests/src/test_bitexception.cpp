@@ -10,29 +10,28 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#if !defined(__GNUC__) || __GNUC__ >= 5
+
 #include <catch2/catch.hpp>
 
-#include <bitexception.hpp>
-
-#include <bit7zlibrary.hpp>
+#include <bit7z/bitexception.hpp>
 #include <internal/windows.hpp>
 
 #include <iostream>
 
-using bit7z::Bit7zLibrary;
 using bit7z::BitException;
 
 struct portable_error_test {
-    const char* const name;
+    const char* name;
     HRESULT error;
-    const char* const message;
+    const char* message;
     std::errc portable_error;
 };
 
 #define ERROR_TEST( code ) #code, code
 #define HRESULT_WIN32_TEST( code ) #code, HRESULT_FROM_WIN32( code )
 
-portable_error_test tests[] = { // NOLINT(cert-err58-cpp)
+constexpr portable_error_test hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( E_ABORT ), "Operation aborted", std::errc::operation_canceled },
     { ERROR_TEST( E_NOTIMPL ), "Not implemented", std::errc::function_not_supported },
     { ERROR_TEST( E_NOINTERFACE ), "No such interface supported", std::errc::not_supported },
@@ -126,24 +125,46 @@ portable_error_test tests[] = { // NOLINT(cert-err58-cpp)
       std::errc::not_a_directory },
     { ERROR_TEST( HRESULT_WIN32_ERROR_NEGATIVE_SEEK ),
       "An attempt was made to move the file pointer before the beginning of the file.",
-      std::errc::invalid_argument },
-    { HRESULT_WIN32_TEST( ERROR_NO_MORE_FILES ),
-      "There are no more files.",
-      std::errc::no_such_file_or_directory }
+      std::errc::invalid_argument }
 };
 
+TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][HRESULT]" ) {
+    for ( const auto& test : hresult_tests ) {
+        DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
+            auto code = bit7z::make_hresult_code( test.error );
+
+            REQUIRE( code.value() == test.error );
+            REQUIRE( code.message() == test.message );
+            REQUIRE( code == test.portable_error );
+
+            auto ex = BitException( "Hello World", code );
+#ifdef _WIN32
+            REQUIRE( ex.nativeCode() == code.value() );
+            REQUIRE( ex.hresultCode() == ex.nativeCode() );
+            REQUIRE( ex.posixCode() == static_cast<int>( test.portable_error ) );
+#else
+            REQUIRE( ex.nativeCode() == static_cast<int>( test.portable_error ) );
+            REQUIRE( ex.hresultCode() == test.error );
+            REQUIRE( ex.posixCode() == ex.nativeCode() );
+#endif
+        }
+    }
+}
+
+#ifndef __MINGW32__
+
 struct win32_error_test {
-    const char* const name;
+    const char* name;
     DWORD error;
 };
 
-win32_error_test tests2[] = {
+constexpr win32_error_test win32_tests[] = { // NOLINT(*-avoid-c-arrays)
 #ifdef _WIN32
     { ERROR_TEST( ERROR_FILE_NOT_FOUND ) },
     { ERROR_TEST( ERROR_NOT_SUPPORTED ) },
     { ERROR_TEST( ERROR_INVALID_PARAMETER ) },
     { ERROR_TEST( ERROR_OUTOFMEMORY ) },
-    // ERROR_DIRECTORY should correspond to errc::not_a_directory, however MSVC maps it to errc::invalid_argument
+    // ERROR_DIRECTORY should correspond to errc::not_a_directory; however, MSVC maps it to errc::invalid_argument
     //{ ERROR_TEST( ERROR_DIRECTORY ) },
     { ERROR_TEST( ERROR_NEGATIVE_SEEK ) }, //ERROR_NEGATIVE_SEEK is not POSIX on p7zip
 #endif
@@ -155,39 +176,20 @@ win32_error_test tests2[] = {
     { ERROR_TEST( ERROR_ALREADY_EXISTS ) },
     { ERROR_TEST( ERROR_FILE_EXISTS ) },
     { ERROR_TEST( ERROR_DISK_FULL ) },
-    { ERROR_TEST( ERROR_INVALID_HANDLE ) },
-    { ERROR_TEST( ERROR_NO_MORE_FILES ) }
+    { ERROR_TEST( ERROR_INVALID_HANDLE ) }
 };
 
-TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][HRESULT]" ) {
-    for ( const auto& test : tests ) {
-        DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
-            auto code = bit7z::make_hresult_code( test.error );
-
-            REQUIRE( code.value() == test.error );
-            REQUIRE( code.message() == test.message );
-            REQUIRE( code == test.portable_error );
-
-            auto ex = BitException( "Hello World", code );
-#ifdef _WIN32
-            REQUIRE( ex.nativeCode() == code.value() );
-#else
-            REQUIRE( ex.nativeCode() == static_cast<int>( test.portable_error ) );
-#endif
-        }
-    }
-}
-
-#ifndef __MINGW32__
+/* The following tests assume that std::system_category() refers to either Win32 error codes on Windows,
+ * and POSIX error codes on Unix (i.e., the native error codes).
+ * However, MinGW uses the std::system_category() for POSIX error codes on Windows, so we don't test it. */
 
 TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitException][win32-posix]" ) {
-    for ( const auto& test : tests2 ) {
+    for ( const auto& test : win32_tests ) {
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto sys_error = std::error_code{ static_cast<int>( test.error ), std::system_category() };
-            if ( test.error != ERROR_NO_MORE_FILES ) {
-                auto hresult_error = bit7z::make_hresult_code( HRESULT_FROM_WIN32( test.error ) );
-                REQUIRE( sys_error.default_error_condition() == hresult_error.default_error_condition() );
-            }
+
+            auto hresult_error = bit7z::make_hresult_code( HRESULT_FROM_WIN32( test.error ) );
+            REQUIRE( sys_error.default_error_condition() == hresult_error.default_error_condition() );
 
             auto ex = BitException( "Hello World", sys_error );
 #ifdef _WIN32
@@ -195,6 +197,10 @@ TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitExcep
 #else
             REQUIRE( ex.nativeCode() == test.error );
 #endif
+            if ( sys_error != std::errc::io_error ) { // Multiple Win32 errors might be mapped to the POSIX IO error.
+                REQUIRE( ex.hresultCode() == HRESULT_FROM_WIN32( test.error ) );
+                REQUIRE( ex.posixCode() == sys_error.default_error_condition().value() );
+            }
         }
     }
 }
@@ -202,12 +208,13 @@ TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitExcep
 #endif
 
 struct hresult_error_test {
-    const char* const name;
+    const char* name;
     HRESULT error;
-    const char* const message;
+    const char* message;
 };
 
-hresult_error_test tests3[] = { //tests for HRESULT values without a POSIX error counterpart
+constexpr hresult_error_test unmapped_hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
+    // Tests for HRESULT values without a POSIX error counterpart
     { ERROR_TEST( E_FAIL ), "Unspecified error" },
 #ifdef _WIN32
     { ERROR_TEST( STG_E_INVALIDPOINTER ), "Invalid pointer error." }
@@ -215,7 +222,7 @@ hresult_error_test tests3[] = { //tests for HRESULT values without a POSIX error
 };
 
 TEST_CASE( "BitException: Constructing std::error_code from unmapped HRESULT values", "[BitException][unmapped]" ) {
-    for ( const auto& test : tests3 ) {
+    for ( const auto& test : unmapped_hresult_tests ) {
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto hresult_code = bit7z::make_hresult_code( test.error );
             REQUIRE( hresult_code.message() == test.message );
@@ -234,7 +241,7 @@ TEST_CASE( "BitException: Constructing std::error_code from unmapped HRESULT val
 TEST_CASE( "BitException: Checking if failed files are moved to the exception constructor", "[bitexception]" ) {
     bit7z::FailedFiles failed_files = { { BIT7Z_STRING( "hello.txt" ),
                                           std::make_error_code( std::errc::bad_file_descriptor ) } };
-    BitException ex{ "Error Message", std::make_error_code( std::errc::io_error ), std::move( failed_files ) };
+    const BitException ex{ "Error Message", std::make_error_code( std::errc::io_error ), std::move( failed_files ) };
     REQUIRE( ex.code() == std::errc::io_error );
     const auto& exception_failed_files = ex.failedFiles();
     REQUIRE( exception_failed_files.size() == 1 );
@@ -243,3 +250,5 @@ TEST_CASE( "BitException: Checking if failed files are moved to the exception co
     // Note: BitException should have cleared failed_files so it is again usable!
     REQUIRE( failed_files.empty() ); // NOLINT(bugprone-use-after-move)
 }
+
+#endif

@@ -14,6 +14,7 @@
 
 #include "bitexception.hpp"
 
+using bit7z::BitInputArchive;
 using bit7z::ProcessedItem;
 
 ProcessedItem::ProcessedItem()
@@ -25,15 +26,15 @@ void ProcessedItem::loadItemInfo( const BitInputArchive& input_archive, std::uin
     loadModifiedTime( input_archive, item_index );
 }
 
-fs::path ProcessedItem::path() const {
+auto ProcessedItem::path() const -> fs::path {
     return mFilePath;
 }
 
-uint32_t ProcessedItem::attributes() const {
+auto ProcessedItem::attributes() const -> uint32_t {
     return mAttributes;
 }
 
-FILETIME ProcessedItem::modifiedTime() const {
+auto ProcessedItem::modifiedTime() const -> FILETIME {
     return mModifiedTime;
 }
 
@@ -107,10 +108,10 @@ void ProcessedItem::loadModifiedTime( const BitInputArchive& input_archive, uint
     }
 }
 
-bool ProcessedItem::areAttributesDefined() const {
+auto ProcessedItem::areAttributesDefined() const -> bool {
     return mAreAttributesDefined;
 }
 
-bool ProcessedItem::isModifiedTimeDefined() const {
+auto ProcessedItem::isModifiedTimeDefined() const -> bool {
     return mIsModifiedTimeDefined;
 }

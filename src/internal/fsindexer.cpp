@@ -19,8 +19,8 @@ using bit7z::GenericInputItem;
 using bit7z::tstring;
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( FSItem directory, tstring filter )
-    : mDirItem( std::move( directory ) ), mFilter( std::move( filter ) ) {
+FSIndexer::FSIndexer( FSItem directory, tstring filter, bool only_files )
+    : mDirItem( std::move( directory ) ), mFilter( std::move( filter ) ), mOnlyFiles{ only_files } {
     if ( !mDirItem.isDir() ) {
         throw BitException( "Invalid path", std::make_error_code( std::errc::not_a_directory ), mDirItem.name() );
     }
@@ -46,7 +46,13 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
         }
 
         const FSItem current_item{ current_entry, search_path };
-        const bool item_matches = fsutil::wildcardMatch( mFilter, current_item.name() );
+        /* An item matches if:
+         *  - Its name matches the wildcard pattern, and
+         *  - Either is a file, or we are interested also to include folders in the index.
+         *
+         * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
+        const bool item_matches = ( !mOnlyFiles || !current_item.isDir() ) &&
+                                  fsutil::wildcardMatch( mFilter, current_item.name() );
         if ( item_matches ) {
             result.emplace_back( std::make_unique< FSItem >( current_item ) );
         }

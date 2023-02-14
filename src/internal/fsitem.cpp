@@ -24,30 +24,30 @@ using bit7z::filesystem::FSItem;
 
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what
- *    the user passes as path parameter in the constructor. If it is a directory, it doesn't contain a trailing / or \
- *    character, to use the method FindFirstFile without problems (as requested by that WinAPI function).
- * 2) mSearchPath contains the search path in which the item was found (e.g., if FSIndexer is searching items in
+ *    the user passes as the path parameter in the constructor.
+ * 2) mSearchPath contains the search path in which the item was found (e.g., if FSIndexer is searching for items in
  *    "foo/bar/", each FSItem created for the elements it found will have mSearchPath == "foo/bar").
  *    As in mPath, mSearchPath does not contain trailing / or \! *
  * 3) mInArchivePath is the path of the item in the archive. If not already given (i.e., the user doesn't want to custom
- *    the path of the file in the archive), the path in the archive is calculated form mPath and mSearchPath
+ *    the path of the file in the archive), the path in the archive is calculated from mPath and mSearchPath
  *    (see inArchivePath() method). */
 
 FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     : mFileAttributeData(),
       mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
     std::error_code error;
-    mFileEntry.assign( itemPath, error );
+
+    mFileEntry.assign( FORMAT_LONG_PATH( itemPath ), error );
     if ( error ) {
-        throw BitException( "Cannot read file entry", error, itemPath.native() );
+        throw BitException( "Cannot read file entry", error, itemPath.string< tchar >() );
     }
     if ( !mFileEntry.exists( error ) ) { // NOLINT
         if ( !error ) { // call to "exists(error)" succeeded
             error = std::make_error_code( std::errc::no_such_file_or_directory );
         }
-        throw BitException( "Invalid path", error, itemPath.native() );
+        throw BitException( "Invalid path", error, itemPath.string< tchar >() );
     }
-    initAttributes( itemPath );
+    initAttributes( mFileEntry.path() );
 }
 
 FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
@@ -60,75 +60,75 @@ FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
 void FSItem::initAttributes( const fs::path& itemPath ) {
     if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
         //should not happen, but anyway...
-        throw BitException( "Could not retrieve file attributes", last_error_code(), itemPath.native() );
+        throw BitException( "Could not retrieve file attributes", last_error_code(), itemPath.string< tchar >() );
     }
 }
 
-bool FSItem::isDots() const {
+auto FSItem::isDots() const -> bool {
     const auto filename = mFileEntry.path().filename();
     return ( filename == "." || filename == ".." );
 }
 
-bool FSItem::isDir() const noexcept {
+auto FSItem::isDir() const noexcept -> bool {
     std::error_code error;
     const bool res = mFileEntry.is_directory( error );
     return !error && res;
 }
 
-uint64_t FSItem::size() const noexcept {
+auto FSItem::size() const noexcept -> uint64_t {
     std::error_code error;
     const auto res = mFileEntry.file_size( error );
     return !error ? res : 0;
 }
 
-FILETIME FSItem::creationTime() const noexcept {
+auto FSItem::creationTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftCreationTime;
 }
 
-FILETIME FSItem::lastAccessTime() const noexcept {
+auto FSItem::lastAccessTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftLastAccessTime;
 }
 
-FILETIME FSItem::lastWriteTime() const noexcept {
+auto FSItem::lastWriteTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftLastWriteTime;
 }
 
-tstring FSItem::name() const {
+auto FSItem::name() const -> tstring {
     BIT7Z_MAYBE_UNUSED std::error_code error;
     return fs::canonical( mFileEntry.path(), error ).filename().string< tchar >();
 }
 
-tstring FSItem::path() const {
+auto FSItem::path() const -> tstring {
     return mFileEntry.path().string< tchar >();
 }
 
-/* NOTE:
- * inArchivePath() returns the path that should be used inside the archive when compressing the item, i.e., the path
- * relative to the 'root' of the archive.
- * This is needed to behave like 7-zip and retaining the directory structure when creating new archives.
+/* Note: inArchivePath() returns the path that should be used inside the archive when compressing the item,
+ * i.e., the path relative to the 'root' of the archive.
+ * This is needed to behave like 7-zip and retain the directory structure when creating new archives.
  *
  * In particular, 7-zip behaves differently according to the kind of paths that are passed to it:
- * + absolute paths (e.g. "C:\foo\bar\test.txt"):
- *   the file is compressed without any directory structure (e.g. "test.txt"), unless it was inside a directory passed
- *   by the user and scanned by FSIndexer: in this case only the directory structure is retained.
+ * + Absolute paths (e.g. "C:\foo\bar\test.txt"):
+ *   + The file is compressed without any directory structure (e.g. "test.txt"),
+ *     unless it was inside a directory passed by the user and scanned by FSIndexer:
+ *     in this case, only the directory structure is retained.
  *
- * + relative paths containing current dir or outside references (e.g. containing a "./" or "../" substring,
- *   like in "../foo/bar/test.txt"):
- *   same as absolute paths (e.g. "test.txt").
+ * + Relative paths containing the current directory or outside references
+ *   (e.g. containing a "./" or "../" substring, like in "../foo/bar/test.txt"):
+ *   + Same as absolute paths (e.g. "test.txt").
  *
- * + relative paths (e.g. "foo/bar/test.txt"):
- *   the file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
+ * + Relative paths (e.g. "foo/bar/test.txt"):
+ *   + The file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
  *
  * If the mInArchivePath is already given (i.e., the user wants a custom mapping of files), this one is returned.*/
-fs::path FSItem::inArchivePath() const {
+auto FSItem::inArchivePath() const -> fs::path {
     return mInArchivePath;
 }
 
-uint32_t FSItem::attributes() const noexcept {
+auto FSItem::attributes() const noexcept -> uint32_t {
     return mFileAttributeData.dwFileAttributes;
 }
 
-HRESULT FSItem::getStream( ISequentialInStream** inStream ) const {
+auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     if ( isDir() ) {
         return S_OK;
     }

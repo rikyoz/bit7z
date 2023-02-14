@@ -12,7 +12,6 @@
 
 #include "internal/streamextractcallback.hpp"
 
-#include "bitexception.hpp"
 #include "internal/cstdoutstream.hpp"
 #include "internal/util.hpp"
 
@@ -24,18 +23,11 @@ StreamExtractCallback::StreamExtractCallback( const BitInputArchive& inputArchiv
     : ExtractCallback( inputArchive ),
       mOutputStream( outputStream ) {}
 
-void StreamExtractCallback::throwException( HRESULT error ) {
-    if ( !mOutputStream ) {
-        throw BitException( "Stream error", std::error_code( errno, std::generic_category() ) );
-    }
-    Callback::throwException( error );
-}
-
 void StreamExtractCallback::releaseStream() {
     mStdOutStream.Release();
 }
 
-HRESULT StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+auto StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }

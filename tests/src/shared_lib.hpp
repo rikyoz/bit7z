@@ -10,7 +10,7 @@
 #ifndef SHARED_LIB_HPP
 #define SHARED_LIB_HPP
 
-#include <bittypes.hpp>
+#include <bit7z/bittypes.hpp>
 
 #ifndef BIT7Z_USE_SYSTEM_7ZIP
 #include "filesystem.hpp"
@@ -36,7 +36,7 @@ inline auto sevenzip_lib_path() -> tstring {
     return lib_path;
 }
 
-}
-}
+} // namespace test
+} // namespace bit7z
 
 #endif //SHARED_LIB_HPP

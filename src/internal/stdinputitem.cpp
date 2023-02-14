@@ -22,29 +22,29 @@ using std::istream;
 
 StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
 
-tstring StdInputItem::name() const {
+auto StdInputItem::name() const -> tstring {
     return mStreamPath.filename().string< tchar >();
 }
 
-tstring StdInputItem::path() const {
+auto StdInputItem::path() const -> tstring {
     return mStreamPath.string< tchar >();
 }
 
-fs::path StdInputItem::inArchivePath() const {
+auto StdInputItem::inArchivePath() const -> fs::path {
     return mStreamPath;
 }
 
-HRESULT StdInputItem::getStream( ISequentialInStream** inStream ) const {
+auto StdInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     auto inStreamLoc = bit7z::make_com< CStdInStream, ISequentialInStream >( mStream );
     *inStream = inStreamLoc.Detach(); //Note: 7-zip will take care of freeing the memory!
     return S_OK;
 }
 
-bool StdInputItem::isDir() const noexcept {
+auto StdInputItem::isDir() const noexcept -> bool {
     return false;
 }
 
-uint64_t StdInputItem::size() const {
+auto StdInputItem::size() const -> uint64_t {
     const auto original_pos = mStream.tellg();
     mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
     const auto result = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
@@ -52,18 +52,18 @@ uint64_t StdInputItem::size() const {
     return result;
 }
 
-FILETIME StdInputItem::creationTime() const noexcept { //-V524
+auto StdInputItem::creationTime() const noexcept -> FILETIME { //-V524
     return currentFileTime();
 }
 
-FILETIME StdInputItem::lastAccessTime() const noexcept { //-V524
+auto StdInputItem::lastAccessTime() const noexcept -> FILETIME { //-V524
     return currentFileTime();
 }
 
-FILETIME StdInputItem::lastWriteTime() const noexcept {
+auto StdInputItem::lastWriteTime() const noexcept -> FILETIME {
     return currentFileTime();
 }
 
-uint32_t StdInputItem::attributes() const noexcept {
+auto StdInputItem::attributes() const noexcept -> uint32_t {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }

@@ -20,7 +20,7 @@
 #include <limits>
 
 
-size_t wcsnlen_s( const wchar_t* str, size_t max_size ) {
+auto wcsnlen_s( const wchar_t* str, size_t max_size ) -> size_t {
     if ( str == nullptr || max_size == 0 ) {
         return 0;
     }
@@ -33,7 +33,7 @@ size_t wcsnlen_s( const wchar_t* str, size_t max_size ) {
     return result;
 }
 
-BSTR SysAllocString( const OLECHAR* str ) {
+auto SysAllocString( const OLECHAR* str ) -> BSTR {
     if ( str == nullptr ) {
         return nullptr;
     }
@@ -51,9 +51,9 @@ using bstr_prefix_t = uint32_t;
  *     allocated by 7-zip (which uses malloc). Never mix new/delete and malloc/free.
  *   - We use calloc instead of malloc, so that we do not have to manually add the termination character at the end.
  *   - The length parameter is an uint64_t, instead of the UINT parameter used in the WinAPI interface.
- *     This allows to avoid unsigned integer wrap around in SysAllocStringLen.
+ *     This allows avoiding unsigned integer wrap around in SysAllocStringLen.
  * */
-BSTR AllocStringBuffer( LPCSTR str, uint64_t byte_length ) {
+auto AllocStringBuffer( LPCSTR str, uint64_t byte_length ) -> BSTR {
     // Maximum value that can be stored in the BSTR byte_length prefix.
     constexpr auto max_prefix_value = std::numeric_limits< bstr_prefix_t >::max();
 
@@ -88,12 +88,12 @@ BSTR AllocStringBuffer( LPCSTR str, uint64_t byte_length ) {
     return result;
 }
 
-BSTR SysAllocStringLen( const OLECHAR* str, UINT length ) {
+auto SysAllocStringLen( const OLECHAR* str, UINT length ) -> BSTR {
     auto byte_length = static_cast< uint64_t >( length ) * sizeof( OLECHAR );
     return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), byte_length );
 }
 
-BSTR SysAllocStringByteLen( LPCSTR str, UINT length ) {
+auto SysAllocStringByteLen( LPCSTR str, UINT length ) -> BSTR {
     return AllocStringBuffer( str, length );
 }
 
@@ -108,7 +108,7 @@ void SysFreeString( BSTR bstrString ) { // NOLINT(readability-non-const-paramete
     }
 }
 
-UINT SysStringByteLen( BSTR bstrString ) { // NOLINT(readability-non-const-parameter)
+auto SysStringByteLen( BSTR bstrString ) -> UINT { // NOLINT(readability-non-const-parameter)
     if ( bstrString == nullptr ) {
         return 0;
     }
@@ -117,7 +117,7 @@ UINT SysStringByteLen( BSTR bstrString ) { // NOLINT(readability-non-const-param
     return *( reinterpret_cast< const bstr_prefix_t* >( bstrString ) - 1 );
 }
 
-UINT SysStringLen( BSTR bstrString ) { // NOLINT(readability-non-const-parameter)
+auto SysStringLen( BSTR bstrString ) -> UINT { // NOLINT(readability-non-const-parameter)
     // Same as SysStringByteLen, but we count how many OLECHARs are stored in the BSTR.
     return SysStringByteLen( bstrString ) / sizeof( OLECHAR );
 }

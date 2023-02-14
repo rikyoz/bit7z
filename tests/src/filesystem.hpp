@@ -18,17 +18,14 @@
 
 #ifdef _WIN32
 #include <Windows.h>
-#else
-#include <climits> // for PATH_MAX
-#include <unistd.h> // for readlink (Linux) or getpid (macOS)
-#ifdef __APPLE__
+#elif defined( __APPLE__ )
 #include <libproc.h> // for proc_pidpath and PROC_PIDPATHINFO_MAXSIZE
-#endif
+#include <unistd.h> // for getpid
 #endif
 
 #include <internal/fs.hpp>
 
-namespace bit7z {
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
 
@@ -37,20 +34,19 @@ inline auto exe_path() -> fs::path {
     wchar_t path[MAX_PATH] = { 0 };
     GetModuleFileNameW( nullptr, path, MAX_PATH );
     return path;
-#else
-#ifdef __APPLE__
+#elif defined( __APPLE__ )
     char result[PROC_PIDPATHINFO_MAXSIZE];
     ssize_t result_size = proc_pidpath(getpid(), result, sizeof(result));
+    return result_size > 0 ? std::string( result, result_size ) : "";
 #else
-    char result[PATH_MAX];
-    ssize_t result_size = readlink("/proc/self/exe", result, PATH_MAX);
-#endif
-    return result_size > 0 ? std::string(result, result_size) : "";
+    std::error_code error;
+    fs::path result = fs::read_symlink( "/proc/self/exe", error );
+    return error ? "" : result;
 #endif
 }
 
-}
-}
-}
+} // namespace filesystem
+} // namespace test
+} // namespace bit7z
 
 #endif //FILESYSTEM_HPP

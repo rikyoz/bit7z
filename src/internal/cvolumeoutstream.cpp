@@ -12,11 +12,10 @@
 
 #include "internal/cvolumeoutstream.hpp"
 
-using bit7z::tstring;
 using bit7z::CVolumeOutStream;
 
-CVolumeOutStream::CVolumeOutStream( const tstring& volumeName )
-    : CFileOutStream( volumeName ), mPath{ volumeName }, mCurrentOffset{ 0 }, mCurrentSize{ 0 } {}
+CVolumeOutStream::CVolumeOutStream( const fs::path& volumeName )
+    : CFileOutStream( volumeName ), mCurrentOffset{ 0 }, mCurrentSize{ 0 } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
@@ -45,7 +44,7 @@ STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* pro
     return S_OK;
 }
 
-uint64_t CVolumeOutStream::currentOffset() const {
+auto CVolumeOutStream::currentOffset() const -> uint64_t {
     return mCurrentOffset;
 }
 
@@ -56,14 +55,10 @@ STDMETHODIMP CVolumeOutStream::SetSize( UInt64 newSize ) {
     return S_OK;
 }
 
-uint64_t CVolumeOutStream::currentSize() const {
+auto CVolumeOutStream::currentSize() const -> uint64_t {
     return mCurrentSize;
 }
 
 void CVolumeOutStream::setCurrentSize( uint64_t currentSize ) {
     mCurrentSize = currentSize;
-}
-
-fs::path CVolumeOutStream::path() const {
-    return mPath;
 }

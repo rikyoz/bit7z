@@ -19,10 +19,10 @@ BitAbstractArchiveOpener::BitAbstractArchiveOpener( const Bit7zLibrary& lib,
                                                     const tstring& password )
     : BitAbstractArchiveHandler{ lib, password, OverwriteMode::Overwrite }, mFormat{ format } {}
 
-const BitInFormat& BitAbstractArchiveOpener::format() const noexcept {
+auto BitAbstractArchiveOpener::format() const noexcept -> const BitInFormat& {
     return mFormat;
 }
 
-const BitInFormat& BitAbstractArchiveOpener::extractionFormat() const noexcept {
+auto BitAbstractArchiveOpener::extractionFormat() const noexcept -> const BitInFormat& {
     return mFormat;
 }

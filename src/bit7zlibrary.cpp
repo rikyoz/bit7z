@@ -32,7 +32,7 @@ using namespace bit7z;
 
 Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadLibrary( library_path ) ) {
     if ( mLibrary == nullptr ) {
-        throw BitException( "Failed to load 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
+        throw BitException( "Failed to load the 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
     }
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
@@ -51,7 +51,7 @@ Bit7zLibrary::~Bit7zLibrary() {
 void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const {
     const HRESULT res = mCreateObjectFunc( format_ID, interface_ID, out_object );
     if ( res != S_OK ) {
-        throw BitException( "Failed to get class object", make_hresult_code( res ) );
+        throw BitException( "Failed to get the class object", make_hresult_code( res ) );
     }
 }
 
@@ -65,6 +65,6 @@ void Bit7zLibrary::setLargePageMode() {
     }
     const HRESULT res = pSetLargePageMode();
     if ( res != S_OK ) {
-        throw BitException( "Failed to set large page mode", make_hresult_code( res ) );
+        throw BitException( "Failed to set the large page mode", make_hresult_code( res ) );
     }
 }

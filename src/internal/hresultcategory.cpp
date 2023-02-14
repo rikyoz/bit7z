@@ -17,11 +17,11 @@
 
 using namespace bit7z;
 
-const char* hresult_category_t::name() const noexcept {
+auto hresult_category_t::name() const noexcept -> const char* {
     return "HRESULT";
 }
 
-std::string hresult_category_t::message( int ev ) const {
+auto hresult_category_t::message( int ev ) const -> std::string {
 #ifdef _MSC_VER
     // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors.
     return std::system_category().message( ev );
@@ -82,7 +82,7 @@ std::string hresult_category_t::message( int ev ) const {
 #endif
 }
 
-std::error_condition hresult_category_t::default_error_condition( int error_value ) const noexcept {
+auto hresult_category_t::default_error_condition( int error_value ) const noexcept -> std::error_condition {
     switch ( static_cast< HRESULT >( error_value ) ) {
         // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors.
         case E_ABORT:
@@ -90,7 +90,7 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
         case E_NOTIMPL:
             // e.g., function not implemented
             return std::make_error_condition( std::errc::function_not_supported );
-#ifdef __MINGW32__
+#ifdef _WIN32
         case HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ):
 #endif
         case E_NOINTERFACE:
@@ -108,8 +108,6 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
             return std::make_error_condition( std::errc::invalid_argument );
         case __HRESULT_FROM_WIN32( ERROR_DIRECTORY ):
             return std::make_error_condition( std::errc::not_a_directory );
-        case __HRESULT_FROM_WIN32( ERROR_NO_MORE_FILES ):
-            return std::make_error_condition( std::errc::no_such_file_or_directory );
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );
         default:
@@ -142,7 +140,6 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
                         return std::make_error_condition( std::errc::io_error );
                     case ERROR_FILE_NOT_FOUND:
                     case ERROR_PATH_NOT_FOUND:
-                    case ERROR_NO_MORE_FILES:
                         return std::make_error_condition( std::errc::no_such_file_or_directory );
                     case ERROR_ALREADY_EXISTS:
                     case ERROR_FILE_EXISTS:
@@ -160,7 +157,7 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
     }
 }
 
-const std::error_category& bit7z::hresult_category() noexcept {
+auto bit7z::hresult_category() noexcept -> const std::error_category& {
     static const bit7z::hresult_category_t instance{};
     return instance;
 }

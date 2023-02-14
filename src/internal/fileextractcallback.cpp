@@ -19,12 +19,11 @@
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
+using namespace bit7z::filesystem;
 
-constexpr auto kCannotOpenOutput = "Cannot open output file";
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
-FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
-                                          const tstring& directoryPath )
+FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath )
     : ExtractCallback( inputArchive ),
       mInFilePath( inputArchive.archivePath() ),
       mDirectoryPath( directoryPath ),
@@ -34,7 +33,7 @@ void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!
 }
 
-HRESULT FileExtractCallback::finishOperation( OperationResult operation_result ) {
+auto FileExtractCallback::finishOperation( OperationResult operation_result ) -> HRESULT {
     const HRESULT result = operation_result != OperationResult::Success ? E_FAIL : S_OK;
     if ( mFileOutStream == nullptr ) {
         return result;
@@ -60,21 +59,7 @@ HRESULT FileExtractCallback::finishOperation( OperationResult operation_result )
     return result;
 }
 
-void FileExtractCallback::throwException( HRESULT error ) {
-    if ( mErrorMessage != nullptr ) {
-        throw BitException( mErrorMessage, make_hresult_code( error ), mFilePathOnDisk.native() );
-    }
-    Callback::throwException( error );
-}
-
-HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
-    try {
-        mCurrentItem.loadItemInfo( inputArchive(), index );
-    } catch ( const BitException& ex ) {
-        mErrorMessage = ex.what();
-        return E_FAIL;
-    }
-
+auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
     fs::path filePath = mCurrentItem.path();
     if ( filePath.empty() ) {
         filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
@@ -83,7 +68,20 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     } else {
         // No action needed
     }
+    return filePath;
+}
+
+auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
+    mCurrentItem.loadItemInfo( inputArchive(), index );
+
+    auto filePath = getCurrentItemPath();
     mFilePathOnDisk = mDirectoryPath / filePath;
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( fsutil::should_format_long_path( mFilePathOnDisk ) ) {
+        mFilePathOnDisk = fsutil::format_long_path( mFilePathOnDisk );
+    }
+#endif
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
@@ -98,8 +96,9 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
 
             switch ( overwrite_mode ) {
                 case OverwriteMode::None: {
-                    mErrorMessage = kCannotDeleteOutput;
-                    return E_ABORT;
+                    throw BitException( kCannotDeleteOutput,
+                                        make_hresult_code( E_ABORT ),
+                                        mFilePathOnDisk.string< tchar >() );
                 }
                 case OverwriteMode::Skip: {
                     return S_OK;
@@ -107,22 +106,18 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
                 case OverwriteMode::Overwrite:
                 default: {
                     if ( !fs::remove( mFilePathOnDisk, error ) ) {
-                        mErrorMessage = kCannotDeleteOutput;
-                        return E_ABORT;
+                        throw BitException( kCannotDeleteOutput,
+                                            make_hresult_code( E_ABORT ),
+                                            mFilePathOnDisk.string< tchar >() );
                     }
                     break;
                 }
             }
         }
 
-        try {
-            auto outStreamLoc = bit7z::make_com< CFileOutStream >( mFilePathOnDisk, true );
-            mFileOutStream = outStreamLoc;
-            *outStream = outStreamLoc.Detach();
-        } catch ( const BitException& ) {
-            mErrorMessage = kCannotOpenOutput;
-            return E_ABORT;
-        }
+        auto outStreamLoc = bit7z::make_com< CFileOutStream >( mFilePathOnDisk, true );
+        mFileOutStream = outStreamLoc;
+        *outStream = outStreamLoc.Detach();
     } else if ( mRetainDirectories ) { // Directory, and we must retain it
         std::error_code error;
         fs::create_directories( mFilePathOnDisk, error );
