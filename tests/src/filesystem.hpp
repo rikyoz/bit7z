@@ -45,6 +45,24 @@ inline auto exe_path() -> fs::path {
 #endif
 }
 
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
+constexpr auto test_data_dir = BIT7Z_TESTS_DATA_DIR;
+constexpr auto test_filesystem_dir = BIT7Z_TESTS_DATA_DIR "/test_filesystem";
+
+inline auto current_dir() -> fs::path {
+    std::error_code ec;
+    return fs::current_path( ec );
+}
+
+inline auto set_current_dir( const fs::path& dir ) -> bool {
+    std::error_code ec;
+    fs::current_path( dir, ec );
+    return !ec;
+}
+
+#endif
+
 } // namespace filesystem
 } // namespace test
 } // namespace bit7z

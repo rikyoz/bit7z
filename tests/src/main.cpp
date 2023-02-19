@@ -40,6 +40,9 @@ auto main( int argc, char* argv[] ) -> int {
 #else
     std::cout << sevenzip_lib_path() << std::endl;
 #endif
+#ifdef BIT7Z_TESTS_FILESYSTEM
+    std::cout << "Test data path: " << filesystem::test_data_dir << std::endl;
+#endif
 #ifdef _WIN32
     std::cout << "Code page: " << GetACP() << std::endl;
 #endif

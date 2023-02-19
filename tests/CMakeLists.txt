@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+option( BIT7Z_TESTS_FILESYSTEM "Enable or disable testing filesystem-related classes" ON )
+message( STATUS "Testing filesystem-related classes: ${BIT7Z_TESTS_FILESYSTEM}" )
+
 # sources
 set( SOURCE_FILES
      src/main.cpp
@@ -16,6 +19,37 @@ set( SOURCE_FILES
 set( TESTS_TARGET bit7z${ARCH_POSTFIX}-tests )
 add_executable( ${TESTS_TARGET} ${SOURCE_FILES} )
 
+if( BIT7Z_TESTS_FILESYSTEM )
+    set( BIT7Z_TESTS_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data )
+
+    # TODO: use execute_process to run git submodule directly
+    if ( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/.git )
+        message( FATAL_ERROR "Please, update the git submodules to download the tests data files" )
+    else()
+        message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
+        target_compile_definitions( ${TESTS_TARGET} PRIVATE
+                                    BIT7Z_TESTS_FILESYSTEM
+                                    BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+        if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
+            file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
+        endif()
+
+        if( NOT EXISTS ${CMAKE_SOURCE_DIR}/test_filesystem/folder/subfolder )
+            file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/folder/subfolder )
+        endif()
+    endif()
+else()
+    # Bit7z employs the ghc::filesystem library on compilers that don't support C++17's filesystem.
+    # To avoid linking errors due to mismatched filesystem libraries, it's important to use the same C++ standard
+    # as the Bit7z library when testing any internal code related to the filesystem.
+    # However, if filesystem-related code isn't being tested, we recommend using the C++11 standard
+    # to ensure we test the maximum compatibility with C++ projects.
+    set( CMAKE_CXX_STANDARD 11 )
+    set( CMAKE_CXX_STANDARD_REQUIRED ON )
+endif()
+
+message( STATUS "Language standard used for the tests: C++${CMAKE_CXX_STANDARD}" )
+
 option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON )
 message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
 if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
@@ -27,10 +61,11 @@ endif()
 set( CMAKE_CXX_STANDARD_LIBRARIES "" )
 
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} )
-target_include_directories( ${TESTS_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
-                                                    "${PROJECT_SOURCE_DIR}/src"
-                                                    "${EXTERNAL_LIBS_DIR}"
-                                                    "${7ZIP_SOURCE_DIR}/CPP/" )
+target_include_directories( ${TESTS_TARGET} PRIVATE
+                            "${PROJECT_SOURCE_DIR}/include/bit7z"
+                            "${PROJECT_SOURCE_DIR}/src"
+                            "${EXTERNAL_LIBS_DIR}"
+                            "${7ZIP_SOURCE_DIR}/CPP/" )
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )

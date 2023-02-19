@@ -18,6 +18,8 @@
 #include <vector>
 #include <map>
 
+#include "filesystem.hpp"
+
 using std::vector;
 using std::map;
 using namespace bit7z;
@@ -174,3 +176,60 @@ TEST_CASE( "fsutil: Wildcard matching with both question mark and star", "[fsuti
     REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
     REQUIRE( wildcardMatch( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
 }
+
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
+struct TestItem {
+    fs::path path;
+    fs::path inArchivePath;
+};
+
+TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
+    using namespace test::filesystem;
+
+    const fs::path old_current_dir = current_dir();
+    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+
+    // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
+    //       directory, hence we must declare the vector inside the test case and not outside!
+    const vector< TestItem > test_items = {
+        { ".",                                                 "" },
+        { "./",                                                "" },
+        { "..",                                                "" },
+        { "../",                                               "" },
+        { "italy.svg",                                         "italy.svg" },
+        { "folder",                                            "folder" },
+        { "folder/",                                           "folder/" },
+        { "folder/clouds.jpg",                                 "folder/clouds.jpg" },
+        { "folder/subfolder2",                                 "folder/subfolder2" },
+        { "folder/subfolder2/",                                "folder/subfolder2/" },
+        { "folder/subfolder2/homeworks.doc",                   "folder/subfolder2/homeworks.doc" },
+        { "./italy.svg",                                       "italy.svg" },
+        { "./folder",                                          "folder" },
+        { "./folder/",                                         "folder" },
+        { "./folder/clouds.jpg",                               "clouds.jpg" },
+        { "./folder/subfolder2",                               "subfolder2" },
+        { "./folder/subfolder2/homeworks.doc",                 "homeworks.doc" },
+        { "./../test_filesystem/",                             "test_filesystem" },
+        { "./../test_filesystem/folder/",                      "folder" },
+        { fs::absolute( "." ),                                 "test_filesystem" },
+        { fs::absolute( "../" ),                               "data" },
+        { fs::absolute( "./italy.svg" ),                       "italy.svg" },
+        { fs::absolute( "./folder" ),                          "folder" },
+        { fs::absolute( "./folder/" ),                         "folder" },
+        { fs::absolute( "./folder/clouds.jpg" ),               "clouds.jpg" },
+        { fs::absolute( "./folder/subfolder2" ),               "subfolder2" },
+        { fs::absolute( "./folder/subfolder2/" ),              "subfolder2" },
+        { fs::absolute( "./folder/subfolder2/homeworks.doc" ), "homeworks.doc" }
+    };
+
+    for ( const auto& test_item : test_items ) {
+        DYNAMIC_SECTION( "Path: " << test_item.path ) {
+            REQUIRE( inArchivePath( test_item.path ) == test_item.inArchivePath );
+        }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+#endif
