@@ -25,7 +25,7 @@
 #include <sstream>
 #include <cstring>
 
-//-V::530,2008,2608,3555 (Suppressing warnings in PVS-Studio)
+//-V::530,2008,2563,2608,3555 (Suppressing warnings in PVS-Studio)
 
 #if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 

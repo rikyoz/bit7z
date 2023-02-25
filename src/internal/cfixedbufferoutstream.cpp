@@ -142,10 +142,10 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         write_size = static_cast< uint32_t >( mBufferSize - mCurrentPosition );
     }
 
-    const auto* byte_data = static_cast< const byte_t* >( data );
+    const auto* byte_data = static_cast< const byte_t* >( data ); //-V2571
     try {
-        std::copy_n( byte_data, write_size,
-                     &mBuffer[ mCurrentPosition ] ); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        std::copy_n( byte_data, write_size, &mBuffer[ mCurrentPosition ] ); //-V2563
     } catch ( ... ) {
         return E_OUTOFMEMORY;
     }

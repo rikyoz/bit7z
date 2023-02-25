@@ -29,7 +29,7 @@ using bit7z::CBufferInStream;
 TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbufferinstream][seeking]" ) {
     size_t buffer_size = GENERATE( 0, 1, 5, 42, 1024 * 1024 );
 
-    DYNAMIC_SECTION( "Streaming a buffer of size " << buffer_size ) {
+    DYNAMIC_SECTION( "Streaming a buffer of size " << buffer_size ) { //-V128
         buffer_t buffer( buffer_size );
         CBufferInStream in_stream{ buffer };
         UInt64 new_position{ 0 };

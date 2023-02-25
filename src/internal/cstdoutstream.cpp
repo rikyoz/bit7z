@@ -32,7 +32,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 
     const auto old_pos = mOutputStream.tellp();
 
-    mOutputStream.write( static_cast< const char* >( data ), size );
+    mOutputStream.write( static_cast< const char* >( data ), size ); //-V2571
 
     if ( processedSize != nullptr ) {
         *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - old_pos );
