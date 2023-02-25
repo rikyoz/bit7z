@@ -276,7 +276,7 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
 #ifndef _WIN32
         if ( mSolidMode ) {
             /* NOTE: Apparently, p7zip requires the filters to be set off for the solid compression to work.
-               The most strange thing is... according to my tests this happens only in WSL!
+               The strangest thing is... in my tests this happens only in WSL!
                I've tested the same code on a Linux VM, and it works without disabling the filters! */
             // TODO: So, for now I disable them, but this will need further investigation!
             properties.setProperty( L"f", false );
