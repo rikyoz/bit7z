@@ -25,6 +25,8 @@
 #include <sstream>
 #include <cstring>
 
+//-V::530,2008,2608,3555 (Suppressing warnings in PVS-Studio)
+
 #if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 
 BSTR ConvertStringToBSTR( const std::string& str ) {

@@ -40,7 +40,7 @@ class UpdateCallback final : public Callback,
         ~UpdateCallback() override;
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
-        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
+        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511
 
         auto Finalize() noexcept -> HRESULT;
 

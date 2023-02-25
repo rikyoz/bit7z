@@ -24,6 +24,8 @@ using bit7z::byte_t;
 using bit7z::buffer_t;
 using bit7z::CBufferInStream;
 
+//-V::2008 (Suppressing warnings for cyclomatic complexity in PVS-Studio)
+
 TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbufferinstream][seeking]" ) {
     size_t buffer_size = GENERATE( 0, 1, 5, 42, 1024 * 1024 );
 

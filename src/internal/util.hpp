@@ -52,7 +52,7 @@ using is_com_type = bool_constant< std::is_base_of< CMyUnknownImp, T >::value &&
 
 template< typename T, typename I = T, class... Args >
 inline auto make_com( Args&& ... args ) -> CMyComPtr< typename std::enable_if< is_com_type< T, I >::value, I >::type > {
-    return CMyComPtr< I >( new T( std::forward< Args >( args )... ) );
+    return CMyComPtr< I >( new T( std::forward< Args >( args )... ) ); //-V2511
 }
 
 }  // namespace bit7z

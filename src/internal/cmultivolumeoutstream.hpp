@@ -62,7 +62,8 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
         BIT7Z_NODISCARD auto GetSize() const noexcept -> UInt64;
 
-        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept, modernize-use-trailing-return-type)
+        // NOLINT(modernize-use-noexcept, modernize-use-trailing-return-type)
+        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );

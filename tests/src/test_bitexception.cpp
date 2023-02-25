@@ -248,7 +248,7 @@ TEST_CASE( "BitException: Checking if failed files are moved to the exception co
     REQUIRE( exception_failed_files[ 0 ].first == BIT7Z_STRING( "hello.txt" ) );
     REQUIRE( exception_failed_files[ 0 ].second == std::errc::bad_file_descriptor );
     // Note: BitException should have cleared failed_files so it is again usable!
-    REQUIRE( failed_files.empty() ); // NOLINT(bugprone-use-after-move)
+    REQUIRE( failed_files.empty() ); // NOLINT(bugprone-use-after-move) //-V1030
 }
 
 #endif

@@ -25,6 +25,8 @@ using std::map;
 using namespace bit7z;
 using namespace bit7z::filesystem::fsutil;
 
+//-V::2008 (Suppressing warnings for cyclomatic complexity in PVS-Studio)
+
 TEST_CASE( "fsutil: Wildcard matching without special characters", "[fsutil][wildcardMatch]" ) {
     REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
     REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "a" ) ) == true );
