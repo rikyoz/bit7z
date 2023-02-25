@@ -152,6 +152,7 @@ TEST_CASE( "BitPropVariant: Boolean variant", "[BitPropVariant][boolean]" ) {
 
         SECTION( "Using double assignment (different type)" ) {
             prop_variant = BIT7Z_STRING( "hello world!" );
+            (void)prop_variant;
             prop_variant = true;
         }
 
@@ -181,6 +182,7 @@ TEST_CASE( "BitPropVariant: Boolean variant", "[BitPropVariant][boolean]" ) {
 
         SECTION( "Using double assignment (different type)" ) {
             prop_variant = BIT7Z_STRING( "hello world!" );
+            (void)prop_variant;
             prop_variant = false;
         }
 
