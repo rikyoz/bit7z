@@ -38,11 +38,11 @@ struct GUID {
 using REFGUID = const GUID&;
 using REFIID = REFGUID;
 
-inline bool operator==( REFGUID g1, REFGUID g2 ) {
+inline auto operator==( REFGUID g1, REFGUID g2 ) -> bool {
     return std::memcmp( &g1, &g2, sizeof( GUID ) ) == 0;
 }
 
-inline bool operator!=( REFGUID g1, REFGUID g2 ) { return !( g1 == g2 ); }
+inline auto operator!=( REFGUID g1, REFGUID g2 ) -> bool { return !( g1 == g2 ); }
 
 #define STDMETHODCALLTYPE
 #define STDMETHOD_( t, f ) virtual t STDMETHODCALLTYPE f

@@ -17,6 +17,7 @@
 #endif
 
 #ifdef _WIN32
+#include <array>
 #include <Windows.h>
 #elif defined( __APPLE__ )
 #include <libproc.h> // for proc_pidpath and PROC_PIDPATHINFO_MAXSIZE
@@ -31,16 +32,16 @@ namespace filesystem {
 
 inline auto exe_path() -> fs::path {
 #ifdef _WIN32
-    wchar_t path[MAX_PATH] = { 0 };
-    GetModuleFileNameW( nullptr, path, MAX_PATH );
-    return path;
+    std::array< wchar_t, MAX_PATH > path{ 0 };
+    GetModuleFileNameW( nullptr, path.data(), MAX_PATH );
+    return path.data();
 #elif defined( __APPLE__ )
-    char result[PROC_PIDPATHINFO_MAXSIZE];
-    ssize_t result_size = proc_pidpath(getpid(), result, sizeof(result));
-    return result_size > 0 ? std::string( result, result_size ) : "";
+    std::array< char, PROC_PIDPATHINFO_MAXSIZE > result{ 0 };
+    ssize_t result_size = proc_pidpath( getpid(), result.data(), result.size() );
+    return result_size > 0 ? std::string( result.data(), result_size ) : "";
 #else
     std::error_code error;
-    fs::path result = fs::read_symlink( "/proc/self/exe", error );
+    const fs::path result = fs::read_symlink( "/proc/self/exe", error );
     return error ? "" : result;
 #endif
 }
