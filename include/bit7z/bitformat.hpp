@@ -226,7 +226,8 @@ extern const BitInFormat Cpio;      ///< CPIO Archive Format
 
 extern const BitInOutFormat Zip;        ///< ZIP Archive Format
 extern const BitInOutFormat BZip2;      ///< BZIP2 Archive Format
-extern const BitInOutFormat SevenZip;   ///< XZ Archive Format
+extern const BitInOutFormat SevenZip;   ///< 7Z Archive Format
+extern const BitInOutFormat Xz;         ///< XZ Archive Format
 extern const BitInOutFormat Wim;        ///< WIM Archive Format
 extern const BitInOutFormat Tar;        ///< TAR Archive Format
 extern const BitInOutFormat GZip;       ///< GZIP Archive Format
