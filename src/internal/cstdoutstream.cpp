@@ -88,6 +88,6 @@ STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) {
 
     mOutputStream.seekp( old_pos );
 
-    return mOutputStream ? S_OK : E_FAIL;
+    return !mOutputStream.fail() ? S_OK : E_FAIL;
 }
 

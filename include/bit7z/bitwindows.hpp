@@ -36,12 +36,12 @@
 
 // Avoiding accidentally including p7zip's MyWindows.h, so that its inclusion is not needed in client code!
 #ifndef __MYWINDOWS_H
-#define __MYWINDOWS_H
+#define __MYWINDOWS_H // NOLINT
 #endif
 
 // Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code!
 #ifndef __MY_WINDOWS_H
-#define __MY_WINDOWS_H
+#define __MY_WINDOWS_H // NOLINT
 #endif
 
 using std::size_t;

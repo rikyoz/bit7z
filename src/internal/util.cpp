@@ -57,6 +57,7 @@ auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
     } //output is null-terminated
     return result;
 #elif !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ < 5
+    (void)size; // To avoid warnings of unused size argument...
     return fs::detail::toUtf8( wideString );
 #else
     std::wstring_convert< convert_type, wchar_t > converter;

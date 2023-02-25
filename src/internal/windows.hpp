@@ -45,7 +45,7 @@ constexpr auto VARIANT_TRUE = static_cast< VARIANT_BOOL >( -1 );
 constexpr auto VARIANT_FALSE = static_cast< VARIANT_BOOL >( 0 );
 
 // Win32 macros needed by p7zip code
-#define FAILED( Status ) ((HRESULT)(Status)<0)
+#define FAILED( Status ) (static_cast< HRESULT >(Status)<0)
 #define HRESULT_FACILITY( hr )  (((hr) >> 16) & 0x1FFF)
 #define HRESULT_CODE( hr )    ((hr) & 0xFFFF)
 
