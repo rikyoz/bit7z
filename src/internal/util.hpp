@@ -10,10 +10,6 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
-#ifdef _WIN32
-#define NOMINMAX
-#endif
-
 #include <cstdint>
 #include <limits>
 #include <string>
@@ -40,8 +36,8 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string;
 auto widen( const std::string& narrowString ) -> std::wstring;
 
 constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
-    return ( ( offset > 0 ) && ( position > ( std::numeric_limits< int64_t >::max() - offset ) ) ) ||
-           ( ( offset < 0 ) && ( position < ( std::numeric_limits< int64_t >::min() - offset ) ) );
+    return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< int64_t >::max )() - offset ) ) ) ||
+           ( ( offset < 0 ) && ( position < ( ( std::numeric_limits< int64_t >::min )() - offset ) ) );
 }
 
 template< bool B >
