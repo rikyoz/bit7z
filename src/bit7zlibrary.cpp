@@ -17,7 +17,7 @@
 #include "internal/util.hpp"
 
 #ifdef _WIN32
-#   define Bit7zLoadLibrary(lib_name) LoadLibraryW( WIDEN( (library_path) ).c_str() )
+#   define Bit7zLoadLibrary( lib_name ) LoadLibraryW( WIDEN( (lib_name) ).c_str() )
 #   define ERROR_CODE( errc ) bit7z::last_error_code()
 #else
 #   include <dlfcn.h>
