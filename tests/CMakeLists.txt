@@ -14,6 +14,7 @@ set( SOURCE_FILES
      src/test_cbufferinstream.cpp
      src/test_dateutil.cpp
      src/test_fsutil.cpp
+     src/test_util.cpp
      src/test_windows.cpp )
 
 set( TESTS_TARGET bit7z${ARCH_POSTFIX}-tests )
