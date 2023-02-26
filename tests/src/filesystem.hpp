@@ -47,7 +47,7 @@ inline auto exe_path() -> fs::path {
 #endif
 }
 
-#ifdef BIT7Z_TESTS_FILESYSTEM
+#ifdef BIT7Z_TESTS_DATA_DIR
 
 constexpr auto test_data_dir = BIT7Z_TESTS_DATA_DIR;
 constexpr auto test_filesystem_dir = BIT7Z_TESTS_DATA_DIR "/test_filesystem";

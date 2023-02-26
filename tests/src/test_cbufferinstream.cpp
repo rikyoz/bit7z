@@ -240,7 +240,7 @@ TEST_CASE( "CBufferInStream: Reading a single-value buffer stream", "[cbufferins
 }
 
 TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][reading]" ) {
-    const buffer_t buffer { 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!' }; // Hello World!
+    const buffer_t buffer{ 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd', '!' }; // Hello World! //-V826
     CBufferInStream in_stream{ buffer };
     UInt32 processed_size{ 0 };
 

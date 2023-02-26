@@ -65,7 +65,7 @@ using bit7z::check_overflow;
 constexpr auto max_value = ( std::numeric_limits< int64_t >::max )();
 constexpr auto min_value = ( std::numeric_limits< int64_t >::min )();
 
-TEST_CASE( "util: Calling check_overflow on a non-overflowing offset", "[util][check_overflow]" ) {
+TEST_CASE( "util: Calling check_overflow on a non-overflowing offset", "[util][check_overflow]" ) { //-V2008
     REQUIRE_FALSE( check_overflow( max_value, 0 ) );
     REQUIRE_FALSE( check_overflow( max_value, -1 ) );
     REQUIRE_FALSE( check_overflow( max_value, -42 ) );

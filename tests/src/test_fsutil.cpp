@@ -194,7 +194,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
 
     // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
     //       directory, hence we must declare the vector inside the test case and not outside!
-    const vector< TestItem > test_items = {
+    const std::array< TestItem, 28 > test_items{ {
         { ".",                                                 "" },
         { "./",                                                "" },
         { "..",                                                "" },
@@ -223,7 +223,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
         { fs::absolute( "./folder/subfolder2" ),               "subfolder2" },
         { fs::absolute( "./folder/subfolder2/" ),              "subfolder2" },
         { fs::absolute( "./folder/subfolder2/homeworks.doc" ), "homeworks.doc" }
-    };
+    } };
 
     for ( const auto& test_item : test_items ) {
         DYNAMIC_SECTION( "Path: " << test_item.path ) {
