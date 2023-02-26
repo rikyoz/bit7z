@@ -21,7 +21,7 @@
 
 using bit7z::BitException;
 
-struct portable_error_test {
+struct portable_error_test { //-V802
     const char* name;
     HRESULT error;
     const char* message;

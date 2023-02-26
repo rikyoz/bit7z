@@ -462,7 +462,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     REQUIRE( prop_variant.isUInt16() == ( sizeof( TestType ) <= 2 ) );
 
     // The variant is an UInt32 only if the TestType size is at most 32 bits.
-    REQUIRE( prop_variant.isUInt32() == ( sizeof( TestType ) <= 4 ) );
+    REQUIRE( prop_variant.isUInt32() == ( sizeof( TestType ) <= 4 ) ); //-V112
 
     // All unsigned types can be contained in a UInt64.
     REQUIRE( prop_variant.isUInt64() );
@@ -491,7 +491,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     } else {
         REQUIRE_THROWS( prop_variant.getUInt16() );
     }
-    if ( sizeof( TestType ) <= 4 ) {
+    if ( sizeof( TestType ) <= 4 ) { //-V112
         REQUIRE( prop_variant.getUInt32() == prop_variant.getUInt64() );
     } else {
         REQUIRE_THROWS( prop_variant.getUInt32() );
@@ -553,7 +553,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
     REQUIRE( prop_variant.isInt16() == ( sizeof( TestType ) <= 2 ) );
 
     // The variant is an Int32 only if the TestType size is at most 32 bits.
-    REQUIRE( prop_variant.isInt32() == ( sizeof( TestType ) <= 4 ) );
+    REQUIRE( prop_variant.isInt32() == ( sizeof( TestType ) <= 4 ) ); //-V112
 
     // All signed types can be contained in an Int64.
     REQUIRE( prop_variant.isInt64() );
@@ -583,7 +583,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
     } else {
         REQUIRE_THROWS( prop_variant.getInt16() );
     }
-    if ( sizeof( TestType ) <= 4 ) {
+    if ( sizeof( TestType ) <= 4 ) { //-V112
         REQUIRE( prop_variant.getInt32() == prop_variant.getInt64() );
     } else {
         REQUIRE_THROWS( prop_variant.getInt32() );

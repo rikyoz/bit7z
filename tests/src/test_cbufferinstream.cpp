@@ -277,7 +277,7 @@ TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][readin
         }
 
         SECTION( "Reading the middle part of the buffer stream" ) {
-            const Int64 read_offset = static_cast< Int64 >( buffer.size() ) / 4;
+            const Int64 read_offset = static_cast< Int64 >( buffer.size() ) / 4; //-V112
             UInt64 new_position{ 0 };
             REQUIRE( in_stream.Seek( read_offset, STREAM_SEEK_SET, &new_position ) == S_OK );
             REQUIRE( new_position == read_offset );
