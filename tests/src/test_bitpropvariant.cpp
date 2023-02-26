@@ -305,58 +305,50 @@ using is_unsigned_with_size = std::integral_constant< bool, std::is_unsigned< T 
 template< typename T, size_t S >
 using is_signed_with_size = std::integral_constant< bool, std::is_signed< T >::value && S == sizeof( T ) >;
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 1 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 1 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI1;
     prop.bVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 2 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 2 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI2;
     prop.uiVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 4 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 4 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI4;
     prop.ulVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 8 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 8 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI8;
     prop.uhVal.QuadPart = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 1 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 1 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I1;
     prop.cVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 2 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 2 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I2;
     prop.iVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 4 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 4 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I4;
     prop.lVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 8 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 8 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I8;
     prop.hVal.QuadPart = value;
 }
