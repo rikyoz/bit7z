@@ -28,7 +28,7 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
         }
         throw BitException( "Failed to create the output file", error, mFilePath.string< tchar >() );
     }
-    mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc );
+    mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
         throw BitException( "Failed to open the output file",
                             make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),

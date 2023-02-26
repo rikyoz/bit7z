@@ -27,7 +27,7 @@ CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileSt
 }
 
 void CFileInStream::openFile( const fs::path& filePath ) {
-    mFileStream.open( filePath, std::ios::in | std::ios::binary );
+    mFileStream.open( filePath, std::ios::in | std::ios::binary ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
         //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
         throw BitException( "Failed to open the archive file",

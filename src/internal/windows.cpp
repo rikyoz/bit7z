@@ -84,7 +84,9 @@ auto AllocStringBuffer( LPCSTR str, uint64_t byte_length ) -> BSTR {
     BSTR result = reinterpret_cast< BSTR >( bstr_buffer + sizeof( bstr_prefix_t ) );
     if ( str != nullptr ) {
         // Copying byte-by-byte the input string to the BSTR.
-        std::memcpy( result, str, byte_length );
+        // Note: flawfinder warns about not checking for buffer overflows; this is a false alarm,
+        // since are using the correct destination size we just allocated using calloc.
+        std::memcpy( result, str, byte_length ); // flawfinder: ignore
     }
     return result;
 }

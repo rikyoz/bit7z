@@ -157,10 +157,13 @@ auto restore_symlink( const std::string& name ) -> bool {
 
 static const mode_t global_umask = []() noexcept {
     // Getting and setting the current umask.
-    const mode_t current_umask{ umask( 0 ) };
+    // Note: flawfinder warns about umask with the mask set to 0;
+    // however, we use it only to read the current umask,
+    // then we restore the old value, hence we can ignore the warning!
+    const mode_t current_umask{ umask( 0 ) }; // flawfinder: ignore
 
     // Restoring the umask.
-    umask( current_umask );
+    umask( current_umask ); // flawfinder: ignore
 
     return static_cast<int>( fs::perms::all ) & ( ~current_umask );
 }();
