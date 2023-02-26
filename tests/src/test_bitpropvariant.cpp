@@ -251,7 +251,10 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
         SECTION( "Manually setting it" ) {
             prop_variant.vt = VT_BSTR;
 #ifdef BIT7Z_USE_NATIVE_STRING
-            prop_variant.bstrVal = SysAllocStringLen( test_tstring, static_cast<UINT>( wcslen( test_tstring ) ) );
+            // Note: flawfinder complains about using wcslen on a possibly non-null terminating string,
+            // but test_tstring is guaranteed to be a null-terminated string!
+            const auto test_tstring_size = static_cast< UINT >( wcslen( test_tstring ) ); // flawfinder: ignore
+            prop_variant.bstrVal = SysAllocStringLen( test_tstring, test_tstring_size );
 #else
             prop_variant.bstrVal = ConvertStringToBSTR( test_tstring );
 #endif

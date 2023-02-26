@@ -107,7 +107,9 @@ TEST_CASE( "winapi: Allocating from wide strings", "[winapi][string allocation]"
         }
 
         SECTION( "SysAllocStringLen with half-length parameter" ) {
-            expected_string = std::wstring{ test_str, std::wcslen( test_str ) / 2 };
+            // Note: flawfinder warns about potentially using non-null terminating strings,
+            // but, in our case, the test string is guaranteed to be null-terminated!
+            expected_string = std::wstring{ test_str, std::wcslen( test_str ) / 2 }; // flawfinder: ignore
             result_string = SysAllocStringLen( test_str, expected_string.size() );
         }
 
@@ -145,7 +147,9 @@ TEST_CASE( "winapi: Allocating from narrow strings", "[winapi][string allocation
         }
 
         SECTION( "SysAllocStringByteLen with half-length parameter" ) {
-            expected_string = std::string{ test_str, std::strlen( test_str ) / 2 };
+            // Note: flawfinder warns about potentially using non-null terminating strings,
+            // but, in our case, the test string is guaranteed to be null-terminated!
+            expected_string = std::string{ test_str, std::strlen( test_str ) / 2 }; // flawfinder: ignore
             result_string = SysAllocStringByteLen( test_str, expected_string.size() );
         }
 
