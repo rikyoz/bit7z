@@ -36,7 +36,9 @@ elseif( NOT WIN32 ) # GCC on Linux (i.e., not MinGW)
     endif()
 
     # For some reasons, the address sanitizer gives a CHECK failed error on versions of Clang before the 3.9
-    if( NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "3.9.0" )
+    # Also, on old versions of GCC the sanitizer give some false positives.
+    if( ( NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "5.0" ) OR
+        ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "3.9.0" ) )
         add_sanitizer( address )
         check_cxx_compiler_flag( -fsanitize-address-use-after-scope COMPILER_SUPPORT_SANITIZE_USE_AFTER_SCOPE )
         if( COMPILER_SUPPORT_SANITIZE_USE_AFTER_SCOPE )
