@@ -71,7 +71,7 @@ auto bit7z::widen( const std::string& narrowString ) -> std::wstring {
     const int wideStringSize = MultiByteToWideChar( CP_UTF8,
                                                     0,
                                                     narrowString.c_str(),
-                                                    static_cast<int>( narrowString.size() ),
+                                                    static_cast< int >( narrowString.size() ),
                                                     nullptr,
                                                     0 );
     if ( wideStringSize == 0 ) {
@@ -82,7 +82,7 @@ auto bit7z::widen( const std::string& narrowString ) -> std::wstring {
     MultiByteToWideChar( CP_UTF8,
                          0,
                          narrowString.c_str(),
-                         static_cast<int>( narrowString.size() ),
+                         static_cast< int >( narrowString.size() ),
                          &result[ 0 ], // NOLINT(readability-container-data-pointer)
                          wideStringSize );
     return result;

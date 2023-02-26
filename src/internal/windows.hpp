@@ -61,7 +61,7 @@ constexpr auto FACILITY_CODE = FACILITY_WIN32;
 /* Note: p7zip uses FACILITY_WIN32, 7-zip version of HRESULT_FROM_WIN32 uses FACILITY_ERRNO. */
 inline constexpr HRESULT HRESULT_FROM_WIN32( unsigned int x ) {
     auto result = static_cast< HRESULT >( x );
-    return ( result > 0 ) ? static_cast< HRESULT >( ( x & 0x0000FFFF ) | ( FACILITY_WIN32 << 16 ) | 0x80000000 ) : result;
+    return ( result > 0 ) ? static_cast< HRESULT >( ( x & 0x0000FFFF ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 ) : result;
 }
 
 constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;

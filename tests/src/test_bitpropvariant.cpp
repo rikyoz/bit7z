@@ -29,7 +29,7 @@
 
 #if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 
-BSTR ConvertStringToBSTR( const std::string& str ) {
+auto ConvertStringToBSTR( const std::string& str ) -> BSTR {
     const int wide_length = ::MultiByteToWideChar( CP_ACP, 0 /* no flags */,
                                                    str.data(), static_cast<int>(str.length()),
                                                    nullptr, 0 );
