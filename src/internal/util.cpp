@@ -19,6 +19,7 @@
 // we use GHC filesystem's utility functions for string conversions.
 #include "internal/fs.hpp"
 #else
+#define HAS_CODECVT
 #include <codecvt>
 using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
@@ -27,14 +28,14 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 using namespace bit7z;
 
 auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
-    if ( wideString == nullptr ) {
+    if ( wideString == nullptr || size == 0 ) {
         return "";
     }
 #ifdef WIN32
     const int narrowStringSize = WideCharToMultiByte( CP_UTF8,
                                                       0,
                                                       wideString,
-                                                      ( size != 0U ? static_cast<int>( size ) : -1 ),
+                                                      static_cast< int >( size ),
                                                       nullptr,
                                                       0,
                                                       nullptr,
@@ -49,14 +50,11 @@ auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
                          wideString,
                          -1,
                          &result[ 0 ],  // NOLINT(readability-container-data-pointer)
-                         static_cast<int>( narrowStringSize ),
+                         static_cast< int >( narrowStringSize ),
                          nullptr,
                          nullptr );
-    if ( size == 0U ) {
-        result.resize( static_cast< size_t >( narrowStringSize - 1 ) );
-    } //output is null-terminated
     return result;
-#elif !defined( __clang__ ) && defined( __GNUC__ ) && __GNUC__ < 5
+#elif !defined(HAS_CODECVT)
     (void)size; // To avoid warnings of unused size argument...
     return fs::detail::toUtf8( wideString );
 #else
