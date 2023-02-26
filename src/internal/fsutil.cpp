@@ -178,8 +178,8 @@ auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
 #ifdef _WIN32
     return ::SetFileAttributes( filePath.c_str(), attributes ) != FALSE;
 #else
-    struct stat file_stat{};
-    if ( lstat( filePath.c_str(), &file_stat ) != 0 ) {
+    struct stat64 file_stat{};
+    if ( lstat64( filePath.c_str(), &file_stat ) != 0 ) {
         return false;
     }
 
