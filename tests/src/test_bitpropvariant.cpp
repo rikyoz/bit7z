@@ -46,11 +46,11 @@ auto ConvertStringToBSTR( const std::string& str ) -> BSTR {
 using namespace std;
 using namespace bit7z;
 
-const auto test_wide_string = L"abcdefghijklmnopqrstuvwxyz0123456789";
-const auto test_tstring = BIT7Z_STRING( "abcdefghijklmnopqrstuvwxyz0123456789" );
+constexpr auto test_wide_string = L"abcdefghijklmnopqrstuvwxyz0123456789";
+constexpr auto test_tstring = BIT7Z_STRING( "abcdefghijklmnopqrstuvwxyz0123456789" );
 
-const auto test_input_encoding = L"\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3"; // ウォルグライモン
-const auto test_output_encoding = BIT7Z_STRING( "\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3" ); // ウォルグライモン
+constexpr auto test_input_encoding = L"\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3"; // ウォルグライモン
+constexpr auto test_output_encoding = BIT7Z_STRING( "\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3" ); // ウォルグライモン
 
 void check_variant_type( const BitPropVariant& prop_variant, BitPropVariantType type ) {
     REQUIRE( prop_variant.type() == type );
