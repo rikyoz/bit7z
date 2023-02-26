@@ -665,9 +665,9 @@ TEST_CASE( "BitPropVariant: Moving string variants", "[BitPropVariant][copy]" ) 
 
     SECTION( "Move assignment" ) {
         // The move may invalidate propvariant.bstrVal (make it nullptr), so we copy the pointer
-        // and check the moved variant uses the same pointer!
+        // and check if the moved variant uses the same pointer!
         BSTR test_bstrVal = prop_variant.bstrVal; // NOLINT(bugprone-use-after-move)
-        const BitPropVariant move_var = std::move( prop_variant );
+        const BitPropVariant move_var = std::move( prop_variant ); // cppcheck-suppress accessMoved
         REQUIRE( !move_var.isEmpty() );
         REQUIRE( move_var.vt == VT_BSTR );
         REQUIRE( move_var.bstrVal ==
