@@ -13,6 +13,10 @@
 #include <string>
 #include <vector>
 
+// Might be needed if the user manually enabled a BIT7Z_* compilation option
+// by uncommenting the corresponding macro define in bitdefines.hpp.
+#include "bitdefines.hpp"
+
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
 #endif

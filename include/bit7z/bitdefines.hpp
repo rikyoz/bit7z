@@ -10,7 +10,8 @@
 #ifndef BITDEFINES_HPP
 #define BITDEFINES_HPP
 
-/* Uncomment the following macros if you don't want to define them yourself in your project files */
+/* Uncomment the following macros if you don't want to define them yourself in your project files,
+ * and you can't enable them via CMake. */
 //#define BIT7Z_AUTO_FORMAT
 //#define BIT7Z_REGEX_MATCHING
 //#define BIT7Z_USE_STD_BYTE
