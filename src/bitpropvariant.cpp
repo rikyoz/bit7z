@@ -16,7 +16,7 @@
 #include "biterror.hpp"
 #include "internal/dateutil.hpp"
 
-#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32) // Windows
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
 #include "internal/util.hpp"

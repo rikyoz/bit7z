@@ -10,6 +10,8 @@
 #ifndef FORMATDETECT_HPP
 #define FORMATDETECT_HPP
 
+#include "bitdefines.hpp"
+
 #ifdef BIT7Z_AUTO_FORMAT
 
 #include "bitformat.hpp"
