@@ -10,11 +10,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifdef BIT7Z_AUTO_FORMAT
-
 #include "internal/formatdetect.hpp"
 
-#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+#ifdef BIT7Z_AUTO_FORMAT
+
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 #include <cwctype> // for std::iswdigit
 #else
 #include <cctype> // for std::isdigit
@@ -514,7 +514,7 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
                         make_error_code( BitError::NoMatchingSignature ) );
 }
 
-#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 #   define is_digit(ch) std::iswdigit(ch) != 0
 const auto to_lower = std::towlower;
 #else
