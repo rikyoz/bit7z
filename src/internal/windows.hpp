@@ -57,11 +57,12 @@ constexpr auto FACILITY_WIN32 = 7;
 
 #ifndef HRESULT_FROM_WIN32 // for p7zip (7-zip declares HRESULT_FROM_WIN32 in C/7zTypes.h so there's no need for this).
 constexpr auto FACILITY_CODE = FACILITY_WIN32;
+constexpr auto WIN32_MASK = 0x0000FFFF;
 
 /* Note: p7zip uses FACILITY_WIN32, 7-zip version of HRESULT_FROM_WIN32 uses FACILITY_ERRNO. */
 inline constexpr HRESULT HRESULT_FROM_WIN32( unsigned int x ) {
-    auto result = static_cast< HRESULT >( x );
-    return ( result > 0 ) ? static_cast< HRESULT >( ( x & 0x0000FFFF ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 ) : result;
+    auto res = static_cast< HRESULT >( x );
+    return ( res > 0 ) ? static_cast< HRESULT >( ( x & WIN32_MASK ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 ) : res;
 }
 
 constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
