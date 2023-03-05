@@ -15,8 +15,8 @@ if( POLICY CMP0076 )
     cmake_policy( SET CMP0076 NEW )
 endif()
 
-set( EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party )
-set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip )
+set( BIT7Z_EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party CACHE PATH "Third-party directory" )
+set( BIT7Z_7ZIP_SOURCE_DIR ${BIT7Z_EXTERNAL_LIBS_DIR}/7-zip CACHE PATH "7-zip source code directory" )
 
 # public headers
 set( PUBLIC_HEADERS
@@ -182,8 +182,8 @@ target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SO
 # private includes
 target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
                                                   "${PROJECT_SOURCE_DIR}/src"
-                                                  "${EXTERNAL_LIBS_DIR}"
-                                                  "${7ZIP_SOURCE_DIR}/CPP/" )
+                                                  "${BIT7Z_EXTERNAL_LIBS_DIR}"
+                                                  "${BIT7Z_7ZIP_SOURCE_DIR}/CPP/" )
 
 # 7-zip compilation definitions
 target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
