@@ -91,7 +91,7 @@ auto hresult_category_t::default_error_condition( int error_value ) const noexce
             // e.g., function not implemented
             return std::make_error_condition( std::errc::function_not_supported );
 #ifdef _WIN32
-        case HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ):
+        case __HRESULT_FROM_WIN32( ERROR_NOT_SUPPORTED ):
 #endif
         case E_NOINTERFACE:
             // e.g., function implemented, parameters ok, but the requested functionality is not available.
