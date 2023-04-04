@@ -12,6 +12,7 @@
 
 #ifdef BIT7Z_AUTO_FORMAT
 
+#include <algorithm>
 #include "internal/formatdetect.hpp"
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
