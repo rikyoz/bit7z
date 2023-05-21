@@ -11,6 +11,7 @@
 #define FILESYSTEM_HPP
 
 #include <bitfs.hpp>
+#include <bittypes.hpp>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -61,6 +62,19 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
     std::error_code error;
     fs::current_path( dir, error );
     return !error;
+}
+
+inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t > {
+    INFO( in_file )
+    fs::ifstream ifs( in_file, fs::ifstream::binary );
+    REQUIRE( ifs.is_open() );
+    noskipws( ifs ); //no skip spaces!
+    auto size = fs::file_size( in_file );
+    std::vector< bit7z::byte_t > result( size );
+    // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
+    ifs.read( reinterpret_cast<char*>( result.data() ), result.cend() - result.cbegin() );
+    //note: using basic_ifstream with istreambuf_iterator<std::byte> would be cleaner, but it is 10x slower.
+    return result;
 }
 
 #endif
