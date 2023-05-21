@@ -63,10 +63,11 @@ endif()
 set( CMAKE_CXX_STANDARD_LIBRARIES "" )
 
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} )
-target_include_directories( ${TESTS_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
-                                                    "${PROJECT_SOURCE_DIR}/src"
-                                                    "${BIT7Z_EXTERNAL_LIBS_DIR}"
-                                                    "${BIT7Z_7ZIP_SOURCE_DIR}/CPP/" )
+target_include_directories( ${TESTS_TARGET} PRIVATE
+                            "${PROJECT_SOURCE_DIR}/include/bit7z"
+                            "${PROJECT_SOURCE_DIR}/src"
+                            "${BIT7Z_EXTERNAL_LIBS_DIR}"
+                            "${BIT7Z_7ZIP_SOURCE_DIR}/CPP/" )
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )
@@ -78,6 +79,15 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
 endif()
 
 include( cmake/Sanitizers.cmake )
+
+include( CheckIPOSupported )
+check_ipo_supported( RESULT ipo_supported OUTPUT ipo_error )
+if(ipo_supported)
+    message(STATUS "IPO is supported!")
+    set_property(TARGET ${TESTS_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+else()
+    message(WARNING "IPO is not supported: ${ipo_error}")
+endif()
 
 # Catch2
 include( cmake/Catch2.cmake )
