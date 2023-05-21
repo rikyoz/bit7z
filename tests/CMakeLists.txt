@@ -24,7 +24,7 @@ if( BIT7Z_TESTS_FILESYSTEM )
     set( BIT7Z_TESTS_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data )
 
     # TODO: use execute_process to run git submodule directly
-    if ( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/.git )
+    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/.git )
         message( FATAL_ERROR "Please, update the git submodules to download the tests data files" )
     else()
         message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
