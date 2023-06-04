@@ -27,12 +27,12 @@ add_executable( ${TESTS_TARGET} ${SOURCE_FILES} )
 if( BIT7Z_TESTS_FILESYSTEM )
     set( BIT7Z_TESTS_DATA_DIR ${CMAKE_CURRENT_SOURCE_DIR}/data )
 
-    # TODO: use execute_process to run git submodule directly
     if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/.git )
         include( FetchContent )
         FetchContent_Declare( bit7z-test-data
                               GIT_REPOSITORY https://github.com/rikyoz/bit7z-test-data.git
                               GIT_TAG main
+                              GIT_SHALLOW ON
                               SOURCE_DIR ${BIT7Z_TESTS_DATA_DIR} )
 
         FetchContent_MakeAvailable( bit7z-test-data )
