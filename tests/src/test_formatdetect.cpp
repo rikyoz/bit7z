@@ -18,6 +18,7 @@
 #include "shared_lib.hpp"
 
 #include <bitarchivereader.hpp>
+#include <bitexception.hpp>
 #include <bitformat.hpp>
 #include <internal/formatdetect.hpp>
 
@@ -227,6 +228,40 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
         const BitArchiveReader reader{ lib, file_buffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+TEST_CASE( "formatdetect: Format detection of invalid archives", "[formatdetect]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "detection";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    REQUIRE_THROWS_AS( BitArchiveReader( lib, BIT7Z_STRING( "small" ) ), BitException );
+    REQUIRE_THROWS_AS( BitArchiveReader( lib, BIT7Z_STRING( "invalid" ) ), BitException );
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Issue #134)", "[formatdetect]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "detection";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    // From file
+    REQUIRE_THROWS( BitArchiveReader( lib, BIT7Z_STRING( "wrong_extension.rar" ), BitFormat::Rar ) );
+    REQUIRE_NOTHROW( BitArchiveReader( lib, BIT7Z_STRING( "wrong_extension.rar" ), BitFormat::SevenZip ) );
+    REQUIRE_NOTHROW( BitArchiveReader( lib, BIT7Z_STRING( "wrong_extension.rar" ) ) );
+
+    // From buffer
+    auto file_buffer = load_file( "wrong_extension.rar" );
+    REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, BitFormat::Rar ) );
+    REQUIRE_NOTHROW( BitArchiveReader( lib, file_buffer, BitFormat::SevenZip ) );
+    REQUIRE_NOTHROW( BitArchiveReader( lib, file_buffer ) );
 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
