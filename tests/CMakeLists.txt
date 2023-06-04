@@ -18,7 +18,8 @@ set( SOURCE_FILES
      src/test_dateutil.cpp
      src/test_fsutil.cpp
      src/test_util.cpp
-     src/test_windows.cpp )
+     src/test_windows.cpp
+     src/test_formatdetect.cpp )
 
 set( TESTS_TARGET bit7z${ARCH_POSTFIX}-tests )
 add_executable( ${TESTS_TARGET} ${SOURCE_FILES} )
@@ -90,11 +91,11 @@ include( cmake/Sanitizers.cmake )
 
 include( CheckIPOSupported )
 check_ipo_supported( RESULT ipo_supported OUTPUT ipo_error )
-if(ipo_supported)
-    message(STATUS "IPO is supported!")
-    set_property(TARGET ${TESTS_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+if( ipo_supported )
+    message( STATUS "IPO is supported!" )
+    set_property( TARGET ${TESTS_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE )
 else()
-    message(WARNING "IPO is not supported: ${ipo_error}")
+    message( WARNING "IPO is not supported!" )
 endif()
 
 # Catch2
