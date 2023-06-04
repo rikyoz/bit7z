@@ -489,14 +489,15 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
     }
 
     // Detecting ISO/UDF
-    constexpr auto ISO_SIGNATURE = 0x4344303031000000; //CD001
+    constexpr auto BEA_SIGNATURE = 0x4245413031000000; // BEA01 (beginning of the extended descriptor section)
+    constexpr auto ISO_SIGNATURE = 0x4344303031000000; // CD001 (ISO format signature)
     constexpr auto ISO_SIGNATURE_SIZE = 5ULL;
     constexpr auto ISO_SIGNATURE_OFFSET = 0x8001;
 
     // Checking for ISO signature
     stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
     file_signature = readSignature( stream, ISO_SIGNATURE_SIZE );
-    if ( file_signature == ISO_SIGNATURE ) {
+    if ( file_signature == ISO_SIGNATURE || file_signature == BEA_SIGNATURE ) {
         constexpr auto MAX_VOLUME_DESCRIPTORS = 16;
         constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
 
