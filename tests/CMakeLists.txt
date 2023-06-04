@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+cmake_minimum_required( VERSION 3.14 )
+
 option( BIT7Z_TESTS_FILESYSTEM "Enable or disable testing filesystem-related classes" ON )
 message( STATUS "Testing filesystem-related classes: ${BIT7Z_TESTS_FILESYSTEM}" )
 
@@ -26,19 +28,25 @@ if( BIT7Z_TESTS_FILESYSTEM )
 
     # TODO: use execute_process to run git submodule directly
     if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/.git )
-        message( FATAL_ERROR "Please, update the git submodules to download the tests data files" )
-    else()
-        message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
-        target_compile_definitions( ${TESTS_TARGET} PRIVATE
-                                    BIT7Z_TESTS_FILESYSTEM
-                                    BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
-        if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
-            file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
-        endif()
+        include( FetchContent )
+        FetchContent_Declare( bit7z-test-data
+                              GIT_REPOSITORY https://github.com/rikyoz/bit7z-test-data.git
+                              GIT_TAG main
+                              SOURCE_DIR ${BIT7Z_TESTS_DATA_DIR} )
 
-        if( NOT EXISTS ${CMAKE_SOURCE_DIR}/test_filesystem/folder/subfolder )
-            file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/folder/subfolder )
-        endif()
+        FetchContent_MakeAvailable( bit7z-test-data )
+    endif()
+
+    message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
+    target_compile_definitions( ${TESTS_TARGET} PRIVATE
+                                BIT7Z_TESTS_FILESYSTEM
+                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
+        file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
+    endif()
+
+    if( NOT EXISTS ${CMAKE_SOURCE_DIR}/test_filesystem/folder/subfolder )
+        file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/folder/subfolder )
     endif()
 else()
     # Bit7z employs the ghc::filesystem library on compilers that don't support C++17's filesystem.
