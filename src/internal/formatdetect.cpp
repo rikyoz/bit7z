@@ -181,7 +181,11 @@ auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> 
         case str_hash( BIT7Z_STRING( "ntfs" ) ):
             *format = &BitFormat::Ntfs;
             return true;
+        case str_hash( BIT7Z_STRING( "ova" ) ):
+            *format = &BitFormat::Tar;
+            return true;
         case str_hash( BIT7Z_STRING( "pmd" ) ):
+        case str_hash( BIT7Z_STRING( "ppmd" ) ):
             *format = &BitFormat::Ppmd;
             return true;
         case str_hash( BIT7Z_STRING( "qcow" ) ):
@@ -194,6 +198,9 @@ auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> 
             return true;
         case str_hash( BIT7Z_STRING( "squashfs" ) ):
             *format = &BitFormat::SquashFS;
+            return true;
+        case str_hash( BIT7Z_STRING( "swf" ) ):
+            *format = &BitFormat::Swf;
             return true;
         case str_hash( BIT7Z_STRING( "te" ) ):
             *format = &BitFormat::TE;
@@ -274,7 +281,7 @@ auto findFormatBySignature( uint64_t signature, const BitInFormat** format ) noe
     constexpr auto SwfcSignature2 = 0x5A57530000000000ULL; // ZWS
     constexpr auto TESignature = 0x565A000000000000ULL; // VZ
     constexpr auto VMDKSignature = 0x4B444D0000000000ULL; // KDMV
-    constexpr auto VDISignature = 0x3C3C3C2000000000ULL; // Alternatively 0x7F10DABE at offset 0x40
+    constexpr auto VDISignature = 0x3C3C3C2000000000ULL; // Alternatively, 0x7F10DABE at offset 0x40
     constexpr auto VhdSignature = 0x636F6E6563746978ULL; // conectix
     constexpr auto XarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
     constexpr auto ZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
@@ -389,7 +396,7 @@ auto findFormatBySignature( uint64_t signature, const BitInFormat** format ) noe
         case VMDKSignature: // K  D  M  V
             *format = &BitFormat::VMDK;
             return true;
-        case VDISignature: // Alternatively 0x7F10DABE at offset 0x40
+        case VDISignature: // Alternatively, 0x7F10DABE at offset 0x40
             *format = &BitFormat::VDI;
             return true;
         case VhdSignature: // c  o  n  e  c  t  i  x
