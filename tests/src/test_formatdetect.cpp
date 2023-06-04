@@ -30,6 +30,7 @@ struct TestDetection {
     const BitInFormat& format;
 };
 
+// Note: format detection by extension doesn't actually require the file to exist!
 TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
     const fs::path old_current_dir = current_dir();
     const auto test_dir = fs::path{ test_archives_dir } / "detection" / "valid";
@@ -90,7 +91,10 @@ TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
                           TestDetection{ "pptx", BitFormat::Zip },
                           TestDetection{ "qcow", BitFormat::QCow },
                           TestDetection{ "qcow2", BitFormat::QCow },
-                          TestDetection{ "rar4.rar", BitFormat::Auto },
+                          TestDetection{ "r00", BitFormat::Rar }, // Old-style multi-volume RAR4 extension
+                          TestDetection{ "r01", BitFormat::Rar },
+                          TestDetection{ "r42", BitFormat::Rar },
+                          TestDetection{ "rar4.rar", BitFormat::Auto }, // Rar files can be Rar4 or Rar5
                           TestDetection{ "rar5.rar", BitFormat::Auto },
                           TestDetection{ "rpm", BitFormat::Rpm },
                           TestDetection{ "squashfs", BitFormat::SquashFS },
@@ -114,6 +118,9 @@ TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
                           TestDetection{ "xlsx", BitFormat::Zip },
                           TestDetection{ "xz", BitFormat::Xz },
                           TestDetection{ "z", BitFormat::Z },
+                          TestDetection{ "z00", BitFormat::Zip }, // Old-style multi-volume ZIP extension
+                          TestDetection{ "z01", BitFormat::Zip },
+                          TestDetection{ "z21", BitFormat::Zip },
                           TestDetection{ "zip", BitFormat::Zip },
                           TestDetection{ "zipx", BitFormat::Zip } );
 
