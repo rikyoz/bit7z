@@ -58,3 +58,6 @@ roadmap.txt
 *.dfo
 .PVS-Studio/
 pvs-studio-analyzer.stacktrace.txt
+
+# Test data
+tests/data/
