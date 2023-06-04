@@ -52,6 +52,7 @@ inline auto exe_path() -> fs::path {
 
 constexpr auto test_data_dir = BIT7Z_TESTS_DATA_DIR;
 constexpr auto test_filesystem_dir = BIT7Z_TESTS_DATA_DIR "/test_filesystem";
+constexpr auto test_archives_dir = BIT7Z_TESTS_DATA_DIR "/test_archives";
 
 inline auto current_dir() -> fs::path {
     std::error_code error;
