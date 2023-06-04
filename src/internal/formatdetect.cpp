@@ -497,24 +497,29 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
     // Checking for ISO signature
     stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
     file_signature = readSignature( stream, ISO_SIGNATURE_SIZE );
-    if ( file_signature == ISO_SIGNATURE || file_signature == BEA_SIGNATURE ) {
+
+    const bool is_iso = file_signature == ISO_SIGNATURE;
+    if ( is_iso || file_signature == BEA_SIGNATURE ) {
         constexpr auto MAX_VOLUME_DESCRIPTORS = 16;
         constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
 
         constexpr auto UDF_SIGNATURE = 0x4E53523000000000; //NSR0
         constexpr auto UDF_SIGNATURE_SIZE = 4U;
 
-        // The file is ISO, checking if it is also UDF!
         for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
             stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
             file_signature = readSignature( stream, UDF_SIGNATURE_SIZE );
-            if ( file_signature == UDF_SIGNATURE ) {
+
+            if ( file_signature == UDF_SIGNATURE ) { // The file is ISO+UDF or just UDF
                 stream->Seek( 0, 0, nullptr );
                 return BitFormat::Udf;
             }
         }
-        stream->Seek( 0, 0, nullptr );
-        return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
+
+        if ( is_iso ) { // The file is pure ISO (no UDF).
+            stream->Seek( 0, 0, nullptr );
+            return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
+        }
     }
 
     stream->Seek( 0, 0, nullptr );
