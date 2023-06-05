@@ -11,15 +11,19 @@
  */
 
 #include "internal/util.hpp"
+
 #include <locale>
 
 #ifndef WIN32
-#if !defined( __clang__ ) && defined(__GNUC__) && __GNUC__ < 5
+#ifndef BIT7Z_USE_STANDARD_FILESYSTEM
 // GCC 4.9 doesn't have the <codecvt> header; as a workaround,
 // we use GHC filesystem's utility functions for string conversions.
 #include "internal/fs.hpp"
 #else
-#define HAS_CODECVT
+// The <codecvt> header has been deprecated in C++17; however, there's no real replacement
+// (excluding third-party libraries); hence, for now we just disable the deprecation warnings (only here).
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <codecvt>
 using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
@@ -54,7 +58,7 @@ auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
                          nullptr,
                          nullptr );
     return result;
-#elif !defined(HAS_CODECVT)
+#elif !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
     (void)size; // To avoid warnings of unused size argument...
     return fs::detail::toUtf8( wideString );
 #else
@@ -84,10 +88,14 @@ auto bit7z::widen( const std::string& narrowString ) -> std::wstring {
                          &result[ 0 ], // NOLINT(readability-container-data-pointer)
                          wideStringSize );
     return result;
-#elif !defined( __clang__ ) && defined(__GNUC__) && __GNUC__ < 5
+#elif !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
     return fs::detail::fromUtf8< std::wstring >( narrowString );
 #else
     std::wstring_convert< convert_type, wchar_t > converter;
     return converter.from_bytes( narrowString );
 #endif
 }
+
+#if !defined( WIN32 ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+#pragma GCC diagnostic pop
+#endif
