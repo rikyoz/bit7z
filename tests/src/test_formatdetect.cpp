@@ -204,9 +204,6 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
                           TestDetection{ "tbz2", BitFormat::BZip2 },
                           TestDetection{ "tgz", BitFormat::GZip },
                           TestDetection{ "txz", BitFormat::Xz },
-                          TestDetection{ "udf", BitFormat::Udf },
-                          TestDetection{ "udf.img", BitFormat::Udf },
-                          TestDetection{ "udf.iso", BitFormat::Udf },
                           TestDetection{ "vdi", BitFormat::VDI },
                           TestDetection{ "vhd", BitFormat::Vhd },
                           TestDetection{ "vmdk", BitFormat::VMDK },
@@ -231,6 +228,31 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
+
+#ifdef _WIN32
+
+// For some reasons, 7-zip fails to open UDF files on Linux, so we test them only on Windows.
+TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatdetect]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "detection" / "valid";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    auto test = GENERATE( TestDetection{ "udf", BitFormat::Udf },
+                          TestDetection{ "udf.img", BitFormat::Udf },
+                          TestDetection{ "udf.iso", BitFormat::Udf } );
+
+    DYNAMIC_SECTION( "Extension: " << test.extension ) {
+        const auto file_buffer = load_file( "valid." + test.extension );
+        const BitArchiveReader reader{ lib, file_buffer };
+        REQUIRE( reader.detectedFormat() == test.format );
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+#endif
 
 TEST_CASE( "formatdetect: Format detection of invalid archives", "[formatdetect]" ) {
     const fs::path old_current_dir = current_dir();

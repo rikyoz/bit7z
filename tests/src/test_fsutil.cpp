@@ -15,6 +15,7 @@
 #include <bit7z/bitformat.hpp>
 #include <internal/fsutil.hpp>
 
+#include <array>
 #include <vector>
 #include <map>
 
