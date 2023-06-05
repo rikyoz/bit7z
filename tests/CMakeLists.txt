@@ -89,15 +89,6 @@ endif()
 
 include( cmake/Sanitizers.cmake )
 
-include( CheckIPOSupported )
-check_ipo_supported( RESULT ipo_supported OUTPUT ipo_error )
-if( ipo_supported )
-    message( STATUS "IPO is supported!" )
-    set_property( TARGET ${TESTS_TARGET} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE )
-else()
-    message( WARNING "IPO is not supported!" )
-endif()
-
 # Catch2
 include( cmake/Catch2.cmake )
 target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
