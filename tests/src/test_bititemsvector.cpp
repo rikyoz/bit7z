@@ -36,7 +36,7 @@ using namespace bit7z::filesystem;
 using namespace bit7z::test::filesystem;
 
 TEST_CASE( "BitItemsVector: Default properties", "[bititemsvector]" ) {
-    const BitItemsVector items_vector;
+    const BitItemsVector items_vector{};
 
     REQUIRE( items_vector.size() == 0 );
     REQUIRE( items_vector.cbegin() == items_vector.cend() );
@@ -214,7 +214,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
     );
 
     DYNAMIC_SECTION ( "Indexing directory " << test_directory.path ) {
-        REQUIRE_NOTHROW( items_vector.indexDirectory( test_directory.path, BIT7Z_STRING(""), options ) );
+        REQUIRE_NOTHROW( items_vector.indexDirectory( test_directory.path, BIT7Z_STRING( "" ), options ) );
 
         const vector< fs::path > indexed_paths = inArchivePaths( items_vector );
         REQUIRE_THAT( indexed_paths, Catch::UnorderedEquals( test_directory.expectedItems ) );
@@ -1736,7 +1736,7 @@ TEST_CASE( "BitItemsVector: Indexing a non-existing file should fail", "[bititem
 }
 
 struct TestFile {
-    bit7z::tstring inputFile;
+    fs::path inputFile;
     fs::path expectedItem;
 };
 
@@ -1748,21 +1748,18 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 
     const auto test_input =
         GENERATE(
-            TestFile{ BIT7Z_STRING( "Lorem Ipsum.pdf" ), "Lorem Ipsum.pdf" },
-            TestFile{ BIT7Z_STRING( "italy.svg" ), "italy.svg" },
-            TestFile{ BIT7Z_STRING( "noext" ), "noext" },
-            TestFile{ BIT7Z_STRING( "folder/clouds.jpg" ), "folder/clouds.jpg" },
-            TestFile{ BIT7Z_STRING( "folder/subfolder2/homeworks.doc" ), "folder/subfolder2/homeworks.doc" },
-            TestFile{
-                BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
-                "folder/subfolder2/The quick brown fox.pdf"
-            },
-            TestFile{ BIT7Z_STRING( "folder/subfolder2/trends.xlsx" ), "folder/subfolder2/trends.xlsx" },
-            TestFile{ BIT7Z_STRING( "dot.folder/hello.json" ), "dot.folder/hello.json" }
+            TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "italy.svg", "italy.svg" },
+            TestFile{ "noext", "noext" },
+            TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
+            TestFile{ "folder/subfolder2/homeworks.doc", "folder/subfolder2/homeworks.doc" },
+            TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
+            TestFile{ "folder/subfolder2/trends.xlsx", "folder/subfolder2/trends.xlsx" },
+            TestFile{ "dot.folder/hello.json", "dot.folder/hello.json" }
         );
 
-    DYNAMIC_SECTION ( "Indexing file " << Catch::StringMaker< std::string >::convert( test_input.inputFile ) ) {
-        REQUIRE_NOTHROW( items_vector.indexFile( test_input.inputFile ) );
+    DYNAMIC_SECTION ( "Indexing file " << test_input.inputFile ) {
+        REQUIRE_NOTHROW( items_vector.indexFile( test_input.inputFile.string< bit7z::tchar >() ) );
 
         REQUIRE( items_vector.size() == 1 );
         REQUIRE( items_vector[ 0 ].inArchivePath() == test_input.expectedItem );
@@ -1779,19 +1776,20 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
 
     BitItemsVector items_vector;
 
-    const auto* test_input = GENERATE(
-        BIT7Z_STRING( "Lorem Ipsum.pdf" ),
-        BIT7Z_STRING( "italy.svg" ),
-        BIT7Z_STRING( "noext" ),
-        BIT7Z_STRING( "folder/clouds.jpg" ),
-        BIT7Z_STRING( "folder/subfolder2/homeworks.doc" ),
-        BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
-        BIT7Z_STRING( "folder/subfolder2/trends.xlsx" ),
-        BIT7Z_STRING( "dot.folder/hello.json" )
+    const fs::path test_input = GENERATE( as< fs::path >(),
+        "Lorem Ipsum.pdf",
+        "italy.svg",
+        "noext",
+        "folder/clouds.jpg",
+        "folder/subfolder2/homeworks.doc",
+        "folder/subfolder2/The quick brown fox.pdf",
+        "folder/subfolder2/trends.xlsx",
+        "dot.folder/hello.json"
     );
 
     DYNAMIC_SECTION ( "Indexing file " << test_input ) {
-        REQUIRE_NOTHROW( items_vector.indexFile( test_input, BIT7Z_STRING( "custom_name.ext" ) ) );
+        REQUIRE_NOTHROW( items_vector.indexFile( test_input.string< bit7z::tchar >(),
+                                                 BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( items_vector.size() == 1 );
         REQUIRE( items_vector[ 0 ].inArchivePath() == "custom_name.ext" );
         REQUIRE( items_vector[ 0 ].path() == test_input );
