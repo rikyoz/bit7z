@@ -24,12 +24,13 @@
  *        Since some public API headers include bitgenericitem.hpp (e.g. "bitoutputarchive.hpp"),
  *        including private headers here would result in the "leaking" out of these latter in the public API.*/
 namespace ghc {
-    namespace filesystem {
-        class path;
-    }
-}
+namespace filesystem {
+class path;
+} // namespace filesystem
+} // namespace ghc
 #endif
 
+namespace bit7z {
 namespace fs {
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 using namespace std::filesystem;
@@ -37,5 +38,6 @@ using namespace std::filesystem;
 using namespace ghc::filesystem;
 #endif
 } // namespace fs
+} // namespace bit7z
 
 #endif //BITFS_HPP

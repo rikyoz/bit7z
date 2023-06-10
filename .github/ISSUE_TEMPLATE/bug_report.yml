@@ -15,7 +15,9 @@ body:
       label: bit7z version
       multiple: true
       options:
-        - 4.0.x beta
+        - 4.0.x RC
+        - 4.0.x Beta
+        - 3.2.x
         - 3.1.x
         - 3.0.x
         - 2.1
@@ -23,11 +25,33 @@ body:
     validations:
       required: true
   - type: dropdown
+    id: compilation_options
+    attributes:
+      label: Compilation options
+      multiple: true
+      options:
+        - BIT7Z_ANALYZE_CODE
+        - BIT7Z_AUTO_FORMAT
+        - BIT7Z_AUTO_PREFIX_LONG_PATHS
+        - BIT7Z_BUILD_TESTS
+        - BIT7Z_BUILD_DOCS
+        - BIT7Z_GENERATE_PIC
+        - BIT7Z_LINK_LIBCPP
+        - BIT7Z_REGEX_MATCHING
+        - BIT7Z_STATIC_RUNTIME
+        - BIT7Z_USE_NATIVE_STRING
+        - BIT7Z_USE_STD_BYTE
+        - BIT7Z_VS_LIBNAME_OUTDIR_STYLE
+    validations:
+      required: false
+  - type: dropdown
     id: sevenzip
     attributes:
       label: 7-zip version
       multiple: true
       options:
+        - v22.01
+        - v22.00
         - v21.07
         - v21.06
         - v19.00
@@ -40,32 +64,38 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: sevenzip-dll
+    id: sevenzip_shared_lib
     attributes:
-      label: 7-zip DLL used
+      label: 7-zip shared library used
       multiple: true
       options:
-        - 7z.dll
-        - 7za.dll
-        - 7zra.dll
-        - 7zxa.dll
-        - 7zxr.dll
+        - 7z.dll / 7z.so
+        - 7za.dll / 7za.so
+        - 7zra.dll / 7zra.so
+        - 7zxa.dll / 7zxa.so
+        - 7zxr.dll / 7zxr.so
     validations:
       required: true
   - type: dropdown
-    id: msvc-version
+    id: compiler
     attributes:
-      label: MSVC version
+      label: Compilers
       multiple: true
       options:
-        - 2022
-        - 2019
-        - 2017
-        - 2015
-        - 2013
-        - 2012
+        - MSVC
+        - MinGW
+        - GCC
+        - Clang
     validations:
       required: true
+  - type: input
+    id: compiler_version
+    attributes:
+      label: Compiler versions
+      description: What compiler versions are you using?
+      placeholder: ex. GCC 7, MSVC 2022, Clang 12, ...
+    validations:
+      required: false
   - type: dropdown
     id: architecture
     attributes:
@@ -77,15 +107,22 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: windows-version
+    id: operating_system
     attributes:
-      label: Which version of Windows are you using?
+      label: Operating system
       multiple: true
       options:
-        - Windows 11
-        - Windows 10
-        - Windows 8.1
-        - Windows 8
+        - Windows
+        - Linux
+        - macOS
+    validations:
+      required: true
+  - type: input
+    id: os_version
+    attributes:
+      label: Operating system versions
+      description: Which operating system versions are you targeting?
+      placeholder: ex. Windows 11, Ubuntu 22.04, macOS Monterey, ...
     validations:
       required: false
   - type: textarea

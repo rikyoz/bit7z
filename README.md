@@ -217,6 +217,8 @@ The newest bit7z v4 introduced some significant breaking changes to the API. In 
   + You can still achieve the old behavior on Windows using the `-DBIT7Z_USE_NATIVE_STRING` CMake option.
 + The old `BitExtractor` class is now called `BitFileExtractor`.
   + Now `BitExtractor` is just the name of a template class for all the extraction classes.
++ The old `BitCompressor` class is now called `BitFileCompressor`.
+  + Now `BitCompressor` is just the name of a template class for all the compression classes.
 + The `ProgressCallback` now must return a `bool` value indicating whether the current operation can continue (`true`) or not (`false`).
 
 </details>

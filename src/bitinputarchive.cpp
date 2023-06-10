@@ -111,6 +111,10 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
          *       and an exception is thrown (next if)!
          * NOTE 2: If signature detection was already performed (detected_by_signature == false), it detected
          *         a wrong format, no further check can be done, and an exception must be thrown (next if)! */
+
+        /* Opening the file might have changed the current file pointer, so we reset it to the beginning of the file
+         * to correctly read the file signature. */
+        in_stream->Seek( 0, STREAM_SEEK_SET, nullptr );
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         format_GUID = formatGUID( *mDetectedFormat );
         in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
