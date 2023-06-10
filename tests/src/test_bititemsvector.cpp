@@ -32,6 +32,7 @@ using bit7z::tstring;
 using bit7z::BitException;
 using bit7z::BitItemsVector;
 using bit7z::IndexingOptions;
+using namespace bit7z;
 using namespace bit7z::filesystem;
 using namespace bit7z::test::filesystem;
 
