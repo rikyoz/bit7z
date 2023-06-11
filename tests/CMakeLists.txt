@@ -12,6 +12,7 @@ set( SOURCE_FILES
      src/main.cpp
      src/test_bit7zlibrary.cpp
      src/test_bitexception.cpp
+     src/test_bitfilecompressor.cpp
      src/test_bitpropvariant.cpp
      src/test_bititemsvector.cpp
      src/test_cbufferinstream.cpp
