@@ -30,12 +30,10 @@ namespace ghc {
 }
 #endif
 
-namespace fs {
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-using namespace std::filesystem;
+namespace fs = std::filesystem;
 #else
-using namespace ghc::filesystem;
+namespace fs = ghc::filesystem;
 #endif
-} // namespace fs
 
 #endif //BITFS_HPP
