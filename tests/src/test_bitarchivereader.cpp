@@ -62,6 +62,8 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
 
 #define REQUIRE_ARCHIVE_CONTENT( info, input )                                                        \
     do {                                                                                              \
+        REQUIRE( !info.archiveProperties().empty() );                                                 \
+                                                                                                      \
         const auto& archive_content = (input).content();                                              \
         REQUIRE( (info).itemsCount() == archive_content.items.size() );                               \
         REQUIRE( (info).filesCount() == archive_content.fileCount );                                  \
