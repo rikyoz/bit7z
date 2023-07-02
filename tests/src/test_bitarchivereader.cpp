@@ -119,6 +119,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.archivePath() == arc_file_name );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Buffer archive" ) {
@@ -126,6 +127,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Stream archive" ) {
@@ -133,6 +135,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
     }
 
@@ -166,6 +169,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.archivePath() == arc_file_name );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Buffer archive" ) {
@@ -173,6 +177,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Stream archive" ) {
@@ -180,6 +185,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
     }
 
@@ -214,6 +220,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.archivePath() == arc_file_name );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Buffer archive" ) {
@@ -221,6 +228,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Stream archive" ) {
@@ -228,6 +236,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
     }
 
@@ -246,6 +255,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
+    const auto* const password = BIT7Z_STRING( "helloworld" );
+
     const auto test_archive = GENERATE( as< EncryptedArchive >(),
                                         EncryptedArchive{ "7z", BitFormat::SevenZip, 563568 },
                                         EncryptedArchive{ "rar4.rar", BitFormat::Rar, 565424 },
@@ -257,25 +268,31 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
         const fs::path arc_file_name = "encrypted." + test_archive.extension();
 
         SECTION( "Filesystem archive" ) {
-            const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
+            BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.setPassword( password ) );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Buffer archive" ) {
             const auto file_buffer = load_file( arc_file_name );
-            const BitArchiveReader info( lib, file_buffer, test_archive.format() );
+            BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.setPassword( password ) );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             REQUIRE( file_stream.is_open() );
 
-            const BitArchiveReader info( lib, file_stream, test_archive.format() );
+            BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.setPassword( password ) );
+            REQUIRE_NOTHROW( info.test() );
         }
     }
 
@@ -307,6 +324,7 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Buffer archive" ) {
@@ -317,6 +335,7 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
             const BitArchiveReader info( lib, file_buffer, test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
 
         SECTION( "Stream archive" ) {
@@ -332,6 +351,7 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
             const BitArchiveReader info( lib, file_stream, test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
         }
     }
 }
@@ -364,6 +384,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 REQUIRE( info.volumesCount() == 3 );
                 REQUIRE( info.itemsCount() == 1 );
                 REQUIRE( info.items()[ 0 ].name() == arc_file_name.stem().string< tchar >() );
+                REQUIRE_NOTHROW( info.test() );
             }
 
             SECTION( "Opening as a whole archive" ) {
@@ -371,6 +392,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 // REQUIRE( info.isMultiVolume() );
                 // REQUIRE( info.volumesCount() == 3 );
                 REQUIRE_ARCHIVE_ITEM( test_archive.format(), info.items()[ 0 ], test_archive.content().items[ 0 ] );
+                REQUIRE_NOTHROW( info.test() );
             }
         }
     }
@@ -384,6 +406,8 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
         const ArchivedItem expected_item{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.items()[ 0 ], expected_item );
+
+        REQUIRE_NOTHROW( info.test() );
     }
 
     SECTION( "Multi-volume RAR4" ) {
@@ -395,6 +419,8 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
         const ArchivedItem expected_item{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.items()[ 0 ], expected_item );
+
+        REQUIRE_NOTHROW( info.test() );
     }
 }
 
@@ -408,21 +434,25 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     SECTION( "Solid 7z" ) {
         const BitArchiveReader info( lib, BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
         REQUIRE( info.isSolid() );
+        REQUIRE_NOTHROW( info.test() );
     }
 
     SECTION( "Solid RAR" ) {
         const BitArchiveReader info( lib, BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
         REQUIRE( info.isSolid() );
+        REQUIRE_NOTHROW( info.test() );
     }
 
     SECTION( "Non solid 7z" ) {
         const BitArchiveReader info( lib, BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
         REQUIRE( !info.isSolid() );
+        REQUIRE_NOTHROW( info.test() );
     }
 
     SECTION( "Non-solid RAR" ) {
         const BitArchiveReader info( lib, BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
         REQUIRE( !info.isSolid() );
+        REQUIRE_NOTHROW( info.test() );
     }
 
     REQUIRE( set_current_dir( old_current_dir ) );
