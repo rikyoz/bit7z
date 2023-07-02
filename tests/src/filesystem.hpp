@@ -121,6 +121,8 @@ auto multiple_items_content() -> const ArchiveContent&;
 
 auto encrypted_content() -> const ArchiveContent&;
 
+auto empty_content() -> const ArchiveContent&;
+
 #endif
 
 } // namespace filesystem

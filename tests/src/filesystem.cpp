@@ -145,6 +145,11 @@ auto encrypted_content() -> const ArchiveContent& {
     return instance;
 }
 
+auto empty_content() -> const ArchiveContent& {
+    static const ArchiveContent instance{ 0, 0, {} };
+    return instance;
+}
+
 } // namespace filesystem
 } // namespace test
 } // namespace bit7z

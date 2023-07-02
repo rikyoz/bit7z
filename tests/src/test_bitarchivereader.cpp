@@ -424,6 +424,54 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
     }
 }
 
+struct EmptyArchive : public TestInputArchive {
+    EmptyArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
+        : TestInputArchive{ std::move( extension ), format, packedSize, empty_content() } {}
+};
+
+TEST_CASE( "BitArchiveReader: Reading an empty archive", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "extraction" / "empty";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    const auto test_archive = GENERATE( as< EmptyArchive >(),
+                                        EmptyArchive{ "7z", BitFormat::SevenZip, 0 },
+    // EmptyArchive{ "tar", BitFormat::Tar, 0 }, // TODO: Check why it fails opening
+                                        EmptyArchive{ "wim", BitFormat::Wim, 0 },
+                                        EmptyArchive{ "zip", BitFormat::Zip, 0 } );
+
+    DYNAMIC_SECTION( "Archive format: " << test_archive.extension() ) {
+        const fs::path arc_file_name = "empty." + test_archive.extension();
+
+        SECTION( "Filesystem archive" ) {
+            const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
+            REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
+        }
+
+        SECTION( "Buffer archive" ) {
+            const auto file_buffer = load_file( arc_file_name );
+            const BitArchiveReader info( lib, file_buffer, test_archive.format() );
+            REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
+        }
+
+        SECTION( "Stream archive" ) {
+            fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
+            const BitArchiveReader info( lib, file_stream, test_archive.format() );
+            REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_NOTHROW( info.test() );
+        }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+
 TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     const fs::path old_current_dir = current_dir();
     const auto test_dir = fs::path{ test_archives_dir } / "solid";
