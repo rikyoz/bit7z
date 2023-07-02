@@ -206,13 +206,13 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
         { "folder/clouds.jpg",                                 "folder/clouds.jpg" },
         { "folder/subfolder2",                                 "folder/subfolder2" },
         { "folder/subfolder2/",                                "folder/subfolder2/" },
-        { "folder/subfolder2/homeworks.doc",                   "folder/subfolder2/homeworks.doc" },
+        { "folder/subfolder2/homework.doc",                   "folder/subfolder2/homework.doc" },
         { "./italy.svg",                                       "italy.svg" },
         { "./folder",                                          "folder" },
         { "./folder/",                                         "folder" },
         { "./folder/clouds.jpg",                               "clouds.jpg" },
         { "./folder/subfolder2",                               "subfolder2" },
-        { "./folder/subfolder2/homeworks.doc",                 "homeworks.doc" },
+        { "./folder/subfolder2/homework.doc",                 "homework.doc" },
         { "./../test_filesystem/",                             "test_filesystem" },
         { "./../test_filesystem/folder/",                      "folder" },
         { fs::absolute( "." ),                                 "test_filesystem" },
@@ -223,7 +223,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
         { fs::absolute( "./folder/clouds.jpg" ),               "clouds.jpg" },
         { fs::absolute( "./folder/subfolder2" ),               "subfolder2" },
         { fs::absolute( "./folder/subfolder2/" ),              "subfolder2" },
-        { fs::absolute( "./folder/subfolder2/homeworks.doc" ), "homeworks.doc" }
+        { fs::absolute( "./folder/subfolder2/homework.doc" ), "homework.doc" }
     } };
 
     for ( const auto& test_item : test_items ) {
