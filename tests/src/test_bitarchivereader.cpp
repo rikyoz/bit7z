@@ -86,10 +86,15 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
         size_t found_items = 0;                                                                       \
         for ( const auto& archived_item : archive_content.items ) {                                   \
             for ( const auto& item : items ) {                                                        \
-                if ( archive_stores_paths && item.name() != archived_item.fileInfo.name ) {           \
-                    continue;                                                                         \
+                if ( archive_stores_paths ) {                                                         \
+                    if ( item.name() != archived_item.fileInfo.name ) {                               \
+                        continue;                                                                     \
+                    }                                                                                 \
+                    REQUIRE( (info).find( item.path() ) != (info).cend() );                           \
+                    REQUIRE( (info).contains( item.path() ) );                                        \
                 }                                                                                     \
                 REQUIRE( (info).isItemEncrypted( item.index() ) == archived_item.isEncrypted );       \
+                REQUIRE( (info).isItemFolder( item.index() ) == archived_item.fileInfo.is_dir );      \
                 REQUIRE_ARCHIVE_ITEM( format, item, archived_item );                                  \
                 found_items++;                                                                        \
                 break;                                                                                \
