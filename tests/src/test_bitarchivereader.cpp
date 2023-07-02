@@ -13,6 +13,7 @@
 
 #include "archive.hpp"
 #include "filesystem.hpp"
+#include "format.hpp"
 #include "shared_lib.hpp"
 
 #include <bit7z/bitarchivereader.hpp>
@@ -674,6 +675,66 @@ TEST_CASE( "BitArchiveReader: Reading invalid archives", "[bitarchivereader]" ) 
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE_THROWS( info.test() );
+        }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should throw", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "extraction" / "single_file";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    const auto correct_format = GENERATE( as< TestInputFormat >(),
+                                          TestInputFormat{ "7z", BitFormat::SevenZip },
+                                          TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                          TestInputFormat{ "gz", BitFormat::GZip },
+                                          TestInputFormat{ "iso", BitFormat::Iso },
+                                          TestInputFormat{ "lzh", BitFormat::Lzh },
+                                          TestInputFormat{ "lzma", BitFormat::Lzma },
+                                          TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                          TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                          TestInputFormat{ "tar", BitFormat::Tar },
+                                          TestInputFormat{ "wim", BitFormat::Wim },
+                                          TestInputFormat{ "xz", BitFormat::Xz },
+                                          TestInputFormat{ "zip", BitFormat::Zip } );
+
+    const auto wrong_format = GENERATE( as< TestInputFormat >(),
+                                        TestInputFormat{ "7z", BitFormat::SevenZip },
+                                        TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                        TestInputFormat{ "gz", BitFormat::GZip },
+                                        TestInputFormat{ "iso", BitFormat::Iso },
+                                        TestInputFormat{ "lzh", BitFormat::Lzh },
+                                        TestInputFormat{ "lzma", BitFormat::Lzma },
+                                        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                        TestInputFormat{ "tar", BitFormat::Tar },
+                                        TestInputFormat{ "wim", BitFormat::Wim },
+                                        TestInputFormat{ "xz", BitFormat::Xz },
+                                        TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << correct_format.extension ) {
+        const auto arc_file_name = fs::path{ clouds.name }.concat( "." + correct_format.extension );
+
+        if ( correct_format.extension != wrong_format.extension ) {
+            DYNAMIC_SECTION( "Wrong format: " << wrong_format.extension ) {
+                SECTION( "Filesystem archive" ) {
+                    REQUIRE_THROWS( BitArchiveReader( lib, arc_file_name.string< tchar >(), wrong_format.format ) );
+                }
+
+                SECTION( "Buffer archive" ) {
+                    const auto file_buffer = load_file( arc_file_name );
+                    REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, wrong_format.format ) );
+                }
+
+                SECTION( "Stream archive" ) {
+                    fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+                    REQUIRE_THROWS( BitArchiveReader( lib, file_stream, wrong_format.format ) );
+                }
+            }
         }
     }
 
