@@ -559,22 +559,6 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
-auto operator==( const BitArchiveItem& first, const BitArchiveItem& second ) -> bool {
-    return first.index() == second.index() &&
-           first.name() == second.name() &&
-           first.path() == second.path() &&
-           first.isDir() == second.isDir() &&
-           first.crc() == second.crc() &&
-           first.extension() == second.extension() &&
-           first.isEncrypted() == second.isEncrypted() &&
-           first.size() == second.size() &&
-           first.packSize() == second.packSize() &&
-           first.attributes() == second.attributes() &&
-           first.creationTime() == second.creationTime() &&
-           first.lastWriteTime() == second.lastWriteTime() &&
-           first.lastAccessTime() == second.lastAccessTime();
-}
-
 #define REQUIRE_ITEM_EQUAL( first, second ) \
     do {                                              \
         REQUIRE( (first).index() == (second).index() ); \
