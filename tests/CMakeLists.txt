@@ -31,16 +31,13 @@ add_executable( ${TESTS_TARGET} ${SOURCE_FILES} )
 if( BIT7Z_TESTS_FILESYSTEM )
     set( BIT7Z_TESTS_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/data )
 
-    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/.git )
-        message( STATUS "Tests data not available. Downloading it..." )
-        include( FetchContent )
-        FetchContent_Declare( bit7z-test-data
-                              GIT_REPOSITORY https://github.com/rikyoz/bit7z-test-data.git
-                              GIT_TAG main
-                              GIT_SHALLOW ON
-                              SOURCE_DIR ${BIT7Z_TESTS_DATA_DIR} )
-        FetchContent_MakeAvailable( bit7z-test-data )
-    endif()
+    include( FetchContent )
+    FetchContent_Declare( bit7z-test-data
+                          GIT_REPOSITORY https://github.com/rikyoz/bit7z-test-data.git
+                          GIT_TAG main
+                          GIT_SHALLOW ON
+                          SOURCE_DIR ${BIT7Z_TESTS_DATA_DIR} )
+    FetchContent_MakeAvailable( bit7z-test-data )
 
     message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
     target_compile_definitions( ${TESTS_TARGET} PRIVATE
