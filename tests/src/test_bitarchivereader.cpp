@@ -62,7 +62,7 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
 
 #define REQUIRE_ARCHIVE_CONTENT( info, input )                                                        \
     do {                                                                                              \
-        REQUIRE( !info.archiveProperties().empty() );                                                 \
+        REQUIRE_FALSE( (info).archiveProperties().empty() );                                          \
                                                                                                       \
         const auto& archive_content = (input).content();                                              \
         REQUIRE( (info).itemsCount() == archive_content.items.size() );                               \
@@ -75,7 +75,7 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
             REQUIRE( (info).packSize() == (input).packedSize() );                                     \
         }                                                                                             \
                                                                                                       \
-        REQUIRE( !(info).isMultiVolume() );                                                           \
+        REQUIRE_FALSE( (info).isMultiVolume() );                                                      \
         REQUIRE( (info).volumesCount() == 1 );                                                        \
                                                                                                       \
         std::vector< BitArchiveItemInfo > items;                                                      \
@@ -487,7 +487,6 @@ TEST_CASE( "BitArchiveReader: Reading an empty archive", "[bitarchivereader]" ) 
 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
-
 
 TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     const fs::path old_current_dir = current_dir();
