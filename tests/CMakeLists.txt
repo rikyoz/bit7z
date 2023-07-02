@@ -9,8 +9,11 @@ message( STATUS "Testing filesystem-related classes: ${BIT7Z_TESTS_FILESYSTEM}" 
 
 # sources
 set( SOURCE_FILES
+     src/archive.cpp
+     src/filesystem.cpp
      src/main.cpp
      src/test_bit7zlibrary.cpp
+     src/test_bitarchivereader.cpp
      src/test_bitexception.cpp
      src/test_bitfilecompressor.cpp
      src/test_bitpropvariant.cpp

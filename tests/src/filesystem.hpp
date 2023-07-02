@@ -26,6 +26,7 @@
 #include <unistd.h> // for getpid
 #endif
 
+#include <catch2/catch.hpp>
 #include <internal/fs.hpp>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
@@ -77,6 +78,48 @@ inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t >
     //note: using basic_ifstream with istreambuf_iterator<std::byte> would be cleaner, but it is 10x slower.
     return result;
 }
+
+struct FilesystemItemInfo {
+    const tchar* name; // path inside the test_filesystem folder
+    const tchar* ext;
+    bool is_dir;
+    uint64_t size;
+    uint32_t crc32;
+};
+
+extern const FilesystemItemInfo italy;
+extern const FilesystemItemInfo lorem_ipsum;
+extern const FilesystemItemInfo noext;
+extern const FilesystemItemInfo dot_folder;
+extern const FilesystemItemInfo hello_json;
+extern const FilesystemItemInfo empty_folder;
+extern const FilesystemItemInfo folder;
+extern const FilesystemItemInfo subfolder;
+extern const FilesystemItemInfo subfolder2;
+extern const FilesystemItemInfo homework;
+extern const FilesystemItemInfo quick_brown;
+extern const FilesystemItemInfo frequency;
+extern const FilesystemItemInfo clouds;
+
+struct ArchivedItem {
+    const FilesystemItemInfo& fileInfo;
+    fs::path inArchivePath;
+    bool isEncrypted = false;
+};
+
+struct ArchiveContent {
+    std::size_t fileCount;
+    std::size_t size;
+    std::vector< ArchivedItem > items;
+};
+
+auto single_file_content() -> const ArchiveContent&;
+
+auto multiple_files_content() -> const ArchiveContent&;
+
+auto multiple_items_content() -> const ArchiveContent&;
+
+auto encrypted_content() -> const ArchiveContent&;
 
 #endif
 

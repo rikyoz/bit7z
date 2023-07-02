@@ -21,7 +21,7 @@ using bit7z::Bit7zLibrary;
 using bit7z::BitFileCompressor;
 using bit7z::BitInOutFormat;
 
-struct TestFormat {
+struct TestOutputFormat {
     const char* name;
     const BitInOutFormat& format; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 };
@@ -62,14 +62,14 @@ TEST_CASE( "BitFileCompressor: Basic API tests (BitArchiveCreator API)", "[bitfi
     }
 
     SECTION( "compressionFormat()" ) {
-        const auto test_format = GENERATE( as< TestFormat >(),
-                                           TestFormat{ "ZIP", BitFormat::Zip },
-                                           TestFormat{ "BZIP2", BitFormat::BZip2 },
-                                           TestFormat{ "7Z", BitFormat::SevenZip },
-                                           TestFormat{ "XZ", BitFormat::Xz },
-                                           TestFormat{ "WIM", BitFormat::Wim },
-                                           TestFormat{ "TAR", BitFormat::Tar },
-                                           TestFormat{ "GZIP", BitFormat::GZip } );
+        const auto test_format = GENERATE( as< TestOutputFormat >(),
+                                           TestOutputFormat{ "ZIP", BitFormat::Zip },
+                                           TestOutputFormat{ "BZIP2", BitFormat::BZip2 },
+                                           TestOutputFormat{ "7Z", BitFormat::SevenZip },
+                                           TestOutputFormat{ "XZ", BitFormat::Xz },
+                                           TestOutputFormat{ "WIM", BitFormat::Wim },
+                                           TestOutputFormat{ "TAR", BitFormat::Tar },
+                                           TestOutputFormat{ "GZIP", BitFormat::GZip } );
         DYNAMIC_SECTION( "Format: " << test_format.name ) {
             const BitFileCompressor compressor{ lib, test_format.format };
             REQUIRE( compressor.compressionFormat() == test_format.format );
