@@ -554,6 +554,103 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
+auto operator==( const BitArchiveItem& first, const BitArchiveItem& second ) -> bool {
+    return first.index() == second.index() &&
+           first.name() == second.name() &&
+           first.path() == second.path() &&
+           first.isDir() == second.isDir() &&
+           first.crc() == second.crc() &&
+           first.extension() == second.extension() &&
+           first.isEncrypted() == second.isEncrypted() &&
+           first.size() == second.size() &&
+           first.packSize() == second.packSize() &&
+           first.attributes() == second.attributes() &&
+           first.creationTime() == second.creationTime() &&
+           first.lastWriteTime() == second.lastWriteTime() &&
+           first.lastAccessTime() == second.lastAccessTime();
+}
+
+#define REQUIRE_ITEM_EQUAL( first, second ) \
+    do {                                              \
+        REQUIRE( (first).index() == (second).index() ); \
+        REQUIRE( (first).name() == (second).name() ); \
+        REQUIRE( (first).path() == (second).path() ); \
+        REQUIRE( (first).isDir() == (second).isDir() ); \
+        REQUIRE( (first).crc() == (second).crc() ); \
+        REQUIRE( (first).extension() == (second).extension() ); \
+        REQUIRE( (first).isEncrypted() == (second).isEncrypted() ); \
+        REQUIRE( (first).size() == (second).size() ); \
+        REQUIRE( (first).packSize() == (second).packSize() ); \
+        REQUIRE( (first).attributes() == (second).attributes() ); \
+    } while ( false )
+
+TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    const auto test_archive = GENERATE( as< MultipleItemsArchive >(),
+                                        MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
+                                        MultipleItemsArchive{ "iso", BitFormat::Iso, 615351 },
+                                        MultipleItemsArchive{ "rar4.rar", BitFormat::Rar, 565329 },
+                                        MultipleItemsArchive{ "rar5.rar", BitFormat::Rar5, 565756 },
+                                        MultipleItemsArchive{ "tar", BitFormat::Tar, 617472 },
+                                        MultipleItemsArchive{ "wim", BitFormat::Wim, 615351 },
+                                        MultipleItemsArchive{ "zip", BitFormat::Zip, 564097 } );
+
+    DYNAMIC_SECTION( "Archive format: " << test_archive.extension() ) {
+        const fs::path arc_file_name = "multiple_items." + test_archive.extension();
+
+        SECTION( "Filesystem archive" ) {
+            const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
+
+            const auto archive_items = info.items();
+
+            REQUIRE( info.begin() == info.cbegin() );
+            REQUIRE( info.end() == info.cend() );
+
+            for ( const auto& iterated_item : info ) {
+                const auto& archived_item = archive_items[ iterated_item.index() ];
+                REQUIRE_ITEM_EQUAL( archived_item, iterated_item );
+            }
+        }
+
+        SECTION( "Buffer archive" ) {
+            const auto file_buffer = load_file( arc_file_name );
+            const BitArchiveReader info( lib, file_buffer, test_archive.format() );
+
+            const auto archive_items = info.items();
+
+            REQUIRE( info.begin() == info.cbegin() );
+            REQUIRE( info.end() == info.cend() );
+
+            for ( const auto& iterated_item : info ) {
+                const auto& archived_item = archive_items[ iterated_item.index() ];
+                REQUIRE_ITEM_EQUAL( archived_item, iterated_item );
+            }
+        }
+
+        SECTION( "Stream archive" ) {
+            fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            const BitArchiveReader info( lib, file_stream, test_archive.format() );
+
+            const auto archive_items = info.items();
+
+            REQUIRE( info.begin() == info.cbegin() );
+            REQUIRE( info.end() == info.cend() );
+
+            for ( const auto& iterated_item : info ) {
+                const auto& archived_item = archive_items[ iterated_item.index() ];
+                REQUIRE_ITEM_EQUAL( archived_item, iterated_item );
+            }
+        }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
 #ifdef BIT7Z_AUTO_FORMAT
 
 TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]" ) {
