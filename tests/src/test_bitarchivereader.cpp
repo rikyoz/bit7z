@@ -640,6 +640,47 @@ TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
+TEST_CASE( "BitArchiveReader: Reading invalid archives", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "testing";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    const auto test_archive = GENERATE( as< SingleFileArchive >(),
+                                        SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
+                                        SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
+                                        SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
+                                        SingleFileArchive{ "rar", BitFormat::Rar5, 477870 },
+                                        //SingleFileArchive{ "tar", BitFormat::Tar, 479232 },
+                                        SingleFileArchive{ "wim", BitFormat::Wim, clouds.size },
+                                        SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
+                                        SingleFileArchive{ "zip", BitFormat::Zip, 476375 } );
+
+    DYNAMIC_SECTION( "Archive format: " << test_archive.extension() ) {
+        const fs::path arc_file_name = "ko_test." + test_archive.extension();
+
+        SECTION( "Filesystem archive" ) {
+            const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
+            REQUIRE_THROWS( info.test() );
+        }
+
+        SECTION( "Buffer archive" ) {
+            const auto file_buffer = load_file( arc_file_name );
+            const BitArchiveReader info( lib, file_buffer, test_archive.format() );
+            REQUIRE_THROWS( info.test() );
+        }
+
+        SECTION( "Stream archive" ) {
+            fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            const BitArchiveReader info( lib, file_stream, test_archive.format() );
+            REQUIRE_THROWS( info.test() );
+        }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
 #ifdef BIT7Z_AUTO_FORMAT
 
 TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]" ) {
