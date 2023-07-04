@@ -19,6 +19,29 @@
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
+#include <internal/windows.hpp>
+
+// Needed by MSVC for defining the S_XXXX macros
+#ifndef _CRT_INTERNAL_NONSTDC_NAMES
+#define _CRT_INTERNAL_NONSTDC_NAMES 1
+#endif
+
+// For checking posix file attributes
+#include <sys/stat.h>
+
+// On MSVC, these macros are not defined!
+#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
+#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#endif
+#if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
+#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#endif
+#if !defined(S_ISLNK) && defined(S_IFMT)
+#ifndef S_IFLNK
+constexpr auto S_IFLNK = 0120000;
+#endif
+#define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
+#endif
 
 using namespace bit7z;
 using namespace bit7z::test;
@@ -735,6 +758,110 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
                     REQUIRE_THROWS( BitArchiveReader( lib, file_stream, wrong_format.format ) );
                 }
             }
+        }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+#ifndef FILE_ATTRIBUTE_WINDOWS_MASK
+#define FILE_ATTRIBUTE_WINDOWS_MASK 0x07FFF
+#endif
+
+#include <iostream>
+
+#define REQUIRE_ITEM_DIRECTORY( info, item_name )                                                     \
+    do {                                                                                              \
+        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
+        REQUIRE( iterator != (info).cend() );                                                         \
+        REQUIRE( iterator->isDir() );                                                                 \
+        auto item_attributes = iterator->attributes();                                                \
+        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY );    \
+        }                                                                                             \
+        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
+            auto posix_attributes = item_attributes >> 16U;                                           \
+            REQUIRE( S_ISDIR( posix_attributes ) );                                                   \
+            REQUIRE( !S_ISREG( posix_attributes ) );                                                  \
+            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
+        }                                                                                             \
+        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
+    } while ( false )
+
+#define REQUIRE_ITEM_REGULAR( info, item_name )                                                       \
+    do {                                                                                              \
+        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
+        REQUIRE( iterator != (info).cend() );                                                         \
+        REQUIRE_FALSE( iterator->isDir() );                                                           \
+        auto item_attributes = iterator->attributes();                                                \
+        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
+        }                                                                                             \
+        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
+            auto posix_attributes = item_attributes >> 16U;                                           \
+            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
+            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
+            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
+        }                                                                                             \
+        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
+    } while ( false )
+
+#define REQUIRE_ITEM_SYMLINK( info, item_name )                                                       \
+    do {                                                                                              \
+        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
+        REQUIRE( iterator != (info).cend() );                                                         \
+        REQUIRE_FALSE( iterator->isDir() );                                                           \
+        auto item_attributes = iterator->attributes();                                                \
+        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
+        }                                                                                             \
+        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
+            auto posix_attributes = item_attributes >> 16U;                                           \
+            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
+            REQUIRE( !S_ISREG( posix_attributes ) );                                                  \
+            REQUIRE( S_ISLNK( posix_attributes ) );                                                   \
+        }                                                                                             \
+        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
+    } while ( false )
+
+TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "file_type";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    const auto test_format = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << test_format.extension ) {
+        const fs::path arc_file_name = "file_type." + test_format.extension;
+
+        SECTION( "Filesystem archive" ) {
+            const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_format.format );
+            REQUIRE_ITEM_DIRECTORY( info, "dir" );
+            REQUIRE_ITEM_REGULAR( info, "regular" );
+            REQUIRE_ITEM_SYMLINK( info, "symlink" );
+        }
+
+        SECTION( "Buffer archive" ) {
+            const auto file_buffer = load_file( arc_file_name );
+            const BitArchiveReader info( lib, file_buffer, test_format.format );
+            REQUIRE_ITEM_DIRECTORY( info, "dir" );
+            REQUIRE_ITEM_REGULAR( info, "regular" );
+            REQUIRE_ITEM_SYMLINK( info, "symlink" );
+        }
+
+        SECTION( "Stream archive" ) {
+            fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            const BitArchiveReader info( lib, file_stream, test_format.format );
+            REQUIRE_ITEM_DIRECTORY( info, "dir" );
+            REQUIRE_ITEM_REGULAR( info, "regular" );
+            REQUIRE_ITEM_SYMLINK( info, "symlink" );
         }
     }
 
