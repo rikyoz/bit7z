@@ -137,15 +137,15 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
             REQUIRE( code.message() == test.message );
             REQUIRE( code == test.portable_error );
 
-            auto ex = BitException( "Hello World", code );
+            const auto exception = BitException( "Hello World", code );
 #ifdef _WIN32
-            REQUIRE( ex.nativeCode() == code.value() );
-            REQUIRE( ex.hresultCode() == ex.nativeCode() );
-            REQUIRE( ex.posixCode() == static_cast<int>( test.portable_error ) );
+            REQUIRE( exception.nativeCode() == code.value() );
+            REQUIRE( exception.hresultCode() == exception.nativeCode() );
+            REQUIRE( exception.posixCode() == static_cast<int>( test.portable_error ) );
 #else
-            REQUIRE( ex.nativeCode() == static_cast<int>( test.portable_error ) );
-            REQUIRE( ex.hresultCode() == test.error );
-            REQUIRE( ex.posixCode() == ex.nativeCode() );
+            REQUIRE( exception.nativeCode() == static_cast<int>( test.portable_error ) );
+            REQUIRE( exception.hresultCode() == test.error );
+            REQUIRE( exception.posixCode() == exception.nativeCode() );
 #endif
         }
     }
@@ -191,15 +191,15 @@ TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitExcep
             auto hresult_error = bit7z::make_hresult_code( HRESULT_FROM_WIN32( test.error ) );
             REQUIRE( sys_error.default_error_condition() == hresult_error.default_error_condition() );
 
-            auto ex = BitException( "Hello World", sys_error );
+            const auto exception = BitException( "Hello World", sys_error );
 #ifdef _WIN32
-            REQUIRE( ex.nativeCode() == HRESULT_FROM_WIN32( test.error ) );
+            REQUIRE( exception.nativeCode() == HRESULT_FROM_WIN32( test.error ) );
 #else
-            REQUIRE( ex.nativeCode() == test.error );
+            REQUIRE( exception.nativeCode() == test.error );
 #endif
             if ( sys_error != std::errc::io_error ) { // Multiple Win32 errors might be mapped to the POSIX IO error.
-                REQUIRE( ex.hresultCode() == HRESULT_FROM_WIN32( test.error ) );
-                REQUIRE( ex.posixCode() == sys_error.default_error_condition().value() );
+                REQUIRE( exception.hresultCode() == HRESULT_FROM_WIN32( test.error ) );
+                REQUIRE( exception.posixCode() == sys_error.default_error_condition().value() );
             }
         }
     }
@@ -241,9 +241,10 @@ TEST_CASE( "BitException: Constructing std::error_code from unmapped HRESULT val
 TEST_CASE( "BitException: Checking if failed files are moved to the exception constructor", "[bitexception]" ) {
     bit7z::FailedFiles failed_files = { { BIT7Z_STRING( "hello.txt" ),
                                           std::make_error_code( std::errc::bad_file_descriptor ) } };
-    const BitException ex{ "Error Message", std::make_error_code( std::errc::io_error ), std::move( failed_files ) };
-    REQUIRE( ex.code() == std::errc::io_error );
-    const auto& exception_failed_files = ex.failedFiles();
+    const BitException exception{ "Error Message",
+                                  std::make_error_code( std::errc::io_error ), std::move( failed_files ) };
+    REQUIRE( exception.code() == std::errc::io_error );
+    const auto& exception_failed_files = exception.failedFiles();
     REQUIRE( exception_failed_files.size() == 1 );
     REQUIRE( exception_failed_files[ 0 ].first == BIT7Z_STRING( "hello.txt" ) );
     REQUIRE( exception_failed_files[ 0 ].second == std::errc::bad_file_descriptor );
