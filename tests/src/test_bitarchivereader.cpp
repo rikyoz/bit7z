@@ -824,6 +824,44 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
         REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
     } while ( false )
 
+#define REQUIRE_ITEM_HIDDEN( info, item_name )                                                        \
+    do {                                                                                              \
+        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
+        REQUIRE( iterator != (info).cend() );                                                         \
+        REQUIRE_FALSE( iterator->isDir() );                                                           \
+        auto item_attributes = iterator->attributes();                                                \
+        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == FILE_ATTRIBUTE_HIDDEN );          \
+        }                                                                                             \
+        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
+            auto posix_attributes = item_attributes >> 16U;                                           \
+            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
+            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
+            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
+        }                                                                                             \
+        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
+    } while ( false )
+
+#define REQUIRE_ITEM_READONLY( info, item_name )                                                       \
+    do {                                                                                              \
+        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
+        REQUIRE( iterator != (info).cend() );                                                         \
+        REQUIRE_FALSE( iterator->isDir() );                                                           \
+        auto item_attributes = iterator->attributes();                                                \
+        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == FILE_ATTRIBUTE_READONLY );      \
+        }                                                                                             \
+        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
+            auto posix_attributes = item_attributes >> 16U;                                           \
+            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
+            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
+            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
+        }                                                                                             \
+        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
+    } while ( false )
+
 TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bitarchivereader]" ) {
     const fs::path old_current_dir = current_dir();
     const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "file_type";
@@ -846,6 +884,8 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
             REQUIRE_ITEM_DIRECTORY( info, "dir" );
             REQUIRE_ITEM_REGULAR( info, "regular" );
             REQUIRE_ITEM_SYMLINK( info, "symlink" );
+            REQUIRE_ITEM_HIDDEN( info, "hidden" );
+            REQUIRE_ITEM_READONLY( info, "read_only" );
         }
 
         SECTION( "Buffer archive" ) {
@@ -854,6 +894,8 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
             REQUIRE_ITEM_DIRECTORY( info, "dir" );
             REQUIRE_ITEM_REGULAR( info, "regular" );
             REQUIRE_ITEM_SYMLINK( info, "symlink" );
+            REQUIRE_ITEM_HIDDEN( info, "hidden" );
+            REQUIRE_ITEM_READONLY( info, "read_only" );
         }
 
         SECTION( "Stream archive" ) {
@@ -862,6 +904,8 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
             REQUIRE_ITEM_DIRECTORY( info, "dir" );
             REQUIRE_ITEM_REGULAR( info, "regular" );
             REQUIRE_ITEM_SYMLINK( info, "symlink" );
+            REQUIRE_ITEM_HIDDEN( info, "hidden" );
+            REQUIRE_ITEM_READONLY( info, "read_only" );
         }
     }
 
