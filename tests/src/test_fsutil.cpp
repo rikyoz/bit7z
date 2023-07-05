@@ -15,13 +15,18 @@
 #include <bit7z/bitformat.hpp>
 #include <internal/fsutil.hpp>
 
+#include <array>
 #include <vector>
 #include <map>
+
+#include "filesystem.hpp"
 
 using std::vector;
 using std::map;
 using namespace bit7z;
 using namespace bit7z::filesystem::fsutil;
+
+//-V::2008 (Suppressing warnings for cyclomatic complexity in PVS-Studio)
 
 TEST_CASE( "fsutil: Wildcard matching without special characters", "[fsutil][wildcardMatch]" ) {
     REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
@@ -174,3 +179,60 @@ TEST_CASE( "fsutil: Wildcard matching with both question mark and star", "[fsuti
     REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
     REQUIRE( wildcardMatch( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
 }
+
+#ifdef BIT7Z_TESTS_FILESYSTEM
+
+struct TestItem {
+    fs::path path;
+    fs::path inArchivePath;
+};
+
+TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
+    using namespace test::filesystem;
+
+    const fs::path old_current_dir = current_dir();
+    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+
+    // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
+    //       directory, hence we must declare the vector inside the test case and not outside!
+    const std::array< TestItem, 28 > test_items{ {
+        { ".",                                                 "" },
+        { "./",                                                "" },
+        { "..",                                                "" },
+        { "../",                                               "" },
+        { "italy.svg",                                         "italy.svg" },
+        { "folder",                                            "folder" },
+        { "folder/",                                           "folder/" },
+        { "folder/clouds.jpg",                                 "folder/clouds.jpg" },
+        { "folder/subfolder2",                                 "folder/subfolder2" },
+        { "folder/subfolder2/",                                "folder/subfolder2/" },
+        { "folder/subfolder2/homework.doc",                   "folder/subfolder2/homework.doc" },
+        { "./italy.svg",                                       "italy.svg" },
+        { "./folder",                                          "folder" },
+        { "./folder/",                                         "folder" },
+        { "./folder/clouds.jpg",                               "clouds.jpg" },
+        { "./folder/subfolder2",                               "subfolder2" },
+        { "./folder/subfolder2/homework.doc",                 "homework.doc" },
+        { "./../test_filesystem/",                             "test_filesystem" },
+        { "./../test_filesystem/folder/",                      "folder" },
+        { fs::absolute( "." ),                                 "test_filesystem" },
+        { fs::absolute( "../" ),                               "data" },
+        { fs::absolute( "./italy.svg" ),                       "italy.svg" },
+        { fs::absolute( "./folder" ),                          "folder" },
+        { fs::absolute( "./folder/" ),                         "folder" },
+        { fs::absolute( "./folder/clouds.jpg" ),               "clouds.jpg" },
+        { fs::absolute( "./folder/subfolder2" ),               "subfolder2" },
+        { fs::absolute( "./folder/subfolder2/" ),              "subfolder2" },
+        { fs::absolute( "./folder/subfolder2/homework.doc" ), "homework.doc" }
+    } };
+
+    for ( const auto& test_item : test_items ) {
+        DYNAMIC_SECTION( "Path: " << test_item.path ) {
+            REQUIRE( inArchivePath( test_item.path ) == test_item.inArchivePath );
+        }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+#endif

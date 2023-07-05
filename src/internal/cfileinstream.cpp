@@ -17,7 +17,7 @@
 using namespace bit7z;
 
 CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ), mBuffer{} {
-    open( filePath );
+    openFile( filePath );
 
     /* By default, file stream performance is relatively poor due to the default buffer size used
      * (e.g., GCC uses a small 1024-bytes buffer).
@@ -26,8 +26,8 @@ CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileSt
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), buffer_size );
 }
 
-void CFileInStream::open( const fs::path& filePath ) {
-    mFileStream.open( filePath, std::ios::in | std::ios::binary );
+void CFileInStream::openFile( const fs::path& filePath ) {
+    mFileStream.open( filePath, std::ios::in | std::ios::binary ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
         //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
         throw BitException( "Failed to open the archive file",

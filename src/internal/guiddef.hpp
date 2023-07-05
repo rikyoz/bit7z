@@ -20,6 +20,7 @@
 #define GUID_DEFINED
 #endif
 
+#include <array>
 #include <cstdint>
 #include <cstring> //for std::memcmp
 
@@ -29,7 +30,7 @@ struct GUID {
     UInt32 Data1;
     UInt16 Data2;
     UInt16 Data3;
-    unsigned char Data4[8];
+    std::array< unsigned char, 8 > Data4;
 };
 
 #define DEFINE_GUID( name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8 ) \
@@ -38,11 +39,11 @@ struct GUID {
 using REFGUID = const GUID&;
 using REFIID = REFGUID;
 
-inline bool operator==( REFGUID g1, REFGUID g2 ) {
+inline auto operator==( REFGUID g1, REFGUID g2 ) -> bool {
     return std::memcmp( &g1, &g2, sizeof( GUID ) ) == 0;
 }
 
-inline bool operator!=( REFGUID g1, REFGUID g2 ) { return !( g1 == g2 ); }
+inline auto operator!=( REFGUID g1, REFGUID g2 ) -> bool { return !( g1 == g2 ); }
 
 #define STDMETHODCALLTYPE
 #define STDMETHOD_( t, f ) virtual t STDMETHODCALLTYPE f

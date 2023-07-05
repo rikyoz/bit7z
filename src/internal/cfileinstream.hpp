@@ -22,7 +22,7 @@ class CFileInStream : public CStdInStream {
     public:
         explicit CFileInStream( const fs::path& filePath );
 
-        void open( const fs::path& filePath );
+        void openFile( const fs::path& filePath );
 
     private:
         fs::ifstream mFileStream;

@@ -22,7 +22,7 @@ using filesystem::FSItem;
 using filesystem::FSIndexer;
 
 void BitItemsVector::indexDirectory( const fs::path& in_dir, const tstring& filter, IndexingOptions options ) {
-    //Note: if in_dir is an invalid path, FSItem constructor throws a BitException!
+    // Note: if in_dir is an invalid path, FSItem constructor throws a BitException!
     const FSItem dir_item{ in_dir, options.retain_folder_structure ? in_dir : fs::path{} };
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
         mItems.emplace_back( std::make_unique< FSItem >( dir_item ) );

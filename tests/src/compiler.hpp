@@ -63,7 +63,7 @@ constexpr auto standard_library_version = __GNUC__;
 #   endif
 #elif defined( _MSC_VER )
 constexpr auto standard_library = "Microsoft STL";
-const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
+static const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
 #   if _MSC_VER >= 1900
     constexpr auto msvc_major = _MSC_VER / 100 - 5;
 #   else

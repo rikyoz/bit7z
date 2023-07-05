@@ -30,7 +30,7 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
         return S_OK;
     }
 
-    mInputStream.read( static_cast< char* >( data ), size );
+    mInputStream.read( static_cast< char* >( data ), size ); // flawfinder: ignore //-V2571
 
     if ( processedSize != nullptr ) {
         *processedSize = static_cast< uint32_t >( mInputStream.gcount() );

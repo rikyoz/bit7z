@@ -40,9 +40,9 @@ auto isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
 }
 
 auto isValidDictionarySize( BitCompressionMethod method, uint32_t dictionary_size ) noexcept -> bool {
-    static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1 << 20 ); // less than 1536 MiB
-    static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1 << 30 );        // less than 1 GiB, i.e., 2^30 bytes
-    static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1 << 10 ); // less than 900 KiB
+    static constexpr auto MAX_LZMA_DICTIONARY_SIZE = 1536 * ( 1LL << 20 ); // less than 1536 MiB
+    static constexpr auto MAX_PPMD_DICTIONARY_SIZE = ( 1LL << 30 );        // less than 1 GiB, i.e., 2^30 bytes
+    static constexpr auto MAX_BZIP2_DICTIONARY_SIZE = 900 * ( 1LL << 10 ); // less than 900 KiB
 
     switch ( method ) {
         case BitCompressionMethod::Lzma:
@@ -267,7 +267,8 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
         properties.setProperty( L"x", static_cast< uint32_t >( mCompressionLevel ) );
 
         if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) && mCompressionMethod != mFormat.defaultMethod() ) {
-            properties.setProperty( mFormat == BitFormat::SevenZip ? L"0" : L"m", methodName( mCompressionMethod ) );
+            const auto* property_name = ( mFormat == BitFormat::SevenZip ) ? L"0" : L"m";
+            properties.setProperty( property_name, methodName( mCompressionMethod ) );
         }
     }
     if ( mFormat.hasFeature( FormatFeatures::SolidArchive ) ) {
@@ -275,7 +276,7 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
 #ifndef _WIN32
         if ( mSolidMode ) {
             /* NOTE: Apparently, p7zip requires the filters to be set off for the solid compression to work.
-               The most strange thing is... according to my tests this happens only in WSL!
+               The strangest thing is... in my tests this happens only in WSL!
                I've tested the same code on a Linux VM, and it works without disabling the filters! */
             // TODO: So, for now I disable them, but this will need further investigation!
             properties.setProperty( L"f", false );

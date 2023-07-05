@@ -39,23 +39,21 @@ constexpr auto cmp_less( T t, U u ) noexcept -> bool {
 #else // SFINAE implementation for C++14
 
 template< class T, class U >
-constexpr std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, bool >
-cmp_less( T t, U u ) noexcept {
+constexpr auto
+cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, bool > {
     return t < u;
 }
 
 template< class T, class U >
-constexpr std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool >
-cmp_less( T t, U u ) noexcept {
-    using UT = std::make_unsigned_t< T >;
-    return t < 0 || UT( t ) < u;
+constexpr auto
+cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool > {
+    return t < 0 || std::make_unsigned_t< T >( t ) < u;
 }
 
 template< class T, class U >
-constexpr std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool >
-cmp_less( T t, U u ) noexcept {
-    using UU = std::make_unsigned_t< U >;
-    return u >= 0 && t < UU( u );
+constexpr auto
+cmp_less( T t, U u ) noexcept -> std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool > {
+    return u >= 0 && t < std::make_unsigned_t< U >( u );
 }
 
 #endif
@@ -144,10 +142,10 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         write_size = static_cast< uint32_t >( mBufferSize - mCurrentPosition );
     }
 
-    const auto* byte_data = static_cast< const byte_t* >( data );
+    const auto* byte_data = static_cast< const byte_t* >( data ); //-V2571
     try {
-        std::copy_n( byte_data, write_size,
-                     &mBuffer[ mCurrentPosition ] ); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        std::copy_n( byte_data, write_size, &mBuffer[ mCurrentPosition ] ); //-V2563
     } catch ( ... ) {
         return E_OUTOFMEMORY;
     }

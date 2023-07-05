@@ -25,9 +25,11 @@
 #include <sstream>
 #include <cstring>
 
+//-V::530,2008,2563,2608,3555 (Suppressing warnings in PVS-Studio)
+
 #if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 
-BSTR ConvertStringToBSTR( const std::string& str ) {
+auto ConvertStringToBSTR( const std::string& str ) -> BSTR {
     const int wide_length = ::MultiByteToWideChar( CP_ACP, 0 /* no flags */,
                                                    str.data(), static_cast<int>(str.length()),
                                                    nullptr, 0 );
@@ -44,11 +46,11 @@ BSTR ConvertStringToBSTR( const std::string& str ) {
 using namespace std;
 using namespace bit7z;
 
-const auto test_wide_string = L"abcdefghijklmnopqrstuvwxyz0123456789";
-const auto test_tstring = BIT7Z_STRING( "abcdefghijklmnopqrstuvwxyz0123456789" );
+constexpr auto test_wide_string = L"abcdefghijklmnopqrstuvwxyz0123456789";
+constexpr auto test_tstring = BIT7Z_STRING( "abcdefghijklmnopqrstuvwxyz0123456789" );
 
-const auto test_input_encoding = L"\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3"; // ウォルグライモン
-const auto test_output_encoding = BIT7Z_STRING( "\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3" ); // ウォルグライモン
+constexpr auto test_input_encoding = L"\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3"; // ウォルグライモン
+constexpr auto test_output_encoding = BIT7Z_STRING( "\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3" ); // ウォルグライモン
 
 void check_variant_type( const BitPropVariant& prop_variant, BitPropVariantType type ) {
     REQUIRE( prop_variant.type() == type );
@@ -150,6 +152,7 @@ TEST_CASE( "BitPropVariant: Boolean variant", "[BitPropVariant][boolean]" ) {
 
         SECTION( "Using double assignment (different type)" ) {
             prop_variant = BIT7Z_STRING( "hello world!" );
+            (void)prop_variant;
             prop_variant = true;
         }
 
@@ -179,6 +182,7 @@ TEST_CASE( "BitPropVariant: Boolean variant", "[BitPropVariant][boolean]" ) {
 
         SECTION( "Using double assignment (different type)" ) {
             prop_variant = BIT7Z_STRING( "hello world!" );
+            (void)prop_variant;
             prop_variant = false;
         }
 
@@ -247,7 +251,10 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
         SECTION( "Manually setting it" ) {
             prop_variant.vt = VT_BSTR;
 #ifdef BIT7Z_USE_NATIVE_STRING
-            prop_variant.bstrVal = SysAllocStringLen( test_tstring, static_cast<UINT>( wcslen( test_tstring ) ) );
+            // Note: flawfinder complains about using wcslen on a possibly non-null terminating string,
+            // but test_tstring is guaranteed to be a null-terminated string!
+            const auto test_tstring_size = static_cast< UINT >( wcslen( test_tstring ) ); // flawfinder: ignore
+            prop_variant.bstrVal = SysAllocStringLen( test_tstring, test_tstring_size );
 #else
             prop_variant.bstrVal = ConvertStringToBSTR( test_tstring );
 #endif
@@ -298,58 +305,50 @@ using is_unsigned_with_size = std::integral_constant< bool, std::is_unsigned< T 
 template< typename T, size_t S >
 using is_signed_with_size = std::integral_constant< bool, std::is_signed< T >::value && S == sizeof( T ) >;
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 1 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 1 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI1;
     prop.bVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 2 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 2 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI2;
     prop.uiVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 4 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 4 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI4;
     prop.ulVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_unsigned_with_size< T, 8 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_unsigned_with_size< T, 8 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_UI8;
     prop.uhVal.QuadPart = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 1 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 1 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I1;
     prop.cVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 2 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 2 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I2;
     prop.iVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 4 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 4 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I4;
     prop.lVal = value;
 }
 
-template< typename T >
-typename std::enable_if< is_signed_with_size< T, 8 >::value >::type
-manually_set_variant( BitPropVariant& prop, T value ) {
+template< typename T, typename std::enable_if< is_signed_with_size< T, 8 >::value >::type* = nullptr >
+void manually_set_variant( BitPropVariant& prop, T value ) {
     prop.vt = VT_I8;
     prop.hVal.QuadPart = value;
 }
@@ -463,7 +462,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     REQUIRE( prop_variant.isUInt16() == ( sizeof( TestType ) <= 2 ) );
 
     // The variant is an UInt32 only if the TestType size is at most 32 bits.
-    REQUIRE( prop_variant.isUInt32() == ( sizeof( TestType ) <= 4 ) );
+    REQUIRE( prop_variant.isUInt32() == ( sizeof( TestType ) <= 4 ) ); //-V112
 
     // All unsigned types can be contained in a UInt64.
     REQUIRE( prop_variant.isUInt64() );
@@ -492,7 +491,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     } else {
         REQUIRE_THROWS( prop_variant.getUInt16() );
     }
-    if ( sizeof( TestType ) <= 4 ) {
+    if ( sizeof( TestType ) <= 4 ) { //-V112
         REQUIRE( prop_variant.getUInt32() == prop_variant.getUInt64() );
     } else {
         REQUIRE_THROWS( prop_variant.getUInt32() );
@@ -554,7 +553,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
     REQUIRE( prop_variant.isInt16() == ( sizeof( TestType ) <= 2 ) );
 
     // The variant is an Int32 only if the TestType size is at most 32 bits.
-    REQUIRE( prop_variant.isInt32() == ( sizeof( TestType ) <= 4 ) );
+    REQUIRE( prop_variant.isInt32() == ( sizeof( TestType ) <= 4 ) ); //-V112
 
     // All signed types can be contained in an Int64.
     REQUIRE( prop_variant.isInt64() );
@@ -584,7 +583,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
     } else {
         REQUIRE_THROWS( prop_variant.getInt16() );
     }
-    if ( sizeof( TestType ) <= 4 ) {
+    if ( sizeof( TestType ) <= 4 ) { //-V112
         REQUIRE( prop_variant.getInt32() == prop_variant.getInt64() );
     } else {
         REQUIRE_THROWS( prop_variant.getInt32() );
@@ -666,9 +665,9 @@ TEST_CASE( "BitPropVariant: Moving string variants", "[BitPropVariant][copy]" ) 
 
     SECTION( "Move assignment" ) {
         // The move may invalidate propvariant.bstrVal (make it nullptr), so we copy the pointer
-        // and check the moved variant uses the same pointer!
+        // and check if the moved variant uses the same pointer!
         BSTR test_bstrVal = prop_variant.bstrVal; // NOLINT(bugprone-use-after-move)
-        const BitPropVariant move_var = std::move( prop_variant );
+        const BitPropVariant move_var = std::move( prop_variant ); // cppcheck-suppress accessMoved
         REQUIRE( !move_var.isEmpty() );
         REQUIRE( move_var.vt == VT_BSTR );
         REQUIRE( move_var.bstrVal ==

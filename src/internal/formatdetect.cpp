@@ -38,7 +38,7 @@
  */
 auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(misc-no-recursion)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, *-magic-numbers)
-    return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381;
+    return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381; //-V2563
 }
 
 namespace bit7z {
@@ -181,7 +181,11 @@ auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> 
         case str_hash( BIT7Z_STRING( "ntfs" ) ):
             *format = &BitFormat::Ntfs;
             return true;
+        case str_hash( BIT7Z_STRING( "ova" ) ):
+            *format = &BitFormat::Tar;
+            return true;
         case str_hash( BIT7Z_STRING( "pmd" ) ):
+        case str_hash( BIT7Z_STRING( "ppmd" ) ):
             *format = &BitFormat::Ppmd;
             return true;
         case str_hash( BIT7Z_STRING( "qcow" ) ):
@@ -194,6 +198,9 @@ auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> 
             return true;
         case str_hash( BIT7Z_STRING( "squashfs" ) ):
             *format = &BitFormat::SquashFS;
+            return true;
+        case str_hash( BIT7Z_STRING( "swf" ) ):
+            *format = &BitFormat::Swf;
             return true;
         case str_hash( BIT7Z_STRING( "te" ) ):
             *format = &BitFormat::TE;
@@ -274,7 +281,7 @@ auto findFormatBySignature( uint64_t signature, const BitInFormat** format ) noe
     constexpr auto SwfcSignature2 = 0x5A57530000000000ULL; // ZWS
     constexpr auto TESignature = 0x565A000000000000ULL; // VZ
     constexpr auto VMDKSignature = 0x4B444D0000000000ULL; // KDMV
-    constexpr auto VDISignature = 0x3C3C3C2000000000ULL; // Alternatively 0x7F10DABE at offset 0x40
+    constexpr auto VDISignature = 0x3C3C3C2000000000ULL; // Alternatively, 0x7F10DABE at offset 0x40
     constexpr auto VhdSignature = 0x636F6E6563746978ULL; // conectix
     constexpr auto XarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
     constexpr auto ZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
@@ -389,7 +396,7 @@ auto findFormatBySignature( uint64_t signature, const BitInFormat** format ) noe
         case VMDKSignature: // K  D  M  V
             *format = &BitFormat::VMDK;
             return true;
-        case VDISignature: // Alternatively 0x7F10DABE at offset 0x40
+        case VDISignature: // Alternatively, 0x7F10DABE at offset 0x40
             *format = &BitFormat::VDI;
             return true;
         case VhdSignature: // c  o  n  e  c  t  i  x
@@ -418,7 +425,7 @@ struct OffsetSignature {
 #define bswap64 _byteswap_uint64
 #elif defined(__GNUC__) || defined(__clang__)
 //Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
-//      for checking compiler version or using _has_builtin macro!
+//      for checking the compiler version or using _has_builtin macro!
 #define bswap64 __builtin_bswap64
 #else
 static inline uint64_t bswap64( uint64_t x ) {
@@ -482,31 +489,37 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
     }
 
     // Detecting ISO/UDF
-    constexpr auto ISO_SIGNATURE = 0x4344303031000000; //CD001
+    constexpr auto BEA_SIGNATURE = 0x4245413031000000; // BEA01 (beginning of the extended descriptor section)
+    constexpr auto ISO_SIGNATURE = 0x4344303031000000; // CD001 (ISO format signature)
     constexpr auto ISO_SIGNATURE_SIZE = 5ULL;
     constexpr auto ISO_SIGNATURE_OFFSET = 0x8001;
 
     // Checking for ISO signature
     stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
     file_signature = readSignature( stream, ISO_SIGNATURE_SIZE );
-    if ( file_signature == ISO_SIGNATURE ) {
+
+    const bool is_iso = file_signature == ISO_SIGNATURE;
+    if ( is_iso || file_signature == BEA_SIGNATURE ) {
         constexpr auto MAX_VOLUME_DESCRIPTORS = 16;
         constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
 
         constexpr auto UDF_SIGNATURE = 0x4E53523000000000; //NSR0
         constexpr auto UDF_SIGNATURE_SIZE = 4U;
 
-        // The file is ISO, checking if it is also UDF!
         for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
             stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
             file_signature = readSignature( stream, UDF_SIGNATURE_SIZE );
-            if ( file_signature == UDF_SIGNATURE ) {
+
+            if ( file_signature == UDF_SIGNATURE ) { // The file is ISO+UDF or just UDF
                 stream->Seek( 0, 0, nullptr );
                 return BitFormat::Udf;
             }
         }
-        stream->Seek( 0, 0, nullptr );
-        return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
+
+        if ( is_iso ) { // The file is pure ISO (no UDF).
+            stream->Seek( 0, 0, nullptr );
+            return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
+        }
     }
 
     stream->Seek( 0, 0, nullptr );

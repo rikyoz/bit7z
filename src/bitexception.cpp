@@ -37,7 +37,7 @@ BitException::BitException( const char* const message, std::error_code code, con
 }
 
 BitException::BitException( const std::string& message, std::error_code code )
-    : system_error( code, message.c_str() ) {}
+    : system_error( code, message ) {}
 
 auto BitException::failedFiles() const noexcept -> const FailedFiles& {
     return mFailedFiles;

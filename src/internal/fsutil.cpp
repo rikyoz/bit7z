@@ -126,7 +126,7 @@ auto fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) -> bool
 
 #ifndef _WIN32
 
-bool restore_symlink( const std::string& name ) {
+auto restore_symlink( const std::string& name ) -> bool {
     std::ifstream ifs( name, std::ios::in | std::ios::binary );
     if ( !ifs.is_open() ) {
         return false;
@@ -157,10 +157,13 @@ bool restore_symlink( const std::string& name ) {
 
 static const mode_t global_umask = []() noexcept {
     // Getting and setting the current umask.
-    mode_t current_umask{ umask( 0 ) };
+    // Note: flawfinder warns about umask with the mask set to 0;
+    // however, we use it only to read the current umask,
+    // then we restore the old value, hence we can ignore the warning!
+    const mode_t current_umask{ umask( 0 ) }; // flawfinder: ignore
 
     // Restoring the umask.
-    umask( current_umask );
+    umask( current_umask ); // flawfinder: ignore
 
     return static_cast<int>( fs::perms::all ) & ( ~current_umask );
 }();
@@ -173,10 +176,10 @@ auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
     }
 
 #ifdef _WIN32
-    return ::SetFileAttributes( filePath.c_str(), attributes ) != FALSE;
+    return ::SetFileAttributesW( filePath.c_str(), attributes ) != FALSE;
 #else
-    struct stat file_stat{};
-    if ( lstat( filePath.c_str(), &file_stat ) != 0 ) {
+    struct stat64 file_stat{};
+    if ( lstat64( filePath.c_str(), &file_stat ) != 0 ) {
         return false;
     }
 
@@ -197,7 +200,7 @@ auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
         file_stat.st_mode &= ~( S_IWUSR | S_IWGRP | S_IWOTH );
     }
 
-    fs::perms file_permissions = static_cast<fs::perms>( file_stat.st_mode & global_umask ) & fs::perms::mask;
+    const fs::perms file_permissions = static_cast<fs::perms>( file_stat.st_mode & global_umask ) & fs::perms::mask;
     std::error_code ec;
     fs::permissions( filePath, file_permissions, ec );
     return !ec;
@@ -234,8 +237,8 @@ auto fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE
 #ifdef _WIN32
     return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileMetadata ) != FALSE;
 #else
-    struct stat stat_info{};
-    if ( lstat( filePath.c_str(), &stat_info ) != 0 ) {
+    struct stat64 stat_info{};
+    if ( lstat64( filePath.c_str(), &stat_info ) != 0 ) {
         return false;
     }
 

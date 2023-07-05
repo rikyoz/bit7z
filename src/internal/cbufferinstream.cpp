@@ -49,7 +49,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
      * So we just read all the remaining bytes, not more or less. */
 
     /* Note: here remaining is > 0 */
-    std::copy_n( mCurrentPosition, remaining, static_cast< byte_t* >( data ) );
+    std::copy_n( mCurrentPosition, remaining, static_cast< byte_t* >( data ) ); //-V2571
     std::advance( mCurrentPosition, remaining );
 
     if ( processedSize != nullptr ) {

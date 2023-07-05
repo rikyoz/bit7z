@@ -14,7 +14,7 @@
 
 namespace bit7z {
 // 100ns intervals
-using FileTimeTickRate = std::ratio< 1, 10'000'000 >;
+using FileTimeTickRate = std::ratio< 1, 10'000'000 >; // NOLINT(*-magic-numbers)
 // FileTimeDuration has the same layout as FILETIME;
 using FileTimeDuration = std::chrono::duration< int64_t, FileTimeTickRate >;
 // Seconds between 01/01/1601 (NT epoch) and 01/01/1970 (Unix epoch):
@@ -31,8 +31,8 @@ auto FILETIME_to_file_time_type( const FILETIME& fileTime ) -> fs::file_time_typ
     return fs::file_time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unix_epoch ) };
 }
 
-auto time_to_FILETIME( const std::time_t& time ) -> FILETIME {
-    uint64_t time_in_seconds = ( time * 10000000ull ) + 116444736000000000;
+auto time_to_FILETIME( const std::time_t& timeValue ) -> FILETIME {
+    const uint64_t time_in_seconds = ( timeValue * 10000000ull ) + 116444736000000000; // NOLINT(*-magic-numbers)
     FILETIME fileTime{};
     fileTime.dwLowDateTime = static_cast< DWORD >( time_in_seconds );
     fileTime.dwHighDateTime = static_cast< DWORD >( time_in_seconds >> 32 );
@@ -55,13 +55,13 @@ auto currentFileTime() -> FILETIME {
     FILETIME file_time{};
     SYSTEMTIME system_time{};
 
-    GetSystemTime( &system_time ); // Getting the current time as a SYSTEMTIME struct.
+    GetSystemTime( &system_time ); // Getting the current time_value as a SYSTEMTIME struct.
     SystemTimeToFileTime( &system_time, &file_time ); // Converting it to the FILETIME struct format.
     return file_time;
 #else
     auto current_time = std::chrono::system_clock::now();
-    std::time_t time = std::chrono::system_clock::to_time_t( current_time );
-    return time_to_FILETIME( time );
+    const std::time_t time_value = std::chrono::system_clock::to_time_t( current_time );
+    return time_to_FILETIME( time_value );
 #endif
 }
 }  // namespace bit7z

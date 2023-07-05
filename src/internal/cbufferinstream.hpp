@@ -35,7 +35,8 @@ class CBufferInStream final : public IInStream, public CMyUnknownImp {
 
         MY_UNKNOWN_DESTRUCTOR( ~CBufferInStream() ) = default;
 
-        MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept, modernize-use-trailing-return-type)
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        MY_UNKNOWN_IMP1( IInStream )  //-V2507 //-V2511
 
         // IInStream
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );

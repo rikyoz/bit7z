@@ -72,7 +72,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         mCurrentPosition = mBuffer.begin() + old_pos; //resize invalidated the old mCurrentPosition iterator
     }
 
-    const auto* byte_data = static_cast< const byte_t* >( data );
+    const auto* byte_data = static_cast< const byte_t* >( data ); //-V2571
     try {
         std::copy_n( byte_data, size, mCurrentPosition );
     } catch ( ... ) {
