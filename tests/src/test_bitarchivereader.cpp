@@ -765,10 +765,8 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
 }
 
 #ifndef FILE_ATTRIBUTE_WINDOWS_MASK
-#define FILE_ATTRIBUTE_WINDOWS_MASK 0x07FFF
+constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
 #endif
-
-#include <iostream>
 
 #define REQUIRE_ITEM_DIRECTORY( info, item_name )                                                     \
     do {                                                                                              \
@@ -778,6 +776,8 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY );    \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
         }                                                                                             \
         if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
             auto posix_attributes = item_attributes >> 16U;                                           \
@@ -796,6 +796,8 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
         }                                                                                             \
         if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
             auto posix_attributes = item_attributes >> 16U;                                           \
@@ -814,6 +816,8 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
         }                                                                                             \
         if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
             auto posix_attributes = item_attributes >> 16U;                                           \
@@ -843,7 +847,7 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
         REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
     } while ( false )
 
-#define REQUIRE_ITEM_READONLY( info, item_name )                                                       \
+#define REQUIRE_ITEM_READONLY( info, item_name )                                                      \
     do {                                                                                              \
         auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
         REQUIRE( iterator != (info).cend() );                                                         \
@@ -851,6 +855,7 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
+            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == FILE_ATTRIBUTE_READONLY );      \
         }                                                                                             \
         if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
