@@ -147,6 +147,7 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
             REQUIRE( exception.hresultCode() == test.error );
             REQUIRE( exception.posixCode() == exception.nativeCode() );
 #endif
+            REQUIRE( exception.what() == std::string{ "Hello World: " } + test.message );
         }
     }
 }
@@ -201,6 +202,7 @@ TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitExcep
                 REQUIRE( exception.hresultCode() == HRESULT_FROM_WIN32( test.error ) );
                 REQUIRE( exception.posixCode() == sys_error.default_error_condition().value() );
             }
+            REQUIRE( exception.what() == std::string{ "Hello World: " } + sys_error.message() );
         }
     }
 }
