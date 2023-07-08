@@ -41,7 +41,9 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
     while ( mCurrentVolumeIndex >= mVolumes.size() ) {
         /* The current volume stream still doesn't exist, so we need to create it. */
         tstring name = to_tstring( static_cast< uint64_t >( mCurrentVolumeIndex ) + 1 );
-        name.insert( 0, 3 - name.length(), L'0' );
+        if ( name.length() < 3 ) {
+            name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
+        }
 
         fs::path volume_path = mVolumePrefix;
         volume_path += BIT7Z_STRING( "." ) + name;
