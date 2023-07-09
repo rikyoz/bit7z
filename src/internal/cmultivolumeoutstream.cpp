@@ -36,11 +36,12 @@ auto CMultiVolumeOutStream::GetSize() const noexcept -> UInt64 { return mFullSiz
 /**
  * @brief When writing multi-volume archives, we keep all the volume streams open until we finished.
  * This is less than ideal, and there's a limit in the number of open file descriptors/handles.
- * This function increases such a limit to the maximum value allowed by the OS.
+ * This function is a temporary workaround, where we increase such a limit to the maximum value allowed by the OS.
  */
 void increase_opened_files_limit() {
 #ifdef _WIN32
-    _setmaxstdio( 2048 );
+    // http://msdn.microsoft.com/en-us/library/6e3b887c.aspx
+    _setmaxstdio( 8192 );
 #else
     rlimit limits;
     if ( getrlimit( RLIMIT_NOFILE, &limits ) == 0 ) {
@@ -76,8 +77,8 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
             // TODO: Avoid keeping all the volumes streams open
             constexpr auto opened_files_threshold = 500;
             if ( mCurrentVolumeIndex == opened_files_threshold ) {
-                // We have created many volumes, so it is likely we'll keep creating more.
-                // Hence, we increase the limit to the number of current process's opened files
+                // Since we have created many volumes, it is likely we'll keep creating more.
+                // Hence, we increase the limit to the number of files that can be opened by the current process
                 // to avoid problems in the future.
                 increase_opened_files_limit();
             }
