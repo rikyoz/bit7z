@@ -17,6 +17,10 @@
 #include "bitexception.hpp"
 #include "internal/util.hpp"
 
+#ifndef _WIN32
+#include <sys/resource.h>
+#endif
+
 using namespace bit7z;
 
 CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName )
@@ -28,6 +32,27 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archive
       mFullSize( 0 ) {}
 
 auto CMultiVolumeOutStream::GetSize() const noexcept -> UInt64 { return mFullSize; }
+
+/**
+ * @brief When writing multi-volume archives, we keep all the volume streams open until we finished.
+ * This is less than ideal, and there's a limit in the number of open file descriptors/handles.
+ * This function increases such a limit to the maximum value allowed by the OS.
+ */
+void increase_opened_files_limit() {
+#ifdef _WIN32
+    _setmaxstdio( 2048 );
+#else
+    rlimit limits;
+    if ( getrlimit( RLIMIT_NOFILE, &limits ) == 0 ) {
+#ifdef __APPLE__
+        limits.rlim_cur = std::min( static_cast< rlim_t >( OPEN_MAX ), limits.rlim_max );
+#else
+        limits.rlim_cur = limits.rlim_max;
+#endif
+        setrlimit( RLIMIT_NOFILE, &limits );
+    }
+#endif
+}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
@@ -48,6 +73,14 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
         fs::path volume_path = mVolumePrefix;
         volume_path += BIT7Z_STRING( "." ) + name;
         try {
+            // TODO: Avoid keeping all the volumes streams open
+            constexpr auto opened_files_threshold = 500;
+            if ( mCurrentVolumeIndex == opened_files_threshold ) {
+                // We have created many volumes, so it is likely we'll keep creating more.
+                // Hence, we increase the limit to the number of current process's opened files
+                // to avoid problems in the future.
+                increase_opened_files_limit();
+            }
             mVolumes.emplace_back( make_com< CVolumeOutStream >( volume_path ) );
         } catch ( const BitException& ex ) {
             return ex.nativeCode();
