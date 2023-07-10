@@ -16,6 +16,7 @@
 
 #include "internal/cmultivolumeinstream.hpp"
 #include "internal/util.hpp"
+#include "internal/fsutil.hpp"
 
 using bit7z::CMultiVolumeInStream;
 using bit7z::CVolumeInStream;
@@ -35,6 +36,14 @@ CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& first_volume ) : mCu
                                BIT7Z_STRING( '0' ) );
         }
         volume_path.replace_extension( volume_ext );
+
+        // TODO: Avoid keeping all the volumes streams open
+        constexpr auto opened_files_threshold = 500;
+        if ( volume_index == opened_files_threshold ) {
+            // Note: we use == to avoid increasing the limit more than once;
+            // the volume_index is always increasing, so it is not an issue here.
+            filesystem::fsutil::increase_opened_files_limit();
+        }
     }
 }
 

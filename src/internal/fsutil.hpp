@@ -50,6 +50,13 @@ BIT7Z_NODISCARD auto format_long_path( const fs::path& path ) -> fs::path;
 #   define FORMAT_LONG_PATH( path ) path
 #endif
 
+/**
+ * @brief When writing multi-volume archives, we keep all the volume streams open until we finished.
+ * This is less than ideal, and there's a limit in the number of open file descriptors/handles.
+ * This function is a temporary workaround, where we increase such a limit to the maximum value allowed by the OS.
+ */
+void increase_opened_files_limit();
+
 }  // namespace fsutil
 }  // namespace filesystem
 }  // namespace bit7z

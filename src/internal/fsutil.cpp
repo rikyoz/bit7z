@@ -15,6 +15,7 @@
 #include <algorithm> //for std::adjacent_find
 
 #ifndef _WIN32
+#include <sys/resource.h> // for rlimit, getrlimit, and setrlimit
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -285,3 +286,20 @@ auto fsutil::format_long_path( const fs::path& path ) -> fs::path {
 }
 
 #endif
+
+void fsutil::increase_opened_files_limit() {
+#ifdef _WIN32
+    // http://msdn.microsoft.com/en-us/library/6e3b887c.aspx
+    _setmaxstdio( 8192 );
+#else
+    rlimit limits;
+    if ( getrlimit( RLIMIT_NOFILE, &limits ) == 0 ) {
+#ifdef __APPLE__
+        limits.rlim_cur = std::min( static_cast< rlim_t >( OPEN_MAX ), limits.rlim_max );
+#else
+        limits.rlim_cur = limits.rlim_max;
+#endif
+        setrlimit( RLIMIT_NOFILE, &limits );
+    }
+#endif
+}
