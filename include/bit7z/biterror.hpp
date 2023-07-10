@@ -41,7 +41,7 @@ enum struct BitError {
     WrongUpdateMode
 };
 
-auto make_error_code( const BitError& e ) -> std::error_code;
+auto make_error_code( const BitError& error ) -> std::error_code;
 
 }  // namespace bit7z
 

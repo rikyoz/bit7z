@@ -12,7 +12,7 @@
 
 #include <utility>
 
-#include "internal/cmultivolumeoutstream.hpp"
+#include "cmultivolumeoutstream.hpp"
 
 #include "bitexception.hpp"
 #include "fsutil.hpp"

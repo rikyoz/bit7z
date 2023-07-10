@@ -30,10 +30,8 @@ CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& first_volume ) : mCu
 
         ++volume_index;
         tstring volume_ext = to_tstring( volume_index );
-        if ( volume_ext.length() < 3 ) {
-            volume_ext.insert( volume_ext.begin(),
-                               volume_digits - volume_ext.length(),
-                               BIT7Z_STRING( '0' ) );
+        if ( volume_ext.length() < volume_digits ) {
+            volume_ext.insert( volume_ext.begin(), volume_digits - volume_ext.length(), BIT7Z_STRING( '0' ) );
         }
         volume_path.replace_extension( volume_ext );
 
