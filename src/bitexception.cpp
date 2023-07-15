@@ -14,6 +14,7 @@
 
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
+#include "internal/operationcategory.hpp"
 #include "internal/windows.hpp"
 
 auto bit7z::make_hresult_code( HRESULT res ) noexcept -> std::error_code {
@@ -29,15 +30,15 @@ using bit7z::FailedFiles;
 using bit7z::tstring;
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
-    : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
+    : std::system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
 
 BitException::BitException( const char* const message, std::error_code code, const tstring& file )
-    : system_error( code, message ) {
+    : std::system_error( code, message ) {
     mFailedFiles.emplace_back( file, code );
 }
 
 BitException::BitException( const std::string& message, std::error_code code )
-    : system_error( code, message ) {}
+    : std::system_error( code, message ) {}
 
 auto BitException::failedFiles() const noexcept -> const FailedFiles& {
     return mFailedFiles;
@@ -101,15 +102,20 @@ auto BitException::hresultCode() const noexcept -> HRESULT {
     return E_FAIL;
 }
 
+inline auto is_not_posix_category( const std::error_category& category ) -> bool {
+#ifdef _MSC_VER
+    if ( category == std::system_category() ) {
+        return true;
+    }
+#endif
+    return category == bit7z::hresult_category() ||
+           category == bit7z::internal_category() ||
+           category == bit7z::operation_category();
+}
+
 auto BitException::posixCode() const noexcept -> int {
     const auto& error = code();
-#ifdef _MSC_VER
-    if ( error.category() == bit7z::hresult_category() ||
-         error.category() == bit7z::internal_category() ||
-         error.category() == std::system_category() ) {
-#else
-    if ( error.category() == bit7z::hresult_category() || error.category() == bit7z::internal_category() ) {
-#endif
+    if ( is_not_posix_category( error.category() ) ) {
         return error.default_error_condition().value();
     }
     return error.value(); // On POSIX systems, std::system_category == std::generic_category
