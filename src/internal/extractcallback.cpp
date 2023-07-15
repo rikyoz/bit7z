@@ -107,8 +107,11 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 
     auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
     if ( result != OperationResult::Success ) {
+        constexpr auto kTestFailed = "Failed to test the archive";
+        constexpr auto kExtractFailed = "Failed to extract the archive";
+        const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
         auto error = std::error_code{ static_cast< int >( result ), operation_category() };
-        mErrorException = std::make_exception_ptr( BitException( "Extraction error", error ) );
+        mErrorException = std::make_exception_ptr( BitException( msg, error ) );
     }
 
     return finishOperation( result );

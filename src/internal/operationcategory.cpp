@@ -23,21 +23,21 @@ auto operation_category_t::name() const noexcept -> const char* {
 auto operation_category_t::message( int error_value ) const -> std::string {
     switch ( static_cast< OperationResult >( error_value ) ) {
         case OperationResult::UnsupportedMethod:
-            return "unsupported method";
+            return "Unsupported method.";
         case OperationResult::CRCError:
             return "CRC failed";
         case OperationResult::DataError:
-            return "data error";
+            return "Data error.";
         case OperationResult::UnexpectedEnd:
-            return "reached an unexpected end of data";
+            return "Reached an unexpected end of data.";
         case OperationResult::WrongPassword:
-            return "wrong password";
+            return "Wrong password.";
         case OperationResult::DataErrorEncrypted:
-            return "data error in encrypted file (wrong password?)";
+            return "Data error in encrypted file (wrong password?).";
         case OperationResult::CRCErrorEncrypted:
-            return "CRC error in encrypted file (wrong password?)";
+            return "CRC error in encrypted file (wrong password?).";
         default:
-            return "unknown error";
+            return "Unknown error.";
     }
 }
 

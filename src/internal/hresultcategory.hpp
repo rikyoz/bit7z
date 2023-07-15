@@ -25,7 +25,7 @@ struct hresult_category_t final : public std::error_category {
 
     BIT7Z_NODISCARD auto name() const noexcept -> const char* override;
 
-    BIT7Z_NODISCARD auto message( int ev ) const -> std::string override;
+    BIT7Z_NODISCARD auto message( int error_value ) const -> std::string override;
 
     BIT7Z_NODISCARD auto default_error_condition( int error_value ) const noexcept -> std::error_condition override;
 };

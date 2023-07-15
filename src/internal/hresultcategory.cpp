@@ -21,10 +21,10 @@ auto hresult_category_t::name() const noexcept -> const char* {
     return "HRESULT";
 }
 
-auto hresult_category_t::message( int ev ) const -> std::string {
+auto hresult_category_t::message( int error_value ) const -> std::string {
 #ifdef _MSC_VER
     // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors.
-    return std::system_category().message( ev );
+    return std::system_category().message( error_value );
 #elif defined( __MINGW32__ )
     // MinGW supports FormatMessageA!
     LPSTR messageBuffer = nullptr;
@@ -32,7 +32,7 @@ auto hresult_category_t::message( int ev ) const -> std::string {
                                    FORMAT_MESSAGE_FROM_SYSTEM |
                                    FORMAT_MESSAGE_IGNORE_INSERTS |
                                    FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                                   nullptr, ev, 0, reinterpret_cast<LPSTR>( &messageBuffer ), 0, nullptr );
+                                   nullptr, error_value, 0, reinterpret_cast<LPSTR>( &messageBuffer ), 0, nullptr );
     if ( msgSize == 0 ) {
         return "Unknown error";
     }
@@ -44,7 +44,7 @@ auto hresult_category_t::message( int ev ) const -> std::string {
     return errorMessage;
 #else
     // Note: same messages returned by FormatMessageA on Windows platform.
-    switch ( static_cast< HRESULT >( ev ) ) {
+    switch ( static_cast< HRESULT >( error_value ) ) {
         case E_ABORT:
             return "Operation aborted";
         case E_NOTIMPL:
@@ -73,9 +73,9 @@ auto hresult_category_t::message( int ev ) const -> std::string {
         case E_FAIL:
             return "Unspecified error";
         default:
-            if ( HRESULT_FACILITY( ev ) == FACILITY_CODE ) {
+            if ( HRESULT_FACILITY( error_value ) == FACILITY_CODE ) {
                 // POSIX error code wrapped in a HRESULT value (e.g., through HRESULT_FROM_WIN32 macro)
-                return std::system_category().message( HRESULT_CODE( ev ) );
+                return std::system_category().message( HRESULT_CODE( error_value ) );
             }
             return "Unknown error";
     }
@@ -126,7 +126,7 @@ auto hresult_category_t::default_error_condition( int error_value ) const noexce
                  * Note 3: on Linux, most error_value values returned by p7zip are POSIX error codes wrapped
                  * into a HRESULT value, hence the following line will return the correct error_condition.
                  * Some error codes returned by p7zip are, however, equal to the Windows code: such cases are
-                 * taken into account in specific cases above!
+                 * taken into account in the specific cases above!
                  */
                 return std::system_category().default_error_condition( HRESULT_CODE( error_value ) );
 #else
