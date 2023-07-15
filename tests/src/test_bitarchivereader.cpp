@@ -359,8 +359,12 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
         const fs::path arc_file_name = "header_encrypted." + test_archive.extension();
 
         SECTION( "Filesystem archive" ) {
-            //no password specified!
+            // no password specified!
             REQUIRE_THROWS( BitArchiveReader( lib, arc_file_name.string< tchar >(), test_archive.format() ) );
+
+            // wrong password specified!
+            REQUIRE_THROWS( BitArchiveReader( lib, arc_file_name.string< tchar >(), test_archive.format(),
+                                              BIT7Z_STRING( "wrong_password" ) ) );
 
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
@@ -370,8 +374,13 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
 
         SECTION( "Buffer archive" ) {
             const auto file_buffer = load_file( arc_file_name );
-            //no password specified!
+
+            // no password specified!
             REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, test_archive.format() ) );
+
+            // wrong password specified!
+            REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, test_archive.format(),
+                                              BIT7Z_STRING( "wrong_password" ) ) );
 
             const BitArchiveReader info( lib, file_buffer, test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
@@ -383,8 +392,12 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             REQUIRE( file_stream.is_open() );
 
-            //no password specified!
+            // no password specified!
             REQUIRE_THROWS( BitArchiveReader( lib, file_stream, test_archive.format() ) );
+
+            // wrong password specified!
+            REQUIRE_THROWS( BitArchiveReader( lib, file_stream, test_archive.format(),
+                                              BIT7Z_STRING( "wrong_password" ) ) );
 
             file_stream.clear();
             file_stream.seekg( 0, std::ios::beg );
