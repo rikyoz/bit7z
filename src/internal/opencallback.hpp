@@ -61,10 +61,13 @@ class OpenCallback final : public IArchiveOpenCallback,
         //ICryptoGetTextPassword
         BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* password );
 
+        auto passwordWasAsked() -> bool;
+
     private:
         bool mSubArchiveMode;
         std::wstring mSubArchiveName;
         FSItem mFileItem;
+        bool mPasswordWasAsked;
 };
 
 }  // namespace bit7z

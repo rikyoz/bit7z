@@ -40,8 +40,11 @@ enum struct OperationResult {
     HeadersError = NOperationResult::kHeadersError,
     WrongPassword = NOperationResult::kWrongPassword,
     DataErrorEncrypted = 2 * NOperationResult::kWrongPassword,
-    CRCErrorEncrypted = 2 * NOperationResult::kWrongPassword + 1
+    CRCErrorEncrypted = 2 * NOperationResult::kWrongPassword + 1,
+    OpenErrorEncrypted = 2 * NOperationResult::kWrongPassword + 2
 };
+
+auto make_error_code( const OperationResult& error ) -> std::error_code;
 
 class ExtractCallback : public Callback,
                         public IArchiveExtractCallback,

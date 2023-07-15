@@ -95,7 +95,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
     CMyComPtr< IInArchive > in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
 
     // Creating open callback for the file
-    auto open_callback = bit7z::make_com< OpenCallback, IArchiveOpenCallback >( mArchiveHandler, name );
+    auto open_callback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
 
     // Trying to open the file with the detected format
 #ifndef BIT7Z_AUTO_FORMAT
@@ -123,7 +123,9 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
 #endif
 
     if ( res != S_OK ) {
-        throw BitException( "Failed to open the archive", make_hresult_code( res ), name.string< tchar >() );
+        const auto error = open_callback->passwordWasAsked() ?
+                           make_error_code( OperationResult::OpenErrorEncrypted ) : make_hresult_code( res );
+        throw BitException( "Could not open the archive", error, name.string< tchar >() );
     }
 
     return in_archive.Detach();

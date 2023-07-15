@@ -18,7 +18,7 @@
 
 #include <exception>
 
-using namespace bit7z;
+namespace bit7z {
 
 ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
     : Callback( inputArchive.handler() ),
@@ -136,3 +136,9 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
 
     return StringToBstr( pass.c_str(), password );
 }
+
+auto make_error_code( const OperationResult& error ) -> std::error_code {
+    return { static_cast< int >( error ), operation_category() };
+}
+
+} // namespace bit7z

@@ -20,7 +20,7 @@ using namespace bit7z;
 using namespace bit7z::filesystem;
 
 OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const fs::path& filename )
-    : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
+    : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ), mPasswordWasAsked{ false } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) noexcept {
@@ -117,6 +117,8 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
+    mPasswordWasAsked = true;
+
     std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         if ( mHandler.passwordCallback() ) {
@@ -131,4 +133,8 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     }
 
     return StringToBstr( pass.c_str(), password );
+}
+
+auto OpenCallback::passwordWasAsked() -> bool {
+    return mPasswordWasAsked;
 }
