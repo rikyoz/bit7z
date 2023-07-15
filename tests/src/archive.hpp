@@ -36,7 +36,6 @@ public:
     auto packedSize() const -> std::size_t;
 
     auto content() const -> const ArchiveContent&;
-
 };
 
 } // namespace test
