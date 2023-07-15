@@ -38,7 +38,9 @@ enum struct OperationResult {
     DataAfterEnd = NOperationResult::kDataAfterEnd,
     IsNotArc = NOperationResult::kIsNotArc,
     HeadersError = NOperationResult::kHeadersError,
-    WrongPassword = NOperationResult::kWrongPassword
+    WrongPassword = NOperationResult::kWrongPassword,
+    DataErrorEncrypted = 2 * NOperationResult::kWrongPassword,
+    CRCErrorEncrypted = 2 * NOperationResult::kWrongPassword + 1
 };
 
 class ExtractCallback : public Callback,
@@ -115,6 +117,7 @@ class ExtractCallback : public Callback,
     private:
         const BitInputArchive& mInputArchive;
         ExtractMode mExtractMode;
+        bool mIsLastItemEncrypted;
         std::exception_ptr mErrorException;
 };
 

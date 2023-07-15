@@ -14,13 +14,17 @@
 
 #include "bitexception.hpp"
 #include "internal/util.hpp"
+#include "internal/operationcategory.hpp"
+
+#include <exception>
 
 using namespace bit7z;
 
 ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
     : Callback( inputArchive.handler() ),
       mInputArchive( inputArchive ),
-      mExtractMode( ExtractMode::Extract ) {}
+      mExtractMode( ExtractMode::Extract ),
+      mIsLastItemEncrypted{ false } {}
 
 auto ExtractCallback::finishOperation( OperationResult operation_result ) -> HRESULT {
     releaseStream();
@@ -64,6 +68,11 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
     *outStream = nullptr;
     releaseStream();
 
+    auto isEncrypted = itemProperty( index, BitProperty::Encrypted );
+    if ( isEncrypted.isBool() ) {
+        mIsLastItemEncrypted = isEncrypted.getBool();
+    }
+
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
     }
@@ -73,40 +82,33 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
     mErrorException = std::make_exception_ptr( ex );
     return ex.hresultCode();
 } catch ( const std::runtime_error& ) {
-    mErrorException = std::make_exception_ptr( BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) ) );
+    mErrorException = std::make_exception_ptr(
+        BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) ) );
     return E_ABORT;
+}
+
+auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> OperationResult {
+    if ( isLastItemEncrypted ) {
+        if ( operationResult == NOperationResult::kCRCError ) {
+            return OperationResult::CRCErrorEncrypted;
+        }
+
+        if ( operationResult == NOperationResult::kDataError ) {
+            return OperationResult::DataErrorEncrypted;
+        }
+    }
+
+    return static_cast< OperationResult >( operationResult );
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
     using namespace NArchive::NExtract;
-    constexpr auto kUnsupportedMethod = "Unsupported Method";
-    constexpr auto kCRCFailed = "CRC Failed";
-    constexpr auto kDataError = "Data Error";
-    constexpr auto kUnknownError = "Unknown Error";
 
-    auto result = static_cast< OperationResult >( operationResult );
+    auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
     if ( result != OperationResult::Success ) {
-        switch ( result ) {
-            case OperationResult::UnsupportedMethod:
-                mErrorException = std::make_exception_ptr( BitException( kUnsupportedMethod,
-                                                                         make_hresult_code( E_FAIL ) ) );
-                break;
-
-            case OperationResult::CRCError:
-                mErrorException = std::make_exception_ptr( BitException( kCRCFailed,
-                                                                         make_hresult_code( E_FAIL ) ) );
-                break;
-
-            case OperationResult::DataError:
-                mErrorException = std::make_exception_ptr( BitException( kDataError,
-                                                                         make_hresult_code( E_FAIL ) ) );
-                break;
-
-            default:
-                mErrorException = std::make_exception_ptr( BitException( kUnknownError,
-                                                                         make_hresult_code( E_FAIL ) ) );
-        }
+        auto error = std::error_code{ static_cast< int >( result ), operation_category() };
+        mErrorException = std::make_exception_ptr( BitException( "Extraction error", error ) );
     }
 
     return finishOperation( result );
