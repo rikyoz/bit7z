@@ -23,45 +23,45 @@ auto internal_category_t::name() const noexcept -> const char* {
 auto internal_category_t::message( int error_value ) const -> std::string {
     switch ( static_cast< BitError >( error_value ) ) {
         case BitError::Fail:
-            return "Unspecified error.";
+            return "unspecified error.";
         case BitError::FilterNotSpecified:
-            return "No item filter specified.";
+            return "no item filter specified.";
         case BitError::FormatFeatureNotSupported:
-            return "Feature not supported by the archive format.";
+            return "feature not supported by the archive format.";
         case BitError::IndicesNotSpecified:
-            return "No indices specified.";
+            return "no indices specified.";
         case BitError::InvalidArchivePath:
-            return "Invalid archive path.";
+            return "invalid archive path.";
         case BitError::InvalidOutputBufferSize:
-            return "Invalid output buffer size.";
+            return "invalid output buffer size.";
         case BitError::InvalidCompressionMethod:
-            return "Invalid compression method for the chosen archive format.";
+            return "invalid compression method for the chosen archive format.";
         case BitError::InvalidDictionarySize:
-            return "Invalid dictionary size for the chosen compression method.";
+            return "invalid dictionary size for the chosen compression method.";
         case BitError::InvalidIndex:
-            return "Invalid index.";
+            return "invalid index.";
         case BitError::InvalidWordSize:
-            return "Invalid word size for the chosen compression method.";
+            return "invalid word size for the chosen compression method.";
         case BitError::ItemIsAFolder:
-            return "The item is a folder.";
+            return "the item is a folder.";
         case BitError::ItemMarkedAsDeleted:
-            return "The item is marked as deleted.";
+            return "the item is marked as deleted.";
         case BitError::NoMatchingExtension:
-            return "No known extension found.";
+            return "no known extension found.";
         case BitError::NoMatchingItems:
-            return "No matching item was found in the archive.";
+            return "no matching item was found in the archive.";
         case BitError::NoMatchingSignature:
-            return "No known signature found.";
+            return "no known signature found.";
         case BitError::NonEmptyOutputBuffer:
-            return "The output buffer is not empty.";
+            return "the output buffer is not empty.";
         case BitError::RequestedWrongVariantType:
-            return "Requested the wrong variant type.";
+            return "requested the wrong variant type.";
         case BitError::UnsupportedOperation:
-            return "Unsupported operation.";
+            return "unsupported operation.";
         case BitError::WrongUpdateMode:
-            return "Wrong update mode.";
+            return "wrong update mode.";
         default:
-            return "Unknown error.";
+            return "unknown error.";
     }
 }
 
