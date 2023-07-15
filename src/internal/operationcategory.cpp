@@ -33,11 +33,11 @@ auto operation_category_t::message( int error_value ) const -> std::string {
         case OperationResult::WrongPassword:
             return "wrong password";
         case OperationResult::DataErrorEncrypted:
-            return "data error in encrypted file. Wrong password?";
+            return "data error in encrypted file (wrong password?)";
         case OperationResult::CRCErrorEncrypted:
-            return "CRC error in encrypted file. Wrong password?";
+            return "CRC error in encrypted file (wrong password?)";
         default:
-            return "unknown error.";
+            return "unknown error";
     }
 }
 
