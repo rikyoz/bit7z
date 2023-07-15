@@ -312,6 +312,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
             BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_THROWS( info.test() );
             REQUIRE_NOTHROW( info.setPassword( password ) );
             REQUIRE_NOTHROW( info.test() );
         }
@@ -321,6 +322,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
             BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_THROWS( info.test() );
             REQUIRE_NOTHROW( info.setPassword( password ) );
             REQUIRE_NOTHROW( info.test() );
         }
@@ -332,6 +334,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
             BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive );
+            REQUIRE_THROWS( info.test() );
             REQUIRE_NOTHROW( info.setPassword( password ) );
             REQUIRE_NOTHROW( info.test() );
         }
