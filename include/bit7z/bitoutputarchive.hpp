@@ -166,7 +166,7 @@ class BitOutputArchive {
          *                  and all of its subdirectories.
          */
         void addFiles( const tstring& in_dir,
-                       const tstring& filter = BIT7Z_STRING( "*.*" ),
+                       const tstring& filter = BIT7Z_STRING( "*" ),
                        bool recursive = true );
 
         /**
