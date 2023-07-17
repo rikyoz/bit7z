@@ -62,6 +62,15 @@ enum struct OverwriteMode {
 };
 
 /**
+ * @brief Enumeration representing the policy according to which the archive handler should treat
+ *        the items that match the pattern given by the user.
+ */
+enum struct FilterPolicy {
+    Include, ///< Extract/compress the items that match the pattern.
+    Exclude  ///< Do not extract/compress the items that match the pattern.
+};
+
+/**
  * @brief Abstract class representing a generic archive handler.
  */
 class BitAbstractArchiveHandler {

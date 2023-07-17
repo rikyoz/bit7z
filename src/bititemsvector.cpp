@@ -21,13 +21,16 @@ using namespace bit7z;
 using filesystem::FSItem;
 using filesystem::FSIndexer;
 
-void BitItemsVector::indexDirectory( const fs::path& in_dir, const tstring& filter, IndexingOptions options ) {
+void BitItemsVector::indexDirectory( const fs::path& in_dir,
+                                     const tstring& filter,
+                                     FilterPolicy policy,
+                                     IndexingOptions options ) {
     // Note: if in_dir is an invalid path, FSItem constructor throws a BitException!
     const FSItem dir_item{ in_dir, options.retain_folder_structure ? in_dir : fs::path{} };
     if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
         mItems.emplace_back( std::make_unique< FSItem >( dir_item ) );
     }
-    FSIndexer indexer{ dir_item, filter, options.only_files };
+    FSIndexer indexer{ dir_item, filter, policy, options.only_files };
     indexer.listDirectoryItems( mItems, options.recursive );
 }
 
@@ -52,7 +55,7 @@ void BitItemsVector::indexItem( const FSItem& item, IndexingOptions options ) {
         if ( !item.inArchivePath().empty() ) {
             mItems.emplace_back( std::make_unique< FSItem >( item ) );
         }
-        FSIndexer indexer{ item, {}, options.only_files };
+        FSIndexer indexer{ item, {}, FilterPolicy::Include, options.only_files };
         indexer.listDirectoryItems( mItems, true );
     } else {
         // No action needed

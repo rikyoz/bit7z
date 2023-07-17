@@ -13,6 +13,7 @@
 #include <map>
 #include <memory>
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitfs.hpp"
 #include "bittypes.hpp"
 
@@ -64,10 +65,14 @@ class BitItemsVector final {
          * @param in_dir    the directory to be indexed.
          * @param filter    (optional) the wildcard filter to be used for indexing;
          *                  empty string means "index all files".
+         * @param policy    (optional) the filtering policy to be applied to the matched items.
          * @param options   (optional) the settings to be used while indexing the given directory
          *                  and all of its subdirectories.
          */
-        void indexDirectory( const fs::path& in_dir, const tstring& filter = {}, IndexingOptions options = {} );
+        void indexDirectory( const fs::path& in_dir,
+                             const tstring& filter = {},
+                             FilterPolicy policy = FilterPolicy::Include,
+                             IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.

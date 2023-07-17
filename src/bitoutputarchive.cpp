@@ -119,17 +119,21 @@ void BitOutputArchive::addFiles( const std::vector< tstring >& in_files ) {
 }
 
 void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, bool recursive ) {
+    addFiles( in_dir, filter, FilterPolicy::Include, recursive );
+}
+
+void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, FilterPolicy policy, bool recursive ) {
     IndexingOptions options{};
     options.recursive = recursive;
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
     options.only_files = true;
-    mNewItemsVector.indexDirectory( in_dir, filter, options );
+    mNewItemsVector.indexDirectory( in_dir, filter, policy, options );
 }
 
 void BitOutputArchive::addDirectory( const tstring& in_dir ) {
     IndexingOptions options{};
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
-    mNewItemsVector.indexDirectory( in_dir, BIT7Z_STRING( "" ), options );
+    mNewItemsVector.indexDirectory( in_dir, BIT7Z_STRING( "" ), FilterPolicy::Include, options );
 }
 
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {

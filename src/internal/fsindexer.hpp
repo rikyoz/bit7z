@@ -14,6 +14,7 @@
 #include <vector>
 #include <map>
 
+#include "bitabstractarchivehandler.hpp"
 #include "internal/fsitem.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
@@ -24,7 +25,10 @@ using std::unique_ptr;
 
 class FSIndexer final {
     public:
-        explicit FSIndexer( FSItem directory, tstring filter = {}, bool only_files = false );
+        explicit FSIndexer( FSItem directory,
+                            tstring filter = {},
+                            FilterPolicy policy = FilterPolicy::Include,
+                            bool only_files = false );
 
         void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                  bool recursive,
@@ -33,6 +37,7 @@ class FSIndexer final {
     private:
         FSItem mDirItem;
         tstring mFilter;
+        FilterPolicy mPolicy;
         bool mOnlyFiles;
 };
 

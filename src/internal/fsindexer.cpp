@@ -19,8 +19,8 @@ using bit7z::GenericInputItem;
 using bit7z::tstring;
 using namespace bit7z::filesystem;
 
-FSIndexer::FSIndexer( FSItem directory, tstring filter, bool only_files )
-    : mDirItem( std::move( directory ) ), mFilter( std::move( filter ) ), mOnlyFiles{ only_files } {
+FSIndexer::FSIndexer( FSItem directory, tstring filter, FilterPolicy policy, bool only_files )
+    : mDirItem{ std::move( directory ) }, mFilter{ std::move( filter ) }, mPolicy{ policy }, mOnlyFiles{ only_files } {
     if ( !mDirItem.isDir() ) {
         throw BitException( "Invalid path", std::make_error_code( std::errc::not_a_directory ), mDirItem.name() );
     }
@@ -38,6 +38,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
     const bool include_root_path = mFilter.empty() ||
                                    fs::path{ mDirItem.path() }.parent_path().empty() ||
                                    mDirItem.inArchivePath().filename() != mDirItem.name();
+    const bool should_include_matched_items = mPolicy == FilterPolicy::Include;
     std::error_code error;
     for ( const auto& current_entry : fs::directory_iterator( path, error ) ) {
         auto search_path = include_root_path ? mDirItem.inArchivePath() : fs::path();
@@ -53,11 +54,11 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
         const bool item_matches = ( !mOnlyFiles || !current_item.isDir() ) &&
                                   fsutil::wildcardMatch( mFilter, current_item.name() );
-        if ( item_matches ) {
+        if ( item_matches == should_include_matched_items ) {
             result.emplace_back( std::make_unique< FSItem >( current_item ) );
         }
 
-        if ( current_item.isDir() && ( recursive || item_matches ) ) {
+        if ( current_item.isDir() && ( recursive || ( item_matches == should_include_matched_items ) ) ) {
             //currentItem is a directory, and we must list it only if:
             // > indexing is done recursively
             // > indexing is not recursive, but the directory name matched the filter.
