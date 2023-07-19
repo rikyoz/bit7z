@@ -177,6 +177,11 @@ target_sources( ${LIB_TARGET}
                 PUBLIC ${PUBLIC_HEADERS}
                 PRIVATE ${HEADERS} ${SOURCES} )
 
+if ( NOT "${ARCH_POSTFIX}" STREQUAL "" )
+    add_custom_target( bit7z )
+    add_dependencies( bit7z ${LIB_TARGET} )
+endif()
+
 # public includes
 target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
                                                  "$<INSTALL_INTERFACE:include>" )
