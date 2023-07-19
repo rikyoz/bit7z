@@ -15,7 +15,7 @@
 
 #include <algorithm> //for std::copy_n
 
-using namespace bit7z;
+namespace bit7z {
 
 CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer )
     : mBuffer( out_buffer ), mCurrentPosition{ mBuffer.begin() } {}
@@ -87,3 +87,5 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
 
     return S_OK;
 }
+
+} // namespace bit7z

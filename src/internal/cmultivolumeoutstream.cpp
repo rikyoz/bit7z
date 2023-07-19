@@ -18,7 +18,7 @@
 #include "fsutil.hpp"
 #include "util.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName )
     : mMaxVolumeSize( volSize ),
@@ -150,3 +150,5 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) {
     mFullSize = newSize;
     return S_OK;
 }
+
+} // namespace bit7z

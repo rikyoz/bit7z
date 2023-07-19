@@ -12,7 +12,7 @@
 
 #include "internal/cvolumeinstream.hpp"
 
-using bit7z::CVolumeInStream;
+namespace bit7z {
 
 CVolumeInStream::CVolumeInStream( const fs::path& volume_path, uint64_t global_offset )
     : CFileInStream{ volume_path }, mSize{ fs::file_size( volume_path ) }, mGlobalOffset{ global_offset } {}
@@ -26,3 +26,5 @@ BIT7Z_NODISCARD
 auto CVolumeInStream::size() const -> uint64_t {
     return mSize;
 }
+
+} // namespace bit7z

@@ -16,7 +16,7 @@
 
 #include "bitexception.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     : CStdOutStream( mFileStream ), mFilePath{ std::move( filePath ) }, mBuffer{} {
@@ -52,3 +52,5 @@ STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) {
 auto CFileOutStream::path() const -> const fs::path& {
     return mFilePath;
 }
+
+} // namespace bit7z

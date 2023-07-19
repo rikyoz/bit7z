@@ -16,9 +16,9 @@
 #include "internal/dateutil.hpp"
 #include "internal/util.hpp"
 
-using bit7z::StdInputItem;
-using bit7z::tstring;
 using std::istream;
+
+namespace bit7z {
 
 StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
 
@@ -67,3 +67,5 @@ auto StdInputItem::lastWriteTime() const noexcept -> FILETIME {
 auto StdInputItem::attributes() const noexcept -> uint32_t {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
+
+} // namespace bit7z

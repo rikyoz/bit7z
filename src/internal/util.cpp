@@ -29,9 +29,9 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
 #endif
 
-using namespace bit7z;
+namespace bit7z {
 
-auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
+auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
     if ( wideString == nullptr || size == 0 ) {
         return "";
     }
@@ -68,7 +68,7 @@ auto bit7z::narrow( const wchar_t* wideString, size_t size ) -> std::string {
 #endif
 }
 
-auto bit7z::widen( const std::string& narrowString ) -> std::wstring {
+auto widen( const std::string& narrowString ) -> std::wstring {
 #ifdef WIN32
     const int wideStringSize = MultiByteToWideChar( CP_UTF8,
                                                     0,
@@ -99,3 +99,5 @@ auto bit7z::widen( const std::string& narrowString ) -> std::wstring {
 #if !defined( WIN32 ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
 #pragma GCC diagnostic pop
 #endif
+
+} // namespace bit7z

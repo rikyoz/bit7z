@@ -21,7 +21,7 @@
 
 #include <algorithm> //for std::copy_n
 
-using namespace bit7z;
+namespace bit7z {
 
 CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer )
     : mBuffer( in_buffer ), mCurrentPosition{ mBuffer.begin() } {}
@@ -80,3 +80,5 @@ STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* new
 
     return S_OK;
 }
+
+} // namespace bit7z

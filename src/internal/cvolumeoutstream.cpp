@@ -12,7 +12,7 @@
 
 #include "internal/cvolumeoutstream.hpp"
 
-using bit7z::CVolumeOutStream;
+namespace bit7z {
 
 CVolumeOutStream::CVolumeOutStream( const fs::path& volumeName )
     : CFileOutStream( volumeName ), mCurrentOffset{ 0 }, mCurrentSize{ 0 } {}
@@ -62,3 +62,5 @@ auto CVolumeOutStream::currentSize() const -> uint64_t {
 void CVolumeOutStream::setCurrentSize( uint64_t currentSize ) {
     mCurrentSize = currentSize;
 }
+
+} // namespace bit7z

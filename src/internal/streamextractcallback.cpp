@@ -17,7 +17,8 @@
 
 using namespace std;
 using namespace NWindows;
-using namespace bit7z;
+
+namespace bit7z {
 
 StreamExtractCallback::StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream )
     : ExtractCallback( inputArchive ),
@@ -52,4 +53,6 @@ auto StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
     mStdOutStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;
+}
+
 }

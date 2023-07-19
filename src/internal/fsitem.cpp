@@ -19,8 +19,8 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-using bit7z::tstring;
-using bit7z::filesystem::FSItem;
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
+namespace filesystem {
 
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what
@@ -141,3 +141,6 @@ auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     }
     return S_OK;
 }
+
+} // namespace filesystem
+} // namespace bit7z

@@ -17,9 +17,10 @@
 #include "internal/util.hpp"
 
 using namespace std;
-using namespace bit7z;
 
 constexpr auto kCannotDeleteOutput = "Cannot erase output buffer";
+
+namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
                                               map< tstring, vector< byte_t > >& buffersMap )
@@ -78,3 +79,4 @@ auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
     return S_OK;
 }
 
+} // namespace bit7z

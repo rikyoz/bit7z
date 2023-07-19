@@ -15,7 +15,7 @@
 #include "internal/cfileoutstream.hpp"
 #include "internal/util.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 UpdateCallback::UpdateCallback( const BitOutputArchive& output )
     : Callback{ output.handler() },
@@ -138,3 +138,5 @@ STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, B
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
 }
+
+} // namespace bit7z

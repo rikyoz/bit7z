@@ -18,8 +18,6 @@
 #include "bitexception.hpp"
 #include "internal/util.hpp"
 
-using namespace bit7z;
-
 /* Safe integer comparison like in C++20 */
 #ifdef __cpp_if_constexpr
 
@@ -67,6 +65,8 @@ template< class T, class U >
 constexpr auto cmp_greater_equal( T t, U u ) noexcept -> bool {
     return !cmp_less( t, u );
 }
+
+namespace bit7z {
 
 CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
     : mBuffer( buffer ), mBufferSize( size ), mCurrentPosition( 0 ) {
@@ -158,3 +158,5 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
 
     return S_OK;
 }
+
+} // namespace bit7z

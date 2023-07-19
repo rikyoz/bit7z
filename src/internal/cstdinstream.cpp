@@ -14,7 +14,7 @@
 
 #include "internal/streamutil.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
 
@@ -62,3 +62,5 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
 
     return S_OK;
 }
+
+} // namespace bit7z

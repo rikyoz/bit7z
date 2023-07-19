@@ -13,6 +13,7 @@
 #include "internal/guids.hpp"
 
 namespace bit7z {
+
 // GUIDs of Interfaces
 #ifndef _MSC_VER
 const GUID IID_IUnknown = {
@@ -81,4 +82,5 @@ const GUID IID_IArchiveUpdateCallback = {
 const GUID IID_IArchiveUpdateCallback2 = {
     0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x06, 0x00, 0x82, 0x00, 0x00 }
 };
+
 }  // namespace bit7z

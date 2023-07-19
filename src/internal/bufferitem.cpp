@@ -16,10 +16,9 @@
 #include "internal/dateutil.hpp"
 #include "internal/util.hpp"
 
-using bit7z::BufferItem;
-using bit7z::byte_t;
-using bit7z::tstring;
 using std::vector;
+
+namespace bit7z {
 
 BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name )
     : mBuffer{ buffer }, mBufferName{ name } {}
@@ -65,3 +64,5 @@ auto BufferItem::lastWriteTime() const noexcept -> FILETIME {
 auto BufferItem::attributes() const noexcept -> uint32_t {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
+
+} // namespace bit7z

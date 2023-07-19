@@ -16,8 +16,7 @@
 #include "internal/cfileinstream.hpp"
 #include "internal/util.hpp"
 
-using namespace bit7z;
-using namespace bit7z::filesystem;
+namespace bit7z {
 
 OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const fs::path& filename )
     : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ), mPasswordWasAsked{ false } {}
@@ -138,3 +137,5 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
 auto OpenCallback::passwordWasAsked() -> bool {
     return mPasswordWasAsked;
 }
+
+} // namespace bit7z

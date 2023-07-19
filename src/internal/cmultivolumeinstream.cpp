@@ -18,8 +18,7 @@
 #include "internal/util.hpp"
 #include "internal/fsutil.hpp"
 
-using bit7z::CMultiVolumeInStream;
-using bit7z::CVolumeInStream;
+namespace bit7z {
 
 CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& first_volume ) : mCurrentPosition{ 0 }, mTotalSize{ 0 } {
     constexpr size_t volume_digits = 3u;
@@ -139,3 +138,5 @@ void CMultiVolumeInStream::addVolume( const fs::path& volume_path ) {
     mVolumes.emplace_back( make_com< CVolumeInStream >( volume_path, global_offset ) );
     mTotalSize += mVolumes.back()->size();
 }
+
+} // namespace bit7z

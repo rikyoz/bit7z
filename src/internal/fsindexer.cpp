@@ -15,9 +15,8 @@
 #include "bitexception.hpp"
 #include "internal/fsutil.hpp"
 
-using bit7z::GenericInputItem;
-using bit7z::tstring;
-using namespace bit7z::filesystem;
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
+namespace filesystem {
 
 FSIndexer::FSIndexer( FSItem directory, tstring filter, FilterPolicy policy, bool only_files )
     : mDirItem{ std::move( directory ) }, mFilter{ std::move( filter ) }, mPolicy{ policy }, mOnlyFiles{ only_files } {
@@ -67,3 +66,6 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
         }
     }
 }
+
+} // namespace filesystem
+} // namespace bit7z

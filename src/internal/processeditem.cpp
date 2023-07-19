@@ -14,8 +14,7 @@
 
 #include "bitexception.hpp"
 
-using bit7z::BitInputArchive;
-using bit7z::ProcessedItem;
+namespace bit7z {
 
 ProcessedItem::ProcessedItem()
     : mModifiedTime{}, mIsModifiedTimeDefined{ false }, mAttributes{ 0 }, mAreAttributesDefined{ false } {}
@@ -115,3 +114,5 @@ auto ProcessedItem::areAttributesDefined() const -> bool {
 auto ProcessedItem::isModifiedTimeDefined() const -> bool {
     return mIsModifiedTimeDefined;
 }
+
+} // namespace bit7z

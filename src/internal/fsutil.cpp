@@ -23,8 +23,9 @@
 #endif
 
 using namespace std;
-using namespace bit7z;
-using namespace bit7z::filesystem;
+
+namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
+namespace filesystem {
 
 auto fsutil::basename( const tstring& path ) -> tstring {
     return fs::path{ path }.stem().string< tchar >();
@@ -303,3 +304,6 @@ void fsutil::increase_opened_files_limit() {
     }
 #endif
 }
+
+} // namespace filesystem
+} // namespace bit7z

@@ -18,10 +18,10 @@
 
 using namespace std;
 using namespace NWindows;
-using namespace bit7z;
-using namespace bit7z::filesystem;
 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
+
+namespace bit7z {
 
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath )
     : ExtractCallback( inputArchive ),
@@ -126,3 +126,5 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
     }
     return S_OK;
 }
+
+} // namespace bit7z

@@ -16,7 +16,7 @@
 
 #include <iterator>
 
-using namespace bit7z;
+namespace bit7z {
 
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
@@ -91,3 +91,4 @@ STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) {
     return !mOutputStream.fail() ? S_OK : E_FAIL;
 }
 
+} // namespace bit7z

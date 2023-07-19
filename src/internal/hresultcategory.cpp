@@ -15,7 +15,7 @@
 #include "bittypes.hpp"
 #include "internal/windows.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 auto hresult_category_t::name() const noexcept -> const char* {
     return "HRESULT";
@@ -157,7 +157,9 @@ auto hresult_category_t::default_error_condition( int error_value ) const noexce
     }
 }
 
-auto bit7z::hresult_category() noexcept -> const std::error_category& {
+auto hresult_category() noexcept -> const std::error_category& {
     static const bit7z::hresult_category_t instance{};
     return instance;
 }
+
+} // namespace bit7z

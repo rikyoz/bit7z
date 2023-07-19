@@ -14,7 +14,7 @@
 
 #include "bitexception.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ), mBuffer{} {
     openFile( filePath );
@@ -35,3 +35,5 @@ void CFileInStream::openFile( const fs::path& filePath ) {
                             filePath.string< tchar >() );
     }
 }
+
+} // namespace bit7z

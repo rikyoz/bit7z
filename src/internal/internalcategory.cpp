@@ -14,7 +14,7 @@
 
 #include "biterror.hpp"
 
-using bit7z::internal_category_t;
+namespace bit7z {
 
 auto internal_category_t::name() const noexcept -> const char* {
     return "bit7z";
@@ -92,7 +92,9 @@ auto bit7z::internal_category_t::default_error_condition( int error_value ) cons
     }
 }
 
-auto bit7z::internal_category() noexcept -> const std::error_category& {
+auto internal_category() noexcept -> const std::error_category& {
     static const internal_category_t instance{};
     return instance;
 }
+
+} // namespace bit7z
