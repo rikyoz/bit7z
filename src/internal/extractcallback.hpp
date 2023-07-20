@@ -10,6 +10,8 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
+#include <system_error>
+
 #include "bitinputarchive.hpp"
 #include "internal/callback.hpp"
 #include "internal/macros.hpp"
