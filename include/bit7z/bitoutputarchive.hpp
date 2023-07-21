@@ -18,7 +18,9 @@
 #include "bitexception.hpp" //for FailedFiles
 #include "bitpropvariant.hpp"
 
+//! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct ISequentialInStream;
+//! @endcond
 
 namespace bit7z {
 

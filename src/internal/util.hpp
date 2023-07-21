@@ -20,6 +20,7 @@
 #include "internal/windows.hpp"
 #endif
 
+// Note: on non-Windows platforms, this must be included _after_ windows.hpp and guiddef.hpp
 #include <Common/MyCom.h>
 
 namespace bit7z {
