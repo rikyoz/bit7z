@@ -45,9 +45,17 @@ constexpr auto VARIANT_TRUE = static_cast< VARIANT_BOOL >( -1 );
 constexpr auto VARIANT_FALSE = static_cast< VARIANT_BOOL >( 0 );
 
 // Win32 macros needed by p7zip code
+#ifndef FAILED
 #define FAILED( Status ) (static_cast< HRESULT >(Status)<0)
+#endif
+
+#ifndef HRESULT_FACILITY
 #define HRESULT_FACILITY( hr )  (((hr) >> 16) & 0x1FFF)
+#endif
+
+#ifndef HRESULT_CODE
 #define HRESULT_CODE( hr )    ((hr) & 0xFFFF)
+#endif
 
 // Win32 APIs
 inline auto WINAPI GetLastError() -> DWORD { return static_cast< DWORD >( errno ); }
