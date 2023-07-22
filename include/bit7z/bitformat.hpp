@@ -11,7 +11,6 @@
 #define BITFORMAT_HPP
 
 #include <bitset>
-
 #include <type_traits>
 
 #include "bitcompressionmethod.hpp"

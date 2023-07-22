@@ -10,10 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/opencallback.hpp"
-
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/opencallback.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z {

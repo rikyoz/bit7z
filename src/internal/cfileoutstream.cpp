@@ -12,9 +12,8 @@
 
 #include <utility>
 
-#include "internal/cfileoutstream.hpp"
-
 #include "bitexception.hpp"
+#include "internal/cfileoutstream.hpp"
 
 namespace bit7z {
 

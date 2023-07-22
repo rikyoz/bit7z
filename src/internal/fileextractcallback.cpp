@@ -10,9 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/fileextractcallback.hpp"
-
 #include "bitexception.hpp"
+#include "internal/fileextractcallback.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 

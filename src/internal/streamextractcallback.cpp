@@ -10,9 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/streamextractcallback.hpp"
-
 #include "internal/cstdoutstream.hpp"
+#include "internal/streamextractcallback.hpp"
 #include "internal/util.hpp"
 
 using namespace std;

@@ -10,8 +10,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/fsutil.hpp"
-
 #include <algorithm> //for std::adjacent_find
 
 #ifndef _WIN32
@@ -21,6 +19,8 @@
 
 #include "internal/dateutil.hpp"
 #endif
+
+#include "internal/fsutil.hpp"
 
 using namespace std;
 

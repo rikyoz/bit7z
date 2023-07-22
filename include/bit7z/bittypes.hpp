@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-// Might be needed if the user manually enabled a BIT7Z_* compilation option
+// Must be included here since the user might have manually enabled a BIT7Z_* compilation option
 // by uncommenting the corresponding macro define in bitdefines.hpp.
 #include "bitdefines.hpp"
 

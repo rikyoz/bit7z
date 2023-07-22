@@ -10,9 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/util.hpp"
-
 #include <locale>
+
+#include "internal/util.hpp"
 
 #ifndef WIN32
 #ifndef BIT7Z_USE_STANDARD_FILESYSTEM

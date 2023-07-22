@@ -10,9 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/processeditem.hpp"
-
 #include "bitexception.hpp"
+#include "internal/processeditem.hpp"
 
 namespace bit7z {
 

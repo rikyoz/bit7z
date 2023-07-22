@@ -10,9 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/internalcategory.hpp"
-
 #include "biterror.hpp"
+#include "internal/internalcategory.hpp"
 
 namespace bit7z {
 

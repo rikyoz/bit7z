@@ -10,10 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <algorithm> //for std::copy_n
+
 #include "internal/cbufferoutstream.hpp"
 #include "internal/bufferutil.hpp"
-
-#include <algorithm> //for std::copy_n
 
 namespace bit7z {
 

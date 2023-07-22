@@ -20,6 +20,9 @@
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct ISequentialInStream;
+
+template< typename T >
+class CMyComPtr;
 //! @endcond
 
 namespace bit7z {

@@ -19,11 +19,6 @@
 struct IInArchive;
 struct IOutArchive;
 
-//! @cond IGNORE_BLOCK_IN_DOXYGEN
-template< typename T >
-class CMyComPtr;
-//! @endcond
-
 /**
  * @brief The main namespace of the bit7z library.
  */

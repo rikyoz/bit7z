@@ -11,7 +11,6 @@
  */
 
 #include "internal/bufferitem.hpp"
-
 #include "internal/cbufferinstream.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/util.hpp"

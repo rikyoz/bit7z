@@ -10,12 +10,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/cfixedbufferoutstream.hpp"
-
 #include <algorithm> //for std::copy_n
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "internal/cfixedbufferoutstream.hpp"
 #include "internal/util.hpp"
 
 /* Safe integer comparison like in C++20 */

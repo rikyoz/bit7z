@@ -11,7 +11,6 @@
  */
 
 #include "internal/cstdinstream.hpp"
-
 #include "internal/streamutil.hpp"
 
 namespace bit7z {

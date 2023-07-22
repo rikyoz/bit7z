@@ -16,10 +16,10 @@
 #pragma warning(disable:4996)
 #endif
 
+#include <algorithm> //for std::copy_n
+
 #include "internal/cbufferinstream.hpp"
 #include "internal/bufferutil.hpp"
-
-#include <algorithm> //for std::copy_n
 
 namespace bit7z {
 

@@ -12,11 +12,10 @@
 
 #include <utility>
 
-#include "cmultivolumeoutstream.hpp"
-
 #include "bitexception.hpp"
-#include "fsutil.hpp"
-#include "util.hpp"
+#include "internal/cmultivolumeoutstream.hpp"
+#include "internal/fsutil.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
 

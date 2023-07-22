@@ -10,10 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/fixedbufferextractcallback.hpp"
-
 #include "internal/cfixedbufferoutstream.hpp"
-#include "internal/fs.hpp"
+#include "internal/fixedbufferextractcallback.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z {

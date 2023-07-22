@@ -10,12 +10,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/fsitem.hpp"
-
 #include <system_error>
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/fsitem.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
