@@ -40,13 +40,6 @@ using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
 
-auto initArchiveObject( const Bit7zLibrary& lib, const GUID* format_GUID ) -> CMyComPtr< IInArchive > {
-    CMyComPtr< IInArchive > arc_object;
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    lib.createArchiveObject( format_GUID, &::IID_IInArchive, reinterpret_cast< void** >( &arc_object ) );
-    return arc_object;
-}
-
 void extractArc( IInArchive* in_archive, const vector< uint32_t >& indices, ExtractCallback* extract_callback ) {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
     const uint32_t num_items = indices.empty() ?
@@ -86,13 +79,12 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
         detected_by_signature = true;
     }
-    GUID format_GUID = formatGUID( *mDetectedFormat );
+    CMyComPtr< IInArchive > in_archive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
 #else
-    const GUID format_GUID = formatGUID( mArchiveHandler.format() );
+    CMyComPtr< IInArchive > in_archive = mArchiveHandler.library().initInArchive( mArchiveHandler.format() );
 #endif
     // NOTE: CMyComPtr is still needed: if an error occurs, and an exception is thrown,
     // the IInArchive object is deleted automatically!
-    CMyComPtr< IInArchive > in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
 
     // Creating open callback for the file
     auto open_callback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
@@ -116,8 +108,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
          * to correctly read the file signature. */
         in_stream->Seek( 0, STREAM_SEEK_SET, nullptr );
         mDetectedFormat = &( detectFormatFromSig( in_stream ) );
-        format_GUID = formatGUID( *mDetectedFormat );
-        in_archive = initArchiveObject( mArchiveHandler.library(), &format_GUID );
+        in_archive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
         res = in_archive->Open( in_stream, nullptr, open_callback );
     }
 #endif

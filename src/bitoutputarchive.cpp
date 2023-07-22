@@ -139,9 +139,7 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
     CMyComPtr< IOutArchive > new_arc;
     if ( mInputArchive == nullptr ) {
-        const GUID format_GUID = formatGUID( mArchiveCreator.format() );
-        mArchiveCreator.library() // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-                       .createArchiveObject( &format_GUID, &::IID_IOutArchive, reinterpret_cast< void** >( &new_arc ) );
+        new_arc = mArchiveCreator.library().initOutArchive( mArchiveCreator.format() );
     } else {
         mInputArchive->initUpdatableArchive( &new_arc );
     }

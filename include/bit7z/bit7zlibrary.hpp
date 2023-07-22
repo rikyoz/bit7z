@@ -12,15 +12,12 @@
 
 #include <string>
 
+#include "bitformat.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
 struct IInArchive;
 struct IOutArchive;
-
-#ifndef _WIN32
-struct GUID;
-#endif
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 template< typename T >
@@ -81,27 +78,20 @@ class Bit7zLibrary final {
         ~Bit7zLibrary();
 
         /**
-         * @brief Initiates the 7-zip object needed to create a new archive or use an old one.
-         *
-         * @note Usually, this method should not be called directly by users of the bit7z library.
-         *
-         * @param format_ID     Pointer to the GUID of the archive format (see BitInFormat's guid() method).
-         * @param interface_ID  Pointer to the GUID of the archive interface to be requested
-         *                      (IID_IInArchive or IID_IOutArchive).
-         * @param out_object    Pointer to a CMyComPtr of an object implementing the requested interface.
-         */
-        void createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const;
-
-        /**
          * @brief Set the 7-zip shared library to use large memory pages.
          */
         void setLargePageMode();
 
     private:
-        using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* interfaceID, void** out );
-
         HMODULE mLibrary;
-        CreateObjectFunc mCreateObjectFunc;
+        FARPROC mCreateObjectFunc;
+
+        auto initInArchive( const BitInFormat& format ) const -> IInArchive*;
+
+        auto initOutArchive( const BitInFormat& format ) const -> IOutArchive*;
+
+        friend class BitInputArchive;
+        friend class BitOutputArchive;
 };
 
 }  // namespace bit7z

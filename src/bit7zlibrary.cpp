@@ -11,10 +11,10 @@
  */
 
 #include "bit7zlibrary.hpp"
-
 #include "bitexception.hpp"
-#include "internal/windows.hpp"
+#include "internal/guids.hpp"
 #include "internal/util.hpp"
+#include "internal/windows.hpp"
 
 #ifdef _WIN32
 #   define Bit7zLoadLibrary( lib_name ) LoadLibraryW( WIDEN( (lib_name) ).c_str() )
@@ -35,8 +35,7 @@ Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadL
         throw BitException( "Failed to load the 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
     }
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    mCreateObjectFunc = reinterpret_cast< CreateObjectFunc >( GetProcAddress( mLibrary, "CreateObject" ) );
+    mCreateObjectFunc = GetProcAddress( mLibrary, "CreateObject" );
 
     if ( mCreateObjectFunc == nullptr ) {
         FreeLibrary( mLibrary );
@@ -46,13 +45,6 @@ Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadL
 
 Bit7zLibrary::~Bit7zLibrary() {
     FreeLibrary( mLibrary );
-}
-
-void Bit7zLibrary::createArchiveObject( const GUID* format_ID, const GUID* interface_ID, void** out_object ) const {
-    const HRESULT res = mCreateObjectFunc( format_ID, interface_ID, out_object );
-    if ( res != S_OK ) {
-        throw BitException( "Failed to get the class object", make_hresult_code( res ) );
-    }
 }
 
 void Bit7zLibrary::setLargePageMode() {
@@ -67,4 +59,32 @@ void Bit7zLibrary::setLargePageMode() {
     if ( res != S_OK ) {
         throw BitException( "Failed to set the large page mode", make_hresult_code( res ) );
     }
+}
+
+using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* interfaceID, void** out );
+
+auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> IInArchive* {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    auto createObject = reinterpret_cast< CreateObjectFunc >( mCreateObjectFunc );
+    const auto format_ID = formatGUID( format );
+    IInArchive* in_archive = nullptr;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    const HRESULT res = createObject( &format_ID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
+    if ( res != S_OK || in_archive == nullptr ) {
+        throw BitException( "Failed to get the class object", make_hresult_code( res ) );
+    }
+    return in_archive;
+}
+
+auto Bit7zLibrary::initOutArchive( const BitInFormat& format ) const -> IOutArchive* {
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    auto createObject = reinterpret_cast< CreateObjectFunc >( mCreateObjectFunc );
+    const auto format_ID = formatGUID( format );
+    IOutArchive* out_archive = nullptr;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    const HRESULT res = createObject( &format_ID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
+    if ( res != S_OK || out_archive == nullptr ) {
+        throw BitException( "Failed to get the class object", make_hresult_code( res ) );
+    }
+    return out_archive;
 }
