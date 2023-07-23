@@ -16,8 +16,13 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
+//! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct IInArchive;
 struct IOutArchive;
+
+template< typename T >
+class CMyComPtr;
+//! @endcond
 
 /**
  * @brief The main namespace of the bit7z library.
@@ -81,9 +86,9 @@ class Bit7zLibrary final {
         HMODULE mLibrary;
         FARPROC mCreateObjectFunc;
 
-        auto initInArchive( const BitInFormat& format ) const -> IInArchive*;
+        auto initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive >;
 
-        auto initOutArchive( const BitInOutFormat& format ) const -> IOutArchive*;
+        auto initOutArchive( const BitInOutFormat& format ) const -> CMyComPtr< IOutArchive >;
 
         friend class BitInputArchive;
         friend class BitOutputArchive;

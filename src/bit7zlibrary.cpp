@@ -17,6 +17,8 @@
 #include "internal/util.hpp"
 #include "internal/windows.hpp"
 
+#include <7zip/Archive/IArchive.h>
+
 #ifdef _WIN32
 #   define Bit7zLoadLibrary( lib_name ) LoadLibraryW( WIDEN( (lib_name) ).c_str() )
 #   define ERROR_CODE( errc ) bit7z::last_error_code()
@@ -64,26 +66,37 @@ void Bit7zLibrary::setLargePageMode() {
 
 using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* interfaceID, void** out );
 
-auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> IInArchive* {
+// Making the code not build when choosing a wrong interface type (only IInArchive and IOutArchive are supported!)
+template< typename T >
+constexpr auto interface_id = "Invalid interface!";
+
+template<>
+const GUID& interface_id< IInArchive > = bit7z::IID_IInArchive;
+
+template<>
+const GUID& interface_id< IOutArchive > = bit7z::IID_IOutArchive;
+
+template< typename T >
+auto createArchiveObject( FARPROC creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    auto createObject = reinterpret_cast< CreateObjectFunc >( mCreateObjectFunc );
+    auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
     const auto format_ID = formatGUID( format );
-    IInArchive* in_archive = nullptr;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    const HRESULT res = createObject( &format_ID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
+    return createObject( &format_ID, &interface_id< T >, reinterpret_cast< void** >( object ) );
+}
+
+auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive > {
+    CMyComPtr< IInArchive > in_archive{};
+    const HRESULT res = createArchiveObject( mCreateObjectFunc, format, &in_archive );
     if ( res != S_OK || in_archive == nullptr ) {
         throw BitException( "Failed to initialize the input archive object", make_hresult_code( res ) );
     }
     return in_archive;
 }
 
-auto Bit7zLibrary::initOutArchive( const BitInOutFormat& format ) const -> IOutArchive* {
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    auto createObject = reinterpret_cast< CreateObjectFunc >( mCreateObjectFunc );
-    const auto format_ID = formatGUID( format );
-    IOutArchive* out_archive = nullptr;
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    const HRESULT res = createObject( &format_ID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
+auto Bit7zLibrary::initOutArchive( const BitInOutFormat& format ) const -> CMyComPtr< IOutArchive > {
+    CMyComPtr< IOutArchive > out_archive{};
+    const HRESULT res = createArchiveObject( mCreateObjectFunc, format, &out_archive );
     if ( res != S_OK || out_archive == nullptr ) {
         throw BitException( "Failed to initialize the output archive object", make_hresult_code( res ) );
     }
