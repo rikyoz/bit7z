@@ -12,6 +12,7 @@
 
 #include "bit7zlibrary.hpp"
 #include "bitexception.hpp"
+#include "bitformat.hpp"
 #include "internal/guids.hpp"
 #include "internal/util.hpp"
 #include "internal/windows.hpp"
