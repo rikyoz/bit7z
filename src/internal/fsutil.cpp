@@ -289,9 +289,12 @@ auto fsutil::format_long_path( const fs::path& path ) -> fs::path {
 #endif
 
 void fsutil::increase_opened_files_limit() {
-#ifdef _WIN32
+#if defined( _MSC_VER )
     // http://msdn.microsoft.com/en-us/library/6e3b887c.aspx
     _setmaxstdio( 8192 );
+#elif defined( __MINGW32__ )
+    // MinGW uses an older max value for this function
+    _setmaxstdio( 2048 );
 #else
     rlimit limits;
     if ( getrlimit( RLIMIT_NOFILE, &limits ) == 0 ) {
