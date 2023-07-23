@@ -15,7 +15,6 @@
 #include "bitformat.hpp"
 #include "internal/guids.hpp"
 #include "internal/util.hpp"
-#include "internal/windows.hpp"
 
 #include <7zip/Archive/IArchive.h>
 
