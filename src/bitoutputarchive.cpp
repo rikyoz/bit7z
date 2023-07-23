@@ -10,10 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitoutputarchive.hpp"
-
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "bitoutputarchive.hpp"
 #include "internal/archiveproperties.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"

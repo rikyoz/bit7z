@@ -39,9 +39,6 @@ class UpdateCallback final : public Callback,
 
         ~UpdateCallback() override;
 
-        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
-        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511
-
         auto Finalize() noexcept -> HRESULT;
 
         // IProgress from IArchiveUpdateCallback2
@@ -68,8 +65,11 @@ class UpdateCallback final : public Callback,
 
         BIT7Z_STDMETHOD_NOEXCEPT( SetOperationResult, Int32 operationResult );
 
-        //ICryptoGetTextPassword2
+        // ICryptoGetTextPassword2
         BIT7Z_STDMETHOD( CryptoGetTextPassword2, Int32* passwordIsDefined, BSTR* password );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511
 
     private:
         const BitOutputArchive& mOutputArchive;

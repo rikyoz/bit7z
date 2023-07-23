@@ -10,10 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitfilecompressor.hpp"
-
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "bitfilecompressor.hpp"
 #include "bitoutputarchive.hpp"
 #include "internal/fs.hpp"
 

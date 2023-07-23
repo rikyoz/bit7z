@@ -37,15 +37,15 @@ class CStdOutStream : public IOutStream, public CMyUnknownImp {
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdOutStream() ) = default;
 
-        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
-        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511
-
         // IOutStream
         BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
 
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511
 
     private:
         ostream& mOutputStream;

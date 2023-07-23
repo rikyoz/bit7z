@@ -21,12 +21,12 @@
 #include "internal/bufferextractcallback.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/cmultivolumeinstream.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/util.hpp"
-#include "internal/cmultivolumeinstream.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"

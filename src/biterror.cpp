@@ -11,7 +11,6 @@
  */
 
 #include "biterror.hpp"
-
 #include "internal/internalcategory.hpp"
 
 auto bit7z::make_error_code( const bit7z::BitError& error ) -> std::error_code {

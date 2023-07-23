@@ -11,7 +11,6 @@
  */
 
 #include "bitexception.hpp"
-
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
 #include "internal/operationcategory.hpp"

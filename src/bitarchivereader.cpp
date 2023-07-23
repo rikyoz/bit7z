@@ -10,10 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitarchivereader.hpp"
-
 #include <algorithm>
 #include <numeric>
+
+#include "bitarchivereader.hpp"
 
 #include <7zip/PropID.h>
 
@@ -74,7 +74,7 @@ auto BitArchiveReader::foldersCount() const -> uint32_t {
 }
 
 auto BitArchiveReader::filesCount() const -> uint32_t {
-    return itemsCount() - foldersCount(); //I'm lazy :)
+    return itemsCount() - foldersCount(); // I'm lazy :)
 }
 
 auto BitArchiveReader::size() const -> uint64_t {

@@ -10,10 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitpropvariant.hpp"
-
 #include "bitexception.hpp"
 #include "biterror.hpp"
+#include "bitpropvariant.hpp"
 #include "internal/dateutil.hpp"
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows

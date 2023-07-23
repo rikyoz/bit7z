@@ -42,26 +42,26 @@ class OpenCallback final : public IArchiveOpenCallback,
 
         ~OpenCallback() override = default;
 
-        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
-        MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword ) //-V2507 //-V2511
+        auto passwordWasAsked() const -> bool;
 
-        //IArchiveOpenCallback
+        // IArchiveOpenCallback
         BIT7Z_STDMETHOD_NOEXCEPT( SetTotal, const UInt64* files, const UInt64* bytes );
 
         BIT7Z_STDMETHOD_NOEXCEPT( SetCompleted, const UInt64* files, const UInt64* bytes );
 
-        //IArchiveOpenVolumeCallback
+        // IArchiveOpenVolumeCallback
         BIT7Z_STDMETHOD( GetProperty, PROPID propID, PROPVARIANT* value );
 
         BIT7Z_STDMETHOD( GetStream, const wchar_t* name, IInStream** inStream );
 
-        //IArchiveOpenSetSubArchiveName
+        // IArchiveOpenSetSubArchiveName
         BIT7Z_STDMETHOD( SetSubArchiveName, const wchar_t* name );
 
-        //ICryptoGetTextPassword
+        // ICryptoGetTextPassword
         BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* password );
 
-        auto passwordWasAsked() -> bool;
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword ) //-V2507 //-V2511
 
     private:
         bool mSubArchiveMode;

@@ -10,9 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bititemsvector.hpp"
-
 #include "bitexception.hpp"
+#include "bititemsvector.hpp"
 #include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
 #include "internal/stdinputitem.hpp"

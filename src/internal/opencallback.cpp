@@ -133,7 +133,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
     return StringToBstr( pass.c_str(), password );
 }
 
-auto OpenCallback::passwordWasAsked() -> bool {
+auto OpenCallback::passwordWasAsked() const -> bool {
     return mPasswordWasAsked;
 }
 
