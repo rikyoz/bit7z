@@ -83,7 +83,7 @@ class Bit7zLibrary final {
 
         auto initInArchive( const BitInFormat& format ) const -> IInArchive*;
 
-        auto initOutArchive( const BitInFormat& format ) const -> IOutArchive*;
+        auto initOutArchive( const BitInOutFormat& format ) const -> IOutArchive*;
 
         friend class BitInputArchive;
         friend class BitOutputArchive;

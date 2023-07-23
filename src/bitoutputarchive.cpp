@@ -139,7 +139,7 @@ void BitOutputArchive::addDirectory( const tstring& in_dir ) {
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
     CMyComPtr< IOutArchive > new_arc;
     if ( mInputArchive == nullptr ) {
-        new_arc = mArchiveCreator.library().initOutArchive( mArchiveCreator.format() );
+        new_arc = mArchiveCreator.library().initOutArchive( mArchiveCreator.compressionFormat() );
     } else {
         mInputArchive->initUpdatableArchive( &new_arc );
     }

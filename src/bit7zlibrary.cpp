@@ -76,7 +76,7 @@ auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> IInArchiv
     return in_archive;
 }
 
-auto Bit7zLibrary::initOutArchive( const BitInFormat& format ) const -> IOutArchive* {
+auto Bit7zLibrary::initOutArchive( const BitInOutFormat& format ) const -> IOutArchive* {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     auto createObject = reinterpret_cast< CreateObjectFunc >( mCreateObjectFunc );
     const auto format_ID = formatGUID( format );
