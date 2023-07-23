@@ -45,9 +45,9 @@ class OpenCallback final : public IArchiveOpenCallback,
         auto passwordWasAsked() const -> bool;
 
         // IArchiveOpenCallback
-        BIT7Z_STDMETHOD_NOEXCEPT( SetTotal, const UInt64* files, const UInt64* bytes );
+        BIT7Z_STDMETHOD( SetTotal, const UInt64* files, const UInt64* bytes );
 
-        BIT7Z_STDMETHOD_NOEXCEPT( SetCompleted, const UInt64* files, const UInt64* bytes );
+        BIT7Z_STDMETHOD( SetCompleted, const UInt64* files, const UInt64* bytes );
 
         // IArchiveOpenVolumeCallback
         BIT7Z_STDMETHOD( GetProperty, PROPID propID, PROPVARIANT* value );

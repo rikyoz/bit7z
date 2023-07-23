@@ -72,7 +72,7 @@ class ExtractCallback : public Callback,
         BIT7Z_STDMETHOD( SetRatioInfo, const UInt64* inSize, const UInt64* outSize );
 
         // IArchiveExtractCallback
-        BIT7Z_STDMETHOD_NOEXCEPT( PrepareOperation, Int32 askExtractMode );
+        BIT7Z_STDMETHOD( PrepareOperation, Int32 askExtractMode );
 
         // ICryptoGetTextPassword
         BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* aPassword );

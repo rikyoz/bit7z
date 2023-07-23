@@ -29,8 +29,6 @@
 #endif
 
 #define MY_STDMETHOD_NOEXCEPT( method, ... ) auto STDMETHODCALLTYPE method ( __VA_ARGS__ ) noexcept -> HRESULT
-#define BIT7Z_STDMETHOD_NOEXCEPT( method, ... ) MY_STDMETHOD_NOEXCEPT(method, __VA_ARGS__) override
-
-#define BIT7Z_STDMETHOD BIT7Z_STDMETHOD_NOEXCEPT
+#define BIT7Z_STDMETHOD( method, ... ) MY_STDMETHOD_NOEXCEPT(method, __VA_ARGS__) override
 
 #endif //MACROS_HPP
