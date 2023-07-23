@@ -10,9 +10,11 @@ macro( add_sanitizer name )
     unset( CMAKE_REQUIRED_FLAGS )
 endmacro()
 
+option( BIT7Z_TESTS_NO_SANITIZERS "" OFF )
+
 if( MSVC )
-    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /RTCsu /analyze" )
-elseif( NOT WIN32 ) # GCC/Clang on Linux/macOS (i.e., not MinGW)
+    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /RTCsu /analyze /guard:cf" )
+elseif( NOT WIN32 AND NOT BIT7Z_TESTS_NO_SANITIZERS ) # GCC/Clang on Linux/macOS (i.e., not MinGW)
     set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer" )
 
     if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "6.0.0" )
