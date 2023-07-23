@@ -66,15 +66,20 @@ void Bit7zLibrary::setLargePageMode() {
 
 using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* interfaceID, void** out );
 
-// Making the code not build when choosing a wrong interface type (only IInArchive and IOutArchive are supported!)
+// Making the code not build when choosing a wrong interface type (only IInArchive and IOutArchive are supported!).
+// Note: use template variables once we drop support to GCC 4.9.
 template< typename T >
-constexpr auto interface_id = "Invalid interface!";
+constexpr auto interface_id() -> const GUID&;
 
 template<>
-const GUID& interface_id< IInArchive > = bit7z::IID_IInArchive;
+constexpr auto interface_id< IInArchive >() -> const GUID& {
+    return bit7z::IID_IInArchive;
+}
 
 template<>
-const GUID& interface_id< IOutArchive > = bit7z::IID_IOutArchive;
+constexpr auto interface_id< IOutArchive >() -> const GUID& {
+    return bit7z::IID_IOutArchive;
+}
 
 template< typename T >
 auto createArchiveObject( FARPROC creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
@@ -82,7 +87,7 @@ auto createArchiveObject( FARPROC creatorFunction, const BitInFormat& format, T*
     auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
     const auto format_ID = formatGUID( format );
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    return createObject( &format_ID, &interface_id< T >, reinterpret_cast< void** >( object ) );
+    return createObject( &format_ID, &interface_id< T >(), reinterpret_cast< void** >( object ) );
 }
 
 auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive > {
