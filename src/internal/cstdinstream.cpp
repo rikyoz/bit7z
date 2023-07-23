@@ -18,7 +18,7 @@ namespace bit7z {
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
     mInputStream.clear();
 
     if ( processedSize != nullptr ) {
@@ -39,7 +39,7 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     mInputStream.clear();
 
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)

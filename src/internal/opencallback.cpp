@@ -31,7 +31,7 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
+STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) noexcept try {
     BitPropVariant prop;
     if ( mSubArchiveMode ) {
         if ( propID == kpidName ) {
@@ -68,10 +68,12 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     *value = prop;
     prop.bstrVal = nullptr;
     return S_OK;
+} catch ( const BitException& ex ) {
+    return ex.hresultCode();
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) {
+STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) noexcept {
     try {
         *inStream = nullptr;
         if ( mSubArchiveMode ) {
@@ -103,7 +105,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
+STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) noexcept {
     mSubArchiveMode = true;
     try {
         mSubArchiveName = name;
@@ -114,7 +116,7 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     mPasswordWasAsked = true;
 
     std::wstring pass;

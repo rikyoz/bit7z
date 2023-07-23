@@ -42,7 +42,7 @@ auto CFileOutStream::fail() const -> bool {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) noexcept {
     std::error_code error;
     fs::resize_file( mFilePath, newSize, error );
     return error ? E_FAIL : S_OK;

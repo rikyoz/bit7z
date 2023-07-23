@@ -13,11 +13,11 @@
 #include <cstdint>
 #include <istream>
 
+#include "internal/com.hpp"
 #include "internal/guids.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 namespace bit7z {
 

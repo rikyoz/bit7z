@@ -34,7 +34,7 @@ auto UpdateCallback::Finalize() noexcept -> HRESULT {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
+STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) noexcept {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );
     }
@@ -42,7 +42,7 @@ STDMETHODIMP UpdateCallback::SetTotal( UInt64 size ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
+STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) noexcept {
     if ( completeValue != nullptr && mHandler.progressCallback() ) {
         return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
@@ -50,7 +50,7 @@ STDMETHODIMP UpdateCallback::SetCompleted( const UInt64* completeValue ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) noexcept {
     if ( inSize != nullptr && outSize != nullptr && mHandler.ratioCallback() ) {
         mHandler.ratioCallback()( *inSize, *outSize );
     }
@@ -58,7 +58,7 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) {
+STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) noexcept try {
     BitPropVariant prop;
     if ( propID == kpidIsAnti ) {
         prop = false;
@@ -68,10 +68,12 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
     *value = prop;
     prop.bstrVal = nullptr;
     return S_OK;
+} catch( const BitException& ex ) {
+    return ex.hresultCode();
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) {
+STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) noexcept {
     RINOK( Finalize() )
 
     if ( mHandler.fileCallback() ) {
@@ -90,7 +92,7 @@ STDMETHODIMP UpdateCallback::GetVolumeSize( UInt32 /*index*/, UInt64* /*size*/ )
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) {
+STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream** volumeStream ) noexcept {
     tstring res = to_tstring( index + 1 );
     if ( res.length() < 3 ) {
         // Adding leading zeros for a total res length of 3 (e.g., volume 42 will have the extension .042)
@@ -133,7 +135,7 @@ STDMETHODIMP UpdateCallback::SetOperationResult( Int32 /* operationResult */ ) n
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) {
+STDMETHODIMP UpdateCallback::CryptoGetTextPassword2( Int32* passwordIsDefined, BSTR* password ) noexcept {
     *passwordIsDefined = ( mHandler.isPasswordDefined() ? 1 : 0 );
     return StringToBstr( WIDEN( mHandler.password() ).c_str(), password );
 }

@@ -21,7 +21,7 @@ CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer )
     : mBuffer( out_buffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
     try {
         mBuffer.resize( static_cast< vector< byte_t >::size_type >( newSize ) );
         return S_OK;
@@ -52,7 +52,7 @@ STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* ne
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

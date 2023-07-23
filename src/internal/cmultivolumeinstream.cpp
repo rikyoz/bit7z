@@ -62,7 +62,7 @@ auto CMultiVolumeInStream::currentVolume() -> const CMyComPtr< CVolumeInStream >
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -92,7 +92,7 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     uint64_t origin_position; // NOLINT(cppcoreguidelines-init-variables)
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:

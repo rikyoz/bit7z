@@ -27,7 +27,7 @@ CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer )
     : mBuffer( in_buffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -40,7 +40,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
      * so "remaining" will always be > 0 (and casts to unsigned types are safe) */
     size_t remaining = mBuffer.cend() - mCurrentPosition;
     if ( remaining > static_cast< size_t >( size ) ) {
-        /* Remaining buffer still to read is bigger than the buffer size requested by the user,
+        /* The remaining buffer still to read is bigger than the buffer size requested by the user,
          * so we need to read just a "size" number of bytes. */
         remaining = static_cast< size_t >( size );
     }

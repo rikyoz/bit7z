@@ -20,7 +20,7 @@ namespace bit7z {
 CStdOutStream::CStdOutStream( std::ostream& outputStream ) : mOutputStream( outputStream ) {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -41,7 +41,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
     RINOK( to_seekdir( seekOrigin, way ) )
 
@@ -63,7 +63,7 @@ STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) noexcept {
     if ( !mOutputStream ) {
         return E_FAIL;
     }

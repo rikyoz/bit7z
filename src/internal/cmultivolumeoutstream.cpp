@@ -30,7 +30,7 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archive
 auto CMultiVolumeOutStream::GetSize() const noexcept -> UInt64 { return mFullSize; }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -127,7 +127,7 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
     for ( auto& volume : mVolumes ) {
         if ( newSize < volume->currentSize() ) {
             RINOK( volume->SetSize( newSize ) )

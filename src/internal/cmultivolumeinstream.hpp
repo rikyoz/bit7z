@@ -10,12 +10,12 @@
 #ifndef CMULTIVOLUMEINSTREAM_HPP
 #define CMULTIVOLUMEINSTREAM_HPP
 
+#include "internal/com.hpp"
 #include "internal/cvolumeinstream.hpp"
 #include "internal/macros.hpp"
 #include "internal/guiddef.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 namespace bit7z {
 

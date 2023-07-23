@@ -76,7 +76,7 @@ CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
     return newSize != mBufferSize ? E_INVALIDARG : S_OK;
 }
 
@@ -125,7 +125,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }

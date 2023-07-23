@@ -44,6 +44,11 @@
 #define __MY_WINDOWS_H // NOLINT
 #endif
 
+// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code!
+#ifndef ZIP7_INC_MY_WINDOWS_H // 7-zip 23.01+
+#define ZIP7_INC_MY_WINDOWS_H
+#endif
+
 using std::size_t;
 
 #define WINAPI

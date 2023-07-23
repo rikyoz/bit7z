@@ -24,14 +24,13 @@
 #define MY_UNKNOWN_VIRTUAL_DESTRUCTOR( x ) MY_UNKNOWN_DESTRUCTOR(x)
 #endif
 
-#ifndef _WIN32
+#ifndef COM_DECLSPEC_NOTHROW
 #define COM_DECLSPEC_NOTHROW
 #endif
 
-#define MY_STDMETHOD( method, ... ) auto STDMETHODCALLTYPE method ( __VA_ARGS__ ) -> HRESULT
-#define BIT7Z_STDMETHOD( method, ... ) COM_DECLSPEC_NOTHROW MY_STDMETHOD(method, __VA_ARGS__) override
-
 #define MY_STDMETHOD_NOEXCEPT( method, ... ) auto STDMETHODCALLTYPE method ( __VA_ARGS__ ) noexcept -> HRESULT
 #define BIT7Z_STDMETHOD_NOEXCEPT( method, ... ) MY_STDMETHOD_NOEXCEPT(method, __VA_ARGS__) override
+
+#define BIT7Z_STDMETHOD BIT7Z_STDMETHOD_NOEXCEPT
 
 #endif //MACROS_HPP

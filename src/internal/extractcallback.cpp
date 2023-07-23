@@ -31,7 +31,7 @@ auto ExtractCallback::finishOperation( OperationResult operation_result ) -> HRE
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
+STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) noexcept {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );
     }
@@ -39,7 +39,7 @@ STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
+STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) noexcept {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
         return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
@@ -47,7 +47,7 @@ STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) noexcept {
     if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
         mHandler.ratioCallback()( *inSize, *outSize );
     }
@@ -63,7 +63,8 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) noexcept 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) noexcept
+try {
     *outStream = nullptr;
     releaseStream();
 
@@ -101,7 +102,7 @@ auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
+STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexcept {
     using namespace NArchive::NExtract;
 
     auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
@@ -117,7 +118,7 @@ STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         if ( mHandler.passwordCallback() ) {

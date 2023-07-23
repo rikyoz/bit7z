@@ -124,6 +124,10 @@ enum STREAM_SEEK {
 #define MY_EXTERN_C extern "C"
 #endif
 
+#ifndef EXTERN_C // 7-zip 23.01+
+#define EXTERN_C MY_EXTERN_C
+#endif
+
 // String-related Win32 API functions (implemented in windows.cpp)
 auto SysAllocStringByteLen( LPCSTR psz, UINT len ) -> BSTR;
 
@@ -149,7 +153,10 @@ auto SysStringLen( BSTR bstr ) -> UINT;
 // On Unix 7-zip uses a different facility code since it uses HRESULT_FROM_WIN32 only for POSIX error codes.
 constexpr auto FACILITY_CODE = FACILITY_ERRNO;
 constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY__E_ERROR_NEGATIVE_SEEK;
-#else //p7zip or 7-zip on Windows
+#elif defined( MY_E_ERROR_NEGATIVE_SEEK ) // 7-zip 23.01+ on Unix
+constexpr auto FACILITY_CODE = FACILITY_ERRNO;
+constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY_E_ERROR_NEGATIVE_SEEK;
+#else // p7zip or 7-zip on Windows
 constexpr auto FACILITY_CODE = FACILITY_WIN32;
 constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK );
 #endif

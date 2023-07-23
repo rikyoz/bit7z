@@ -14,11 +14,11 @@
 #include <string>
 #include <cstdint>
 
+#include "internal/com.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/cvolumeoutstream.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 
 using std::vector;

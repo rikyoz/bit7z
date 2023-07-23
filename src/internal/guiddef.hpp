@@ -47,13 +47,29 @@ inline auto operator==( REFGUID g1, REFGUID g2 ) -> bool {
 
 inline auto operator!=( REFGUID g1, REFGUID g2 ) -> bool { return !( g1 == g2 ); }
 
+#ifndef STDMETHODCALLTYPE
 #define STDMETHODCALLTYPE
-#define STDMETHOD_( t, f ) virtual t STDMETHODCALLTYPE f
-#define STDMETHOD( f ) STDMETHOD_(HRESULT, f)
-#define STDMETHODIMP_( type ) type STDMETHODCALLTYPE
-#define STDMETHODIMP STDMETHODIMP_(HRESULT)
+#endif
 
+#ifndef STDMETHOD_
+#define STDMETHOD_( t, f ) virtual t STDMETHODCALLTYPE f
+#endif
+
+#ifndef STDMETHOD
+#define STDMETHOD( f ) STDMETHOD_(HRESULT, f)
+#endif
+
+#ifndef STDMETHODIMP_
+#define STDMETHODIMP_( type ) type STDMETHODCALLTYPE
+#endif
+
+#ifndef STDMETHODIMP
+#define STDMETHODIMP STDMETHODIMP_(HRESULT)
+#endif
+
+#ifndef PURE
 #define PURE = 0
+#endif
 
 struct IUnknown {
     STDMETHOD ( QueryInterface )( REFIID iid, void** outObject ) PURE;
