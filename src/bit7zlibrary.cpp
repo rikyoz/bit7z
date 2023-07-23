@@ -71,7 +71,7 @@ auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> IInArchiv
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     const HRESULT res = createObject( &format_ID, &::IID_IInArchive, reinterpret_cast< void** >( &in_archive ) );
     if ( res != S_OK || in_archive == nullptr ) {
-        throw BitException( "Failed to get the class object", make_hresult_code( res ) );
+        throw BitException( "Failed to initialize the input archive object", make_hresult_code( res ) );
     }
     return in_archive;
 }
@@ -84,7 +84,7 @@ auto Bit7zLibrary::initOutArchive( const BitInFormat& format ) const -> IOutArch
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     const HRESULT res = createObject( &format_ID, &::IID_IOutArchive, reinterpret_cast< void** >( &out_archive ) );
     if ( res != S_OK || out_archive == nullptr ) {
-        throw BitException( "Failed to get the class object", make_hresult_code( res ) );
+        throw BitException( "Failed to initialize the output archive object", make_hresult_code( res ) );
     }
     return out_archive;
 }
