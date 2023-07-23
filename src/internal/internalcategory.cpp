@@ -59,6 +59,8 @@ auto internal_category_t::message( int error_value ) const -> std::string {
             return "Unsupported operation.";
         case BitError::WrongUpdateMode:
             return "Wrong update mode.";
+        case BitError::InvalidZipPassword:
+            return "7-Zip only supports printable ASCII characters for passwords when creating Zip archives.";
         default:
             return "Unknown error.";
     }
@@ -77,6 +79,7 @@ auto bit7z::internal_category_t::default_error_condition( int error_value ) cons
         case BitError::InvalidWordSize:
         case BitError::ItemIsAFolder:
         case BitError::NonEmptyOutputBuffer:
+        case BitError::InvalidZipPassword:
             return std::make_error_condition( std::errc::invalid_argument );
         case BitError::NoMatchingItems:
             return std::make_error_condition( std::errc::no_such_file_or_directory );

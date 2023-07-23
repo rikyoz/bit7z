@@ -10,8 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitabstractarchivecreator.hpp"
+#include <algorithm> // for std::all_of
 
+#include "bitabstractarchivecreator.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/archiveproperties.hpp"
@@ -175,7 +176,18 @@ void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders );
 }
 
+auto is_ascii( const tstring& str ) -> bool {
+    return std::all_of( str.begin(), str.end(), []( char character ) -> bool {
+        // Note: 7-zip supports the DEL character (code 127), while bit7z doesn't.
+        constexpr auto last_ascii_char = 127;
+        return character >= 32 && character < last_ascii_char;
+    } );
+}
+
 void BitAbstractArchiveCreator::setPassword( const tstring& password, bool crypt_headers ) {
+    if ( mFormat == BitFormat::Zip && !is_ascii( password ) ) {
+        throw BitException( "Invalid password", make_error_code( BitError::InvalidZipPassword ) );
+    }
     BitAbstractArchiveHandler::setPassword( password );
     mCryptHeaders = ( password.length() > 0 ) && crypt_headers;
 }
@@ -188,7 +200,8 @@ void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level )
 
 void BitAbstractArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
     if ( !isValidCompressionMethod( mFormat, method ) ) {
-        throw BitException( "Cannot set the compression method", make_error_code( BitError::InvalidCompressionMethod ) );
+        throw BitException( "Cannot set the compression method",
+                            make_error_code( BitError::InvalidCompressionMethod ) );
     }
     if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) ) {
         /* even though the compression method is valid, we set it only if the format supports

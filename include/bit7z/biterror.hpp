@@ -38,7 +38,8 @@ enum struct BitError {
     NonEmptyOutputBuffer,
     RequestedWrongVariantType,
     UnsupportedOperation,
-    WrongUpdateMode
+    WrongUpdateMode,
+    InvalidZipPassword
 };
 
 auto make_error_code( const BitError& error ) -> std::error_code;
