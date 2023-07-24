@@ -68,7 +68,7 @@ class UpdateCallback final : public Callback,
         // ICryptoGetTextPassword2
         BIT7Z_STDMETHOD( CryptoGetTextPassword2, Int32* passwordIsDefined, BSTR* password );
 
-        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511
 
     private:

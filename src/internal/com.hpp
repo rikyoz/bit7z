@@ -16,11 +16,16 @@
 #include "internal/guiddef.hpp"
 #include "internal/windows.hpp"
 
+// Note: on non-Windows platforms, this must be included _after_ windows.hpp and guiddef.hpp
 #include <Common/MyCom.h>
 
 #ifdef Z7_COM_UNKNOWN_IMP_1 // 7-zip 23.01+
 #define SEVENZIP_2301
 #endif
+
+/* These macros redefinitions are a temporary workaround to make bit7z work as it is with 7-zip 23.01+.
+ * The latest version of 7-zip made the COM functions private, which creates lots of problems.
+ * Here we force those functions to be defined non-private as in previous 7-zip versions. */
 
 #ifdef Z7_COM_QI_BEGIN // 7-zip 23.01+
 #undef Z7_COM_QI_BEGIN

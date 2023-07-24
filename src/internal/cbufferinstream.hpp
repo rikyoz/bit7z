@@ -40,7 +40,7 @@ class CBufferInStream final : public IInStream, public CMyUnknownImp {
 
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP1( IInStream )  //-V2507 //-V2511
 
     private:

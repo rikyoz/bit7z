@@ -87,7 +87,7 @@ class ExtractCallback : public Callback,
             return mErrorException;
         }
 
-        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511
 
     protected:

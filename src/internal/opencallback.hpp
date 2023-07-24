@@ -60,7 +60,7 @@ class OpenCallback final : public IArchiveOpenCallback,
         // ICryptoGetTextPassword
         BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* password );
 
-        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type)
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword ) //-V2507 //-V2511
 
     private:

@@ -69,7 +69,7 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 
-        // NOLINT(modernize-use-noexcept, modernize-use-trailing-return-type)
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511
 };
 
