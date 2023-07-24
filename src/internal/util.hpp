@@ -15,13 +15,7 @@
 #include <string>
 #include <type_traits>
 
-#ifndef _WIN32
-#include "internal/guiddef.hpp"
-#include "internal/windows.hpp"
-#endif
-
-// Note: on non-Windows platforms, this must be included _after_ windows.hpp and guiddef.hpp
-#include <Common/MyCom.h>
+#include "internal/com.hpp"
 
 namespace bit7z {
 

@@ -68,6 +68,7 @@ set( HEADERS
      src/internal/cfixedbufferoutstream.hpp
      src/internal/cmultivolumeinstream.hpp
      src/internal/cmultivolumeoutstream.hpp
+     src/internal/com.hpp
      src/internal/cstdinstream.hpp
      src/internal/cstdoutstream.hpp
      src/internal/cvolumeinstream.hpp

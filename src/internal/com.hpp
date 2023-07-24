@@ -10,8 +10,6 @@
 #ifndef COM_HPP
 #define COM_HPP
 
-#define Z7_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN
-
 #include "bitwindows.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/windows.hpp"
