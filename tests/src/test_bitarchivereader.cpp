@@ -31,16 +31,16 @@
 
 // On MSVC, these macros are not defined!
 #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
-#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#define S_ISREG( m ) (((m) & S_IFMT) == S_IFREG)
 #endif
 #if !defined(S_ISDIR) && defined(S_IFMT) && defined(S_IFDIR)
-#define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#define S_ISDIR( m ) (((m) & S_IFMT) == S_IFDIR)
 #endif
 #if !defined(S_ISLNK) && defined(S_IFMT)
 #ifndef S_IFLNK
 constexpr auto S_IFLNK = 0120000;
 #endif
-#define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
+#define S_ISLNK( m ) (((m) & S_IFMT) == S_IFLNK)
 #endif
 
 using namespace bit7z;
@@ -985,7 +985,6 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with unicode names
             REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
             REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
             REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
-
         }
 
         SECTION( "Stream archive" ) {
@@ -995,8 +994,45 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with unicode names
             REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
             REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
             REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
-
         }
+    }
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file name", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "unicode";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    const fs::path arc_file_name = "αρχείο.7z";
+
+    SECTION( "Filesystem archive" ) {
+        const BitArchiveReader info( lib, arc_file_name.string< tchar >(), BitFormat::SevenZip );
+        REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
+        REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
+        REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
+        REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
+    }
+
+    SECTION( "Buffer archive" ) {
+        const auto file_buffer = load_file( arc_file_name );
+        const BitArchiveReader info( lib, file_buffer, BitFormat::SevenZip );
+        REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
+        REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
+        REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
+        REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
+    }
+
+    SECTION( "Stream archive" ) {
+        fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+        const BitArchiveReader info( lib, file_stream, BitFormat::SevenZip );
+        REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
+        REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
+        REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
+        REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
     }
 
     REQUIRE( set_current_dir( old_current_dir ) );
