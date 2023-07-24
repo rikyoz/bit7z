@@ -4,9 +4,15 @@
 
 # checking if compiler supports the standard filesystem library
 
-set( CMAKE_CXX_STANDARD 17 )
-include( CheckIncludeFileCXX )
-check_include_file_cxx( "filesystem" USE_STANDARD_FILESYSTEM )
+if ( MINGW )
+    # Some versions of MinGW have a buggy std::filesystem that doesn't correctly handle utf-8 paths,
+    # so we are always using the ghc::filesystem library.
+    set( USE_STANDARD_FILESYSTEM OFF )
+else()
+    set( CMAKE_CXX_STANDARD 17 )
+    include( CheckIncludeFileCXX )
+    check_include_file_cxx( "filesystem" USE_STANDARD_FILESYSTEM )
+endif()
 
 if( USE_STANDARD_FILESYSTEM )
     include( CheckCXXSourceCompiles )
