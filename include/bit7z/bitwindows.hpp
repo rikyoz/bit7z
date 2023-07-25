@@ -33,6 +33,7 @@
  * We will use only this header and avoid including "MyWindows.h" or similar headers (e.g., StdAfx.h). */
 #include <cerrno>
 #include <cstdint>
+#include <cstddef>
 
 // Avoiding accidentally including p7zip's MyWindows.h, so that its inclusion is not needed in client code!
 #ifndef __MYWINDOWS_H
