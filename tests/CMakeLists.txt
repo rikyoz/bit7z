@@ -72,12 +72,11 @@ endif()
 # The main project's CMakeLists.txt should provide the needed libraries to link!
 set( CMAKE_CXX_STANDARD_LIBRARIES "" )
 
-target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} )
+target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} 7-zip )
 target_include_directories( ${TESTS_TARGET} PRIVATE
                             "${PROJECT_SOURCE_DIR}/include/bit7z"
                             "${PROJECT_SOURCE_DIR}/src"
-                            "${BIT7Z_EXTERNAL_LIBS_DIR}"
-                            "${BIT7Z_7ZIP_SOURCE_DIR}/CPP/" )
+                            "${BIT7Z_EXTERNAL_LIBS_DIR}" )
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )

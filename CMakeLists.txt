@@ -16,7 +16,6 @@ if( POLICY CMP0076 )
 endif()
 
 set( BIT7Z_EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party CACHE PATH "Third-party directory" )
-set( BIT7Z_7ZIP_SOURCE_DIR ${BIT7Z_EXTERNAL_LIBS_DIR}/7-zip CACHE PATH "7-zip source code directory" )
 
 # public headers
 set( PUBLIC_HEADERS
@@ -183,6 +182,9 @@ if ( NOT "${ARCH_POSTFIX}" STREQUAL "" )
     add_dependencies( bit7z ${LIB_TARGET} )
 endif()
 
+include( cmake/Dependencies.cmake )
+target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
+
 # public includes
 target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
                                                  "$<INSTALL_INTERFACE:include>" )
@@ -190,8 +192,7 @@ target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SO
 # private includes
 target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
                                                   "${PROJECT_SOURCE_DIR}/src"
-                                                  "${BIT7Z_EXTERNAL_LIBS_DIR}"
-                                                  "${BIT7Z_7ZIP_SOURCE_DIR}/CPP/" )
+                                                  "${BIT7Z_EXTERNAL_LIBS_DIR}" )
 
 # 7-zip compilation definitions
 target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
