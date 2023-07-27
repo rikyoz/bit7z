@@ -5,7 +5,7 @@
 # checking if compiler supports the standard filesystem library
 
 if ( MINGW )
-    # Some versions of MinGW have a buggy std::filesystem that doesn't correctly handle utf-8 paths,
+    # Some versions of MinGW have a buggy std::filesystem that doesn't correctly handle paths with unicode characters,
     # so we are always using the ghc::filesystem library.
     set( USE_STANDARD_FILESYSTEM OFF )
 else()

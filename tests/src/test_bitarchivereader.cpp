@@ -79,7 +79,7 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
                                                                                                          \
         if ( ( format_has_crc( format ) && !(item).itemProperty( BitProperty::CRC ).isEmpty() ) &&       \
              ( format != BitFormat::Rar5 || !(item).isEncrypted() ) ) {                                  \
-            /* For some reasons, encrypted Rar5 archives messes up the values of CRCs*/                  \
+            /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/                  \
             REQUIRE( (item).crc() == (expected_item).fileInfo.crc32 );                                   \
         }                                                                                                \
     } while( false )
