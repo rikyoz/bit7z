@@ -15,6 +15,8 @@ endif()
 option( BIT7Z_VS_LIBNAME_OUTDIR_STYLE
         "Force using Visual Studio output library name and directory structure convention" )
 
+get_property( isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG )
+
 # architecture-specific options
 set( ARCH_POSTFIX "" )
 if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
@@ -22,14 +24,14 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
     if( WIN32 )
         add_definitions( -DWIN64 )
     endif()
-    if( NOT GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
+    if( NOT isMultiConfig AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
         set( ARCH_POSTFIX 64 )
     endif()
 else()
     set( ARCH_DIR "x86" )
 endif()
 
-if( NOT GENERATOR_IS_MULTI_CONFIG AND BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
+if( NOT isMultiConfig AND BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
     # forcing output directory to ${BIT7Z_DIR}/lib/${ARCH_DIR}/${CMAKE_BUILD_TYPE} (e.g. ./lib/x64/Release)
     set( LIB_OUTPUT_DIR lib/${ARCH_DIR}/${CMAKE_BUILD_TYPE}/ )
     set( BIN_OUTPUT_DIR bin/${ARCH_DIR}/${CMAKE_BUILD_TYPE}/ )
@@ -45,6 +47,6 @@ set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${LIB_OUTPUT_DIR}" )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${LIB_OUTPUT_DIR}" )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/${BIN_OUTPUT_DIR}" )
 
-if( NOT GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
+if( NOT isMultiConfig AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
     set( CMAKE_DEBUG_POSTFIX "_d" ) # debug library file name should end with "_d" (e.g. bit7z_d.lib)
 endif()
