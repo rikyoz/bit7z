@@ -15,7 +15,7 @@ endif()
 option( BIT7Z_VS_LIBNAME_OUTDIR_STYLE
         "Force using Visual Studio output library name and directory structure convention" )
 
-get_property( isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG )
+get_property( BIT7Z_GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG )
 
 include( cmake/TargetArchDetect.cmake )
 
@@ -24,7 +24,7 @@ if( BIT7Z_TARGET_ARCH_IS_64_BIT )
     if( WIN32 )
         add_definitions( -DWIN64 )
     endif()
-    if( NOT isMultiConfig AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
+    if( NOT BIT7Z_GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
         set( ARCH_POSTFIX 64 )
     endif()
 else()
