@@ -12,15 +12,8 @@ if( NOT CMAKE_BUILD_TYPE ) # by default, use release build
     set( CMAKE_BUILD_TYPE "Release" )
 endif()
 
-if( CMAKE_GENERATOR MATCHES "Visual Studio" )
-    set( BIT7Z_VS_STYLE_DEFAULT ON )
-else()
-    set( BIT7Z_VS_STYLE_DEFAULT OFF )
-endif()
-
 option( BIT7Z_VS_LIBNAME_OUTDIR_STYLE
-        "Force using Visual Studio output library name and directory structure convention"
-        ${BIT7Z_VS_STYLE_DEFAULT} )
+        "Force using Visual Studio output library name and directory structure convention" )
 
 # architecture-specific options
 set( ARCH_POSTFIX "" )
