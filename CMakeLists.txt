@@ -166,7 +166,7 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
 message( STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}" )
 message( STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}" )
-message( STATUS "Architecture: ${ARCH_DIR}" )
+message( STATUS "Architecture: ${BIT7Z_TARGET_ARCH_NAME}" )
 message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
 message( STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}" )
 

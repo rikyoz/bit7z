@@ -17,10 +17,10 @@ option( BIT7Z_VS_LIBNAME_OUTDIR_STYLE
 
 get_property( isMultiConfig GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG )
 
+include( cmake/TargetArchDetect.cmake )
+
 # architecture-specific options
-set( ARCH_POSTFIX "" )
-if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
-    set( ARCH_DIR "x64" )
+if( BIT7Z_TARGET_ARCH_IS_64_BIT )
     if( WIN32 )
         add_definitions( -DWIN64 )
     endif()
@@ -28,8 +28,11 @@ if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
         set( ARCH_POSTFIX 64 )
     endif()
 else()
-    set( ARCH_DIR "x86" )
+    set( ARCH_POSTFIX "" )
 endif()
+
+# Note: 7-zip supports only x86, x64, arm, and arm64
+set( ARCH_DIR ${BIT7Z_TARGET_ARCH_NAME} )
 
 if( NOT isMultiConfig AND BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
     # forcing output directory to ${BIT7Z_DIR}/lib/${ARCH_DIR}/${CMAKE_BUILD_TYPE} (e.g. ./lib/x64/Release)
