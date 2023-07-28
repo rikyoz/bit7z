@@ -20,6 +20,8 @@ if( MSVC )
         target_compile_options( ${LIB_TARGET} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/analyze>" )
     endif()
 
+    target_compile_options( ${LIB_TARGET} PRIVATE /EHsc )
+
     # remove CMake default warning level
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
