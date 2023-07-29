@@ -177,11 +177,13 @@ target_sources( ${LIB_TARGET}
                 PUBLIC ${PUBLIC_HEADERS}
                 PRIVATE ${HEADERS} ${SOURCES} )
 
+# additional target without the architecture suffix in the name
 if ( NOT "${ARCH_POSTFIX}" STREQUAL "" )
     add_custom_target( bit7z )
     add_dependencies( bit7z ${LIB_TARGET} )
 endif()
 
+# downloading the 7-zip source code, and setting it as a dependency of bit7z
 include( cmake/Dependencies.cmake )
 target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
 

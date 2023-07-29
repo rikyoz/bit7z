@@ -27,8 +27,6 @@ if( BIT7Z_TARGET_ARCH_IS_64_BIT )
     if( NOT BIT7Z_GENERATOR_IS_MULTI_CONFIG AND NOT BIT7Z_VS_LIBNAME_OUTDIR_STYLE )
         set( ARCH_POSTFIX 64 )
     endif()
-else()
-    set( ARCH_POSTFIX "" )
 endif()
 
 # Note: 7-zip supports only x86, x64, arm, and arm64
