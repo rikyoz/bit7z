@@ -83,7 +83,7 @@ struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder
     const tchar* ext;
     bool is_dir;
-    uint64_t size;
+    std::size_t size;
     uint32_t crc32;
 };
 
