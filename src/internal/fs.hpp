@@ -25,8 +25,6 @@ using fstream = std::fstream;
 } // namespace fs
 } // namespace bit7z
 #else
-#define GHC_WIN_WSTRING_STRING_TYPE
-
 #include <ghc/filesystem.hpp>
 
 namespace bit7z {
