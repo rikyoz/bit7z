@@ -50,6 +50,10 @@ if( BIT7Z_TESTS_FILESYSTEM )
     if( NOT EXISTS ${CMAKE_SOURCE_DIR}/test_filesystem/folder/subfolder )
         file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/folder/subfolder )
     endif()
+
+    if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES )
+        target_link_libraries( ${TESTS_TARGET} PRIVATE ghc_filesystem )
+    endif()
 else()
     # Bit7z employs the ghc::filesystem library on compilers that don't support C++17's filesystem.
     # To avoid linking errors due to mismatched filesystem libraries, it's important to use the same C++ standard
@@ -75,8 +79,7 @@ set( CMAKE_CXX_STANDARD_LIBRARIES "" )
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} 7-zip )
 target_include_directories( ${TESTS_TARGET} PRIVATE
                             "${PROJECT_SOURCE_DIR}/include/bit7z"
-                            "${PROJECT_SOURCE_DIR}/src"
-                            "${BIT7Z_EXTERNAL_LIBS_DIR}" )
+                            "${PROJECT_SOURCE_DIR}/src" )
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )

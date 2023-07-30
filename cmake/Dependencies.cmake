@@ -10,12 +10,26 @@ if( NOT ( EXISTS ${CPM_DOWNLOAD_LOCATION} ))
 endif()
 include( ${CPM_DOWNLOAD_LOCATION} )
 
+# 7-zip source code
 CPMAddPackage( NAME 7-zip
                GITHUB_REPOSITORY "rikyoz/7-Zip"
                VERSION 23.01
                DOWNLOAD_ONLY YES )
 if( 7-zip_ADDED )
     message( STATUS "7-zip source code available at ${7-zip_SOURCE_DIR}" )
-    add_library( 7-zip INTERFACE )
+    add_library( 7-zip INTERFACE IMPORTED )
     target_include_directories( 7-zip INTERFACE "${7-zip_SOURCE_DIR}/CPP/" )
+endif()
+
+# ghc::filesystem library
+if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES )
+    CPMAddPackage( NAME ghc_filesystem
+                   GITHUB_REPOSITORY gulrak/filesystem
+                   VERSION 1.5.14
+                   DOWNLOAD_ONLY YES )
+    if( ghc_filesystem_ADDED )
+        message( STATUS "ghc::filesystem source code available at ${ghc_filesystem_SOURCE_DIR}" )
+        add_library( ghc_filesystem INTERFACE IMPORTED )
+        target_include_directories( ghc_filesystem SYSTEM INTERFACE ${ghc_filesystem_SOURCE_DIR}/include )
+    endif()
 endif()

@@ -15,8 +15,6 @@ if( POLICY CMP0076 )
     cmake_policy( SET CMP0076 NEW )
 endif()
 
-set( BIT7Z_EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party CACHE PATH "Third-party directory" )
-
 # public headers
 set( PUBLIC_HEADERS
      include/bit7z/bit7z.hpp
@@ -158,17 +156,16 @@ set( SOURCES
 # library output file name options
 include( cmake/OutputOptions.cmake )
 
-# filesystem library
-include( cmake/Filesystem.cmake )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
+# detecting if the std::filesystem is available and usable
+include( cmake/FilesystemDetect.cmake )
 
 # printing library and compiler information (useful for debugging)
 message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
 message( STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}" )
 message( STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}" )
 message( STATUS "Architecture: ${BIT7Z_TARGET_ARCH_NAME}" )
-message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
-message( STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}" )
+message( STATUS "Build Type: ${CMAKE_BUILD_TYPE}" )
+message( STATUS "Language Standard for bit7z: C++${CMAKE_CXX_STANDARD}" )
 
 # library target options
 set( LIB_TARGET bit7z${ARCH_POSTFIX} )
@@ -178,14 +175,21 @@ target_sources( ${LIB_TARGET}
                 PRIVATE ${HEADERS} ${SOURCES} )
 
 # additional target without the architecture suffix in the name
-if ( NOT "${ARCH_POSTFIX}" STREQUAL "" )
+if( NOT "${ARCH_POSTFIX}" STREQUAL "" )
     add_custom_target( bit7z )
     add_dependencies( bit7z ${LIB_TARGET} )
 endif()
 
-# downloading the 7-zip source code, and setting it as a dependency of bit7z
+# dependencies
 include( cmake/Dependencies.cmake )
+
+# 7-zip source code
 target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
+
+# filesystem library (needed if std::filesystem is not available)
+if( ghc_filesystem_ADDED )
+    target_link_libraries( ${LIB_TARGET} PRIVATE ghc_filesystem )
+endif()
 
 # public includes
 target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
@@ -193,8 +197,7 @@ target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SO
 
 # private includes
 target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
-                                                  "${PROJECT_SOURCE_DIR}/src"
-                                                  "${BIT7Z_EXTERNAL_LIBS_DIR}" )
+                                                  "${PROJECT_SOURCE_DIR}/src" )
 
 # 7-zip compilation definitions
 target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
