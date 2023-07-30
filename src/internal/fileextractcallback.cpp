@@ -77,8 +77,8 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
     mFilePathOnDisk = mDirectoryPath / filePath;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( fsutil::should_format_long_path( mFilePathOnDisk ) ) {
-        mFilePathOnDisk = fsutil::format_long_path( mFilePathOnDisk );
+    if ( filesystem::fsutil::should_format_long_path( mFilePathOnDisk ) ) {
+        mFilePathOnDisk = filesystem::fsutil::format_long_path( mFilePathOnDisk );
     }
 #endif
 
