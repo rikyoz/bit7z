@@ -104,7 +104,7 @@ extern const FilesystemItemInfo clouds;
 struct ArchivedItem {
     const FilesystemItemInfo& fileInfo;
     fs::path inArchivePath;
-    bool isEncrypted = false;
+    bool isEncrypted;
 };
 
 struct ArchiveContent {

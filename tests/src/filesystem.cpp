@@ -95,34 +95,34 @@ const FilesystemItemInfo clouds{ BIT7Z_STRING( "clouds.jpg" ),
                                  0x515D4B66 };
 
 auto single_file_content() -> const ArchiveContent& {
-    static const ArchiveContent instance{ 1, clouds.size, { { clouds, clouds.name } } };
+    static const ArchiveContent instance{ 1, clouds.size, { { clouds, clouds.name, false } } };
     return instance;
 }
 
 auto multiple_files_content() -> const ArchiveContent& {
     static const ArchiveContent instance{ 2,
                                           italy.size + lorem_ipsum.size,
-                                          { { italy, italy.name },
-                                            { lorem_ipsum, lorem_ipsum.name } } };
+                                          { { italy, italy.name, false },
+                                            { lorem_ipsum, lorem_ipsum.name, false } } };
     return instance;
 }
 
 auto multiple_items_content() -> const ArchiveContent& {
     static const ArchiveContent instance{ 8,
                                           615351,
-                                          { { italy, "italy.svg" },
-                                            { lorem_ipsum, "Lorem Ipsum.pdf" },
-                                            { noext, "noext" },
-                                            { dot_folder, "dot.folder" },
-                                            { hello_json, "dot.folder/hello.json" },
-                                            { empty_folder, "empty" },
-                                            { folder, "folder" },
-                                            { clouds, "folder/clouds.jpg" },
-                                            { subfolder, "folder/subfolder" },
-                                            { subfolder2, "folder/subfolder2" },
-                                            { frequency, "folder/subfolder2/frequency.xlsx" },
-                                            { homework, "folder/subfolder2/homework.doc" },
-                                            { quick_brown, "folder/subfolder2/The quick brown fox.pdf" } } };
+                                          { { italy, "italy.svg", false },
+                                            { lorem_ipsum, "Lorem Ipsum.pdf", false },
+                                            { noext, "noext", false },
+                                            { dot_folder, "dot.folder", false },
+                                            { hello_json, "dot.folder/hello.json", false },
+                                            { empty_folder, "empty", false },
+                                            { folder, "folder", false },
+                                            { clouds, "folder/clouds.jpg", false },
+                                            { subfolder, "folder/subfolder", false },
+                                            { subfolder2, "folder/subfolder2", false },
+                                            { frequency, "folder/subfolder2/frequency.xlsx", false },
+                                            { homework, "folder/subfolder2/homework.doc", false },
+                                            { quick_brown, "folder/subfolder2/The quick brown fox.pdf", false } } };
     return instance;
 }
 
@@ -132,13 +132,13 @@ auto encrypted_content() -> const ArchiveContent& {
                                           { { italy, "italy.svg", true },
                                             { lorem_ipsum, "Lorem Ipsum.pdf", true },
                                             { noext, "noext", true },
-                                            { dot_folder, "dot.folder" },
+                                            { dot_folder, "dot.folder", false },
                                             { hello_json, "dot.folder/hello.json", true },
-                                            { empty_folder, "empty" },
-                                            { folder, "folder" },
+                                            { empty_folder, "empty", false },
+                                            { folder, "folder", false },
                                             { clouds, "folder/clouds.jpg", true },
-                                            { subfolder, "folder/subfolder" },
-                                            { subfolder2, "folder/subfolder2" },
+                                            { subfolder, "folder/subfolder", false },
+                                            { subfolder2, "folder/subfolder2", false },
                                             { frequency, "folder/subfolder2/frequency.xlsx", true },
                                             { homework, "folder/subfolder2/homework.doc", true },
                                             { quick_brown, "folder/subfolder2/The quick brown fox.pdf", true } } };
