@@ -218,12 +218,13 @@ include( cmake/BuildOptions.cmake )
 # compiler-specific options
 include( cmake/CompilerOptions.cmake )
 
+# tests
 if( BIT7Z_BUILD_TESTS )
-    # tests
+    enable_testing()
     add_subdirectory( tests )
 endif()
 
+# docs
 if( BIT7Z_BUILD_DOCS )
-    # docs
     add_subdirectory( docs )
 endif()
