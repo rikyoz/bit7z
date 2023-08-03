@@ -176,8 +176,7 @@ target_sources( ${LIB_TARGET}
 
 # additional target without the architecture suffix in the name
 if( NOT "${ARCH_POSTFIX}" STREQUAL "" )
-    add_custom_target( bit7z )
-    add_dependencies( bit7z ${LIB_TARGET} )
+    add_library( bit7z ALIAS ${LIB_TARGET} )
 endif()
 
 # dependencies
