@@ -41,7 +41,11 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) noex
     } else {
         switch ( propID ) {
             case kpidName:
-                prop = fs::path( mFileItem.name() ).wstring();
+#ifdef BIT7Z_USE_NATIVE_STRING
+                prop = mFileItem.name();
+#else
+                prop = widen(mFileItem.name());
+#endif
                 break;
             case kpidIsDir:
                 prop = mFileItem.isDir();

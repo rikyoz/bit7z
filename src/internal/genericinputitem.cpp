@@ -11,6 +11,7 @@
  */
 
 #include "internal/genericinputitem.hpp"
+#include "util.hpp"
 
 namespace bit7z {
 
@@ -21,9 +22,16 @@ auto GenericInputItem::hasNewData() const noexcept -> bool {
 auto GenericInputItem::itemProperty( BitProperty propID ) const -> BitPropVariant {
     BitPropVariant prop;
     switch ( propID ) {
-        case BitProperty::Path:
-            prop = inArchivePath().wstring();
+        case BitProperty::Path: {
+            try {
+                prop = inArchivePath().wstring();
+            } catch (...) {
+                // On some compilers and platforms (e.g., GCC before v12.3),
+                // the conversion to wstring might throw an exception.
+                prop = widen(inArchivePath().string());
+            }
             break;
+        }
         case BitProperty::IsDir:
             prop = isDir();
             break;
