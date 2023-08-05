@@ -137,7 +137,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     return StringToBstr( pass.c_str(), password );
 }
 
-auto make_error_code( const OperationResult& error ) -> std::error_code {
+auto make_error_code( OperationResult error ) -> std::error_code {
     return { static_cast< int >( error ), operation_category() };
 }
 

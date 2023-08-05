@@ -46,7 +46,7 @@ enum struct OperationResult {
     OpenErrorEncrypted = 2 * NOperationResult::kWrongPassword + 2
 };
 
-auto make_error_code( const OperationResult& error ) -> std::error_code;
+auto make_error_code( OperationResult error ) -> std::error_code;
 
 class ExtractCallback : public Callback,
                         public IArchiveExtractCallback,

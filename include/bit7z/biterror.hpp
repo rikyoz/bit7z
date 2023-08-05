@@ -42,7 +42,7 @@ enum struct BitError {
     InvalidZipPassword
 };
 
-auto make_error_code( const BitError& error ) -> std::error_code;
+auto make_error_code( BitError error ) -> std::error_code;
 
 }  // namespace bit7z
 
