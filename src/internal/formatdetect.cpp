@@ -61,6 +61,7 @@ auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> 
             *format = &BitFormat::GZip;
             return true;
         case str_hash( BIT7Z_STRING( "tar" ) ):
+        case str_hash( BIT7Z_STRING( "ova" ) ):
             *format = &BitFormat::Tar;
             return true;
         case str_hash( BIT7Z_STRING( "wim" ) ):
@@ -180,9 +181,6 @@ auto findFormatByExtension( const tstring& ext, const BitInFormat** format ) -> 
             return true;
         case str_hash( BIT7Z_STRING( "ntfs" ) ):
             *format = &BitFormat::Ntfs;
-            return true;
-        case str_hash( BIT7Z_STRING( "ova" ) ):
-            *format = &BitFormat::Tar;
             return true;
         case str_hash( BIT7Z_STRING( "pmd" ) ):
         case str_hash( BIT7Z_STRING( "ppmd" ) ):
