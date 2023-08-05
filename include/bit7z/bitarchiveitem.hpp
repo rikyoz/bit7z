@@ -20,11 +20,6 @@ namespace bit7z {
 class BitArchiveItem : public BitGenericItem {
     public:
         /**
-         * @brief BitArchiveItem destructor.
-         */
-        ~BitArchiveItem() override = default;
-
-        /**
          * @return the index of the item in the archive.
          */
         BIT7Z_NODISCARD auto index() const noexcept -> uint32_t;

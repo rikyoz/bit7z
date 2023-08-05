@@ -23,13 +23,14 @@ auto GenericInputItem::itemProperty( BitProperty propID ) const -> BitPropVarian
     BitPropVariant prop;
     switch ( propID ) {
         case BitProperty::Path: {
-            try {
-                prop = inArchivePath().wstring();
-            } catch (...) {
-                // On some compilers and platforms (e.g., GCC before v12.3),
-                // the conversion to wstring might throw an exception.
-                prop = widen(inArchivePath().string());
-            }
+#if defined(_MSC_VER) || !defined(BIT7Z_USE_STANDARD_FILESYSTEM)
+            prop = inArchivePath().wstring();
+#else
+            // On some compilers and platforms (e.g., GCC before v12.3),
+            // the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
+            // So we simply convert to tstring, and then widen it if necessary.
+            prop = WIDEN( inArchivePath().string< tchar >() );
+#endif
             break;
         }
         case BitProperty::IsDir:
