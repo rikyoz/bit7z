@@ -88,7 +88,7 @@ class ExtractCallback : public Callback,
         }
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511
+        MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835
 
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );

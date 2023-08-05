@@ -21,13 +21,13 @@ namespace bit7z {
 
 #ifndef _WIN32
 
-auto FILETIME_to_file_time_type( const FILETIME& fileTime ) -> fs::file_time_type;
+auto FILETIME_to_file_time_type( FILETIME fileTime ) -> fs::file_time_type;
 
 auto time_to_FILETIME( const std::time_t& timeValue ) -> FILETIME;
 
 #endif
 
-auto FILETIME_to_time_type( const FILETIME& fileTime ) -> time_type;
+auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type;
 
 auto currentFileTime() -> FILETIME;
 

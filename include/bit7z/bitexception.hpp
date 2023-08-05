@@ -50,8 +50,17 @@ class BitException final : public system_error {
          * @brief Constructs a BitException object with the given message, and the specific file that failed.
          *
          * @param message   the message associated with the exception object.
-         * @param file      the file that failed during the operation.
          * @param code      the HRESULT code associated with the exception object.
+         * @param file      the file that failed during the operation.
+         */
+        BitException( const char* message, std::error_code code, tstring&& file );
+
+        /**
+         * @brief Constructs a BitException object with the given message, and the specific file that failed.
+         *
+         * @param message   the message associated with the exception object.
+         * @param code      the HRESULT code associated with the exception object.
+         * @param file      the file that failed during the operation.
          */
         BitException( const char* message, std::error_code code, const tstring& file );
 

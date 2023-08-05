@@ -31,10 +31,11 @@ using bit7z::tstring;
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
     : std::system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
 
+BitException::BitException( const char* const message, std::error_code code, tstring&& file )
+    : std::system_error( code, message ), mFailedFiles{ std::make_pair( std::move( file ), code ) } {}
+
 BitException::BitException( const char* const message, std::error_code code, const tstring& file )
-    : std::system_error( code, message ) {
-    mFailedFiles.emplace_back( file, code );
-}
+    : std::system_error( code, message ), mFailedFiles{ std::make_pair( file, code ) } {}
 
 BitException::BitException( const std::string& message, std::error_code code )
     : std::system_error( code, message ) {}

@@ -30,7 +30,7 @@ BIT7Z_NODISCARD auto wildcardMatch( const tstring& pattern, const tstring& str )
 BIT7Z_NODISCARD auto getFileAttributesEx( const fs::path& filePath,
                                           WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
 
-auto setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept -> bool;
+auto setFileModifiedTime( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
 
 auto setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
 

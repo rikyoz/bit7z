@@ -64,7 +64,7 @@ auto lookupType( VARTYPE type ) -> BitPropVariantType {
 namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
 
 /* Needed for comparing FILETIME objects in BitPropVariant */
-inline auto operator==( const FILETIME& ft1, const FILETIME& ft2 ) noexcept -> bool {
+inline auto operator==( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
 #ifdef _WIN32
     return CompareFileTime( &ft1, &ft2 ) == 0;
 #else
@@ -177,7 +177,7 @@ BitPropVariant::BitPropVariant( int64_t value ) noexcept: PROPVARIANT() {
     hVal.QuadPart = value;
 }
 
-BitPropVariant::BitPropVariant( const FILETIME& value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( FILETIME value ) noexcept: PROPVARIANT() {
     vt = VT_FILETIME;
     wReserved1 = 0;
     filetime = value;

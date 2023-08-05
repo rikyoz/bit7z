@@ -249,7 +249,7 @@ struct BitPropVariant final : public PROPVARIANT {
          *
          * @param value the FILETIME value of the BitPropVariant
          */
-        explicit BitPropVariant( const FILETIME& value ) noexcept;
+        explicit BitPropVariant( FILETIME value ) noexcept;
 
         /**
          * @brief BitPropVariant destructor.

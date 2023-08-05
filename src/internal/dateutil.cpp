@@ -22,7 +22,7 @@ constexpr std::chrono::seconds nt_to_unix_epoch{ -11644473600 };
 
 #ifndef _WIN32
 
-auto FILETIME_to_file_time_type( const FILETIME& fileTime ) -> fs::file_time_type {
+auto FILETIME_to_file_time_type( FILETIME fileTime ) -> fs::file_time_type {
     const FileTimeDuration file_time_duration{
         ( static_cast< int64_t >( fileTime.dwHighDateTime ) << 32 ) + fileTime.dwLowDateTime
     };
@@ -41,7 +41,7 @@ auto time_to_FILETIME( const std::time_t& timeValue ) -> FILETIME {
 
 #endif
 
-auto FILETIME_to_time_type( const FILETIME& fileTime ) -> time_type {
+auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
     const FileTimeDuration file_time_duration{
         ( static_cast< int64_t >( fileTime.dwHighDateTime ) << 32 ) + fileTime.dwLowDateTime
     };

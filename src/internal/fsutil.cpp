@@ -209,7 +209,7 @@ auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
 #endif
 }
 
-auto fsutil::setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept -> bool {
+auto fsutil::setFileModifiedTime( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
