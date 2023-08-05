@@ -29,7 +29,9 @@
 #include "internal/util.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
+
 #include "internal/formatdetect.hpp"
+
 #endif
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
@@ -40,33 +42,21 @@ using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
 
-void extractArc( IInArchive* in_archive, const vector< uint32_t >& indices, ExtractCallback* extract_callback ) {
+void extractArc( IInArchive* in_archive,
+                 const vector< uint32_t >& indices,
+                 ExtractCallback* extract_callback,
+                 ExtractMode mode = ExtractMode::Extract ) {
     const uint32_t* item_indices = indices.empty() ? nullptr : indices.data();
     const uint32_t num_items = indices.empty() ?
                                std::numeric_limits< uint32_t >::max() : static_cast< uint32_t >( indices.size() );
 
-    const HRESULT res = in_archive->Extract( item_indices, num_items, NExtract::NAskMode::kExtract, extract_callback );
+    const HRESULT res = in_archive->Extract( item_indices, num_items, static_cast< Int32 >( mode ), extract_callback );
     if ( res != S_OK ) {
         const auto& errorException = extract_callback->errorException();
         if ( errorException ) {
             std::rethrow_exception( errorException );
         } else {
             throw BitException( "Could not extract the archive", make_hresult_code( res ) );
-        }
-    }
-}
-
-void testArc( IInArchive* in_archive, ExtractCallback* extract_callback ) {
-    const HRESULT res = in_archive->Extract( nullptr,
-                                             static_cast< uint32_t >( -1 ),
-                                             NExtract::NAskMode::kTest,
-                                             extract_callback );
-    if ( res != S_OK ) {
-        const auto& errorException = extract_callback->errorException();
-        if ( errorException ) {
-            std::rethrow_exception( errorException );
-        } else {
-            throw BitException( "Could not test the archive", make_hresult_code( res ) );
         }
     }
 }
@@ -136,6 +126,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path )
     : mDetectedFormat{ nullptr },
 #else
+
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arc_path )
     : mDetectedFormat{ DETECT_FORMAT( handler.format(), arc_path ) },
 #endif
@@ -312,7 +303,19 @@ void BitInputArchive::extractTo( std::map< tstring, std::vector< byte_t > >& out
 void BitInputArchive::test() const {
     map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummy_map );
-    testArc( mInArchive, extract_callback );
+    extractArc( mInArchive, {}, extract_callback, ExtractMode::Test );
+}
+
+void BitInputArchive::testItem( uint32_t index ) const {
+    const uint32_t number_items = itemsCount();
+    if ( index >= number_items ) {
+        throw BitException( "Cannot test item at the index " + std::to_string( index ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
+    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummy_map );
+    extractArc( mInArchive, { index }, extract_callback, ExtractMode::Test );
 }
 
 auto BitInputArchive::close() const noexcept -> HRESULT {
@@ -367,11 +370,13 @@ auto BitInputArchive::const_iterator::operator++( int ) noexcept -> BitInputArch
     return incremented;
 }
 
-auto BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const noexcept -> bool {
+auto
+BitInputArchive::const_iterator::operator==( const BitInputArchive::const_iterator& other ) const noexcept -> bool {
     return mItemOffset == other.mItemOffset;
 }
 
-auto BitInputArchive::const_iterator::operator!=( const BitInputArchive::const_iterator& other ) const noexcept -> bool {
+auto
+BitInputArchive::const_iterator::operator!=( const BitInputArchive::const_iterator& other ) const noexcept -> bool {
     return !( *this == other );
 }
 

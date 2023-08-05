@@ -246,6 +246,15 @@ class BitInputArchive {
          */
         void test() const;
 
+        /**
+         * @brief Tests the item at the given index inside the archive without extracting it.
+         *
+         * If the archive is not valid, or there's no item at the given index, a BitException is thrown!
+         *
+         * @param index  the index of the file to be tested.
+         */
+        void testItem( uint32_t index ) const;
+
     protected:
         auto openArchiveStream( const fs::path& name, IInStream* in_stream ) -> IInArchive*;
 
