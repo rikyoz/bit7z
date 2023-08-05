@@ -178,6 +178,16 @@ auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const
         throw BitException( "Could not retrieve property for item at the index " + std::to_string( index ),
                             make_hresult_code( res ) );
     }
+    if ( property == BitProperty::Path && item_property.isEmpty() && itemsCount() == 1 ) {
+#if defined(_MSC_VER) || !defined(BIT7Z_USE_STANDARD_FILESYSTEM)
+        item_property = fs::path{ mArchivePath }.stem().wstring();
+#else
+        // On some compilers and platforms (e.g., GCC before v12.3),
+        // the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
+        // So we simply convert to tstring, and then widen it if necessary.
+        item_property = WIDEN( fs::path{ mArchivePath }.stem().string< tchar >() );
+#endif
+    }
     return item_property;
 }
 
