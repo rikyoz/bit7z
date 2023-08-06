@@ -1930,7 +1930,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
 
     BitItemsVector items_vector;
 
-    const auto* test_input = GENERATE(
+    const auto* test_input = GENERATE( as< const tchar* >(),
         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
         BIT7Z_STRING( "italy.svg" ),
         BIT7Z_STRING( "noext" ),
@@ -1959,7 +1959,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
 
     BitItemsVector items_vector;
 
-    const auto* test_input = GENERATE(
+    const auto* test_input = GENERATE( as< const tchar* >(),
         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
         BIT7Z_STRING( "italy.svg" ),
         BIT7Z_STRING( "noext" ),

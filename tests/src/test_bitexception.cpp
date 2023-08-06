@@ -29,7 +29,7 @@ struct portable_error_test { //-V802
 };
 
 #define ERROR_TEST( code ) #code, code
-#define HRESULT_WIN32_TEST( code ) #code, HRESULT_FROM_WIN32( code )
+#define HRESULT_WIN32_TEST( code ) #code, __HRESULT_FROM_WIN32( code )
 
 constexpr portable_error_test hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( E_ABORT ), "Operation aborted", std::errc::operation_canceled },
@@ -134,7 +134,13 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
             auto code = bit7z::make_hresult_code( test.error );
 
             REQUIRE( code.value() == test.error );
-            REQUIRE( code.message() == test.message );
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+			auto error_message = code.message();
+			error_message.erase(error_message.length() - 2);
+			REQUIRE(error_message == test.message);
+#else
+			REQUIRE(code.message() == test.message);
+#endif
             REQUIRE( code == test.portable_error );
 
             const auto exception = BitException( "Hello World", code );
@@ -147,7 +153,14 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
             REQUIRE( exception.hresultCode() == test.error );
             REQUIRE( exception.posixCode() == exception.nativeCode() );
 #endif
-            REQUIRE( exception.what() == std::string{ "Hello World: " } + test.message );
+
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+			bit7z::tstring exception_message = exception.what();
+			exception_message.erase(exception_message.length() - 2);
+            REQUIRE( exception_message == std::string{ "Hello World: " } + test.message );
+#else
+			REQUIRE( exception.what() == std::string{ "Hello World: " } +test.message );
+#endif
         }
     }
 }
@@ -189,8 +202,10 @@ TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitExcep
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto sys_error = std::error_code{ static_cast<int>( test.error ), std::system_category() };
 
+#if defined(_MSC_VER) && _MSC_VER > 1900
             auto hresult_error = bit7z::make_hresult_code( HRESULT_FROM_WIN32( test.error ) );
             REQUIRE( sys_error.default_error_condition() == hresult_error.default_error_condition() );
+#endif
 
             const auto exception = BitException( "Hello World", sys_error );
 #ifdef _WIN32
@@ -227,7 +242,14 @@ TEST_CASE( "BitException: Constructing std::error_code from unmapped HRESULT val
     for ( const auto& test : unmapped_hresult_tests ) {
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto hresult_code = bit7z::make_hresult_code( test.error );
+
+#if defined(_MSC_VER) && _MSC_VER <= 1900
+			auto error_message = hresult_code.message();
+			error_message.erase(error_message.length() - 2);
+			REQUIRE( error_message == test.message );
+#else
             REQUIRE( hresult_code.message() == test.message );
+#endif
 
             auto hresult_cond = hresult_code.default_error_condition();
             if ( HRESULT_FACILITY( test.error ) == FACILITY_WIN32 ) {

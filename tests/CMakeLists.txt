@@ -90,6 +90,10 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     endif()
 endif()
 
+if ( MSVC )
+    target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
+endif()
+
 include( cmake/Sanitizers.cmake )
 
 # Catch2
