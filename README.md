@@ -282,14 +282,24 @@ add_subdirectory( ${CMAKE_SOURCE_DIR}/third_party/bit7z )
 target_link_libraries( ${YOUR_TARGET} PRIVATE bit7z )
 ```
 
-### Characters Encoding
+### String Encoding
 
 By default, the project follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
 
 + The default path string type is `std::string`, so users can easily use the library in cross-platform projects.
-+ `std::string`s will be considered to be UTF-8 encoded.
++ `std::string`s are considered to be UTF-8 encoded.
 
-On Windows, you can configure bit7z to use UTF-16 encoded strings (i.e., `std::wstring`) by enabling the `BIT7Z_USE_NATIVE_STRING` option via CMake.
+On Windows, if your project needs access to files or paths having characters outside of the [ANSI](https://en.wikipedia.org/wiki/Windows-1252) set, you either:
+
++ Use the UTF-8 code page for your application (recommended); or
++ Configure bit7z to use UTF-16 encoded wide strings (i.e., `std::wstring`) by enabling the `BIT7Z_USE_NATIVE_STRING` option via CMake.
+
+### Long Paths (Windows-only)
+
+<details>
+  <summary>Expand for more details!</summary>
+
+</details>
 
 ## ☕️ Donate
 
