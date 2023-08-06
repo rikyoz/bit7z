@@ -1019,10 +1019,10 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file n
 #if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
     const auto old_locale = std::locale::global( std::locale("en_US.UTF8") );
 #endif
-    const fs::path arc_file_name = "αρχείο.7z";
+    const auto* const arc_file_name = BIT7Z_STRING( "αρχείο.7z" );
 
     SECTION( "Filesystem archive" ) {
-        const BitArchiveReader info( lib, arc_file_name.string< tchar >(), BitFormat::SevenZip );
+        const BitArchiveReader info( lib, arc_file_name, BitFormat::SevenZip );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
         REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );

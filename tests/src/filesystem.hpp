@@ -28,6 +28,7 @@
 
 #include <catch2/catch.hpp>
 #include <internal/fs.hpp>
+#include "internal/util.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
@@ -67,8 +68,12 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
 }
 
 inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t > {
-    INFO( in_file )
+    //INFO( in_file.string() )
+#if BIT7Z_USE_NATIVE_STRING
+    fs::ifstream ifs( widen(in_file.u8string()), fs::ifstream::binary );
+#else
     fs::ifstream ifs( in_file, fs::ifstream::binary );
+#endif
     REQUIRE( ifs.is_open() );
     noskipws( ifs ); //no skip spaces!
     auto size = fs::file_size( in_file );

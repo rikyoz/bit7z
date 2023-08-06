@@ -93,7 +93,12 @@ endif()
 if ( MSVC )
     set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TESTS_TARGET} )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
-    target_sources( ${TESTS_TARGET} PRIVATE src/encoding.manifest )
+
+    if ( NOT BIT7Z_USE_NATIVE_STRING )
+        target_sources( ${TESTS_TARGET} PRIVATE src/encoding.manifest )
+    else()
+        target_sources( ${TESTS_TARGET} PRIVATE src/encodingLegacy.manifest )
+    endif()
 endif()
 
 include( cmake/Sanitizers.cmake )

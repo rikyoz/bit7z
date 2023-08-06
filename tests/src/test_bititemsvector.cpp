@@ -81,7 +81,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                "σαράντα δύο.txt",
+                BIT7Z_STRING( "σαράντα δύο.txt" ),
                 "dot.folder",
                 "dot.folder/hello.json",
                 "empty",
@@ -166,7 +166,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                "σαράντα δύο.txt",
+                BIT7Z_STRING( "σαράντα δύο.txt" ),
                 "dot.folder/hello.json",
                 "folder/clouds.jpg",
                 "folder/subfolder2/homework.doc",
@@ -244,7 +244,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
                 "./italy.svg",
                 "./Lorem Ipsum.pdf",
                 "./noext",
-                "./σαράντα δύο.txt",
+                BIT7Z_STRING( "./σαράντα δύο.txt" ),
                 "./dot.folder",
                 "./dot.folder/hello.json",
                 "./empty",
@@ -328,7 +328,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                     "dot.folder",
                     "dot.folder/hello.json",
                     "empty",
@@ -402,7 +402,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                     "dot.folder/hello.json",
                     "folder/clouds.jpg",
                     "folder/subfolder2/homework.doc",
@@ -466,7 +466,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "dot.folder/hello.json",
                     "italy.svg",
                     "Lorem Ipsum.pdf",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                     "folder/clouds.jpg",
                     "folder/subfolder2/homework.doc",
                     "folder/subfolder2/The quick brown fox.pdf",
@@ -530,7 +530,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "dot.folder/hello.json",
                     "italy.svg",
                     "Lorem Ipsum.pdf",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                     "folder/clouds.jpg",
                     "folder/subfolder2/homework.doc",
                     "folder/subfolder2/The quick brown fox.pdf",
@@ -721,7 +721,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                 {
                     "italy.svg",
                     "noext",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                     "dot.folder",
                     "dot.folder/hello.json",
                     "empty",
@@ -840,7 +840,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                     "dot.folder",
                     "dot.folder/hello.json",
                     "empty",
@@ -922,7 +922,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                 }
             },
             TestDirectory{ "empty", {} },
@@ -975,7 +975,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "dot.folder/hello.json",
                     "italy.svg",
                     "Lorem Ipsum.pdf",
-                    "σαράντα δύο.txt",
+                    BIT7Z_STRING( "σαράντα δύο.txt" ),
                 }
             },
             TestDirectory{ "empty", {} },
@@ -1031,7 +1031,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         options.only_files = true;
 
         const auto test_directory = GENERATE(
-            TestDirectory{ ".", { "italy.svg", "Lorem Ipsum.pdf", "σαράντα δύο.txt", } },
+            TestDirectory{ ".", { "italy.svg", "Lorem Ipsum.pdf", BIT7Z_STRING( "σαράντα δύο.txt" ), } },
             TestDirectory{ "empty", {} },
             TestDirectory{ "./empty", {} },
             TestDirectory{ "folder", { "folder/clouds.jpg" } },
@@ -1213,7 +1213,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                "σαράντα δύο.txt",
+                BIT7Z_STRING( "σαράντα δύο.txt" ),
                 "empty",
                 "folder",
                 "folder/clouds.jpg",
@@ -1295,7 +1295,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
                 "test_filesystem/italy.svg",
                 "test_filesystem/Lorem Ipsum.pdf",
                 "test_filesystem/noext",
-                "test_filesystem/σαράντα δύο.txt",
+                BIT7Z_STRING( "test_filesystem/σαράντα δύο.txt" ),
                 "test_filesystem/dot.folder",
                 "test_filesystem/dot.folder/hello.json",
                 "test_filesystem/empty",
@@ -1359,7 +1359,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
                 "test_filesystem/italy.svg",
                 "test_filesystem/Lorem Ipsum.pdf",
                 "test_filesystem/noext",
-                "test_filesystem/σαράντα δύο.txt",
+                BIT7Z_STRING( "test_filesystem/σαράντα δύο.txt" ),
                 "test_filesystem/dot.folder",
                 "test_filesystem/dot.folder/hello.json",
                 "test_filesystem/empty",
@@ -1423,7 +1423,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/italy.svg",
                 "custom_folder/Lorem Ipsum.pdf",
                 "custom_folder/noext",
-                "custom_folder/σαράντα δύο.txt",
+                BIT7Z_STRING( "custom_folder/σαράντα δύο.txt" ),
                 "custom_folder/empty",
                 "custom_folder/folder",
                 "custom_folder/folder/clouds.jpg",
@@ -1525,7 +1525,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                "σαράντα δύο.txt",
+                BIT7Z_STRING( "σαράντα δύο.txt" ),
                 "empty",
                 "folder",
                 "folder/clouds.jpg",
@@ -1892,7 +1892,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
             TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
             TestFile{ "italy.svg", "italy.svg" },
             TestFile{ "noext", "noext" },
-            TestFile{ "σαράντα δύο.txt", "σαράντα δύο.txt" },
+            TestFile{ BIT7Z_STRING( "σαράντα δύο.txt" ), BIT7Z_STRING( "σαράντα δύο.txt" ) },
             TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
             TestFile{ "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
             TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
@@ -1900,7 +1900,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
             TestFile{ "dot.folder/hello.json", "dot.folder/hello.json" }
         );
 
-    DYNAMIC_SECTION ( "Indexing file " << test_input.inputFile ) {
+    DYNAMIC_SECTION ( "Indexing file " << test_input.inputFile.u8string() ) {
         REQUIRE_NOTHROW( items_vector.indexFile( test_input.inputFile.string< bit7z::tchar >() ) );
 
         REQUIRE( items_vector.size() == 1 );
@@ -1922,7 +1922,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
         "Lorem Ipsum.pdf",
         "italy.svg",
         "noext",
-        "σαράντα δύο.txt",
+        BIT7Z_STRING( "σαράντα δύο.txt" ),
         "folder/clouds.jpg",
         "folder/subfolder2/homework.doc",
         "folder/subfolder2/The quick brown fox.pdf",
@@ -1930,7 +1930,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
         "dot.folder/hello.json"
     );
 
-    DYNAMIC_SECTION ( "Indexing file " << test_input ) {
+    DYNAMIC_SECTION ( "Indexing file " << test_input.u8string() ) {
         REQUIRE_NOTHROW( items_vector.indexFile( test_input.string< bit7z::tchar >(),
                                                  BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( items_vector.size() == 1 );
@@ -1948,7 +1948,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
 
     BitItemsVector items_vector;
 
-    const auto* test_input = GENERATE( as< const tchar* >(),
+    const fs::path test_input = GENERATE( as< fs::path >(),
         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
         BIT7Z_STRING( "italy.svg" ),
         BIT7Z_STRING( "noext" ),
@@ -1960,8 +1960,8 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
         BIT7Z_STRING( "dot.folder/hello.json" )
     );
 
-    DYNAMIC_SECTION ( "Indexing file " << test_input << " as a stream" ) {
-        std::ifstream input_stream{ test_input };
+    DYNAMIC_SECTION ( "Indexing file " << test_input.u8string() << " as a stream" ) {
+        fs::ifstream input_stream{ test_input };
         REQUIRE_NOTHROW( items_vector.indexStream( input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( items_vector.size() == 1 );
         REQUIRE( items_vector[ 0 ].inArchivePath() == "custom_name.ext" );
@@ -1978,7 +1978,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
 
     BitItemsVector items_vector;
 
-    const auto* test_input = GENERATE( as< const tchar* >(),
+    const fs::path test_input = GENERATE( as< fs::path >(),
         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
         BIT7Z_STRING( "italy.svg" ),
         BIT7Z_STRING( "noext" ),
@@ -1990,7 +1990,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
         BIT7Z_STRING( "dot.folder/hello.json" )
     );
 
-    DYNAMIC_SECTION ( "Indexing file " << test_input << " as a stream" ) {
+    DYNAMIC_SECTION ( "Indexing file " << test_input.u8string() << " as a buffer" ) {
         auto input_buffer = bit7z::test::filesystem::load_file( test_input );
         REQUIRE_NOTHROW( items_vector.indexBuffer( input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( items_vector.size() == 1 );
