@@ -56,7 +56,7 @@ In the end, some other features (e.g., _automatic format detection_ and _selecti
 
 Below are a few examples that show how to use some of the main features of bit7z.
 
-### 📂 Extracting files from an archive
+### 📂 Extracting Files from an Archive
 
 ```cpp
 #include <bit7z/bitfileextractor.hpp>
@@ -104,7 +104,7 @@ try { // bit7z classes can throw BitException objects
 } catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
-### 💼 Compressing files into an archive
+### 💼 Compressing Files into an Archive
 
 ```cpp
 #include <bit7z/bitfilecompressor.hpp>
@@ -165,7 +165,7 @@ try { // bit7z classes can throw BitException objects
 } catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
-### 📑 Reading archive metadata
+### 📑 Reading Archive Metadata
 
 ```cpp
 #include <bit7z/bitarchivereader.hpp>
@@ -246,6 +246,7 @@ You can also clone/download this repository and build the library yourself (plea
 
 + **Operating System:** Windows, Linux, macOS, Android[^1].
 + **Architecture:** x86, x86_64, arm, arm64.
++ **Language Standard:** C++11 (for using the library), C++14 (for building the library).
 + **Compiler:** MSVC 2015 or later[^2], MinGW v6.4 or later, GCC v4.9 or later, Clang 3.6 or later.
 + **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix[^3].
 
@@ -255,7 +256,7 @@ You can also clone/download this repository and build the library yourself (plea
 
 [^3]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
-## ⚙️ Building and using bit7z
+## ⚙️ Building and Using bit7z
 
 For building the library:
 
@@ -278,8 +279,17 @@ For example:
 
 ```cmake
 add_subdirectory( ${CMAKE_SOURCE_DIR}/third_party/bit7z )
-target_link_libraries( ${TARGET_NAME} PRIVATE bit7z )
+target_link_libraries( ${YOUR_TARGET} PRIVATE bit7z )
 ```
+
+### Characters Encoding
+
+By default, the project follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
+
++ The default string type for paths is `std::string`, so users can easily use the library in cross-platform projects.
++ `std::string`s will be considered as UTF-8 encoded.
+
+On Windows, you can configure bit7z to use UTF-16 encoded strings (i.e., `std::wstring`) for its API by enabling the `BIT7Z_USE_NATIVE_STRING` option in CMake.
 
 ## ☕️ Donate
 
