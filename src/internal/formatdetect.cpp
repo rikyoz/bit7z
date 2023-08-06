@@ -461,7 +461,7 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
         file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
     }
 
-    static constexpr OffsetSignature common_signatures_with_offset[] = { // NOLINT(*-avoid-c-arrays)
+    static const OffsetSignature common_signatures_with_offset[] = { // NOLINT(*-avoid-c-arrays)
         { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // -lh
         { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // NTFS 0x20 0x20 0x20 0x20
         { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // Nullsoft
