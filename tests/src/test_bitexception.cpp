@@ -134,12 +134,12 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
             auto code = bit7z::make_hresult_code( test.error );
 
             REQUIRE( code.value() == test.error );
-#if defined(_MSC_VER) && _MSC_VER <= 1900
-			auto error_message = code.message();
-			error_message.erase(error_message.length() - 2);
-			REQUIRE(error_message == test.message);
+#if defined(_MSC_VER) && _MSC_VER < 1920
+            auto error_message = code.message();
+            error_message.erase(error_message.length() - 2);
+            REQUIRE(error_message == test.message);
 #else
-			REQUIRE(code.message() == test.message);
+            REQUIRE( code.message() == test.message );
 #endif
             REQUIRE( code == test.portable_error );
 
@@ -154,12 +154,12 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
             REQUIRE( exception.posixCode() == exception.nativeCode() );
 #endif
 
-#if defined(_MSC_VER) && _MSC_VER <= 1900
-			bit7z::tstring exception_message = exception.what();
-			exception_message.erase(exception_message.length() - 2);
+#if defined(_MSC_VER) && _MSC_VER < 1920
+            bit7z::tstring exception_message = exception.what();
+            exception_message.erase(exception_message.length() - 2);
             REQUIRE( exception_message == std::string{ "Hello World: " } + test.message );
 #else
-			REQUIRE( exception.what() == std::string{ "Hello World: " } +test.message );
+            REQUIRE( exception.what() == std::string{ "Hello World: " } + test.message );
 #endif
         }
     }
@@ -243,10 +243,10 @@ TEST_CASE( "BitException: Constructing std::error_code from unmapped HRESULT val
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto hresult_code = bit7z::make_hresult_code( test.error );
 
-#if defined(_MSC_VER) && _MSC_VER <= 1900
-			auto error_message = hresult_code.message();
-			error_message.erase(error_message.length() - 2);
-			REQUIRE( error_message == test.message );
+#if defined(_MSC_VER) && _MSC_VER < 1920
+            auto error_message = hresult_code.message();
+            error_message.erase(error_message.length() - 2);
+            REQUIRE( error_message == test.message );
 #else
             REQUIRE( hresult_code.message() == test.message );
 #endif
