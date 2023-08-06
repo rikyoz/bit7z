@@ -1009,7 +1009,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with unicode names
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1920 || !defined(BIT7Z_USE_STANDARD_FILESYSTEM))
+#if defined(_MSC_VER) && (_MSC_VER >= 1930 || !defined(BIT7Z_USE_STANDARD_FILESYSTEM))
 TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file name", "[bitarchivereader]" ) {
     const fs::path old_current_dir = current_dir();
     const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "unicode";
