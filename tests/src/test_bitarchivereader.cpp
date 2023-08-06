@@ -1009,7 +1009,6 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with unicode names
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
-#if defined(_MSC_VER) && (_MSC_VER >= 1930 || !defined(BIT7Z_USE_STANDARD_FILESYSTEM))
 TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file name", "[bitarchivereader]" ) {
     const fs::path old_current_dir = current_dir();
     const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "unicode";
@@ -1017,6 +1016,9 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file n
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
+#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
+    const auto old_locale = std::locale::global( std::locale("en_US.UTF8") );
+#endif
     const fs::path arc_file_name = "αρχείο.7z";
 
     SECTION( "Filesystem archive" ) {
@@ -1045,9 +1047,12 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file n
         REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
     }
 
+#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
+    std::locale::global( old_locale );
+#endif
+
     REQUIRE( set_current_dir( old_current_dir ) );
 }
-#endif
 
 #ifdef BIT7Z_AUTO_FORMAT
 
