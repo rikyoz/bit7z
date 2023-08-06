@@ -51,7 +51,8 @@ auto main( int argc, char* argv[] ) -> int {
     std::cout << "[Flags]" << std::endl;
     std::cout << "BIT7Z_AUTO_FORMAT: " << flags::auto_format << std::endl;
     std::cout << "BIT7Z_REGEX_MATCHING: " << flags::regex_matching << std::endl;
-    std::cout << "BIT7Z_USE_NATIVE_STRING: " << flags::native_string << std::endl << std::endl;
+    std::cout << "BIT7Z_USE_NATIVE_STRING: " << flags::native_string << std::endl;
+    std::cout << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << std::endl << std::endl;
 
     return Catch::Session().run( argc, argv );
 }
