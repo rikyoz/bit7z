@@ -90,11 +90,14 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     endif()
 endif()
 
-if ( MSVC )
-    set_property( DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TESTS_TARGET} )
+if( CMAKE_GENERATOR MATCHES "Visual Studio" )
+    set_property( DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TESTS_TARGET} )
+endif()
+
+if( MSVC )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
 
-    if ( NOT BIT7Z_USE_NATIVE_STRING )
+    if( NOT BIT7Z_USE_NATIVE_STRING )
         target_sources( ${TESTS_TARGET} PRIVATE res/encoding.manifest )
     else()
         target_sources( ${TESTS_TARGET} PRIVATE res/encodingLegacy.manifest )
