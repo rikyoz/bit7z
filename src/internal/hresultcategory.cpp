@@ -22,8 +22,15 @@ auto hresult_category_t::name() const noexcept -> const char* {
 
 auto hresult_category_t::message( int error_value ) const -> std::string {
 #ifdef _MSC_VER
-    // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors.
+    // MSVC compilers use FormatMessage, which supports both Win32 errors and HRESULT com errors.
+#   if _MSC_VER >= 1920
     return std::system_category().message( error_value );
+#   else
+    // Old versions of MSVC had a trailing \r\n in the error message, so we trim it.
+    auto error_message = std::system_category().message( error_value );
+    error_message.erase( error_message.find_last_not_of( " \r\n" ) + 1 );
+    return error_message;
+#   endif
 #elif defined( __MINGW32__ )
     // MinGW supports FormatMessageA!
     LPSTR messageBuffer = nullptr;
