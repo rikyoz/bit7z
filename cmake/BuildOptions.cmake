@@ -41,6 +41,9 @@ message( STATUS "7-zip version: ${BIT7Z_7ZIP_VERSION}" )
 option( BIT7Z_BUILD_TESTS "Enable or disable building the testing executable" )
 message( STATUS "Build tests: ${BIT7Z_BUILD_TESTS}" )
 
+option( BIT7Z_BUILD_DOCS "Enable or disable building the documentation" )
+message( STATUS "Build docs: ${BIT7Z_BUILD_DOCS}" )
+
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     option( BIT7Z_LINK_LIBCPP "Enable or disable linking to libc++" )
     message( STATUS "Link to libc++: ${BIT7Z_LINK_LIBCPP}" )
