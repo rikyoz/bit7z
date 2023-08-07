@@ -95,9 +95,9 @@ if ( MSVC )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
 
     if ( NOT BIT7Z_USE_NATIVE_STRING )
-        target_sources( ${TESTS_TARGET} PRIVATE src/encoding.manifest )
+        target_sources( ${TESTS_TARGET} PRIVATE res/encoding.manifest )
     else()
-        target_sources( ${TESTS_TARGET} PRIVATE src/encodingLegacy.manifest )
+        target_sources( ${TESTS_TARGET} PRIVATE res/encodingLegacy.manifest )
     endif()
 endif()
 
