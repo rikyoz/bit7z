@@ -14,7 +14,10 @@
 
 #ifdef BIT7Z_AUTO_FORMAT
 
-#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
+#include <algorithm>
+#include "internal/formatdetect.hpp"
+
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 #include <cwctype> // for std::iswdigit
 #else
 #include <cctype> // for std::isdigit
