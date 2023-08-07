@@ -179,6 +179,12 @@ if( NOT "${ARCH_POSTFIX}" STREQUAL "" )
     add_library( bit7z ALIAS ${LIB_TARGET} )
 endif()
 
+# bit7z build options
+include( cmake/BuildOptions.cmake )
+
+# compiler-specific options
+include( cmake/CompilerOptions.cmake )
+
 # dependencies
 include( cmake/Dependencies.cmake )
 
@@ -210,12 +216,6 @@ if( UNIX )
                                                       ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
     target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
-
-# bit7z build options
-include( cmake/BuildOptions.cmake )
-
-# compiler-specific options
-include( cmake/CompilerOptions.cmake )
 
 # tests
 if( BIT7Z_BUILD_TESTS )

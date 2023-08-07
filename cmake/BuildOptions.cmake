@@ -35,6 +35,9 @@ if( BIT7Z_USE_NATIVE_STRING )
     set_property( TARGET ${TARGET_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON )
 endif()
 
+set( BIT7Z_7ZIP_VERSION "23.01" CACHE STRING "The version of 7-zip to be used by bit7z" )
+message( STATUS "7-zip version: ${BIT7Z_7ZIP_VERSION}" )
+
 option( BIT7Z_BUILD_TESTS "Enable or disable building the testing executable" )
 message( STATUS "Build tests: ${BIT7Z_BUILD_TESTS}" )
 

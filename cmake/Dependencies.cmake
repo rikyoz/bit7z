@@ -13,7 +13,7 @@ include( ${CPM_DOWNLOAD_LOCATION} )
 # 7-zip source code
 CPMAddPackage( NAME 7-zip
                GITHUB_REPOSITORY "rikyoz/7-Zip"
-               VERSION 23.01
+               VERSION ${BIT7Z_7ZIP_VERSION}
                DOWNLOAD_ONLY YES )
 if( 7-zip_ADDED )
     message( STATUS "7-zip source code available at ${7-zip_SOURCE_DIR}" )
