@@ -15,8 +15,7 @@ body:
       label: bit7z version
       multiple: true
       options:
-        - 4.0.x RC
-        - 4.0.x Beta
+        - 4.0
         - 3.2.x
         - 3.1.x
         - 3.0.x
@@ -30,6 +29,7 @@ body:
       label: Compilation options
       multiple: true
       options:
+        - BIT7Z_7ZIP_VERSION
         - BIT7Z_ANALYZE_CODE
         - BIT7Z_AUTO_FORMAT
         - BIT7Z_AUTO_PREFIX_LONG_PATHS
@@ -39,6 +39,9 @@ body:
         - BIT7Z_LINK_LIBCPP
         - BIT7Z_REGEX_MATCHING
         - BIT7Z_STATIC_RUNTIME
+        - BIT7Z_TESTS_FILESYSTEM
+        - BIT7Z_TESTS_NO_SANITIZERS
+        - BIT7Z_TESTS_USE_SYSTEM_7ZIP
         - BIT7Z_USE_NATIVE_STRING
         - BIT7Z_USE_STD_BYTE
         - BIT7Z_VS_LIBNAME_OUTDIR_STYLE
@@ -50,6 +53,7 @@ body:
       label: 7-zip version
       multiple: true
       options:
+        - v23.01
         - v22.01
         - v22.00
         - v21.07
@@ -104,6 +108,8 @@ body:
       options:
         - x86_64
         - x86
+        - arm
+        - arm64
     validations:
       required: true
   - type: dropdown
@@ -115,6 +121,7 @@ body:
         - Windows
         - Linux
         - macOS
+        - Android
     validations:
       required: true
   - type: input
