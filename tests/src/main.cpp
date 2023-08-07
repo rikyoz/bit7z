@@ -23,36 +23,36 @@
 auto main( int argc, char* argv[] ) -> int {
     using namespace bit7z::test;
 
-    std::cout << "[Compiler]" << std::endl;
-    std::cout << "Name: " << compiler::name << std::endl;
-    std::cout << "Version: " << compiler::version << std::endl;
-    std::cout << "Target Architecture: " << compiler::target_arch << std::endl << std::endl;
+    std::cout << "[Compiler]\n";
+    std::cout << "Name: " << compiler::name << '\n';
+    std::cout << "Version: " << compiler::version << '\n';
+    std::cout << "Target Architecture: " << compiler::target_arch << "\n\n";
 
-    std::cout << "[Standard Library]" << std::endl;
-    std::cout << "Name: " << compiler::standard_library << std::endl;
-    std::cout << "Version: " << compiler::standard_library_version << std::endl << std::endl;
+    std::cout << "[Standard Library]\n";
+    std::cout << "Name: " << compiler::standard_library << '\n';
+    std::cout << "Version: " << compiler::standard_library_version << "\n\n";
 
-    std::cout << "[Runtime]" << std::endl;
-    std::cout << "Executable path: " << filesystem::exe_path().string() << std::endl;
+    std::cout << "[Runtime]\n";
+    std::cout << "Executable path: " << filesystem::exe_path().string() << '\n';
     std::cout << "7-zip shared library: ";
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
-    std::wcout << sevenzip_lib_path() << std::endl;
+    std::wcout << sevenzip_lib_path() << "\n";
 #else
-    std::cout << sevenzip_lib_path() << std::endl;
+    std::cout << sevenzip_lib_path() << '\n';
 #endif
 #ifdef BIT7Z_TESTS_FILESYSTEM
-    std::cout << "Test data path: " << filesystem::test_data_dir << std::endl;
+    std::cout << "Test data path: " << filesystem::test_data_dir << '\n';
 #endif
 #ifdef _WIN32
-    std::cout << "Code page: " << GetACP() << std::endl;
+    std::cout << "Code page: " << GetACP() << '\n';
 #endif
-    std::cout << std::endl;
+    std::cout << '\n';
 
-    std::cout << "[Flags]" << std::endl;
-    std::cout << "BIT7Z_AUTO_FORMAT: " << flags::auto_format << std::endl;
-    std::cout << "BIT7Z_REGEX_MATCHING: " << flags::regex_matching << std::endl;
-    std::cout << "BIT7Z_USE_NATIVE_STRING: " << flags::native_string << std::endl;
-    std::cout << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << std::endl << std::endl;
+    std::cout << "[Flags]\n";
+    std::cout << "BIT7Z_AUTO_FORMAT: " << flags::auto_format << '\n';
+    std::cout << "BIT7Z_REGEX_MATCHING: " << flags::regex_matching << '\n';
+    std::cout << "BIT7Z_USE_NATIVE_STRING: " << flags::native_string << '\n';
+    std::cout << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << '\n' << std::endl;
 
     return Catch::Session().run( argc, argv );
 }
