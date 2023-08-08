@@ -112,12 +112,14 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* in_str
     return in_archive.Detach();
 }
 
+inline auto detect_format( const BitInFormat& format, const fs::path& arc_path ) -> const BitInFormat* {
 #ifdef BIT7Z_AUTO_FORMAT
-#   define DETECT_FORMAT( format, arc_path ) \
-        ( (format) == BitFormat::Auto ? &detectFormatFromExt( arc_path ) : &(format) )
+    return ( (format) == BitFormat::Auto ? &detectFormatFromExt( arc_path ) : &(format) );
 #else
-#   define DETECT_FORMAT( format, arc_path ) &format
+    (void)arc_path; // unused when auto format detection is enabled!
+    return &format;
 #endif
+}
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& in_file )
     : BitInputArchive( handler, fs::path{ in_file } ) {}
@@ -126,9 +128,8 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path )
     : mDetectedFormat{ nullptr },
 #else
-
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arc_path )
-    : mDetectedFormat{ DETECT_FORMAT( handler.format(), arc_path ) },
+    : mDetectedFormat{ detect_format( handler.format(), arc_path ) },
 #endif
       mArchiveHandler{ handler },
       mArchivePath{ arc_path.string< tchar >() } {
@@ -136,7 +137,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
     if ( filesystem::fsutil::should_format_long_path( arc_path ) ) {
         arc_path = filesystem::fsutil::format_long_path( arc_path );
     }
-    mDetectedFormat = DETECT_FORMAT( handler.format(), arc_path );
+    mDetectedFormat = detect_format( handler.format(), arc_path );
 #endif
 
     CMyComPtr< IInStream > file_stream;
