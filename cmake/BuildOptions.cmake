@@ -31,7 +31,7 @@ endif()
 
 option( BIT7Z_GENERATE_PIC "Enable or disable generating Position Independent Code" )
 message( STATUS "Generate Position Independent Code: ${BIT7Z_GENERATE_PIC}" )
-if( BIT7Z_USE_NATIVE_STRING )
+if( BIT7Z_GENERATE_PIC )
     set_property( TARGET ${TARGET_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON )
 endif()
 
