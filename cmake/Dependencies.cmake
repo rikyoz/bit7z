@@ -10,15 +10,17 @@ if( NOT ( EXISTS ${CPM_DOWNLOAD_LOCATION} ))
 endif()
 include( ${CPM_DOWNLOAD_LOCATION} )
 
-# 7-zip source code
-CPMAddPackage( NAME 7-zip
-               GITHUB_REPOSITORY "rikyoz/7-Zip"
-               VERSION ${BIT7Z_7ZIP_VERSION}
-               DOWNLOAD_ONLY YES )
-if( 7-zip_ADDED )
-    message( STATUS "7-zip source code available at ${7-zip_SOURCE_DIR}" )
-    add_library( 7-zip INTERFACE IMPORTED )
-    target_include_directories( 7-zip INTERFACE "${7-zip_SOURCE_DIR}/CPP/" )
+if( BIT7Z_7ZIP_VERSION )
+    # 7-zip source code
+    CPMAddPackage( NAME 7-zip
+                   GITHUB_REPOSITORY "rikyoz/7-Zip"
+                   VERSION ${BIT7Z_7ZIP_VERSION}
+                   DOWNLOAD_ONLY YES )
+    if( 7-zip_ADDED )
+        message( STATUS "7-zip source code available at ${7-zip_SOURCE_DIR}" )
+        add_library( 7-zip INTERFACE IMPORTED )
+        target_include_directories( 7-zip INTERFACE "${7-zip_SOURCE_DIR}/CPP/" )
+    endif()
 endif()
 
 # ghc::filesystem library
