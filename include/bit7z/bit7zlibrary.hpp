@@ -86,8 +86,10 @@ class Bit7zLibrary final {
         HMODULE mLibrary;
         FARPROC mCreateObjectFunc;
 
+        BIT7Z_NODISCARD
         auto initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive >;
 
+        BIT7Z_NODISCARD
         auto initOutArchive( const BitInOutFormat& format ) const -> CMyComPtr< IOutArchive >;
 
         friend class BitInputArchive;

@@ -81,6 +81,7 @@ constexpr auto interface_id< IOutArchive >() -> const GUID& {
 }
 
 template< typename T >
+BIT7Z_NODISCARD
 auto createArchiveObject( FARPROC creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
@@ -89,6 +90,7 @@ auto createArchiveObject( FARPROC creatorFunction, const BitInFormat& format, T*
     return createObject( &format_ID, &interface_id< T >(), reinterpret_cast< void** >( object ) );
 }
 
+BIT7Z_NODISCARD
 auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive > {
     CMyComPtr< IInArchive > in_archive{};
     const HRESULT res = createArchiveObject( mCreateObjectFunc, format, &in_archive );
@@ -98,6 +100,7 @@ auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> CMyComPtr
     return in_archive;
 }
 
+BIT7Z_NODISCARD
 auto Bit7zLibrary::initOutArchive( const BitInOutFormat& format ) const -> CMyComPtr< IOutArchive > {
     CMyComPtr< IOutArchive > out_archive{};
     const HRESULT res = createArchiveObject( mCreateObjectFunc, format, &out_archive );
