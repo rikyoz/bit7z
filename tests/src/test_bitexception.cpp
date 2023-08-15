@@ -133,7 +133,7 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto code = bit7z::make_hresult_code( test.error );
 
-            REQUIRE( code.value() == test.error );
+            REQUIRE( static_cast< HRESULT >( code.value() ) == test.error );
             REQUIRE( code.message() == test.message );
             REQUIRE( code == test.portable_error );
 
