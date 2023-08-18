@@ -172,6 +172,16 @@ static const mode_t global_umask = []() noexcept {
 
 #endif
 
+#ifndef _WIN32
+#ifdef __APPLE__
+using stat_t = struct stat;
+const auto os_lstat = lstat;
+#else
+using stat_t = struct stat64;
+const auto os_lstat = lstat64;
+#endif
+#endif
+
 auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
@@ -180,8 +190,8 @@ auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
 #ifdef _WIN32
     return ::SetFileAttributesW( filePath.c_str(), attributes ) != FALSE;
 #else
-    struct stat64 file_stat{};
-    if ( lstat64( filePath.c_str(), &file_stat ) != 0 ) {
+    stat_t file_stat{};
+    if ( os_lstat( filePath.c_str(), &file_stat ) != 0 ) {
         return false;
     }
 
@@ -239,8 +249,8 @@ auto fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE
 #ifdef _WIN32
     return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileMetadata ) != FALSE;
 #else
-    struct stat64 stat_info{};
-    if ( lstat64( filePath.c_str(), &stat_info ) != 0 ) {
+    stat_t stat_info{};
+    if ( os_lstat( filePath.c_str(), &stat_info ) != 0 ) {
         return false;
     }
 
