@@ -93,9 +93,10 @@ endif()
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
     target_compile_options( ${LIB_TARGET} PRIVATE -Wshadow -Wcast-align -Wunused
                             -Woverloaded-virtual -Wformat=2 -Wdouble-promotion -Wlogical-op )
-    if( NOT MINGW )
+    if( NOT MINGW AND BIT7Z_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wnon-virtual-dtor )
-    else()
+    endif()
+    if( MINGW )
         # Some versions of MinGW might complain that the library is too big when linking to it.
         # Using -Wa,-mbig-obj fixes the linking error.
         # (https://digitalkarabela.com/mingw-w64-how-to-fix-file-too-big-too-many-sections/).

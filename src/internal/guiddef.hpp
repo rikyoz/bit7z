@@ -78,7 +78,9 @@ struct IUnknown {
 
     STDMETHOD_( ULONG, Release )() PURE;
 
+#ifdef BIT7Z_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN
     virtual ~IUnknown() = default;
+#endif
 };
 
 #endif
