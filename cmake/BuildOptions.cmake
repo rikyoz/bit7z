@@ -35,6 +35,12 @@ if( BIT7Z_GENERATE_PIC )
     set_property( TARGET ${TARGET_NAME} PROPERTY POSITION_INDEPENDENT_CODE ON )
 endif()
 
+option( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK "Disable checking if password is ASCII when compressing using Zip format" )
+message( STATUS "Zip ASCII password check: ${BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK}" )
+if( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
+endif()
+
 set( BIT7Z_CUSTOM_7ZIP_PATH "" CACHE STRING "A custom path to the 7-zip source code" )
 if( NOT BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
     if( NOT EXISTS ${BIT7Z_CUSTOM_7ZIP_PATH}/CPP )
