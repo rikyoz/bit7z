@@ -280,6 +280,7 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
         REQUIRE( prop_variant.toString() == test_tstring );
     }
 
+#ifndef BIT7Z_TESTS_LEGACY_ENCODING
     SECTION( "Initializing with non-ASCII encoded string" ) {
         SECTION( "String literal constructor" ) {
             prop_variant = BitPropVariant{ test_input_encoding };
@@ -292,6 +293,7 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
         auto encoded_tstring = prop_variant.getString();
         REQUIRE( encoded_tstring == test_output_encoding );
     }
+#endif
 
     check_variant_type( prop_variant, BitPropVariantType::String );
     REQUIRE_NOTHROW( prop_variant.clear() );

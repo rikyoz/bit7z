@@ -68,6 +68,7 @@ struct TestDirectory {
     vector< fs::path > expectedItems;
 };
 
+#ifndef BIT7Z_TESTS_LEGACY_ENCODING
 TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
     REQUIRE ( set_current_dir( test_filesystem_dir ) );
@@ -1611,6 +1612,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
+#endif
 
 struct TestPaths {
     vector< bit7z::tstring > inputPaths;
@@ -1887,6 +1889,8 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 
     BitItemsVector items_vector;
 
+    // Catch2 doesn't support preprocessor ifdef inside GENERATE, at least on MSVC
+#ifndef BIT7Z_TESTS_LEGACY_ENCODING
     const auto test_input =
         GENERATE(
             TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
@@ -1899,6 +1903,19 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
             TestFile{ "folder/subfolder2/frequency.xlsx", "folder/subfolder2/frequency.xlsx" },
             TestFile{ "dot.folder/hello.json", "dot.folder/hello.json" }
         );
+#else
+    const auto test_input =
+        GENERATE(
+            TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "italy.svg", "italy.svg" },
+            TestFile{ "noext", "noext" },
+            TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
+            TestFile{ "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
+            TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
+            TestFile{ "folder/subfolder2/frequency.xlsx", "folder/subfolder2/frequency.xlsx" },
+            TestFile{ "dot.folder/hello.json", "dot.folder/hello.json" }
+        );
+#endif
 
     DYNAMIC_SECTION ( "Indexing file " << test_input.inputFile.u8string() ) {
         REQUIRE_NOTHROW( items_vector.indexFile( test_input.inputFile.string< bit7z::tchar >() ) );
@@ -1912,6 +1929,12 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
+#ifndef BIT7Z_TESTS_LEGACY_ENCODING
+#define UNICODE_TESTPATH(x) BIT7Z_STRING( x ),
+#else
+#define UNICODE_TESTPATH(x)
+#endif
+
 TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
     REQUIRE ( set_current_dir( test_filesystem_dir ) );
@@ -1922,7 +1945,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
         "Lorem Ipsum.pdf",
         "italy.svg",
         "noext",
-        BIT7Z_STRING( "σαράντα δύο.txt" ),
+        UNICODE_TESTPATH( "σαράντα δύο.txt" )
         "folder/clouds.jpg",
         "folder/subfolder2/homework.doc",
         "folder/subfolder2/The quick brown fox.pdf",
@@ -1952,7 +1975,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
         BIT7Z_STRING( "italy.svg" ),
         BIT7Z_STRING( "noext" ),
-        BIT7Z_STRING( "σαράντα δύο.txt" ),
+        UNICODE_TESTPATH( "σαράντα δύο.txt" )
         BIT7Z_STRING( "folder/clouds.jpg" ),
         BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
         BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
@@ -1982,7 +2005,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
         BIT7Z_STRING( "italy.svg" ),
         BIT7Z_STRING( "noext" ),
-        BIT7Z_STRING( "σαράντα δύο.txt" ),
+        UNICODE_TESTPATH( "σαράντα δύο.txt" )
         BIT7Z_STRING( "folder/clouds.jpg" ),
         BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
         BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),

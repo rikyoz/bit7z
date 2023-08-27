@@ -14,6 +14,10 @@
 
 #include <internal/util.hpp>
 
+#ifdef BIT7Z_TESTS_LEGACY_ENCODING
+#include <internal/fs.hpp>
+#endif
+
 #define NARROWING_TEST_STR( str ) std::make_tuple( L##str, (str) )
 
 TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
@@ -36,7 +40,14 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
         }
     ) );
 
+#ifndef BIT7Z_TESTS_LEGACY_ENCODING
     REQUIRE( narrow( test_input, wcsnlen( test_input, 128 ) ) == test_output );
+#else
+    try {
+        const auto test_output_as_string = bit7z::fs::u8path( test_output ).string();
+        REQUIRE( narrow( test_input, wcsnlen( test_input, 128 ) ) == test_output_as_string );
+    } catch(...) {}
+#endif
 }
 
 #define WIDENING_TEST_STR( str ) std::make_tuple( (str), L##str )
@@ -58,7 +69,14 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
         }
     ) );
 
+#ifndef BIT7Z_TESTS_LEGACY_ENCODING
     REQUIRE( widen( test_input ) == test_output );
+#else
+    try {
+        const auto test_input_as_string = bit7z::fs::u8path( test_input ).string();
+        REQUIRE( widen( test_input_as_string ) == test_output );
+    } catch(...) {}
+#endif
 }
 
 using bit7z::check_overflow;

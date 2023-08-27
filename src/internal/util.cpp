@@ -36,7 +36,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
         return "";
     }
 #ifdef WIN32
-    const int narrowStringSize = WideCharToMultiByte( CP_UTF8,
+    const int narrowStringSize = WideCharToMultiByte( GetACP(),
                                                       0,
                                                       wideString,
                                                       static_cast< int >( size ),
@@ -49,7 +49,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
     }
 
     std::string result( narrowStringSize, 0 );
-    WideCharToMultiByte( CP_UTF8,
+    WideCharToMultiByte( GetACP(),
                          0,
                          wideString,
                          -1,
@@ -70,7 +70,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 
 auto widen( const std::string& narrowString ) -> std::wstring {
 #ifdef WIN32
-    const int wideStringSize = MultiByteToWideChar( CP_UTF8,
+    const int wideStringSize = MultiByteToWideChar( GetACP(),
                                                     0,
                                                     narrowString.c_str(),
                                                     static_cast< int >( narrowString.size() ),
@@ -81,7 +81,7 @@ auto widen( const std::string& narrowString ) -> std::wstring {
     }
 
     std::wstring result( wideStringSize, 0 );
-    MultiByteToWideChar( CP_UTF8,
+    MultiByteToWideChar( GetACP(),
                          0,
                          narrowString.c_str(),
                          static_cast< int >( narrowString.size() ),

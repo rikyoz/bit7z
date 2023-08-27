@@ -942,6 +942,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
+#ifndef BIT7Z_TESTS_LEGACY_ENCODING
 #define REQUIRE_ITEM_UNICODE( info, item_name )                                                       \
     do {                                                                                              \
         auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
@@ -1053,6 +1054,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file n
 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
+#endif
 
 #ifdef BIT7Z_AUTO_FORMAT
 
