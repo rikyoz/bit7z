@@ -14,6 +14,7 @@
 #include <numeric>
 
 #include "bitarchivereader.hpp"
+#include "internal/extractcallback.hpp"
 
 #include <7zip/PropID.h>
 
@@ -97,6 +98,15 @@ auto BitArchiveReader::hasEncryptedItems() const -> bool {
     } );
 }
 
+auto BitArchiveReader::isEncrypted() const -> bool {
+    if ( filesCount() == 0 ) {
+        return false;
+    }
+    return std::all_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
+        return item.isDir() || item.isEncrypted();
+    } );
+}
+
 auto BitArchiveReader::isMultiVolume() const -> bool {
     if ( extractionFormat() == BitFormat::Split ) {
         return true;
@@ -113,4 +123,9 @@ auto BitArchiveReader::isSolid() const -> bool {
 auto BitArchiveReader::volumesCount() const -> uint32_t {
     const BitPropVariant volumes_count = archiveProperty( BitProperty::NumVolumes );
     return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
+}
+
+auto BitArchiveReader::isOpenEncryptedError( std::error_code error ) -> bool {
+    static const auto encrypted_error = make_error_code( OperationResult::OpenErrorEncrypted );
+    return error == encrypted_error;
 }

@@ -168,6 +168,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
         SECTION( "Filesystem archive" ) {
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.archivePath() == arc_file_name );
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, true );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -176,6 +178,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -184,6 +188,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -218,6 +224,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
         SECTION( "Filesystem archive" ) {
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.archivePath() == arc_file_name );
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, true );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -226,6 +234,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -234,6 +244,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -269,6 +281,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
         SECTION( "Filesystem archive" ) {
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.archivePath() == arc_file_name );
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, true );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -277,6 +291,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -285,6 +301,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
+            REQUIRE_FALSE( info.hasEncryptedItems() );
+            REQUIRE_FALSE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -318,8 +336,17 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
         const fs::path arc_file_name = "encrypted." + test_archive.extension();
 
         SECTION( "Filesystem archive" ) {
+            REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( lib,
+                                                                arc_file_name.string< tchar >(),
+                                                                test_archive.format() ) );
+
+            REQUIRE( BitArchiveReader::isEncrypted( lib,
+                                                    arc_file_name.string< tchar >(),
+                                                    test_archive.format() ) );
+
             BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
+            REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, true );
             REQUIRE_THROWS( info.test() );
             REQUIRE_NOTHROW( info.setPassword( password ) );
@@ -328,8 +355,16 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
+            REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( lib,
+                                                                file_buffer,
+                                                                test_archive.format() ) );
+
+            REQUIRE( BitArchiveReader::isEncrypted( lib, file_buffer, test_archive.format() ) );
+
             BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
+            REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_THROWS( info.test() );
             REQUIRE_NOTHROW( info.setPassword( password ) );
@@ -340,8 +375,19 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             REQUIRE( file_stream.is_open() );
 
+            REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( lib,
+                                                                file_stream,
+                                                                test_archive.format() ) );
+            file_stream.clear();
+            file_stream.seekg( 0, std::ios::beg );
+
+            REQUIRE( BitArchiveReader::isEncrypted( lib, file_stream, test_archive.format() ) );
+            file_stream.clear();
+            file_stream.seekg( 0, std::ios::beg );
+
             BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.hasEncryptedItems() );
+            REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_THROWS( info.test() );
             REQUIRE_NOTHROW( info.setPassword( password ) );
@@ -371,6 +417,12 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
         const fs::path arc_file_name = "header_encrypted." + test_archive.extension();
 
         SECTION( "Filesystem archive" ) {
+            REQUIRE( BitArchiveReader::isHeaderEncrypted( lib,
+                                                          arc_file_name.string< tchar >(),
+                                                          test_archive.format() ) );
+
+            REQUIRE( BitArchiveReader::isEncrypted( lib, arc_file_name.string< tchar >(), test_archive.format() ) );
+
             // no password specified!
             REQUIRE_THROWS( BitArchiveReader( lib, arc_file_name.string< tchar >(), test_archive.format() ) );
 
@@ -380,12 +432,19 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
 
             const BitArchiveReader info( lib, arc_file_name.string< tchar >(), test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
+            REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, true );
             REQUIRE_ARCHIVE_TESTS( info );
         }
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
+            REQUIRE( BitArchiveReader::isHeaderEncrypted( lib,
+                                                          file_buffer,
+                                                          test_archive.format() ) );
+
+            REQUIRE( BitArchiveReader::isEncrypted( lib, file_buffer, test_archive.format() ) );
 
             // no password specified!
             REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, test_archive.format() ) );
@@ -396,6 +455,7 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
 
             const BitArchiveReader info( lib, file_buffer, test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
+            REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -403,6 +463,16 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
             REQUIRE( file_stream.is_open() );
+
+            REQUIRE( BitArchiveReader::isHeaderEncrypted( lib,
+                                                          file_stream,
+                                                          test_archive.format() ) );
+            file_stream.clear();
+            file_stream.seekg( 0, std::ios::beg );
+
+            REQUIRE( BitArchiveReader::isEncrypted( lib, file_stream, test_archive.format() ) );
+            file_stream.clear();
+            file_stream.seekg( 0, std::ios::beg );
 
             // no password specified!
             REQUIRE_THROWS( BitArchiveReader( lib, file_stream, test_archive.format() ) );
@@ -416,6 +486,7 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
             REQUIRE( file_stream.is_open() );
             const BitArchiveReader info( lib, file_stream, test_archive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
+            REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
         }
@@ -963,7 +1034,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
         REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
     } while ( false )
 
-TEST_CASE( "BitArchiveReader: Correctly reading archive items with unicode names", "[bitarchivereader]" ) {
+TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names", "[bitarchivereader]" ) {
     const fs::path old_current_dir = current_dir();
     const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "unicode";
     REQUIRE( set_current_dir( test_dir ) );
@@ -1010,7 +1081,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with unicode names
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
-TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file name", "[bitarchivereader]" ) {
+TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file name", "[bitarchivereader]" ) {
     const fs::path old_current_dir = current_dir();
     const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "unicode";
     REQUIRE( set_current_dir( test_dir ) );
@@ -1055,6 +1126,10 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a unicode file n
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 #endif
+
+TEST_CASE( "BitArchiveReader: Correctly identifying header-encrypted archives", "[bitarchivereader]" ) {
+
+}
 
 #ifdef BIT7Z_AUTO_FORMAT
 
