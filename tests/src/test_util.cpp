@@ -20,6 +20,7 @@
 
 #define NARROWING_TEST_STR( str ) std::make_tuple( L##str, (str) )
 
+#if !defined(_WIN32) || !defined(BIT7Z_USE_NATIVE_STRING)
 TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
     using bit7z::narrow;
 
@@ -78,6 +79,7 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
     } catch(...) {}
 #endif
 }
+#endif
 
 using bit7z::check_overflow;
 constexpr auto max_value = ( std::numeric_limits< int64_t >::max )();
