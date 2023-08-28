@@ -21,10 +21,6 @@
 #include <bit7z/bitformat.hpp>
 #include <internal/windows.hpp>
 
-// Needed by MSVC for defining the S_XXXX macros
-#ifndef _CRT_INTERNAL_NONSTDC_NAMES
-#define _CRT_INTERNAL_NONSTDC_NAMES 1
-#endif
 
 // For checking posix file attributes
 #include <sys/stat.h>

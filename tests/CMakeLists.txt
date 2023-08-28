@@ -97,6 +97,9 @@ endif()
 if( MSVC )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
 
+    # Needed by MSVC for defining the S_XXXX macros (used in BitArchiveReader tests)
+    target_compile_definitions( ${TESTS_TARGET} PRIVATE _CRT_INTERNAL_NONSTDC_NAMES=1 )
+
     if ( BIT7Z_USE_NATIVE_STRING )
         set( BIT7Z_TESTS_LEGACY_ENCODING ON )
     else()
