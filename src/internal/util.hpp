@@ -24,11 +24,11 @@ namespace bit7z {
 #   define WIDEN( tstr ) tstr
 #else
 #   define WIDEN( tstr ) bit7z::widen(tstr)
-#endif
 
 auto narrow( const wchar_t* wideString, size_t size ) -> std::string;
 
 auto widen( const std::string& narrowString ) -> std::wstring;
+#endif
 
 constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
     return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< int64_t >::max )() - offset ) ) ) ||

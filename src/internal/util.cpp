@@ -14,7 +14,7 @@
 
 #include "internal/util.hpp"
 
-#ifndef WIN32
+#ifndef _WIN32
 #ifndef BIT7Z_USE_STANDARD_FILESYSTEM
 // GCC 4.9 doesn't have the <codecvt> header; as a workaround,
 // we use GHC filesystem's utility functions for string conversions.
@@ -31,11 +31,12 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 
 namespace bit7z {
 
+#if !defined( _WIN32 ) || !defined( BIT7Z_USE_NATIVE_STRING )
 auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
     if ( wideString == nullptr || size == 0 ) {
         return "";
     }
-#ifdef WIN32
+#ifdef _WIN32
     const int narrowStringSize = WideCharToMultiByte( GetACP(),
                                                       0,
                                                       wideString,
@@ -69,7 +70,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 }
 
 auto widen( const std::string& narrowString ) -> std::wstring {
-#ifdef WIN32
+#ifdef _WIN32
     const int wideStringSize = MultiByteToWideChar( GetACP(),
                                                     0,
                                                     narrowString.c_str(),
@@ -95,8 +96,9 @@ auto widen( const std::string& narrowString ) -> std::wstring {
     return converter.from_bytes( narrowString );
 #endif
 }
+#endif
 
-#if !defined( WIN32 ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+#if !defined( _WIN32 ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
 #pragma GCC diagnostic pop
 #endif
 
