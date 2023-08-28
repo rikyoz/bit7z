@@ -2014,7 +2014,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
     );
 
     DYNAMIC_SECTION ( "Indexing file " << test_input.u8string() << " as a buffer" ) {
-        auto input_buffer = bit7z::test::filesystem::load_file( test_input );
+        REQUIRE_LOAD_FILE( input_buffer, test_input );
         REQUIRE_NOTHROW( items_vector.indexBuffer( input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( items_vector.size() == 1 );
         REQUIRE( items_vector[ 0 ].inArchivePath() == "custom_name.ext" );

@@ -69,12 +69,14 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
 
 inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t > {
     //INFO( in_file.string() )
-#if BIT7Z_USE_NATIVE_STRING
-    fs::ifstream ifs( widen(in_file.u8string()), fs::ifstream::binary );
-#else
+//#if BIT7Z_USE_NATIVE_STRING
+//    fs::ifstream ifs( widen( in_file.u8string() ), fs::ifstream::binary );
+//#else
     fs::ifstream ifs( in_file, fs::ifstream::binary );
-#endif
-    REQUIRE( ifs.is_open() );
+//#endif
+    if ( !ifs.is_open() ) {
+        return {};
+    }
     noskipws( ifs ); //no skip spaces!
     auto size = fs::file_size( in_file );
     std::vector< bit7z::byte_t > result( size );
@@ -83,6 +85,10 @@ inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t >
     //note: using basic_ifstream with istreambuf_iterator<std::byte> would be cleaner, but it is 10x slower.
     return result;
 }
+
+#define REQUIRE_LOAD_FILE( var, in_file ) \
+    const auto (var) = load_file( in_file ); \
+    REQUIRE_FALSE( var.empty() )
 
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder

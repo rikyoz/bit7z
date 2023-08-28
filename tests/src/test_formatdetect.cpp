@@ -226,7 +226,7 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
         // too many internal headers, and it easily gives compilation problems.
         // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid signature detection).
 
-        const auto file_buffer = load_file( "valid." + test.extension );
+        REQUIRE_LOAD_FILE( file_buffer, "valid." + test.extension );
         const BitArchiveReader reader{ lib, file_buffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
@@ -249,7 +249,7 @@ TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatde
                           TestInputFormat{ "udf.iso", BitFormat::Udf } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
-        const auto file_buffer = load_file( "valid." + test.extension );
+        REQUIRE_LOAD_FILE( file_buffer, "valid." + test.extension );
         const BitArchiveReader reader{ lib, file_buffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
