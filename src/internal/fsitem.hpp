@@ -44,6 +44,10 @@ class FSItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const -> HRESULT override;
 
+#ifdef _WIN32
+        BIT7Z_NODISCARD auto nativeName() const -> native_string;
+#endif
+
     private:
         fs::directory_entry mFileEntry;
         WIN32_FILE_ATTRIBUTE_DATA mFileAttributeData;

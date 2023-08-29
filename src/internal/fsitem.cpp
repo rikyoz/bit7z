@@ -94,7 +94,7 @@ auto FSItem::lastWriteTime() const noexcept -> FILETIME {
 
 auto FSItem::name() const -> tstring {
     BIT7Z_MAYBE_UNUSED std::error_code error;
-    return fs::canonical( mFileEntry.path(), error ).filename().string< tchar >();
+    return fs::canonical( mFileEntry, error ).filename().string< tchar >();
 }
 
 auto FSItem::path() const -> tstring {
@@ -140,6 +140,13 @@ auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     }
     return S_OK;
 }
+
+#ifdef _WIN32
+auto FSItem::nativeName() const -> native_string {
+    BIT7Z_MAYBE_UNUSED std::error_code error;
+    return fs::canonical( mFileEntry, error ).filename();
+}
+#endif
 
 } // namespace filesystem
 } // namespace bit7z
