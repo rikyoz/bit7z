@@ -68,7 +68,7 @@ struct TestDirectory {
     vector< fs::path > expectedItems;
 };
 
-#ifndef BIT7Z_TESTS_LEGACY_ENCODING
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
     REQUIRE ( set_current_dir( test_filesystem_dir ) );
@@ -1890,7 +1890,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     BitItemsVector items_vector;
 
     // Catch2 doesn't support preprocessor ifdef inside GENERATE, at least on MSVC
-#ifndef BIT7Z_TESTS_LEGACY_ENCODING
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
     const auto test_input =
         GENERATE(
             TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
@@ -1929,7 +1929,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     REQUIRE( set_current_dir( old_current_dir ) );
 }
 
-#ifndef BIT7Z_TESTS_LEGACY_ENCODING
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 #define UNICODE_TESTPATH(x) BIT7Z_STRING( x ),
 #else
 #define UNICODE_TESTPATH(x)

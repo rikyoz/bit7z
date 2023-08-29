@@ -14,7 +14,7 @@
 
 #include <internal/util.hpp>
 
-#ifdef BIT7Z_TESTS_LEGACY_ENCODING
+#ifdef BIT7Z_USE_SYSTEM_CODEPAGE
 #include <internal/fs.hpp>
 #endif
 
@@ -41,7 +41,7 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
         }
     ) );
 
-#ifndef BIT7Z_TESTS_LEGACY_ENCODING
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
     REQUIRE( narrow( test_input, wcsnlen( test_input, 128 ) ) == test_output );
 #else
     try {
@@ -70,7 +70,7 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
         }
     ) );
 
-#ifndef BIT7Z_TESTS_LEGACY_ENCODING
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
     REQUIRE( widen( test_input ) == test_output );
 #else
     try {

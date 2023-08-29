@@ -14,7 +14,13 @@
 
 #include "internal/util.hpp"
 
-#ifndef _WIN32
+#ifdef _WIN32
+#ifdef BIT7Z_USE_SYSTEM_CODEPAGE
+#define CODEPAGE GetACP()
+#else
+#define CODEPAGE CP_UTF8
+#endif
+#else
 #ifndef BIT7Z_USE_STANDARD_FILESYSTEM
 // GCC 4.9 doesn't have the <codecvt> header; as a workaround,
 // we use GHC filesystem's utility functions for string conversions.
@@ -37,7 +43,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
         return "";
     }
 #ifdef _WIN32
-    const int narrowStringSize = WideCharToMultiByte( GetACP(),
+    const int narrowStringSize = WideCharToMultiByte( CODEPAGE,
                                                       0,
                                                       wideString,
                                                       static_cast< int >( size ),
@@ -50,7 +56,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
     }
 
     std::string result( narrowStringSize, 0 );
-    WideCharToMultiByte( GetACP(),
+    WideCharToMultiByte( CODEPAGE,
                          0,
                          wideString,
                          -1,
@@ -71,7 +77,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 
 auto widen( const std::string& narrowString ) -> std::wstring {
 #ifdef _WIN32
-    const int wideStringSize = MultiByteToWideChar( GetACP(),
+    const int wideStringSize = MultiByteToWideChar( CODEPAGE,
                                                     0,
                                                     narrowString.c_str(),
                                                     static_cast< int >( narrowString.size() ),
@@ -82,7 +88,7 @@ auto widen( const std::string& narrowString ) -> std::wstring {
     }
 
     std::wstring result( wideStringSize, 0 );
-    MultiByteToWideChar( GetACP(),
+    MultiByteToWideChar( CODEPAGE,
                          0,
                          narrowString.c_str(),
                          static_cast< int >( narrowString.size() ),

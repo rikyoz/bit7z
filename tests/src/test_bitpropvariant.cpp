@@ -284,7 +284,7 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
         REQUIRE( prop_variant.toString() == test_tstring );
     }
 
-#ifndef BIT7Z_TESTS_LEGACY_ENCODING
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
     SECTION( "Initializing with non-ASCII encoded string" ) {
         SECTION( "String literal constructor" ) {
             prop_variant = BitPropVariant{ test_input_encoding };
