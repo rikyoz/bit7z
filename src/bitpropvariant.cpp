@@ -260,6 +260,18 @@ auto BitPropVariant::getString() const -> tstring {
     return bstrVal == nullptr ? tstring{} : BSTR_TO_TSTRING( bstrVal );
 }
 
+auto BitPropVariant::getNativeString() const -> native_string {
+#ifdef _WIN32
+    if ( vt != VT_BSTR ) {
+        throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
+    }
+    //Note: a nullptr BSTR is semantically equivalent to an empty string!
+    return bstrVal == nullptr ? native_string{} : native_string{ bstrVal, ::SysStringLen( bstrVal ) };
+#else
+    return getString();
+#endif
+}
+
 auto BitPropVariant::getUInt8() const -> uint8_t {
     switch ( vt ) {
         case VT_UI1:

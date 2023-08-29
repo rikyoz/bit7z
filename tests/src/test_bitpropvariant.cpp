@@ -48,6 +48,7 @@ using namespace bit7z;
 
 constexpr auto test_wide_string = L"abcdefghijklmnopqrstuvwxyz0123456789";
 constexpr auto test_tstring = BIT7Z_STRING( "abcdefghijklmnopqrstuvwxyz0123456789" );
+constexpr auto test_native_string = BIT7Z_NATIVE_STRING( "abcdefghijklmnopqrstuvwxyz0123456789" );
 
 constexpr auto test_input_encoding = L"\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3"; // ウォルグライモン
 constexpr auto test_output_encoding = BIT7Z_STRING( "\u30a6\u30a9\u30eb\u30b0\u30e9\u30a4\u30e2\u30f3" ); // ウォルグライモン
@@ -84,6 +85,7 @@ void check_variant_type( const BitPropVariant& prop_variant, BitPropVariantType 
     }
     if ( type != BitPropVariantType::String ) {
         REQUIRE_THROWS( prop_variant.getString() );
+        REQUIRE_THROWS( prop_variant.getNativeString() );
     }
 
     if ( type != BitPropVariantType::UInt64 ) {
@@ -235,6 +237,7 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
         }
 
         REQUIRE( prop_variant.getString().empty() );
+        REQUIRE( prop_variant.getNativeString().empty() );
         REQUIRE( prop_variant.toString().empty() );
     }
 
@@ -277,6 +280,7 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
 
         REQUIRE( prop_variant.bstrVal != nullptr );
         REQUIRE( prop_variant.getString() == test_tstring );
+        REQUIRE( prop_variant.getNativeString() == test_native_string );
         REQUIRE( prop_variant.toString() == test_tstring );
     }
 
@@ -474,6 +478,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     REQUIRE( !prop_variant.isInt64() );
     REQUIRE( !prop_variant.isFileTime() );
     REQUIRE_THROWS( prop_variant.getString() );
+    REQUIRE_THROWS( prop_variant.getNativeString() );
     REQUIRE_THROWS( prop_variant.getBool() );
     REQUIRE_THROWS( prop_variant.getInt8() );
     REQUIRE_THROWS( prop_variant.getInt16() );
@@ -566,6 +571,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
     REQUIRE( !prop_variant.isUInt64() );
     REQUIRE( !prop_variant.isFileTime() );
     REQUIRE_THROWS( prop_variant.getString() );
+    REQUIRE_THROWS( prop_variant.getNativeString() );
     REQUIRE_THROWS( prop_variant.getBool() );
     REQUIRE_THROWS( prop_variant.getUInt8() );
     REQUIRE_THROWS( prop_variant.getUInt16() );
@@ -637,6 +643,7 @@ TEST_CASE( "BitPropVariant: Copying string variants", "[BitPropVariant][copy]" )
         REQUIRE( copy_var.bstrVal != prop_variant.bstrVal );
         REQUIRE( wcscmp( copy_var.bstrVal, prop_variant.bstrVal ) == 0 );
         REQUIRE( copy_var.getString() == prop_variant.getString() );
+        REQUIRE( copy_var.getNativeString() == prop_variant.getNativeString() );
     }
 
     SECTION( "Copy assignment" ) {
@@ -647,6 +654,7 @@ TEST_CASE( "BitPropVariant: Copying string variants", "[BitPropVariant][copy]" )
         REQUIRE( copy_var.bstrVal != prop_variant.bstrVal );
         REQUIRE( wcscmp( copy_var.bstrVal, prop_variant.bstrVal ) == 0 );
         REQUIRE( copy_var.getString() == prop_variant.getString() );
+        REQUIRE( copy_var.getNativeString() == prop_variant.getNativeString() );
     }
 }
 
@@ -663,6 +671,7 @@ TEST_CASE( "BitPropVariant: Moving string variants", "[BitPropVariant][copy]" ) 
         REQUIRE( move_var.bstrVal ==
                  test_bstrVal ); //move_var should point to the same BSTR object of the original prop_variant!
         REQUIRE( move_var.getString() == test_tstring );
+        REQUIRE( move_var.getNativeString() == test_native_string );
     }
 
     SECTION( "Move assignment" ) {
@@ -675,6 +684,7 @@ TEST_CASE( "BitPropVariant: Moving string variants", "[BitPropVariant][copy]" ) 
         REQUIRE( move_var.bstrVal ==
                  test_bstrVal ); //move_var should point to the same BSTR object of the original prop_variant!
         REQUIRE( move_var.getString() == test_tstring );
+        REQUIRE( move_var.getNativeString() == test_native_string );
     }
 }
 

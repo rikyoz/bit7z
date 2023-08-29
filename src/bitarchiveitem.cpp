@@ -37,7 +37,7 @@ auto BitArchiveItem::name() const -> tstring {
     BitPropVariant name = itemProperty( BitProperty::Name );
     if ( name.isEmpty() ) {
         name = itemProperty( BitProperty::Path );
-        return name.isEmpty() ? tstring{} : filename( name.getString() );
+        return name.isEmpty() ? tstring{} : filename( name.getNativeString() );
     }
     return name.getString();
 }

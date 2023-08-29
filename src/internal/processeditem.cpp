@@ -45,7 +45,7 @@ void ProcessedItem::loadFilePath( const BitInputArchive& input_archive, uint32_t
             break;
 
         case BitPropVariantType::String:
-            mFilePath = fs::path( prop.getString() );
+            mFilePath = fs::path( prop.getNativeString() );
             break;
 
         default:

@@ -61,6 +61,17 @@ struct string_traits< wchar_t > {
 /** @endcond */
 
 /**
+ * Native string type of the system.
+ */
+#ifdef _WIN32
+using native_string = std::wstring;
+#define BIT7Z_NATIVE_STRING( str ) L##str
+#else
+using native_string = std::string;
+#define BIT7Z_NATIVE_STRING( str ) str
+#endif
+
+/**
  * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tchar` is an alias of `wchar_t`.
  */
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows with native strings
