@@ -84,7 +84,15 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
-            mHandler.fileCallback()( filePath.string< tchar >() );
+#if defined( BIT7Z_USE_NATIVE_STRING )
+            const auto& filePathString = filePath.native();
+#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+            const auto filePathString = filePath.u8string();
+#else
+            const auto& nativePath = filePath.native();
+            const auto filePathString = narrow( nativePath.c_str(), nativePath.size() );
+#endif
+            mHandler.fileCallback()( filePathString );
         }
 
         std::error_code error;
