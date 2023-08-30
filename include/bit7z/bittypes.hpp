@@ -101,6 +101,23 @@ inline auto to_tstring( T&& arg ) -> std::basic_string< tchar > {
     return string_traits< tchar >::convert_to_string( std::forward< T >( arg ) );
 }
 
+/**
+ * Converts a native string to a tstring.
+ *
+ * @note On Linux or on Windows when BIT7Z_USE_NATIVE_STRING is used,
+ * both native_string and tstring are aliases of the same string type;
+ * in this case, no conversion is performed, and a const reference to the original string is returned.
+ *
+ * @param str   The native string to be converted.
+ *
+ * @return the converted tstring.
+ */
+#if defined( _WIN32 ) && !defined( BIT7Z_USE_NATIVE_STRING )
+auto to_tstring( const native_string& str ) -> tstring;
+#else
+auto to_tstring( const native_string& str ) -> const tstring&;
+#endif
+
 }  // namespace bit7z
 
 #endif // BITTYPES_HPP

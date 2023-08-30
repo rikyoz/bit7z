@@ -116,6 +116,7 @@ set( SOURCES
      src/bititemsvector.cpp
      src/bitoutputarchive.cpp
      src/bitpropvariant.cpp
+     src/bittypes.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferitem.cpp
      src/internal/bufferutil.cpp
