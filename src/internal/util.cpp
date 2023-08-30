@@ -44,7 +44,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
     }
 #ifdef _WIN32
     const int narrowStringSize = WideCharToMultiByte( CODEPAGE,
-                                                      0,
+                                                      WC_NO_BEST_FIT_CHARS,
                                                       wideString,
                                                       static_cast< int >( size ),
                                                       nullptr,
@@ -57,7 +57,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 
     std::string result( narrowStringSize, 0 );
     WideCharToMultiByte( CODEPAGE,
-                         0,
+                         WC_NO_BEST_FIT_CHARS,
                          wideString,
                          -1,
                          &result[ 0 ],  // NOLINT(readability-container-data-pointer)
