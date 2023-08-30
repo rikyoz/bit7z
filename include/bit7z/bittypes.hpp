@@ -46,16 +46,16 @@ struct string_traits;
 template<>
 struct string_traits< char > {
     template< class T >
-    static inline auto convert_to_string( T&& t ) -> std::string {
-        return std::to_string( std::forward< T >( t ) );
+    static inline auto convert_to_string( T&& value ) -> std::string {
+        return std::to_string( std::forward< T >( value ) );
     }
 };
 
 template<>
 struct string_traits< wchar_t > {
     template< class T >
-    static inline auto convert_to_string( T&& t ) -> std::wstring {
-        return std::to_wstring( std::forward< T >( t ) );
+    static inline auto convert_to_string( T&& value ) -> std::wstring {
+        return std::to_wstring( std::forward< T >( value ) );
     }
 };
 /** @endcond */
