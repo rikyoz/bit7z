@@ -57,7 +57,7 @@ auto fsutil::inArchivePath( const fs::path& file_path, const fs::path& search_pa
     const auto& normal_path = file_path.lexically_normal();
 
     auto filename = normal_path.filename();
-    if ( filename == "." || filename == ".." ) {
+    if ( filename == BIT7Z_NATIVE_STRING( "." ) || filename == BIT7Z_NATIVE_STRING( ".." ) ) {
         return {};
     }
     if ( filename.empty() ) {
