@@ -10,6 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <utility>
+
 #include "internal/bufferitem.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/dateutil.hpp"
@@ -19,8 +21,8 @@ using std::vector;
 
 namespace bit7z {
 
-BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name )
-    : mBuffer{ buffer }, mBufferName{ name } {}
+BufferItem::BufferItem( const vector< byte_t >& buffer, fs::path name )
+    : mBuffer{ buffer }, mBufferName{ std::move( name ) } {}
 
 auto BufferItem::name() const -> tstring {
     return mBufferName.filename().string< tchar >();

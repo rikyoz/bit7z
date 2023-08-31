@@ -67,13 +67,13 @@ void BitArchiveEditor::updateItem( uint32_t index, const tstring& in_file ) {
 void BitArchiveEditor::updateItem( uint32_t index, const std::vector< byte_t >& in_buffer ) {
     checkIndex( index );
     auto item_name = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< BufferItem >( in_buffer, item_name.getString() );
+    mEditedItems[ index ] = std::make_unique< BufferItem >( in_buffer, item_name.getNativeString() );
 }
 
 void BitArchiveEditor::updateItem( uint32_t index, std::istream& in_stream ) {
     checkIndex( index );
     auto item_name = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< StdInputItem >( in_stream, item_name.getString() );
+    mEditedItems[ index ] = std::make_unique< StdInputItem >( in_stream, item_name.getNativeString() );
 }
 
 void BitArchiveEditor::updateItem( const tstring& item_path, const tstring& in_file ) {

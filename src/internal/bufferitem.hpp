@@ -20,7 +20,7 @@ using std::vector;
 
 class BufferItem final : public GenericInputItem {
     public:
-        explicit BufferItem( const vector< byte_t >& buffer, const tstring& name );
+        explicit BufferItem( const vector< byte_t >& buffer, fs::path name );
 
         BIT7Z_NODISCARD auto name() const -> tstring override;
 

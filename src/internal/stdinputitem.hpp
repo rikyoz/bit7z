@@ -18,7 +18,7 @@ using std::istream;
 
 class StdInputItem final : public GenericInputItem {
     public:
-        explicit StdInputItem( istream& stream, const tstring& path );
+        explicit StdInputItem( istream& stream, fs::path path );
 
         BIT7Z_NODISCARD auto name() const -> tstring override;
 

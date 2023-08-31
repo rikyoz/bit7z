@@ -10,6 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <utility>
+
 #include "internal/cstdinstream.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/stdinputitem.hpp"
@@ -19,7 +21,7 @@ using std::istream;
 
 namespace bit7z {
 
-StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
+StdInputItem::StdInputItem( istream& stream, fs::path path ) : mStream{ stream }, mStreamPath{ std::move( path ) } {}
 
 auto StdInputItem::name() const -> tstring {
     return mStreamPath.filename().string< tchar >();
