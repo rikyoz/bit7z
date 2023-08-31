@@ -41,11 +41,11 @@ void ProcessedItem::loadFilePath( const BitInputArchive& input_archive, uint32_t
 
     switch ( prop.type() ) {
         case BitPropVariantType::Empty:
-            mFilePath = fs::path();
+            mFilePath = fs::path{};
             break;
 
         case BitPropVariantType::String:
-            mFilePath = fs::path( prop.getNativeString() );
+            mFilePath = fs::path{ prop.getNativeString() };
             break;
 
         default:

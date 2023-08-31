@@ -32,7 +32,7 @@ class FSIndexer final {
 
         void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                  bool recursive,
-                                 const fs::path& prefix = fs::path() );
+                                 const fs::path& prefix = fs::path{} );
 
     private:
         FSItem mDirItem;

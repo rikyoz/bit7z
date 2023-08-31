@@ -34,12 +34,12 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
         path = path / prefix;
     }
     const bool include_root_path = mFilter.empty() ||
-                                   mDirItem.filesystemPath().parent_path().empty() ||
+                                   !mDirItem.filesystemPath().has_parent_path() ||
                                    mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
     const bool should_include_matched_items = mPolicy == FilterPolicy::Include;
     std::error_code error;
     for ( const auto& current_entry : fs::directory_iterator( path, error ) ) {
-        auto search_path = include_root_path ? mDirItem.inArchivePath() : fs::path();
+        auto search_path = include_root_path ? mDirItem.inArchivePath() : fs::path{};
         if ( !prefix.empty() ) {
             search_path = search_path.empty() ? prefix : search_path / prefix;
         }

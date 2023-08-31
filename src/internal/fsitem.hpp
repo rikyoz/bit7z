@@ -18,7 +18,7 @@ namespace filesystem {
 
 class FSItem final : public GenericInputItem {
     public:
-        explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
+        explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path{} );
 
         explicit FSItem( fs::directory_entry entry, const fs::path& searchPath );
 
