@@ -29,13 +29,13 @@ FSIndexer::FSIndexer( FSItem directory, tstring filter, FilterPolicy policy, boo
 void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                     bool recursive,
                                     const fs::path& prefix ) {
-    fs::path path = mDirItem.path();
+    fs::path path = mDirItem.filesystemPath();
     if ( !prefix.empty() ) {
         path = path / prefix;
     }
     const bool include_root_path = mFilter.empty() ||
-                                   fs::path{ mDirItem.path() }.parent_path().empty() ||
-                                   mDirItem.inArchivePath().filename() != mDirItem.name();
+                                   mDirItem.filesystemPath().parent_path().empty() ||
+                                   mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
     const bool should_include_matched_items = mPolicy == FilterPolicy::Include;
     std::error_code error;
     for ( const auto& current_entry : fs::directory_iterator( path, error ) ) {
@@ -61,7 +61,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
             // > indexing is done recursively
             // > indexing is not recursive, but the directory name matched the filter.
             const fs::path next_dir = prefix.empty() ?
-                                      fs::path{ current_item.nativeName() } :  prefix / current_item.nativeName();
+                                      current_item.filesystemName() :  prefix / current_item.filesystemName();
             listDirectoryItems( result, true, next_dir );
         }
     }

@@ -141,12 +141,14 @@ auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     return S_OK;
 }
 
-#ifdef _WIN32
-auto FSItem::nativeName() const -> native_string {
+auto FSItem::filesystemPath() const -> const fs::path& {
+    return mFileEntry.path();
+}
+
+auto FSItem::filesystemName() const -> fs::path {
     BIT7Z_MAYBE_UNUSED std::error_code error;
     return fs::canonical( mFileEntry, error ).filename();
 }
-#endif
 
 } // namespace filesystem
 } // namespace bit7z
