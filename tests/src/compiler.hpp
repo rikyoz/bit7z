@@ -77,6 +77,16 @@ constexpr auto standard_library = "Unknown";
 constexpr auto standard_library_version = "N/A";
 #endif
 
+#ifdef __GLIBC__
+constexpr auto c_runtime = "glibc";
+#elif defined( _UCRT )
+constexpr auto c_runtime = "ucrt";
+#elif defined( __MSVCRT_VERSION__ )
+constexpr auto c_runtime = "msvcrt";
+#else
+constexpr auto c_runtime = "Unknown";
+#endif
+
 // Compiler target architecture
 #if defined( _WIN64 ) || defined( __x86_64__ )
 constexpr auto target_arch = "x64";

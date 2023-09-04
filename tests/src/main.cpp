@@ -28,7 +28,10 @@ auto main( int argc, char* argv[] ) -> int {
     std::cout << "Version: " << compiler::version << '\n';
     std::cout << "Target Architecture: " << compiler::target_arch << "\n\n";
 
-    std::cout << "[Standard Library]\n";
+    std::cout << "[C Runtime Library]\n";
+    std::cout << "Name: " << compiler::c_runtime << "\n\n";
+
+    std::cout << "[C++ Standard Library]\n";
     std::cout << "Name: " << compiler::standard_library << '\n';
     std::cout << "Version: " << compiler::standard_library_version << "\n\n";
 
