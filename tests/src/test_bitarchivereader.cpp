@@ -172,6 +172,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
             REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -182,6 +183,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
             REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -228,6 +231,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
             REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -238,6 +242,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
             REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -285,6 +291,7 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffered archives
             REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -295,6 +302,8 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE( info.archivePath().empty() ); // No archive path for streamed archives
             REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -586,6 +595,7 @@ TEST_CASE( "BitArchiveReader: Reading an empty archive", "[bitarchivereader]" ) 
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE_ARCHIVE_CONTENT( info, test_archive, false );
             REQUIRE_ARCHIVE_TESTS( info );
@@ -738,6 +748,8 @@ TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
 
             const auto archive_items = info.items();
@@ -782,12 +794,15 @@ TEST_CASE( "BitArchiveReader: Reading invalid archives", "[bitarchivereader]" ) 
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
             const BitArchiveReader info( lib, file_buffer, test_archive.format() );
             REQUIRE_THROWS( info.test() );
         }
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
             REQUIRE_THROWS( info.test() );
         }
@@ -842,11 +857,14 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
 
                 SECTION( "Buffer archive" ) {
                     REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
                     REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, wrong_format.format ) );
                 }
 
                 SECTION( "Stream archive" ) {
                     fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+                    REQUIRE( file_stream.is_open() );
+
                     REQUIRE_THROWS( BitArchiveReader( lib, file_stream, wrong_format.format ) );
                 }
             }
@@ -987,6 +1005,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
             const BitArchiveReader info( lib, file_buffer, test_format.format );
             REQUIRE_ITEM_DIRECTORY( info, "dir" );
             REQUIRE_ITEM_REGULAR( info, "regular" );
@@ -997,6 +1016,8 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
             const BitArchiveReader info( lib, file_stream, test_format.format );
             REQUIRE_ITEM_DIRECTORY( info, "dir" );
             REQUIRE_ITEM_REGULAR( info, "regular" );
@@ -1057,6 +1078,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names
 
         SECTION( "Buffer archive" ) {
             REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
             const BitArchiveReader info( lib, file_buffer, test_format.format );
             REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
             REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
@@ -1066,6 +1088,8 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names
 
         SECTION( "Stream archive" ) {
             fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+            REQUIRE( file_stream.is_open() );
+
             const BitArchiveReader info( lib, file_stream, test_format.format );
             REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
             REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
@@ -1099,6 +1123,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file n
 
     SECTION( "Buffer archive" ) {
         REQUIRE_LOAD_FILE( file_buffer, arc_file_name );
+
         const BitArchiveReader info( lib, file_buffer, BitFormat::SevenZip );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
@@ -1108,6 +1133,8 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file n
 
     SECTION( "Stream archive" ) {
         fs::ifstream file_stream{ arc_file_name, std::ios::binary };
+        REQUIRE( file_stream.is_open() );
+
         const BitArchiveReader info( lib, file_stream, BitFormat::SevenZip );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );

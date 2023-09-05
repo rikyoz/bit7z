@@ -1985,6 +1985,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
 
     DYNAMIC_SECTION ( "Indexing file " << test_input.u8string() << " as a stream" ) {
         fs::ifstream input_stream{ test_input };
+        REQUIRE( input_stream.is_open() );
         REQUIRE_NOTHROW( items_vector.indexStream( input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( items_vector.size() == 1 );
         REQUIRE( items_vector[ 0 ].inArchivePath() == "custom_name.ext" );
