@@ -36,6 +36,10 @@
 #include <internal/fs.hpp>
 #include "internal/util.hpp"
 
+#if defined(__MINGW32__) && defined(_WIO_DEFINED)
+#include "internal/fsutil.hpp"
+#endif
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
@@ -100,6 +104,20 @@ inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t >
 #define REQUIRE_LOAD_FILE( var, in_file ) \
     const auto (var) = load_file( in_file ); \
     REQUIRE_FALSE( var.empty() )
+
+#if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
+#define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
+    fs::ifstream (var){}; \
+    *(var).rdbuf() = bit7z::filesystem::fsutil::open_filebuf<char>( in_file, std::ios::in | std::ios::binary ); \
+    if ( !(var).is_open() ) { \
+        (var).setstate( std::ios::failbit ); \
+    } \
+    REQUIRE( (var).is_open() )
+#else
+#define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
+    fs::ifstream (var){ in_file, std::ios::binary }; \
+    REQUIRE( (var).is_open() )
+#endif
 
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder

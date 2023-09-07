@@ -747,8 +747,7 @@ TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators
         }
 
         SECTION( "Stream archive" ) {
-            fs::ifstream file_stream{ arc_file_name, std::ios::binary };
-            REQUIRE( file_stream.is_open() );
+            REQUIRE_OPEN_IFSTREAM( file_stream, arc_file_name );
 
             const BitArchiveReader info( lib, file_stream, test_archive.format() );
 
@@ -1132,8 +1131,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file n
     }
 
     SECTION( "Stream archive" ) {
-        fs::ifstream file_stream{ arc_file_name, std::ios::binary };
-        REQUIRE( file_stream.is_open() );
+        REQUIRE_OPEN_IFSTREAM( file_stream, fs::path{ arc_file_name } );
 
         const BitArchiveReader info( lib, file_stream, BitFormat::SevenZip );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
