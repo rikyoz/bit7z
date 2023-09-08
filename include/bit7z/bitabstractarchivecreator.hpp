@@ -245,7 +245,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
 
         /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
-         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         * (e.g., https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
          * @tparam T    An integral type (i.e., a bool or an integer type).
          *
@@ -259,7 +259,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
 
         /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
-         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         * (e.g., https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
          * For example, passing the string L"tm" with a false value while creating a .7z archive
          * will disable storing the last modified timestamps of the compressed files.
