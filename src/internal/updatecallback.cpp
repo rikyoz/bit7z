@@ -63,7 +63,10 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
     if ( propID == kpidIsAnti ) {
         prop = false;
     } else {
-        prop = mOutputArchive.outputItemProperty( index, static_cast< BitProperty >( propID ) );
+        const auto property = static_cast< BitProperty >( propID );
+        if ( mOutputArchive.creator().storeSymbolicLinks() || property != BitProperty::SymLink ) {
+            prop = mOutputArchive.outputItemProperty( index, property );
+        }
     }
     *value = prop;
     prop.bstrVal = nullptr;

@@ -124,7 +124,8 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
       mCryptHeaders( false ),
       mSolidMode( false ),
       mVolumeSize( 0 ),
-      mThreadsCount( 0 ) {
+      mThreadsCount( 0 ),
+      mStoreSymbolicLinks{ false } {
     setRetainDirectories( false );
 }
 
@@ -170,6 +171,10 @@ auto BitAbstractArchiveCreator::volumeSize() const noexcept -> uint64_t {
 
 auto BitAbstractArchiveCreator::threadsCount() const noexcept -> uint32_t {
     return mThreadsCount;
+}
+
+auto BitAbstractArchiveCreator::storeSymbolicLinks() const noexcept -> bool {
+    return mStoreSymbolicLinks;
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
@@ -260,6 +265,10 @@ void BitAbstractArchiveCreator::setVolumeSize( uint64_t volume_size ) noexcept {
 
 void BitAbstractArchiveCreator::setThreadsCount( uint32_t threads_count ) noexcept {
     mThreadsCount = threads_count;
+}
+
+void BitAbstractArchiveCreator::setStoreSymbolicLinks( bool store_symlinks ) noexcept {
+    mStoreSymbolicLinks = store_symlinks;
 }
 
 auto dictionaryPropertyName( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {

@@ -42,6 +42,8 @@ class FSItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
 
+        BIT7Z_NODISCARD auto itemProperty( BitProperty propID ) const -> BitPropVariant override;
+
         BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const -> HRESULT override;
 
         BIT7Z_NODISCARD auto filesystemPath() const -> const fs::path&;

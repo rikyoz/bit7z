@@ -231,6 +231,12 @@ class BitOutputArchive {
         auto handler() const noexcept -> const BitAbstractArchiveHandler&;
 
         /**
+         * @return a constant reference to the BitAbstractArchiveHandler object containing the
+         *         settings for writing the output archive.
+         */
+        auto creator() const noexcept -> const BitAbstractArchiveCreator&;
+
+        /**
          * @brief Default destructor.
          */
         virtual ~BitOutputArchive() = default;

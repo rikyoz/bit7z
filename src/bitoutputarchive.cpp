@@ -373,4 +373,8 @@ auto BitOutputArchive::handler() const noexcept -> const BitAbstractArchiveHandl
     return mArchiveCreator;
 }
 
+auto BitOutputArchive::creator() const noexcept -> const BitAbstractArchiveCreator& {
+    return mArchiveCreator;
+}
+
 } // namespace bit7z

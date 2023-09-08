@@ -111,6 +111,11 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto threadsCount() const noexcept -> uint32_t;
 
         /**
+         * @return whether the archive creator stores symbolic links as links in the output archive.
+         */
+        BIT7Z_NODISCARD auto storeSymbolicLinks() const noexcept -> bool;
+
+        /**
          * @brief Sets up a password for the output archives.
          *
          * When setting a password, the produced archives will be encrypted using the default
@@ -232,6 +237,13 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         void setThreadsCount( uint32_t threads_count ) noexcept;
 
         /**
+         * @brief Sets whether the creator will store symbolic links as links in the output archive.
+         *
+         * @param store_symlinks    if true, symbolic links will be stored as links.
+         */
+        void setStoreSymbolicLinks( bool store_symlinks ) noexcept;
+
+        /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
          * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
@@ -284,6 +296,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         bool mSolidMode;
         uint64_t mVolumeSize;
         uint32_t mThreadsCount;
+        bool mStoreSymbolicLinks;
         std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
 

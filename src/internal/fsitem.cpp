@@ -150,5 +150,14 @@ auto FSItem::filesystemName() const -> fs::path {
     return fs::canonical( mFileEntry, error ).filename();
 }
 
+auto FSItem::itemProperty( BitProperty propID ) const -> BitPropVariant {
+    std::error_code error;
+    if ( propID == BitProperty::SymLink && mFileEntry.is_symlink( error ) ) {
+        const auto symlink_path = fs::read_symlink( mFileEntry.path(), error );
+        return !error ? BitPropVariant{ symlink_path.wstring() } : BitPropVariant{};
+    }
+    return GenericInputItem::itemProperty( propID );
+}
+
 } // namespace filesystem
 } // namespace bit7z
