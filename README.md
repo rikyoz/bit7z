@@ -282,6 +282,8 @@ add_subdirectory( ${CMAKE_SOURCE_DIR}/third_party/bit7z )
 target_link_libraries( ${YOUR_TARGET} PRIVATE bit7z )
 ```
 
+The library is highly customizable: for a list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
+
 ### String Encoding
 
 By default, the project follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
@@ -293,13 +295,6 @@ On Windows, if your project needs access to files or paths having characters out
 
 + Use the UTF-8 code page for your application (recommended); or
 + Configure bit7z to use UTF-16 encoded wide strings (i.e., `std::wstring`) by enabling the `BIT7Z_USE_NATIVE_STRING` option via CMake.
-
-### Long Paths (Windows-only)
-
-<details>
-  <summary>Expand for more details!</summary>
-
-</details>
 
 ## ☕️ Donate
 
