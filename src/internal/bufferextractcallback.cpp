@@ -43,9 +43,10 @@ auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
     if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;
     } else if ( prop.isString() ) {
-        fullPath = prop.getString();
         if ( !mHandler.retainDirectories() ) {
-            fullPath = fs::path{ fullPath }.filename().string< tchar >();
+            fullPath = fs::path{ prop.getNativeString() }.filename().string< tchar >();
+        } else {
+            fullPath = prop.getString();
         }
     } else {
         return E_FAIL;
