@@ -272,9 +272,9 @@ auto fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 
-constexpr auto LONG_PATH_PREFIX = R"(\\?\)";
+constexpr auto LONG_PATH_PREFIX = BIT7Z_NATIVE_STRING( R"(\\?\)" );
 
-inline auto starts_with( const std::string& str, const std::string& prefix ) -> bool {
+inline auto starts_with( const native_string& str, const native_string& prefix ) -> bool {
     return str.size() >= prefix.size() && str.compare( 0, prefix.size(), prefix ) == 0;
 }
 
@@ -284,7 +284,7 @@ auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
     if ( !path.is_absolute() ) {
         return false;
     }
-    auto path_str = path.string();
+    const auto& path_str = path.native();
     if ( path_str.size() < ( MAX_PATH - MAX_DOS_FILENAME_SIZE ) ) {
         return false;
     }
