@@ -1146,11 +1146,29 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file n
 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
+
+TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file name (no path attribute stored)", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "metadata" / "unicode";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
+    const auto old_locale = std::locale::global( std::locale("en_US.UTF8") );
 #endif
 
-TEST_CASE( "BitArchiveReader: Correctly identifying header-encrypted archives", "[bitarchivereader]" ) {
+    const auto* const arc_file_name = BIT7Z_STRING( "クラウド.jpg.bz2" );
+    const BitArchiveReader info( lib, arc_file_name, BitFormat::BZip2 );
+    REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
 
+#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
+    std::locale::global( old_locale );
+#endif
+
+    REQUIRE( set_current_dir( old_current_dir ) );
 }
+#endif
 
 #ifdef BIT7Z_AUTO_FORMAT
 

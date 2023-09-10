@@ -34,7 +34,7 @@ if( BIT7Z_TESTS_FILESYSTEM )
     include( FetchContent )
     FetchContent_Declare( bit7z-test-data
                           GIT_REPOSITORY https://github.com/rikyoz/bit7z-test-data.git
-                          GIT_TAG main
+                          GIT_TAG 1fc4db57ae75cf2aa246573095e3b42934246a32
                           GIT_SHALLOW ON
                           SOURCE_DIR ${BIT7Z_TESTS_DATA_DIR} )
     FetchContent_MakeAvailable( bit7z-test-data )
