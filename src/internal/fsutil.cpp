@@ -21,6 +21,7 @@
 #endif
 
 #include "internal/fsutil.hpp"
+#include "internal/util.hpp"
 
 using namespace std;
 
@@ -28,23 +29,23 @@ namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
 auto fsutil::basename( const tstring& path ) -> tstring {
-    return fs::path{ path }.stem().string< tchar >();
+    return path_to_tstring( fs::path{ path }.stem() );
 }
 
 auto fsutil::extension( const fs::path& path ) -> tstring {
     const fs::path ext = path.extension();
     if ( !ext.empty() ) {
         // We don't want the leading dot of the extension!
-        const tstring result = ext.string< tchar >();
+        const tstring result = path_to_tstring( ext );
         return result.substr( 1 );
     }
-    return ext.string< tchar >();
+    return path_to_tstring( ext );
 }
 
 auto contains_dot_references( const fs::path& path ) -> bool {
     /* Note: here we suppose that path does not contain file names with a final dot (e.g., "foo.").
              This must be true on Windows, but not on Unix systems! */
-    const auto& native_path = path.string< tchar >();
+    const auto& native_path = path_to_tstring( path );
     return std::adjacent_find( native_path.begin(), native_path.end(), []( tchar a, tchar b ) {
         return a == BIT7Z_STRING( '.' ) && ( b == BIT7Z_STRING( '/' ) || b == BIT7Z_STRING( '\\' ) );
     } ) != native_path.end();

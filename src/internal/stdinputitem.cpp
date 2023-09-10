@@ -24,11 +24,11 @@ namespace bit7z {
 StdInputItem::StdInputItem( istream& stream, fs::path path ) : mStream{ stream }, mStreamPath{ std::move( path ) } {}
 
 auto StdInputItem::name() const -> tstring {
-    return mStreamPath.filename().string< tchar >();
+    return path_to_tstring( mStreamPath.filename() );
 }
 
 auto StdInputItem::path() const -> tstring {
-    return mStreamPath.string< tchar >();
+    return path_to_tstring( mStreamPath );
 }
 
 auto StdInputItem::inArchivePath() const -> fs::path {

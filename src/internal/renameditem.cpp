@@ -13,6 +13,7 @@
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/renameditem.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
 
@@ -20,11 +21,11 @@ RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, 
     : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ new_path } {}
 
 auto RenamedItem::name() const -> tstring {
-    return mNewPath.filename().string< tchar >();
+    return path_to_tstring( mNewPath.filename() );
 }
 
 auto RenamedItem::path() const -> tstring {
-    return mNewPath.string< tchar >();
+    return path_to_tstring( mNewPath );
 }
 
 auto RenamedItem::inArchivePath() const -> fs::path { return path(); }

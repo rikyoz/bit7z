@@ -25,11 +25,11 @@ BufferItem::BufferItem( const vector< byte_t >& buffer, fs::path name )
     : mBuffer{ buffer }, mBufferName{ std::move( name ) } {}
 
 auto BufferItem::name() const -> tstring {
-    return mBufferName.filename().string< tchar >();
+    return path_to_tstring( mBufferName.filename() );
 }
 
 auto BufferItem::path() const -> tstring {
-    return mBufferName.string< tchar >();
+    return path_to_tstring( mBufferName );
 }
 
 auto BufferItem::inArchivePath() const -> fs::path {

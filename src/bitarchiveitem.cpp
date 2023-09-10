@@ -12,6 +12,7 @@
 
 #include "bitarchiveitem.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/util.hpp"
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
@@ -30,7 +31,7 @@ auto BitArchiveItem::isDir() const -> bool {
 
 BIT7Z_NODISCARD
 inline auto filename( const fs::path& path ) -> tstring {
-    return path.filename().string< tchar >();
+    return path_to_tstring( path.filename() );
 }
 
 auto BitArchiveItem::name() const -> tstring {

@@ -14,6 +14,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileoutstream.hpp"
+#include "internal/util.hpp"
 
 #if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
 #include "internal/fsutil.hpp"
@@ -29,7 +30,7 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
             // the call to fs::exists succeeded, but the filePath exists, and this is an error!
             error = std::make_error_code( std::errc::file_exists );
         }
-        throw BitException( "Failed to create the output file", error, mFilePath.string< tchar >() );
+        throw BitException( "Failed to create the output file", error, path_to_tstring( mFilePath ) );
     }
 #if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
     *mFileStream.rdbuf() = filesystem::fsutil::open_filebuf<char>( mFilePath, std::ios::out | std::ios::binary | std::ios::trunc );
@@ -42,7 +43,7 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     if ( mFileStream.fail() ) {
         throw BitException( "Failed to open the output file",
                             make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
-                            mFilePath.string< tchar >() );
+                            path_to_tstring( mFilePath ) );
     }
 
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), buffer_size );

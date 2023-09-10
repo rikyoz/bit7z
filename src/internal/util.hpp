@@ -31,13 +31,24 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string;
 auto widen( const std::string& narrowString ) -> std::wstring;
 #endif
 
+inline auto path_to_tstring( const fs::path& path ) -> tstring {
+    /* In an ideal world, we should only use the string< tchar >() function for converting a path to a tstring.
+     * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
+     * which is the default encoding of bit7z. */
+#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+    return path.u8string();
+#else
+    return path.string< tchar >();
+#endif
+}
+
 inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
 #if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
     return path.wstring();
 #else
-    // On some compilers and platforms (e.g., GCC before v12.3),
-    // the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
-    // So we simply convert to tstring, and then widen it if necessary.
+    /* On some compilers and platforms (e.g., GCC before v12.3),
+     * the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
+     * So we simply convert to tstring, and then widen it if necessary. */
     return WIDEN( path.string< tchar >() );
 #endif
 }

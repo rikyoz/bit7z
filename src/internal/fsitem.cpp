@@ -38,13 +38,13 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
 
     mFileEntry.assign( FORMAT_LONG_PATH( itemPath ), error );
     if ( error ) {
-        throw BitException( "Cannot read file entry", error, itemPath.string< tchar >() );
+        throw BitException( "Cannot read file entry", error, path_to_tstring( itemPath ) );
     }
     if ( !mFileEntry.exists( error ) ) { // NOLINT
         if ( !error ) { // call to "exists(error)" succeeded
             error = std::make_error_code( std::errc::no_such_file_or_directory );
         }
-        throw BitException( "Invalid path", error, itemPath.string< tchar >() );
+        throw BitException( "Invalid path", error, path_to_tstring( itemPath ) );
     }
     initAttributes( mFileEntry.path() );
 }
@@ -59,7 +59,7 @@ FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
 void FSItem::initAttributes( const fs::path& itemPath ) {
     if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
         //should not happen, but anyway...
-        throw BitException( "Could not retrieve file attributes", last_error_code(), itemPath.string< tchar >() );
+        throw BitException( "Could not retrieve file attributes", last_error_code(), path_to_tstring( itemPath ) );
     }
 }
 
@@ -94,11 +94,11 @@ auto FSItem::lastWriteTime() const noexcept -> FILETIME {
 
 auto FSItem::name() const -> tstring {
     BIT7Z_MAYBE_UNUSED std::error_code error;
-    return fs::canonical( mFileEntry, error ).filename().string< tchar >();
+    return path_to_tstring( fs::canonical( mFileEntry, error ).filename() );
 }
 
 auto FSItem::path() const -> tstring {
-    return mFileEntry.path().string< tchar >();
+    return path_to_tstring( mFileEntry.path() );
 }
 
 /* Note: inArchivePath() returns the path that should be used inside the archive when compressing the item,

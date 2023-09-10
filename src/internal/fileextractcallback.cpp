@@ -105,7 +105,7 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
                 case OverwriteMode::None: {
                     throw BitException( kCannotDeleteOutput,
                                         make_hresult_code( E_ABORT ),
-                                        mFilePathOnDisk.string< tchar >() );
+                                        path_to_tstring( mFilePathOnDisk ) );
                 }
                 case OverwriteMode::Skip: {
                     return S_OK;
@@ -115,7 +115,7 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
                     if ( !fs::remove( mFilePathOnDisk, error ) ) {
                         throw BitException( kCannotDeleteOutput,
                                             make_hresult_code( E_ABORT ),
-                                            mFilePathOnDisk.string< tchar >() );
+                                            path_to_tstring( mFilePathOnDisk ) );
                     }
                     break;
                 }

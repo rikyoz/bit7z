@@ -12,6 +12,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/util.hpp"
 
 #if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
 #include "internal/fsutil.hpp"
@@ -42,7 +43,7 @@ void CFileInStream::openFile( const fs::path& filePath ) {
         //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
         throw BitException( "Failed to open the archive file",
                             make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
-                            filePath.string< tchar >() );
+                            path_to_tstring( filePath ) );
     }
 }
 
