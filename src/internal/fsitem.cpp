@@ -154,7 +154,7 @@ auto FSItem::itemProperty( BitProperty propID ) const -> BitPropVariant {
     std::error_code error;
     if ( propID == BitProperty::SymLink && mFileEntry.is_symlink( error ) ) {
         const auto symlink_path = fs::read_symlink( mFileEntry.path(), error );
-        return !error ? BitPropVariant{ symlink_path.wstring() } : BitPropVariant{};
+        return !error ? BitPropVariant{ path_to_wide_string( symlink_path ) } : BitPropVariant{};
     }
     return GenericInputItem::itemProperty( propID );
 }

@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include "internal/com.hpp"
+#include "internal/fs.hpp"
 
 namespace bit7z {
 
@@ -29,6 +30,17 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string;
 
 auto widen( const std::string& narrowString ) -> std::wstring;
 #endif
+
+inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
+#if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+    return path.wstring();
+#else
+    // On some compilers and platforms (e.g., GCC before v12.3),
+    // the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
+    // So we simply convert to tstring, and then widen it if necessary.
+    return WIDEN( path.string< tchar >() );
+#endif
+}
 
 constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
     return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< int64_t >::max )() - offset ) ) ) ||
