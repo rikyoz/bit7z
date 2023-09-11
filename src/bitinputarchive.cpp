@@ -122,7 +122,7 @@ inline auto detect_format( const BitInFormat& format, const fs::path& arc_path )
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& in_file )
-    : BitInputArchive( handler, fs::path{ in_file } ) {}
+    : BitInputArchive( handler, tstring_to_path( in_file ) ) {}
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path )
@@ -180,7 +180,7 @@ auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const
                             make_hresult_code( res ) );
     }
     if ( property == BitProperty::Path && item_property.isEmpty() && itemsCount() == 1 ) {
-        item_property = path_to_wide_string( fs::path{ mArchivePath }.stem() );
+        item_property = path_to_wide_string( tstring_to_path( mArchivePath ).stem() );
     }
     return item_property;
 }

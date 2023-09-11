@@ -27,7 +27,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {}
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const tstring& in_file )
-    : BitOutputArchive( creator, fs::path{ in_file } ) {}
+    : BitOutputArchive( creator, tstring_to_path( in_file ) ) {}
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, fs::path in_arc )

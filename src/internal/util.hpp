@@ -42,6 +42,15 @@ inline auto path_to_tstring( const fs::path& path ) -> tstring {
 #endif
 }
 
+inline auto tstring_to_path( const tstring& str ) -> fs::path {
+    // By default, MSVC treats strings as encoded using the system codepage, but bit7z uses UTF-8.
+#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+    return fs::u8path( str );
+#else
+    return fs::path{ str };
+#endif
+}
+
 inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
 #if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
     return path.wstring();

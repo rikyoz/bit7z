@@ -61,7 +61,7 @@ auto FileExtractCallback::finishOperation( OperationResult operation_result ) ->
 auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
     fs::path filePath = mCurrentItem.path();
     if ( filePath.empty() ) {
-        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
+        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path{ kEmptyFileAlias };
     } else if ( !mRetainDirectories ) {
         filePath = filePath.filename();
     } else {
