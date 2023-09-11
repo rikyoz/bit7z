@@ -20,7 +20,7 @@
 
 namespace bit7z {
 
-#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 // On Windows, with native strings enabled, strings are already wide!
 #   define WIDEN( tstr ) tstr
 #else
