@@ -65,7 +65,8 @@ struct string_traits< wchar_t > {
  */
 #ifdef _WIN32
 using native_string = std::wstring;
-#define BIT7Z_NATIVE_STRING( str ) L##str
+#define BIT7Z_NATIVE_STRING_( str ) L##str
+#define BIT7Z_NATIVE_STRING( str ) BIT7Z_NATIVE_STRING_( str )
 #else
 using native_string = std::string;
 #define BIT7Z_NATIVE_STRING( str ) str
@@ -76,7 +77,8 @@ using native_string = std::string;
  */
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows with native strings
 using tchar = wchar_t;
-#define BIT7Z_STRING( str ) L##str
+#define BIT7Z_STRING_( str ) L##str
+#define BIT7Z_STRING( str ) BIT7Z_STRING_( str )
 #else // Unix, and Windows with non-native strings
 using tchar = char;
 #define BIT7Z_STRING( str ) str
