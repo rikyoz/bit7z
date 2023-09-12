@@ -77,8 +77,7 @@ using native_string = std::string;
  */
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows with native strings
 using tchar = wchar_t;
-#define BIT7Z_STRING_( str ) L##str
-#define BIT7Z_STRING( str ) BIT7Z_STRING_( str )
+#define BIT7Z_STRING( str ) BIT7Z_NATIVE_STRING_( str )
 #else // Unix, and Windows with non-native strings
 using tchar = char;
 #define BIT7Z_STRING( str ) str
