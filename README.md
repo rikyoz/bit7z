@@ -286,15 +286,47 @@ The library is highly customizable: for a list of the available build options, p
 
 ### String Encoding
 
-By default, the project follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
+By default, bit7z follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/) to simplify the use of the library within cross-platform projects.
+In short, this means that:
 
-+ The default path string type is `std::string`, so users can easily use the library in cross-platform projects.
-+ `std::string`s are considered to be UTF-8 encoded.
++ The default path string type is `std::string`.
++ Input `std::string`s are considered to be UTF-8 encoded; output `std::string`s are UTF-8 encoded.
 
-On Windows, if your project needs access to files or paths having characters outside of the [ANSI](https://en.wikipedia.org/wiki/Windows-1252) set, you either:
+<details>
+  <summary>Expand for more details!</summary>
 
-+ Use the UTF-8 code page for your application (recommended); or
-+ Configure bit7z to use UTF-16 encoded wide strings (i.e., `std::wstring`) by enabling the `BIT7Z_USE_NATIVE_STRING` option via CMake.
+On POSIX systems, `std::string`s are usually already UTF-8 encoded, and no configuration is needed.
+
+The situation is a bit more complex on Windows since, by default, Windows treats `std::string`s as encoded using the system code page, which may not necessarily be UTF-8, like, for example, [Windows-1252](https://en.wikipedia.org/wiki/Windows-1252).
+
+If your program deals exclusively with ASCII-only strings, you should be fine with the default bit7z settings (as ASCII characters are also UTF-8).
+
+However, if you need to handle non-ASCII/Unicode characters, as it is likely, you have the following options:
+
++ Enforcing using the UTF-8 code page for your whole application, as explained by Microsoft [here](https://learn.microsoft.com/en-us/windows/apps/design/globalizing/use-utf8-code-page):
+  + _**Recommended**_, but supported only since Windows 10 1903 and later.
++ Manually ensuring the encoding of the `std::string`s passed to bit7z:
+  + You can use some string encoding library or C++11's UTF-8 string literals for input strings.
+  + User-input strings (e.g., the password of an archive) can be handled as explained [here](https://nullprogram.com/blog/2020/05/04/); in short: read the input as an UTF-16 wide string (e.g., via `ReadConsoleW`), and convert it to UTF-8 (bit7z provides a utility function for this, `bit7z::to_tstring`).
+  + You can correctly print the UTF-8 output strings from bit7z (e.g., the path/name metadata of a file in an archive) to the console by calling [`SetConsoleOutputCP(CP_UTF8)`](https://learn.microsoft.com/en-us/windows/console/setconsoleoutputcp) before.
++ Configuring bit7z to use UTF-16 encoded wide strings (i.e., `std::wstring`) by enabling the `BIT7Z_USE_NATIVE_STRING` option via CMake.
+  + If your program is Windows-only, or you already use wide strings on Windows, this might be the best choice since it will avoid any internal string conversions (7-zip always uses wide strings).
+  + This option makes developing cross-platform applications slightly inconvenient since you'll still have to use `std::string` on POSIX systems.
+  + The library provides a `BIT7Z_STRING` macro function for defining wide string literals on Windows and narrow ones on other platforms.
+  + You must programmatically set the standard input and output encoding to UTF-16 to correctly read and print Unicode characters:
+
+    ```cpp
+    #include <fcntl.h> //for _O_U16TEXT
+    #include <io.h>  //for _setmode
+
+    _setmode(_fileno(stdout), _O_U16TEXT); // setting the stdout encoding to UTF16
+    _setmode(_fileno(stdin), _O_U16TEXT); // setting the stdin encoding to UTF16
+    ```
+
++ Configuring bit7z to use the system code page encoding for `std::string` by enabling the `BIT7Z_USE_SYSTEM_CODEPAGE` option via CMake.
+  + _Not recommended_: using this option, your program will be limited in the set of characters it can pass to and read from bit7z.
+
+</details>
 
 ## ☕️ Donate
 
