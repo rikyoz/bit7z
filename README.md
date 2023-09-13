@@ -206,10 +206,10 @@ A complete _**API reference**_ is available in the [wiki](https://github.com/rik
 
 ## 🚀 Upgrading from bit7z v3 to v4
 
+The newest bit7z v4 introduced some significant breaking changes to the library's API.
+
 <details>
   <summary>Expand for more details!</summary>
-
-The newest bit7z v4 introduced some significant breaking changes to the API. In particular:
 
 + By default, the project now follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/):
   + The default string type is `std::string` (instead of `std::wstring`), so users can use the library in cross-platform projects more easily (v4 introduced Linux/macOS support too).
@@ -226,8 +226,7 @@ The newest bit7z v4 introduced some significant breaking changes to the API. In 
 ## 💾 Download
 
 <div align="center">
-<a href="https://github.com/rikyoz/bit7z/releases">
-<img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?include_prereleases&sort=semver&label=Latest%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
+<a href="https://github.com/rikyoz/bit7z/releases"><img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?include_prereleases&sort=semver&label=Latest%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
 <br/>
 <a href="https://github.com/rikyoz/bit7z/releases">
 <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout&label=Total%20Downloads&logo=icloud&logoColor=white"/></a>
