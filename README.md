@@ -289,7 +289,7 @@ By default, bit7z follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere
 In short, this means that:
 
 + The default path string type is `std::string`.
-+ Input `std::string`s are considered to be UTF-8 encoded; output `std::string`s are UTF-8 encoded.
++ Input `std::string`s are considered as UTF-8 encoded; output `std::string`s are UTF-8 encoded.
 
 <details>
   <summary>Expand for more details!</summary>
