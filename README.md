@@ -204,7 +204,7 @@ try { // bit7z classes can throw BitException objects
 
 A complete _**API reference**_ is available in the [wiki](https://github.com/rikyoz/bit7z/wiki/) section.
 
-## 🚀 Upgrading from bit7z v3 to v4
+### 🚀 Upgrading from bit7z v3 to v4
 
 The newest bit7z v4 introduced some significant breaking changes to the library's API.
 
@@ -283,7 +283,7 @@ target_link_libraries( ${YOUR_TARGET} PRIVATE bit7z )
 
 The library is highly customizable: for a list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
-### String Encoding
+### 🌐 String Encoding
 
 By default, bit7z follows the [UTF-8 Everywhere Manifesto](http://utf8everywhere.org/) to simplify the use of the library within cross-platform projects.
 In short, this means that:
@@ -292,7 +292,7 @@ In short, this means that:
 + Input `std::string`s are considered as UTF-8 encoded; output `std::string`s are UTF-8 encoded.
 
 <details>
-  <summary>Expand for more details!</summary>
+  <summary>Expand for more details and for other string encoding options!</summary>
 
 On POSIX systems, `std::string`s are usually already UTF-8 encoded, and no configuration is needed.
 
@@ -311,7 +311,7 @@ However, if you need to handle non-ASCII/Unicode characters, as it is likely, yo
 + Configuring bit7z to use UTF-16 encoded wide strings (i.e., `std::wstring`) by enabling the `BIT7Z_USE_NATIVE_STRING` option via CMake.
   + If your program is Windows-only, or you already use wide strings on Windows, this might be the best choice since it will avoid any internal string conversions (7-zip always uses wide strings).
   + This option makes developing cross-platform applications slightly inconvenient since you'll still have to use `std::string` on POSIX systems.
-  + The library provides a `BIT7Z_STRING` macro function for defining wide string literals on Windows and narrow ones on other platforms.
+  + The library provides a type alias `bit7z::tstring` and a macro function `BIT7Z_STRING` for defining wide string variables and literals on Windows and narrow ones on other platforms.
   + You must programmatically set the standard input and output encoding to UTF-16 to correctly read and print Unicode characters:
 
     ```cpp
