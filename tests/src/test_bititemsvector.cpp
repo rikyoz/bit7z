@@ -71,7 +71,7 @@ struct TestDirectory {
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -153,7 +153,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.only_files = true;
@@ -230,7 +230,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structure)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.retain_folder_structure = true;
@@ -317,7 +317,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -826,7 +826,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtered)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1198,7 +1198,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1284,7 +1284,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -1345,7 +1345,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recursively)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1410,7 +1410,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -1513,7 +1513,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mapping)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -1621,7 +1621,7 @@ struct TestPaths {
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -1684,7 +1684,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structure)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.retain_folder_structure = true;
@@ -1750,7 +1750,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.only_files = true;
@@ -1814,7 +1814,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1885,7 +1885,7 @@ struct TestFile {
 
 TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -1937,7 +1937,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 
 TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -1967,7 +1967,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
 
 TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
@@ -1997,7 +1997,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
 
 TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
     const fs::path old_current_dir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    REQUIRE( set_current_dir( test_filesystem_dir ) );
 
     BitItemsVector items_vector;
 
