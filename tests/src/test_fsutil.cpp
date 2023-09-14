@@ -28,156 +28,156 @@ using namespace bit7z::filesystem::fsutil;
 
 //-V::2008 (Suppressing warnings for cyclomatic complexity in PVS-Studio)
 
-TEST_CASE( "fsutil: Wildcard matching without special characters", "[fsutil][wildcardMatch]" ) {
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "?" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "b" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "acb" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a42b" ), BIT7Z_STRING( "a42b42" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "****a****b****c****" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "*a*b*c*" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc*def" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc def" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abcdef" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abc def" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLah" ), BIT7Z_STRING( "bLah" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLaH" ), BIT7Z_STRING( "bLah" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem " ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem-ipsum" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem " ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( " lorem" ) ) == true );
+TEST_CASE( "fsutil: Wildcard matching without special characters", "[fsutil][wildcard_match]" ) {
+    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "?" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "b" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "acb" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a42b" ), BIT7Z_STRING( "a42b42" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "****a****b****c****" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "*a*b*c*" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc*def" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc def" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abcdef" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abc def" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "bLah" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "bLaH" ), BIT7Z_STRING( "bLah" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem " ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem-ipsum" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem " ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( " lorem" ) ) == true );
 }
 
-TEST_CASE( "fsutil: Wildcard matching with question mark special character", "[fsutil][wildcardMatch]" ) {
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "?" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "aa" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "??a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?a?b" ), BIT7Z_STRING( "caaab" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "z" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?Lah" ), BIT7Z_STRING( "bLaH" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?LaH" ), BIT7Z_STRING( "bLaH" ) ) == true );
+TEST_CASE( "fsutil: Wildcard matching with question mark special character", "[fsutil][wildcard_match]" ) {
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "?" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "aa" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "??a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?a?b" ), BIT7Z_STRING( "caaab" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "z" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?Lah" ), BIT7Z_STRING( "bLaH" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?LaH" ), BIT7Z_STRING( "bLaH" ) ) == true );
 
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc?" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a?c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc?" ), BIT7Z_STRING( "abc" ) ) == false );
 
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "bL?h" ), BIT7Z_STRING( "bLah" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLaaa" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "bL?h" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLaaa" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLah" ) ) == true );
 }
 
-TEST_CASE( "fsutil: Wildcard matching with star special character", "[fsutil][wildcardMatch]" ) {
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a*r" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*aar" ), BIT7Z_STRING( "a*ar" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "a*abab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aAazz" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "acb" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acb" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acbd" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acdb" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ac" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "bc" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aaazz" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "ab*d" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*abc*abc*abc" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*abc*abc*abcd" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc**" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem-ipsum" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*Ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxx*yzz*a" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*a" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*z*xyz" ), BIT7Z_STRING( "xyxyxyzyxyz" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "XY*Z*XYz" ), BIT7Z_STRING( "XYXYXYZYXYz" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
+TEST_CASE( "fsutil: Wildcard matching with star special character", "[fsutil][wildcard_match]" ) {
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a*r" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*aar" ), BIT7Z_STRING( "a*ar" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "a*abab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aAazz" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "acb" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acb" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acbd" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acdb" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ac" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "bc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aaazz" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "ab*d" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*abc*abc*abc" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*abc*abc*abcd" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "abc**" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem-ipsum" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*Ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "xxx*yzz*a" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*a" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*z*xyz" ), BIT7Z_STRING( "xyxyxyzyxyz" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "XY*Z*XYz" ), BIT7Z_STRING( "XYXYXYZYXYz" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
 
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "**" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "**" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "***a*b*c***" ), BIT7Z_STRING( "*abc*" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "********a********b********c********" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "********a********b********b********" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "**a**b**c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "**a**b**c**" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "**b**c" ), BIT7Z_STRING( "bc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "b" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a**b***c****" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaaaaaaa" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaa" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*b*c*" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*aabbaa*a*" ), BIT7Z_STRING( "aaabbaabbaab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abc*" ), BIT7Z_STRING( "aBc" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*aBc*" ), BIT7Z_STRING( "aBc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ba" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bac" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bd" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "db" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ccd" ), BIT7Z_STRING( "abcccd" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ipsum*ips*" ), BIT7Z_STRING( "lorem ipsum ipsu" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*orem*IPS*" ), BIT7Z_STRING( "lorem IPSUM" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*orem*IPS" ), BIT7Z_STRING( "lorem IPSUM" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ORE*" ), BIT7Z_STRING( "lOREm" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*21" ), BIT7Z_STRING( "a42b42" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42b42" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*23" ), BIT7Z_STRING( "A42b42" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42B42" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "**" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "**" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "***a*b*c***" ), BIT7Z_STRING( "*abc*" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "********a********b********c********" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "********a********b********b********" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "**a**b**c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "**a**b**c**" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "**b**c" ), BIT7Z_STRING( "bc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "b" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a**b***c****" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaaaaaaa" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaa" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*b*c*" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*aabbaa*a*" ), BIT7Z_STRING( "aaabbaabbaab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*abc*" ), BIT7Z_STRING( "aBc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*aBc*" ), BIT7Z_STRING( "aBc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ba" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bac" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bd" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "db" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*ccd" ), BIT7Z_STRING( "abcccd" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*ipsum*ips*" ), BIT7Z_STRING( "lorem ipsum ipsu" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*orem*IPS*" ), BIT7Z_STRING( "lorem IPSUM" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*orem*IPS" ), BIT7Z_STRING( "lorem IPSUM" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*ORE*" ), BIT7Z_STRING( "lOREm" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*21" ), BIT7Z_STRING( "a42b42" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42b42" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*23" ), BIT7Z_STRING( "A42b42" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42B42" ) ) == true );
 }
 
-TEST_CASE( "fsutil: Wildcard matching with both question mark and star", "[fsutil][wildcardMatch]" ) {
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?*?*" ), BIT7Z_STRING( "ab" ) ) == true );
+TEST_CASE( "fsutil: Wildcard matching with both question mark and star", "[fsutil][wildcard_match]" ) {
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "*?*?*" ), BIT7Z_STRING( "ab" ) ) == true );
 
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?*?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?*?" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?*&?" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?b*??" ), BIT7Z_STRING( "abcd" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?a*??" ), BIT7Z_STRING( "abcd" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?c?" ), BIT7Z_STRING( "abcd" ) ) == true );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
-    REQUIRE( wildcardMatch( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?*?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?*?" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?*&?" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?b*??" ), BIT7Z_STRING( "abcd" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?a*??" ), BIT7Z_STRING( "abcd" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?c?" ), BIT7Z_STRING( "abcd" ) ) == true );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
+    REQUIRE( wildcard_match( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
 }
 
 #ifdef BIT7Z_TESTS_FILESYSTEM
@@ -187,7 +187,7 @@ struct TestItem {
     fs::path inArchivePath;
 };
 
-TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
+TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) {
     using namespace test::filesystem;
 
     const fs::path old_current_dir = current_dir();
@@ -228,7 +228,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][inArchivePath]" ) {
 
     for ( const auto& test_item : test_items ) {
         DYNAMIC_SECTION( "Path: " << test_item.path ) {
-            REQUIRE( inArchivePath( test_item.path ) == test_item.inArchivePath );
+            REQUIRE( in_archive_path( test_item.path ) == test_item.inArchivePath );
         }
     }
 

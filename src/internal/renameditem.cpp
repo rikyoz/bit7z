@@ -48,17 +48,17 @@ auto RenamedItem::size() const -> uint64_t {
 
 auto RenamedItem::creationTime() const -> FILETIME {
     const BitPropVariant creation_time = mInputArchive.itemProperty( mIndex, BitProperty::CTime );
-    return creation_time.isFileTime() ? creation_time.getFileTime() : currentFileTime();
+    return creation_time.isFileTime() ? creation_time.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::lastAccessTime() const -> FILETIME {
     const BitPropVariant access_time = mInputArchive.itemProperty( mIndex, BitProperty::ATime );
-    return access_time.isFileTime() ? access_time.getFileTime() : currentFileTime();
+    return access_time.isFileTime() ? access_time.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::lastWriteTime() const -> FILETIME {
     const BitPropVariant write_time = mInputArchive.itemProperty( mIndex, BitProperty::MTime );
-    return write_time.isFileTime() ? write_time.getFileTime() : currentFileTime();
+    return write_time.isFileTime() ? write_time.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::attributes() const -> uint32_t {

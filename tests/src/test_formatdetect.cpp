@@ -128,7 +128,7 @@ TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
                           TestInputFormat{ "zipx", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
-        REQUIRE( detectFormatFromExt( "valid." + test.extension ) == test.format );
+        REQUIRE( detect_format_from_extension( "valid." + test.extension ) == test.format );
     }
 
     REQUIRE( set_current_dir( old_current_dir ) );
@@ -222,7 +222,7 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
                           TestInputFormat{ "zipx", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
-        // We might directly test the detectFormatFromSig function, but it would require us to include
+        // We might directly test the detect_format_from_signature function, but it would require us to include
         // too many internal headers, and it easily gives compilation problems.
         // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid signature detection).
 

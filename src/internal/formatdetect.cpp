@@ -47,7 +47,7 @@ auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(mis
 namespace bit7z {
 /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
  *       format, but the ifs are faster and have less memory footprint. */
-auto findFormatByExtension( const tstring& extension ) -> const BitInFormat* {
+auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* {
     switch ( str_hash( extension.c_str() ) ) {
         case str_hash( BIT7Z_STRING( "7z" ) ):
             return &BitFormat::SevenZip;
@@ -191,7 +191,7 @@ auto findFormatByExtension( const tstring& extension ) -> const BitInFormat* {
 /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
  *         format. However, the switch case is faster and has less memory footprint. */
-auto findFormatBySignature( uint64_t signature ) noexcept -> const BitInFormat* {
+auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInFormat* {
     constexpr auto RarSignature = 0x526172211A070000ULL; // Rar! 0x1A 0x07 0x00
     constexpr auto Rar5Signature = 0x526172211A070100ULL; // Rar! 0x1A 0x07 0x01 0x00
     constexpr auto SevenZipSignature = 0x377ABCAF271C0000ULL; // 7z 0xBC 0xAF 0x27 0x1C
@@ -356,21 +356,21 @@ static inline uint64_t bswap64( uint64_t x ) {
 }
 #endif
 
-auto readSignature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
+auto read_signature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
     uint64_t signature = 0;
     stream->Read( &signature, size, nullptr );
     return bswap64( signature );
 }
 
-auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
+auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     constexpr auto SIGNATURE_SIZE = 8U;
     constexpr auto BASE_SIGNATURE_MASK = 0xFFFFFFFFFFFFFFFFULL;
     constexpr auto BYTE_SHIFT = 8ULL;
 
-    uint64_t file_signature = readSignature( stream, SIGNATURE_SIZE );
+    uint64_t file_signature = read_signature( stream, SIGNATURE_SIZE );
     uint64_t signature_mask = BASE_SIGNATURE_MASK;
     for ( auto i = 0U; i < SIGNATURE_SIZE - 1; ++i ) {
-        const BitInFormat* format = findFormatBySignature( file_signature );
+        const BitInFormat* format = find_format_by_signature( file_signature );
         if ( format != nullptr ) {
             stream->Seek( 0, 0, nullptr );
             return *format;
@@ -397,7 +397,7 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
 
     for ( const auto& sig : common_signatures_with_offset ) {
         stream->Seek( sig.offset, 0, nullptr );
-        file_signature = readSignature( stream, sig.size );
+        file_signature = read_signature( stream, sig.size );
         if ( file_signature == sig.signature ) {
             stream->Seek( 0, 0, nullptr );
             return sig.format;
@@ -412,7 +412,7 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
 
     // Checking for ISO signature
     stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
-    file_signature = readSignature( stream, ISO_SIGNATURE_SIZE );
+    file_signature = read_signature( stream, ISO_SIGNATURE_SIZE );
 
     const bool is_iso = file_signature == ISO_SIGNATURE;
     if ( is_iso || file_signature == BEA_SIGNATURE ) {
@@ -424,7 +424,7 @@ auto detectFormatFromSig( IInStream* stream ) -> const BitInFormat& {
 
         for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
             stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
-            file_signature = readSignature( stream, UDF_SIGNATURE_SIZE );
+            file_signature = read_signature( stream, UDF_SIGNATURE_SIZE );
 
             if ( file_signature == UDF_SIGNATURE ) { // The file is ISO+UDF or just UDF
                 stream->Seek( 0, 0, nullptr );
@@ -458,7 +458,7 @@ inline auto to_lower( unsigned char character ) -> char {
 
 #endif
 
-auto detectFormatFromExt( const fs::path& in_file ) -> const BitInFormat& {
+auto detect_format_from_extension( const fs::path& in_file ) -> const BitInFormat& {
     tstring ext = filesystem::fsutil::extension( in_file );
     if ( ext.empty() ) {
         throw BitException( "Failed to detect the archive format from the extension",
@@ -467,7 +467,7 @@ auto detectFormatFromExt( const fs::path& in_file ) -> const BitInFormat& {
     std::transform( ext.cbegin(), ext.cend(), ext.begin(), to_lower );
 
     // Detecting archives with common file extensions
-    const BitInFormat* format = findFormatByExtension( ext );
+    const BitInFormat* format = find_format_by_extension( ext );
     if ( format != nullptr ) { //extension found in the map
         return *format;
     }

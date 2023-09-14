@@ -33,7 +33,7 @@ namespace filesystem {
 
 FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     : mFileAttributeData(),
-      mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
+      mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::in_archive_path( itemPath ) ) {
     std::error_code error;
 
     mFileEntry.assign( FORMAT_LONG_PATH( itemPath ), error );
@@ -52,12 +52,12 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
 FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
     : mFileEntry( std::move( entry ) ),
       mFileAttributeData(),
-      mInArchivePath( fsutil::inArchivePath( mFileEntry.path(), searchPath ) ) {
+      mInArchivePath( fsutil::in_archive_path( mFileEntry.path(), searchPath ) ) {
     initAttributes( mFileEntry.path() );
 }
 
 void FSItem::initAttributes( const fs::path& itemPath ) {
-    if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
+    if ( !fsutil::get_file_attributes_ex( itemPath.c_str(), mFileAttributeData ) ) {
         //should not happen, but anyway...
         throw BitException( "Could not retrieve file attributes", last_error_code(), path_to_tstring( itemPath ) );
     }

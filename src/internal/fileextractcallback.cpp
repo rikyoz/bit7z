@@ -49,11 +49,11 @@ auto FileExtractCallback::finishOperation( OperationResult operation_result ) ->
     }
 
     if ( mCurrentItem.isModifiedTimeDefined() ) {
-        filesystem::fsutil::setFileModifiedTime( mFilePathOnDisk, mCurrentItem.modifiedTime() );
+        filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem.modifiedTime() );
     }
 
     if ( mCurrentItem.areAttributesDefined() ) {
-        filesystem::fsutil::setFileAttributes( mFilePathOnDisk, mCurrentItem.attributes() );
+        filesystem::fsutil::set_file_attributes( mFilePathOnDisk, mCurrentItem.attributes() );
     }
     return result;
 }

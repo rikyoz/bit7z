@@ -29,7 +29,7 @@ auto time_to_FILETIME( const std::time_t& timeValue ) -> FILETIME;
 
 auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type;
 
-auto currentFileTime() -> FILETIME;
+auto current_file_time() -> FILETIME;
 
 }  // namespace bit7z
 

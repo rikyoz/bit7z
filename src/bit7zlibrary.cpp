@@ -85,7 +85,7 @@ BIT7Z_NODISCARD
 auto createArchiveObject( FARPROC creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
-    const auto format_ID = formatGUID( format );
+    const auto format_ID = format_guid( format );
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     return createObject( &format_ID, &interface_id< T >(), reinterpret_cast< void** >( object ) );
 }

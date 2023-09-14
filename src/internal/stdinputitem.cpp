@@ -54,15 +54,15 @@ auto StdInputItem::size() const -> uint64_t {
 }
 
 auto StdInputItem::creationTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto StdInputItem::lastAccessTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto StdInputItem::lastWriteTime() const noexcept -> FILETIME {
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto StdInputItem::attributes() const noexcept -> uint32_t {

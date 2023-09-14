@@ -31,17 +31,17 @@ BIT7Z_NODISCARD auto basename( const tstring& path ) -> tstring;
 
 BIT7Z_NODISCARD auto extension( const fs::path& path ) -> tstring;
 
-BIT7Z_NODISCARD auto wildcardMatch( const tstring& pattern, const tstring& str ) -> bool;
+BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
 
-BIT7Z_NODISCARD auto getFileAttributesEx( const fs::path& filePath,
-                                          WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
+BIT7Z_NODISCARD auto get_file_attributes_ex( const fs::path& filePath,
+                                             WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
 
-auto setFileModifiedTime( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
+auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
 
-auto setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
+auto set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
 
-BIT7Z_NODISCARD auto inArchivePath( const fs::path& file_path,
-                                    const fs::path& search_path = fs::path{} ) -> fs::path;
+BIT7Z_NODISCARD auto in_archive_path( const fs::path& file_path,
+                                      const fs::path& search_path = fs::path{} ) -> fs::path;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 

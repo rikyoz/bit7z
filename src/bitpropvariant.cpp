@@ -26,7 +26,7 @@ constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVar
 
 using namespace bit7z;
 
-auto lookupType( VARTYPE type ) -> BitPropVariantType {
+auto lookup_type( VARTYPE type ) -> BitPropVariantType {
     switch ( type ) {
         case VT_EMPTY:
             return BitPropVariantType::Empty;
@@ -482,7 +482,7 @@ auto BitPropVariant::isFileTime() const noexcept -> bool {
 }
 
 auto BitPropVariant::type() const -> BitPropVariantType {
-    return lookupType( vt );
+    return lookup_type( vt );
 }
 
 void BitPropVariant::clear() noexcept {

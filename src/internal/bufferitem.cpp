@@ -51,15 +51,15 @@ auto BufferItem::size() const noexcept -> uint64_t {
 }
 
 auto BufferItem::creationTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto BufferItem::lastAccessTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto BufferItem::lastWriteTime() const noexcept -> FILETIME {
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto BufferItem::attributes() const noexcept -> uint32_t {

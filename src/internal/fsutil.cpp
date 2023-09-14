@@ -51,7 +51,7 @@ auto contains_dot_references( const fs::path& path ) -> bool {
     } ) != native_path.end();
 }
 
-auto fsutil::inArchivePath( const fs::path& file_path, const fs::path& search_path ) -> fs::path {
+auto fsutil::in_archive_path( const fs::path& file_path, const fs::path& search_path ) -> fs::path {
     /* Note: the following algorithm tries to emulate the behavior of 7-zip when dealing with
              paths of items in archives. */
 
@@ -120,9 +120,9 @@ auto w_match( tstring::const_iterator pattern_it, // NOLINT(misc-no-recursion)
     return str_it == str_end;
 }
 
-auto fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) -> bool { // NOLINT(misc-no-recursion)
+auto fsutil::wildcard_match( const tstring& pattern, const tstring& str ) -> bool { // NOLINT(misc-no-recursion)
     if ( pattern.empty() ) {
-        return wildcardMatch( BIT7Z_STRING( "*" ), str );
+        return wildcard_match( BIT7Z_STRING( "*" ), str );
     }
     return w_match( pattern.cbegin(), pattern.cend(), str.begin(), str.end() );
 }
@@ -183,7 +183,7 @@ const auto os_lstat = lstat64;
 #endif
 #endif
 
-auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool {
+auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
@@ -220,7 +220,7 @@ auto fsutil::setFileAttributes( const fs::path& filePath, DWORD attributes ) noe
 #endif
 }
 
-auto fsutil::setFileModifiedTime( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool {
+auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
@@ -242,7 +242,7 @@ auto fsutil::setFileModifiedTime( const fs::path& filePath, FILETIME ftModified 
 #endif
 }
 
-auto fsutil::getFileAttributesEx( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool {
+auto fsutil::get_file_attributes_ex( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }

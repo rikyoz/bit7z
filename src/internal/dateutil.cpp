@@ -50,7 +50,7 @@ auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
     return time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unix_epoch ) };
 }
 
-auto currentFileTime() -> FILETIME {
+auto current_file_time() -> FILETIME {
 #ifdef _WIN32
     FILETIME file_time{};
     SYSTEMTIME system_time{};

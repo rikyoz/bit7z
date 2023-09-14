@@ -51,7 +51,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
          *
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
         const bool item_matches = ( !mOnlyFiles || !current_item.isDir() ) &&
-                                  fsutil::wildcardMatch( mFilter, current_item.name() );
+                                  fsutil::wildcard_match( mFilter, current_item.name() );
         if ( item_matches == should_include_matched_items ) {
             result.emplace_back( std::make_unique< FSItem >( current_item ) );
         }

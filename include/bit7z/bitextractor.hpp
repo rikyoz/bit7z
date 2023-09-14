@@ -21,7 +21,7 @@ namespace bit7z {
 
 namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
-auto wildcardMatch( const tstring& pattern, const tstring& str ) -> bool;
+auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
 } // namespace fsutil
 } // namespace filesystem
 
@@ -117,7 +117,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             }
 
             extractMatchingFilter( in_archive, out_dir, policy, [ &item_filter ]( const tstring& item_path ) -> bool {
-                return fsutil::wildcardMatch( item_filter, item_path );
+                return fsutil::wildcard_match( item_filter, item_path );
             } );
         }
 
@@ -141,7 +141,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
 
             extractMatchingFilter( in_archive, out_buffer, policy,
                                    [ &item_filter ]( const tstring& item_path ) -> bool {
-                                       return fsutil::wildcardMatch( item_filter, item_path );
+                                       return fsutil::wildcard_match( item_filter, item_path );
                                    } );
         }
 
