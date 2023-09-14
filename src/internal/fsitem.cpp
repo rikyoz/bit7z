@@ -107,16 +107,16 @@ auto FSItem::path() const -> tstring {
  *
  * In particular, 7-zip behaves differently according to the kind of paths that are passed to it:
  * + Absolute paths (e.g. "C:\foo\bar\test.txt"):
- *   + The file is compressed without any directory structure (e.g. "test.txt"),
+ *   + The file is compressed without any directory structure (e.g., "test.txt"),
  *     unless it was inside a directory passed by the user and scanned by FSIndexer:
  *     in this case, only the directory structure is retained.
  *
  * + Relative paths containing the current directory or outside references
- *   (e.g. containing a "./" or "../" substring, like in "../foo/bar/test.txt"):
- *   + Same as absolute paths (e.g. "test.txt").
+ *   (e.g., containing a "./" or "../" substring, like in "../foo/bar/test.txt"):
+ *   + Same as absolute paths (e.g., "test.txt").
  *
- * + Relative paths (e.g. "foo/bar/test.txt"):
- *   + The file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
+ * + Relative paths (e.g., "foo/bar/test.txt"):
+ *   + The file is compressed retaining the directory structure (e.g., "foo/bar/test.txt" in both example cases).
  *
  * If the mInArchivePath is already given (i.e., the user wants a custom mapping of files), this one is returned.*/
 auto FSItem::inArchivePath() const -> fs::path {
