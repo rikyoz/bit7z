@@ -362,6 +362,15 @@ auto BitInputArchive::contains( const tstring& path ) const noexcept -> bool {
     return find( path ) != end();
 }
 
+auto BitInputArchive::itemAt( uint32_t index ) const -> BitArchiveItemOffset {
+    const uint32_t number_items = itemsCount();
+    if ( index >= number_items ) {
+        throw BitException( "Cannot get the item at the index " + std::to_string( index ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+    return { index, *this };
+}
+
 auto BitInputArchive::const_iterator::operator++() noexcept -> BitInputArchive::const_iterator& {
     ++mItemOffset;
     return *this;

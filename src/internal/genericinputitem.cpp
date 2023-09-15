@@ -49,4 +49,8 @@ auto GenericInputItem::itemProperty( BitProperty propID ) const -> BitPropVarian
     return prop;
 }
 
+auto GenericInputItem::isSymLink() const -> bool {
+    return false;
+}
+
 } // namespace bit7z

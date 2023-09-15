@@ -20,6 +20,8 @@ struct ISequentialInStream;
 namespace bit7z {
 
 struct GenericInputItem : public BitGenericItem {
+    BIT7Z_NODISCARD auto isSymLink() const -> bool override;
+
     BIT7Z_NODISCARD virtual auto inArchivePath() const -> fs::path = 0;
 
     BIT7Z_NODISCARD virtual auto getStream( ISequentialInStream** inStream ) const -> HRESULT = 0;

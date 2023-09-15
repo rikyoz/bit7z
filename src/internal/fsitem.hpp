@@ -26,6 +26,8 @@ class FSItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto isDir() const noexcept -> bool override;
 
+        BIT7Z_NODISCARD auto isSymLink() const -> bool override;
+
         BIT7Z_NODISCARD auto size() const noexcept -> uint64_t override;
 
         BIT7Z_NODISCARD auto creationTime() const noexcept -> FILETIME override;

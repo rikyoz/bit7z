@@ -23,6 +23,8 @@ class RenamedItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto isDir() const -> bool override;
 
+        BIT7Z_NODISCARD auto isSymLink() const -> bool override;
+
         BIT7Z_NODISCARD auto size() const -> uint64_t override;
 
         BIT7Z_NODISCARD auto creationTime() const -> FILETIME override;

@@ -42,6 +42,10 @@ auto RenamedItem::isDir() const -> bool {
     return mInputArchive.itemProperty( mIndex, BitProperty::IsDir ).getBool();
 }
 
+auto RenamedItem::isSymLink() const -> bool {
+    return mInputArchive.itemAt( mIndex ).isSymLink();
+}
+
 auto RenamedItem::size() const -> uint64_t {
     return mInputArchive.itemProperty( mIndex, BitProperty::Size ).getUInt64();
 }

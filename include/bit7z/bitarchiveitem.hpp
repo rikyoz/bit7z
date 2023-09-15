@@ -30,6 +30,12 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD auto isDir() const -> bool override;
 
         /**
+         * @return true if and only if the item is a symbolic link (either has a non-empty BitProperty::SymLink,
+         *         or it has POSIX/Win32 symbolic link file attributes).
+         */
+        BIT7Z_NODISCARD auto isSymLink() const -> bool override;
+
+        /**
          * @return the item's name; if not available, it tries to get it from the element's path or,
          *         if not possible, it returns an empty string.
          */

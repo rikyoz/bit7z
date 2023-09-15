@@ -14,6 +14,9 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
+// For checking posix file attributes
+#include <sys/stat.h>
+
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
@@ -98,4 +101,26 @@ auto BitArchiveItem::attributes() const -> uint32_t {
 auto BitArchiveItem::crc() const -> uint32_t {
     const BitPropVariant crc = itemProperty( BitProperty::CRC );
     return crc.isUInt32() ? crc.getUInt32() : 0;
+}
+
+// On MSVC, these macros are not defined!
+#if !defined(S_ISLNK) && defined(S_IFMT)
+#ifndef S_IFLNK
+constexpr auto S_IFLNK = 0120000;
+#endif
+#define S_ISLNK( m ) (((m) & S_IFMT) == S_IFLNK)
+#endif
+
+auto BitArchiveItem::isSymLink() const -> bool {
+    const BitPropVariant symlink = itemProperty( BitProperty::SymLink );
+    if ( symlink.isString() ) {
+        return true;
+    }
+
+    const auto item_attributes = attributes();
+    if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
+        auto posix_attributes = item_attributes >> 16U;
+        return S_ISLNK( posix_attributes );
+    }
+    return ( item_attributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;
 }

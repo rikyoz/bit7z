@@ -159,5 +159,10 @@ auto FSItem::itemProperty( BitProperty propID ) const -> BitPropVariant {
     return GenericInputItem::itemProperty( propID );
 }
 
+auto FSItem::isSymLink() const -> bool {
+    BIT7Z_MAYBE_UNUSED std::error_code error;
+    return mFileEntry.is_symlink( error );
+}
+
 } // namespace filesystem
 } // namespace bit7z

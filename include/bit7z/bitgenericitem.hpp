@@ -25,6 +25,11 @@ class BitGenericItem {
         BIT7Z_NODISCARD virtual auto isDir() const -> bool = 0;
 
         /**
+         * @return true if and only if the item is a symbolic link.
+         */
+        BIT7Z_NODISCARD virtual auto isSymLink() const -> bool = 0;
+
+        /**
          * @return the uncompressed size of the item.
          */
         BIT7Z_NODISCARD virtual auto size() const -> uint64_t = 0;

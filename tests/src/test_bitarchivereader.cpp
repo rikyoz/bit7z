@@ -882,6 +882,7 @@ constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
         auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
         REQUIRE( iterator != (info).cend() );                                                         \
         REQUIRE( iterator->isDir() );                                                                 \
+        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY );    \
@@ -902,6 +903,7 @@ constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
         auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
         REQUIRE( iterator != (info).cend() );                                                         \
         REQUIRE_FALSE( iterator->isDir() );                                                           \
+        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
@@ -922,6 +924,7 @@ constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
         auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
         REQUIRE( iterator != (info).cend() );                                                         \
         REQUIRE_FALSE( iterator->isDir() );                                                           \
+        REQUIRE( iterator->isSymLink() );                                                        \
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
@@ -942,6 +945,7 @@ constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
         auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
         REQUIRE( iterator != (info).cend() );                                                         \
         REQUIRE_FALSE( iterator->isDir() );                                                           \
+        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
@@ -961,6 +965,7 @@ constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
         auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
         REQUIRE( iterator != (info).cend() );                                                         \
         REQUIRE_FALSE( iterator->isDir() );                                                           \
+        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
         auto item_attributes = iterator->attributes();                                                \
         if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
             REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \

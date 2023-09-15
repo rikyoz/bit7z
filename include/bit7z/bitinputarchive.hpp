@@ -383,6 +383,15 @@ class BitInputArchive {
          * @return true if and only if an item with the given path exists in the archive.
          */
         BIT7Z_NODISCARD auto contains( const tstring& path ) const noexcept -> bool;
+
+        /**
+         * @brief Retrieve the item at the given index.
+         *
+         * @param index the index of the item to be retrieved.
+         *
+         * @return the item at the given index within the archive.
+         */
+        BIT7Z_NODISCARD auto itemAt( uint32_t index ) const -> BitArchiveItemOffset;
 };
 
 }  // namespace bit7z
