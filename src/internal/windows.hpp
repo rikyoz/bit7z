@@ -33,9 +33,26 @@ using UInt32 = uint32_t;
 // Win32 file attributes flags
 #ifndef FILE_ATTRIBUTE_READONLY
 constexpr auto FILE_ATTRIBUTE_READONLY       = 1;
+#endif
+
+#ifndef FILE_ATTRIBUTE_DIRECTORY
 constexpr auto FILE_ATTRIBUTE_DIRECTORY      = 16;
+#endif
+
+#ifndef FILE_ATTRIBUTE_ARCHIVE
 constexpr auto FILE_ATTRIBUTE_ARCHIVE        = 32;
+#endif
+
+#ifndef FILE_ATTRIBUTE_NORMAL
 constexpr auto FILE_ATTRIBUTE_NORMAL         = 128;
+#endif
+
+#ifndef FILE_ATTRIBUTE_REPARSE_POINT
+constexpr auto FILE_ATTRIBUTE_REPARSE_POINT  = 1024;
+#endif
+
+#ifndef FILE_ATTRIBUTE_UNIX_EXTENSION
+constexpr auto FILE_ATTRIBUTE_UNIX_EXTENSION = 0x8000; // As defined by p7zip
 #endif
 
 constexpr auto MAX_PATHNAME_LEN = 1024;
@@ -160,10 +177,6 @@ constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY_E_ERROR_NEGATIVE_SEEK;
 constexpr auto FACILITY_CODE = FACILITY_WIN32;
 constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK );
 #endif
-#endif
-
-#ifndef FILE_ATTRIBUTE_UNIX_EXTENSION
-constexpr auto FILE_ATTRIBUTE_UNIX_EXTENSION = 0x8000; //as defined by p7zip
 #endif
 
 #endif //WINDOWS_HPP
