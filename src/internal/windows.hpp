@@ -51,10 +51,6 @@ constexpr auto FILE_ATTRIBUTE_NORMAL         = 128;
 constexpr auto FILE_ATTRIBUTE_REPARSE_POINT  = 1024;
 #endif
 
-#ifndef FILE_ATTRIBUTE_UNIX_EXTENSION
-constexpr auto FILE_ATTRIBUTE_UNIX_EXTENSION = 0x8000; // As defined by p7zip
-#endif
-
 constexpr auto MAX_PATHNAME_LEN = 1024;
 
 // Win32 VARIANT_BOOL constants
@@ -177,6 +173,11 @@ constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY_E_ERROR_NEGATIVE_SEEK;
 constexpr auto FACILITY_CODE = FACILITY_WIN32;
 constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK );
 #endif
+#endif
+
+// Note: this needs to be defined on all platforms, as it is a custom file attributes extension defined by p7zip/7-zip.
+#ifndef FILE_ATTRIBUTE_UNIX_EXTENSION
+constexpr auto FILE_ATTRIBUTE_UNIX_EXTENSION = 0x8000; // As defined by p7zip
 #endif
 
 #endif //WINDOWS_HPP
