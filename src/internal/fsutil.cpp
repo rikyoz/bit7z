@@ -214,9 +214,9 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
     }
 
     const fs::perms file_permissions = static_cast<fs::perms>( file_stat.st_mode & global_umask ) & fs::perms::mask;
-    std::error_code ec;
-    fs::permissions( filePath, file_permissions, ec );
-    return !ec;
+    std::error_code error;
+    fs::permissions( filePath, file_permissions, error );
+    return !error;
 #endif
 }
 
@@ -235,10 +235,10 @@ auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModifi
     }
     return res;
 #else
-    std::error_code ec;
-    auto ft = FILETIME_to_file_time_type( ftModified );
-    fs::last_write_time( filePath, ft, ec );
-    return !ec;
+    std::error_code error;
+    auto file_time = FILETIME_to_file_time_type( ftModified );
+    fs::last_write_time( filePath, file_time, error );
+    return !error;
 #endif
 }
 
