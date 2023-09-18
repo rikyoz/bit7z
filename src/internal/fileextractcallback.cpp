@@ -77,12 +77,10 @@ fs::path FileExtractCallback::getCurrentItemPath() const {
 
 #ifdef _WIN32
 std::wstring CharacterStandard( const std::wstring& src ) {
-    std::wstring destChar = src;
     //Define Rules
-    std::wregex illegalCharRegex( L"[<>:\"/|?*]" );
+    const std::wregex illegalCharRegex( L"[<>:\"/|?*]" );
     //Replacing illegal characters with underscores using regular expressions
-    destChar = std::regex_replace( destChar, illegalCharRegex, L"_" );
-    return destChar;
+    return std::regex_replace( src, illegalCharRegex, L"_" );
 }
 #endif
 
