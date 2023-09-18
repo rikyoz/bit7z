@@ -28,6 +28,7 @@ class FSIndexer final {
         explicit FSIndexer( FSItem directory,
                             tstring filter = {},
                             FilterPolicy policy = FilterPolicy::Include,
+                            SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
                             bool only_files = false );
 
         void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
@@ -38,6 +39,7 @@ class FSIndexer final {
         FSItem mDirItem;
         tstring mFilter;
         FilterPolicy mPolicy;
+        SymlinkPolicy mSymlinkPolicy;
         bool mOnlyFiles;
 };
 

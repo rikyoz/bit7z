@@ -25,6 +25,12 @@
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
+
+enum struct SymlinkPolicy {
+    Follow,
+    DoNotFollow
+};
+
 namespace fsutil {
 
 BIT7Z_NODISCARD auto basename( const tstring& path ) -> tstring;
@@ -34,6 +40,7 @@ BIT7Z_NODISCARD auto extension( const fs::path& path ) -> tstring;
 BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
 
 BIT7Z_NODISCARD auto get_file_attributes_ex( const fs::path& filePath,
+                                             SymlinkPolicy symlinkPolicy,
                                              WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
 
 auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;

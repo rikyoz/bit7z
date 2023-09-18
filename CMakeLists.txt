@@ -68,6 +68,7 @@ set( HEADERS
      src/internal/com.hpp
      src/internal/cstdinstream.hpp
      src/internal/cstdoutstream.hpp
+     src/internal/csymlinkinstream.hpp
      src/internal/cvolumeinstream.hpp
      src/internal/cvolumeoutstream.hpp
      src/internal/dateutil.hpp
@@ -130,6 +131,7 @@ set( SOURCES
      src/internal/cmultivolumeoutstream.cpp
      src/internal/cstdinstream.cpp
      src/internal/cstdoutstream.cpp
+     src/internal/csymlinkinstream.cpp
      src/internal/cvolumeinstream.cpp
      src/internal/cvolumeoutstream.cpp
      src/internal/dateutil.cpp

@@ -269,6 +269,8 @@ void BitAbstractArchiveCreator::setThreadsCount( uint32_t threads_count ) noexce
 
 void BitAbstractArchiveCreator::setStoreSymbolicLinks( bool store_symlinks ) noexcept {
     mStoreSymbolicLinks = store_symlinks;
+    // p7zip/7-zip behavior: when enabling storing symbolic links ("-snl" switch), they enable the solid mode.
+    setSolidMode( store_symlinks );
 }
 
 auto dictionaryPropertyName( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {

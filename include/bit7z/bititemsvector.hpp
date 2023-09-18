@@ -38,6 +38,7 @@ struct IndexingOptions {
     bool recursive = true;
     bool retain_folder_structure = false;
     bool only_files = false;
+    bool follow_symlinks = true;
 };
 /** @endcond **/
 
@@ -101,10 +102,11 @@ class BitItemsVector final {
          *
          * @note If a directory path is given, a BitException is thrown.
          *
-         * @param in_file the path to the filesystem file to be indexed in the vector.
-         * @param name    (optional) user-defined path to be used inside archives.
+         * @param in_file         the path to the filesystem file to be indexed in the vector.
+         * @param name            (optional) user-defined path to be used inside archives.
+         * @param follow_symlinks (optional) whether to follow symbolic links or not.
          */
-        void indexFile( const tstring& in_file, const tstring& name = {} );
+        void indexFile( const tstring& in_file, const tstring& name = {}, bool follow_symlinks = true );
 
         /**
          * @brief Indexes the given buffer, using the given name as a path when compressed in archives.

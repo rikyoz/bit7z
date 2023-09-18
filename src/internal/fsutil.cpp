@@ -176,10 +176,12 @@ static const mode_t global_umask = []() noexcept {
 #ifndef _WIN32
 #ifdef __APPLE__
 using stat_t = struct stat;
-const auto os_lstat = lstat;
+const auto os_lstat = &lstat;
+const auto os_stat = &stat;
 #else
 using stat_t = struct stat64;
-const auto os_lstat = lstat64;
+const auto os_lstat = &lstat64;
+const auto os_stat = &stat64;
 #endif
 #endif
 
@@ -242,16 +244,22 @@ auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModifi
 #endif
 }
 
-auto fsutil::get_file_attributes_ex( const fs::path& filePath, WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool {
+auto fsutil::get_file_attributes_ex( const fs::path& filePath,
+                                     SymlinkPolicy symlinkPolicy,
+                                     WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
 
 #ifdef _WIN32
+    (void)symlinkPolicy;
     return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileMetadata ) != FALSE;
 #else
     stat_t stat_info{};
-    if ( os_lstat( filePath.c_str(), &stat_info ) != 0 ) {
+    const auto stat_res = symlinkPolicy == SymlinkPolicy::Follow ?
+                          os_stat( filePath.c_str(), &stat_info ) :
+                          os_lstat( filePath.c_str(), &stat_info );
+    if ( stat_res != 0 ) {
         return false;
     }
 

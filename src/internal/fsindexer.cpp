@@ -17,8 +17,16 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-FSIndexer::FSIndexer( FSItem directory, tstring filter, FilterPolicy policy, bool only_files )
-    : mDirItem{ std::move( directory ) }, mFilter{ std::move( filter ) }, mPolicy{ policy }, mOnlyFiles{ only_files } {
+FSIndexer::FSIndexer( FSItem directory,
+                      tstring filter,
+                      FilterPolicy policy,
+                      SymlinkPolicy symlinkPolicy,
+                      bool only_files )
+    : mDirItem{ std::move( directory ) },
+      mFilter{ std::move( filter ) },
+      mPolicy{ policy },
+      mSymlinkPolicy{ symlinkPolicy },
+      mOnlyFiles{ only_files } {
     if ( !mDirItem.isDir() ) {
         throw BitException( "Invalid path", std::make_error_code( std::errc::not_a_directory ), mDirItem.name() );
     }
@@ -44,7 +52,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
             search_path = search_path.empty() ? prefix : search_path / prefix;
         }
 
-        const FSItem current_item{ current_entry, search_path };
+        const FSItem current_item{ current_entry, search_path, mSymlinkPolicy };
         /* An item matches if:
          *  - Its name matches the wildcard pattern, and
          *  - Either is a file, or we are interested also to include folders in the index.
@@ -61,7 +69,7 @@ void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& re
             // > indexing is done recursively
             // > indexing is not recursive, but the directory name matched the filter.
             const fs::path next_dir = prefix.empty() ?
-                                      current_item.filesystemName() :  prefix / current_item.filesystemName();
+                                      current_item.filesystemName() : prefix / current_item.filesystemName();
             listDirectoryItems( result, true, next_dir );
         }
     }

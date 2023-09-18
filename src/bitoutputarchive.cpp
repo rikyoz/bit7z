@@ -90,15 +90,20 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, st
 void BitOutputArchive::addItems( const std::vector< tstring >& in_paths ) {
     IndexingOptions options{};
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
+    options.follow_symlinks = !mArchiveCreator.storeSymbolicLinks();
     mNewItemsVector.indexPaths( in_paths, options );
 }
 
 void BitOutputArchive::addItems( const std::map< tstring, tstring >& in_paths ) {
-    mNewItemsVector.indexPathsMap( in_paths );
+    IndexingOptions options{};
+    options.follow_symlinks = !mArchiveCreator.storeSymbolicLinks();
+    mNewItemsVector.indexPathsMap( in_paths, options );
 }
 
 void BitOutputArchive::addFile( const tstring& in_file, const tstring& name ) {
-    mNewItemsVector.indexFile( in_file, mArchiveCreator.retainDirectories() ? in_file : name );
+    mNewItemsVector.indexFile( in_file,
+                               mArchiveCreator.retainDirectories() ? in_file : name,
+                               !mArchiveCreator.storeSymbolicLinks() );
 }
 
 void BitOutputArchive::addFile( const std::vector< byte_t >& in_buffer, const tstring& name ) {
@@ -114,6 +119,7 @@ void BitOutputArchive::addFiles( const std::vector< tstring >& in_files ) {
     options.recursive = false;
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
     options.only_files = true;
+    options.follow_symlinks = !mArchiveCreator.storeSymbolicLinks();
     mNewItemsVector.indexPaths( in_files, options );
 }
 
@@ -126,12 +132,14 @@ void BitOutputArchive::addFiles( const tstring& in_dir, const tstring& filter, F
     options.recursive = recursive;
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
     options.only_files = true;
+    options.follow_symlinks = !mArchiveCreator.storeSymbolicLinks();
     mNewItemsVector.indexDirectory( in_dir, filter, policy, options );
 }
 
 void BitOutputArchive::addDirectory( const tstring& in_dir ) {
     IndexingOptions options{};
     options.retain_folder_structure = mArchiveCreator.retainDirectories();
+    options.follow_symlinks = !mArchiveCreator.storeSymbolicLinks();
     mNewItemsVector.indexDirectory( in_dir, BIT7Z_STRING( "" ), FilterPolicy::Include, options );
 }
 

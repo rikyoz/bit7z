@@ -14,8 +14,8 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/csymlinkinstream.hpp"
 #include "internal/fsitem.hpp"
-#include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
@@ -31,9 +31,10 @@ namespace filesystem {
  *    the path of the file in the archive), the path in the archive is calculated from mPath and mSearchPath
  *    (see inArchivePath() method). */
 
-FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
+FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath, SymlinkPolicy symlinkPolicy )
     : mFileAttributeData(),
-      mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::in_archive_path( itemPath ) ) {
+      mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::in_archive_path( itemPath ) ),
+      mSymlinkPolicy{ symlinkPolicy } {
     std::error_code error;
 
     mFileEntry.assign( FORMAT_LONG_PATH( itemPath ), error );
@@ -49,15 +50,16 @@ FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
     initAttributes( mFileEntry.path() );
 }
 
-FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
+FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath, SymlinkPolicy symlinkPolicy )
     : mFileEntry( std::move( entry ) ),
       mFileAttributeData(),
-      mInArchivePath( fsutil::in_archive_path( mFileEntry.path(), searchPath ) ) {
+      mInArchivePath( fsutil::in_archive_path( mFileEntry.path(), searchPath ) ),
+      mSymlinkPolicy{ symlinkPolicy } {
     initAttributes( mFileEntry.path() );
 }
 
 void FSItem::initAttributes( const fs::path& itemPath ) {
-    if ( !fsutil::get_file_attributes_ex( itemPath.c_str(), mFileAttributeData ) ) {
+    if ( !fsutil::get_file_attributes_ex( itemPath.c_str(), mSymlinkPolicy, mFileAttributeData ) ) {
         //should not happen, but anyway...
         throw BitException( "Could not retrieve file attributes", last_error_code(), path_to_tstring( itemPath ) );
     }
@@ -76,6 +78,9 @@ auto FSItem::isDir() const noexcept -> bool {
 
 auto FSItem::size() const noexcept -> uint64_t {
     std::error_code error;
+    if ( mSymlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
+        return fs::read_symlink( mFileEntry, error ).u8string().size();
+    }
     const auto res = mFileEntry.file_size( error );
     return !error ? res : 0;
 }
@@ -130,6 +135,16 @@ auto FSItem::attributes() const noexcept -> uint32_t {
 auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     if ( isDir() ) {
         return S_OK;
+    }
+
+    if ( mSymlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
+        try {
+            auto inStreamLoc = bit7z::make_com< CSymlinkInStream >( path() );
+            *inStream = inStreamLoc.Detach();
+            return S_OK;
+        } catch ( const BitException& ex ) {
+            return ex.nativeCode();
+        }
     }
 
     try {
