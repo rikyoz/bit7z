@@ -16,10 +16,6 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-#ifdef _WIN32
-#include <regex>
-#endif
-
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
@@ -76,11 +72,22 @@ fs::path FileExtractCallback::getCurrentItemPath() const {
 }
 
 #ifdef _WIN32
-std::wstring CharacterStandard( const std::wstring& src ) {
-    //Define Rules
-    const std::wregex illegalCharRegex( L"[<>:\"/|?*]" );
-    //Replacing illegal characters with underscores using regular expressions
-    return std::regex_replace( src, illegalCharRegex, L"_" );
+/**
+ * Sanitizes the given file path, removing any eventual Windows illegal character
+ * (https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file)
+ *
+ * @param path The path to be sanitized.
+ *
+ * @return the sanitized path, where illegal characters are replaced with the '_' character.
+ */
+auto sanitize_path( const fs::path& path ) -> fs::path {
+    auto path_str = path.wstring();
+    std::replace_if( path_str.begin(), path_str.end(), []( wchar_t chr ) {
+        constexpr auto last_non_printable_ascii = 31;
+        return chr <= last_non_printable_ascii || chr == L'[' || chr == L'<' || chr == L'>' || chr == L':' ||
+               chr == L'"' || chr == L'/' || chr == L'|' || chr == L'?' || chr == L'*' || chr == L']';
+    }, L'_' );
+    return fs::path{ path_str };
 }
 #endif
 
@@ -89,8 +96,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
 
     auto filePath = getCurrentItemPath();
 #ifdef _WIN32
-    // Normalize String
-    filePath = CharacterStandard( filePath.wstring() );
+    filePath = sanitize_path( filePath );
 #endif
     mFilePathOnDisk = mDirectoryPath / filePath;
 
