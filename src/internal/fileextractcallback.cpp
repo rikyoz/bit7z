@@ -78,7 +78,7 @@ std::wstring CharacterStandard( const std::wstring& src ) {
     std::wregex illegalCharRegex( L"[<>:\"/|?*]" );
     //Replacing illegal characters with underscores using regular expressions
     destChar = std::regex_replace( destChar, illegalCharRegex, L"_" );
-	return destChar.c_str();
+    return destChar;
 }
 
 HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
