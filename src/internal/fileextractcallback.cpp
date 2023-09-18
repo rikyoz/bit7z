@@ -15,7 +15,10 @@
 #include "bitexception.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
+
+#ifdef _WIN32
 #include <regex>
+#endif
 
 using namespace std;
 using namespace NWindows;
@@ -72,6 +75,7 @@ fs::path FileExtractCallback::getCurrentItemPath() const {
     return filePath;
 }
 
+#ifdef _WIN32
 std::wstring CharacterStandard( const std::wstring& src ) {
     std::wstring destChar = src;
     //Define Rules
@@ -80,13 +84,16 @@ std::wstring CharacterStandard( const std::wstring& src ) {
     destChar = std::regex_replace( destChar, illegalCharRegex, L"_" );
     return destChar;
 }
+#endif
 
 HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
+#ifdef _WIN32
     // Normalize String
     filePath = CharacterStandard( filePath.wstring() );
+#endif
     mFilePathOnDisk = mDirectoryPath / filePath;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
