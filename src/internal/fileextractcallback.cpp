@@ -16,7 +16,7 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-#ifdef _WIN32
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 #include <cwctype> // for iswdigit
 #endif
 
@@ -75,7 +75,7 @@ fs::path FileExtractCallback::getCurrentItemPath() const {
     return filePath;
 }
 
-#ifdef _WIN32
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 inline auto is_windows_reserved_name( const wstring& component ) -> bool {
     // Reserved file names that can't be used on Windows: CON, PRN, AUX, and NUL.
     if ( component == L"CON" || component == L"PRN" || component == L"AUX" || component == L"NUL" ) {
@@ -124,7 +124,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
-#ifdef _WIN32
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
     filePath = sanitize_path( filePath );
 #endif
     mFilePathOnDisk = mDirectoryPath / filePath;
