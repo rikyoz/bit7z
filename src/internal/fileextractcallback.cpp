@@ -112,7 +112,7 @@ inline auto sanitize_path_component( wstring component ) -> wstring {
  * @return the sanitized path, where illegal characters are replaced with the '_' character.
  */
 inline auto sanitize_path( const fs::path& path ) -> fs::path {
-    fs::path sanitized_path;
+    fs::path sanitized_path = path.root_name();
     for( const auto& path_component : path ) {
         sanitized_path /= sanitize_path_component( path_component.native() );
     }
