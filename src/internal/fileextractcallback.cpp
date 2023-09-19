@@ -76,7 +76,7 @@ fs::path FileExtractCallback::getCurrentItemPath() const {
 }
 
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-inline auto is_windows_reserved_name( const wstring& component ) -> bool {
+inline auto is_windows_reserved_name( const std::wstring& component ) -> bool {
     // Reserved file names that can't be used on Windows: CON, PRN, AUX, and NUL.
     if ( component == L"CON" || component == L"PRN" || component == L"AUX" || component == L"NUL" ) {
         return true;
@@ -89,7 +89,7 @@ inline auto is_windows_reserved_name( const wstring& component ) -> bool {
            std::iswdigit( component.back() ) != 0;
 }
 
-inline auto sanitize_path_component( wstring component ) -> wstring {
+inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
     // If the component is a reserved name on Windows, we prepend it with a '_' character.
     if ( is_windows_reserved_name( component ) ) {
         component.insert( 0, 1, '_' );
@@ -103,6 +103,7 @@ inline auto sanitize_path_component( wstring component ) -> wstring {
     }, L'_' );
     return component;
 }
+
 /**
  * Sanitizes the given file path, removing any eventual Windows illegal character
  * (https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file)
