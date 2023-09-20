@@ -115,6 +115,7 @@ inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
 inline auto sanitize_path( const fs::path& path ) -> fs::path {
     fs::path sanitized_path = path.root_path().make_preferred();
     for( const auto& path_component : path.relative_path() ) {
+        // cppcheck-suppress useStlAlgorithm
         sanitized_path /= sanitize_path_component( path_component.wstring() );
     }
     return sanitized_path;
@@ -126,9 +127,10 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
 
     auto filePath = getCurrentItemPath();
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-    filePath = sanitize_path( filePath );
-#endif
+    mFilePathOnDisk = mDirectoryPath / sanitize_path( filePath );
+#else
     mFilePathOnDisk = mDirectoryPath / filePath;
+#endif
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
     if ( fsutil::should_format_long_path( mFilePathOnDisk ) ) {
