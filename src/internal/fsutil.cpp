@@ -309,8 +309,8 @@ inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
     // Replacing all reserved characters in the component with the '_' character.
     std::replace_if( component.begin(), component.end(), []( wchar_t chr ) {
         constexpr auto last_non_printable_ascii = 31;
-        return chr <= last_non_printable_ascii || chr == L'[' || chr == L'<' || chr == L'>' || chr == L':' ||
-               chr == L'"' || chr == L'/' || chr == L'|' || chr == L'?' || chr == L'*' || chr == L']';
+        return chr <= last_non_printable_ascii || chr == L'<' || chr == L'>' || chr == L':' ||
+               chr == L'"' || chr == L'/' || chr == L'|' || chr == L'?' || chr == L'*';
     }, L'_' );
     return component;
 }
