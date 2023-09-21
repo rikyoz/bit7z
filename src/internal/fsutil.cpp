@@ -315,7 +315,7 @@ inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
     return component;
 }
 
-auto sanitize_path( const fs::path& path ) -> fs::path {
+auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
     fs::path sanitized_path = path.root_path().make_preferred();
     for( const auto& path_component : path.relative_path() ) {
         // cppcheck-suppress useStlAlgorithm
