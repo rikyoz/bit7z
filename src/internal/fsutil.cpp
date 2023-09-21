@@ -303,7 +303,8 @@ inline auto is_windows_reserved_name( const std::wstring& component ) -> bool {
 inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
     // If the component is a reserved name on Windows, we prepend it with a '_' character.
     if ( is_windows_reserved_name( component ) ) {
-        component.insert( 0, 1, '_' );
+        component.insert( 0, 1, L'_' );
+        return component;
     }
 
     // Replacing all reserved characters in the component with the '_' character.
