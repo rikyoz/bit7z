@@ -31,12 +31,12 @@
 
 auto ConvertStringToBSTR( const std::string& str ) -> BSTR {
     const int wide_length = ::MultiByteToWideChar( CP_ACP, 0 /* no flags */,
-                                                   str.data(), static_cast<int>(str.length()),
+                                                   str.data(), static_cast<int>(str.size()),
                                                    nullptr, 0 );
 
     BSTR wide_string = ::SysAllocStringLen( nullptr, wide_length );
     ::MultiByteToWideChar( CP_ACP, 0 /* no flags */,
-                           str.data(), static_cast<int>(str.length()),
+                           str.data(), static_cast<int>(str.size()),
                            wide_string, wide_length );
     return wide_string;
 }

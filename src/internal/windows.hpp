@@ -81,7 +81,7 @@ constexpr auto FACILITY_CODE = FACILITY_WIN32;
 constexpr auto WIN32_MASK = 0x0000FFFF;
 
 /* Note: p7zip uses FACILITY_WIN32, 7-zip version of HRESULT_FROM_WIN32 uses FACILITY_ERRNO. */
-inline constexpr HRESULT HRESULT_FROM_WIN32( unsigned int x ) {
+inline constexpr auto HRESULT_FROM_WIN32( unsigned int x ) -> HRESULT {
     auto res = static_cast< HRESULT >( x );
     return ( res > 0 ) ? static_cast< HRESULT >( ( x & WIN32_MASK ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 ) : res;
 }

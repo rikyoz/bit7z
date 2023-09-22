@@ -23,25 +23,25 @@ struct TestInputFormat {
 };
 
 inline auto format_has_path_metadata( const BitInFormat& format ) -> bool {
-    return format != BitFormat::BZip2 && format != BitFormat::Lzma && format != BitFormat::Xz;
+    return ( format != BitFormat::BZip2 ) && ( format != BitFormat::Lzma ) && ( format != BitFormat::Xz );
 }
 
 inline auto format_has_size_metadata( const BitInFormat& format ) -> bool {
-    return format != BitFormat::BZip2 && format != BitFormat::Lzma;
+    return ( format != BitFormat::BZip2 ) && ( format != BitFormat::Lzma );
 }
 
 inline auto format_has_crc( const BitInFormat& format ) -> bool {
-    return format != BitFormat::BZip2 &&
-           format != BitFormat::Iso &&
-           format != BitFormat::Lzh && // Actually, Lzh provides a CRC, but it is not a CRC32 like other formats!
-           format != BitFormat::Lzma &&
-           format != BitFormat::Tar &&
-           format != BitFormat::Wim &&
-           format != BitFormat::Xz;
+    return ( format != BitFormat::BZip2 ) &&
+           ( format != BitFormat::Iso ) &&
+           ( format != BitFormat::Lzh ) && // Actually, Lzh provides a CRC, but it is not a CRC32 like other formats!
+           ( format != BitFormat::Lzma ) &&
+           ( format != BitFormat::Tar ) &&
+           ( format != BitFormat::Wim ) &&
+           ( format != BitFormat::Xz );
 }
 
 inline auto format_compresses_files( const BitInFormat& format ) -> bool {
-    return format != BitFormat::Iso && format != BitFormat::Tar && format != BitFormat::Wim;
+    return ( format != BitFormat::Iso ) && ( format != BitFormat::Tar ) && ( format != BitFormat::Wim );
 }
 
 } // namespace test

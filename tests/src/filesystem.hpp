@@ -48,7 +48,7 @@ inline auto exe_path() -> fs::path {
 #ifdef _WIN32
     std::array< wchar_t, MAX_PATH > path{ 0 };
     GetModuleFileNameW( nullptr, path.data(), MAX_PATH );
-    return path.data();
+    return fs::path{ path.data() };
 #elif defined( __APPLE__ )
     std::array< char, PROC_PIDPATHINFO_MAXSIZE > result{ 0 };
     ssize_t result_size = proc_pidpath( getpid(), result.data(), result.size() );

@@ -42,8 +42,8 @@ enum struct OperationResult {
     HeadersError = NOperationResult::kHeadersError,
     WrongPassword = NOperationResult::kWrongPassword,
     DataErrorEncrypted = 2 * NOperationResult::kWrongPassword,
-    CRCErrorEncrypted = 2 * NOperationResult::kWrongPassword + 1,
-    OpenErrorEncrypted = 2 * NOperationResult::kWrongPassword + 2
+    CRCErrorEncrypted = ( 2 * NOperationResult::kWrongPassword ) + 1,
+    OpenErrorEncrypted = ( 2 * NOperationResult::kWrongPassword ) + 2
 };
 
 auto make_error_code( OperationResult error ) -> std::error_code;
