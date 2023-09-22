@@ -44,13 +44,10 @@ auto fsutil::extension( const fs::path& path ) -> tstring {
     return path_to_tstring( ext );
 }
 
-auto contains_dot_references( const fs::path& path ) -> bool {
-    /* Note: here we suppose that path does not contain file names with a final dot (e.g., "foo.").
-             This must be true on Windows, but not on Unix systems! */
-    const auto& native_path = path_to_tstring( path );
-    return std::adjacent_find( native_path.begin(), native_path.end(), []( tchar a, tchar b ) {
-        return a == BIT7Z_STRING( '.' ) && ( b == BIT7Z_STRING( '/' ) || b == BIT7Z_STRING( '\\' ) );
-    } ) != native_path.end();
+inline auto contains_dot_references( const fs::path& path ) -> bool {
+    return std::find_if( path.begin(), path.end(), [] ( const fs::path& component ) -> bool {
+        return component == BIT7Z_NATIVE_STRING( "." ) || component == BIT7Z_NATIVE_STRING( ".." );
+    }) != path.end();
 }
 
 auto fsutil::in_archive_path( const fs::path& file_path, const fs::path& search_path ) -> fs::path {
