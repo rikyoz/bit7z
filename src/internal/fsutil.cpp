@@ -18,14 +18,12 @@
 #include <unistd.h>
 
 #include "internal/dateutil.hpp"
+#elif defined( BIT7Z_PATH_SANITIZATION )
+#include <cwctype> // for iswdigit
 #endif
 
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
-
-#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-#include <cwctype> // for iswdigit
-#endif
 
 using namespace std;
 
