@@ -23,6 +23,10 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+#include <cwctype> // for iswdigit
+#endif
+
 using namespace std;
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
@@ -326,6 +330,46 @@ void fsutil::increase_opened_files_limit() {
     }
 #endif
 }
+
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+inline auto is_windows_reserved_name( const std::wstring& component ) -> bool {
+    // Reserved file names that can't be used on Windows: CON, PRN, AUX, and NUL.
+    if ( component == L"CON" || component == L"PRN" || component == L"AUX" || component == L"NUL" ) {
+        return true;
+    }
+    // Reserved file names that can't be used on Windows:
+    // COM0, COM1, COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9,
+    // LPT0, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, and LPT9.
+    return component.size() == 4 &&
+           ( component.find(L"COM") == 0 || component.find(L"LPT") == 0 ) &&
+           std::iswdigit( component.back() ) != 0;
+}
+
+inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
+    // If the component is a reserved name on Windows, we prepend it with a '_' character.
+    if ( is_windows_reserved_name( component ) ) {
+        component.insert( 0, 1, L'_' );
+        return component;
+    }
+
+    // Replacing all reserved characters in the component with the '_' character.
+    std::replace_if( component.begin(), component.end(), []( wchar_t chr ) {
+        constexpr auto last_non_printable_ascii = 31;
+        return chr <= last_non_printable_ascii || chr == L'<' || chr == L'>' || chr == L':' ||
+               chr == L'"' || chr == L'/' || chr == L'|' || chr == L'?' || chr == L'*';
+    }, L'_' );
+    return component;
+}
+
+auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
+    fs::path sanitized_path = path.root_path().make_preferred();
+    for( const auto& path_component : path.relative_path() ) {
+        // cppcheck-suppress useStlAlgorithm
+        sanitized_path /= sanitize_path_component( path_component.wstring() );
+    }
+    return sanitized_path;
+}
+#endif
 
 } // namespace filesystem
 } // namespace bit7z

@@ -82,6 +82,13 @@ if( WIN32 )
     if( BIT7Z_USE_SYSTEM_CODEPAGE )
         target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_USE_SYSTEM_CODEPAGE )
     endif()
+
+    option( BIT7Z_PATH_SANITIZATION "Enable or disable path sanitization when extracting archives \
+containing files with invalid Windows names" )
+    message( STATUS "Path sanitization: ${BIT7Z_PATH_SANITIZATION}" )
+    if( BIT7Z_PATH_SANITIZATION )
+        target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_PATH_SANITIZATION )
+    endif()
 else()
     option( BIT7Z_BUILD_FOR_P7ZIP "Enable or disable building for p7zip" )
     message( STATUS "Build for p7zip: ${BIT7Z_BUILD_FOR_P7ZIP}" )

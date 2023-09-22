@@ -236,3 +236,54 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
 }
 
 #endif
+
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
+    REQUIRE( sanitize_path( L"hello world.txt" ) == L"hello world.txt" );
+    REQUIRE( sanitize_path( L"hello?world<" ) == L"hello_world_" );
+    REQUIRE( sanitize_path( L":hello world|" ) == L"_hello world_" );
+    REQUIRE( sanitize_path( L"hello?world<.txt" ) == L"hello_world_.txt" );
+    REQUIRE( sanitize_path( L":hello world|.txt" ) == L"_hello world_.txt" );
+
+    REQUIRE( sanitize_path( L"COM0" ) == L"_COM0" );
+    REQUIRE( sanitize_path( L"COM0.txt" ) == L"COM0.txt" );
+    REQUIRE( sanitize_path( L"LPT9" ) == L"_LPT9" );
+    REQUIRE( sanitize_path( L"LPT9.txt" ) == L"LPT9.txt" );
+    REQUIRE( sanitize_path( L"COM42" ) == L"COM42" );
+    REQUIRE( sanitize_path( L"LPT42" ) == L"LPT42" );
+
+    REQUIRE( sanitize_path( L"CON" ) == L"_CON" );
+    REQUIRE( sanitize_path( L"PRN" ) == L"_PRN" );
+    REQUIRE( sanitize_path( L"AUX" ) == L"_AUX" );
+    REQUIRE( sanitize_path( L"NUL" ) == L"_NUL" );
+    REQUIRE( sanitize_path( L"CONO" ) == L"CONO" );
+    REQUIRE( sanitize_path( L"PRNG" ) == L"PRNG" );
+    REQUIRE( sanitize_path( L"AUXI" ) == L"AUXI" );
+    REQUIRE( sanitize_path( L"NULL" ) == L"NULL" );
+
+    REQUIRE( sanitize_path( L"C:/abc/NUL/def" ) == L"C:\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"C:\\abc\\NUL\\def" ) == L"C:\\abc\\_NUL\\def" );
+
+    REQUIRE( sanitize_path( L"C:/Test/COM0/hello?world<.txt" ) == L"C:\\Test\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"C:\\Test\\COM0\\hello?world<.txt" ) == L"C:\\Test\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"Test/COM0/hello?world<.txt" ) == L"Test\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"Test\\COM0\\hello?world<.txt" ) == L"Test\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"../COM0/hello?world<.txt" ) == L"..\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"..\\COM0\\hello?world<.txt" ) == L"..\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"./COM0/hello?world<.txt" ) == L".\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L".\\COM0\\hello?world<.txt" ) == L".\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"COM0/hello?world<.txt" ) == L"_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"COM0\\hello?world<.txt" ) == L"_COM0\\hello_world_.txt" );
+
+    REQUIRE( sanitize_path( L"C:/Test/:hello world|/LPT5" ) == L"C:\\Test\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"C:\\Test\\:hello world|\\LPT5" ) == L"C:\\Test\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"Test/:hello world|/LPT5" ) == L"Test\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"Test\\:hello world|\\LPT5" ) == L"Test\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"../:hello world|/LPT5" ) == L"..\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"..\\:hello world|\\LPT5" ) == L"..\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"./:hello world|/LPT5" ) == L".\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L".\\:hello world|\\LPT5" ) == L".\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L":hello world|/LPT5" ) == L"_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L":hello world|\\LPT5" ) == L"_hello world_\\_LPT5" );
+}
+#endif

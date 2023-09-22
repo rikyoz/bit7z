@@ -123,6 +123,18 @@ auto open_filebuf(const fs::path& path, std::ios_base::openmode mode) -> std::ba
 }
 #endif
 
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+/**
+ * Sanitizes the given file path, removing any eventual Windows illegal character
+ * (https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file)
+ *
+ * @param path The path to be sanitized.
+ *
+ * @return the sanitized path, where illegal characters are replaced with the '_' character.
+ */
+auto sanitize_path( const fs::path& path ) -> fs::path;
+#endif
+
 }  // namespace fsutil
 }  // namespace filesystem
 }  // namespace bit7z
