@@ -53,4 +53,11 @@ if( WIN32 )
     if( BIT7Z_AUTO_PREFIX_LONG_PATHS )
         target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_AUTO_PREFIX_LONG_PATHS )
     endif()
+
+    option( BIT7Z_PATH_SANITIZATION "Enable or disable path sanitization when extracting archives \
+containing files with invalid Windows names" )
+    message( STATUS "Path sanitization: ${BIT7Z_PATH_SANITIZATION}" )
+    if( BIT7Z_PATH_SANITIZATION )
+        target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_PATH_SANITIZATION )
+    endif()
 endif()

@@ -16,6 +16,7 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
+
 using namespace std;
 using namespace NWindows;
 using namespace bit7z;
@@ -75,7 +76,11 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+    mFilePathOnDisk = mDirectoryPath / fsutil::sanitize_path( filePath );
+#else
     mFilePathOnDisk = mDirectoryPath / filePath;
+#endif
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
     if ( fsutil::should_format_long_path( mFilePathOnDisk ) ) {
