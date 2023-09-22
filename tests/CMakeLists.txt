@@ -25,7 +25,7 @@ set( SOURCE_FILES
      src/test_windows.cpp
      src/test_formatdetect.cpp )
 
-set( TESTS_TARGET bit7z${ARCH_POSTFIX}-tests )
+set( TESTS_TARGET bit7z-tests )
 add_executable( ${TESTS_TARGET} ${SOURCE_FILES} )
 
 if( BIT7Z_TESTS_FILESYSTEM )
