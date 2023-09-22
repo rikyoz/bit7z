@@ -155,11 +155,11 @@ auto restore_symlink( const std::string& name ) -> bool {
     ifs.close();
 
     // Removing the link file.
-    std::error_code ec;
-    fs::remove( name, ec );
+    std::error_code error;
+    fs::remove( name, error );
 
     // Restoring the symbolic link to the target file.
-    return !ec && symlink( link_path.c_str(), name.c_str() ) == 0;
+    return !error && symlink( link_path.c_str(), name.c_str() ) == 0;
 }
 
 static const mode_t global_umask = []() noexcept {
@@ -272,7 +272,8 @@ auto fsutil::get_file_attributes_ex( const fs::path& filePath,
     if ( ( stat_info.st_mode & S_IWUSR ) == 0 ) {
         fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
     }
-    fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( stat_info.st_mode & 0xFFFF ) << 16 );
+    constexpr auto mask = 0xFFFF;
+    fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( stat_info.st_mode & mask ) << 16 );
 
     // File times
     fileMetadata.ftCreationTime = time_to_FILETIME( stat_info.st_ctime );
@@ -319,7 +320,7 @@ void fsutil::increase_opened_files_limit() {
     // MinGW uses an older max value for this function
     _setmaxstdio( 2048 );
 #else
-    rlimit limits;
+    rlimit limits{ 0, 0 };
     if ( getrlimit( RLIMIT_NOFILE, &limits ) == 0 ) {
 #ifdef __APPLE__
         limits.rlim_cur = std::min( static_cast< rlim_t >( OPEN_MAX ), limits.rlim_max );
