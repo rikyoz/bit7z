@@ -101,16 +101,17 @@ auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> 
     return static_cast< OperationResult >( operationResult );
 }
 
+constexpr auto kTestFailed = "Failed to test the archive";
+constexpr auto kExtractFailed = "Failed to extract the archive";
+
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexcept {
     using namespace NArchive::NExtract;
 
     auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
     if ( result != OperationResult::Success ) {
-        constexpr auto kTestFailed = "Failed to test the archive";
-        constexpr auto kExtractFailed = "Failed to extract the archive";
         const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
-        auto error = std::error_code{ static_cast< int >( result ), operation_category() };
+        auto error = make_error_code( result );
         mErrorException = std::make_exception_ptr( BitException( msg, error ) );
     }
 
