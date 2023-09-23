@@ -24,7 +24,7 @@ if( BIT7Z_7ZIP_VERSION )
 endif()
 
 # ghc::filesystem library
-if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES )
+if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES OR BIT7Z_BUILD_TESTS )
     CPMAddPackage( NAME ghc_filesystem
                    GITHUB_REPOSITORY gulrak/filesystem
                    VERSION 1.5.14
