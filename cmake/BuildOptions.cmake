@@ -36,7 +36,7 @@ if( BIT7Z_GENERATE_PIC )
 endif()
 
 option( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK "Disable checking if password is ASCII when compressing using Zip format" )
-message( STATUS "Zip ASCII password check: ${BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK}" )
+message( STATUS "Disable Zip ASCII password check: ${BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK}" )
 if( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
     target_compile_definitions( ${LIB_TARGET} PRIVATE BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
 endif()
