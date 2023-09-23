@@ -136,11 +136,11 @@ void BitArchiveEditor::applyChanges() {
 auto BitArchiveEditor::findItem( const tstring& item_path ) -> uint32_t {
     auto archiveItem = inputArchive()->find( item_path );
     if ( archiveItem == inputArchive()->cend() ) {
-        throw BitException( "Cannot find the file in the archive",
+        throw BitException( "Could not find the file in the archive",
                             std::make_error_code( std::errc::no_such_file_or_directory ), item_path );
     }
     if ( isDeletedIndex( archiveItem->index() ) ) {
-        throw BitException( "Cannot edit item",
+        throw BitException( "Could not find item",
                             make_error_code( BitError::ItemMarkedAsDeleted ), item_path );
     }
     return archiveItem->index();
