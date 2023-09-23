@@ -29,9 +29,7 @@
 #include "internal/util.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
-
 #include "internal/formatdetect.hpp"
-
 #endif
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
@@ -239,7 +237,7 @@ void BitInputArchive::extractTo( std::vector< byte_t >& out_buffer, uint32_t ind
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    if ( isItemFolder( index ) ) { //Consider only files, not folders
+    if ( isItemFolder( index ) ) { // Consider only files, not folders
         throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
@@ -258,7 +256,7 @@ void BitInputArchive::extractTo( std::ostream& out_stream, uint32_t index ) cons
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    if ( isItemFolder( index ) ) { //Consider only files, not folders
+    if ( isItemFolder( index ) ) { // Consider only files, not folders
         throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
@@ -275,7 +273,7 @@ void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t inde
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    if ( isItemFolder( index ) ) { //Consider only files, not folders
+    if ( isItemFolder( index ) ) { // Consider only files, not folders
         throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
@@ -295,7 +293,7 @@ void BitInputArchive::extractTo( std::map< tstring, std::vector< byte_t > >& out
     const uint32_t number_items = itemsCount();
     vector< uint32_t > files_indices;
     for ( uint32_t i = 0; i < number_items; ++i ) {
-        if ( !isItemFolder( i ) ) { //Consider only files, not folders
+        if ( !isItemFolder( i ) ) { // Consider only files, not folders
             files_indices.push_back( i );
         }
     }
@@ -305,7 +303,7 @@ void BitInputArchive::extractTo( std::map< tstring, std::vector< byte_t > >& out
 }
 
 void BitInputArchive::test() const {
-    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    map< tstring, vector< byte_t > > dummy_map; // output map (not used since we are testing!)
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummy_map );
     extract_arc( mInArchive, {}, extract_callback, ExtractMode::Test );
 }
@@ -317,7 +315,7 @@ void BitInputArchive::testItem( uint32_t index ) const {
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    map< tstring, vector< byte_t > > dummy_map; //output map (not used since we are testing!)
+    map< tstring, vector< byte_t > > dummy_map; // output map (not used since we are testing!)
     auto extract_callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummy_map );
     extract_arc( mInArchive, { index }, extract_callback, ExtractMode::Test );
 }
@@ -338,7 +336,7 @@ auto BitInputArchive::begin() const noexcept -> BitInputArchive::const_iterator 
 }
 
 auto BitInputArchive::end() const noexcept -> BitInputArchive::const_iterator {
-    //Note: we do not use itemsCount() since it can throw an exception and end() is marked as noexcept!
+    // Note: we do not use itemsCount() since it can throw an exception and end() is marked as noexcept!
     uint32_t items_count = 0;
     mInArchive->GetNumberOfItems( &items_count );
     return const_iterator{ items_count, *this };
