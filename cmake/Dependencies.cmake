@@ -10,7 +10,7 @@ if( NOT ( EXISTS ${CPM_DOWNLOAD_LOCATION} ))
 endif()
 include( ${CPM_DOWNLOAD_LOCATION} )
 
-if( BIT7Z_7ZIP_VERSION )
+if( BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
     # 7-zip source code
     CPMAddPackage( NAME 7-zip
                    GITHUB_REPOSITORY "rikyoz/7-Zip"
