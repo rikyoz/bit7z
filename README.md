@@ -291,7 +291,7 @@ Optionally, you can specify a different version of 7-zip via the CMake option `B
 
 Alternatively, you can specify a custom path containing the 7-zip source code via the option `BIT7Z_CUSTOM_7ZIP_PATH`.
 
-Please note that, in general, it is best to compile bit7z for the specific version of the shared libraries of 7-zip that you will use at runtime.
+Please note that, in general, it is best to use the same version of 7-zip of the shared libraries that you will use at runtime.
 
 #### Using 7-zip v23.01 on Linux and macOS
 
