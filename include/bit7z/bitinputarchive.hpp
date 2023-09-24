@@ -46,11 +46,7 @@ class BitInputArchive {
          *                  be used for reading the input archive
          * @param arc_path  the path to the input archive file
          */
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-        BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path );
-#else
         BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arc_path );
-#endif
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive given in the input buffer.

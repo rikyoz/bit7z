@@ -18,6 +18,10 @@
 #include "internal/com.hpp"
 #include "internal/fs.hpp"
 
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+#include "internal/fsutil.hpp"
+#endif
+
 namespace bit7z {
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
@@ -43,8 +47,14 @@ inline auto path_to_tstring( const fs::path& path ) -> tstring {
 }
 
 inline auto tstring_to_path( const tstring& str ) -> fs::path {
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    auto result = fs::u8path( str );
+    if ( filesystem::fsutil::should_format_long_path( result ) ) {
+        result = filesystem::fsutil::format_long_path( result );
+    }
+    return result;
+#elif defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
     // By default, MSVC treats strings as encoded using the system codepage, but bit7z uses UTF-8.
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
     return fs::u8path( str );
 #else
     return fs::path{ str };

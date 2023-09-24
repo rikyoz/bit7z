@@ -29,12 +29,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator )
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const tstring& in_file )
     : BitOutputArchive( creator, tstring_to_path( in_file ) ) {}
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, fs::path in_arc )
-#else
-
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const fs::path& in_arc )
-#endif
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
         return;
@@ -43,12 +38,6 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, co
     if ( in_arc.empty() ) { // No input file specified, so we are creating a totally new archive!
         return;
     }
-
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( filesystem::fsutil::should_format_long_path( in_arc ) ) {
-        in_arc = filesystem::fsutil::format_long_path( in_arc );
-    }
-#endif
 
     std::error_code error;
     if ( !fs::exists( in_arc, error ) ) { // An input file was specified, but it doesn't exist, so we ignore it.

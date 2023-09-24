@@ -316,11 +316,7 @@ class BitOutputArchive {
 
         auto initOutFileStream( const fs::path& out_archive, bool updating_archive ) const -> CMyComPtr< IOutStream >;
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-        BitOutputArchive( const BitAbstractArchiveCreator& creator, fs::path in_arc );
-#else
         BitOutputArchive( const BitAbstractArchiveCreator& creator, const fs::path& in_arc );
-#endif
 
         void compressToFile( const fs::path& out_file, UpdateCallback* update_callback );
 

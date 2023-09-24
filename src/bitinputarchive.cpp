@@ -32,10 +32,6 @@
 #include "internal/formatdetect.hpp"
 #endif
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-#include "internal/fsutil.hpp"
-#endif
-
 using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
@@ -122,22 +118,10 @@ inline auto detect_format( const BitInFormat& format, const fs::path& arc_path )
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& in_file )
     : BitInputArchive( handler, tstring_to_path( in_file ) ) {}
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, fs::path arc_path )
-    : mDetectedFormat{ nullptr },
-#else
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arc_path )
     : mDetectedFormat{ detect_format( handler.format(), arc_path ) },
-#endif
       mArchiveHandler{ handler },
       mArchivePath{ arc_path.string< tchar >() } {
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( filesystem::fsutil::should_format_long_path( arc_path ) ) {
-        arc_path = filesystem::fsutil::format_long_path( arc_path );
-    }
-    mDetectedFormat = detect_format( handler.format(), arc_path );
-#endif
-
     CMyComPtr< IInStream > file_stream;
     if ( *mDetectedFormat != BitFormat::Split && arc_path.extension() == ".001" ) {
         file_stream = bit7z::make_com< CMultiVolumeInStream, IInStream >( arc_path );
