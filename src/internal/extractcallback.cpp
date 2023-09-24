@@ -127,8 +127,9 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
         }
 
         if ( pass.empty() ) {
+            const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
             auto error = make_error_code( OperationResult::EmptyPassword );
-            mErrorException = std::make_exception_ptr( BitException( "Invalid password", error ) );
+            mErrorException = std::make_exception_ptr( BitException( msg, error ) );
             return E_FAIL;
         }
     } else {

@@ -38,7 +38,7 @@ auto operation_category_t::message( int error_value ) const -> std::string {
         case OperationResult::OpenErrorEncrypted:
             return "Wrong password?";
         case OperationResult::EmptyPassword:
-            return "Password required, but an empty password was provided.";
+            return "A password is required but none was provided.";
         default:
             return "Unknown error.";
     }
