@@ -29,6 +29,12 @@ auto stem( const tstring& path ) -> tstring;
 
 using namespace filesystem;
 
+#ifdef __cpp_if_constexpr
+#define BIT7Z_IF_CONSTEXPR if constexpr
+#else
+#define BIT7Z_IF_CONSTEXPR if
+#endif
+
 /**
  * @brief The BitCompressor template class allows compressing files into archives.
  *
@@ -65,12 +71,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
              * item filename using the original filename. Otherwise, if the user didn't specify the input file name,
              * we use the filename (without extension) of the output file path. */
             tstring name;
-#ifdef __cpp_if_constexpr
-            if constexpr ( !std::is_same_v< Input, const tstring& > ) {
-#else
-            //There's probably some compile-time SFINAE alternative for C++14, but life is too short ;)
-            if ( !std::is_same< Input, const tstring& >::value ) {
-#endif
+            BIT7Z_IF_CONSTEXPR( !std::is_same_v< Input, const tstring& > ) {
                 name = input_name.empty() ? fsutil::stem( out_file ) : input_name;
             }
 
