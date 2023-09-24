@@ -281,7 +281,19 @@ add_subdirectory( ${CMAKE_SOURCE_DIR}/third_party/bit7z )
 target_link_libraries( ${YOUR_TARGET} PRIVATE bit7z )
 ```
 
-The library is highly customizable: for a list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
+The library is highly customizable: for a detailed list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
+
+### 📄 7-zip Version
+
+While configuring bit7z via CMake, it automatically downloads the latest version of 7-zip currently supported by the library.
+
+Optionally, you can specify a different version of 7-zip via the CMake option `BIT7Z_7ZIP_VERSION` (e.g., `-DBIT7Z_7ZIP_VERSION="22.01"`).
+
+Alternatively, you can specify a custom path containing the 7-zip source code via the option `BIT7Z_CUSTOM_7ZIP_PATH`.
+
+Note that, _on Linux and macOS_, 7-zip v23.01 introduced breaking changes to the IUnknown interface. If you build bit7z for such a version of 7-zip (the default), it will not support using the shared libraries from previous versions of 7-zip (or from p7zip). Vice versa, bit7z made for 7-zip v22.01 and earlier or for p7zip is incompatible with the shared libraries from 7-zip v23.01 and later.
+
+You can build the shared libraries of 7-zip v23.01 in a backward-compatible mode by defining the macro `Z7_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN`. If this is your case, you can build bit7z for v23.01 using the option `BIT7Z_USE_LEGACY_IUNKNOWN` (in this case, bit7z will be compatible also with previous versions of 7-zip/p7zip).
 
 ### 🌐 String Encoding
 
