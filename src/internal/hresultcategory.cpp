@@ -16,11 +16,11 @@
 
 namespace bit7z {
 
-auto hresult_category_t::name() const noexcept -> const char* {
+auto HresultCategory::name() const noexcept -> const char* {
     return "HRESULT";
 }
 
-auto hresult_category_t::message( int error_value ) const -> std::string {
+auto HresultCategory::message( int error_value ) const -> std::string {
 #ifdef _MSC_VER
     // MSVC compilers use FormatMessage, which supports both Win32 errors and HRESULT com errors.
 #   if _MSC_VER >= 1920
@@ -88,7 +88,7 @@ auto hresult_category_t::message( int error_value ) const -> std::string {
 #endif
 }
 
-auto hresult_category_t::default_error_condition( int error_value ) const noexcept -> std::error_condition {
+auto HresultCategory::default_error_condition( int error_value ) const noexcept -> std::error_condition {
     switch ( static_cast< HRESULT >( error_value ) ) {
         // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors.
         case E_ABORT:
@@ -164,7 +164,7 @@ auto hresult_category_t::default_error_condition( int error_value ) const noexce
 }
 
 auto hresult_category() noexcept -> const std::error_category& {
-    static const bit7z::hresult_category_t instance{};
+    static const bit7z::HresultCategory instance{};
     return instance;
 }
 

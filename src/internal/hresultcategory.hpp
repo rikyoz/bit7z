@@ -18,10 +18,10 @@
 
 namespace bit7z {
 
-struct hresult_category_t final : public std::error_category {
+struct HresultCategory final : public std::error_category {
     static_assert( sizeof( int ) >= sizeof( HRESULT ), "HRESULT type must be at least the size of int" );
 
-    explicit hresult_category_t() = default;
+    explicit HresultCategory() = default;
 
     BIT7Z_NODISCARD auto name() const noexcept -> const char* override;
 

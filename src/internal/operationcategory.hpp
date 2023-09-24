@@ -17,7 +17,7 @@
 
 namespace bit7z {
 
-struct operation_category_t final : public std::error_category {
+struct OperationCategory final : public std::error_category {
     BIT7Z_NODISCARD auto name() const noexcept -> const char* override;
 
     BIT7Z_NODISCARD auto message( int error_value ) const -> std::string override;

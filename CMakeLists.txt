@@ -73,6 +73,7 @@ set( HEADERS
      src/internal/cvolumeoutstream.hpp
      src/internal/dateutil.hpp
      src/internal/extractcallback.hpp
+     src/internal/failuresourcecategory.hpp
      src/internal/fileextractcallback.hpp
      src/internal/fixedbufferextractcallback.hpp
      src/internal/formatdetect.hpp
@@ -88,6 +89,7 @@ set( HEADERS
      src/internal/macros.hpp
      src/internal/opencallback.hpp
      src/internal/operationcategory.hpp
+     src/internal/operationresult.hpp
      src/internal/processeditem.hpp
      src/internal/renameditem.hpp
      src/internal/stdinputitem.hpp
@@ -136,6 +138,7 @@ set( SOURCES
      src/internal/cvolumeoutstream.cpp
      src/internal/dateutil.cpp
      src/internal/extractcallback.cpp
+     src/internal/failuresourcecategory.cpp
      src/internal/fileextractcallback.cpp
      src/internal/fixedbufferextractcallback.cpp
      src/internal/formatdetect.cpp
@@ -148,6 +151,7 @@ set( SOURCES
      src/internal/internalcategory.cpp
      src/internal/opencallback.cpp
      src/internal/operationcategory.cpp
+     src/internal/operationresult.cpp
      src/internal/processeditem.cpp
      src/internal/renameditem.cpp
      src/internal/stdinputitem.cpp

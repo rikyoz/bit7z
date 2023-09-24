@@ -10,18 +10,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "biterror.hpp"
-#include "internal/failuresourcecategory.hpp"
-#include "internal/internalcategory.hpp"
+#include "internal/operationcategory.hpp"
+#include "internal/operationresult.hpp"
 
 namespace bit7z {
 
-auto make_error_code( BitError error ) -> std::error_code {
-    return { static_cast< int >( error ), internal_category() };
-}
-
-auto make_error_condition( BitFailureSource failure_source ) -> std::error_condition {
-    return { static_cast< int >( failure_source ), source_category() };
+auto make_error_code( OperationResult error ) -> std::error_code {
+    return { static_cast< int >( error ), operation_category() };
 }
 
 } // namespace bit7z

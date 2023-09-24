@@ -117,7 +117,7 @@ void BitArchiveEditor::deleteItem( const tstring& item_path ) {
 void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
     if ( mode == UpdateMode::None ) {
         throw BitException( "Cannot set update mode to UpdateMode::None",
-                            make_error_code( BitError::UnsupportedOperation ) );
+                            std::make_error_code( std::errc::invalid_argument ) );
     }
     BitAbstractArchiveCreator::setUpdateMode( mode );
 }

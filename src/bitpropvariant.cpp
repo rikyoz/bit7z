@@ -429,7 +429,7 @@ auto BitPropVariant::toString() const -> tstring {
             return tstring{};
         default: // The type is not supported
             throw BitException( "BitPropVariant type code " + std::to_string( vt ) + " not supported.",
-                                make_error_code( BitError::UnsupportedOperation ) );
+                                make_error_code( BitError::UnsupportedVariantType ) );
     }
 }
 

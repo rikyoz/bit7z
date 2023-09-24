@@ -17,6 +17,7 @@ set( SOURCE_FILES
 set( PUBLIC_API_SOURCE_FILES
      src/test_bit7zlibrary.cpp
      src/test_bitarchivereader.cpp
+     src/test_biterror.cpp
      src/test_bitexception.cpp
      src/test_bitfilecompressor.cpp
      src/test_bitpropvariant.cpp )
@@ -53,6 +54,7 @@ if( BIT7Z_TESTS_FILESYSTEM )
                                 BIT7Z_TESTS_FILESYSTEM
                                 BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
     target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE
+                                BIT7Z_TESTS_PUBLIC_API_ONLY
                                 BIT7Z_TESTS_FILESYSTEM
                                 BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
     if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )

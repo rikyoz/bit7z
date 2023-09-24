@@ -71,7 +71,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
              * item filename using the original filename. Otherwise, if the user didn't specify the input file name,
              * we use the filename (without extension) of the output file path. */
             tstring name;
-            BIT7Z_IF_CONSTEXPR( !std::is_same_v< Input, const tstring& > ) {
+            BIT7Z_IF_CONSTEXPR( !std::is_same< Input, const tstring& >::value ) {
                 name = input_name.empty() ? fsutil::stem( out_file ) : input_name;
             }
 

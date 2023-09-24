@@ -37,17 +37,39 @@ enum struct BitError {
     NonEmptyOutputBuffer,
     RequestedWrongVariantType,
     UnsupportedOperation,
+    UnsupportedVariantType,
     WrongUpdateMode,
-    InvalidZipPassword
+    InvalidZipPassword,
 };
 
 auto make_error_code( BitError error ) -> std::error_code;
+
+enum struct BitFailureSource {
+    CRCError,
+    DataAfterEnd,
+    DataError,
+    InvalidArchive,
+    InvalidArgument,
+    FormatDetectionError,
+    HeadersError,
+    NoSuchItem,
+    OperationNotSupported,
+    OperationNotPermitted,
+    UnavailableData,
+    UnexpectedEnd,
+    WrongPassword
+};
+
+auto make_error_condition( BitFailureSource failure_source ) -> std::error_condition;
 
 }  // namespace bit7z
 
 namespace std {
 template<>
 struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public true_type {};
+
+template <>
+struct BIT7Z_MAYBE_UNUSED is_error_condition_enum< bit7z::BitFailureSource > : public true_type {};
 } // namespace std
 
 #endif //BITERROR_HPP

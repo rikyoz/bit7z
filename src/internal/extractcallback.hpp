@@ -15,6 +15,7 @@
 #include "bitinputarchive.hpp"
 #include "internal/callback.hpp"
 #include "internal/macros.hpp"
+#include "internal/operationresult.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
@@ -29,25 +30,6 @@ enum struct ExtractMode {
     Test = NAskMode::kTest,
     Skip = NAskMode::kSkip
 };
-
-enum struct OperationResult {
-    Success = NOperationResult::kOK,
-    UnsupportedMethod = NOperationResult::kUnsupportedMethod,
-    DataError = NOperationResult::kDataError,
-    CRCError = NOperationResult::kCRCError,
-    Unavailable = NOperationResult::kUnavailable,
-    UnexpectedEnd = NOperationResult::kUnexpectedEnd,
-    DataAfterEnd = NOperationResult::kDataAfterEnd,
-    IsNotArc = NOperationResult::kIsNotArc,
-    HeadersError = NOperationResult::kHeadersError,
-    WrongPassword = NOperationResult::kWrongPassword,
-    DataErrorEncrypted = 2 * NOperationResult::kWrongPassword,
-    CRCErrorEncrypted = ( 2 * NOperationResult::kWrongPassword ) + 1,
-    OpenErrorEncrypted = ( 2 * NOperationResult::kWrongPassword ) + 2,
-    EmptyPassword = ( 2 * NOperationResult::kWrongPassword ) + 3,
-};
-
-auto make_error_code( OperationResult error ) -> std::error_code;
 
 class ExtractCallback : public Callback,
                         public IArchiveExtractCallback,
