@@ -283,7 +283,7 @@ target_link_libraries( ${YOUR_TARGET} PRIVATE bit7z )
 
 The library is highly customizable: for a detailed list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
-### 📄 7-zip Version
+### 📑 7-zip Version
 
 While configuring bit7z via CMake, it automatically downloads the latest version of 7-zip currently supported by the library.
 
