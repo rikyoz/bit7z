@@ -36,12 +36,13 @@ auto fsutil::stem( const tstring& path ) -> tstring {
 
 auto fsutil::extension( const fs::path& path ) -> tstring {
     const fs::path ext = path.extension();
-    if ( !ext.empty() ) {
-        // We don't want the leading dot of the extension!
-        const tstring result = path_to_tstring( ext );
-        return result.substr( 1 );
+    if ( ext.empty() ) {
+        return {};
     }
-    return path_to_tstring( ext );
+
+    // We don't want the leading dot of the extension!
+    const tstring result = path_to_tstring( ext );
+    return result.substr( 1 );
 }
 
 inline auto contains_dot_references( const fs::path& path ) -> bool {
