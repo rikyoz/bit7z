@@ -447,7 +447,6 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
 #   define is_digit(ch) std::iswdigit(ch) != 0
 const auto to_lower = std::towlower;
 #else
-
 inline auto is_digit( unsigned char character ) -> bool {
     return std::isdigit( character ) != 0;
 }
@@ -455,14 +454,12 @@ inline auto is_digit( unsigned char character ) -> bool {
 inline auto to_lower( unsigned char character ) -> char {
     return static_cast< char >( std::tolower( character ) );
 }
-
 #endif
 
 auto detect_format_from_extension( const fs::path& in_file ) -> const BitInFormat& {
     tstring ext = filesystem::fsutil::extension( in_file );
     if ( ext.empty() ) {
-        throw BitException( "Failed to detect the archive format from the extension",
-                            make_error_code( BitError::NoMatchingExtension ) );
+        return BitFormat::Auto;
     }
     std::transform( ext.cbegin(), ext.cend(), ext.begin(), to_lower );
 

@@ -32,7 +32,6 @@ enum struct BitError {
     InvalidWordSize,
     ItemIsAFolder,
     ItemMarkedAsDeleted,
-    NoMatchingExtension,
     NoMatchingItems,
     NoMatchingSignature,
     NonEmptyOutputBuffer,

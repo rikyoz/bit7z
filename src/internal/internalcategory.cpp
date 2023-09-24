@@ -45,8 +45,6 @@ auto internal_category_t::message( int error_value ) const -> std::string {
             return "The item is a folder.";
         case BitError::ItemMarkedAsDeleted:
             return "The item is marked as deleted.";
-        case BitError::NoMatchingExtension:
-            return "No known extension found.";
         case BitError::NoMatchingItems:
             return "No matching item was found in the archive.";
         case BitError::NoMatchingSignature:

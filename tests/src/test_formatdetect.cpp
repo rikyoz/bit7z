@@ -224,7 +224,7 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
         // We might directly test the detect_format_from_signature function, but it would require us to include
         // too many internal headers, and it easily gives compilation problems.
-        // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid signature detection).
+        // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid detection via file extension).
 
         REQUIRE_LOAD_FILE( file_buffer, "valid." + test.extension );
         const BitArchiveReader reader{ lib, file_buffer };
@@ -289,6 +289,21 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
     REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, BitFormat::Rar ) );
     REQUIRE_NOTHROW( BitArchiveReader( lib, file_buffer, BitFormat::SevenZip ) );
     REQUIRE_NOTHROW( BitArchiveReader( lib, file_buffer ) );
+
+    REQUIRE( set_current_dir( old_current_dir ) );
+}
+
+TEST_CASE( "BitArchiveReader: Format detection of an archive file without extension", "[bitarchivereader]" ) {
+    const fs::path old_current_dir = current_dir();
+    const auto test_dir = fs::path{ test_archives_dir } / "detection";
+    REQUIRE( set_current_dir( test_dir ) );
+
+    REQUIRE( detect_format_from_extension( "noextension" ) == BitFormat::Auto );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+    const BitArchiveReader reader{ lib, BIT7Z_STRING( "noextension" ) };
+    REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
+    REQUIRE_NOTHROW( reader.test() );
 
     REQUIRE( set_current_dir( old_current_dir ) );
 }
