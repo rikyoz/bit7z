@@ -30,7 +30,7 @@ using namespace std;
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-auto fsutil::basename( const tstring& path ) -> tstring {
+auto fsutil::stem( const tstring& path ) -> tstring {
     return path_to_tstring( tstring_to_path( path ).stem() );
 }
 

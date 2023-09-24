@@ -33,7 +33,7 @@ enum struct SymlinkPolicy {
 
 namespace fsutil {
 
-BIT7Z_NODISCARD auto basename( const tstring& path ) -> tstring;
+BIT7Z_NODISCARD auto stem( const tstring& path ) -> tstring;
 
 BIT7Z_NODISCARD auto extension( const fs::path& path ) -> tstring;
 
