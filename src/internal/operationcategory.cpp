@@ -37,6 +37,8 @@ auto operation_category_t::message( int error_value ) const -> std::string {
             return "CRC error in encrypted file (wrong password?).";
         case OperationResult::OpenErrorEncrypted:
             return "Wrong password?";
+        case OperationResult::EmptyPassword:
+            return "Password required, but an empty password was provided.";
         default:
             return "Unknown error.";
     }
@@ -54,6 +56,7 @@ auto operation_category_t::default_error_condition( int error_value ) const noex
         case OperationResult::OpenErrorEncrypted:
             return std::make_error_condition( std::errc::io_error );
         case OperationResult::WrongPassword:
+        case OperationResult::EmptyPassword:
             return std::make_error_condition( std::errc::operation_not_permitted );
         default:
             return error_category::default_error_condition( error_value );

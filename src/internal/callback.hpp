@@ -16,7 +16,6 @@
 #include "internal/com.hpp"
 #include "internal/guids.hpp"
 
-constexpr auto kPasswordNotDefined = "Password is not defined";
 constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 
 namespace bit7z {

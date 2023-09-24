@@ -64,7 +64,7 @@ auto internal_category_t::message( int error_value ) const -> std::string {
     }
 }
 
-auto bit7z::internal_category_t::default_error_condition( int error_value ) const noexcept -> std::error_condition {
+auto internal_category_t::default_error_condition( int error_value ) const noexcept -> std::error_condition {
     switch ( static_cast< BitError >( error_value ) ) {
         case BitError::FilterNotSpecified:
         case BitError::FormatFeatureNotSupported:
