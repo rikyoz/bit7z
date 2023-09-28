@@ -17,22 +17,22 @@ namespace test {
 
 TestInputArchive::TestInputArchive( std::string extension, const BitInFormat& format,
                                     std::size_t packedSize, const ArchiveContent& content )
-    : m_format{ std::move( extension ), format }, m_packedSize{ packedSize }, m_content{ content } {}
+    : mFormat{ std::move( extension ), format }, mPackedSize{ packedSize }, mContent{ content } {}
 
 auto TestInputArchive::format() const -> const BitInFormat& {
-    return m_format.format;
+    return mFormat.format;
 }
 
 auto TestInputArchive::packedSize() const -> std::size_t {
-    return m_packedSize;
+    return mPackedSize;
 }
 
 auto TestInputArchive::content() const -> const ArchiveContent& {
-    return m_content;
+    return mContent;
 }
 
 auto TestInputArchive::extension() const -> const std::string& {
-    return m_format.extension;
+    return mFormat.extension;
 }
 
 } // namespace test

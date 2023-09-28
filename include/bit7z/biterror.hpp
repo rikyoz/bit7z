@@ -60,7 +60,7 @@ enum struct BitFailureSource {
     WrongPassword
 };
 
-auto make_error_condition( BitFailureSource failure_source ) -> std::error_condition;
+auto make_error_condition( BitFailureSource failureSource ) -> std::error_condition;
 
 }  // namespace bit7z
 

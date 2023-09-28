@@ -82,43 +82,43 @@ STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t current_index{};
+    int64_t currentIndex{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
             break;
         }
         case STREAM_SEEK_CUR: {
-            current_index = mCurrentPosition;
+            currentIndex = mCurrentPosition;
             break;
         }
         case STREAM_SEEK_END: {
-            current_index = static_cast< int64_t >( mBufferSize );
+            currentIndex = static_cast< int64_t >( mBufferSize );
             break;
         }
         default:
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if the sum between the current_index and offset would result in an integer overflow or underflow
-    if ( check_overflow( current_index, offset ) ) {
+    // Checking if the sum between the currentIndex and offset would result in an integer overflow or underflow
+    if ( check_overflow( currentIndex, offset ) ) {
         return E_INVALIDARG;
     }
 
-    const int64_t new_index = current_index + offset;
+    const int64_t newIndex = currentIndex + offset;
 
-    // Making sure the new_index value is between 0 and mBufferSize - 1
-    if ( new_index < 0 ) {
+    // Making sure the newIndex value is between 0 and mBufferSize - 1
+    if ( newIndex < 0 ) {
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
     }
 
-    if ( cmp_greater_equal( new_index, mBufferSize ) ) {
+    if ( cmp_greater_equal( newIndex, mBufferSize ) ) {
         return E_INVALIDARG;
     }
 
-    mCurrentPosition = new_index;
+    mCurrentPosition = newIndex;
 
     if ( newPosition != nullptr ) {
-        *newPosition = new_index;
+        *newPosition = newIndex;
     }
 
     return S_OK;
@@ -134,25 +134,25 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         return E_FAIL;
     }
 
-    uint32_t write_size = size;
+    uint32_t writeSize = size;
     if ( cmp_greater_equal( size, mBufferSize - mCurrentPosition ) ) {
         /* Writing only to the remaining part of the output buffer!
          * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe! */
-        write_size = static_cast< uint32_t >( mBufferSize - mCurrentPosition );
+        writeSize = static_cast< uint32_t >( mBufferSize - mCurrentPosition );
     }
 
-    const auto* byte_data = static_cast< const byte_t* >( data ); //-V2571
+    const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
     try {
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        std::copy_n( byte_data, write_size, &mBuffer[ mCurrentPosition ] ); //-V2563
+        std::copy_n( byteData, writeSize, &mBuffer[ mCurrentPosition ] ); //-V2563
     } catch ( ... ) {
         return E_OUTOFMEMORY;
     }
 
-    mCurrentPosition += write_size;
+    mCurrentPosition += writeSize;
 
     if ( processedSize != nullptr ) {
-        *processedSize = write_size;
+        *processedSize = writeSize;
     }
 
     return S_OK;

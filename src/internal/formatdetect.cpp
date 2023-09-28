@@ -10,11 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/formatdetect.hpp"
-
 #ifdef BIT7Z_AUTO_FORMAT
 
 #include <algorithm>
+
 #include "internal/formatdetect.hpp"
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
@@ -192,138 +191,138 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
  *         format. However, the switch case is faster and has less memory footprint. */
 auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInFormat* {
-    constexpr auto RarSignature = 0x526172211A070000ULL; // Rar! 0x1A 0x07 0x00
-    constexpr auto Rar5Signature = 0x526172211A070100ULL; // Rar! 0x1A 0x07 0x01 0x00
-    constexpr auto SevenZipSignature = 0x377ABCAF271C0000ULL; // 7z 0xBC 0xAF 0x27 0x1C
-    constexpr auto BZip2Signature = 0x425A680000000000ULL; // BZh
-    constexpr auto GZipSignature = 0x1F8B080000000000ULL; // 0x1F 0x8B 0x08
-    constexpr auto WimSignature = 0x4D5357494D000000ULL; // MSWIM 0x00 0x00 0x00
-    constexpr auto XzSignature = 0xFD377A585A000000ULL; // 0xFD 7zXZ 0x00
-    constexpr auto ZipSignature = 0x504B000000000000ULL; // PK
-    constexpr auto APMSignature = 0x4552000000000000ULL; // ER
-    constexpr auto ArjSignature = 0x60EA000000000000ULL; // `EA
-    constexpr auto CabSignature = 0x4D53434600000000ULL; // MSCF 0x00 0x00 0x00 0x00
-    constexpr auto ChmSignature = 0x4954534603000000ULL; // ITSF 0x03
-    constexpr auto CompoundSignature = 0xD0CF11E0A1B11AE1ULL; // 0xD0 0xCF 0x11 0xE0 0xA1 0xB1 0x1A 0xE1
-    constexpr auto CpioSignature1 = 0xC771000000000000ULL; // 0xC7 q
-    constexpr auto CpioSignature2 = 0x71C7000000000000ULL; // q 0xC7
-    constexpr auto CpioSignature3 = 0x3037303730000000ULL; // 07070
-    constexpr auto DebSignature = 0x213C617263683E00ULL; // !<arch>0A
-    constexpr auto ElfSignature = 0x7F454C4600000000ULL; // 0x7F ELF
-    constexpr auto PeSignature = 0x4D5A000000000000ULL; // MZ
-    constexpr auto FlvSignature = 0x464C560100000000ULL; // FLV 0x01
-    constexpr auto LzmaSignature = 0x5D00000000000000ULL; //
-    constexpr auto Lzma86Signature = 0x015D000000000000ULL; //
-    constexpr auto MachoSignature1 = 0xCEFAEDFE00000000ULL; // 0xCE 0xFA 0xED 0xFE
-    constexpr auto MachoSignature2 = 0xCFFAEDFE00000000ULL; // 0xCF 0xFA 0xED 0xFE
-    constexpr auto MachoSignature3 = 0xFEEDFACE00000000ULL; // 0xFE 0xED 0xFA 0xCE
-    constexpr auto MachoSignature4 = 0xFEEDFACF00000000ULL; // 0xFE 0xED 0xFA 0xCF
-    constexpr auto MubSignature1 = 0xCAFEBABE00000000ULL; // 0xCA 0xFE 0xBA 0xBE 0x00 0x00 0x00
-    constexpr auto MubSignature2 = 0xB9FAF10E00000000ULL; // 0xB9 0xFA 0xF1 0x0E
-    constexpr auto MslzSignature = 0x535A444488F02733ULL; // SZDD 0x88 0xF0 '3
-    constexpr auto PpmdSignature = 0x8FAFAC8400000000ULL; // 0x8F 0xAF 0xAC 0x84
-    constexpr auto QCowSignature = 0x514649FB00000000ULL; // QFI 0xFB 0x00 0x00 0x00
-    constexpr auto RpmSignature = 0xEDABEEDB00000000ULL; // 0xED 0xAB 0xEE 0xDB
-    constexpr auto SquashFSSignature1 = 0x7371736800000000ULL; // sqsh
-    constexpr auto SquashFSSignature2 = 0x6873717300000000ULL; // hsqs
-    constexpr auto SquashFSSignature3 = 0x7368737100000000ULL; // shsq
-    constexpr auto SquashFSSignature4 = 0x7173687300000000ULL; // qshs
-    constexpr auto SwfSignature = 0x4657530000000000ULL; // FWS
-    constexpr auto SwfcSignature1 = 0x4357530000000000ULL; // CWS
-    constexpr auto SwfcSignature2 = 0x5A57530000000000ULL; // ZWS
-    constexpr auto TESignature = 0x565A000000000000ULL; // VZ
-    constexpr auto VMDKSignature = 0x4B444D0000000000ULL; // KDMV
-    constexpr auto VDISignature = 0x3C3C3C2000000000ULL; // Alternatively, 0x7F10DABE at offset 0x40
-    constexpr auto VhdSignature = 0x636F6E6563746978ULL; // conectix
-    constexpr auto XarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
-    constexpr auto ZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
-    constexpr auto ZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
+    constexpr auto kRarSignature = 0x526172211A070000ULL; // Rar! 0x1A 0x07 0x00
+    constexpr auto kRar5Signature = 0x526172211A070100ULL; // Rar! 0x1A 0x07 0x01 0x00
+    constexpr auto kSevenzipSignature = 0x377ABCAF271C0000ULL; // 7z 0xBC 0xAF 0x27 0x1C
+    constexpr auto kBzip2Signature = 0x425A680000000000ULL; // BZh
+    constexpr auto kGzipSignature = 0x1F8B080000000000ULL; // 0x1F 0x8B 0x08
+    constexpr auto kWimSignature = 0x4D5357494D000000ULL; // MSWIM 0x00 0x00 0x00
+    constexpr auto kXzSignature = 0xFD377A585A000000ULL; // 0xFD 7zXZ 0x00
+    constexpr auto kZipSignature = 0x504B000000000000ULL; // PK
+    constexpr auto kApmSignature = 0x4552000000000000ULL; // ER
+    constexpr auto kArjSignature = 0x60EA000000000000ULL; // `EA
+    constexpr auto kCabSignature = 0x4D53434600000000ULL; // MSCF 0x00 0x00 0x00 0x00
+    constexpr auto kChmSignature = 0x4954534603000000ULL; // ITSF 0x03
+    constexpr auto kCompoundSignature = 0xD0CF11E0A1B11AE1ULL; // 0xD0 0xCF 0x11 0xE0 0xA1 0xB1 0x1A 0xE1
+    constexpr auto kCpioSignature1 = 0xC771000000000000ULL; // 0xC7 q
+    constexpr auto kCpioSignature2 = 0x71C7000000000000ULL; // q 0xC7
+    constexpr auto kCpioSignature3 = 0x3037303730000000ULL; // 07070
+    constexpr auto kDebSignature = 0x213C617263683E00ULL; // !<arch>0A
+    constexpr auto kElfSignature = 0x7F454C4600000000ULL; // 0x7F ELF
+    constexpr auto kPeSignature = 0x4D5A000000000000ULL; // MZ
+    constexpr auto kFlvSignature = 0x464C560100000000ULL; // FLV 0x01
+    constexpr auto kLzmaSignature = 0x5D00000000000000ULL; //
+    constexpr auto kLzma86Signature = 0x015D000000000000ULL; //
+    constexpr auto kMachoSignature1 = 0xCEFAEDFE00000000ULL; // 0xCE 0xFA 0xED 0xFE
+    constexpr auto kMachoSignature2 = 0xCFFAEDFE00000000ULL; // 0xCF 0xFA 0xED 0xFE
+    constexpr auto kMachoSignature3 = 0xFEEDFACE00000000ULL; // 0xFE 0xED 0xFA 0xCE
+    constexpr auto kMachoSignature4 = 0xFEEDFACF00000000ULL; // 0xFE 0xED 0xFA 0xCF
+    constexpr auto kMubSignature1 = 0xCAFEBABE00000000ULL; // 0xCA 0xFE 0xBA 0xBE 0x00 0x00 0x00
+    constexpr auto kMubSignature2 = 0xB9FAF10E00000000ULL; // 0xB9 0xFA 0xF1 0x0E
+    constexpr auto kMslzSignature = 0x535A444488F02733ULL; // SZDD 0x88 0xF0 '3
+    constexpr auto kPpmdSignature = 0x8FAFAC8400000000ULL; // 0x8F 0xAF 0xAC 0x84
+    constexpr auto kQcowSignature = 0x514649FB00000000ULL; // QFI 0xFB 0x00 0x00 0x00
+    constexpr auto kRpmSignature = 0xEDABEEDB00000000ULL; // 0xED 0xAB 0xEE 0xDB
+    constexpr auto kSquashfsSignature1 = 0x7371736800000000ULL; // sqsh
+    constexpr auto kSquashfsSignature2 = 0x6873717300000000ULL; // hsqs
+    constexpr auto kSquashfsSignature3 = 0x7368737100000000ULL; // shsq
+    constexpr auto kSquashfsSignature4 = 0x7173687300000000ULL; // qshs
+    constexpr auto kSwfSignature = 0x4657530000000000ULL; // FWS
+    constexpr auto kSwfcSignature1 = 0x4357530000000000ULL; // CWS
+    constexpr auto kSwfcSignature2 = 0x5A57530000000000ULL; // ZWS
+    constexpr auto kTeSignature = 0x565A000000000000ULL; // VZ
+    constexpr auto kVmdkSignature = 0x4B444D0000000000ULL; // KDMV
+    constexpr auto kVdiSignature = 0x3C3C3C2000000000ULL; // Alternatively, 0x7F10DABE at offset 0x40
+    constexpr auto kVhdSignature = 0x636F6E6563746978ULL; // conectix
+    constexpr auto kXarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
+    constexpr auto kZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
+    constexpr auto kZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
 
     switch ( signature ) {
-        case RarSignature:
+        case kRarSignature:
             return &BitFormat::Rar;
-        case Rar5Signature:
+        case kRar5Signature:
             return &BitFormat::Rar5;
-        case SevenZipSignature:
+        case kSevenzipSignature:
             return &BitFormat::SevenZip;
-        case BZip2Signature:
+        case kBzip2Signature:
             return &BitFormat::BZip2;
-        case GZipSignature:
+        case kGzipSignature:
             return &BitFormat::GZip;
-        case WimSignature:
+        case kWimSignature:
             return &BitFormat::Wim;
-        case XzSignature:
+        case kXzSignature:
             return &BitFormat::Xz;
-        case ZipSignature:
+        case kZipSignature:
             return &BitFormat::Zip;
-        case APMSignature:
+        case kApmSignature:
             return &BitFormat::APM;
-        case ArjSignature:
+        case kArjSignature:
             return &BitFormat::Arj;
-        case CabSignature:
+        case kCabSignature:
             return &BitFormat::Cab;
-        case ChmSignature:
+        case kChmSignature:
             return &BitFormat::Chm;
-        case CompoundSignature:
+        case kCompoundSignature:
             return &BitFormat::Compound;
-        case CpioSignature1:
-        case CpioSignature2:
-        case CpioSignature3:
+        case kCpioSignature1:
+        case kCpioSignature2:
+        case kCpioSignature3:
             return &BitFormat::Cpio;
-        case DebSignature:
+        case kDebSignature:
             return &BitFormat::Deb;
             /* DMG signature detection is not this simple
             case 0x7801730D62626000:
                 return &BitFormat::Dmg;
             */
-        case ElfSignature:
+        case kElfSignature:
             return &BitFormat::Elf;
-        case PeSignature:
+        case kPeSignature:
             return &BitFormat::Pe;
-        case FlvSignature:
+        case kFlvSignature:
             return &BitFormat::Flv;
-        case LzmaSignature:
+        case kLzmaSignature:
             return &BitFormat::Lzma;
-        case Lzma86Signature:
+        case kLzma86Signature:
             return &BitFormat::Lzma86;
-        case MachoSignature1:
-        case MachoSignature2:
-        case MachoSignature3:
-        case MachoSignature4:
+        case kMachoSignature1:
+        case kMachoSignature2:
+        case kMachoSignature3:
+        case kMachoSignature4:
             return &BitFormat::Macho;
-        case MubSignature1:
-        case MubSignature2:
+        case kMubSignature1:
+        case kMubSignature2:
             return &BitFormat::Mub;
-        case MslzSignature:
+        case kMslzSignature:
             return &BitFormat::Mslz;
-        case PpmdSignature:
+        case kPpmdSignature:
             return &BitFormat::Ppmd;
-        case QCowSignature:
+        case kQcowSignature:
             return &BitFormat::QCow;
-        case RpmSignature:
+        case kRpmSignature:
             return &BitFormat::Rpm;
-        case SquashFSSignature1:
-        case SquashFSSignature2:
-        case SquashFSSignature3:
-        case SquashFSSignature4:
+        case kSquashfsSignature1:
+        case kSquashfsSignature2:
+        case kSquashfsSignature3:
+        case kSquashfsSignature4:
             return &BitFormat::SquashFS;
-        case SwfSignature:
+        case kSwfSignature:
             return &BitFormat::Swf;
-        case SwfcSignature1:
-        case SwfcSignature2:
+        case kSwfcSignature1:
+        case kSwfcSignature2:
             return &BitFormat::Swfc;
-        case TESignature:
+        case kTeSignature:
             return &BitFormat::TE;
-        case VMDKSignature: // K  D  M  V
+        case kVmdkSignature: // K  D  M  V
             return &BitFormat::VMDK;
-        case VDISignature: // Alternatively, 0x7F10DABE at offset 0x40
+        case kVdiSignature: // Alternatively, 0x7F10DABE at offset 0x40
             return &BitFormat::VDI;
-        case VhdSignature: // c  o  n  e  c  t  i  x
+        case kVhdSignature: // c  o  n  e  c  t  i  x
             return &BitFormat::Vhd;
-        case XarSignature: // x  a  r  !  00 1C
+        case kXarSignature: // x  a  r  !  00 1C
             return &BitFormat::Xar;
-        case ZSignature1: // 1F 9D
-        case ZSignature2: // 1F A0
+        case kZSignature1: // 1F 9D
+        case kZSignature2: // 1F A0
             return &BitFormat::Z;
         default:
             return nullptr;
@@ -363,23 +362,23 @@ auto read_signature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
 }
 
 auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
-    constexpr auto SIGNATURE_SIZE = 8U;
-    constexpr auto BASE_SIGNATURE_MASK = 0xFFFFFFFFFFFFFFFFULL;
-    constexpr auto BYTE_SHIFT = 8ULL;
+    constexpr auto kSignatureSize = 8U;
+    constexpr auto kBaseSignatureMask = 0xFFFFFFFFFFFFFFFFULL;
+    constexpr auto kByteShift = 8ULL;
 
-    uint64_t file_signature = read_signature( stream, SIGNATURE_SIZE );
-    uint64_t signature_mask = BASE_SIGNATURE_MASK;
-    for ( auto i = 0U; i < SIGNATURE_SIZE - 1; ++i ) {
-        const BitInFormat* format = find_format_by_signature( file_signature );
+    uint64_t fileSignature = read_signature( stream, kSignatureSize );
+    uint64_t signatureMask = kBaseSignatureMask;
+    for ( auto i = 0U; i < kSignatureSize - 1; ++i ) {
+        const BitInFormat* format = find_format_by_signature( fileSignature );
         if ( format != nullptr ) {
             stream->Seek( 0, 0, nullptr );
             return *format;
         }
-        signature_mask <<= BYTE_SHIFT;    // left shifting the mask of one byte, so that
-        file_signature &= signature_mask; // the least significant i bytes are masked (set to 0)
+        signatureMask <<= kByteShift;    // left shifting the mask of one byte, so that
+        fileSignature &= signatureMask; // the least significant i bytes are masked (set to 0)
     }
 
-    static const OffsetSignature common_signatures_with_offset[] = { // NOLINT(*-avoid-c-arrays)
+    static const OffsetSignature commonSignaturesWithOffset[] = { // NOLINT(*-avoid-c-arrays)
         { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // -lh
         { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // NTFS 0x20 0x20 0x20 0x20
         { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // Nullsoft
@@ -395,44 +394,44 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
         { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }    // S 0xEF
     };
 
-    for ( const auto& sig : common_signatures_with_offset ) {
+    for ( const auto& sig : commonSignaturesWithOffset ) {
         stream->Seek( sig.offset, 0, nullptr );
-        file_signature = read_signature( stream, sig.size );
-        if ( file_signature == sig.signature ) {
+        fileSignature = read_signature( stream, sig.size );
+        if ( fileSignature == sig.signature ) {
             stream->Seek( 0, 0, nullptr );
             return sig.format;
         }
     }
 
     // Detecting ISO/UDF
-    constexpr auto BEA_SIGNATURE = 0x4245413031000000; // BEA01 (beginning of the extended descriptor section)
-    constexpr auto ISO_SIGNATURE = 0x4344303031000000; // CD001 (ISO format signature)
-    constexpr auto ISO_SIGNATURE_SIZE = 5ULL;
-    constexpr auto ISO_SIGNATURE_OFFSET = 0x8001;
+    constexpr auto kBeaSignature = 0x4245413031000000; // BEA01 (beginning of the extended descriptor section)
+    constexpr auto kIsoSignature = 0x4344303031000000; // CD001 (ISO format signature)
+    constexpr auto kIsoSignatureSize = 5ULL;
+    constexpr auto kIsoSignatureOffset = 0x8001;
 
     // Checking for ISO signature
-    stream->Seek( ISO_SIGNATURE_OFFSET, 0, nullptr );
-    file_signature = read_signature( stream, ISO_SIGNATURE_SIZE );
+    stream->Seek( kIsoSignatureOffset, 0, nullptr );
+    fileSignature = read_signature( stream, kIsoSignatureSize );
 
-    const bool is_iso = file_signature == ISO_SIGNATURE;
-    if ( is_iso || file_signature == BEA_SIGNATURE ) {
-        constexpr auto MAX_VOLUME_DESCRIPTORS = 16;
-        constexpr auto ISO_VOLUME_DESCRIPTOR_SIZE = 0x800; //2048
+    const bool isIso = fileSignature == kIsoSignature;
+    if ( isIso || fileSignature == kBeaSignature ) {
+        constexpr auto kMaxVolumeDescriptors = 16;
+        constexpr auto kIsoVolumeDescriptorSize = 0x800; //2048
 
-        constexpr auto UDF_SIGNATURE = 0x4E53523000000000; //NSR0
-        constexpr auto UDF_SIGNATURE_SIZE = 4U;
+        constexpr auto kUdfSignature = 0x4E53523000000000; //NSR0
+        constexpr auto kUdfSignatureSize = 4U;
 
-        for ( auto descriptor_index = 1; descriptor_index < MAX_VOLUME_DESCRIPTORS; ++descriptor_index ) {
-            stream->Seek( ISO_SIGNATURE_OFFSET + descriptor_index * ISO_VOLUME_DESCRIPTOR_SIZE, 0, nullptr );
-            file_signature = read_signature( stream, UDF_SIGNATURE_SIZE );
+        for ( auto descriptorIndex = 1; descriptorIndex < kMaxVolumeDescriptors; ++descriptorIndex ) {
+            stream->Seek( kIsoSignatureOffset + descriptorIndex * kIsoVolumeDescriptorSize, 0, nullptr );
+            fileSignature = read_signature( stream, kUdfSignatureSize );
 
-            if ( file_signature == UDF_SIGNATURE ) { // The file is ISO+UDF or just UDF
+            if ( fileSignature == kUdfSignature ) { // The file is ISO+UDF or just UDF
                 stream->Seek( 0, 0, nullptr );
                 return BitFormat::Udf;
             }
         }
 
-        if ( is_iso ) { // The file is pure ISO (no UDF).
+        if ( isIso ) { // The file is pure ISO (no UDF).
             stream->Seek( 0, 0, nullptr );
             return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
         }
@@ -456,8 +455,8 @@ inline auto to_lower( unsigned char character ) -> char {
 }
 #endif
 
-auto detect_format_from_extension( const fs::path& in_file ) -> const BitInFormat& {
-    tstring ext = filesystem::fsutil::extension( in_file );
+auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat& {
+    tstring ext = filesystem::fsutil::extension( inFile );
     if ( ext.empty() ) {
         return BitFormat::Auto;
     }

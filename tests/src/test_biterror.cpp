@@ -32,30 +32,30 @@ struct ErrorSourceMapping {
     ErrorSourceMapping{ "BitError::" #error, BitError::error, "BitFailureSource::" #source, BitFailureSource::source }
 
 TEST_CASE( "BitError: Checking that error values correspond to the correct failure sources", "[BitError]" ) {
-    const auto error_source = GENERATE( as< ErrorSourceMapping >(),
-                                        ERROR_SOURCE( FilterNotSpecified, InvalidArgument ),
-                                        ERROR_SOURCE( FormatFeatureNotSupported, InvalidArgument ),
-                                        ERROR_SOURCE( IndicesNotSpecified, InvalidArgument ),
-                                        ERROR_SOURCE( InvalidArchivePath, InvalidArgument ),
-                                        ERROR_SOURCE( InvalidOutputBufferSize, InvalidArgument ),
-                                        ERROR_SOURCE( InvalidCompressionMethod, InvalidArgument ),
-                                        ERROR_SOURCE( InvalidDictionarySize, InvalidArgument ),
-                                        ERROR_SOURCE( InvalidIndex, InvalidArgument ),
-                                        ERROR_SOURCE( InvalidWordSize, InvalidArgument ),
-                                        ERROR_SOURCE( ItemIsAFolder, InvalidArgument ),
-                                        ERROR_SOURCE( ItemMarkedAsDeleted, OperationNotPermitted ),
-                                        ERROR_SOURCE( NoMatchingItems, NoSuchItem ),
-                                        ERROR_SOURCE( NoMatchingSignature, InvalidArchive ),
-                                        ERROR_SOURCE( NonEmptyOutputBuffer, InvalidArgument ),
-                                        ERROR_SOURCE( RequestedWrongVariantType, OperationNotSupported ),
-                                        ERROR_SOURCE( UnsupportedOperation, OperationNotSupported ),
-                                        ERROR_SOURCE( UnsupportedVariantType, OperationNotSupported ),
-                                        ERROR_SOURCE( WrongUpdateMode, OperationNotPermitted ),
-                                        ERROR_SOURCE( InvalidZipPassword, InvalidArgument ) );
+    const auto errorSource = GENERATE( as< ErrorSourceMapping >(),
+                                       ERROR_SOURCE( FilterNotSpecified, InvalidArgument ),
+                                       ERROR_SOURCE( FormatFeatureNotSupported, InvalidArgument ),
+                                       ERROR_SOURCE( IndicesNotSpecified, InvalidArgument ),
+                                       ERROR_SOURCE( InvalidArchivePath, InvalidArgument ),
+                                       ERROR_SOURCE( InvalidOutputBufferSize, InvalidArgument ),
+                                       ERROR_SOURCE( InvalidCompressionMethod, InvalidArgument ),
+                                       ERROR_SOURCE( InvalidDictionarySize, InvalidArgument ),
+                                       ERROR_SOURCE( InvalidIndex, InvalidArgument ),
+                                       ERROR_SOURCE( InvalidWordSize, InvalidArgument ),
+                                       ERROR_SOURCE( ItemIsAFolder, InvalidArgument ),
+                                       ERROR_SOURCE( ItemMarkedAsDeleted, OperationNotPermitted ),
+                                       ERROR_SOURCE( NoMatchingItems, NoSuchItem ),
+                                       ERROR_SOURCE( NoMatchingSignature, InvalidArchive ),
+                                       ERROR_SOURCE( NonEmptyOutputBuffer, InvalidArgument ),
+                                       ERROR_SOURCE( RequestedWrongVariantType, OperationNotSupported ),
+                                       ERROR_SOURCE( UnsupportedOperation, OperationNotSupported ),
+                                       ERROR_SOURCE( UnsupportedVariantType, OperationNotSupported ),
+                                       ERROR_SOURCE( WrongUpdateMode, OperationNotPermitted ),
+                                       ERROR_SOURCE( InvalidZipPassword, InvalidArgument ) );
 
-    DYNAMIC_SECTION( error_source.errorName << " vs " << error_source.sourceName ) {
-        const auto error_code = make_error_code( error_source.error );
-        REQUIRE( error_code == error_source.source );
+    DYNAMIC_SECTION( errorSource.errorName << " vs " << errorSource.sourceName ) {
+        const auto errorCode = make_error_code( errorSource.error );
+        REQUIRE( errorCode == errorSource.source );
     }
 }
 
@@ -74,25 +74,25 @@ struct ResultSourceMapping {
                          "BitFailureSource::" #source, BitFailureSource::source }
 
 TEST_CASE( "OperationResult: Checking that result values correspond to the correct failures", "[OperationResult]" ) {
-    const auto error_source = GENERATE( as< ResultSourceMapping >(),
-                                        RESULT_SOURCE( CRCError, CRCError ),
-                                        RESULT_SOURCE( CRCErrorEncrypted, CRCError ),
-                                        RESULT_SOURCE( CRCErrorEncrypted, WrongPassword ),
-                                        RESULT_SOURCE( DataAfterEnd, DataAfterEnd ),
-                                        RESULT_SOURCE( DataError, DataError ),
-                                        RESULT_SOURCE( DataErrorEncrypted, DataError ),
-                                        RESULT_SOURCE( DataErrorEncrypted, WrongPassword ),
-                                        RESULT_SOURCE( EmptyPassword, WrongPassword ),
-                                        RESULT_SOURCE( HeadersError, HeadersError ),
-                                        RESULT_SOURCE( IsNotArc, InvalidArchive ),
-                                        RESULT_SOURCE( OpenErrorEncrypted, WrongPassword ),
-                                        RESULT_SOURCE( Unavailable, UnavailableData ),
-                                        RESULT_SOURCE( UnexpectedEnd, UnexpectedEnd ),
-                                        RESULT_SOURCE( WrongPassword, WrongPassword ) );
+    const auto errorSource = GENERATE( as< ResultSourceMapping >(),
+                                       RESULT_SOURCE( CRCError, CRCError ),
+                                       RESULT_SOURCE( CRCErrorEncrypted, CRCError ),
+                                       RESULT_SOURCE( CRCErrorEncrypted, WrongPassword ),
+                                       RESULT_SOURCE( DataAfterEnd, DataAfterEnd ),
+                                       RESULT_SOURCE( DataError, DataError ),
+                                       RESULT_SOURCE( DataErrorEncrypted, DataError ),
+                                       RESULT_SOURCE( DataErrorEncrypted, WrongPassword ),
+                                       RESULT_SOURCE( EmptyPassword, WrongPassword ),
+                                       RESULT_SOURCE( HeadersError, HeadersError ),
+                                       RESULT_SOURCE( IsNotArc, InvalidArchive ),
+                                       RESULT_SOURCE( OpenErrorEncrypted, WrongPassword ),
+                                       RESULT_SOURCE( Unavailable, UnavailableData ),
+                                       RESULT_SOURCE( UnexpectedEnd, UnexpectedEnd ),
+                                       RESULT_SOURCE( WrongPassword, WrongPassword ) );
 
-    DYNAMIC_SECTION( error_source.errorName << " vs " << error_source.sourceName ) {
-        const auto error_code = make_error_code( error_source.error );
-        REQUIRE( error_code == error_source.source );
+    DYNAMIC_SECTION( errorSource.errorName << " vs " << errorSource.sourceName ) {
+        const auto errorCode = make_error_code( errorSource.error );
+        REQUIRE( errorCode == errorSource.source );
     }
 }
 #endif

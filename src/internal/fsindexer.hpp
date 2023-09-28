@@ -23,20 +23,20 @@ namespace filesystem {
 using std::vector;
 using std::unique_ptr;
 
-class FSIndexer final {
+class FilesystemIndexer final {
     public:
-        explicit FSIndexer( FSItem directory,
-                            tstring filter = {},
-                            FilterPolicy policy = FilterPolicy::Include,
-                            SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
-                            bool only_files = false );
+        explicit FilesystemIndexer( FilesystemItem directory,
+                                    tstring filter = {},
+                                    FilterPolicy policy = FilterPolicy::Include,
+                                    SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
+                                    bool onlyFiles = false );
 
         void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
                                  bool recursive,
                                  const fs::path& prefix = fs::path{} );
 
     private:
-        FSItem mDirItem;
+        FilesystemItem mDirItem;
         tstring mFilter;
         FilterPolicy mPolicy;
         SymlinkPolicy mSymlinkPolicy;

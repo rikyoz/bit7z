@@ -27,8 +27,6 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archive
       mAbsoluteOffset( 0 ),
       mFullSize( 0 ) {}
 
-auto CMultiVolumeOutStream::GetSize() const noexcept -> UInt64 { return mFullSize; }
-
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
@@ -45,18 +43,18 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
             name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
         }
 
-        fs::path volume_path = mVolumePrefix;
-        volume_path += BIT7Z_STRING( "." ) + name;
+        fs::path volumePath = mVolumePrefix;
+        volumePath += BIT7Z_STRING( "." ) + name;
         try {
             // TODO: Avoid keeping all the volumes streams open
-            constexpr auto opened_files_threshold = 500;
-            if ( mCurrentVolumeIndex == opened_files_threshold ) {
+            constexpr auto kOpenedFilesThreshold = 500;
+            if ( mCurrentVolumeIndex == kOpenedFilesThreshold ) {
                 // Since we have created many volumes, it is likely we'll keep creating more.
                 // Hence, we increase the limit to the number of files that can be opened by the current process
                 // to avoid problems in the future.
                 filesystem::fsutil::increase_opened_files_limit();
             }
-            mVolumes.emplace_back( make_com< CVolumeOutStream >( volume_path ) );
+            mVolumes.emplace_back( make_com< CVolumeOutStream >( volumePath ) );
         } catch ( const BitException& ex ) {
             return ex.nativeCode();
         }

@@ -24,68 +24,68 @@ BitFileCompressor::BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFor
 
 /* from filesystem to filesystem */
 
-void BitFileCompressor::compress( const std::vector< tstring >& in_paths, const tstring& out_file ) const {
-    if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+void BitFileCompressor::compress( const std::vector< tstring >& inPaths, const tstring& outFile ) const {
+    if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addItems( in_paths );
-    output_archive.compressTo( out_file );
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addItems( inPaths );
+    outputArchive.compressTo( outFile );
 }
 
-void BitFileCompressor::compress( const std::map< tstring, tstring >& in_paths, const tstring& out_file ) const {
-    if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+void BitFileCompressor::compress( const std::map< tstring, tstring >& inPaths, const tstring& outFile ) const {
+    if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addItems( in_paths );
-    output_archive.compressTo( out_file );
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addItems( inPaths );
+    outputArchive.compressTo( outFile );
 }
 
-void BitFileCompressor::compressFiles( const std::vector< tstring >& in_files, const tstring& out_file ) const {
-    if ( in_files.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+void BitFileCompressor::compressFiles( const std::vector< tstring >& inFiles, const tstring& outFile ) const {
+    if ( inFiles.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addFiles( in_files );
-    output_archive.compressTo( out_file );
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addFiles( inFiles );
+    outputArchive.compressTo( outFile );
 }
 
-void BitFileCompressor::compressFiles( const tstring& in_dir, const tstring& out_file,
+void BitFileCompressor::compressFiles( const tstring& inDir, const tstring& outFile,
                                        bool recursive, const tstring& filter ) const {
     if ( !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addFiles( in_dir, filter, recursive );
-    output_archive.compressTo( out_file );
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addFiles( inDir, filter, recursive );
+    outputArchive.compressTo( outFile );
 }
 
-void BitFileCompressor::compressDirectory( const tstring& in_dir, const tstring& out_file ) const {
+void BitFileCompressor::compressDirectory( const tstring& inDir, const tstring& outFile ) const {
     if ( !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitOutputArchive output_archive{ *this, out_file };
-    output_archive.addDirectory( in_dir );
-    output_archive.compressTo( out_file );
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addDirectory( inDir );
+    outputArchive.compressTo( outFile );
 }
 
 /* from filesystem to stream */
 
-void BitFileCompressor::compress( const std::vector< tstring >& in_paths, std::ostream& out_stream ) const {
-    if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+void BitFileCompressor::compress( const std::vector< tstring >& inPaths, std::ostream& outStream ) const {
+    if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitOutputArchive output_archive{ *this };
-    output_archive.addItems( in_paths );
-    output_archive.compressTo( out_stream );
+    BitOutputArchive outputArchive{ *this };
+    outputArchive.addItems( inPaths );
+    outputArchive.compressTo( outStream );
 }
 
-void BitFileCompressor::compress( const std::map< tstring, tstring >& in_paths, std::ostream& out_stream ) const {
-    if ( in_paths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+void BitFileCompressor::compress( const std::map< tstring, tstring >& inPaths, std::ostream& outStream ) const {
+    if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
-    BitOutputArchive output_archive{ *this };
-    output_archive.addItems( in_paths );
-    output_archive.compressTo( out_stream );
+    BitOutputArchive outputArchive{ *this };
+    outputArchive.addItems( inPaths );
+    outputArchive.compressTo( outStream );
 }

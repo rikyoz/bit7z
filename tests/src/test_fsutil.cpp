@@ -190,12 +190,12 @@ struct TestItem {
 TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) {
     using namespace test::filesystem;
 
-    const fs::path old_current_dir = current_dir();
+    const fs::path oldCurrentDir = current_dir();
     REQUIRE ( set_current_dir( test_filesystem_dir ) );
 
     // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
     //       directory, hence we must declare the vector inside the test case and not outside!
-    const std::array< TestItem, 28 > test_items{ {
+    const std::array< TestItem, 28 > testItems{ {
         { ".",                                                 "" },
         { "./",                                                "" },
         { "..",                                                "" },
@@ -226,13 +226,13 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
         { fs::absolute( "./folder/subfolder2/homework.doc" ), "homework.doc" }
     } };
 
-    for ( const auto& test_item : test_items ) {
-        DYNAMIC_SECTION( "Path: " << test_item.path ) {
-            REQUIRE( in_archive_path( test_item.path ) == test_item.inArchivePath );
+    for ( const auto& testItem : testItems ) {
+        DYNAMIC_SECTION( "Path: " << testItem.path ) {
+            REQUIRE( in_archive_path( testItem.path ) == testItem.inArchivePath );
         }
     }
 
-    REQUIRE( set_current_dir( old_current_dir ) );
+    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #endif

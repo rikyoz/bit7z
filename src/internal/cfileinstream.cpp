@@ -27,7 +27,7 @@ CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileSt
      * (e.g., GCC uses a small 1024-bytes buffer).
      * This is a known problem (see https://stackoverflow.com/questions/26095160/why-are-stdfstreams-so-slow).
      * We make the underlying file stream use a bigger buffer (1 MiB) for optimizing the reading of big files.  */
-    mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), buffer_size );
+    mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );
 }
 
 void CFileInStream::openFile( const fs::path& filePath ) {

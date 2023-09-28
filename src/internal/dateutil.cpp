@@ -23,45 +23,45 @@ constexpr std::chrono::seconds nt_to_unix_epoch{ -11644473600 };
 #ifndef _WIN32
 
 auto FILETIME_to_file_time_type( FILETIME fileTime ) -> fs::file_time_type {
-    const FileTimeDuration file_time_duration{
+    const FileTimeDuration fileTimeDuration{
         ( static_cast< int64_t >( fileTime.dwHighDateTime ) << 32 ) + fileTime.dwLowDateTime
     };
 
-    const auto unix_epoch = file_time_duration + nt_to_unix_epoch;
-    return fs::file_time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unix_epoch ) };
+    const auto unixEpoch = fileTimeDuration + nt_to_unix_epoch;
+    return fs::file_time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unixEpoch ) };
 }
 
 auto time_to_FILETIME( const std::time_t& timeValue ) -> FILETIME {
-    const uint64_t time_in_seconds = ( timeValue * 10000000ull ) + 116444736000000000; // NOLINT(*-magic-numbers)
+    const uint64_t timeInSeconds = ( timeValue * 10000000ull ) + 116444736000000000; // NOLINT(*-magic-numbers)
     FILETIME fileTime{};
-    fileTime.dwLowDateTime = static_cast< DWORD >( time_in_seconds );
-    fileTime.dwHighDateTime = static_cast< DWORD >( time_in_seconds >> 32 );
+    fileTime.dwLowDateTime = static_cast< DWORD >( timeInSeconds );
+    fileTime.dwHighDateTime = static_cast< DWORD >( timeInSeconds >> 32 );
     return fileTime;
 }
 
 #endif
 
 auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
-    const FileTimeDuration file_time_duration{
+    const FileTimeDuration fileTimeDuration{
         ( static_cast< int64_t >( fileTime.dwHighDateTime ) << 32 ) + fileTime.dwLowDateTime
     };
 
-    const auto unix_epoch = file_time_duration + nt_to_unix_epoch;
-    return time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unix_epoch ) };
+    const auto unixEpoch = fileTimeDuration + nt_to_unix_epoch;
+    return time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unixEpoch ) };
 }
 
 auto current_file_time() -> FILETIME {
 #ifdef _WIN32
-    FILETIME file_time{};
-    SYSTEMTIME system_time{};
+    FILETIME fileTime{};
+    SYSTEMTIME systemTime{};
 
-    GetSystemTime( &system_time ); // Getting the current time_value as a SYSTEMTIME struct.
-    SystemTimeToFileTime( &system_time, &file_time ); // Converting it to the FILETIME struct format.
-    return file_time;
+    GetSystemTime( &systemTime ); // Getting the current time as a SYSTEMTIME struct.
+    SystemTimeToFileTime( &systemTime, &fileTime ); // Converting it to the FILETIME struct format.
+    return fileTime;
 #else
-    auto current_time = std::chrono::system_clock::now();
-    const std::time_t time_value = std::chrono::system_clock::to_time_t( current_time );
-    return time_to_FILETIME( time_value );
+    auto currentTime = std::chrono::system_clock::now();
+    const std::time_t timeValue = std::chrono::system_clock::to_time_t( currentTime );
+    return time_to_FILETIME( timeValue );
 #endif
 }
 }  // namespace bit7z

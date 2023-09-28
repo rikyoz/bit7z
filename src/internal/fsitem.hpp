@@ -17,15 +17,15 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-class FSItem final : public GenericInputItem {
+class FilesystemItem final : public GenericInputItem {
     public:
-        explicit FSItem( const fs::path& itemPath,
-                         fs::path inArchivePath = fs::path{},
-                         SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
+        explicit FilesystemItem( const fs::path& itemPath,
+                                 fs::path inArchivePath = fs::path{},
+                                 SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
 
-        explicit FSItem( fs::directory_entry entry,
-                         const fs::path& searchPath,
-                         SymlinkPolicy symlinkPolicy );
+        explicit FilesystemItem( fs::directory_entry entry,
+                                 const fs::path& searchPath,
+                                 SymlinkPolicy symlinkPolicy );
 
         BIT7Z_NODISCARD auto isDots() const -> bool;
 
@@ -49,7 +49,7 @@ class FSItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
 
-        BIT7Z_NODISCARD auto itemProperty( BitProperty propID ) const -> BitPropVariant override;
+        BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
         BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const -> HRESULT override;
 

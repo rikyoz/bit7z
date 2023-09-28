@@ -20,7 +20,7 @@ namespace bit7z {
 
 struct CSymlinkInStream : public IInStream, public CMyUnknownImp {
 public:
-    explicit CSymlinkInStream( const fs::path& symlink_path );
+    explicit CSymlinkInStream( const fs::path& symlinkPath );
 
     CSymlinkInStream( const CSymlinkInStream& ) = delete;
 

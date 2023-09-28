@@ -21,8 +21,8 @@ auto FailureSourceCategory::name() const noexcept -> const char* {
     return "failure-source";
 }
 
-auto FailureSourceCategory::message( int error_value ) const -> std::string {
-    switch ( static_cast< BitFailureSource >( error_value ) ) {
+auto FailureSourceCategory::message( int errorValue ) const -> std::string {
+    switch ( static_cast< BitFailureSource >( errorValue ) ) {
         case BitFailureSource::CRCError:
             return operation_category().message( NOperationResult::kCRCError );
         case BitFailureSource::DataAfterEnd:

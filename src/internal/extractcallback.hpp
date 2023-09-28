@@ -25,6 +25,8 @@ using namespace NArchive::NExtract;
 
 namespace bit7z {
 
+constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
+
 enum struct ExtractMode {
     Extract = NAskMode::kExtract,
     Test = NAskMode::kTest,
@@ -96,7 +98,7 @@ class ExtractCallback : public Callback,
             return mInputArchive;
         }
 
-        virtual auto finishOperation( OperationResult operation_result ) -> HRESULT;
+        virtual auto finishOperation( OperationResult operationResult ) -> HRESULT;
 
         virtual void releaseStream() = 0;
 

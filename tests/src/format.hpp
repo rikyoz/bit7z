@@ -7,8 +7,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifndef BIT7Z_FORMAT_HPP
-#define BIT7Z_FORMAT_HPP
+#ifndef FORMAT_HPP
+#define FORMAT_HPP
 
 #include <string>
 
@@ -47,4 +47,4 @@ inline auto format_compresses_files( const BitInFormat& format ) -> bool {
 } // namespace test
 } // namespace bit7z
 
-#endif //BIT7Z_FORMAT_HPP
+#endif //FORMAT_HPP

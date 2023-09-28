@@ -19,7 +19,7 @@ struct FailureSourceCategory : public std::error_category {
     auto name() const noexcept -> const char* override;
 
     BIT7Z_NODISCARD
-    auto message( int error_value ) const -> std::string override;
+    auto message( int errorValue ) const -> std::string override;
 
     BIT7Z_NODISCARD
     auto equivalent( int error, const std::error_condition& condition ) const noexcept -> bool override;

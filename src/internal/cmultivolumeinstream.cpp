@@ -20,25 +20,25 @@
 
 namespace bit7z {
 
-CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& first_volume ) : mCurrentPosition{ 0 }, mTotalSize{ 0 } {
-    constexpr size_t volume_digits = 3u;
-    size_t volume_index = 1u;
-    fs::path volume_path = first_volume;
-    while ( fs::exists( volume_path ) ) {
-        addVolume( volume_path );
+CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mCurrentPosition{ 0 }, mTotalSize{ 0 } {
+    constexpr size_t kVolumeDigits = 3u;
+    size_t volumeIndex = 1u;
+    fs::path volumePath = firstVolume;
+    while ( fs::exists( volumePath ) ) {
+        addVolume( volumePath );
 
-        ++volume_index;
-        tstring volume_ext = to_tstring( volume_index );
-        if ( volume_ext.length() < volume_digits ) {
-            volume_ext.insert( volume_ext.begin(), volume_digits - volume_ext.length(), BIT7Z_STRING( '0' ) );
+        ++volumeIndex;
+        tstring volumeExt = to_tstring( volumeIndex );
+        if ( volumeExt.length() < kVolumeDigits ) {
+            volumeExt.insert( volumeExt.begin(), kVolumeDigits - volumeExt.length(), BIT7Z_STRING( '0' ) );
         }
-        volume_path.replace_extension( volume_ext );
+        volumePath.replace_extension( volumeExt );
 
         // TODO: Avoid keeping all the volumes streams open
-        constexpr auto opened_files_threshold = 500;
-        if ( volume_index == opened_files_threshold ) {
+        constexpr auto kOpenedFilesThreshold = 500;
+        if ( volumeIndex == kOpenedFilesThreshold ) {
             // Note: we use == to avoid increasing the limit more than once;
-            // the volume_index is always increasing, so it is not an issue here.
+            // the volumeIndex is always increasing, so it is not an issue here.
             filesystem::fsutil::increase_opened_files_limit();
         }
     }
@@ -71,18 +71,18 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
         return S_OK;
     }
 
-    const auto& current_volume = currentVolume();
-    UInt64 local_offset = mCurrentPosition - current_volume->globalOffset();
-    HRESULT result = current_volume->Seek( static_cast< Int64 >( local_offset ), STREAM_SEEK_SET, &local_offset );
+    const auto& volume = currentVolume();
+    UInt64 localOffset = mCurrentPosition - volume->globalOffset();
+    HRESULT result = volume->Seek( static_cast< Int64 >( localOffset ), STREAM_SEEK_SET, &localOffset );
     if ( result != S_OK ) {
         return result;
     }
 
-    const uint64_t remaining = current_volume->size() - local_offset;
+    const uint64_t remaining = volume->size() - localOffset;
     if ( size > remaining ) {
         size = static_cast< UInt32 >( remaining );
     }
-    result = current_volume->Read( data, size, &size );
+    result = volume->Read( data, size, &size );
     mCurrentPosition += size;
 
     if ( processedSize != nullptr ) {
@@ -93,35 +93,35 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t origin_position; // NOLINT(cppcoreguidelines-init-variables)
+    uint64_t originPosition; // NOLINT(cppcoreguidelines-init-variables)
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
-            origin_position = 0;
+            originPosition = 0;
             break;
         case STREAM_SEEK_CUR:
-            origin_position = mCurrentPosition;
+            originPosition = mCurrentPosition;
             break;
         case STREAM_SEEK_END:
-            origin_position = mTotalSize;
+            originPosition = mTotalSize;
             break;
         default:
             return STG_E_INVALIDFUNCTION;
     }
 
     // Checking if adding the (negative) offset would result in the unsigned wrap around of the current position.
-    if ( offset < 0 && origin_position < static_cast< uint64_t >( -offset ) ) {
+    if ( offset < 0 && originPosition < static_cast< uint64_t >( -offset ) ) {
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
     }
 
     // Checking if adding the (positive) offset would result in the unsigned wrap around of the current position.
     if ( offset > 0 ) {
-        const auto positive_offset = static_cast< uint64_t >( offset );
-        const uint64_t seek_position = origin_position + positive_offset;
-        if ( seek_position < origin_position || seek_position < positive_offset ) {
+        const auto positiveOffset = static_cast< uint64_t >( offset );
+        const uint64_t seekPosition = originPosition + positiveOffset;
+        if ( seekPosition < originPosition || seekPosition < positiveOffset ) {
             return E_INVALIDARG;
         }
     }
-    mCurrentPosition = origin_position + offset;
+    mCurrentPosition = originPosition + offset;
 
     if ( newPosition != nullptr ) {
         *newPosition = mCurrentPosition;
@@ -129,13 +129,13 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
     return S_OK;
 }
 
-void CMultiVolumeInStream::addVolume( const fs::path& volume_path ) {
-    uint64_t global_offset = 0;
+void CMultiVolumeInStream::addVolume( const fs::path& volumePath ) {
+    uint64_t globalOffset = 0;
     if ( !mVolumes.empty() ) {
-        const auto& last_stream = mVolumes.back();
-        global_offset = last_stream->globalOffset() + last_stream->size();
+        const auto& lastStream = mVolumes.back();
+        globalOffset = lastStream->globalOffset() + lastStream->size();
     }
-    mVolumes.emplace_back( make_com< CVolumeInStream >( volume_path, global_offset ) );
+    mVolumes.emplace_back( make_com< CVolumeInStream >( volumePath, globalOffset ) );
     mTotalSize += mVolumes.back()->size();
 }
 

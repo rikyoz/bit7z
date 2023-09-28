@@ -20,16 +20,16 @@
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-BitArchiveItem::BitArchiveItem( uint32_t item_index ) noexcept
-    : mItemIndex( item_index ) {}
+BitArchiveItem::BitArchiveItem( uint32_t itemIndex ) noexcept
+    : mItemIndex( itemIndex ) {}
 
 auto BitArchiveItem::index() const noexcept -> uint32_t {
     return mItemIndex;
 }
 
 auto BitArchiveItem::isDir() const -> bool {
-    const BitPropVariant is_dir = itemProperty( BitProperty::IsDir );
-    return !is_dir.isEmpty() && is_dir.getBool();
+    const BitPropVariant isDir = itemProperty( BitProperty::IsDir );
+    return !isDir.isEmpty() && isDir.getBool();
 }
 
 BIT7Z_NODISCARD
@@ -69,28 +69,28 @@ auto BitArchiveItem::size() const -> uint64_t {
 }
 
 auto BitArchiveItem::packSize() const -> uint64_t {
-    const BitPropVariant pack_size = itemProperty( BitProperty::PackSize );
-    return pack_size.isEmpty() ? 0 : pack_size.getUInt64();
+    const BitPropVariant packSize = itemProperty( BitProperty::PackSize );
+    return packSize.isEmpty() ? 0 : packSize.getUInt64();
 }
 
 auto BitArchiveItem::isEncrypted() const -> bool {
-    const BitPropVariant is_encrypted = itemProperty( BitProperty::Encrypted );
-    return is_encrypted.isBool() && is_encrypted.getBool();
+    const BitPropVariant isEncrypted = itemProperty( BitProperty::Encrypted );
+    return isEncrypted.isBool() && isEncrypted.getBool();
 }
 
 auto BitArchiveItem::creationTime() const -> time_type {
-    const BitPropVariant creation_time = itemProperty( BitProperty::CTime );
-    return creation_time.isFileTime() ? creation_time.getTimePoint() : time_type::clock::now();
+    const BitPropVariant creationTime = itemProperty( BitProperty::CTime );
+    return creationTime.isFileTime() ? creationTime.getTimePoint() : time_type::clock::now();
 }
 
 auto BitArchiveItem::lastAccessTime() const -> time_type {
-    const BitPropVariant access_time = itemProperty( BitProperty::ATime );
-    return access_time.isFileTime() ? access_time.getTimePoint() : time_type::clock::now();
+    const BitPropVariant accessTime = itemProperty( BitProperty::ATime );
+    return accessTime.isFileTime() ? accessTime.getTimePoint() : time_type::clock::now();
 }
 
 auto BitArchiveItem::lastWriteTime() const -> time_type {
-    const BitPropVariant write_time = itemProperty( BitProperty::MTime );
-    return write_time.isFileTime() ? write_time.getTimePoint() : time_type::clock::now();
+    const BitPropVariant writeTime = itemProperty( BitProperty::MTime );
+    return writeTime.isFileTime() ? writeTime.getTimePoint() : time_type::clock::now();
 }
 
 auto BitArchiveItem::attributes() const -> uint32_t {
@@ -117,10 +117,10 @@ auto BitArchiveItem::isSymLink() const -> bool {
         return true;
     }
 
-    const auto item_attributes = attributes();
-    if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        auto posix_attributes = item_attributes >> 16U;
-        return S_ISLNK( posix_attributes );
+    const auto itemAttributes = attributes();
+    if ( ( itemAttributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
+        auto posixAttributes = itemAttributes >> 16U;
+        return S_ISLNK( posixAttributes );
     }
-    return ( item_attributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;
+    return ( itemAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;
 }

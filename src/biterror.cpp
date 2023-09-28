@@ -20,8 +20,8 @@ auto make_error_code( BitError error ) -> std::error_code {
     return { static_cast< int >( error ), internal_category() };
 }
 
-auto make_error_condition( BitFailureSource failure_source ) -> std::error_condition {
-    return { static_cast< int >( failure_source ), source_category() };
+auto make_error_condition( BitFailureSource failureSource ) -> std::error_condition {
+    return { static_cast< int >( failureSource ), source_category() };
 }
 
 } // namespace bit7z

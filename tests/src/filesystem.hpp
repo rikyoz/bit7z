@@ -77,23 +77,23 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
     return !error;
 }
 
-inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t > {
+inline auto load_file( fs::path const& inFile ) -> std::vector< bit7z::byte_t > {
 #if defined(__MINGW32__) && defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIO_DEFINED)
     int fd;
-    const auto res = _wsopen_s( &fd, in_file.c_str(), _O_BINARY, _SH_DENYNO, _S_IREAD );
+    const auto res = _wsopen_s( &fd, inFile.c_str(), _O_BINARY, _SH_DENYNO, _S_IREAD );
     if ( res != 0 ) {
         return {};
     }
     __gnu_cxx::stdio_filebuf<char> filebuf(fd, std::ios::in);
     std::istream ifs( &filebuf );
 #else
-    fs::ifstream ifs{ in_file, fs::ifstream::binary };
+    fs::ifstream ifs{ inFile, fs::ifstream::binary };
     if ( !ifs.is_open() ) {
         return {};
     }
 #endif
     noskipws( ifs ); //no skip spaces!
-    auto size = fs::file_size( in_file );
+    auto size = fs::file_size( inFile );
     std::vector< bit7z::byte_t > result( size );
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
     ifs.read( reinterpret_cast<char*>( result.data() ), result.cend() - result.cbegin() );
@@ -122,7 +122,7 @@ inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t >
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder
     const tchar* ext;
-    bool is_dir;
+    bool isDir;
     std::size_t size;
     uint32_t crc32;
 };

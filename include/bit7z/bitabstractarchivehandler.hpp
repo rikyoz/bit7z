@@ -18,37 +18,35 @@
 
 namespace bit7z {
 
-using std::function;
-
 class BitInFormat;
 
 /**
  * @brief A std::function whose argument is the total size of the ongoing operation.
  */
-using TotalCallback = function< void( uint64_t ) >;
+using TotalCallback = std::function< void( uint64_t ) >;
 
 /**
  * @brief A std::function whose argument is the currently processed size of the ongoing operation and returns
  *        true or false whether the operation must continue or not.
  */
-using ProgressCallback = function< bool( uint64_t ) >;
+using ProgressCallback = std::function< bool( uint64_t ) >;
 
 /**
  * @brief A std::function whose arguments are the current processed input size, and the current output size of the
  *        ongoing operation.
  */
-using RatioCallback = function< void( uint64_t, uint64_t ) >;
+using RatioCallback = std::function< void( uint64_t, uint64_t ) >;
 
 /**
  * @brief A std::function whose argument is the path, in the archive, of the file currently being processed
  *        by the ongoing operation.
  */
-using FileCallback = function< void( tstring ) >;
+using FileCallback = std::function< void( tstring ) >;
 
 /**
  * @brief A std::function returning the password to be used to handle an archive.
  */
-using PasswordCallback = function< tstring() >;
+using PasswordCallback = std::function< tstring() >;
 
 /**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
@@ -189,7 +187,7 @@ class BitAbstractArchiveHandler {
          * @brief Sets the function to be called when the processed size of the ongoing operation is updated.
          *
          * @note The completion percentage of the current operation can be obtained by calculating
-         * `static_cast<int>( ( 100.0 * processed_size ) / total_size )`.
+         * `static_cast<int>((100.0 * processed_size) / total_size)`.
          *
          * @param callback  the progress callback to be used.
          */
@@ -200,7 +198,7 @@ class BitAbstractArchiveHandler {
          * ongoing operation are known.
          *
          * @note The ratio percentage of a compression operation can be obtained by calculating
-         * `static_cast<int>( ( 100.0 * output_size ) / input_size )`.
+         * `static_cast<int>((100.0 * output_size) / input_size)`.
          *
          * @param callback  the ratio callback to be used.
          */
@@ -230,7 +228,7 @@ class BitAbstractArchiveHandler {
     protected:
         explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib,
                                             tstring password = {},
-                                            OverwriteMode overwrite_mode = OverwriteMode::None );
+                                            OverwriteMode overwriteMode = OverwriteMode::None );
 
     private:
         const Bit7zLibrary& mLibrary;

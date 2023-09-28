@@ -7,8 +7,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifndef COUTMULTIVOLUMESTREAM_HPP
-#define COUTMULTIVOLUMESTREAM_HPP
+#ifndef CMULTIVOLUMEOUTSTREAM_HPP
+#define CMULTIVOLUMEOUTSTREAM_HPP
 
 #include <vector>
 #include <string>
@@ -60,8 +60,6 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
         MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeOutStream() ) = default;
 
-        BIT7Z_NODISCARD auto GetSize() const noexcept -> UInt64;
-
         // IOutStream
         BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
 
@@ -75,4 +73,4 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
 }  // namespace bit7z
 
-#endif // COUTMULTIVOLUMESTREAM_HPP
+#endif // CMULTIVOLUMEOUTSTREAM_HPP

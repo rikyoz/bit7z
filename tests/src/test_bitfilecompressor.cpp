@@ -62,17 +62,17 @@ TEST_CASE( "BitFileCompressor: Basic API tests (BitArchiveCreator API)", "[bitfi
     }
 
     SECTION( "compressionFormat()" ) {
-        const auto test_format = GENERATE( as< TestOutputFormat >(),
-                                           TestOutputFormat{ "ZIP", BitFormat::Zip },
-                                           TestOutputFormat{ "BZIP2", BitFormat::BZip2 },
-                                           TestOutputFormat{ "7Z", BitFormat::SevenZip },
-                                           TestOutputFormat{ "XZ", BitFormat::Xz },
-                                           TestOutputFormat{ "WIM", BitFormat::Wim },
-                                           TestOutputFormat{ "TAR", BitFormat::Tar },
-                                           TestOutputFormat{ "GZIP", BitFormat::GZip } );
-        DYNAMIC_SECTION( "Format: " << test_format.name ) {
-            const BitFileCompressor compressor{ lib, test_format.format };
-            REQUIRE( compressor.compressionFormat() == test_format.format );
+        const auto testFormat = GENERATE( as< TestOutputFormat >(),
+                                          TestOutputFormat{ "ZIP", BitFormat::Zip },
+                                          TestOutputFormat{ "BZIP2", BitFormat::BZip2 },
+                                          TestOutputFormat{ "7Z", BitFormat::SevenZip },
+                                          TestOutputFormat{ "XZ", BitFormat::Xz },
+                                          TestOutputFormat{ "WIM", BitFormat::Wim },
+                                          TestOutputFormat{ "TAR", BitFormat::Tar },
+                                          TestOutputFormat{ "GZIP", BitFormat::GZip } );
+        DYNAMIC_SECTION( "Format: " << testFormat.name ) {
+            const BitFileCompressor compressor{ lib, testFormat.format };
+            REQUIRE( compressor.compressionFormat() == testFormat.format );
         }
     }
 

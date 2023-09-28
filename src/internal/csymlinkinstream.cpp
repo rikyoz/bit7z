@@ -15,13 +15,13 @@
 
 namespace bit7z {
 
-auto read_symlink_as_string( const fs::path& symlink_path ) noexcept -> std::string {
+auto read_symlink_as_string( const fs::path& symlinkPath ) noexcept -> std::string {
     std::error_code error;
-    return fs::read_symlink( symlink_path, error ).u8string();
+    return fs::read_symlink( symlinkPath, error ).u8string();
 }
 
-CSymlinkInStream::CSymlinkInStream( const fs::path& symlink_path )
-    : mStream{ read_symlink_as_string( symlink_path ) },
+CSymlinkInStream::CSymlinkInStream( const fs::path& symlinkPath )
+    : mStream{ read_symlink_as_string( symlinkPath ) },
       mSymlinkStream{ bit7z::make_com< CStdInStream >( mStream ) } {}
 
 COM_DECLSPEC_NOTHROW

@@ -20,14 +20,14 @@
 #include <limits>
 
 
-auto wcsnlen_s( const wchar_t* str, size_t max_size ) -> size_t {
-    if ( str == nullptr || max_size == 0 ) {
+auto wcsnlen_s( const wchar_t* str, size_t maxSize ) -> size_t {
+    if ( str == nullptr || maxSize == 0 ) {
         return 0;
     }
 
     size_t result = 0;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    for ( ; result < max_size && str[ result ] != L'\0'; ++result ) {
+    for ( ; result < maxSize && str[ result ] != L'\0'; ++result ) {
         // continue;
     }
     return result;
@@ -53,48 +53,48 @@ using bstr_prefix_t = uint32_t;
  *   - The length parameter is an uint64_t, instead of the UINT parameter used in the WinAPI interface.
  *     This allows avoiding unsigned integer wrap around in SysAllocStringLen.
  * */
-auto AllocStringBuffer( LPCSTR str, uint64_t byte_length ) -> BSTR {
-    // Maximum value that can be stored in the BSTR byte_length prefix.
-    constexpr auto max_prefix_value = std::numeric_limits< bstr_prefix_t >::max();
+auto AllocStringBuffer( LPCSTR str, uint64_t byteLength ) -> BSTR {
+    // Maximum value that can be stored in the BSTR byteLength prefix.
+    constexpr auto kMaxPrefixValue = std::numeric_limits< bstr_prefix_t >::max();
 
-    // Max number of bytes that can be stored in the BSTR (excluding the termination char, and the byte_length prefix).
-    constexpr auto max_length = max_prefix_value - sizeof( OLECHAR ) - sizeof( bstr_prefix_t );
+    // Max number of bytes that can be stored in the BSTR (excluding the termination char, and the byteLength prefix).
+    constexpr auto kMaxLength = kMaxPrefixValue - sizeof( OLECHAR ) - sizeof( bstr_prefix_t );
 
-    if ( byte_length >= max_length ) { // Invalid byte_length parameter
+    if ( byteLength >= kMaxLength ) { // Invalid byteLength parameter
         return nullptr;
     }
 
     // Length prefix (32 bits, as in Microsoft specs) + string bytes + termination character (32 bits on Linux).
-    auto buffer_size = sizeof( bstr_prefix_t ) + byte_length + sizeof( OLECHAR );
+    auto bufferSize = sizeof( bstr_prefix_t ) + byteLength + sizeof( OLECHAR );
 
     // Allocating memory for storing the BSTR as a byte array.
     // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
-    auto* bstr_buffer = static_cast< byte_t* >( std::calloc( buffer_size, sizeof( byte_t ) ) );
+    auto* bstrBuffer = static_cast< byte_t* >( std::calloc( bufferSize, sizeof( byte_t ) ) );
 
-    if ( bstr_buffer == nullptr ) { // Failed to allocate memory for the BSTR buffer.
+    if ( bstrBuffer == nullptr ) { // Failed to allocate memory for the BSTR buffer.
         return nullptr;
     }
 
     // Storing the number of bytes of the BSTR as a prefix of it.
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    *reinterpret_cast< bstr_prefix_t* >( bstr_buffer ) = byte_length;
+    *reinterpret_cast< bstr_prefix_t* >( bstrBuffer ) = byteLength;
 
-    // The actual BSTR must point after the byte_length prefix.
+    // The actual BSTR must point after the byteLength prefix.
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
-    BSTR result = reinterpret_cast< BSTR >( bstr_buffer + sizeof( bstr_prefix_t ) );
+    BSTR result = reinterpret_cast< BSTR >( bstrBuffer + sizeof( bstr_prefix_t ) );
     if ( str != nullptr ) {
         // Copying byte-by-byte the input string to the BSTR.
         // Note: flawfinder warns about not checking for buffer overflows; this is a false alarm,
         // since are using the correct destination size we just allocated using calloc.
-        std::memcpy( result, str, byte_length ); // flawfinder: ignore
+        std::memcpy( result, str, byteLength ); // flawfinder: ignore
     }
     return result;
 }
 
 auto SysAllocStringLen( const OLECHAR* str, UINT length ) -> BSTR {
-    auto byte_length = static_cast< uint64_t >( length ) * sizeof( OLECHAR );
+    auto byteLength = static_cast< uint64_t >( length ) * sizeof( OLECHAR );
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), byte_length );
+    return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), byteLength );
 }
 
 auto SysAllocStringByteLen( LPCSTR str, UINT length ) -> BSTR {
@@ -105,10 +105,10 @@ void SysFreeString( BSTR bstrString ) { // NOLINT(readability-non-const-paramete
     if ( bstrString != nullptr ) {
         // We must delete the original memory buffer, which starts from the BSTR length prefix
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
-        auto* bstr_buffer = reinterpret_cast< byte_t* >( bstrString ) - sizeof( bstr_prefix_t );
+        auto* bstrBuffer = reinterpret_cast< byte_t* >( bstrString ) - sizeof( bstr_prefix_t );
 
         // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
-        std::free( static_cast< void* >( bstr_buffer ) );
+        std::free( static_cast< void* >( bstrBuffer ) );
     }
 }
 

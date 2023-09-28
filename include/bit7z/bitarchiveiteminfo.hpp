@@ -42,7 +42,7 @@ class BitArchiveItemInfo final : public BitArchiveItem {
         map< BitProperty, BitPropVariant > mItemProperties;
 
         /* BitArchiveItem objects can be created and updated only by BitArchiveReader */
-        explicit BitArchiveItemInfo( uint32_t item_index );
+        explicit BitArchiveItemInfo( uint32_t itemIndex );
 
         void setProperty( BitProperty property, const BitPropVariant& value );
 

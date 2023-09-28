@@ -28,9 +28,9 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
     REQUIRE( narrow( nullptr, 42 ).empty() );
     REQUIRE( narrow( L"", 0 ).empty() );
 
-    const wchar_t* test_input = nullptr;
-    const char* test_output = nullptr;
-    std::tie( test_input, test_output ) = GENERATE( table< const wchar_t*, const char* >(
+    const wchar_t* testInput = nullptr;
+    const char* testOutput = nullptr;
+    std::tie( testInput, testOutput ) = GENERATE( table< const wchar_t*, const char* >(
         {
             NARROWING_TEST_STR( "" ),
             NARROWING_TEST_STR( "h" ),
@@ -42,11 +42,11 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
     ) );
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
-    REQUIRE( narrow( test_input, wcsnlen( test_input, 128 ) ) == test_output );
+    REQUIRE( narrow( testInput, wcsnlen( testInput, 128 ) ) == testOutput );
 #else
     try {
-        const auto test_output_as_string = bit7z::fs::u8path( test_output ).string();
-        REQUIRE( narrow( test_input, wcsnlen( test_input, 128 ) ) == test_output_as_string );
+        const auto testOutputAsString = bit7z::fs::u8path( testOutput ).string();
+        REQUIRE( narrow( testInput, wcsnlen( testInput, 128 ) ) == testOutputAsString );
     } catch(...) {}
 #endif
 }
@@ -57,9 +57,9 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
     using bit7z::widen;
     using std::make_tuple;
 
-    const char* test_input = nullptr;
-    const wchar_t* test_output = nullptr;
-    std::tie( test_input, test_output ) = GENERATE( table< const char*, const wchar_t* >(
+    const char* testInput = nullptr;
+    const wchar_t* testOutput = nullptr;
+    std::tie( testInput, testOutput ) = GENERATE( table< const char*, const wchar_t* >(
         {
             WIDENING_TEST_STR( "" ),
             WIDENING_TEST_STR( "h" ),
@@ -71,77 +71,77 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
     ) );
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
-    REQUIRE( widen( test_input ) == test_output );
+    REQUIRE( widen( testInput ) == testOutput );
 #else
     try {
-        const auto test_input_as_string = bit7z::fs::u8path( test_input ).string();
-        REQUIRE( widen( test_input_as_string ) == test_output );
+        const auto testInputAsString = bit7z::fs::u8path( testInput ).string();
+        REQUIRE( widen( testInputAsString ) == testOutput );
     } catch(...) {}
 #endif
 }
 #endif
 
 using bit7z::check_overflow;
-constexpr auto max_value = ( std::numeric_limits< int64_t >::max )();
-constexpr auto min_value = ( std::numeric_limits< int64_t >::min )();
+constexpr auto kMaxValue = ( std::numeric_limits< int64_t >::max )();
+constexpr auto kMinValue = ( std::numeric_limits< int64_t >::min )();
 
 TEST_CASE( "util: Calling check_overflow on a non-overflowing offset", "[util][check_overflow]" ) { //-V2008
-    REQUIRE_FALSE( check_overflow( max_value, 0 ) );
-    REQUIRE_FALSE( check_overflow( max_value, -1 ) );
-    REQUIRE_FALSE( check_overflow( max_value, -42 ) );
-    REQUIRE_FALSE( check_overflow( max_value, min_value ) );
+    REQUIRE_FALSE( check_overflow( kMaxValue, 0 ) );
+    REQUIRE_FALSE( check_overflow( kMaxValue, -1 ) );
+    REQUIRE_FALSE( check_overflow( kMaxValue, -42 ) );
+    REQUIRE_FALSE( check_overflow( kMaxValue, kMinValue ) );
 
     REQUIRE_FALSE( check_overflow( 42, 42 ) );
     REQUIRE_FALSE( check_overflow( 42, 1 ) );
     REQUIRE_FALSE( check_overflow( 42, 0 ) );
     REQUIRE_FALSE( check_overflow( 42, -1 ) );
     REQUIRE_FALSE( check_overflow( 42, -42 ) );
-    REQUIRE_FALSE( check_overflow( 42, min_value ) );
+    REQUIRE_FALSE( check_overflow( 42, kMinValue ) );
 
     REQUIRE_FALSE( check_overflow( 1, 42 ) );
     REQUIRE_FALSE( check_overflow( 1, 1 ) );
     REQUIRE_FALSE( check_overflow( 1, 0 ) );
     REQUIRE_FALSE( check_overflow( 1, -1 ) );
     REQUIRE_FALSE( check_overflow( 1, -42 ) );
-    REQUIRE_FALSE( check_overflow( 1, min_value ) );
+    REQUIRE_FALSE( check_overflow( 1, kMinValue ) );
 
-    REQUIRE_FALSE( check_overflow( 0, max_value ) );
+    REQUIRE_FALSE( check_overflow( 0, kMaxValue ) );
     REQUIRE_FALSE( check_overflow( 0, 42 ) );
     REQUIRE_FALSE( check_overflow( 0, 1 ) );
     REQUIRE_FALSE( check_overflow( 0, 0 ) );
     REQUIRE_FALSE( check_overflow( 0, -1 ) );
     REQUIRE_FALSE( check_overflow( 0, -42 ) );
-    REQUIRE_FALSE( check_overflow( 0, min_value ) );
+    REQUIRE_FALSE( check_overflow( 0, kMinValue ) );
 
-    REQUIRE_FALSE( check_overflow( -1, max_value ) );
+    REQUIRE_FALSE( check_overflow( -1, kMaxValue ) );
     REQUIRE_FALSE( check_overflow( -1, 42 ) );
     REQUIRE_FALSE( check_overflow( -1, 1 ) );
     REQUIRE_FALSE( check_overflow( -1, 0 ) );
     REQUIRE_FALSE( check_overflow( -1, -1 ) );
     REQUIRE_FALSE( check_overflow( -1, -42 ) );
 
-    REQUIRE_FALSE( check_overflow( -42, max_value ) );
+    REQUIRE_FALSE( check_overflow( -42, kMaxValue ) );
     REQUIRE_FALSE( check_overflow( -42, 42 ) );
     REQUIRE_FALSE( check_overflow( -42, 1 ) );
     REQUIRE_FALSE( check_overflow( -42, 0 ) );
     REQUIRE_FALSE( check_overflow( -42, -1 ) );
     REQUIRE_FALSE( check_overflow( -42, -42 ) );
 
-    REQUIRE_FALSE( check_overflow( min_value, 0 ) );
-    REQUIRE_FALSE( check_overflow( min_value, 1 ) );
-    REQUIRE_FALSE( check_overflow( min_value, 42 ) );
-    REQUIRE_FALSE( check_overflow( min_value, max_value ) );
+    REQUIRE_FALSE( check_overflow( kMinValue, 0 ) );
+    REQUIRE_FALSE( check_overflow( kMinValue, 1 ) );
+    REQUIRE_FALSE( check_overflow( kMinValue, 42 ) );
+    REQUIRE_FALSE( check_overflow( kMinValue, kMaxValue ) );
 }
 
 TEST_CASE( "util: Calling check_overflow on an overflowing offset", "[util][check_overflow]" ) {
-    REQUIRE( check_overflow( max_value, max_value ) );
-    REQUIRE( check_overflow( max_value, 42 ) );
-    REQUIRE( check_overflow( max_value, 1 ) );
-    REQUIRE( check_overflow( 42, max_value ) );
-    REQUIRE( check_overflow( 1, max_value ) );
-    REQUIRE( check_overflow( -1, min_value ) );
-    REQUIRE( check_overflow( -42, min_value ) );
-    REQUIRE( check_overflow( min_value, -1 ) );
-    REQUIRE( check_overflow( min_value, -42 ) );
-    REQUIRE( check_overflow( min_value, min_value ) );
+    REQUIRE( check_overflow( kMaxValue, kMaxValue ) );
+    REQUIRE( check_overflow( kMaxValue, 42 ) );
+    REQUIRE( check_overflow( kMaxValue, 1 ) );
+    REQUIRE( check_overflow( 42, kMaxValue ) );
+    REQUIRE( check_overflow( 1, kMaxValue ) );
+    REQUIRE( check_overflow( -1, kMinValue ) );
+    REQUIRE( check_overflow( -42, kMinValue ) );
+    REQUIRE( check_overflow( kMinValue, -1 ) );
+    REQUIRE( check_overflow( kMinValue, -42 ) );
+    REQUIRE( check_overflow( kMinValue, kMinValue ) );
 }

@@ -41,20 +41,20 @@ using buffer_t = std::vector< byte_t >;
 using index_t = std::ptrdiff_t; //like gsl::index (https://github.com/microsoft/GSL)
 
 template< class Char >
-struct string_traits;
+struct StringTraits;
 
 template<>
-struct string_traits< char > {
+struct StringTraits< char > {
     template< class T >
-    static inline auto convert_to_string( T&& value ) -> std::string {
+    static inline auto convertToString( T&& value ) -> std::string {
         return std::to_string( std::forward< T >( value ) );
     }
 };
 
 template<>
-struct string_traits< wchar_t > {
+struct StringTraits< wchar_t > {
     template< class T >
-    static inline auto convert_to_string( T&& value ) -> std::wstring {
+    static inline auto convertToString( T&& value ) -> std::wstring {
         return std::to_wstring( std::forward< T >( value ) );
     }
 };
@@ -99,7 +99,7 @@ using tregex = std::basic_regex< tchar >;
 
 template< typename T >
 inline auto to_tstring( T&& arg ) -> std::basic_string< tchar > {
-    return string_traits< tchar >::convert_to_string( std::forward< T >( arg ) );
+    return StringTraits< tchar >::convertToString( std::forward< T >( arg ) );
 }
 
 /**

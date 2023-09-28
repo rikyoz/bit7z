@@ -41,13 +41,13 @@ namespace bit7z {
  * @note In all other cases, the value will be the relative path to a "7z.so" in the working directory of the program.
  */
 #ifdef __DOXYGEN__
-constexpr auto default_library = "<platform-dependent value>";
+constexpr auto kDefaultLibrary = "<platform-dependent value>";
 #elif defined( _WIN32 )
-constexpr auto default_library = BIT7Z_STRING( "7z.dll" );
+constexpr auto kDefaultLibrary = BIT7Z_STRING( "7z.dll" );
 #elif defined( __linux__ )
-constexpr auto default_library = "/usr/lib/p7zip/7z.so"; // Default installation path of the p7zip shared library.
+constexpr auto kDefaultLibrary = "/usr/lib/p7zip/7z.so"; // Default installation path of the p7zip shared library.
 #else
-constexpr auto default_library = "./7z.so";
+constexpr auto kDefaultLibrary = "./7z.so";
 #endif
 
 /**
@@ -68,9 +68,9 @@ class Bit7zLibrary final {
          *
          * By default, it searches a 7z.dll in the same path of the application.
          *
-         * @param library_path  the path to the shared library file to be loaded.
+         * @param libraryPath  the path to the shared library file to be loaded.
          */
-        explicit Bit7zLibrary( const tstring& library_path = default_library );
+        explicit Bit7zLibrary( const tstring& libraryPath = kDefaultLibrary );
 
         /**
          * @brief Destructs the Bit7zLibrary object, freeing the loaded shared library.

@@ -25,9 +25,9 @@ ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
       mExtractMode( ExtractMode::Extract ),
       mIsLastItemEncrypted{ false } {}
 
-auto ExtractCallback::finishOperation( OperationResult operation_result ) -> HRESULT {
+auto ExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
     releaseStream();
-    return operation_result != OperationResult::Success ? E_FAIL : S_OK;
+    return operationResult != OperationResult::Success ? E_FAIL : S_OK;
 }
 
 COM_DECLSPEC_NOTHROW

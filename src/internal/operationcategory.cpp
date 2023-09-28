@@ -19,8 +19,8 @@ auto OperationCategory::name() const noexcept -> const char* {
     return "operation";
 }
 
-auto OperationCategory::message( int error_value ) const -> std::string {
-    switch ( static_cast< OperationResult >( error_value ) ) {
+auto OperationCategory::message( int errorValue ) const -> std::string {
+    switch ( static_cast< OperationResult >( errorValue ) ) {
         case OperationResult::CRCError:
             return "CRC failed";
         case OperationResult::CRCErrorEncrypted:
@@ -52,8 +52,8 @@ auto OperationCategory::message( int error_value ) const -> std::string {
     }
 }
 
-auto OperationCategory::default_error_condition( int error_value ) const noexcept -> std::error_condition {
-    switch ( static_cast< OperationResult >( error_value ) ) {
+auto OperationCategory::default_error_condition( int errorValue ) const noexcept -> std::error_condition {
+    switch ( static_cast< OperationResult >( errorValue ) ) {
         case OperationResult::UnsupportedMethod:
             return std::make_error_condition( std::errc::function_not_supported );
         case OperationResult::CRCError:
@@ -71,7 +71,7 @@ auto OperationCategory::default_error_condition( int error_value ) const noexcep
         case OperationResult::OpenErrorEncrypted:
             return std::make_error_condition( std::errc::operation_not_permitted );
         default:
-            return error_category::default_error_condition( error_value );
+            return error_category::default_error_condition( errorValue );
     }
 }
 

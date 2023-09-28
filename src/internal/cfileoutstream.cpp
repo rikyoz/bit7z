@@ -46,7 +46,7 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
                             path_to_tstring( mFilePath ) );
     }
 
-    mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), buffer_size );
+    mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );
 }
 
 auto CFileOutStream::fail() const -> bool {

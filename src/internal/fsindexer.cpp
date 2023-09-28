@@ -17,16 +17,16 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-FSIndexer::FSIndexer( FSItem directory,
-                      tstring filter,
-                      FilterPolicy policy,
-                      SymlinkPolicy symlinkPolicy,
-                      bool only_files )
+FilesystemIndexer::FilesystemIndexer( FilesystemItem directory,
+                                      tstring filter,
+                                      FilterPolicy policy,
+                                      SymlinkPolicy symlinkPolicy,
+                                      bool onlyFiles )
     : mDirItem{ std::move( directory ) },
       mFilter{ std::move( filter ) },
       mPolicy{ policy },
       mSymlinkPolicy{ symlinkPolicy },
-      mOnlyFiles{ only_files } {
+      mOnlyFiles{ onlyFiles } {
     if ( !mDirItem.isDir() ) {
         throw BitException( "Invalid path", std::make_error_code( std::errc::not_a_directory ), mDirItem.name() );
     }
@@ -34,43 +34,43 @@ FSIndexer::FSIndexer( FSItem directory,
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
 // NOLINTNEXTLINE(misc-no-recursion)
-void FSIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
-                                    bool recursive,
-                                    const fs::path& prefix ) {
+void FilesystemIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
+                                            bool recursive,
+                                            const fs::path& prefix ) {
     fs::path path = mDirItem.filesystemPath();
     if ( !prefix.empty() ) {
         path = path / prefix;
     }
-    const bool include_root_path = mFilter.empty() ||
-                                   !mDirItem.filesystemPath().has_parent_path() ||
-                                   mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
-    const bool should_include_matched_items = mPolicy == FilterPolicy::Include;
+    const bool includeRootPath = mFilter.empty() ||
+                                 !mDirItem.filesystemPath().has_parent_path() ||
+                                 mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
+    const bool shouldIncludeMatchedItems = mPolicy == FilterPolicy::Include;
     std::error_code error;
-    for ( const auto& current_entry : fs::directory_iterator( path, error ) ) {
-        auto search_path = include_root_path ? mDirItem.inArchivePath() : fs::path{};
+    for ( const auto& currentEntry : fs::directory_iterator( path, error ) ) {
+        auto searchPath = includeRootPath ? mDirItem.inArchivePath() : fs::path{};
         if ( !prefix.empty() ) {
-            search_path = search_path.empty() ? prefix : search_path / prefix;
+            searchPath = searchPath.empty() ? prefix : searchPath / prefix;
         }
 
-        const FSItem current_item{ current_entry, search_path, mSymlinkPolicy };
+        const FilesystemItem currentItem{ currentEntry, searchPath, mSymlinkPolicy };
         /* An item matches if:
          *  - Its name matches the wildcard pattern, and
          *  - Either is a file, or we are interested also to include folders in the index.
          *
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
-        const bool item_matches = ( !mOnlyFiles || !current_item.isDir() ) &&
-                                  fsutil::wildcard_match( mFilter, current_item.name() );
-        if ( item_matches == should_include_matched_items ) {
-            result.emplace_back( std::make_unique< FSItem >( current_item ) );
+        const bool itemMatches = ( !mOnlyFiles || !currentItem.isDir() ) &&
+                                 fsutil::wildcard_match( mFilter, currentItem.name() );
+        if ( itemMatches == shouldIncludeMatchedItems ) {
+            result.emplace_back( std::make_unique< FilesystemItem >( currentItem ) );
         }
 
-        if ( current_item.isDir() && ( recursive || ( item_matches == should_include_matched_items ) ) ) {
+        if ( currentItem.isDir() && ( recursive || ( itemMatches == shouldIncludeMatchedItems ) ) ) {
             //currentItem is a directory, and we must list it only if:
             // > indexing is done recursively
             // > indexing is not recursive, but the directory name matched the filter.
-            const fs::path next_dir = prefix.empty() ?
-                                      current_item.filesystemName() : prefix / current_item.filesystemName();
-            listDirectoryItems( result, true, next_dir );
+            const fs::path nextDir = prefix.empty() ?
+                                     currentItem.filesystemName() : prefix / currentItem.filesystemName();
+            listDirectoryItems( result, true, nextDir );
         }
     }
 }

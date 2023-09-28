@@ -19,9 +19,9 @@ auto GenericInputItem::hasNewData() const noexcept -> bool {
     return true;
 }
 
-auto GenericInputItem::itemProperty( BitProperty propID ) const -> BitPropVariant {
+auto GenericInputItem::itemProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant prop;
-    switch ( propID ) {
+    switch ( property ) {
         case BitProperty::Path:
             prop = path_to_wide_string( inArchivePath() );
             break;

@@ -96,7 +96,7 @@ class BitArchiveItem : public BitGenericItem {
     protected:
         uint32_t mItemIndex; //Note: it is not const since the subclass BitArchiveItemOffset can increment it!
 
-        explicit BitArchiveItem( uint32_t item_index ) noexcept;
+        explicit BitArchiveItem( uint32_t itemIndex ) noexcept;
 };
 
 }  // namespace bit7z

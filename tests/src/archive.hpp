@@ -7,8 +7,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifndef BIT7Z_ARCHIVE_HPP
-#define BIT7Z_ARCHIVE_HPP
+#ifndef ARCHIVE_HPP
+#define ARCHIVE_HPP
 
 #include "filesystem.hpp"
 #include "format.hpp"
@@ -19,9 +19,9 @@ namespace test {
 using filesystem::ArchiveContent;
 
 class TestInputArchive {
-    TestInputFormat m_format;
-    std::size_t m_packedSize;
-    const ArchiveContent& m_content;
+    TestInputFormat mFormat;
+    std::size_t mPackedSize;
+    const ArchiveContent& mContent;
 
 public:
     TestInputArchive( std::string extension,
@@ -41,4 +41,4 @@ public:
 } // namespace test
 } // namespace bit7z
 
-#endif //BIT7Z_ARCHIVE_HPP
+#endif //ARCHIVE_HPP

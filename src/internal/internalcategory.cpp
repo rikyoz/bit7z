@@ -19,8 +19,8 @@ auto InternalCategory::name() const noexcept -> const char* {
     return "bit7z";
 }
 
-auto InternalCategory::message( int error_value ) const -> std::string {
-    switch ( static_cast< BitError >( error_value ) ) {
+auto InternalCategory::message( int errorValue ) const -> std::string {
+    switch ( static_cast< BitError >( errorValue ) ) {
         case BitError::Fail:
             return "Unspecified error.";
         case BitError::FilterNotSpecified:
@@ -66,8 +66,8 @@ auto InternalCategory::message( int error_value ) const -> std::string {
     }
 }
 
-auto InternalCategory::default_error_condition( int error_value ) const noexcept -> std::error_condition {
-    switch ( static_cast< BitError >( error_value ) ) {
+auto InternalCategory::default_error_condition( int errorValue ) const noexcept -> std::error_condition {
+    switch ( static_cast< BitError >( errorValue ) ) {
         case BitError::FilterNotSpecified:
         case BitError::FormatFeatureNotSupported:
         case BitError::IndicesNotSpecified:
@@ -91,7 +91,7 @@ auto InternalCategory::default_error_condition( int error_value ) const noexcept
         case BitError::WrongUpdateMode:
             return std::make_error_condition( std::errc::operation_not_permitted );
         default:
-            return error_category::default_error_condition( error_value );
+            return error_category::default_error_condition( errorValue );
     }
 }
 

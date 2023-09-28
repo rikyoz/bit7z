@@ -23,7 +23,7 @@ using std::vector;
 
 class CBufferOutStream final : public IOutStream, public CMyUnknownImp {
     public:
-        explicit CBufferOutStream( vector< byte_t >& out_buffer );
+        explicit CBufferOutStream( vector< byte_t >& outBuffer );
 
         CBufferOutStream( const CBufferOutStream& ) = delete;
 

@@ -16,11 +16,11 @@ using namespace bit7z;
 
 BitAbstractArchiveHandler::BitAbstractArchiveHandler( const Bit7zLibrary& lib,
                                                       tstring password,
-                                                      OverwriteMode overwrite_mode )
+                                                      OverwriteMode overwriteMode )
     : mLibrary{ lib },
       mPassword{ std::move( password ) },
       mRetainDirectories{ true },
-      mOverwriteMode{ overwrite_mode } {}
+      mOverwriteMode{ overwriteMode } {}
 
 auto BitAbstractArchiveHandler::library() const noexcept -> const Bit7zLibrary& {
     return mLibrary;

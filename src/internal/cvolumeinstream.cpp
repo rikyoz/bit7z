@@ -14,8 +14,8 @@
 
 namespace bit7z {
 
-CVolumeInStream::CVolumeInStream( const fs::path& volume_path, uint64_t global_offset )
-    : CFileInStream{ volume_path }, mSize{ fs::file_size( volume_path ) }, mGlobalOffset{ global_offset } {}
+CVolumeInStream::CVolumeInStream( const fs::path& volumePath, uint64_t globalOffset )
+    : CFileInStream{ volumePath }, mSize{ fs::file_size( volumePath ) }, mGlobalOffset{ globalOffset } {}
 
 BIT7Z_NODISCARD
 auto CVolumeInStream::globalOffset() const -> uint64_t {

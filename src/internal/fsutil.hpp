@@ -47,8 +47,8 @@ auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noe
 
 auto set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
 
-BIT7Z_NODISCARD auto in_archive_path( const fs::path& file_path,
-                                      const fs::path& search_path = fs::path{} ) -> fs::path;
+BIT7Z_NODISCARD auto in_archive_path( const fs::path& filePath,
+                                      const fs::path& searchPath = fs::path{} ) -> fs::path;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 

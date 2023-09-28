@@ -34,7 +34,7 @@ struct GenericInputItem : public BitGenericItem {
 
     BIT7Z_NODISCARD virtual auto hasNewData() const noexcept -> bool;
 
-    BIT7Z_NODISCARD auto itemProperty( BitProperty propID ) const -> BitPropVariant override;
+    BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
     ~GenericInputItem() override = default;
 };

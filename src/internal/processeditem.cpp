@@ -18,10 +18,10 @@ namespace bit7z {
 ProcessedItem::ProcessedItem()
     : mModifiedTime{}, mIsModifiedTimeDefined{ false }, mAttributes{ 0 }, mAreAttributesDefined{ false } {}
 
-void ProcessedItem::loadItemInfo( const BitInputArchive& input_archive, std::uint32_t item_index ) {
-    loadFilePath( input_archive, item_index );
-    loadAttributes( input_archive, item_index );
-    loadModifiedTime( input_archive, item_index );
+void ProcessedItem::loadItemInfo( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
+    loadFilePath( inputArchive, itemIndex );
+    loadAttributes( inputArchive, itemIndex );
+    loadModifiedTime( inputArchive, itemIndex );
 }
 
 auto ProcessedItem::path() const -> fs::path {
@@ -36,8 +36,8 @@ auto ProcessedItem::modifiedTime() const -> FILETIME {
     return mModifiedTime;
 }
 
-void ProcessedItem::loadFilePath( const BitInputArchive& input_archive, uint32_t item_index ) {
-    const BitPropVariant prop = input_archive.itemProperty( item_index, BitProperty::Path );
+void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
+    const BitPropVariant prop = inputArchive.itemProperty( itemIndex, BitProperty::Path );
 
     switch ( prop.type() ) {
         case BitPropVariantType::Empty:
@@ -53,12 +53,12 @@ void ProcessedItem::loadFilePath( const BitInputArchive& input_archive, uint32_t
     }
 }
 
-void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32_t item_index ) {
+void ProcessedItem::loadAttributes( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
     mAttributes = 0;
     mAreAttributesDefined = false;
 
     // Get posix attributes
-    const BitPropVariant posixAttributes = input_archive.itemProperty( item_index, BitProperty::PosixAttrib );
+    const BitPropVariant posixAttributes = inputArchive.itemProperty( itemIndex, BitProperty::PosixAttrib );
     switch ( posixAttributes.type() ) {
         case BitPropVariantType::Empty:
             break;
@@ -73,7 +73,7 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
     }
 
     // Get attributes
-    const BitPropVariant attributes = input_archive.itemProperty( item_index, BitProperty::Attrib );
+    const BitPropVariant attributes = inputArchive.itemProperty( itemIndex, BitProperty::Attrib );
     switch ( attributes.type() ) {
         case BitPropVariantType::Empty:
             break;
@@ -88,8 +88,8 @@ void ProcessedItem::loadAttributes( const BitInputArchive& input_archive, uint32
     }
 }
 
-void ProcessedItem::loadModifiedTime( const BitInputArchive& input_archive, uint32_t item_index ) {
-    const BitPropVariant modifiedTime = input_archive.itemProperty( item_index, BitProperty::MTime );
+void ProcessedItem::loadModifiedTime( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
+    const BitPropVariant modifiedTime = inputArchive.itemProperty( itemIndex, BitProperty::MTime );
 
     switch ( modifiedTime.type() ) {
         case BitPropVariantType::Empty:

@@ -32,7 +32,7 @@
 
 using namespace bit7z;
 
-Bit7zLibrary::Bit7zLibrary( const tstring& library_path ) : mLibrary( Bit7zLoadLibrary( library_path ) ) {
+Bit7zLibrary::Bit7zLibrary( const tstring& libraryPath ) : mLibrary( Bit7zLoadLibrary( libraryPath ) ) {
     if ( mLibrary == nullptr ) {
         throw BitException( "Failed to load the 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
     }
@@ -82,30 +82,30 @@ constexpr auto interface_id< IOutArchive >() -> const GUID& {
 
 template< typename T >
 BIT7Z_NODISCARD
-auto createArchiveObject( FARPROC creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
+auto create_archive_object( FARPROC creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
-    const auto format_ID = format_guid( format );
+    const auto formatID = format_guid( format );
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    return createObject( &format_ID, &interface_id< T >(), reinterpret_cast< void** >( object ) );
+    return createObject( &formatID, &interface_id< T >(), reinterpret_cast< void** >( object ) );
 }
 
 BIT7Z_NODISCARD
 auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive > {
-    CMyComPtr< IInArchive > in_archive{};
-    const HRESULT res = createArchiveObject( mCreateObjectFunc, format, &in_archive );
-    if ( res != S_OK || in_archive == nullptr ) {
+    CMyComPtr< IInArchive > inArchive{};
+    const HRESULT res = create_archive_object( mCreateObjectFunc, format, &inArchive );
+    if ( res != S_OK || inArchive == nullptr ) {
         throw BitException( "Failed to initialize the input archive object", make_hresult_code( res ) );
     }
-    return in_archive;
+    return inArchive;
 }
 
 BIT7Z_NODISCARD
 auto Bit7zLibrary::initOutArchive( const BitInOutFormat& format ) const -> CMyComPtr< IOutArchive > {
-    CMyComPtr< IOutArchive > out_archive{};
-    const HRESULT res = createArchiveObject( mCreateObjectFunc, format, &out_archive );
-    if ( res != S_OK || out_archive == nullptr ) {
+    CMyComPtr< IOutArchive > outArchive{};
+    const HRESULT res = create_archive_object( mCreateObjectFunc, format, &outArchive );
+    if ( res != S_OK || outArchive == nullptr ) {
         throw BitException( "Failed to initialize the output archive object", make_hresult_code( res ) );
     }
-    return out_archive;
+    return outArchive;
 }

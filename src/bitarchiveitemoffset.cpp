@@ -16,8 +16,8 @@
 
 using namespace bit7z;
 
-BitArchiveItemOffset::BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept
-    : BitArchiveItem( item_index ), mArc( &item_arc ) {}
+BitArchiveItemOffset::BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept
+    : BitArchiveItem( itemIndex ), mArc( &inputArchive ) {}
 
 auto BitArchiveItemOffset::operator++() noexcept -> BitArchiveItemOffset& {
     ++mItemIndex;
@@ -25,9 +25,9 @@ auto BitArchiveItemOffset::operator++() noexcept -> BitArchiveItemOffset& {
 }
 
 auto BitArchiveItemOffset::operator++( int ) noexcept -> BitArchiveItemOffset { // NOLINT(cert-dcl21-cpp)
-    BitArchiveItemOffset old_value = *this;
+    BitArchiveItemOffset oldValue = *this;
     ++( *this );
-    return old_value;
+    return oldValue;
 }
 
 auto BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const noexcept -> bool {

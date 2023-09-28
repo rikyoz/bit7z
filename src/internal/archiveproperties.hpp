@@ -34,8 +34,8 @@ class ArchiveProperties final {
             mValues.emplace_back( value );
         }
 
-        void addProperties( const std::map< std::wstring, BitPropVariant >& other_properties ) {
-            for ( const auto& entry : other_properties ) {
+        void addProperties( const std::map< std::wstring, BitPropVariant >& otherProperties ) {
+            for ( const auto& entry : otherProperties ) {
                 mNames.emplace_back( entry.first.c_str() );
                 mValues.emplace_back( entry.second );
             }

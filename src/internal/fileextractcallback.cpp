@@ -18,8 +18,6 @@
 using namespace std;
 using namespace NWindows;
 
-constexpr auto kCannotDeleteOutput = "Cannot delete output file";
-
 namespace bit7z {
 
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath )
@@ -32,8 +30,8 @@ void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!
 }
 
-auto FileExtractCallback::finishOperation( OperationResult operation_result ) -> HRESULT {
-    const HRESULT result = operation_result != OperationResult::Success ? E_FAIL : S_OK;
+auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
+    const HRESULT result = operationResult != OperationResult::Success ? E_FAIL : S_OK;
     if ( mFileOutStream == nullptr ) {
         return result;
     }
@@ -70,6 +68,8 @@ auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
     return filePath;
 }
 
+constexpr auto kCannotDeleteOutput = "Cannot delete output file";
+
 auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
@@ -103,9 +103,9 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
         fs::create_directories( mFilePathOnDisk.parent_path(), error );
 
         if ( fs::exists( mFilePathOnDisk, error ) ) {
-            const OverwriteMode overwrite_mode = mHandler.overwriteMode();
+            const OverwriteMode overwriteMode = mHandler.overwriteMode();
 
-            switch ( overwrite_mode ) {
+            switch ( overwriteMode ) {
                 case OverwriteMode::None: {
                     throw BitException( kCannotDeleteOutput,
                                         make_hresult_code( E_ABORT ),
