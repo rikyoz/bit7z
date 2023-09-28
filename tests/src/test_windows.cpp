@@ -62,6 +62,7 @@ TEST_CASE( "winapi: Allocating BSTR string from nullptr C strings", "[winapi][st
         REQUIRE( SysAllocStringByteLen( nullptr, length ) == nullptr );
     }
 
+#if INTPTR_MAX == INT64_MAX
     SECTION( "Using a length value that wraps around" ) {
         auto length = 0xC0000000;
         REQUIRE( SysAllocStringLen( nullptr, length ) == nullptr );
@@ -76,6 +77,7 @@ TEST_CASE( "winapi: Allocating BSTR string from nullptr C strings", "[winapi][st
         REQUIRE( SysStringLen( string ) == length );
         REQUIRE_NOTHROW( SysFreeString( string ) );
     }
+#endif
 }
 
 TEST_CASE( "winapi: Handling nullptr BSTR strings", "[winapi][nullptr BSTR]" ) {

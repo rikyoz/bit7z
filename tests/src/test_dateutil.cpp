@@ -32,8 +32,8 @@ TEST_CASE( "fsutil: Date conversion from std::time_t to FILETIME", "[fsutil][dat
     ) );
 
     DYNAMIC_SECTION( "Date: " << std::get< 0 >( test_date ) ) {
-        std::time_t input = std::get< 1 >( test_date );
-        FILETIME expected_output = std::get< 2 >( test_date );
+        const std::time_t input = std::get< 1 >( test_date );
+        const FILETIME expected_output = std::get< 2 >( test_date );
 
         auto output = time_to_FILETIME( input );
         REQUIRE( output.dwHighDateTime == expected_output.dwHighDateTime );
@@ -55,10 +55,10 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
     ) );
 
     DYNAMIC_SECTION( "Date: " << std::get< 0 >( test_date ) ) {
-        FILETIME input = std::get< 1 >( test_date );
-        std::time_t expected_output = std::get< 2 >( test_date );
+        const FILETIME input = std::get< 1 >( test_date );
+        const std::time_t expected_output = std::get< 2 >( test_date );
 
-        std::time_t output;
+        std::time_t output{};
 
 #ifndef _WIN32
         SECTION( "FILETIME to std::filesystem::file_time_type" ) {

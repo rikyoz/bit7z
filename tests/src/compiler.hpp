@@ -80,7 +80,7 @@ constexpr auto standard_library_version = "N/A";
 #ifdef __GLIBC__
 constexpr auto c_runtime = "glibc";
 #elif defined( _UCRT )
-constexpr auto c_runtime = "ucrt";
+constexpr auto c_runtime = "ucrt + vcruntime";
 #elif defined( __MSVCRT_VERSION__ )
 constexpr auto c_runtime = "msvcrt";
 #else
