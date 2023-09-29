@@ -15,10 +15,10 @@
 
 #include <iostream>
 
-#include "compiler.hpp"
-#include "filesystem.hpp"
-#include "flags.hpp"
-#include "shared_lib.hpp"
+#include "utils/compiler.hpp"
+#include "utils/filesystem.hpp"
+#include "utils/flags.hpp"
+#include "utils/shared_lib.hpp"
 
 auto main( int argc, char* argv[] ) -> int {
     using namespace bit7z::test;

@@ -14,9 +14,9 @@
 
 #include <catch2/catch.hpp>
 
-#include "format.hpp"
-#include "filesystem.hpp"
-#include "shared_lib.hpp"
+#include "utils/format.hpp"
+#include "utils/filesystem.hpp"
+#include "utils/shared_lib.hpp"
 
 #include <bitarchivereader.hpp>
 #include <bitexception.hpp>

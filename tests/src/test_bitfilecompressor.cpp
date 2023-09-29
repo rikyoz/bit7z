@@ -12,9 +12,9 @@
 #include <catch2/catch.hpp>
 
 #include <bit7z/bitfilecompressor.hpp>
+#include <bit7z/bitformat.hpp>
 
-#include "bitformat.hpp"
-#include "shared_lib.hpp"
+#include "utils/shared_lib.hpp"
 
 using namespace bit7z;
 using bit7z::Bit7zLibrary;

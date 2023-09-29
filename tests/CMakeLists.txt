@@ -9,8 +9,8 @@ message( STATUS "Testing filesystem-related classes: ${BIT7Z_TESTS_FILESYSTEM}" 
 
 # base source files
 set( SOURCE_FILES
-     src/archive.cpp
-     src/filesystem.cpp
+     src/utils/archive.cpp
+     src/utils/filesystem.cpp
      src/main.cpp )
 
 # public API test sources

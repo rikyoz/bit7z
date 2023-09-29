@@ -12,7 +12,7 @@
 
 #include <catch2/catch.hpp>
 
-#include "filesystem.hpp"
+#include "utils/filesystem.hpp"
 
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bititemsvector.hpp>

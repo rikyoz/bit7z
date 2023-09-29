@@ -17,7 +17,7 @@
 #include <bit7z/bitexception.hpp>
 #endif
 
-#include "shared_lib.hpp"
+#include "utils/shared_lib.hpp"
 
 namespace bit7z {
 namespace test {

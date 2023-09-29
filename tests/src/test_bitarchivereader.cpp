@@ -11,10 +11,10 @@
  */
 #include <catch2/catch.hpp>
 
-#include "archive.hpp"
-#include "filesystem.hpp"
-#include "format.hpp"
-#include "shared_lib.hpp"
+#include "utils/archive.hpp"
+#include "utils/filesystem.hpp"
+#include "utils/format.hpp"
+#include "utils/shared_lib.hpp"
 
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>

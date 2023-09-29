@@ -10,8 +10,8 @@
 #ifndef FILESYSTEM_HPP
 #define FILESYSTEM_HPP
 
-#include <bitfs.hpp>
-#include <bittypes.hpp>
+#include <bit7z/bitfs.hpp>
+#include <bit7z/bittypes.hpp>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -34,7 +34,7 @@
 
 #include <catch2/catch.hpp>
 #include <internal/fs.hpp>
-#include "internal/util.hpp"
+#include <internal/util.hpp>
 
 #if defined(__MINGW32__) && defined(_WIO_DEFINED)
 #include "internal/fsutil.hpp"
