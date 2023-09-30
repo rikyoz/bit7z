@@ -220,6 +220,12 @@ The newest bit7z v4 introduced some significant breaking changes to the library'
 + The old `BitCompressor` class is now called `BitFileCompressor`.
   + Now `BitCompressor` is just the name of a template class for all the compression classes.
 + The `ProgressCallback` now must return a `bool` value indicating whether the current operation can continue (`true`) or not (`false`).
++ The project structure changed:
+  + Public API headers moved from `include/` to the `include/bit7z/` folder, so include directives now need to prepend `bit7z/` to the included header name (e.g., `#include <bit7z/bitfileextractor.hpp>`).
+    + Even though it is a bit verbose, it is a typical structure for C and C++ libraries, and it makes explicit which third-party library a header file belongs to.
+  + By default, the output folder of bit7z is now `lib/<architecture>/`; if the CMake generator is multi-config (e.g., Visual Studio generators), the default output folder is `lib/<architecture>/<build type>/`.
+    + Optionally, you can force using the "Visual Studio style" output path by enabling the `BIT7Z_VS_LIBNAME_OUTDIR_STYLE` CMake option.
+  + Third-party dependencies are no longer handled using git submodules but are automatically downloaded using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake) when configuring/using the library via CMake.
 
 </details>
 
