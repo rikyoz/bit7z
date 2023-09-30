@@ -32,12 +32,13 @@
 #include "internal/formatdetect.hpp"
 #endif
 
-using namespace bit7z;
 using namespace NWindows;
 using namespace NArchive;
 
+namespace bit7z {
+
 void extract_arc( IInArchive* inArchive,
-                  const vector< uint32_t >& indices,
+                  const std::vector< uint32_t >& indices,
                   ExtractCallback* extractCallback,
                   ExtractMode mode = ExtractMode::Extract ) {
     const uint32_t* itemIndices = indices.empty() ? nullptr : indices.data();
@@ -108,7 +109,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* inStre
 
 inline auto detect_format( const BitInFormat& format, const fs::path& arcPath ) -> const BitInFormat* {
 #ifdef BIT7Z_AUTO_FORMAT
-    return ( (format) == BitFormat::Auto ? &detect_format_from_extension( arcPath ) : &(format) );
+    return ( ( format == BitFormat::Auto ) ? &detect_format_from_extension( arcPath ) : &format );
 #else
     (void)arcPath; // unused when auto format detection is enabled!
     return &format;
@@ -385,3 +386,5 @@ auto BitInputArchive::ConstIterator::operator->() noexcept -> BitInputArchive::C
 
 BitInputArchive::ConstIterator::ConstIterator( uint32_t itemIndex, const BitInputArchive& itemArchive ) noexcept
     : mItemOffset( itemIndex, itemArchive ) {}
+
+}

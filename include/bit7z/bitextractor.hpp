@@ -244,7 +244,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         void extractMatchingFilter( Input inArchive,
                                     const tstring& outDir,
                                     FilterPolicy policy,
-                                    const function< bool( const tstring& ) >& filter ) const {
+                                    const std::function< bool( const tstring& ) >& filter ) const {
             BitInputArchive inputArchive( *this, inArchive );
 
             vector< uint32_t > matchedIndices;
@@ -272,7 +272,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         void extractMatchingFilter( Input inArchive,
                                     vector< byte_t >& outBuffer,
                                     FilterPolicy policy,
-                                    const function< bool( const tstring& ) >& filter ) const {
+                                    const std::function< bool( const tstring& ) >& filter ) const {
             BitInputArchive inputArchive( *this, inArchive );
 
             const bool shouldExtractMatchedItem = policy == FilterPolicy::Include;

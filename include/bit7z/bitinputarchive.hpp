@@ -252,8 +252,6 @@ class BitInputArchive {
         void testItem( uint32_t index ) const;
 
     protected:
-        auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
-
         auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
 
         BIT7Z_NODISCARD auto close() const noexcept -> HRESULT;
@@ -269,6 +267,8 @@ class BitInputArchive {
         const BitInFormat* mDetectedFormat;
         const BitAbstractArchiveHandler& mArchiveHandler;
         tstring mArchivePath;
+
+        auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
 
     public:
         /**
