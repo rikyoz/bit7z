@@ -3,32 +3,35 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/extractcallback.hpp"
+#include <exception>
 
 #include "bitexception.hpp"
+#include "internal/extractcallback.hpp"
+#include "internal/operationcategory.hpp"
 #include "internal/util.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
     : Callback( inputArchive.handler() ),
       mInputArchive( inputArchive ),
-      mExtractMode( ExtractMode::Extract ) {}
+      mExtractMode( ExtractMode::Extract ),
+      mIsLastItemEncrypted{ false } {}
 
-HRESULT ExtractCallback::finishOperation( OperationResult operation_result ) {
+auto ExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
     releaseStream();
-    return operation_result != OperationResult::Success ? E_FAIL : S_OK;
+    return operationResult != OperationResult::Success ? E_FAIL : S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
+STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) noexcept {
     if ( mHandler.totalCallback() ) {
         mHandler.totalCallback()( size );
     }
@@ -36,7 +39,7 @@ STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
+STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) noexcept {
     if ( mHandler.progressCallback() && completeValue != nullptr ) {
         return mHandler.progressCallback()( *completeValue ) ? S_OK : E_ABORT;
     }
@@ -44,7 +47,7 @@ STDMETHODIMP ExtractCallback::SetCompleted( const UInt64* completeValue ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) {
+STDMETHODIMP ExtractCallback::SetRatioInfo( const UInt64* inSize, const UInt64* outSize ) noexcept {
     if ( mHandler.ratioCallback() && inSize != nullptr && outSize != nullptr ) {
         mHandler.ratioCallback()( *inSize, *outSize );
     }
@@ -60,9 +63,15 @@ STDMETHODIMP ExtractCallback::PrepareOperation( Int32 askExtractMode ) noexcept 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) try {
+STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode ) noexcept
+try {
     *outStream = nullptr;
     releaseStream();
+
+    auto isEncrypted = itemProperty( index, BitProperty::Encrypted );
+    if ( isEncrypted.isBool() ) {
+        mIsLastItemEncrypted = isEncrypted.getBool();
+    }
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
@@ -73,47 +82,44 @@ STDMETHODIMP ExtractCallback::GetStream( UInt32 index, ISequentialOutStream** ou
     mErrorException = std::make_exception_ptr( ex );
     return ex.hresultCode();
 } catch ( const std::runtime_error& ) {
-    mErrorException = std::make_exception_ptr( BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) ) );
+    mErrorException = std::make_exception_ptr(
+        BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) ) );
     return E_ABORT;
 }
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) {
-    using namespace NArchive::NExtract;
-    constexpr auto kUnsupportedMethod = "Unsupported Method";
-    constexpr auto kCRCFailed = "CRC Failed";
-    constexpr auto kDataError = "Data Error";
-    constexpr auto kUnknownError = "Unknown Error";
-
-    auto result = static_cast< OperationResult >( operationResult );
-    if ( result != OperationResult::Success ) {
-        switch ( result ) {
-            case OperationResult::UnsupportedMethod:
-                mErrorException = std::make_exception_ptr( BitException( kUnsupportedMethod,
-                                                                         make_hresult_code( E_FAIL ) ) );
-                break;
-
-            case OperationResult::CRCError:
-                mErrorException = std::make_exception_ptr( BitException( kCRCFailed,
-                                                                         make_hresult_code( E_FAIL ) ) );
-                break;
-
-            case OperationResult::DataError:
-                mErrorException = std::make_exception_ptr( BitException( kDataError,
-                                                                         make_hresult_code( E_FAIL ) ) );
-                break;
-
-            default:
-                mErrorException = std::make_exception_ptr( BitException( kUnknownError,
-                                                                         make_hresult_code( E_FAIL ) ) );
+auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> OperationResult {
+    if ( isLastItemEncrypted ) {
+        if ( operationResult == NOperationResult::kCRCError ) {
+            return OperationResult::CRCErrorEncrypted;
         }
+
+        if ( operationResult == NOperationResult::kDataError ) {
+            return OperationResult::DataErrorEncrypted;
+        }
+    }
+
+    return static_cast< OperationResult >( operationResult );
+}
+
+constexpr auto kTestFailed = "Failed to test the archive";
+constexpr auto kExtractFailed = "Failed to extract the archive";
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexcept {
+    using namespace NArchive::NExtract;
+
+    auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
+    if ( result != OperationResult::Success ) {
+        const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
+        auto error = make_error_code( result );
+        mErrorException = std::make_exception_ptr( BitException( msg, error ) );
     }
 
     return finishOperation( result );
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         if ( mHandler.passwordCallback() ) {
@@ -121,8 +127,9 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
         }
 
         if ( pass.empty() ) {
-            mErrorException = std::make_exception_ptr( BitException( kPasswordNotDefined,
-                                                                     make_hresult_code( E_FAIL ) ) );
+            const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
+            auto error = make_error_code( OperationResult::EmptyPassword );
+            mErrorException = std::make_exception_ptr( BitException( msg, error ) );
             return E_FAIL;
         }
     } else {
@@ -131,3 +138,5 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) {
 
     return StringToBstr( pass.c_str(), password );
 }
+
+} // namespace bit7z

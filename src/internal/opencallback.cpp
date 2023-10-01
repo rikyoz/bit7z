@@ -3,24 +3,22 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/opencallback.hpp"
-
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/opencallback.hpp"
 #include "internal/util.hpp"
 
-using namespace bit7z;
-using namespace bit7z::filesystem;
+namespace bit7z {
 
 OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const fs::path& filename )
-    : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ) {}
+    : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ), mPasswordWasAsked{ false } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) noexcept {
@@ -33,17 +31,17 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
+STDMETHODIMP OpenCallback::GetProperty( PROPID property, PROPVARIANT* value ) noexcept try {
     BitPropVariant prop;
     if ( mSubArchiveMode ) {
-        if ( propID == kpidName ) {
+        if ( property == kpidName ) {
             prop = mSubArchiveName;
             // case kpidSize: prop = _subArchiveSize; break; // we don't use it for now.
         }
     } else {
-        switch ( propID ) {
+        switch ( property ) {
             case kpidName:
-                prop = fs::path( mFileItem.name() ).wstring();
+                prop = path_to_wide_string( mFileItem.filesystemName() );
                 break;
             case kpidIsDir:
                 prop = mFileItem.isDir();
@@ -70,10 +68,12 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) {
     *value = prop;
     prop.bstrVal = nullptr;
     return S_OK;
+} catch ( const BitException& ex ) {
+    return ex.hresultCode();
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) {
+STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream ) noexcept {
     try {
         *inStream = nullptr;
         if ( mSubArchiveMode ) {
@@ -82,18 +82,18 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
-        auto stream_path = fs::path{ mFileItem.path() };
+        fs::path streamPath = mFileItem.filesystemPath();
         if ( name != nullptr ) {
-            stream_path = stream_path.parent_path();
-            stream_path.append( name );
-            const auto stream_status = fs::status( stream_path );
-            if ( !fs::exists( stream_status ) || fs::is_directory( stream_status ) ) {  // avoid exceptions using status
+            streamPath = streamPath.parent_path();
+            streamPath.append( name );
+            const auto streamStatus = fs::status( streamPath );
+            if ( !fs::exists( streamStatus ) || fs::is_directory( streamStatus ) ) {  // avoid exceptions using status
                 return S_FALSE;
             }
         }
 
         try {
-            auto inStreamTemp = bit7z::make_com< CFileInStream >( stream_path );
+            auto inStreamTemp = bit7z::make_com< CFileInStream >( streamPath );
             *inStream = inStreamTemp.Detach();
         } catch ( const BitException& ex ) {
             return ex.nativeCode();
@@ -105,7 +105,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
+STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) noexcept {
     mSubArchiveMode = true;
     try {
         mSubArchiveName = name;
@@ -116,7 +116,9 @@ STDMETHODIMP OpenCallback::SetSubArchiveName( const wchar_t* name ) {
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
+STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
+    mPasswordWasAsked = true;
+
     std::wstring pass;
     if ( !mHandler.isPasswordDefined() ) {
         if ( mHandler.passwordCallback() ) {
@@ -132,3 +134,9 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) {
 
     return StringToBstr( pass.c_str(), password );
 }
+
+auto OpenCallback::passwordWasAsked() const -> bool {
+    return mPasswordWasAsked;
+}
+
+} // namespace bit7z

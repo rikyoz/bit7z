@@ -3,32 +3,50 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/util.hpp"
 #include <locale>
 
-#ifndef WIN32
+#include "internal/util.hpp"
+
+#ifdef _WIN32
+#ifdef BIT7Z_USE_SYSTEM_CODEPAGE
+#define CODEPAGE GetACP()
+#else
+#define CODEPAGE CP_UTF8
+#endif
+#else
+#ifndef BIT7Z_USE_STANDARD_FILESYSTEM
+// GCC 4.9 doesn't have the <codecvt> header; as a workaround,
+// we use GHC filesystem's utility functions for string conversions.
+#include "internal/fs.hpp"
+#else
+// The <codecvt> header has been deprecated in C++17; however, there's no real replacement
+// (excluding third-party libraries); hence, for now we just disable the deprecation warnings (only here).
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <codecvt>
 using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
+#endif
 
-using namespace bit7z;
+namespace bit7z {
 
-std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
-    if ( wideString == nullptr ) {
+#if !defined( _WIN32 ) || !defined( BIT7Z_USE_NATIVE_STRING )
+auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
+    if ( wideString == nullptr || size == 0 ) {
         return "";
     }
-#ifdef WIN32
-    const int narrowStringSize = WideCharToMultiByte( CP_UTF8,
-                                                      0,
+#ifdef _WIN32
+    const int narrowStringSize = WideCharToMultiByte( CODEPAGE,
+                                                      WC_NO_BEST_FIT_CHARS,
                                                       wideString,
-                                                      ( size != 0U ? static_cast<int>( size ) : -1 ),
+                                                      static_cast< int >( size ),
                                                       nullptr,
                                                       0,
                                                       nullptr,
@@ -38,18 +56,18 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
     }
 
     std::string result( narrowStringSize, 0 );
-    WideCharToMultiByte( CP_UTF8,
-                         0,
+    WideCharToMultiByte( CODEPAGE,
+                         WC_NO_BEST_FIT_CHARS,
                          wideString,
                          -1,
                          &result[ 0 ],  // NOLINT(readability-container-data-pointer)
-                         static_cast<int>( narrowStringSize ),
+                         static_cast< int >( narrowStringSize ),
                          nullptr,
                          nullptr );
-    if ( size == 0U ) {
-        result.resize( static_cast< size_t >( narrowStringSize - 1 ) );
-    } //output is null-terminated
     return result;
+#elif !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+    (void)size; // To avoid warnings of unused size argument...
+    return fs::detail::toUtf8( wideString );
 #else
     std::wstring_convert< convert_type, wchar_t > converter;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
@@ -57,12 +75,12 @@ std::string bit7z::narrow( const wchar_t* wideString, size_t size ) {
 #endif
 }
 
-std::wstring bit7z::widen( const std::string& narrowString ) {
-#ifdef WIN32
-    const int wideStringSize = MultiByteToWideChar( CP_UTF8,
+auto widen( const std::string& narrowString ) -> std::wstring {
+#ifdef _WIN32
+    const int wideStringSize = MultiByteToWideChar( CODEPAGE,
                                                     0,
                                                     narrowString.c_str(),
-                                                    static_cast<int>( narrowString.size() ),
+                                                    static_cast< int >( narrowString.size() ),
                                                     nullptr,
                                                     0 );
     if ( wideStringSize == 0 ) {
@@ -70,15 +88,24 @@ std::wstring bit7z::widen( const std::string& narrowString ) {
     }
 
     std::wstring result( wideStringSize, 0 );
-    MultiByteToWideChar( CP_UTF8,
+    MultiByteToWideChar( CODEPAGE,
                          0,
                          narrowString.c_str(),
-                         static_cast<int>( narrowString.size() ),
+                         static_cast< int >( narrowString.size() ),
                          &result[ 0 ], // NOLINT(readability-container-data-pointer)
                          wideStringSize );
     return result;
+#elif !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+    return fs::detail::fromUtf8< std::wstring >( narrowString );
 #else
     std::wstring_convert< convert_type, wchar_t > converter;
     return converter.from_bytes( narrowString );
 #endif
 }
+#endif
+
+#if !defined( _WIN32 ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+#pragma GCC diagnostic pop
+#endif
+
+} // namespace bit7z

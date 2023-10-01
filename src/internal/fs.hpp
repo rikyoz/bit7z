@@ -16,22 +16,25 @@
 #include <filesystem>
 #include <fstream>
 
+namespace bit7z {
 namespace fs {
 using namespace std::filesystem;
 using ifstream = std::ifstream;
 using ofstream = std::ofstream;
 using fstream = std::fstream;
 } // namespace fs
+} // namespace bit7z
 #else
-#define GHC_WIN_WSTRING_STRING_TYPE
 #include <ghc/filesystem.hpp>
 
+namespace bit7z {
 namespace fs {
-    using namespace ghc::filesystem;
-    using ifstream = ghc::filesystem::ifstream;
-    using ofstream = ghc::filesystem::ofstream;
-    using fstream = ghc::filesystem::fstream;
+using namespace ghc::filesystem;
+using ifstream = ghc::filesystem::ifstream;
+using ofstream = ghc::filesystem::ofstream;
+using fstream = ghc::filesystem::fstream;
 } // namespace fs
+} // namespace bit7z
 #endif
 
 #endif // FS_HPP

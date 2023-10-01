@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,12 +12,12 @@
 
 #include <utility>
 
-#include "internal/cmultivolumeoutstream.hpp"
-
 #include "bitexception.hpp"
+#include "internal/cmultivolumeoutstream.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName )
     : mMaxVolumeSize( volSize ),
@@ -27,10 +27,8 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archive
       mAbsoluteOffset( 0 ),
       mFullSize( 0 ) {}
 
-UInt64 CMultiVolumeOutStream::GetSize() const noexcept { return mFullSize; }
-
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -41,12 +39,22 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
     while ( mCurrentVolumeIndex >= mVolumes.size() ) {
         /* The current volume stream still doesn't exist, so we need to create it. */
         tstring name = to_tstring( static_cast< uint64_t >( mCurrentVolumeIndex ) + 1 );
-        name.insert( 0, 3 - name.length(), L'0' );
+        if ( name.length() < 3 ) {
+            name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
+        }
 
-        fs::path volume_path = mVolumePrefix;
-        volume_path += BIT7Z_STRING( "." ) + name;
+        fs::path volumePath = mVolumePrefix;
+        volumePath += BIT7Z_STRING( "." ) + name;
         try {
-            mVolumes.emplace_back( make_com< CVolumeOutStream >( volume_path ) );
+            // TODO: Avoid keeping all the volumes streams open
+            constexpr auto kOpenedFilesThreshold = 500;
+            if ( mCurrentVolumeIndex == kOpenedFilesThreshold ) {
+                // Since we have created many volumes, it is likely we'll keep creating more.
+                // Hence, we increase the limit to the number of files that can be opened by the current process
+                // to avoid problems in the future.
+                filesystem::fsutil::increase_opened_files_limit();
+            }
+            mVolumes.emplace_back( make_com< CVolumeOutStream >( volumePath ) );
         } catch ( const BitException& ex ) {
             return ex.nativeCode();
         }
@@ -117,7 +125,7 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
     for ( auto& volume : mVolumes ) {
         if ( newSize < volume->currentSize() ) {
             RINOK( volume->SetSize( newSize ) )
@@ -139,3 +147,5 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) {
     mFullSize = newSize;
     return S_OK;
 }
+
+} // namespace bit7z

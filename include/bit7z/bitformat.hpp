@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,7 +11,6 @@
 #define BITFORMAT_HPP
 
 #include <bitset>
-
 #include <type_traits>
 
 #include "bitcompressionmethod.hpp"
@@ -24,23 +23,23 @@ namespace bit7z {
  * @brief The FormatFeatures enum specifies the features supported by an archive file format.
  */
 enum struct FormatFeatures : unsigned {
-    MultipleFiles = 1 << 0,    ///< The format can compress/extract multiple files         (2^0 = 0000001)
-    SolidArchive = 1 << 1,     ///< The format supports solid archives                     (2^1 = 0000010)
-    CompressionLevel = 1 << 2, ///< The format is able to use different compression levels (2^2 = 0000100)
-    Encryption = 1 << 3,       ///< The format supports archive encryption                 (2^3 = 0001000)
-    HeaderEncryption = 1 << 4, ///< The format can encrypt the file names                  (2^4 = 0010000)
-    MultipleMethods = 1 << 5   ///< The format can use different compression methods       (2^6 = 0100000)
+    MultipleFiles = 1u << 0,    ///< The format can compress/extract multiple files         (2^0 = 0000001)
+    SolidArchive = 1u << 1,     ///< The format supports solid archives                     (2^1 = 0000010)
+    CompressionLevel = 1u << 2, ///< The format is able to use different compression levels (2^2 = 0000100)
+    Encryption = 1u << 3,       ///< The format supports archive encryption                 (2^3 = 0001000)
+    HeaderEncryption = 1u << 4, ///< The format can encrypt the file names                  (2^4 = 0010000)
+    MultipleMethods = 1u << 5   ///< The format can use different compression methods       (2^6 = 0100000)
 };
 
-template< typename E >
-using underlying_type_t = typename std::underlying_type< E >::type;
+template< typename Enum >
+using underlying_type_t = typename std::underlying_type< Enum >::type;
 
-template< typename E >
-inline constexpr auto to_underlying( E e ) noexcept -> underlying_type_t< E > {
-    return static_cast< underlying_type_t< E > >( e );
+template< typename Enum >
+inline constexpr auto to_underlying( Enum e ) noexcept -> underlying_type_t< Enum > {
+    return static_cast< underlying_type_t< Enum > >( e );
 }
 
-inline constexpr FormatFeatures operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept {
+inline constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {
     return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
 }
 
@@ -61,12 +60,12 @@ class BitInFormat {
         //non-copyable
         BitInFormat( const BitInFormat& other ) = delete;
 
-        BitInFormat& operator=( const BitInFormat& other ) = delete;
+        auto operator=( const BitInFormat& other ) -> BitInFormat& = delete;
 
         //non-movable
         BitInFormat( BitInFormat&& other ) = delete;
 
-        BitInFormat& operator=( BitInFormat&& other ) = delete;
+        auto operator=( BitInFormat&& other ) -> BitInFormat& = delete;
 
         ~BitInFormat() = default;
 
@@ -79,19 +78,19 @@ class BitInFormat {
         /**
          * @return the value of the format in the 7z SDK.
          */
-        BIT7Z_NODISCARD unsigned char value() const noexcept;
+        BIT7Z_NODISCARD auto value() const noexcept -> unsigned char;
 
         /**
          * @param other  the target object to compare to.
          * @return a boolean value indicating whether this format is equal to the "other" or not.
          */
-        bool operator==( BitInFormat const& other ) const noexcept;
+        auto operator==( BitInFormat const& other ) const noexcept -> bool;
 
         /**
          * @param other  the target object to compare to.
          * @return a boolean value indicating whether this format is different from the "other" or not.
          */
-        bool operator!=( BitInFormat const& other ) const noexcept;
+        auto operator!=( BitInFormat const& other ) const noexcept -> bool;
 
     private:
         unsigned char mValue;
@@ -122,24 +121,26 @@ class BitInOutFormat final : public BitInFormat {
         //non-copyable
         BitInOutFormat( const BitInOutFormat& other ) = delete;
 
-        BitInOutFormat& operator=( const BitInOutFormat& other ) = delete;
+        auto operator=( const BitInOutFormat& other ) -> BitInOutFormat& = delete;
 
         //non-movable
         BitInOutFormat( BitInOutFormat&& other ) = delete;
 
-        BitInOutFormat& operator=( BitInOutFormat&& other ) = delete;
+        auto operator=( BitInOutFormat&& other ) -> BitInOutFormat& = delete;
 
         ~BitInOutFormat() = default;
 
         /**
          * @return the default file extension of the archive format.
          */
-        BIT7Z_NODISCARD const tchar* extension() const noexcept;
+        BIT7Z_NODISCARD
+        auto extension() const noexcept -> const tchar*;
 
         /**
          * @return the bitset of the features supported by the format.
          */
-        BIT7Z_NODISCARD FormatFeatures features() const noexcept;
+        BIT7Z_NODISCARD
+        auto features() const noexcept -> FormatFeatures;
 
         /**
          * @brief Checks if the format has a specific feature (see FormatFeatures enum).
@@ -148,12 +149,14 @@ class BitInOutFormat final : public BitInFormat {
          *
          * @return a boolean value indicating whether the format has the given feature.
          */
-        BIT7Z_NODISCARD bool hasFeature( FormatFeatures feature ) const noexcept;
+        BIT7Z_NODISCARD
+        auto hasFeature( FormatFeatures feature ) const noexcept -> bool;
 
         /**
          * @return the default method used for compressing the archive format.
          */
-        BIT7Z_NODISCARD BitCompressionMethod defaultMethod() const noexcept;
+        BIT7Z_NODISCARD
+        auto defaultMethod() const noexcept -> BitCompressionMethod;
 
     private:
         const tchar* mExtension;
@@ -171,62 +174,62 @@ namespace BitFormat {
  */
 extern const BitInFormat Auto;
 #endif
-extern const BitInFormat Rar,       ///< RAR Archive Format
-                         Arj,       ///< ARJ Archive Format
-                         Z,         ///< Z Archive Format
-                         Lzh,       ///< LZH Archive Format
-                         Cab,       ///< CAB Archive Format
-                         Nsis,      ///< NSIS Archive Format
-                         Lzma,      ///< LZMA Archive Format
-                         Lzma86,    ///< LZMA86 Archive Format
-                         Ppmd,      ///< PPMD Archive Format
-                         Vhdx,      ///< VHDX Archive Format
-                         COFF,      ///< COFF Archive Format
-                         Ext,       ///< EXT Archive Format
-                         VMDK,      ///< VMDK Archive Format
-                         VDI,       ///< VDI Archive Format
-                         QCow,      ///< QCOW Archive Format
-                         GPT,       ///< GPT Archive Format
-                         Rar5,      ///< RAR5 Archive Format
-                         IHex,      ///< IHEX Archive Format
-                         Hxs,       ///< HXS Archive Format
-                         TE,        ///< TE Archive Format
-                         UEFIc,     ///< UEFIc Archive Format
-                         UEFIs,     ///< UEFIs Archive Format
-                         SquashFS,  ///< SquashFS Archive Format
-                         CramFS,    ///< CramFS Archive Format
-                         APM,       ///< APM Archive Format
-                         Mslz,      ///< MSLZ Archive Format
-                         Flv,       ///< FLV Archive Format
-                         Swf,       ///< SWF Archive Format
-                         Swfc,      ///< SWFC Archive Format
-                         Ntfs,      ///< NTFS Archive Format
-                         Fat,       ///< FAT Archive Format
-                         Mbr,       ///< MBR Archive Format
-                         Vhd,       ///< VHD Archive Format
-                         Pe,        ///< PE Archive Format
-                         Elf,       ///< ELF Archive Format
-                         Macho,     ///< MACHO Archive Format
-                         Udf,       ///< UDF Archive Format
-                         Xar,       ///< XAR Archive Format
-                         Mub,       ///< MUB Archive Format
-                         Hfs,       ///< HFS Archive Format
-                         Dmg,       ///< DMG Archive Format
-                         Compound,  ///< COMPOUND Archive Format
-                         Iso,       ///< ISO Archive Format
-                         Chm,       ///< CHM Archive Format
-                         Split,     ///< SPLIT Archive Format
-                         Rpm,       ///< RPM Archive Format
-                         Deb,       ///< DEB Archive Format
-                         Cpio;      ///< CPIO Archive Format
+extern const BitInFormat Rar;       ///< RAR Archive Format
+extern const BitInFormat Arj;       ///< ARJ Archive Format
+extern const BitInFormat Z;         ///< Z Archive Format
+extern const BitInFormat Lzh;       ///< LZH Archive Format
+extern const BitInFormat Cab;       ///< CAB Archive Format
+extern const BitInFormat Nsis;      ///< NSIS Archive Format
+extern const BitInFormat Lzma;      ///< LZMA Archive Format
+extern const BitInFormat Lzma86;    ///< LZMA86 Archive Format
+extern const BitInFormat Ppmd;      ///< PPMD Archive Format
+extern const BitInFormat Vhdx;      ///< VHDX Archive Format
+extern const BitInFormat COFF;      ///< COFF Archive Format
+extern const BitInFormat Ext;       ///< EXT Archive Format
+extern const BitInFormat VMDK;      ///< VMDK Archive Format
+extern const BitInFormat VDI;       ///< VDI Archive Format
+extern const BitInFormat QCow;      ///< QCOW Archive Format
+extern const BitInFormat GPT;       ///< GPT Archive Format
+extern const BitInFormat Rar5;      ///< RAR5 Archive Format
+extern const BitInFormat IHex;      ///< IHEX Archive Format
+extern const BitInFormat Hxs;       ///< HXS Archive Format
+extern const BitInFormat TE;        ///< TE Archive Format
+extern const BitInFormat UEFIc;     ///< UEFIc Archive Format
+extern const BitInFormat UEFIs;     ///< UEFIs Archive Format
+extern const BitInFormat SquashFS;  ///< SquashFS Archive Format
+extern const BitInFormat CramFS;    ///< CramFS Archive Format
+extern const BitInFormat APM;       ///< APM Archive Format
+extern const BitInFormat Mslz;      ///< MSLZ Archive Format
+extern const BitInFormat Flv;       ///< FLV Archive Format
+extern const BitInFormat Swf;       ///< SWF Archive Format
+extern const BitInFormat Swfc;      ///< SWFC Archive Format
+extern const BitInFormat Ntfs;      ///< NTFS Archive Format
+extern const BitInFormat Fat;       ///< FAT Archive Format
+extern const BitInFormat Mbr;       ///< MBR Archive Format
+extern const BitInFormat Vhd;       ///< VHD Archive Format
+extern const BitInFormat Pe;        ///< PE Archive Format
+extern const BitInFormat Elf;       ///< ELF Archive Format
+extern const BitInFormat Macho;     ///< MACHO Archive Format
+extern const BitInFormat Udf;       ///< UDF Archive Format
+extern const BitInFormat Xar;       ///< XAR Archive Format
+extern const BitInFormat Mub;       ///< MUB Archive Format
+extern const BitInFormat Hfs;       ///< HFS Archive Format
+extern const BitInFormat Dmg;       ///< DMG Archive Format
+extern const BitInFormat Compound;  ///< COMPOUND Archive Format
+extern const BitInFormat Iso;       ///< ISO Archive Format
+extern const BitInFormat Chm;       ///< CHM Archive Format
+extern const BitInFormat Split;     ///< SPLIT Archive Format
+extern const BitInFormat Rpm;       ///< RPM Archive Format
+extern const BitInFormat Deb;       ///< DEB Archive Format
+extern const BitInFormat Cpio;      ///< CPIO Archive Format
 
-extern const BitInOutFormat Zip,        ///< ZIP Archive Format
-                            BZip2,      ///< BZIP2 Archive Format
-                            SevenZip,   ///< 7Z Archive Format
-                            Xz,         ///< XZ Archive Format
-                            Wim,        ///< WIM Archive Format
-                            Tar,        ///< TAR Archive Format
-                            GZip;       ///< GZIP Archive Format
+extern const BitInOutFormat Zip;        ///< ZIP Archive Format
+extern const BitInOutFormat BZip2;      ///< BZIP2 Archive Format
+extern const BitInOutFormat SevenZip;   ///< 7Z Archive Format
+extern const BitInOutFormat Xz;         ///< XZ Archive Format
+extern const BitInOutFormat Wim;        ///< WIM Archive Format
+extern const BitInOutFormat Tar;        ///< TAR Archive Format
+extern const BitInOutFormat GZip;       ///< GZIP Archive Format
 }  // namespace BitFormat
 
 

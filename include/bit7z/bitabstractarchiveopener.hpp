@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,21 +29,21 @@ class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
 
         BitAbstractArchiveOpener( BitAbstractArchiveOpener&& ) = delete;
 
-        BitAbstractArchiveOpener& operator=( const BitAbstractArchiveOpener& ) = delete;
+        auto operator=( const BitAbstractArchiveOpener& ) -> BitAbstractArchiveOpener& = delete;
 
-        BitAbstractArchiveOpener& operator=( BitAbstractArchiveOpener&& ) = delete;
+        auto operator=( BitAbstractArchiveOpener&& ) -> BitAbstractArchiveOpener& = delete;
 
         ~BitAbstractArchiveOpener() override = default;
 
         /**
          * @return the archive format used by the archive opener.
          */
-        BIT7Z_NODISCARD const BitInFormat& format() const noexcept override;
+        BIT7Z_NODISCARD auto format() const noexcept -> const BitInFormat& override;
 
         /**
          * @return the archive format used by the archive opener.
          */
-        BIT7Z_NODISCARD const BitInFormat& extractionFormat() const noexcept;
+        BIT7Z_NODISCARD auto extractionFormat() const noexcept -> const BitInFormat&;
 
     protected:
         BitAbstractArchiveOpener( const Bit7zLibrary& lib,

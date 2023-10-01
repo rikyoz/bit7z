@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,8 +10,10 @@
 #ifndef BITDEFINES_HPP
 #define BITDEFINES_HPP
 
-/* Uncomment the following macros if you don't want to define them yourself in your project files */
+/* Uncomment the following macros if you don't want to define them yourself in your project files,
+ * and you can't enable them via CMake. */
 //#define BIT7Z_AUTO_FORMAT
+//#define BIT7Z_AUTO_PREFIX_LONG_PATHS
 //#define BIT7Z_REGEX_MATCHING
 //#define BIT7Z_USE_STD_BYTE
 //#define BIT7Z_USE_NATIVE_STRING

@@ -10,6 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#if !defined(__GNUC__) || __GNUC__ >= 5
 #include <catch2/catch.hpp>
 
 #include <internal/dateutil.hpp>
@@ -23,20 +24,20 @@ using namespace bit7z;
 #ifndef _WIN32
 
 TEST_CASE( "fsutil: Date conversion from std::time_t to FILETIME", "[fsutil][date functions]" ) {
-    auto test_date = GENERATE( table< const char*, std::time_t, FILETIME >(
+    auto testDate = GENERATE( table< const char*, std::time_t, FILETIME >(
         {
             { "21 December 2012, 12:00", 1356091200, { 3017121792, 30269298 } },
             { "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } }
         }
     ) );
 
-    DYNAMIC_SECTION( "Date: " << std::get< 0 >( test_date ) ) {
-        std::time_t input = std::get< 1 >( test_date );
-        FILETIME expected_output = std::get< 2 >( test_date );
+    DYNAMIC_SECTION( "Date: " << std::get< 0 >( testDate ) ) {
+        const std::time_t input = std::get< 1 >( testDate );
+        const FILETIME expectedOutput = std::get< 2 >( testDate );
 
         auto output = time_to_FILETIME( input );
-        REQUIRE( output.dwHighDateTime == expected_output.dwHighDateTime );
-        REQUIRE( output.dwLowDateTime == expected_output.dwLowDateTime );
+        REQUIRE( output.dwHighDateTime == expectedOutput.dwHighDateTime );
+        REQUIRE( output.dwLowDateTime == expectedOutput.dwLowDateTime );
     }
 }
 
@@ -46,18 +47,18 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
     using namespace std::chrono;
     using std::chrono::seconds;
 
-    auto test_date = GENERATE( table< const char*, FILETIME, std::time_t >(
+    auto testDate = GENERATE( table< const char*, FILETIME, std::time_t >(
         {
             { "21 December 2012, 12:00", { 3017121792, 30269298 }, 1356091200 },
             { "1 January 1970, 00:00",   { 3577643008, 27111902 }, 0 }
         }
     ) );
 
-    DYNAMIC_SECTION( "Date: " << std::get< 0 >( test_date ) ) {
-        FILETIME input = std::get< 1 >( test_date );
-        std::time_t expected_output = std::get< 2 >( test_date );
+    DYNAMIC_SECTION( "Date: " << std::get< 0 >( testDate ) ) {
+        const FILETIME input = std::get< 1 >( testDate );
+        const std::time_t expectedOutput = std::get< 2 >( testDate );
 
-        std::time_t output;
+        std::time_t output{};
 
 #ifndef _WIN32
         SECTION( "FILETIME to std::filesystem::file_time_type" ) {
@@ -71,6 +72,7 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
             output = bit7z::time_type::clock::to_time_t( result );
         }
 
-        REQUIRE( output == expected_output );
+        REQUIRE( output == expectedOutput );
     }
 }
+#endif

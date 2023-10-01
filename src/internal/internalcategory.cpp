@@ -3,25 +3,24 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "biterror.hpp"
 #include "internal/internalcategory.hpp"
 
-#include "biterror.hpp"
+namespace bit7z {
 
-using bit7z::internal_category_t;
-
-const char* internal_category_t::name() const noexcept {
+auto InternalCategory::name() const noexcept -> const char* {
     return "bit7z";
 }
 
-std::string internal_category_t::message( int error_value ) const noexcept {
-    switch ( static_cast< BitError >( error_value ) ) {
+auto InternalCategory::message( int errorValue ) const -> std::string {
+    switch ( static_cast< BitError >( errorValue ) ) {
         case BitError::Fail:
             return "Unspecified error.";
         case BitError::FilterNotSpecified:
@@ -46,27 +45,29 @@ std::string internal_category_t::message( int error_value ) const noexcept {
             return "The item is a folder.";
         case BitError::ItemMarkedAsDeleted:
             return "The item is marked as deleted.";
-        case BitError::NoMatchingExtension:
-            return "No known extension found.";
         case BitError::NoMatchingItems:
             return "No matching item was found in the archive.";
         case BitError::NoMatchingSignature:
             return "No known signature found.";
         case BitError::NonEmptyOutputBuffer:
-            return "Output buffer is not empty.";
+            return "The output buffer is not empty.";
         case BitError::RequestedWrongVariantType:
-            return "Requested wrong variant type.";
+            return "Requested the wrong variant type.";
         case BitError::UnsupportedOperation:
             return "Unsupported operation.";
+        case BitError::UnsupportedVariantType:
+            return "Unsupported variant type.";
         case BitError::WrongUpdateMode:
             return "Wrong update mode.";
+        case BitError::InvalidZipPassword:
+            return "7-Zip only supports printable ASCII characters for passwords when creating Zip archives.";
         default:
             return "Unknown error.";
     }
 }
 
-std::error_condition bit7z::internal_category_t::default_error_condition( int error_value ) const noexcept {
-    switch ( static_cast< BitError >( error_value ) ) {
+auto InternalCategory::default_error_condition( int errorValue ) const noexcept -> std::error_condition {
+    switch ( static_cast< BitError >( errorValue ) ) {
         case BitError::FilterNotSpecified:
         case BitError::FormatFeatureNotSupported:
         case BitError::IndicesNotSpecified:
@@ -78,21 +79,25 @@ std::error_condition bit7z::internal_category_t::default_error_condition( int er
         case BitError::InvalidWordSize:
         case BitError::ItemIsAFolder:
         case BitError::NonEmptyOutputBuffer:
+        case BitError::InvalidZipPassword:
             return std::make_error_condition( std::errc::invalid_argument );
         case BitError::NoMatchingItems:
             return std::make_error_condition( std::errc::no_such_file_or_directory );
         case BitError::RequestedWrongVariantType:
         case BitError::UnsupportedOperation:
-            return std::make_error_condition( std::errc::operation_not_supported );
+        case BitError::UnsupportedVariantType:
+            return std::make_error_condition( std::errc::not_supported );
         case BitError::ItemMarkedAsDeleted:
         case BitError::WrongUpdateMode:
             return std::make_error_condition( std::errc::operation_not_permitted );
         default:
-            return error_category::default_error_condition( error_value );
+            return error_category::default_error_condition( errorValue );
     }
 }
 
-const std::error_category& bit7z::internal_category() noexcept {
-    static const internal_category_t instance{};
+auto internal_category() noexcept -> const std::error_category& {
+    static const InternalCategory instance{};
     return instance;
 }
+
+} // namespace bit7z

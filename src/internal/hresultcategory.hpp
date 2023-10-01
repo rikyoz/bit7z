@@ -18,19 +18,19 @@
 
 namespace bit7z {
 
-struct hresult_category_t final : public std::error_category {
+struct HRESULTCategory final : public std::error_category {
     static_assert( sizeof( int ) >= sizeof( HRESULT ), "HRESULT type must be at least the size of int" );
 
-    explicit hresult_category_t() = default;
+    explicit HRESULTCategory() = default;
 
-    BIT7Z_NODISCARD const char* name() const noexcept override;
+    BIT7Z_NODISCARD auto name() const noexcept -> const char* override;
 
-    BIT7Z_NODISCARD std::string message( int ev ) const override;
+    BIT7Z_NODISCARD auto message( int errorValue ) const -> std::string override;
 
-    BIT7Z_NODISCARD std::error_condition default_error_condition( int error_value ) const noexcept override;
+    BIT7Z_NODISCARD auto default_error_condition( int errorValue ) const noexcept -> std::error_condition override;
 };
 
-const std::error_category& hresult_category() noexcept;
+auto hresult_category() noexcept -> const std::error_category&;
 
 }  // namespace bit7z
 

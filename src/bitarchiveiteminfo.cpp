@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,14 +17,14 @@ using bit7z::BitProperty;
 using bit7z::BitPropVariant;
 using std::map;
 
-BitArchiveItemInfo::BitArchiveItemInfo( uint32_t item_index ) : BitArchiveItem( item_index ) {}
+BitArchiveItemInfo::BitArchiveItemInfo( uint32_t itemIndex ) : BitArchiveItem( itemIndex ) {}
 
-BitPropVariant BitArchiveItemInfo::itemProperty( BitProperty property ) const {
-    auto prop_it = mItemProperties.find( property );
-    return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
+auto BitArchiveItemInfo::itemProperty( BitProperty property ) const -> BitPropVariant {
+    const auto propIt = mItemProperties.find( property );
+    return ( propIt != mItemProperties.end() ? ( *propIt ).second : BitPropVariant() );
 }
 
-map< BitProperty, BitPropVariant > BitArchiveItemInfo::itemProperties() const {
+auto BitArchiveItemInfo::itemProperties() const -> map< BitProperty, BitPropVariant > {
     return mItemProperties;
 }
 

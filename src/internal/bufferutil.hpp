@@ -15,11 +15,11 @@
 
 namespace bit7z {
 
-HRESULT seek( const buffer_t& buffer,
-              const buffer_t::const_iterator& current_position,
-              int64_t offset,
-              uint32_t seek_origin,
-              int64_t& new_position );
+auto seek( const buffer_t& buffer,
+           const buffer_t::const_iterator& currentPosition,
+           int64_t offset,
+           uint32_t seekOrigin,
+           int64_t& newPosition ) -> HRESULT;
 
 } // namespace bit7z
 

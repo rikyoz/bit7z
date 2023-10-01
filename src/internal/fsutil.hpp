@@ -19,23 +19,30 @@
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
+
+enum struct SymlinkPolicy {
+    Follow,
+    DoNotFollow
+};
+
 namespace fsutil {
 
-BIT7Z_NODISCARD tstring basename( const tstring& path );
+BIT7Z_NODISCARD auto stem( const tstring& path ) -> tstring;
 
-BIT7Z_NODISCARD tstring extension( const fs::path& path );
+BIT7Z_NODISCARD auto extension( const fs::path& path ) -> tstring;
 
-BIT7Z_NODISCARD bool wildcardMatch( const tstring& pattern, const tstring& str );
+BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
 
-BIT7Z_NODISCARD bool getFileAttributesEx( const fs::path& filePath,
-                                          WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept;
+BIT7Z_NODISCARD auto get_file_attributes_ex( const fs::path& filePath,
+                                             SymlinkPolicy symlinkPolicy,
+                                             WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
 
-bool setFileModifiedTime( const fs::path& filePath, const FILETIME& ftModified ) noexcept;
+auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
 
-bool setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept;
+auto set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
 
-BIT7Z_NODISCARD fs::path inArchivePath( const fs::path& file_path,
-                                        const fs::path& search_path = fs::path() );
+BIT7Z_NODISCARD auto in_archive_path( const fs::path& filePath,
+                                      const fs::path& searchPath = fs::path{} ) -> fs::path;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 
@@ -49,6 +56,13 @@ BIT7Z_NODISCARD auto format_long_path( const fs::path& path ) -> fs::path;
 #else
 #   define FORMAT_LONG_PATH( path ) path
 #endif
+
+/**
+ * @brief When writing multi-volume archives, we keep all the volume streams open until we finished.
+ * This is less than ideal, and there's a limit in the number of open file descriptors/handles.
+ * This function is a temporary workaround, where we increase such a limit to the maximum value allowed by the OS.
+ */
+void increase_opened_files_limit();
 
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 /**

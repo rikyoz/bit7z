@@ -20,8 +20,6 @@
 
 namespace bit7z {
 
-constexpr auto kUnsupportedOperation = "Unsupported operation";
-
 class UpdateCallback final : public Callback,
                              public IArchiveUpdateCallback2,
                              public ICompressProgressInfo,
@@ -33,16 +31,13 @@ class UpdateCallback final : public Callback,
 
         UpdateCallback( UpdateCallback&& ) = delete;
 
-        UpdateCallback& operator=( const UpdateCallback& ) = delete;
+        auto operator=( const UpdateCallback& ) -> UpdateCallback& = delete;
 
-        UpdateCallback& operator=( UpdateCallback&& ) = delete;
+        auto operator=( UpdateCallback&& ) -> UpdateCallback& = delete;
 
         ~UpdateCallback() override;
 
-        // NOLINTNEXTLINE(modernize-use-noexcept)
-        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 )
-
-        HRESULT Finalize() noexcept;
+        auto finalize() noexcept -> HRESULT;
 
         // IProgress from IArchiveUpdateCallback2
         BIT7Z_STDMETHOD( SetTotal, UInt64 size );
@@ -57,19 +52,22 @@ class UpdateCallback final : public Callback,
 
         BIT7Z_STDMETHOD( GetStream, UInt32 index, ISequentialInStream** inStream );
 
-        BIT7Z_STDMETHOD_NOEXCEPT( GetVolumeSize, UInt32 index, UInt64* size );
+        BIT7Z_STDMETHOD( GetVolumeSize, UInt32 index, UInt64 * size );
 
         BIT7Z_STDMETHOD( GetVolumeStream, UInt32 index, ISequentialOutStream** volumeStream );
 
-        BIT7Z_STDMETHOD_NOEXCEPT( GetUpdateItemInfo, UInt32 index,
-                                  Int32* newData,
-                                  Int32* newProperties,
-                                  UInt32* indexInArchive );
+        BIT7Z_STDMETHOD( GetUpdateItemInfo, UInt32 index,
+                         Int32* newData,
+                         Int32* newProperties,
+                         UInt32* indexInArchive );
 
-        BIT7Z_STDMETHOD_NOEXCEPT( SetOperationResult, Int32 operationResult );
+        BIT7Z_STDMETHOD( SetOperationResult, Int32 operationResult );
 
-        //ICryptoGetTextPassword2
+        // ICryptoGetTextPassword2
         BIT7Z_STDMETHOD( CryptoGetTextPassword2, Int32* passwordIsDefined, BSTR* password );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511 //-V835
 
     private:
         const BitOutputArchive& mOutputArchive;

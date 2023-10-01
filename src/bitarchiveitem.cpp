@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,39 +11,42 @@
  */
 
 #include "bitarchiveitem.hpp"
-
 #include "internal/fsutil.hpp"
+#include "internal/util.hpp"
+
+// For checking posix file attributes
+#include <sys/stat.h>
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-BitArchiveItem::BitArchiveItem( uint32_t item_index ) noexcept
-    : mItemIndex( item_index ) {}
+BitArchiveItem::BitArchiveItem( uint32_t itemIndex ) noexcept
+    : mItemIndex( itemIndex ) {}
 
-uint32_t BitArchiveItem::index() const noexcept {
+auto BitArchiveItem::index() const noexcept -> uint32_t {
     return mItemIndex;
 }
 
-bool BitArchiveItem::isDir() const {
-    const BitPropVariant is_dir = itemProperty( BitProperty::IsDir );
-    return !is_dir.isEmpty() && is_dir.getBool();
+auto BitArchiveItem::isDir() const -> bool {
+    const BitPropVariant isDir = itemProperty( BitProperty::IsDir );
+    return !isDir.isEmpty() && isDir.getBool();
 }
 
 BIT7Z_NODISCARD
 inline auto filename( const fs::path& path ) -> tstring {
-    return path.filename().string< tchar >();
+    return path_to_tstring( path.filename() );
 }
 
-tstring BitArchiveItem::name() const {
+auto BitArchiveItem::name() const -> tstring {
     BitPropVariant name = itemProperty( BitProperty::Name );
     if ( name.isEmpty() ) {
         name = itemProperty( BitProperty::Path );
-        return name.isEmpty() ? tstring{} : filename( name.getString() );
+        return name.isEmpty() ? tstring{} : filename( name.getNativeString() );
     }
     return name.getString();
 }
 
-tstring BitArchiveItem::extension() const {
+auto BitArchiveItem::extension() const -> tstring {
     if ( isDir() ) {
         return tstring{};
     }
@@ -51,7 +54,7 @@ tstring BitArchiveItem::extension() const {
     return extension.isEmpty() ? fsutil::extension( name() ) : extension.getString();
 }
 
-tstring BitArchiveItem::path() const {
+auto BitArchiveItem::path() const -> tstring {
     BitPropVariant path = itemProperty( BitProperty::Path );
     if ( path.isEmpty() ) {
         path = itemProperty( BitProperty::Name );
@@ -60,42 +63,64 @@ tstring BitArchiveItem::path() const {
     return path.getString();
 }
 
-uint64_t BitArchiveItem::size() const {
+auto BitArchiveItem::size() const -> uint64_t {
     const BitPropVariant size = itemProperty( BitProperty::Size );
     return size.isEmpty() ? 0 : size.getUInt64();
 }
 
-uint64_t BitArchiveItem::packSize() const {
-    const BitPropVariant pack_size = itemProperty( BitProperty::PackSize );
-    return pack_size.isEmpty() ? 0 : pack_size.getUInt64();
+auto BitArchiveItem::packSize() const -> uint64_t {
+    const BitPropVariant packSize = itemProperty( BitProperty::PackSize );
+    return packSize.isEmpty() ? 0 : packSize.getUInt64();
 }
 
-bool BitArchiveItem::isEncrypted() const {
-    const BitPropVariant is_encrypted = itemProperty( BitProperty::Encrypted );
-    return is_encrypted.isBool() && is_encrypted.getBool();
+auto BitArchiveItem::isEncrypted() const -> bool {
+    const BitPropVariant isEncrypted = itemProperty( BitProperty::Encrypted );
+    return isEncrypted.isBool() && isEncrypted.getBool();
 }
 
-time_type BitArchiveItem::creationTime() const {
-    const BitPropVariant creation_time = itemProperty( BitProperty::CTime );
-    return creation_time.isFileTime() ? creation_time.getTimePoint() : time_type::clock::now();
+auto BitArchiveItem::creationTime() const -> time_type {
+    const BitPropVariant creationTime = itemProperty( BitProperty::CTime );
+    return creationTime.isFileTime() ? creationTime.getTimePoint() : time_type::clock::now();
 }
 
-time_type BitArchiveItem::lastAccessTime() const {
-    const BitPropVariant access_time = itemProperty( BitProperty::ATime );
-    return access_time.isFileTime() ? access_time.getTimePoint() : time_type::clock::now();
+auto BitArchiveItem::lastAccessTime() const -> time_type {
+    const BitPropVariant accessTime = itemProperty( BitProperty::ATime );
+    return accessTime.isFileTime() ? accessTime.getTimePoint() : time_type::clock::now();
 }
 
-time_type BitArchiveItem::lastWriteTime() const {
-    const BitPropVariant write_time = itemProperty( BitProperty::MTime );
-    return write_time.isFileTime() ? write_time.getTimePoint() : time_type::clock::now();
+auto BitArchiveItem::lastWriteTime() const -> time_type {
+    const BitPropVariant writeTime = itemProperty( BitProperty::MTime );
+    return writeTime.isFileTime() ? writeTime.getTimePoint() : time_type::clock::now();
 }
 
-uint32_t BitArchiveItem::attributes() const {
+auto BitArchiveItem::attributes() const -> uint32_t {
     const BitPropVariant attrib = itemProperty( BitProperty::Attrib );
     return attrib.isUInt32() ? attrib.getUInt32() : 0;
 }
 
-uint32_t BitArchiveItem::crc() const {
+auto BitArchiveItem::crc() const -> uint32_t {
     const BitPropVariant crc = itemProperty( BitProperty::CRC );
     return crc.isUInt32() ? crc.getUInt32() : 0;
+}
+
+// On MSVC, these macros are not defined!
+#if !defined(S_ISLNK) && defined(S_IFMT)
+#ifndef S_IFLNK
+constexpr auto S_IFLNK = 0120000;
+#endif
+#define S_ISLNK( m ) (((m) & S_IFMT) == S_IFLNK)
+#endif
+
+auto BitArchiveItem::isSymLink() const -> bool {
+    const BitPropVariant symlink = itemProperty( BitProperty::SymLink );
+    if ( symlink.isString() ) {
+        return true;
+    }
+
+    const auto itemAttributes = attributes();
+    if ( ( itemAttributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
+        auto posixAttributes = itemAttributes >> 16U;
+        return S_ISLNK( posixAttributes );
+    }
+    return ( itemAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;
 }

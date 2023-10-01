@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,13 +21,13 @@ class BitInputArchive;
  */
 class BitArchiveItemOffset final : public BitArchiveItem {
     public:
-        BitArchiveItemOffset& operator++() noexcept;
+        auto operator++() noexcept -> BitArchiveItemOffset&;
 
-        BitArchiveItemOffset operator++( int ) noexcept; // NOLINT(cert-dcl21-cpp)
+        auto operator++( int ) noexcept -> BitArchiveItemOffset; // NOLINT(cert-dcl21-cpp)
 
-        bool operator==( const BitArchiveItemOffset& other ) const noexcept;
+        auto operator==( const BitArchiveItemOffset& other ) const noexcept -> bool;
 
-        bool operator!=( const BitArchiveItemOffset& other ) const noexcept;
+        auto operator!=( const BitArchiveItemOffset& other ) const noexcept -> bool;
 
         /**
          * @brief Gets the specified item property.
@@ -36,14 +36,14 @@ class BitArchiveItemOffset final : public BitArchiveItem {
          *
          * @return the value of the item property, if available, or an empty BitPropVariant.
          */
-        BIT7Z_NODISCARD BitPropVariant itemProperty( BitProperty property ) const override;
+        BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
     private:
-        /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,
-         * to be CopyConstructible so that stl algorithms can be used with const_iterator! */
+        /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::ConstIterator,
+         * to be CopyConstructible so that stl algorithms can be used with ConstIterator! */
         const BitInputArchive* mArc;
 
-        BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
+        BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept;
 
         friend class BitInputArchive;
 };

@@ -3,21 +3,21 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/streamextractcallback.hpp"
-
 #include "internal/cstdoutstream.hpp"
+#include "internal/streamextractcallback.hpp"
 #include "internal/util.hpp"
 
 using namespace std;
 using namespace NWindows;
-using namespace bit7z;
+
+namespace bit7z {
 
 StreamExtractCallback::StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream )
     : ExtractCallback( inputArchive ),
@@ -27,7 +27,7 @@ void StreamExtractCallback::releaseStream() {
     mStdOutStream.Release();
 }
 
-HRESULT StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+auto StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }
@@ -52,4 +52,6 @@ HRESULT StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStrea
     mStdOutStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;
+}
+
 }

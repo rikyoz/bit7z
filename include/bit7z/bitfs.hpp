@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -24,12 +24,13 @@
  *        Since some public API headers include bitgenericitem.hpp (e.g. "bitoutputarchive.hpp"),
  *        including private headers here would result in the "leaking" out of these latter in the public API.*/
 namespace ghc {
-    namespace filesystem {
-        class path;
-    }
-}
+namespace filesystem {
+class path;
+} // namespace filesystem
+} // namespace ghc
 #endif
 
+namespace bit7z {
 namespace fs {
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 using namespace std::filesystem;
@@ -37,5 +38,6 @@ using namespace std::filesystem;
 using namespace ghc::filesystem;
 #endif
 } // namespace fs
+} // namespace bit7z
 
 #endif //BITFS_HPP

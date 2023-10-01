@@ -22,9 +22,9 @@ class CFileOutStream : public CStdOutStream {
     public:
         explicit CFileOutStream( fs::path filePath, bool createAlways = false );
 
-        BIT7Z_NODISCARD const fs::path& path() const;
+        BIT7Z_NODISCARD auto path() const -> const fs::path&;
 
-        BIT7Z_NODISCARD bool fail() const;
+        BIT7Z_NODISCARD auto fail() const -> bool;
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 
@@ -32,8 +32,8 @@ class CFileOutStream : public CStdOutStream {
         fs::path mFilePath;
         fs::ofstream mFileStream;
 
-        static constexpr auto buffer_size = 1024 * 1024; // 1 MiB
-        std::array< char, buffer_size > mBuffer;
+        static constexpr auto kBufferSize = 1024 * 1024; // 1 MiB
+        std::array< char, kBufferSize > mBuffer;
 };
 
 }  // namespace bit7z

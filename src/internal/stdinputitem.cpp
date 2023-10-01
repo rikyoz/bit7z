@@ -3,67 +3,70 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/stdinputitem.hpp"
+#include <utility>
 
 #include "internal/cstdinstream.hpp"
 #include "internal/dateutil.hpp"
+#include "internal/stdinputitem.hpp"
 #include "internal/util.hpp"
 
-using bit7z::StdInputItem;
-using bit7z::tstring;
 using std::istream;
 
-StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
+namespace bit7z {
 
-tstring StdInputItem::name() const {
-    return mStreamPath.filename().string< tchar >();
+StdInputItem::StdInputItem( istream& stream, fs::path path ) : mStream{ stream }, mStreamPath{ std::move( path ) } {}
+
+auto StdInputItem::name() const -> tstring {
+    return path_to_tstring( mStreamPath.filename() );
 }
 
-tstring StdInputItem::path() const {
-    return mStreamPath.string< tchar >();
+auto StdInputItem::path() const -> tstring {
+    return path_to_tstring( mStreamPath );
 }
 
-fs::path StdInputItem::inArchivePath() const {
+auto StdInputItem::inArchivePath() const -> fs::path {
     return mStreamPath;
 }
 
-HRESULT StdInputItem::getStream( ISequentialInStream** inStream ) const {
+auto StdInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     auto inStreamLoc = bit7z::make_com< CStdInStream, ISequentialInStream >( mStream );
     *inStream = inStreamLoc.Detach(); //Note: 7-zip will take care of freeing the memory!
     return S_OK;
 }
 
-bool StdInputItem::isDir() const noexcept {
+auto StdInputItem::isDir() const noexcept -> bool {
     return false;
 }
 
-uint64_t StdInputItem::size() const {
-    const auto original_pos = mStream.tellg();
+auto StdInputItem::size() const -> uint64_t {
+    const auto originalPos = mStream.tellg();
     mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
-    const auto result = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
-    mStream.seekg( original_pos ); // seeking back to the original position in the stream
+    const auto result = static_cast< uint64_t >( mStream.tellg() - originalPos ); // size of the stream
+    mStream.seekg( originalPos ); // seeking back to the original position in the stream
     return result;
 }
 
-FILETIME StdInputItem::creationTime() const noexcept { //-V524
-    return currentFileTime();
+auto StdInputItem::creationTime() const noexcept -> FILETIME { //-V524
+    return current_file_time();
 }
 
-FILETIME StdInputItem::lastAccessTime() const noexcept { //-V524
-    return currentFileTime();
+auto StdInputItem::lastAccessTime() const noexcept -> FILETIME { //-V524
+    return current_file_time();
 }
 
-FILETIME StdInputItem::lastWriteTime() const noexcept {
-    return currentFileTime();
+auto StdInputItem::lastWriteTime() const noexcept -> FILETIME {
+    return current_file_time();
 }
 
-uint32_t StdInputItem::attributes() const noexcept {
+auto StdInputItem::attributes() const noexcept -> uint32_t {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
+
+} // namespace bit7z

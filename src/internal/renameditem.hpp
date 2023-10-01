@@ -17,29 +17,31 @@ namespace bit7z {
 
 class RenamedItem final : public GenericInputItem {
     public:
-        explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path );
+        explicit RenamedItem( const BitInputArchive& inputArchive, uint32_t index, const tstring& newPath );
 
-        BIT7Z_NODISCARD tstring name() const override;
+        BIT7Z_NODISCARD auto name() const -> tstring override;
 
-        BIT7Z_NODISCARD bool isDir() const override;
+        BIT7Z_NODISCARD auto isDir() const -> bool override;
 
-        BIT7Z_NODISCARD uint64_t size() const override;
+        BIT7Z_NODISCARD auto isSymLink() const -> bool override;
 
-        BIT7Z_NODISCARD FILETIME creationTime() const override;
+        BIT7Z_NODISCARD auto size() const -> uint64_t override;
 
-        BIT7Z_NODISCARD FILETIME lastAccessTime() const override;
+        BIT7Z_NODISCARD auto creationTime() const -> FILETIME override;
 
-        BIT7Z_NODISCARD FILETIME lastWriteTime() const override;
+        BIT7Z_NODISCARD auto lastAccessTime() const -> FILETIME override;
 
-        BIT7Z_NODISCARD uint32_t attributes() const override;
+        BIT7Z_NODISCARD auto lastWriteTime() const -> FILETIME override;
 
-        BIT7Z_NODISCARD tstring path() const override;
+        BIT7Z_NODISCARD auto attributes() const -> uint32_t override;
 
-        BIT7Z_NODISCARD fs::path inArchivePath() const override;
+        BIT7Z_NODISCARD auto path() const -> tstring override;
 
-        BIT7Z_NODISCARD HRESULT getStream( ISequentialInStream** inStream ) const noexcept override;
+        BIT7Z_NODISCARD auto inArchivePath() const -> fs::path override;
 
-        BIT7Z_NODISCARD bool hasNewData() const noexcept override;
+        BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const noexcept -> HRESULT override;
+
+        BIT7Z_NODISCARD auto hasNewData() const noexcept -> bool override;
 
     private:
         const BitInputArchive& mInputArchive;

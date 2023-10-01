@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,19 +16,18 @@
 #pragma warning(disable:4996)
 #endif
 
+#include <algorithm> //for std::copy_n
+
 #include "internal/cbufferinstream.hpp"
 #include "internal/bufferutil.hpp"
 
-#include <algorithm> //for std::copy_n
-#include <cstdint>
+namespace bit7z {
 
-using namespace bit7z;
-
-CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer )
-    : mBuffer( in_buffer ), mCurrentPosition{ mBuffer.begin() } {}
+CBufferInStream::CBufferInStream( const vector< byte_t >& inBuffer )
+    : mBuffer( inBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -41,16 +40,16 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
      * so "remaining" will always be > 0 (and casts to unsigned types are safe) */
     size_t remaining = mBuffer.cend() - mCurrentPosition;
     if ( remaining > static_cast< size_t >( size ) ) {
-        /* Remaining buffer still to read is bigger than the buffer size requested by the user,
-         * so we need to read just "size" number of bytes. */
+        /* The remaining buffer still to read is bigger than the buffer size requested by the user,
+         * so we need to read just a "size" number of bytes. */
         remaining = static_cast< size_t >( size );
     }
-    /* else, the user requested to read a number of bytes greater than or equal to the number
+    /* Else, the user requested to read a number of bytes greater than or equal to the number
      * of remaining bytes to be read from the buffer.
      * So we just read all the remaining bytes, not more or less. */
 
     /* Note: here remaining is > 0 */
-    std::copy_n( mCurrentPosition, remaining, static_cast< byte_t* >( data ) );
+    std::copy_n( mCurrentPosition, remaining, static_cast< byte_t* >( data ) ); //-V2571
     std::advance( mCurrentPosition, remaining );
 
     if ( processedSize != nullptr ) {
@@ -63,21 +62,23 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t new_index{};
-    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, new_index );
+    int64_t newIndex{};
+    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {
-        // new_index is not in the range [0, mBuffer.size]
+        // The newIndex is not in the range [0, mBuffer.size]
         return res;
     }
 
-    // Note: new_index can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
-    mCurrentPosition = mBuffer.cbegin() + static_cast< index_t >( new_index );
+    // Note: newIndex can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
+    mCurrentPosition = mBuffer.cbegin() + static_cast< index_t >( newIndex );
 
     if ( newPosition != nullptr ) {
-        // Safe cast, since new_index >= 0
-        *newPosition = static_cast< UInt64 >( new_index );
+        // Safe cast, since newIndex >= 0
+        *newPosition = static_cast< UInt64 >( newIndex );
     }
 
     return S_OK;
 }
+
+} // namespace bit7z

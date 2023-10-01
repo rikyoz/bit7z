@@ -11,11 +11,11 @@
 #define CBUFFEROUTSTREAM_HPP
 
 #include "bittypes.hpp"
+#include "internal/com.hpp"
 #include "internal/guids.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 namespace bit7z {
 
@@ -23,26 +23,27 @@ using std::vector;
 
 class CBufferOutStream final : public IOutStream, public CMyUnknownImp {
     public:
-        explicit CBufferOutStream( vector< byte_t >& out_buffer );
+        explicit CBufferOutStream( vector< byte_t >& outBuffer );
 
         CBufferOutStream( const CBufferOutStream& ) = delete;
 
         CBufferOutStream( CBufferOutStream&& ) = delete;
 
-        CBufferOutStream& operator=( const CBufferOutStream& ) = delete;
+        auto operator=( const CBufferOutStream& ) -> CBufferOutStream& = delete;
 
-        CBufferOutStream& operator=( CBufferOutStream&& ) = delete;
+        auto operator=( CBufferOutStream&& ) -> CBufferOutStream& = delete;
 
         MY_UNKNOWN_DESTRUCTOR( ~CBufferOutStream() ) = default;
-
-        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
 
-        BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511 //-V835
 
     private:
         buffer_t& mBuffer;

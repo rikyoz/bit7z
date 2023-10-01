@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,28 +16,28 @@
 
 using namespace bit7z;
 
-BitArchiveItemOffset::BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept
-    : BitArchiveItem( item_index ), mArc( &item_arc ) {}
+BitArchiveItemOffset::BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept
+    : BitArchiveItem( itemIndex ), mArc( &inputArchive ) {}
 
-BitArchiveItemOffset& BitArchiveItemOffset::operator++() noexcept {
+auto BitArchiveItemOffset::operator++() noexcept -> BitArchiveItemOffset& {
     ++mItemIndex;
     return *this;
 }
 
-BitArchiveItemOffset BitArchiveItemOffset::operator++( int ) noexcept { // NOLINT(cert-dcl21-cpp)
-    BitArchiveItemOffset old_value = *this;
+auto BitArchiveItemOffset::operator++( int ) noexcept -> BitArchiveItemOffset { // NOLINT(cert-dcl21-cpp)
+    BitArchiveItemOffset oldValue = *this;
     ++( *this );
-    return old_value;
+    return oldValue;
 }
 
-bool BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const noexcept {
+auto BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const noexcept -> bool {
     return mItemIndex == other.mItemIndex;
 }
 
-bool BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const noexcept {
+auto BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const noexcept -> bool {
     return !( *this == other );
 }
 
-BitPropVariant BitArchiveItemOffset::itemProperty( BitProperty property ) const {
+auto BitArchiveItemOffset::itemProperty( BitProperty property ) const -> BitPropVariant {
     return mArc != nullptr ? mArc->itemProperty( mItemIndex, property ) : BitPropVariant();
 }

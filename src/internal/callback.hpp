@@ -13,19 +13,15 @@
 #include <string>
 
 #include "bitabstractarchivehandler.hpp"
+#include "internal/com.hpp"
 #include "internal/guids.hpp"
-
-#include <Common/MyCom.h>
-
-constexpr auto kPasswordNotDefined = "Password is not defined";
-constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 
 namespace bit7z {
 
 /* On Windows, 7-zip's CMyUnknownImp class has a virtual destructor if the compiler is MinGW/GCC/Clang.
  * On MSVC or on Unix, the destructor is not virtual. */
 #ifdef _WIN32
-#   if defined(__GNUC__) || defined(__clang__)
+#   if ( defined(__GNUC__) || defined(__clang__) ) && !defined( SEVENZIP_2301 )
 #       define CALLBACK_DESTRUCTOR( x ) x override
 #   endif
 #endif
@@ -40,9 +36,9 @@ class Callback : protected CMyUnknownImp {
 
         Callback( Callback&& ) = delete;
 
-        Callback& operator=( const Callback& ) = delete;
+        auto operator=( const Callback& ) -> Callback& = delete;
 
-        Callback& operator=( Callback&& ) = delete;
+        auto operator=( Callback&& ) -> Callback& = delete;
 
         CALLBACK_DESTRUCTOR( ~Callback() ) = default;
 

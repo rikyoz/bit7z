@@ -7,18 +7,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifndef COUTMULTIVOLUMESTREAM_HPP
-#define COUTMULTIVOLUMESTREAM_HPP
+#ifndef CMULTIVOLUMEOUTSTREAM_HPP
+#define CMULTIVOLUMEOUTSTREAM_HPP
 
 #include <vector>
 #include <string>
 #include <cstdint>
 
+#include "internal/com.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/cvolumeoutstream.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 
 using std::vector;
@@ -54,24 +54,23 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
 
         CMultiVolumeOutStream( CMultiVolumeOutStream&& ) = delete;
 
-        CMultiVolumeOutStream& operator=( const CMultiVolumeOutStream& ) = delete;
+        auto operator=( const CMultiVolumeOutStream& ) -> CMultiVolumeOutStream& = delete;
 
-        CMultiVolumeOutStream& operator=( CMultiVolumeOutStream&& ) = delete;
+        auto operator=( CMultiVolumeOutStream&& ) -> CMultiVolumeOutStream& = delete;
 
         MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeOutStream() ) = default;
-
-        BIT7Z_NODISCARD UInt64 GetSize() const noexcept;
-
-        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
 
-        BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511 //-V835
 };
 
 }  // namespace bit7z
 
-#endif // COUTMULTIVOLUMESTREAM_HPP
+#endif // CMULTIVOLUMEOUTSTREAM_HPP

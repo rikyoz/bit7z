@@ -18,7 +18,7 @@ if( DOXYGEN_FOUND )
     FetchContent_Declare(
             doxygen-extra
             GIT_REPOSITORY https://gist.github.com/db15772ef4daa2259c2aaff11c64441a.git
-            GIT_TAG 39012c1a479e267c13260740301668af4839aa17
+            GIT_TAG 0ee904a82c7fab446934200ad53667621ad9082a
             GIT_PROGRESS ON
             GIT_SHALLOW ON
             SOURCE_DIR ${EXTRA_PATH}
@@ -58,6 +58,3 @@ if( DOXYGEN_FOUND )
 else()
     message( "Doxygen need to be installed to generate the doxygen documentation" )
 endif()
-
-
-# configure_file(${CMAKE_CURRENT_LIST_DIR}/Doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)

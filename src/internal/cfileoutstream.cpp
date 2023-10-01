@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,11 +12,15 @@
 
 #include <utility>
 
-#include "internal/cfileoutstream.hpp"
-
 #include "bitexception.hpp"
+#include "internal/cfileoutstream.hpp"
+#include "internal/util.hpp"
 
-using namespace bit7z;
+#if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
+#include "internal/fsutil.hpp"
+#endif
+
+namespace bit7z {
 
 CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     : CStdOutStream( mFileStream ), mFilePath{ std::move( filePath ) }, mBuffer{} {
@@ -26,29 +30,31 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
             // the call to fs::exists succeeded, but the filePath exists, and this is an error!
             error = std::make_error_code( std::errc::file_exists );
         }
-        throw BitException( "Failed to create the output file", error, mFilePath.string< tchar >() );
+        throw BitException( "Failed to create the output file", error, path_to_tstring( mFilePath ) );
     }
-    mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc );
+    mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
         throw BitException( "Failed to open the output file",
                             make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
-                            mFilePath.string< tchar >() );
+                            path_to_tstring( mFilePath ) );
     }
 
-    mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), buffer_size );
+    mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );
 }
 
-bool CFileOutStream::fail() const {
+auto CFileOutStream::fail() const -> bool {
     return mFileStream.fail();
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) noexcept {
     std::error_code error;
     fs::resize_file( mFilePath, newSize, error );
     return error ? E_FAIL : S_OK;
 }
 
-const fs::path& CFileOutStream::path() const {
+auto CFileOutStream::path() const -> const fs::path& {
     return mFilePath;
 }
+
+} // namespace bit7z

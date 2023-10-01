@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,49 +16,49 @@ using namespace bit7z;
 
 BitAbstractArchiveHandler::BitAbstractArchiveHandler( const Bit7zLibrary& lib,
                                                       tstring password,
-                                                      OverwriteMode overwrite_mode )
+                                                      OverwriteMode overwriteMode )
     : mLibrary{ lib },
       mPassword{ std::move( password ) },
       mRetainDirectories{ true },
-      mOverwriteMode{ overwrite_mode } {}
+      mOverwriteMode{ overwriteMode } {}
 
-const Bit7zLibrary& BitAbstractArchiveHandler::library() const noexcept {
+auto BitAbstractArchiveHandler::library() const noexcept -> const Bit7zLibrary& {
     return mLibrary;
 }
 
-tstring BitAbstractArchiveHandler::password() const {
+auto BitAbstractArchiveHandler::password() const -> tstring {
     return mPassword;
 }
 
-bool BitAbstractArchiveHandler::retainDirectories() const noexcept {
+auto BitAbstractArchiveHandler::retainDirectories() const noexcept -> bool {
     return mRetainDirectories;
 }
 
-bool BitAbstractArchiveHandler::isPasswordDefined() const noexcept {
+auto BitAbstractArchiveHandler::isPasswordDefined() const noexcept -> bool {
     return !mPassword.empty();
 }
 
-TotalCallback BitAbstractArchiveHandler::totalCallback() const {
+auto BitAbstractArchiveHandler::totalCallback() const -> TotalCallback {
     return mTotalCallback;
 }
 
-ProgressCallback BitAbstractArchiveHandler::progressCallback() const {
+auto BitAbstractArchiveHandler::progressCallback() const -> ProgressCallback {
     return mProgressCallback;
 }
 
-RatioCallback BitAbstractArchiveHandler::ratioCallback() const {
+auto BitAbstractArchiveHandler::ratioCallback() const -> RatioCallback {
     return mRatioCallback;
 }
 
-FileCallback BitAbstractArchiveHandler::fileCallback() const {
+auto BitAbstractArchiveHandler::fileCallback() const -> FileCallback {
     return mFileCallback;
 }
 
-PasswordCallback BitAbstractArchiveHandler::passwordCallback() const {
+auto BitAbstractArchiveHandler::passwordCallback() const -> PasswordCallback {
     return mPasswordCallback;
 }
 
-OverwriteMode BitAbstractArchiveHandler::overwriteMode() const {
+auto BitAbstractArchiveHandler::overwriteMode() const -> OverwriteMode {
     return mOverwriteMode;
 }
 

@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -17,9 +17,8 @@
 #include "internal/util.hpp"
 
 using namespace std;
-using namespace bit7z;
 
-constexpr auto kCannotDeleteOutput = "Cannot erase output buffer";
+namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
                                               map< tstring, vector< byte_t > >& buffersMap )
@@ -30,7 +29,7 @@ void BufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-HRESULT BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }
@@ -42,9 +41,10 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStrea
     if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;
     } else if ( prop.isString() ) {
-        fullPath = prop.getString();
         if ( !mHandler.retainDirectories() ) {
-            fullPath = fs::path{ fullPath }.filename().string< tchar >();
+            fullPath = path_to_tstring( fs::path{ prop.getNativeString() }.filename() );
+        } else {
+            fullPath = prop.getString();
         }
     } else {
         return E_FAIL;
@@ -55,26 +55,27 @@ HRESULT BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStrea
     }
 
     //Note: using [] operator it creates the buffer if it does not already exist!
-    auto& out_buffer = mBuffersMap[ fullPath ];
-    if ( !out_buffer.empty() ) {
+    auto& outBuffer = mBuffersMap[ fullPath ];
+    if ( !outBuffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {
             case OverwriteMode::None: {
-                throw BitException( kCannotDeleteOutput, make_hresult_code( E_ABORT ) );
+                throw BitException( "Cannot erase output buffer", make_hresult_code( E_ABORT ) );
             }
             case OverwriteMode::Skip: {
                 return S_OK;
             }
             case OverwriteMode::Overwrite:
             default: {
-                out_buffer.clear();
+                outBuffer.clear();
                 break;
             }
         }
     }
 
-    auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( out_buffer );
+    auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( outBuffer );
     mOutMemStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;
 }
 
+} // namespace bit7z

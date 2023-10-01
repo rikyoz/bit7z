@@ -28,9 +28,9 @@ class FileExtractCallback final : public ExtractCallback {
 
         FileExtractCallback( FileExtractCallback&& ) = delete;
 
-        FileExtractCallback& operator=( const FileExtractCallback& ) = delete;
+        auto operator=( const FileExtractCallback& ) -> FileExtractCallback& = delete;
 
-        FileExtractCallback& operator=( FileExtractCallback&& ) = delete;
+        auto operator=( FileExtractCallback&& ) -> FileExtractCallback& = delete;
 
         ~FileExtractCallback() override = default;
 
@@ -44,13 +44,14 @@ class FileExtractCallback final : public ExtractCallback {
 
         CMyComPtr< CFileOutStream > mFileOutStream;
 
-        HRESULT finishOperation( OperationResult operation_result ) override;
+        auto finishOperation( OperationResult operationResult ) -> HRESULT override;
 
         void releaseStream() override;
 
-        fs::path getCurrentItemPath() const;
+        BIT7Z_NODISCARD
+        auto getCurrentItemPath() const -> fs::path;
 
-        HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream ) override;
+        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
 }  // namespace bit7z

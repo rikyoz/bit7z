@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,24 +19,24 @@ BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib, const BitInOutForma
     : BitAbstractArchiveCreator( lib, format ), BitOutputArchive( *this, tstring{} ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
-                                    const tstring& in_archive,
+                                    const tstring& inArchive,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
-      BitOutputArchive( *this, in_archive ) {}
+      BitOutputArchive( *this, inArchive ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
-                                    const std::vector< byte_t >& in_archive,
+                                    const std::vector< byte_t >& inArchive,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
-      BitOutputArchive( *this, in_archive ) {}
+      BitOutputArchive( *this, inArchive ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
-                                    std::istream& in_archive,
+                                    std::istream& inArchive,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),
-      BitOutputArchive( *this, in_archive ) {}
+      BitOutputArchive( *this, inArchive ) {}
 
 } // namespace bit7z

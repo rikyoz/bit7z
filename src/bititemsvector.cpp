@@ -3,100 +3,108 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bititemsvector.hpp"
-
 #include "bitexception.hpp"
+#include "bititemsvector.hpp"
 #include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
 #include "internal/stdinputitem.hpp"
 
 using namespace bit7z;
-using filesystem::FSItem;
-using filesystem::FSIndexer;
+using filesystem::FilesystemItem;
+using filesystem::FilesystemIndexer;
+using filesystem::SymlinkPolicy;
 
-void BitItemsVector::indexDirectory( const fs::path& in_dir, const tstring& filter, IndexingOptions options ) {
-    //Note: if in_dir is an invalid path, FSItem constructor throws a BitException!
-    const FSItem dir_item{ in_dir, options.retain_folder_structure ? in_dir : fs::path{} };
-    if ( filter.empty() && !dir_item.inArchivePath().empty() ) {
-        mItems.emplace_back( std::make_unique< FSItem >( dir_item ) );
+void BitItemsVector::indexDirectory( const fs::path& inDir,
+                                     const tstring& filter,
+                                     FilterPolicy policy,
+                                     IndexingOptions options ) {
+    const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    // Note: if inDir is an invalid path, FilesystemItem constructor throws a BitException!
+    const FilesystemItem dirItem{ inDir, options.retainFolderStructure ? inDir : fs::path{}, symlinkPolicy };
+    if ( filter.empty() && !dirItem.inArchivePath().empty() ) {
+        mItems.emplace_back( std::make_unique< FilesystemItem >( dirItem ) );
     }
-    FSIndexer indexer{ dir_item, filter, options.only_files };
+    FilesystemIndexer indexer{ dirItem, filter, policy, symlinkPolicy, options.onlyFiles };
     indexer.listDirectoryItems( mItems, options.recursive );
 }
 
-void BitItemsVector::indexPaths( const std::vector< tstring >& in_paths, IndexingOptions options ) {
-    for ( const auto& file_path : in_paths ) {
-        const FSItem item{ file_path, options.retain_folder_structure ? file_path : BIT7Z_STRING( "" ) };
+void BitItemsVector::indexPaths( const std::vector< tstring >& inPaths, IndexingOptions options ) {
+    const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    for ( const auto& filePath : inPaths ) {
+        const FilesystemItem item{ filePath, options.retainFolderStructure ? filePath : BIT7Z_STRING( "" ), symlinkPolicy };
         indexItem( item, options );
     }
 }
 
-void BitItemsVector::indexPathsMap( const std::map< tstring, tstring >& in_paths, IndexingOptions options ) {
-    for ( const auto& file_pair : in_paths ) {
-        const FSItem item{ fs::path( file_pair.first ), fs::path( file_pair.second ) };
+void BitItemsVector::indexPathsMap( const std::map< tstring, tstring >& inPaths, IndexingOptions options ) {
+    const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    for ( const auto& filePair : inPaths ) {
+        const FilesystemItem item{ fs::path( filePair.first ), fs::path( filePair.second ), symlinkPolicy };
         indexItem( item, options );
     }
 }
 
-void BitItemsVector::indexItem( const FSItem& item, IndexingOptions options ) {
+void BitItemsVector::indexItem( const FilesystemItem& item, IndexingOptions options ) {
     if ( !item.isDir() ) {
-        mItems.emplace_back( std::make_unique< FSItem >( item ) );
+        mItems.emplace_back( std::make_unique< FilesystemItem >( item ) );
     } else if ( options.recursive ) { // The item is a directory
         if ( !item.inArchivePath().empty() ) {
-            mItems.emplace_back( std::make_unique< FSItem >( item ) );
+            mItems.emplace_back( std::make_unique< FilesystemItem >( item ) );
         }
-        FSIndexer indexer{ item, {}, options.only_files };
+        const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+        FilesystemIndexer indexer{ item, {}, FilterPolicy::Include, symlinkPolicy, options.onlyFiles };
         indexer.listDirectoryItems( mItems, true );
     } else {
         // No action needed
     }
 }
 
-void BitItemsVector::indexFile( const tstring& in_file, const tstring& name ) {
-    if ( fs::is_directory( in_file ) ) {
+void BitItemsVector::indexFile( const tstring& inFile, const tstring& name, bool followSymlinks ) {
+    if ( fs::is_directory( inFile ) ) {
         throw BitException( "Input path points to a directory, not a file",
-                            std::make_error_code( std::errc::invalid_argument ), in_file );
+                            std::make_error_code( std::errc::invalid_argument ), inFile );
     }
-    mItems.emplace_back( std::make_unique< FSItem >( in_file, name ) );
+    const auto symlinkPolicy = followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    mItems.emplace_back( std::make_unique< FilesystemItem >( inFile, name, symlinkPolicy ) );
 }
 
-void BitItemsVector::indexBuffer( const vector< byte_t >& in_buffer, const tstring& name ) {
-    mItems.emplace_back( std::make_unique< BufferItem >( in_buffer, name ) );
+void BitItemsVector::indexBuffer( const vector< byte_t >& inBuffer, const tstring& name ) {
+    mItems.emplace_back( std::make_unique< BufferItem >( inBuffer, name ) );
 }
 
-void BitItemsVector::indexStream( std::istream& in_stream, const tstring& name ) {
-    mItems.emplace_back( std::make_unique< StdInputItem >( in_stream, name ) );
+void BitItemsVector::indexStream( std::istream& inStream, const tstring& name ) {
+    mItems.emplace_back( std::make_unique< StdInputItem >( inStream, name ) );
 }
 
-size_t BitItemsVector::size() const {
+auto BitItemsVector::size() const -> size_t {
     return mItems.size();
 }
 
-const GenericInputItem& BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const {
+auto BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const -> const GenericInputItem& {
     // Note: here index is expected to be correct!
     return *mItems[ index ];
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::begin() const noexcept {
+auto BitItemsVector::begin() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cbegin();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::end() const noexcept {
+auto BitItemsVector::end() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cend();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::cbegin() const noexcept {
+auto BitItemsVector::cbegin() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cbegin();
 }
 
-GenericInputItemVector::const_iterator BitItemsVector::cend() const noexcept {
+auto BitItemsVector::cend() const noexcept -> GenericInputItemVector::const_iterator {
     return mItems.cend();
 }
 

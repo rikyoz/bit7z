@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -18,37 +18,35 @@
 
 namespace bit7z {
 
-using std::function;
-
 class BitInFormat;
 
 /**
  * @brief A std::function whose argument is the total size of the ongoing operation.
  */
-using TotalCallback = function< void( uint64_t ) >;
+using TotalCallback = std::function< void( uint64_t ) >;
 
 /**
  * @brief A std::function whose argument is the currently processed size of the ongoing operation and returns
  *        true or false whether the operation must continue or not.
  */
-using ProgressCallback = function< bool( uint64_t ) >;
+using ProgressCallback = std::function< bool( uint64_t ) >;
 
 /**
  * @brief A std::function whose arguments are the current processed input size, and the current output size of the
  *        ongoing operation.
  */
-using RatioCallback = function< void( uint64_t, uint64_t ) >;
+using RatioCallback = std::function< void( uint64_t, uint64_t ) >;
 
 /**
  * @brief A std::function whose argument is the path, in the archive, of the file currently being processed
  *        by the ongoing operation.
  */
-using FileCallback = function< void( tstring ) >;
+using FileCallback = std::function< void( tstring ) >;
 
 /**
  * @brief A std::function returning the password to be used to handle an archive.
  */
-using PasswordCallback = function< tstring() >;
+using PasswordCallback = std::function< tstring() >;
 
 /**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
@@ -62,6 +60,15 @@ enum struct OverwriteMode {
 };
 
 /**
+ * @brief Enumeration representing the policy according to which the archive handler should treat
+ *        the items that match the pattern given by the user.
+ */
+enum struct FilterPolicy {
+    Include, ///< Extract/compress the items that match the pattern.
+    Exclude  ///< Do not extract/compress the items that match the pattern.
+};
+
+/**
  * @brief Abstract class representing a generic archive handler.
  */
 class BitAbstractArchiveHandler {
@@ -70,67 +77,67 @@ class BitAbstractArchiveHandler {
 
         BitAbstractArchiveHandler( BitAbstractArchiveHandler&& ) = delete;
 
-        BitAbstractArchiveHandler& operator=( const BitAbstractArchiveHandler& ) = delete;
+        auto operator=( const BitAbstractArchiveHandler& ) -> BitAbstractArchiveHandler& = delete;
 
-        BitAbstractArchiveHandler& operator=( BitAbstractArchiveHandler&& ) = delete;
+        auto operator=( BitAbstractArchiveHandler&& ) -> BitAbstractArchiveHandler& = delete;
 
         virtual ~BitAbstractArchiveHandler() = default;
 
         /**
          * @return the Bit7zLibrary object used by the handler.
          */
-        BIT7Z_NODISCARD const Bit7zLibrary& library() const noexcept;
+        BIT7Z_NODISCARD auto library() const noexcept -> const Bit7zLibrary&;
 
         /**
          * @return the format used by the handler for extracting or compressing.
          */
-        BIT7Z_NODISCARD virtual const BitInFormat& format() const = 0;
+        BIT7Z_NODISCARD virtual auto format() const -> const BitInFormat& = 0;
 
         /**
          * @return the password used to open, extract, or encrypt the archive.
          */
-        BIT7Z_NODISCARD tstring password() const;
+        BIT7Z_NODISCARD auto password() const -> tstring;
 
         /**
          * @return a boolean value indicating whether the directory structure must be preserved while extracting
          * or compressing the archive.
          */
-        BIT7Z_NODISCARD bool retainDirectories() const noexcept;
+        BIT7Z_NODISCARD auto retainDirectories() const noexcept -> bool;
 
         /**
          * @return a boolean value indicating whether a password is defined or not.
          */
-        BIT7Z_NODISCARD bool isPasswordDefined() const noexcept;
+        BIT7Z_NODISCARD auto isPasswordDefined() const noexcept -> bool;
 
         /**
          * @return the current total callback.
          */
-        BIT7Z_NODISCARD TotalCallback totalCallback() const;
+        BIT7Z_NODISCARD auto totalCallback() const -> TotalCallback;
 
         /**
          * @return the current progress callback.
          */
-        BIT7Z_NODISCARD ProgressCallback progressCallback() const;
+        BIT7Z_NODISCARD auto progressCallback() const -> ProgressCallback;
 
         /**
          * @return the current ratio callback.
          */
-        BIT7Z_NODISCARD RatioCallback ratioCallback() const;
+        BIT7Z_NODISCARD auto ratioCallback() const -> RatioCallback;
 
         /**
          * @return the current file callback.
          */
-        BIT7Z_NODISCARD FileCallback fileCallback() const;
+        BIT7Z_NODISCARD auto fileCallback() const -> FileCallback;
 
         /**
          * @return the current password callback.
          */
-        BIT7Z_NODISCARD PasswordCallback passwordCallback() const;
+        BIT7Z_NODISCARD auto passwordCallback() const -> PasswordCallback;
 
         /**
          * @return the current OverwriteMode.
          */
-        BIT7Z_NODISCARD OverwriteMode overwriteMode() const;
+        BIT7Z_NODISCARD auto overwriteMode() const -> OverwriteMode;
 
         /**
          * @brief Sets up a password to be used by the archive handler.
@@ -180,7 +187,7 @@ class BitAbstractArchiveHandler {
          * @brief Sets the function to be called when the processed size of the ongoing operation is updated.
          *
          * @note The completion percentage of the current operation can be obtained by calculating
-         * `static_cast<int>( ( 100.0 * processed_size ) / total_size )`.
+         * `static_cast<int>((100.0 * processed_size) / total_size)`.
          *
          * @param callback  the progress callback to be used.
          */
@@ -191,7 +198,7 @@ class BitAbstractArchiveHandler {
          * ongoing operation are known.
          *
          * @note The ratio percentage of a compression operation can be obtained by calculating
-         * `static_cast<int>( ( 100.0 * output_size ) / input_size )`.
+         * `static_cast<int>((100.0 * output_size) / input_size)`.
          *
          * @param callback  the ratio callback to be used.
          */
@@ -221,7 +228,7 @@ class BitAbstractArchiveHandler {
     protected:
         explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib,
                                             tstring password = {},
-                                            OverwriteMode overwrite_mode = OverwriteMode::None );
+                                            OverwriteMode overwriteMode = OverwriteMode::None );
 
     private:
         const Bit7zLibrary& mLibrary;

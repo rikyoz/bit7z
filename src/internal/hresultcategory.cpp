@@ -3,28 +3,34 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/hresultcategory.hpp"
-
 #include "bittypes.hpp"
+#include "internal/hresultcategory.hpp"
 #include "internal/windows.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
-const char* hresult_category_t::name() const noexcept {
+auto HRESULTCategory::name() const noexcept -> const char* {
     return "HRESULT";
 }
 
-std::string hresult_category_t::message( int ev ) const {
+auto HRESULTCategory::message( int errorValue ) const -> std::string {
 #ifdef _MSC_VER
-    // MSVC compilers use FormatMessage, which seems to support both Win32 errors and HRESULT com errors.
-    return std::system_category().message( ev );
+    // MSVC compilers use FormatMessage, which supports both Win32 errors and HRESULT com errors.
+#   if _MSC_VER >= 1920
+    return std::system_category().message( errorValue );
+#   else
+    // Old versions of MSVC had a trailing \r\n in the error message, so we trim it.
+    auto error_message = std::system_category().message( errorValue );
+    error_message.erase( error_message.find_last_not_of( " \r\n" ) + 1 );
+    return error_message;
+#   endif
 #elif defined( __MINGW32__ )
     // MinGW supports FormatMessageA!
     LPSTR messageBuffer = nullptr;
@@ -32,7 +38,7 @@ std::string hresult_category_t::message( int ev ) const {
                                    FORMAT_MESSAGE_FROM_SYSTEM |
                                    FORMAT_MESSAGE_IGNORE_INSERTS |
                                    FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                                   nullptr, ev, 0, reinterpret_cast<LPSTR>( &messageBuffer ), 0, nullptr );
+                                   nullptr, errorValue, 0, reinterpret_cast< LPSTR >( &messageBuffer ), 0, nullptr );
     if ( msgSize == 0 ) {
         return "Unknown error";
     }
@@ -44,7 +50,7 @@ std::string hresult_category_t::message( int ev ) const {
     return errorMessage;
 #else
     // Note: same messages returned by FormatMessageA on Windows platform.
-    switch ( static_cast< HRESULT >( ev ) ) {
+    switch ( static_cast< HRESULT >( errorValue ) ) {
         case E_ABORT:
             return "Operation aborted";
         case E_NOTIMPL:
@@ -73,17 +79,17 @@ std::string hresult_category_t::message( int ev ) const {
         case E_FAIL:
             return "Unspecified error";
         default:
-            if ( HRESULT_FACILITY( ev ) == FACILITY_CODE ) {
+            if ( HRESULT_FACILITY( errorValue ) == FACILITY_CODE ) {
                 // POSIX error code wrapped in a HRESULT value (e.g., through HRESULT_FROM_WIN32 macro)
-                return std::system_category().message( HRESULT_CODE( ev ) );
+                return std::system_category().message( HRESULT_CODE( errorValue ) );
             }
             return "Unknown error";
     }
 #endif
 }
 
-std::error_condition hresult_category_t::default_error_condition( int error_value ) const noexcept {
-    switch ( static_cast< HRESULT >( error_value ) ) {
+auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -> std::error_condition {
+    switch ( static_cast< HRESULT >( errorValue ) ) {
         // Note: in all cases, except the default one, error's category is std::generic_category(), i.e., POSIX errors.
         case E_ABORT:
             return std::make_error_condition( std::errc::operation_canceled );
@@ -111,10 +117,10 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
         case E_OUTOFMEMORY:
             return std::make_error_condition( std::errc::not_enough_memory );
         default:
-            if ( HRESULT_FACILITY( error_value ) == FACILITY_CODE ) {
+            if ( HRESULT_FACILITY( errorValue ) == FACILITY_CODE ) {
 #ifndef __MINGW32__
                 /* MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
-                 * However, on Windows error_value is a Win32 error wrapped into a HRESULT
+                 * However, on Windows errorValue is a Win32 error wrapped into a HRESULT
                  * (e.g., through HRESULT_FROM_WIN32).
                  * Hence, to avoid returning a wrong error_condition, this check is not performed on MinGW,
                  * and instead we rely on specific cases for most common Win32 error codes (see 'else' branch).
@@ -123,14 +129,14 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
                  *         - std::generic_category() for Win32 errors that can be mapped to a POSIX error;
                  *         - std::system_category() otherwise.
                  *
-                 * Note 3: on Linux, most error_value values returned by p7zip are POSIX error codes wrapped
+                 * Note 3: on Linux, most errorValue values returned by p7zip are POSIX error codes wrapped
                  * into a HRESULT value, hence the following line will return the correct error_condition.
                  * Some error codes returned by p7zip are, however, equal to the Windows code: such cases are
-                 * taken into account in specific cases above!
+                 * taken into account in the specific cases above!
                  */
-                return std::system_category().default_error_condition( HRESULT_CODE( error_value ) );
+                return std::system_category().default_error_condition( HRESULT_CODE( errorValue ) );
 #else
-                switch ( HRESULT_CODE( error_value ) ) {
+                switch ( HRESULT_CODE( errorValue ) ) {
                     case ERROR_ACCESS_DENIED:
                         return std::make_error_condition( std::errc::permission_denied );
                     case ERROR_OPEN_FAILED:
@@ -153,11 +159,13 @@ std::error_condition hresult_category_t::default_error_condition( int error_valu
             }
             /* E.g., E_FAIL
                Note: the resulting error_condition's category is std::hresult_category() */
-            return error_category::default_error_condition( error_value );
+            return error_category::default_error_condition( errorValue );
     }
 }
 
-const std::error_category& bit7z::hresult_category() noexcept {
-    static const bit7z::hresult_category_t instance{};
+auto hresult_category() noexcept -> const std::error_category& {
+    static const bit7z::HRESULTCategory instance{};
     return instance;
 }
+
+} // namespace bit7z

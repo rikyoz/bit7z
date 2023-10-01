@@ -10,11 +10,11 @@
 #ifndef ARCHIVEPROPERTIES_HPP
 #define ARCHIVEPROPERTIES_HPP
 
-#include "bitpropvariant.hpp"
-
 #include <map>
 #include <string>
 #include <vector>
+
+#include "bitpropvariant.hpp"
 
 namespace bit7z {
 
@@ -34,8 +34,8 @@ class ArchiveProperties final {
             mValues.emplace_back( value );
         }
 
-        void addProperties( const std::map< std::wstring, BitPropVariant >& other_properties ) {
-            for ( const auto& entry : other_properties ) {
+        void addProperties( const std::map< std::wstring, BitPropVariant >& otherProperties ) {
+            for ( const auto& entry : otherProperties ) {
                 mNames.emplace_back( entry.first.c_str() );
                 mValues.emplace_back( entry.second );
             }
@@ -45,22 +45,22 @@ class ArchiveProperties final {
 
     public:
         BIT7Z_NODISCARD
-        inline bool empty() const {
+        inline auto empty() const -> bool {
             return mNames.empty();
         }
 
         BIT7Z_NODISCARD
-        inline const wchar_t* const* names() const {
+        inline auto names() const -> const wchar_t* const* {
             return mNames.data();
         }
 
         BIT7Z_NODISCARD
-        inline const PROPVARIANT* values() const {
+        inline auto values() const -> const PROPVARIANT* {
             return mValues.data();
         }
 
         BIT7Z_NODISCARD
-        inline size_t size() const {
+        inline auto size() const -> size_t {
             return mNames.size();
         }
 };

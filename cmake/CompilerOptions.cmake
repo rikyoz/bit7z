@@ -20,6 +20,8 @@ if( MSVC )
         target_compile_options( ${LIB_TARGET} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/analyze>" )
     endif()
 
+    target_compile_options( ${LIB_TARGET} PRIVATE /EHsc )
+
     # remove CMake default warning level
     string( REGEX REPLACE "/W[0-4]" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
@@ -77,6 +79,9 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 3.8 )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wdouble-promotion )
     endif()
+    if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0 )
+        target_compile_options( ${LIB_TARGET} PRIVATE -Wno-missing-braces -Wmissing-field-initializers )
+    endif()
 endif()
 
 if( APPLE )
@@ -88,9 +93,10 @@ endif()
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
     target_compile_options( ${LIB_TARGET} PRIVATE -Wshadow -Wcast-align -Wunused
                             -Woverloaded-virtual -Wformat=2 -Wdouble-promotion -Wlogical-op )
-    if( NOT MINGW )
+    if( NOT MINGW AND BIT7Z_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wnon-virtual-dtor )
-    else()
+    endif()
+    if( MINGW )
         # Some versions of MinGW might complain that the library is too big when linking to it.
         # Using -Wa,-mbig-obj fixes the linking error.
         # (https://digitalkarabela.com/mingw-w64-how-to-fix-file-too-big-too-many-sections/).
@@ -101,7 +107,10 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
         endif()
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0 )
-        target_compile_options( ${LIB_TARGET} PRIVATE -Wno-missing-field-initializers )
+        target_compile_options( ${LIB_TARGET} PRIVATE
+                                -Wno-missing-field-initializers
+                                -Wno-shadow
+                                -Wno-unused-parameter )
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 6.0 )
         target_compile_options( ${LIB_TARGET} PRIVATE

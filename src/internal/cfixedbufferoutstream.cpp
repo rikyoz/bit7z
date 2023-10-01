@@ -3,28 +3,25 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/cfixedbufferoutstream.hpp"
-
 #include <algorithm> //for std::copy_n
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "internal/cfixedbufferoutstream.hpp"
 #include "internal/util.hpp"
-
-using namespace bit7z;
 
 /* Safe integer comparison like in C++20 */
 #ifdef __cpp_if_constexpr
 
 template< class T, class U >
-constexpr bool cmp_less( T t, U u ) noexcept {
+constexpr auto cmp_less( T t, U u ) noexcept -> bool {
     using UT = std::make_unsigned_t< T >;
     using UU = std::make_unsigned_t< U >;
     if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
@@ -39,36 +36,36 @@ constexpr bool cmp_less( T t, U u ) noexcept {
 #else // SFINAE implementation for C++14
 
 template< class T, class U >
-constexpr std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, bool >
-cmp_less( T t, U u ) noexcept {
+constexpr auto
+cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, bool > {
     return t < u;
 }
 
 template< class T, class U >
-constexpr std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool >
-cmp_less( T t, U u ) noexcept {
-    using UT = std::make_unsigned_t< T >;
-    return t < 0 || UT( t ) < u;
+constexpr auto
+cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool > {
+    return t < 0 || std::make_unsigned_t< T >( t ) < u;
 }
 
 template< class T, class U >
-constexpr std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool >
-cmp_less( T t, U u ) noexcept {
-    using UU = std::make_unsigned_t< U >;
-    return u >= 0 && t < UU( u );
+constexpr auto
+cmp_less( T t, U u ) noexcept -> std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool > {
+    return u >= 0 && t < std::make_unsigned_t< U >( u );
 }
 
 #endif
 
 template< class T, class U >
-constexpr bool cmp_greater( T t, U u ) noexcept {
+constexpr auto cmp_greater( T t, U u ) noexcept -> bool {
     return cmp_less( u, t );
 }
 
 template< class T, class U >
-constexpr bool cmp_greater_equal( T t, U u ) noexcept {
+constexpr auto cmp_greater_equal( T t, U u ) noexcept -> bool {
     return !cmp_less( t, u );
 }
+
+namespace bit7z {
 
 CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
     : mBuffer( buffer ), mBufferSize( size ), mCurrentPosition( 0 ) {
@@ -79,56 +76,56 @@ CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) {
+STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
     return newSize != mBufferSize ? E_INVALIDARG : S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t current_index{};
+    int64_t currentIndex{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
             break;
         }
         case STREAM_SEEK_CUR: {
-            current_index = mCurrentPosition;
+            currentIndex = mCurrentPosition;
             break;
         }
         case STREAM_SEEK_END: {
-            current_index = static_cast< int64_t >( mBufferSize );
+            currentIndex = static_cast< int64_t >( mBufferSize );
             break;
         }
         default:
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if the sum between current_index and offset would result in an integer overflow or underflow
-    if ( check_overflow( current_index, offset ) ) {
+    // Checking if the sum between the currentIndex and offset would result in an integer overflow or underflow
+    if ( check_overflow( currentIndex, offset ) ) {
         return E_INVALIDARG;
     }
 
-    const int64_t new_index = current_index + offset;
+    const int64_t newIndex = currentIndex + offset;
 
-    // Making sure the new_index value is between 0 and mBufferSize - 1
-    if ( new_index < 0 ) {
+    // Making sure the newIndex value is between 0 and mBufferSize - 1
+    if ( newIndex < 0 ) {
         return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
     }
 
-    if ( cmp_greater_equal( new_index, mBufferSize ) ) {
+    if ( cmp_greater_equal( newIndex, mBufferSize ) ) {
         return E_INVALIDARG;
     }
 
-    mCurrentPosition = new_index;
+    mCurrentPosition = newIndex;
 
     if ( newPosition != nullptr ) {
-        *newPosition = new_index;
+        *newPosition = newIndex;
     }
 
     return S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -137,26 +134,28 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         return E_FAIL;
     }
 
-    uint32_t write_size = size;
+    uint32_t writeSize = size;
     if ( cmp_greater_equal( size, mBufferSize - mCurrentPosition ) ) {
         /* Writing only to the remaining part of the output buffer!
          * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe! */
-        write_size = static_cast< uint32_t >( mBufferSize - mCurrentPosition );
+        writeSize = static_cast< uint32_t >( mBufferSize - mCurrentPosition );
     }
 
-    const auto* byte_data = static_cast< const byte_t* >( data );
+    const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
     try {
-        std::copy_n( byte_data, write_size,
-                     &mBuffer[ mCurrentPosition ] ); // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        std::copy_n( byteData, writeSize, &mBuffer[ mCurrentPosition ] ); //-V2563
     } catch ( ... ) {
         return E_OUTOFMEMORY;
     }
 
-    mCurrentPosition += write_size;
+    mCurrentPosition += writeSize;
 
     if ( processedSize != nullptr ) {
-        *processedSize = write_size;
+        *processedSize = writeSize;
     }
 
     return S_OK;
 }
+
+} // namespace bit7z

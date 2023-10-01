@@ -23,9 +23,9 @@ class FixedBufferExtractCallback final : public ExtractCallback {
 
         FixedBufferExtractCallback( FixedBufferExtractCallback&& ) = delete;
 
-        FixedBufferExtractCallback& operator=( const FixedBufferExtractCallback& ) = delete;
+        auto operator=( const FixedBufferExtractCallback& ) -> FixedBufferExtractCallback& = delete;
 
-        FixedBufferExtractCallback& operator=( FixedBufferExtractCallback&& ) = delete;
+        auto operator=( FixedBufferExtractCallback&& ) -> FixedBufferExtractCallback& = delete;
 
         ~FixedBufferExtractCallback() override = default;
 
@@ -36,7 +36,7 @@ class FixedBufferExtractCallback final : public ExtractCallback {
 
         void releaseStream() override;
 
-        HRESULT getOutStream( uint32_t index, ISequentialOutStream** outStream ) override;
+        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
 }  // namespace bit7z

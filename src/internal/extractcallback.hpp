@@ -10,9 +10,12 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
+#include <system_error>
+
 #include "bitinputarchive.hpp"
 #include "internal/callback.hpp"
 #include "internal/macros.hpp"
+#include "internal/operationresult.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
@@ -22,23 +25,12 @@ using namespace NArchive::NExtract;
 
 namespace bit7z {
 
+constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
+
 enum struct ExtractMode {
     Extract = NAskMode::kExtract,
     Test = NAskMode::kTest,
     Skip = NAskMode::kSkip
-};
-
-enum struct OperationResult {
-    Success = NOperationResult::kOK,
-    UnsupportedMethod = NOperationResult::kUnsupportedMethod,
-    DataError = NOperationResult::kDataError,
-    CRCError = NOperationResult::kCRCError,
-    Unavailable = NOperationResult::kUnavailable,
-    UnexpectedEnd = NOperationResult::kUnexpectedEnd,
-    DataAfterEnd = NOperationResult::kDataAfterEnd,
-    IsNotArc = NOperationResult::kIsNotArc,
-    HeadersError = NOperationResult::kHeadersError,
-    WrongPassword = NOperationResult::kWrongPassword
 };
 
 class ExtractCallback : public Callback,
@@ -50,14 +42,11 @@ class ExtractCallback : public Callback,
 
         ExtractCallback( ExtractCallback&& ) = delete;
 
-        ExtractCallback& operator=( const ExtractCallback& ) = delete;
+        auto operator=( const ExtractCallback& ) -> ExtractCallback& = delete;
 
-        ExtractCallback& operator=( ExtractCallback&& ) = delete;
+        auto operator=( ExtractCallback&& ) -> ExtractCallback& = delete;
 
         ~ExtractCallback() override = default;
-
-        // NOLINTNEXTLINE(modernize-use-noexcept)
-        MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword )
 
         // IProgress from IArchiveExtractCallback
         BIT7Z_STDMETHOD( SetTotal, UInt64 size );
@@ -68,7 +57,7 @@ class ExtractCallback : public Callback,
         BIT7Z_STDMETHOD( SetRatioInfo, const UInt64* inSize, const UInt64* outSize );
 
         // IArchiveExtractCallback
-        BIT7Z_STDMETHOD_NOEXCEPT( PrepareOperation, Int32 askExtractMode );
+        BIT7Z_STDMETHOD( PrepareOperation, Int32 askExtractMode );
 
         // ICryptoGetTextPassword
         BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* aPassword );
@@ -79,42 +68,46 @@ class ExtractCallback : public Callback,
         BIT7Z_STDMETHOD( SetOperationResult, Int32 operationResult );
 
         BIT7Z_NODISCARD
-        inline const std::exception_ptr& errorException() const {
+        inline auto errorException() const -> const std::exception_ptr& {
             return mErrorException;
         }
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835
 
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
         BIT7Z_NODISCARD
-        inline ExtractMode extractMode() const {
+        inline auto extractMode() const -> ExtractMode {
             return mExtractMode;
         }
 
         BIT7Z_NODISCARD
-        inline bool isItemFolder( uint32_t index ) const {
+        inline auto isItemFolder( uint32_t index ) const -> bool {
             return mInputArchive.isItemFolder( index );
         }
 
         BIT7Z_NODISCARD
-        inline BitPropVariant itemProperty( uint32_t index, BitProperty property ) const {
+        inline auto itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant {
             return mInputArchive.itemProperty( index, property );
         }
 
         BIT7Z_NODISCARD
-        inline const BitInputArchive& inputArchive() const {
+        inline auto inputArchive() const -> const BitInputArchive& {
             return mInputArchive;
         }
 
-        virtual HRESULT finishOperation( OperationResult operation_result );
+        virtual auto finishOperation( OperationResult operationResult ) -> HRESULT;
 
         virtual void releaseStream() = 0;
 
-        virtual HRESULT getOutStream( UInt32 index, ISequentialOutStream** outStream ) = 0;
+        virtual auto getOutStream( UInt32 index, ISequentialOutStream** outStream ) -> HRESULT = 0;
 
     private:
         const BitInputArchive& mInputArchive;
         ExtractMode mExtractMode;
+        bool mIsLastItemEncrypted;
         std::exception_ptr mErrorException;
 };
 

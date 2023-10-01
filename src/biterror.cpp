@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,9 +11,17 @@
  */
 
 #include "biterror.hpp"
-
+#include "internal/failuresourcecategory.hpp"
 #include "internal/internalcategory.hpp"
 
-std::error_code bit7z::make_error_code( const bit7z::BitError& error ) {
+namespace bit7z {
+
+auto make_error_code( BitError error ) -> std::error_code {
     return { static_cast< int >( error ), internal_category() };
 }
+
+auto make_error_condition( BitFailureSource failureSource ) -> std::error_condition {
+    return { static_cast< int >( failureSource ), source_category() };
+}
+
+} // namespace bit7z

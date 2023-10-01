@@ -10,12 +10,12 @@
 #ifndef CMULTIVOLUMEINSTREAM_HPP
 #define CMULTIVOLUMEINSTREAM_HPP
 
+#include "internal/com.hpp"
 #include "internal/cvolumeinstream.hpp"
 #include "internal/macros.hpp"
 #include "internal/guiddef.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 namespace bit7z {
 
@@ -25,28 +25,30 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
 
         std::vector< CMyComPtr< CVolumeInStream > > mVolumes;
 
-        const CMyComPtr< CVolumeInStream >& currentVolume();
+        auto currentVolume() -> const CMyComPtr< CVolumeInStream >&;
 
-        void addVolume( const fs::path& volume_path );
+        void addVolume( const fs::path& volumePath );
 
     public:
-        explicit CMultiVolumeInStream( const fs::path& first_volume );
+        explicit CMultiVolumeInStream( const fs::path& firstVolume );
 
         CMultiVolumeInStream( const CMultiVolumeInStream& ) = delete;
 
         CMultiVolumeInStream( CMultiVolumeInStream&& ) = delete;
 
-        CMultiVolumeInStream& operator=( const CMultiVolumeInStream& ) = delete;
+        auto operator=( const CMultiVolumeInStream& ) -> CMultiVolumeInStream& = delete;
 
-        CMultiVolumeInStream& operator=( CMultiVolumeInStream&& ) = delete;
+        auto operator=( CMultiVolumeInStream&& ) -> CMultiVolumeInStream& = delete;
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CMultiVolumeInStream() ) = default;
 
-        MY_UNKNOWN_IMP1( IInStream )
-
+        // IInStream
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
 
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+
+        // NOLINTNEXTLINE(modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835
 };
 
 } // namespace bit7z

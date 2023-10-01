@@ -32,6 +32,12 @@ constexpr auto native_string = "ON";
 constexpr auto native_string = "OFF";
 #endif
 
+#ifdef BIT7Z_USE_STANDARD_FILESYSTEM
+constexpr auto standard_filesystem = "ON";
+#else
+constexpr auto standard_filesystem = "OFF";
+#endif
+
 } // namespace flags
 } // namespace test
 } // namespace bit7z

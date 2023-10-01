@@ -1,3 +1,0 @@
-[submodule "7-zip"]
-	path = third_party/7-zip
-	url = https://github.com/rikyoz/7-Zip

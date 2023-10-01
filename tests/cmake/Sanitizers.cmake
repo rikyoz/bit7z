@@ -10,12 +10,14 @@ macro( add_sanitizer name )
     unset( CMAKE_REQUIRED_FLAGS )
 endmacro()
 
+option( BIT7Z_TESTS_NO_SANITIZERS "" OFF )
+
 if( MSVC )
-    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /RTCsu /analyze" )
-elseif( NOT WIN32 ) # GCC on Linux (i.e., not MinGW)
+    set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /RTCsu /analyze /guard:cf" )
+elseif( NOT WIN32 AND NOT BIT7Z_TESTS_NO_SANITIZERS ) # GCC/Clang on Linux/macOS (i.e., not MinGW)
     set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer" )
 
-    if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
+    if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "6.0.0" )
         set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -static-libsan" )
     endif()
 
@@ -35,10 +37,15 @@ elseif( NOT WIN32 ) # GCC on Linux (i.e., not MinGW)
         add_sanitizer( leak )
     endif()
 
-    add_sanitizer( address )
-    check_cxx_compiler_flag( -fsanitize-address-use-after-scope COMPILER_SUPPORT_SANITIZE_USE_AFTER_SCOPE )
-    if( COMPILER_SUPPORT_SANITIZE_USE_AFTER_SCOPE )
-        set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize-address-use-after-scope" )
+    # For some reasons, the address sanitizer gives a CHECK failed error on versions of Clang before the 3.9
+    # Also, on old versions of GCC the sanitizer give some false positives.
+    if( ( NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "5.0" ) OR
+        ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "3.9.0" ) )
+        add_sanitizer( address )
+        check_cxx_compiler_flag( -fsanitize-address-use-after-scope COMPILER_SUPPORT_SANITIZE_USE_AFTER_SCOPE )
+        if( COMPILER_SUPPORT_SANITIZE_USE_AFTER_SCOPE )
+            set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize-address-use-after-scope" )
+        endif()
     endif()
 
     add_sanitizer( float-divide-by-zero )

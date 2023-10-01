@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,18 +21,9 @@ namespace bit7z {
 
 namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
-bool wildcardMatch( const tstring& pattern, const tstring& str );
+auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
 } // namespace fsutil
 } // namespace filesystem
-
-/**
- * @brief Enumeration representing the policy according to which the extractor should handle
- * the items that match the pattern given by the user.
- */
-enum struct FilterPolicy {
-    Include, ///< Extract the items that match the pattern.
-    Exclude  ///< Do not extract the items that match the pattern.
-};
 
 /**
  * @brief The BitExtractor template class allows extracting the content of archives from supported input types.
@@ -50,7 +41,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * format of the in_file archives.
          *
          * @note When bit7z is compiled using the BIT7Z_AUTO_FORMAT macro define, the format
-         * argument has default value BitFormat::Auto (automatic format detection of the in_file archive).
+         * argument has the default value BitFormat::Auto (automatic format detection of the in_file archive).
          * Otherwise, when BIT7Z_AUTO_FORMAT is not defined (i.e., no auto format detection available),
          * the format argument must be specified.
          *
@@ -63,125 +54,125 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         /**
          * @brief Extracts the given archive to the chosen directory.
          *
-         * @param in_archive    the input archive to be extracted.
-         * @param out_dir       the output directory where extracted files will be put.
+         * @param inArchive    the input archive to be extracted.
+         * @param outDir       the output directory where extracted files will be put.
          */
-        void extract( Input in_archive, const tstring& out_dir = {} ) const {
-            BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_dir );
+        void extract( Input inArchive, const tstring& outDir = {} ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outDir );
         }
 
         /**
          * @brief Extracts a file from the given archive to the output buffer.
          *
-         * @param in_archive   the input archive to extract from.
-         * @param out_buffer   the output buffer where the content of the extracted file will be put.
+         * @param inArchive   the input archive to extract from.
+         * @param outBuffer   the output buffer where the content of the extracted file will be put.
          * @param index        the index of the file to be extracted from the archive.
          */
-        void extract( Input in_archive, vector< byte_t >& out_buffer, uint32_t index = 0 ) const {
-            BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_buffer, index );
+        void extract( Input inArchive, vector< byte_t >& outBuffer, uint32_t index = 0 ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outBuffer, index );
         }
 
         /**
          * @brief Extracts a file from the given archive to the output stream.
          *
-         * @param in_archive   the input archive to extract from.
-         * @param out_stream   the (binary) stream where the content of the extracted file will be put.
-         * @param index        the index of the file to be extracted from the archive.
+         * @param inArchive   the input archive to extract from.
+         * @param outStream   the (binary) stream where the content of the extracted file will be put.
+         * @param index       the index of the file to be extracted from the archive.
          */
-        void extract( Input in_archive, std::ostream& out_stream, uint32_t index = 0 ) const {
-            BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_stream, index );
+        void extract( Input inArchive, std::ostream& outStream, uint32_t index = 0 ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outStream, index );
         }
 
         /**
          * @brief Extracts the content of the given archive into a map of memory buffers, where the keys are
          * the paths of the files (inside the archive), and the values are their decompressed contents.
          *
-         * @param in_archive    the input archive to be extracted.
-         * @param out_map       the output map.
+         * @param inArchive    the input archive to be extracted.
+         * @param outMap       the output map.
          */
-        void extract( Input in_archive, std::map< tstring, vector< byte_t > >& out_map ) const {
-            BitInputArchive input_archive( *this, in_archive );
-            input_archive.extract( out_map );
+        void extract( Input inArchive, std::map< tstring, vector< byte_t > >& outMap ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outMap );
         }
 
         /**
          * @brief Extracts the files in the archive that match the given wildcard pattern to the chosen directory.
          *
-         * @param in_archive    the input archive to extract from.
-         * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
-         * @param out_dir       the output directory where extracted files will be put.
-         * @param policy        the filtering policy to be applied to the matched items.
+         * @param inArchive    the input archive to extract from.
+         * @param itemFilter   the wildcard pattern used for matching the paths of files inside the archive.
+         * @param outDir       the output directory where extracted files will be put.
+         * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatching( Input in_archive,
-                              const tstring& item_filter,
-                              const tstring& out_dir = {},
+        void extractMatching( Input inArchive,
+                              const tstring& itemFilter,
+                              const tstring& outDir = {},
                               FilterPolicy policy = FilterPolicy::Include ) const {
             using namespace filesystem;
 
-            if ( item_filter.empty() ) {
+            if ( itemFilter.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
             }
 
-            extractMatchingFilter( in_archive, out_dir, policy, [ &item_filter ]( const tstring& item_path ) -> bool {
-                return fsutil::wildcardMatch( item_filter, item_path );
+            extractMatchingFilter( inArchive, outDir, policy, [ &itemFilter ]( const tstring& itemPath ) -> bool {
+                return fsutil::wildcard_match( itemFilter, itemPath );
             } );
         }
 
         /**
          * @brief Extracts to the output buffer the first file in the archive matching the given wildcard pattern.
          *
-         * @param in_archive    the input archive to extract from.
-         * @param item_filter   the wildcard pattern used for matching the paths of files inside the archive.
-         * @param out_buffer    the output buffer where to extract the file.
-         * @param policy        the filtering policy to be applied to the matched items.
+         * @param inArchive    the input archive to extract from.
+         * @param itemFilter   the wildcard pattern used for matching the paths of files inside the archive.
+         * @param outBuffer    the output buffer where to extract the file.
+         * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatching( Input in_archive,
-                              const tstring& item_filter,
-                              vector< byte_t >& out_buffer,
+        void extractMatching( Input inArchive,
+                              const tstring& itemFilter,
+                              vector< byte_t >& outBuffer,
                               FilterPolicy policy = FilterPolicy::Include ) const {
             using namespace filesystem;
 
-            if ( item_filter.empty() ) {
+            if ( itemFilter.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
             }
 
-            extractMatchingFilter( in_archive, out_buffer, policy,
-                                   [ &item_filter ]( const tstring& item_path ) -> bool {
-                                       return fsutil::wildcardMatch( item_filter, item_path );
+            extractMatchingFilter( inArchive, outBuffer, policy,
+                                   [ &itemFilter ]( const tstring& itemPath ) -> bool {
+                                       return fsutil::wildcard_match( itemFilter, itemPath );
                                    } );
         }
 
         /**
          * @brief Extracts the specified items from the given archive to the chosen directory.
          *
-         * @param in_archive    the input archive to extract from.
-         * @param indices       the indices of the files in the archive that should be extracted.
-         * @param out_dir       the output directory where the extracted files will be placed.
+         * @param inArchive    the input archive to extract from.
+         * @param indices      the indices of the files in the archive that should be extracted.
+         * @param outDir       the output directory where the extracted files will be placed.
          */
-        void extractItems( Input in_archive,
+        void extractItems( Input inArchive,
                            const std::vector< uint32_t >& indices,
-                           const tstring& out_dir = {} ) const {
+                           const tstring& outDir = {} ) const {
             if ( indices.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );
             }
 
-            BitInputArchive input_archive( *this, in_archive );
-            uint32_t n_items = input_archive.itemsCount();
+            BitInputArchive inputArchive( *this, inArchive );
+            uint32_t nItems = inputArchive.itemsCount();
             // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
-            const auto find_res = std::find_if( indices.cbegin(),
-                                                indices.cend(),
-                                                [ &n_items ]( uint32_t index ) -> bool {
-                                                    return index >= n_items;
+            const auto findRes = std::find_if( indices.cbegin(),
+                                               indices.cend(),
+                                               [ &nItems ]( uint32_t index ) -> bool {
+                                                    return index >= nItems;
                                                 } );
-            if ( find_res != indices.cend() ) {
-                throw BitException( "Cannot extract item at the index " + std::to_string( *find_res ),
+            if ( findRes != indices.cend() ) {
+                throw BitException( "Cannot extract item at the index " + std::to_string( *findRes ),
                                     make_error_code( BitError::InvalidIndex ) );
             }
 
-            input_archive.extract( out_dir, indices );
+            inputArchive.extractTo( outDir, indices );
         }
 
 #ifdef BIT7Z_REGEX_MATCHING
@@ -191,22 +182,22 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          *
          * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
          *
-         * @param in_archive    the input archive to extract from.
-         * @param regex         the regex used for matching the paths of files inside the archive.
-         * @param out_dir       the output directory where extracted files will be put.
-         * @param policy        the filtering policy to be applied to the matched items.
+         * @param inArchive    the input archive to extract from.
+         * @param regex        the regex used for matching the paths of files inside the archive.
+         * @param outDir       the output directory where extracted files will be put.
+         * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegex( Input in_archive,
+        void extractMatchingRegex( Input inArchive,
                                    const tstring& regex,
-                                   const tstring& out_dir = {},
+                                   const tstring& outDir = {},
                                    FilterPolicy policy = FilterPolicy::Include ) const {
             if ( regex.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
             }
 
-            const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
-            extractMatchingFilter( in_archive, out_dir, policy, [ &regex_filter ]( const tstring& item_path ) -> bool {
-                return std::regex_match( item_path, regex_filter );
+            const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+            extractMatchingFilter( inArchive, outDir, policy, [ &regexFilter ]( const tstring& itemPath ) -> bool {
+                return std::regex_match( itemPath, regexFilter );
             } );
         }
 
@@ -215,23 +206,23 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          *
          * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
          *
-         * @param in_archive    the input archive to extract from.
-         * @param regex         the regex used for matching the paths of files inside the archive.
-         * @param out_buffer    the output buffer where the extracted file will be put.
-         * @param policy        the filtering policy to be applied to the matched items.
+         * @param inArchive    the input archive to extract from.
+         * @param regex        the regex used for matching the paths of files inside the archive.
+         * @param outBuffer    the output buffer where the extracted file will be put.
+         * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegex( Input in_archive,
+        void extractMatchingRegex( Input inArchive,
                                    const tstring& regex,
-                                   vector< byte_t >& out_buffer,
+                                   vector< byte_t >& outBuffer,
                                    FilterPolicy policy = FilterPolicy::Include ) const {
             if ( regex.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
             }
 
-            const tregex regex_filter( regex, tregex::ECMAScript | tregex::optimize );
-            return extractMatchingFilter( in_archive, out_buffer, policy,
-                                          [ &regex_filter ]( const tstring& item_path ) -> bool {
-                                              return std::regex_match( item_path, regex_filter );
+            const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+            return extractMatchingFilter( inArchive, outBuffer, policy,
+                                          [ &regexFilter ]( const tstring& itemPath ) -> bool {
+                                              return std::regex_match( itemPath, regexFilter );
                                           } );
         }
 
@@ -242,56 +233,56 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          *
          * If the archive is not valid, a BitException is thrown!
          *
-         * @param in_archive   the input archive to be tested.
+         * @param inArchive   the input archive to be tested.
          */
-        void test( Input in_archive ) const {
-            BitInputArchive input_archive( *this, in_archive );
-            input_archive.test();
+        void test( Input inArchive ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.test();
         }
 
     private:
-        void extractMatchingFilter( Input in_archive,
-                                    const tstring& out_dir,
+        void extractMatchingFilter( Input inArchive,
+                                    const tstring& outDir,
                                     FilterPolicy policy,
-                                    const function< bool( const tstring& ) >& filter ) const {
-            BitInputArchive input_archive( *this, in_archive );
+                                    const std::function< bool( const tstring& ) >& filter ) const {
+            BitInputArchive inputArchive( *this, inArchive );
 
-            vector< uint32_t > matched_indices;
-            const bool should_extract_matched_items = policy == FilterPolicy::Include;
+            vector< uint32_t > matchedIndices;
+            const bool shouldExtractMatchedItems = policy == FilterPolicy::Include;
             // Searching for files inside the archive that match the given filter
-            for ( const auto& item : input_archive ) {
-                const bool item_matches = filter( item.path() );
-                if ( item_matches == should_extract_matched_items ) {
-                    /* The if-condition is equivalent to an exclusive NOR (negated XOR) between
-                     * item_matches and should_extract_matched_items.
+            for ( const auto& item : inputArchive ) {
+                const bool itemMatches = filter( item.path() );
+                if ( itemMatches == shouldExtractMatchedItems ) {
+                    /* The if-condition is equivalent to an exclusive XNOR (negated XOR) between
+                     * itemMatches and shouldExtractMatchedItems.
                      * In other words, it is true only if the current item either:
                      *  - matches the filter, and we must include any matching item; or
                      *  - doesn't match the filter, and we must exclude those that match. */
-                    matched_indices.push_back( item.index() );
+                    matchedIndices.push_back( item.index() );
                 }
             }
 
-            if ( matched_indices.empty() ) {
+            if ( matchedIndices.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::NoMatchingItems ) );
             }
 
-            input_archive.extract( out_dir, matched_indices );
+            inputArchive.extractTo( outDir, matchedIndices );
         }
 
-        void extractMatchingFilter( Input in_archive,
-                                    vector< byte_t >& out_buffer,
+        void extractMatchingFilter( Input inArchive,
+                                    vector< byte_t >& outBuffer,
                                     FilterPolicy policy,
-                                    const function< bool( const tstring& ) >& filter ) const {
-            BitInputArchive input_archive( *this, in_archive );
+                                    const std::function< bool( const tstring& ) >& filter ) const {
+            BitInputArchive inputArchive( *this, inArchive );
 
-            const bool should_extract_matched_item = policy == FilterPolicy::Include;
+            const bool shouldExtractMatchedItem = policy == FilterPolicy::Include;
             // Searching for files inside the archive that match the given filter
-            for ( const auto& item : input_archive ) {
-                const bool item_matches = filter( item.path() );
-                if ( item_matches == should_extract_matched_item ) {
+            for ( const auto& item : inputArchive ) {
+                const bool itemMatches = filter( item.path() );
+                if ( itemMatches == shouldExtractMatchedItem ) {
                     /* The if-condition is equivalent to an exclusive NOR (negated XOR) between
-                     *  item_matches and should_extract_matched_item. */
-                    input_archive.extract( out_buffer, item.index() );
+                     *  itemMatches and shouldExtractMatchedItem. */
+                    inputArchive.extractTo( outBuffer, item.index() );
                     return;
                 }
             }

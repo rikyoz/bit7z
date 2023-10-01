@@ -3,26 +3,22 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/fileextractcallback.hpp"
-
 #include "bitexception.hpp"
+#include "internal/fileextractcallback.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-
 using namespace std;
 using namespace NWindows;
-using namespace bit7z;
-using namespace bit7z::filesystem;
 
-constexpr auto kCannotDeleteOutput = "Cannot delete output file";
+namespace bit7z {
 
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath )
     : ExtractCallback( inputArchive ),
@@ -34,8 +30,8 @@ void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!
 }
 
-HRESULT FileExtractCallback::finishOperation( OperationResult operation_result ) {
-    const HRESULT result = operation_result != OperationResult::Success ? E_FAIL : S_OK;
+auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
+    const HRESULT result = operationResult != OperationResult::Success ? E_FAIL : S_OK;
     if ( mFileOutStream == nullptr ) {
         return result;
     }
@@ -51,19 +47,19 @@ HRESULT FileExtractCallback::finishOperation( OperationResult operation_result )
     }
 
     if ( mCurrentItem.isModifiedTimeDefined() ) {
-        filesystem::fsutil::setFileModifiedTime( mFilePathOnDisk, mCurrentItem.modifiedTime() );
+        filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem.modifiedTime() );
     }
 
     if ( mCurrentItem.areAttributesDefined() ) {
-        filesystem::fsutil::setFileAttributes( mFilePathOnDisk, mCurrentItem.attributes() );
+        filesystem::fsutil::set_file_attributes( mFilePathOnDisk, mCurrentItem.attributes() );
     }
     return result;
 }
 
-fs::path FileExtractCallback::getCurrentItemPath() const {
+auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
     fs::path filePath = mCurrentItem.path();
     if ( filePath.empty() ) {
-        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
+        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path{ kEmptyFileAlias };
     } else if ( !mRetainDirectories ) {
         filePath = filePath.filename();
     } else {
@@ -72,38 +68,48 @@ fs::path FileExtractCallback::getCurrentItemPath() const {
     return filePath;
 }
 
-HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) {
+constexpr auto kCannotDeleteOutput = "Cannot delete output file";
+
+auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-    mFilePathOnDisk = mDirectoryPath / fsutil::sanitize_path( filePath );
+    mFilePathOnDisk = mDirectoryPath / filesystem::fsutil::sanitize_path( filePath );
 #else
     mFilePathOnDisk = mDirectoryPath / filePath;
 #endif
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( fsutil::should_format_long_path( mFilePathOnDisk ) ) {
-        mFilePathOnDisk = fsutil::format_long_path( mFilePathOnDisk );
+    if ( filesystem::fsutil::should_format_long_path( mFilePathOnDisk ) ) {
+        mFilePathOnDisk = filesystem::fsutil::format_long_path( mFilePathOnDisk );
     }
 #endif
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
-            mHandler.fileCallback()( filePath.string< tchar >() );
+#if defined( BIT7Z_USE_NATIVE_STRING )
+            const auto& filePathString = filePath.native();
+#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+            const auto filePathString = filePath.u8string();
+#else
+            const auto& nativePath = filePath.native();
+            const auto filePathString = narrow( nativePath.c_str(), nativePath.size() );
+#endif
+            mHandler.fileCallback()( filePathString );
         }
 
         std::error_code error;
         fs::create_directories( mFilePathOnDisk.parent_path(), error );
 
         if ( fs::exists( mFilePathOnDisk, error ) ) {
-            const OverwriteMode overwrite_mode = mHandler.overwriteMode();
+            const OverwriteMode overwriteMode = mHandler.overwriteMode();
 
-            switch ( overwrite_mode ) {
+            switch ( overwriteMode ) {
                 case OverwriteMode::None: {
                     throw BitException( kCannotDeleteOutput,
                                         make_hresult_code( E_ABORT ),
-                                        mFilePathOnDisk.string< tchar >() );
+                                        path_to_tstring( mFilePathOnDisk ) );
                 }
                 case OverwriteMode::Skip: {
                     return S_OK;
@@ -113,7 +119,7 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
                     if ( !fs::remove( mFilePathOnDisk, error ) ) {
                         throw BitException( kCannotDeleteOutput,
                                             make_hresult_code( E_ABORT ),
-                                            mFilePathOnDisk.string< tchar >() );
+                                            path_to_tstring( mFilePathOnDisk ) );
                     }
                     break;
                 }
@@ -131,3 +137,5 @@ HRESULT FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
     }
     return S_OK;
 }
+
+} // namespace bit7z

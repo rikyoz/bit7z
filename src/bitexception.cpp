@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,19 +11,16 @@
  */
 
 #include "bitexception.hpp"
-
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
+#include "internal/operationcategory.hpp"
 #include "internal/windows.hpp"
-#if !defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
-#include "internal/util.hpp"
-#endif
 
-std::error_code bit7z::make_hresult_code( HRESULT res ) noexcept {
+auto bit7z::make_hresult_code( HRESULT res ) noexcept -> std::error_code {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };
 }
 
-std::error_code bit7z::last_error_code() noexcept {
+auto bit7z::last_error_code() noexcept -> std::error_code {
     return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
 }
 
@@ -32,21 +29,22 @@ using bit7z::FailedFiles;
 using bit7z::tstring;
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
-    : system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
+    : std::system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
+
+BitException::BitException( const char* const message, std::error_code code, tstring&& file )
+    : std::system_error( code, message ), mFailedFiles{ std::make_pair( std::move( file ), code ) } {}
 
 BitException::BitException( const char* const message, std::error_code code, const tstring& file )
-    : system_error( code, message ) {
-    mFailedFiles.emplace_back( file, code );
-}
+    : std::system_error( code, message ), mFailedFiles{ std::make_pair( file, code ) } {}
 
 BitException::BitException( const std::string& message, std::error_code code )
-    : system_error( code, message.c_str() ) {}
+    : std::system_error( code, message ) {}
 
-const FailedFiles& BitException::failedFiles() const noexcept {
+auto BitException::failedFiles() const noexcept -> const FailedFiles& {
     return mFailedFiles;
 }
 
-BitException::native_code_type BitException::nativeCode() const noexcept {
+auto BitException::nativeCode() const noexcept -> BitException::native_code_type {
 #ifdef _WIN32 // On Windows, the native code must be a HRESULT value.
     return hresultCode();
 #else // On Unix, the native code is a POSIX error code.
@@ -54,7 +52,7 @@ BitException::native_code_type BitException::nativeCode() const noexcept {
 #endif
 }
 
-HRESULT BitException::hresultCode() const noexcept {
+auto BitException::hresultCode() const noexcept -> HRESULT {
     const std::error_code& error = code();
     if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
         return error.value();
@@ -104,15 +102,20 @@ HRESULT BitException::hresultCode() const noexcept {
     return E_FAIL;
 }
 
-int BitException::posixCode() const noexcept {
-    const auto& error = code();
+inline auto is_not_posix_category( const std::error_category& category ) -> bool {
 #ifdef _MSC_VER
-    if ( error.category() == bit7z::hresult_category() ||
-         error.category() == bit7z::internal_category() ||
-         error.category() == std::system_category() ) {
-#else
-    if ( error.category() == bit7z::hresult_category() || error.category() == bit7z::internal_category() ) {
+    if ( category == std::system_category() ) {
+        return true;
+    }
 #endif
+    return category == bit7z::hresult_category() ||
+           category == bit7z::internal_category() ||
+           category == bit7z::operation_category();
+}
+
+auto BitException::posixCode() const noexcept -> int {
+    const auto& error = code();
+    if ( is_not_posix_category( error.category() ) ) {
         return error.default_error_condition().value();
     }
     return error.value(); // On POSIX systems, std::system_category == std::generic_category

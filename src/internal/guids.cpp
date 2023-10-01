@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,6 +13,7 @@
 #include "internal/guids.hpp"
 
 namespace bit7z {
+
 // GUIDs of Interfaces
 #ifndef _MSC_VER
 const GUID IID_IUnknown = {
@@ -81,4 +82,5 @@ const GUID IID_IArchiveUpdateCallback = {
 const GUID IID_IArchiveUpdateCallback2 = {
     0x23170F69, 0x40C1, 0x278A, { 0x00, 0x00, 0x00, 0x06, 0x00, 0x82, 0x00, 0x00 }
 };
+
 }  // namespace bit7z

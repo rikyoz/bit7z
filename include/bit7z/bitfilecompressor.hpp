@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,10 +21,6 @@ namespace bit7z {
 using std::vector;
 using std::map;
 using std::ostream;
-
-namespace filesystem {
-class FSItem;
-} // namespace filesystem
 
 using namespace filesystem;
 
@@ -57,10 +53,10 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * The items in the first argument must be the relative or absolute paths to files or
          * directories existing on the filesystem.
          *
-         * @param in_paths  a vector of paths.
-         * @param out_file  the path (relative or absolute) to the output archive file.
+         * @param inPaths  a vector of paths.
+         * @param outFile  the path (relative or absolute) to the output archive file.
          */
-        void compress( const std::vector< tstring >& in_paths, const tstring& out_file ) const;
+        void compress( const std::vector< tstring >& inPaths, const tstring& outFile ) const;
 
         /**
          * @brief Compresses the given files or directories using the specified aliases.
@@ -70,31 +66,31 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * Each pair in the map must follow the following format:
          *  {"path to file in the filesystem", "alias path in the archive"}.
          *
-         * @param in_paths  a map of paths and corresponding aliases.
-         * @param out_file  the path (relative or absolute) to the output archive file.
+         * @param inPaths  a map of paths and corresponding aliases.
+         * @param outFile  the path (relative or absolute) to the output archive file.
          */
-        void compress( const std::map< tstring, tstring >& in_paths, const tstring& out_file ) const;
+        void compress( const std::map< tstring, tstring >& inPaths, const tstring& outFile ) const;
 
         /**
          * @brief Compresses a group of files.
          *
          * @note Any path to a directory or to a not-existing file will be ignored!
          *
-         * @param in_files  the path (relative or absolute) to the input files.
-         * @param out_file  the path (relative or absolute) to the output archive file.
+         * @param inFiles  the path (relative or absolute) to the input files.
+         * @param outFile  the path (relative or absolute) to the output archive file.
          */
-        void compressFiles( const std::vector< tstring >& in_files, const tstring& out_file ) const;
+        void compressFiles( const std::vector< tstring >& inFiles, const tstring& outFile ) const;
 
         /**
          * @brief Compresses the files contained in a directory.
          *
-         * @param in_dir        the path (relative or absolute) to the input directory.
-         * @param out_file      the path (relative or absolute) to the output archive file.
-         * @param recursive     (optional) if true, it searches files inside the sub-folders of in_dir.
-         * @param filter        (optional) the filter to use when searching files inside in_dir.
+         * @param inDir        the path (relative or absolute) to the input directory.
+         * @param outFile      the path (relative or absolute) to the output archive file.
+         * @param recursive    (optional) if true, it searches files inside the sub-folders of inDir.
+         * @param filter       (optional) the filter to use when searching files inside inDir.
          */
-        void compressFiles( const tstring& in_dir,
-                            const tstring& out_file,
+        void compressFiles( const tstring& inDir,
+                            const tstring& outFile,
                             bool recursive = true,
                             const tstring& filter = BIT7Z_STRING( "*" ) ) const;
 
@@ -103,10 +99,10 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          *
          * @note This method is equivalent to compressFiles with filter set to L"".
          *
-         * @param in_dir    the path (relative or absolute) to the input directory.
-         * @param out_file  the path (relative or absolute) to the output archive file.
+         * @param inDir    the path (relative or absolute) to the input directory.
+         * @param outFile  the path (relative or absolute) to the output archive file.
          */
-        void compressDirectory( const tstring& in_dir, const tstring& out_file ) const;
+        void compressDirectory( const tstring& inDir, const tstring& outFile ) const;
 
         /* Compression from the file system to standard streams. */
 
@@ -116,10 +112,10 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * The items in the first argument must be the relative or absolute paths to files or
          * directories existing on the filesystem.
          *
-         * @param in_paths      a vector of paths.
-         * @param out_stream    the standard ostream where the archive will be output.
+         * @param inPaths      a vector of paths.
+         * @param outStream    the standard ostream where the archive will be output.
          */
-        void compress( const std::vector< tstring >& in_paths, std::ostream& out_stream ) const;
+        void compress( const std::vector< tstring >& inPaths, std::ostream& outStream ) const;
 
         /**
          * @brief Compresses the given files or directories using the specified aliases.
@@ -129,10 +125,10 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * Each pair in the map must follow the following format:
          *  {"path to file in the filesystem", "alias path in the archive"}.
          *
-         * @param in_paths      a map of paths and corresponding aliases.
-         * @param out_stream    the standard ostream where to output the archive file.
+         * @param inPaths      a map of paths and corresponding aliases.
+         * @param outStream    the standard ostream where to output the archive file.
          */
-        void compress( const std::map< tstring, tstring >& in_paths, std::ostream& out_stream ) const;
+        void compress( const std::map< tstring, tstring >& inPaths, std::ostream& outStream ) const;
 };
 
 }  // namespace bit7z

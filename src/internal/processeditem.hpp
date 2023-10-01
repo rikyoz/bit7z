@@ -20,17 +20,17 @@ class ProcessedItem final {
     public:
         ProcessedItem();
 
-        void loadItemInfo( const BitInputArchive& input_archive, std::uint32_t item_index );
+        void loadItemInfo( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
 
-        BIT7Z_NODISCARD fs::path path() const;
+        BIT7Z_NODISCARD auto path() const -> fs::path;
 
-        BIT7Z_NODISCARD uint32_t attributes() const;
+        BIT7Z_NODISCARD auto attributes() const -> uint32_t;
 
-        BIT7Z_NODISCARD bool areAttributesDefined() const;
+        BIT7Z_NODISCARD auto areAttributesDefined() const -> bool;
 
-        BIT7Z_NODISCARD FILETIME modifiedTime() const;
+        BIT7Z_NODISCARD auto modifiedTime() const -> FILETIME;
 
-        BIT7Z_NODISCARD bool isModifiedTimeDefined() const;
+        BIT7Z_NODISCARD auto isModifiedTimeDefined() const -> bool;
 
     private:
         fs::path mFilePath;
@@ -41,11 +41,11 @@ class ProcessedItem final {
         uint32_t mAttributes;
         bool mAreAttributesDefined;
 
-        void loadFilePath( const BitInputArchive& input_archive, uint32_t item_index );
+        void loadFilePath( const BitInputArchive& inputArchive, uint32_t itemIndex );
 
-        void loadAttributes( const BitInputArchive& input_archive, uint32_t item_index );
+        void loadAttributes( const BitInputArchive& inputArchive, uint32_t itemIndex );
 
-        void loadModifiedTime( const BitInputArchive& input_archive, uint32_t item_index );
+        void loadModifiedTime( const BitInputArchive& inputArchive, uint32_t itemIndex );
 };
 
 }  // namespace bit7z

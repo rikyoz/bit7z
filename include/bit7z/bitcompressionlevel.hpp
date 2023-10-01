@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,7 @@ namespace bit7z {
 
 /**
  * @brief The BitCompressionLevel enum represents the compression level used by 7z when creating archives.
- * @note It uses the same values as used by [7-zip](https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
+ * @note It uses the same values used by [7-zip](https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
  */
 enum struct BitCompressionLevel {
     None = 0,    ///< Copy mode (no compression)

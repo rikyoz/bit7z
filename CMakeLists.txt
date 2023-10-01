@@ -15,9 +15,6 @@ if( POLICY CMP0076 )
     cmake_policy( SET CMP0076 NEW )
 endif()
 
-set( EXTERNAL_LIBS_DIR ${PROJECT_SOURCE_DIR}/third_party )
-set( 7ZIP_SOURCE_DIR ${EXTERNAL_LIBS_DIR}/7-zip )
-
 # public headers
 set( PUBLIC_HEADERS
      include/bit7z/bit7z.hpp
@@ -68,12 +65,15 @@ set( HEADERS
      src/internal/cfixedbufferoutstream.hpp
      src/internal/cmultivolumeinstream.hpp
      src/internal/cmultivolumeoutstream.hpp
+     src/internal/com.hpp
      src/internal/cstdinstream.hpp
      src/internal/cstdoutstream.hpp
+     src/internal/csymlinkinstream.hpp
      src/internal/cvolumeinstream.hpp
      src/internal/cvolumeoutstream.hpp
      src/internal/dateutil.hpp
      src/internal/extractcallback.hpp
+     src/internal/failuresourcecategory.hpp
      src/internal/fileextractcallback.hpp
      src/internal/fixedbufferextractcallback.hpp
      src/internal/formatdetect.hpp
@@ -88,6 +88,8 @@ set( HEADERS
      src/internal/internalcategory.hpp
      src/internal/macros.hpp
      src/internal/opencallback.hpp
+     src/internal/operationcategory.hpp
+     src/internal/operationresult.hpp
      src/internal/processeditem.hpp
      src/internal/renameditem.hpp
      src/internal/stdinputitem.hpp
@@ -117,6 +119,7 @@ set( SOURCES
      src/bititemsvector.cpp
      src/bitoutputarchive.cpp
      src/bitpropvariant.cpp
+     src/bittypes.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferitem.cpp
      src/internal/bufferutil.cpp
@@ -130,10 +133,12 @@ set( SOURCES
      src/internal/cmultivolumeoutstream.cpp
      src/internal/cstdinstream.cpp
      src/internal/cstdoutstream.cpp
+     src/internal/csymlinkinstream.cpp
      src/internal/cvolumeinstream.cpp
      src/internal/cvolumeoutstream.cpp
      src/internal/dateutil.cpp
      src/internal/extractcallback.cpp
+     src/internal/failuresourcecategory.cpp
      src/internal/fileextractcallback.cpp
      src/internal/fixedbufferextractcallback.cpp
      src/internal/formatdetect.cpp
@@ -145,6 +150,8 @@ set( SOURCES
      src/internal/hresultcategory.cpp
      src/internal/internalcategory.cpp
      src/internal/opencallback.cpp
+     src/internal/operationcategory.cpp
+     src/internal/operationresult.cpp
      src/internal/processeditem.cpp
      src/internal/renameditem.cpp
      src/internal/stdinputitem.cpp
@@ -156,17 +163,16 @@ set( SOURCES
 # library output file name options
 include( cmake/OutputOptions.cmake )
 
-# filesystem library
-include( cmake/Filesystem.cmake )
-set( CMAKE_CXX_STANDARD_REQUIRED ON )
+# detecting if the std::filesystem is available and usable
+include( cmake/FilesystemDetect.cmake )
 
 # printing library and compiler information (useful for debugging)
 message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
 message( STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}" )
 message( STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}" )
-message( STATUS "Architecture: ${ARCH_DIR}" )
-message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
-message( STATUS "Language Standard: C++${CMAKE_CXX_STANDARD}" )
+message( STATUS "Architecture: ${BIT7Z_TARGET_ARCH_NAME}" )
+message( STATUS "Build Type: ${CMAKE_BUILD_TYPE}" )
+message( STATUS "Language Standard for bit7z: C++${CMAKE_CXX_STANDARD}" )
 
 # library target options
 set( LIB_TARGET bit7z${ARCH_POSTFIX} )
@@ -175,15 +181,35 @@ target_sources( ${LIB_TARGET}
                 PUBLIC ${PUBLIC_HEADERS}
                 PRIVATE ${HEADERS} ${SOURCES} )
 
+# additional target without the architecture suffix in the name
+if( NOT "${ARCH_POSTFIX}" STREQUAL "" )
+    add_library( bit7z ALIAS ${LIB_TARGET} )
+endif()
+
+# bit7z build options
+include( cmake/BuildOptions.cmake )
+
+# compiler-specific options
+include( cmake/CompilerOptions.cmake )
+
+# dependencies
+include( cmake/Dependencies.cmake )
+
+# 7-zip source code
+target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
+
+# filesystem library (needed if std::filesystem is not available)
+if( ghc_filesystem_ADDED )
+    target_link_libraries( ${LIB_TARGET} PRIVATE ghc_filesystem )
+endif()
+
 # public includes
 target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
                                                  "$<INSTALL_INTERFACE:include>" )
 
 # private includes
 target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
-                                                  "${PROJECT_SOURCE_DIR}/src"
-                                                  "${EXTERNAL_LIBS_DIR}"
-                                                  "${7ZIP_SOURCE_DIR}/CPP/" )
+                                                  "${PROJECT_SOURCE_DIR}/src" )
 
 # 7-zip compilation definitions
 target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
@@ -193,23 +219,19 @@ if( WIN32 )
 endif()
 
 if( UNIX )
-    target_compile_definitions( ${LIB_TARGET} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
-                                                      ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE _LARGEFILE64_SOURCE _LARGEFILE_SOURCE _REENTRANT
+                                                      EXTERNAL_CODECS ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
+    target_compile_definitions( ${LIB_TARGET} PUBLIC _TIME_BITS=64 _FILE_OFFSET_BITS=64 )
     target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
 
-# bit7z build options
-include( cmake/BuildOptions.cmake )
-
-# compiler-specific options
-include( cmake/CompilerOptions.cmake )
-
+# tests
 if( BIT7Z_BUILD_TESTS )
-    # tests
+    enable_testing()
     add_subdirectory( tests )
 endif()
 
+# docs
 if( BIT7Z_BUILD_DOCS )
-    # docs
     add_subdirectory( docs )
 endif()

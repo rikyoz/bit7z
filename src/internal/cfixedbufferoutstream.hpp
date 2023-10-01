@@ -11,11 +11,11 @@
 #define CFIXEDBUFFEROUTSTREAM_HPP
 
 #include "bittypes.hpp"
+#include "internal/com.hpp"
 #include "internal/guids.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 namespace bit7z {
 
@@ -27,20 +27,21 @@ class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
 
         CFixedBufferOutStream( CFixedBufferOutStream&& ) = delete;
 
-        CFixedBufferOutStream& operator=( const CFixedBufferOutStream& ) = delete;
+        auto operator=( const CFixedBufferOutStream& ) -> CFixedBufferOutStream& = delete;
 
-        CFixedBufferOutStream& operator=( CFixedBufferOutStream&& ) = delete;
+        auto operator=( CFixedBufferOutStream&& ) -> CFixedBufferOutStream& = delete;
 
         MY_UNKNOWN_DESTRUCTOR( ~CFixedBufferOutStream() ) = default;
-
-        MY_UNKNOWN_IMP1( IOutStream ) // NOLINT(modernize-use-noexcept)
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
 
-        BIT7Z_STDMETHOD_NOEXCEPT( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511 //-V835
 
     private:
         byte_t* mBuffer;

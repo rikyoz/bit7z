@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,15 +11,14 @@
  */
 
 #include "internal/cstdinstream.hpp"
-
 #include "internal/streamutil.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) {
+STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
     mInputStream.clear();
 
     if ( processedSize != nullptr ) {
@@ -30,7 +29,7 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
         return S_OK;
     }
 
-    mInputStream.read( static_cast< char* >( data ), size );
+    mInputStream.read( static_cast< char* >( data ), size ); // flawfinder: ignore //-V2571
 
     if ( processedSize != nullptr ) {
         *processedSize = static_cast< uint32_t >( mInputStream.gcount() );
@@ -40,7 +39,7 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) {
+STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     mInputStream.clear();
 
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
@@ -62,3 +61,5 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
 
     return S_OK;
 }
+
+} // namespace bit7z

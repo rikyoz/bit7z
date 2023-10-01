@@ -13,11 +13,11 @@
 #include <cstdint>
 #include <istream>
 
+#include "internal/com.hpp"
 #include "internal/guids.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/IStream.h>
-#include <Common/MyCom.h>
 
 namespace bit7z {
 
@@ -31,18 +31,19 @@ class CStdInStream : public IInStream, public CMyUnknownImp {
 
         CStdInStream( CStdInStream&& ) = delete;
 
-        CStdInStream& operator=( const CStdInStream& ) = delete;
+        auto operator=( const CStdInStream& ) -> CStdInStream& = delete;
 
-        CStdInStream& operator=( CStdInStream&& ) = delete;
+        auto operator=( CStdInStream&& ) -> CStdInStream& = delete;
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdInStream() ) = default;
-
-        MY_UNKNOWN_IMP1( IInStream ) // NOLINT(modernize-use-noexcept)
 
         // IInStream
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
 
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835
 
     private:
         istream& mInputStream;

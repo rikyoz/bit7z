@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -29,7 +29,7 @@ namespace BitFormat {
                                 FormatFeatures::CompressionLevel );
     const BitInFormat Rar( 0x03 );
     const BitInFormat Arj( 0x04 ); //-V112
-    const BitInFormat Z( 0x05 );
+    const BitInFormat Z( 0x05 ); // NOLINT(*-identifier-length)
     const BitInFormat Lzh( 0x06 );
     const BitInOutFormat SevenZip( 0x07, BIT7Z_STRING( ".7z" ),
                                    BitCompressionMethod::Lzma2,
@@ -40,7 +40,7 @@ namespace BitFormat {
     const BitInFormat Nsis( 0x09 );
     const BitInFormat Lzma( 0x0A );
     const BitInFormat Lzma86( 0x0B );
-    const BitInOutFormat Xz( 0x0C, BIT7Z_STRING( ".xz" ),
+    const BitInOutFormat Xz( 0x0C, BIT7Z_STRING( ".xz" ), // NOLINT(*-identifier-length)
                              BitCompressionMethod::Lzma2,
                              FormatFeatures::CompressionLevel );
     const BitInFormat Ppmd( 0x0D );
@@ -54,7 +54,7 @@ namespace BitFormat {
     const BitInFormat Rar5( 0xCC );
     const BitInFormat IHex( 0xCD );
     const BitInFormat Hxs( 0xCE );
-    const BitInFormat TE( 0xCF );
+    const BitInFormat TE( 0xCF ); // NOLINT(*-identifier-length)
     const BitInFormat UEFIc( 0xD0 );
     const BitInFormat UEFIs( 0xD1 );
     const BitInFormat SquashFS( 0xD2 );
@@ -68,7 +68,7 @@ namespace BitFormat {
     const BitInFormat Fat( 0xDA );
     const BitInFormat Mbr( 0xDB );
     const BitInFormat Vhd( 0xDC );
-    const BitInFormat Pe( 0xDD );
+    const BitInFormat Pe( 0xDD ); // NOLINT(*-identifier-length)
     const BitInFormat Elf( 0xDE );
     const BitInFormat Macho( 0xDF );
     const BitInFormat Udf( 0xE0 );
@@ -94,31 +94,31 @@ namespace BitFormat {
                                FormatFeatures::CompressionLevel );
 } // namespace BitFormat
 
-unsigned char BitInFormat::value() const noexcept {
+auto BitInFormat::value() const noexcept -> unsigned char {
     return mValue;
 }
 
-bool BitInFormat::operator==( const BitInFormat& other ) const noexcept {
+auto BitInFormat::operator==( const BitInFormat& other ) const noexcept -> bool {
     return mValue == other.value();
 }
 
-bool BitInFormat::operator!=( const BitInFormat& other ) const noexcept {
+auto BitInFormat::operator!=( const BitInFormat& other ) const noexcept -> bool {
     return !( *this == other );
 }
 
-const tchar* BitInOutFormat::extension() const noexcept {
+auto BitInOutFormat::extension() const noexcept -> const tchar* {
     return mExtension;
 }
 
-FormatFeatures BitInOutFormat::features() const noexcept {
+auto BitInOutFormat::features() const noexcept -> FormatFeatures {
     return mFeatures;
 }
 
-bool BitInOutFormat::hasFeature( FormatFeatures feature ) const noexcept {
+auto BitInOutFormat::hasFeature( FormatFeatures feature ) const noexcept -> bool {
     return ( mFeatures & feature ) != 0;
 }
 
-BitCompressionMethod BitInOutFormat::defaultMethod() const noexcept {
+auto BitInOutFormat::defaultMethod() const noexcept -> BitCompressionMethod {
     return mDefaultMethod;
 }
 

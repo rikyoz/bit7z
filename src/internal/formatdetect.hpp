@@ -10,6 +10,8 @@
 #ifndef FORMATDETECT_HPP
 #define FORMATDETECT_HPP
 
+#include "bitdefines.hpp" // for BIT7Z_AUTO_FORMAT
+
 #ifdef BIT7Z_AUTO_FORMAT
 
 #include "bitformat.hpp"
@@ -19,9 +21,9 @@ struct IInStream;
 
 namespace bit7z {
 
-const BitInFormat& detectFormatFromExt( const fs::path& in_file );
+auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat&;
 
-const BitInFormat& detectFormatFromSig( IInStream* stream );
+auto detect_format_from_signature( IInStream * stream ) -> const BitInFormat&;
 
 } // namespace bit7z
 
