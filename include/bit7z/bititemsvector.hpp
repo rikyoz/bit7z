@@ -24,10 +24,10 @@ using std::map;
 using std::unique_ptr;
 
 namespace filesystem {
-class FSItem;
+class FilesystemItem;
 } // namespace filesystem
 
-using filesystem::FSItem;
+using filesystem::FilesystemItem;
 
 struct GenericInputItem;
 using GenericInputItemPtr = std::unique_ptr< GenericInputItem >;
@@ -36,8 +36,9 @@ using GenericInputItemVector = std::vector< GenericInputItemPtr >;
 /** @cond **/
 struct IndexingOptions {
     bool recursive = true;
-    bool retain_folder_structure = false;
-    bool only_files = false;
+    bool retainFolderStructure = false;
+    bool onlyFiles = false;
+    bool followSymlinks = true;
 };
 /** @endcond **/
 
@@ -62,14 +63,14 @@ class BitItemsVector final {
         /**
          * @brief Indexes the given directory, adding to the vector all the files that match the wildcard filter.
          *
-         * @param in_dir    the directory to be indexed.
+         * @param inDir     the directory to be indexed.
          * @param filter    (optional) the wildcard filter to be used for indexing;
          *                  empty string means "index all files".
          * @param policy    (optional) the filtering policy to be applied to the matched items.
          * @param options   (optional) the settings to be used while indexing the given directory
          *                  and all of its subdirectories.
          */
-        void indexDirectory( const fs::path& in_dir,
+        void indexDirectory( const fs::path& inDir,
                              const tstring& filter = {},
                              FilterPolicy policy = FilterPolicy::Include,
                              IndexingOptions options = {} );
@@ -77,11 +78,11 @@ class BitItemsVector final {
         /**
          * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
          *
-         * @param in_paths  the vector of filesystem paths.
+         * @param inPaths   the vector of filesystem paths.
          * @param options   (optional) the settings to be used while indexing the given directory
          *                  and all of its subdirectories.
          */
-        void indexPaths( const std::vector< tstring >& in_paths, IndexingOptions options = {} );
+        void indexPaths( const std::vector< tstring >& inPaths, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given map of filesystem paths, adding to the vector all the files.
@@ -89,38 +90,39 @@ class BitItemsVector final {
          * @note Map keys represent the filesystem paths to be indexed; the corresponding mapped values are
          * the user-defined (possibly different) paths wanted inside archives.
          *
-         * @param in_paths  map of filesystem paths with the corresponding user-defined path desired inside the
+         * @param inPaths   map of filesystem paths with the corresponding user-defined path desired inside the
          *                  output archive.
          * @param options   (optional) the settings to be used while indexing the given directory
          *                  and all of its subdirectories.
          */
-        void indexPathsMap( const std::map< tstring, tstring >& in_paths, IndexingOptions options = {} );
+        void indexPathsMap( const std::map< tstring, tstring >& inPaths, IndexingOptions options = {} );
 
         /**
          * @brief Indexes the given file path, with an optional user-defined path to be used in output archives.
          *
          * @note If a directory path is given, a BitException is thrown.
          *
-         * @param in_file the path to the filesystem file to be indexed in the vector.
-         * @param name    (optional) user-defined path to be used inside archives.
+         * @param inFile          the path to the filesystem file to be indexed in the vector.
+         * @param name            (optional) user-defined path to be used inside archives.
+         * @param followSymlinks  (optional) whether to follow symbolic links or not.
          */
-        void indexFile( const tstring& in_file, const tstring& name = {} );
+        void indexFile( const tstring& inFile, const tstring& name = {}, bool followSymlinks = true );
 
         /**
          * @brief Indexes the given buffer, using the given name as a path when compressed in archives.
          *
-         * @param in_buffer the buffer containing the file to be indexed in the vector.
+         * @param inBuffer  the buffer containing the file to be indexed in the vector.
          * @param name      user-defined path to be used inside archives.
          */
-        void indexBuffer( const std::vector< byte_t >& in_buffer, const tstring& name );
+        void indexBuffer( const std::vector< byte_t >& inBuffer, const tstring& name );
 
         /**
          * @brief Indexes the given standard input stream, using the given name as a path when compressed in archives.
          *
-         * @param in_stream the standard input stream of the file to be indexed in the vector.
+         * @param inStream  the standard input stream of the file to be indexed in the vector.
          * @param name      user-defined path to be used inside archives.
          */
-        void indexStream( std::istream& in_stream, const tstring& name );
+        void indexStream( std::istream& inStream, const tstring& name );
 
         /**
          * @return the size of the items vector.
@@ -162,7 +164,7 @@ class BitItemsVector final {
     private:
         GenericInputItemVector mItems;
 
-        void indexItem( const FSItem& item, IndexingOptions options );
+        void indexItem( const FilesystemItem& item, IndexingOptions options );
 };
 
 }  // namespace bit7z

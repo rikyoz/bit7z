@@ -17,8 +17,8 @@
 
 namespace bit7z {
 
-CBufferOutStream::CBufferOutStream( vector< byte_t >& out_buffer )
-    : mBuffer( out_buffer ), mCurrentPosition{ mBuffer.begin() } {}
+CBufferOutStream::CBufferOutStream( vector< byte_t >& outBuffer )
+    : mBuffer( outBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
@@ -32,20 +32,20 @@ STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t new_index{};
-    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, new_index );
+    int64_t newIndex{};
+    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {
         // We failed to seek (e.g., the new index would not be in the range [0, mBuffer.size]).
         return res;
     }
 
-    // Note: new_index can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
-    mCurrentPosition = mBuffer.begin() + static_cast< index_t >( new_index );
+    // Note: newIndex can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
+    mCurrentPosition = mBuffer.begin() + static_cast< index_t >( newIndex );
 
     if ( newPosition != nullptr ) {
-        // Safe cast, since new_index >=0 0
-        *newPosition = static_cast< UInt64 >( new_index );
+        // Safe cast, since newIndex >=0 0
+        *newPosition = static_cast< UInt64 >( newIndex );
     }
 
     return S_OK;
@@ -61,20 +61,20 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         return E_FAIL;
     }
 
-    auto old_pos = ( mCurrentPosition - mBuffer.begin() );
-    const size_t new_pos = old_pos + size;
-    if ( new_pos > mBuffer.size() ) {
+    auto oldPos = ( mCurrentPosition - mBuffer.begin() );
+    const size_t newPos = oldPos + size;
+    if ( newPos > mBuffer.size() ) {
         try {
-            mBuffer.resize( new_pos );
+            mBuffer.resize( newPos );
         } catch ( ... ) {
             return E_OUTOFMEMORY;
         }
-        mCurrentPosition = mBuffer.begin() + old_pos; //resize invalidated the old mCurrentPosition iterator
+        mCurrentPosition = mBuffer.begin() + oldPos; //resize invalidated the old mCurrentPosition iterator
     }
 
-    const auto* byte_data = static_cast< const byte_t* >( data ); //-V2571
+    const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
     try {
-        std::copy_n( byte_data, size, mCurrentPosition );
+        std::copy_n( byteData, size, mCurrentPosition );
     } catch ( ... ) {
         return E_OUTOFMEMORY;
     }

@@ -39,11 +39,11 @@ class BitArchiveItemOffset final : public BitArchiveItem {
         BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
     private:
-        /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::const_iterator,
-         * to be CopyConstructible so that stl algorithms can be used with const_iterator! */
+        /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::ConstIterator,
+         * to be CopyConstructible so that stl algorithms can be used with ConstIterator! */
         const BitInputArchive* mArc;
 
-        BitArchiveItemOffset( uint32_t item_index, const BitInputArchive& item_arc ) noexcept;
+        BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept;
 
         friend class BitInputArchive;
 };

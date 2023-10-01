@@ -11,8 +11,17 @@
  */
 
 #include "biterror.hpp"
+#include "internal/failuresourcecategory.hpp"
 #include "internal/internalcategory.hpp"
 
-auto bit7z::make_error_code( bit7z::BitError error ) -> std::error_code {
+namespace bit7z {
+
+auto make_error_code( BitError error ) -> std::error_code {
     return { static_cast< int >( error ), internal_category() };
 }
+
+auto make_error_condition( BitFailureSource failureSource ) -> std::error_condition {
+    return { static_cast< int >( failureSource ), source_category() };
+}
+
+} // namespace bit7z

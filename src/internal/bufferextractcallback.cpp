@@ -18,8 +18,6 @@
 
 using namespace std;
 
-constexpr auto kCannotDeleteOutput = "Cannot erase output buffer";
-
 namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
@@ -43,9 +41,10 @@ auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
     if ( prop.isEmpty() ) {
         fullPath = kEmptyFileAlias;
     } else if ( prop.isString() ) {
-        fullPath = prop.getString();
         if ( !mHandler.retainDirectories() ) {
-            fullPath = fs::path{ fullPath }.filename().string< tchar >();
+            fullPath = path_to_tstring( fs::path{ prop.getNativeString() }.filename() );
+        } else {
+            fullPath = prop.getString();
         }
     } else {
         return E_FAIL;
@@ -56,24 +55,24 @@ auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
     }
 
     //Note: using [] operator it creates the buffer if it does not already exist!
-    auto& out_buffer = mBuffersMap[ fullPath ];
-    if ( !out_buffer.empty() ) {
+    auto& outBuffer = mBuffersMap[ fullPath ];
+    if ( !outBuffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {
             case OverwriteMode::None: {
-                throw BitException( kCannotDeleteOutput, make_hresult_code( E_ABORT ) );
+                throw BitException( "Cannot erase output buffer", make_hresult_code( E_ABORT ) );
             }
             case OverwriteMode::Skip: {
                 return S_OK;
             }
             case OverwriteMode::Overwrite:
             default: {
-                out_buffer.clear();
+                outBuffer.clear();
                 break;
             }
         }
     }
 
-    auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( out_buffer );
+    auto outStreamLoc = bit7z::make_com< CBufferOutStream, ISequentialOutStream >( outBuffer );
     mOutMemStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;

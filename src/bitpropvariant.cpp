@@ -26,7 +26,7 @@ constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVar
 
 using namespace bit7z;
 
-auto lookupType( VARTYPE type ) -> BitPropVariantType {
+auto lookup_type( VARTYPE type ) -> BitPropVariantType {
     switch ( type ) {
         case VT_EMPTY:
             return BitPropVariantType::Empty;
@@ -260,6 +260,18 @@ auto BitPropVariant::getString() const -> tstring {
     return bstrVal == nullptr ? tstring{} : BSTR_TO_TSTRING( bstrVal );
 }
 
+auto BitPropVariant::getNativeString() const -> native_string {
+#ifdef _WIN32
+    if ( vt != VT_BSTR ) {
+        throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
+    }
+    //Note: a nullptr BSTR is semantically equivalent to an empty string!
+    return bstrVal == nullptr ? native_string{} : native_string{ bstrVal, ::SysStringLen( bstrVal ) };
+#else
+    return getString();
+#endif
+}
+
 auto BitPropVariant::getUInt8() const -> uint8_t {
     switch ( vt ) {
         case VT_UI1:
@@ -381,8 +393,8 @@ auto BitPropVariant::getFileTime() const -> FILETIME {
 }
 
 auto BitPropVariant::getTimePoint() const -> bit7z::time_type {
-    const FILETIME file_time = getFileTime();
-    return FILETIME_to_time_type( file_time );
+    const FILETIME fileTime = getFileTime();
+    return FILETIME_to_time_type( fileTime );
 }
 
 auto BitPropVariant::toString() const -> tstring {
@@ -417,7 +429,7 @@ auto BitPropVariant::toString() const -> tstring {
             return tstring{};
         default: // The type is not supported
             throw BitException( "BitPropVariant type code " + std::to_string( vt ) + " not supported.",
-                                make_error_code( BitError::UnsupportedOperation ) );
+                                make_error_code( BitError::UnsupportedVariantType ) );
     }
 }
 
@@ -470,7 +482,7 @@ auto BitPropVariant::isFileTime() const noexcept -> bool {
 }
 
 auto BitPropVariant::type() const -> BitPropVariantType {
-    return lookupType( vt );
+    return lookup_type( vt );
 }
 
 void BitPropVariant::clear() noexcept {

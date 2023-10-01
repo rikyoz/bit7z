@@ -23,8 +23,8 @@
 
 namespace bit7z {
 
-CBufferInStream::CBufferInStream( const vector< byte_t >& in_buffer )
-    : mBuffer( in_buffer ), mCurrentPosition{ mBuffer.begin() } {}
+CBufferInStream::CBufferInStream( const vector< byte_t >& inBuffer )
+    : mBuffer( inBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
@@ -62,20 +62,20 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t new_index{};
-    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, new_index );
+    int64_t newIndex{};
+    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {
-        // The new_index is not in the range [0, mBuffer.size]
+        // The newIndex is not in the range [0, mBuffer.size]
         return res;
     }
 
-    // Note: new_index can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
-    mCurrentPosition = mBuffer.cbegin() + static_cast< index_t >( new_index );
+    // Note: newIndex can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
+    mCurrentPosition = mBuffer.cbegin() + static_cast< index_t >( newIndex );
 
     if ( newPosition != nullptr ) {
-        // Safe cast, since new_index >= 0
-        *newPosition = static_cast< UInt64 >( new_index );
+        // Safe cast, since newIndex >= 0
+        *newPosition = static_cast< UInt64 >( newIndex );
     }
 
     return S_OK;

@@ -12,32 +12,36 @@
 
 #include "bitarchiveitem.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/util.hpp"
+
+// For checking posix file attributes
+#include <sys/stat.h>
 
 using namespace bit7z;
 using namespace bit7z::filesystem;
 
-BitArchiveItem::BitArchiveItem( uint32_t item_index ) noexcept
-    : mItemIndex( item_index ) {}
+BitArchiveItem::BitArchiveItem( uint32_t itemIndex ) noexcept
+    : mItemIndex( itemIndex ) {}
 
 auto BitArchiveItem::index() const noexcept -> uint32_t {
     return mItemIndex;
 }
 
 auto BitArchiveItem::isDir() const -> bool {
-    const BitPropVariant is_dir = itemProperty( BitProperty::IsDir );
-    return !is_dir.isEmpty() && is_dir.getBool();
+    const BitPropVariant isDir = itemProperty( BitProperty::IsDir );
+    return !isDir.isEmpty() && isDir.getBool();
 }
 
 BIT7Z_NODISCARD
 inline auto filename( const fs::path& path ) -> tstring {
-    return path.filename().string< tchar >();
+    return path_to_tstring( path.filename() );
 }
 
 auto BitArchiveItem::name() const -> tstring {
     BitPropVariant name = itemProperty( BitProperty::Name );
     if ( name.isEmpty() ) {
         name = itemProperty( BitProperty::Path );
-        return name.isEmpty() ? tstring{} : filename( name.getString() );
+        return name.isEmpty() ? tstring{} : filename( name.getNativeString() );
     }
     return name.getString();
 }
@@ -65,28 +69,28 @@ auto BitArchiveItem::size() const -> uint64_t {
 }
 
 auto BitArchiveItem::packSize() const -> uint64_t {
-    const BitPropVariant pack_size = itemProperty( BitProperty::PackSize );
-    return pack_size.isEmpty() ? 0 : pack_size.getUInt64();
+    const BitPropVariant packSize = itemProperty( BitProperty::PackSize );
+    return packSize.isEmpty() ? 0 : packSize.getUInt64();
 }
 
 auto BitArchiveItem::isEncrypted() const -> bool {
-    const BitPropVariant is_encrypted = itemProperty( BitProperty::Encrypted );
-    return is_encrypted.isBool() && is_encrypted.getBool();
+    const BitPropVariant isEncrypted = itemProperty( BitProperty::Encrypted );
+    return isEncrypted.isBool() && isEncrypted.getBool();
 }
 
 auto BitArchiveItem::creationTime() const -> time_type {
-    const BitPropVariant creation_time = itemProperty( BitProperty::CTime );
-    return creation_time.isFileTime() ? creation_time.getTimePoint() : time_type::clock::now();
+    const BitPropVariant creationTime = itemProperty( BitProperty::CTime );
+    return creationTime.isFileTime() ? creationTime.getTimePoint() : time_type::clock::now();
 }
 
 auto BitArchiveItem::lastAccessTime() const -> time_type {
-    const BitPropVariant access_time = itemProperty( BitProperty::ATime );
-    return access_time.isFileTime() ? access_time.getTimePoint() : time_type::clock::now();
+    const BitPropVariant accessTime = itemProperty( BitProperty::ATime );
+    return accessTime.isFileTime() ? accessTime.getTimePoint() : time_type::clock::now();
 }
 
 auto BitArchiveItem::lastWriteTime() const -> time_type {
-    const BitPropVariant write_time = itemProperty( BitProperty::MTime );
-    return write_time.isFileTime() ? write_time.getTimePoint() : time_type::clock::now();
+    const BitPropVariant writeTime = itemProperty( BitProperty::MTime );
+    return writeTime.isFileTime() ? writeTime.getTimePoint() : time_type::clock::now();
 }
 
 auto BitArchiveItem::attributes() const -> uint32_t {
@@ -97,4 +101,26 @@ auto BitArchiveItem::attributes() const -> uint32_t {
 auto BitArchiveItem::crc() const -> uint32_t {
     const BitPropVariant crc = itemProperty( BitProperty::CRC );
     return crc.isUInt32() ? crc.getUInt32() : 0;
+}
+
+// On MSVC, these macros are not defined!
+#if !defined(S_ISLNK) && defined(S_IFMT)
+#ifndef S_IFLNK
+constexpr auto S_IFLNK = 0120000;
+#endif
+#define S_ISLNK( m ) (((m) & S_IFMT) == S_IFLNK)
+#endif
+
+auto BitArchiveItem::isSymLink() const -> bool {
+    const BitPropVariant symlink = itemProperty( BitProperty::SymLink );
+    if ( symlink.isString() ) {
+        return true;
+    }
+
+    const auto itemAttributes = attributes();
+    if ( ( itemAttributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
+        auto posixAttributes = itemAttributes >> 16U;
+        return S_ISLNK( posixAttributes );
+    }
+    return ( itemAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;
 }

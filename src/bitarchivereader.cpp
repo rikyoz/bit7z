@@ -14,37 +14,38 @@
 #include <numeric>
 
 #include "bitarchivereader.hpp"
+#include "internal/extractcallback.hpp"
 
 #include <7zip/PropID.h>
 
 using namespace bit7z;
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const tstring& in_archive,
+                                    const tstring& inArchive,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const std::vector< byte_t >& in_archive,
+                                    const std::vector< byte_t >& inArchive,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    std::istream& in_archive,
+                                    std::istream& inArchive,
                                     const BitInFormat& format,
                                     const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, in_archive ) {}
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
 auto BitArchiveReader::archiveProperties() const -> map< BitProperty, BitPropVariant > {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
         // Yeah, I know, I cast property twice (here and in archiveProperty), but the code is easier to read!
         const auto property = static_cast< BitProperty >( i );
-        const BitPropVariant property_value = archiveProperty( property );
-        if ( !property_value.isEmpty() ) {
-            result[ property ] = property_value;
+        const BitPropVariant propertyValue = archiveProperty( property );
+        if ( !propertyValue.isEmpty() ) {
+            result[ property ] = propertyValue;
         }
     }
     return result;
@@ -57,9 +58,9 @@ auto BitArchiveReader::items() const -> vector< BitArchiveItemInfo > {
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
             // Yeah, I know, I cast property twice (here and in itemProperty), but the code is easier to read!
             const auto property = static_cast< BitProperty >( j );
-            const auto property_value = itemProperty( i, property );
-            if ( !property_value.isEmpty() ) {
-                item.setProperty( property, property_value );
+            const auto propertyValue = itemProperty( i, property );
+            if ( !propertyValue.isEmpty() ) {
+                item.setProperty( property, propertyValue );
             }
         }
         result.push_back( item );
@@ -97,20 +98,34 @@ auto BitArchiveReader::hasEncryptedItems() const -> bool {
     } );
 }
 
+auto BitArchiveReader::isEncrypted() const -> bool {
+    if ( filesCount() == 0 ) {
+        return false;
+    }
+    return std::all_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
+        return item.isDir() || item.isEncrypted();
+    } );
+}
+
 auto BitArchiveReader::isMultiVolume() const -> bool {
     if ( extractionFormat() == BitFormat::Split ) {
         return true;
     }
-    const BitPropVariant is_multi_volume = archiveProperty( BitProperty::IsVolume );
-    return is_multi_volume.isBool() && is_multi_volume.getBool();
+    const BitPropVariant isMultiVolume = archiveProperty( BitProperty::IsVolume );
+    return isMultiVolume.isBool() && isMultiVolume.getBool();
 }
 
 auto BitArchiveReader::isSolid() const -> bool {
-    const BitPropVariant is_solid = archiveProperty( BitProperty::Solid );
-    return is_solid.isBool() && is_solid.getBool();
+    const BitPropVariant isSolid = archiveProperty( BitProperty::Solid );
+    return isSolid.isBool() && isSolid.getBool();
 }
 
 auto BitArchiveReader::volumesCount() const -> uint32_t {
-    const BitPropVariant volumes_count = archiveProperty( BitProperty::NumVolumes );
-    return volumes_count.isEmpty() ? 1 : volumes_count.getUInt32();
+    const BitPropVariant volumesCount = archiveProperty( BitProperty::NumVolumes );
+    return volumesCount.isEmpty() ? 1 : volumesCount.getUInt32();
+}
+
+auto BitArchiveReader::isOpenEncryptedError( std::error_code error ) -> bool {
+    static const auto encryptedError = make_error_code( OperationResult::OpenErrorEncrypted );
+    return error == encryptedError;
 }

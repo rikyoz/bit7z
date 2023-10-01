@@ -20,8 +20,6 @@
 
 namespace bit7z {
 
-constexpr auto kUnsupportedOperation = "Unsupported operation";
-
 class UpdateCallback final : public Callback,
                              public IArchiveUpdateCallback2,
                              public ICompressProgressInfo,
@@ -39,7 +37,7 @@ class UpdateCallback final : public Callback,
 
         ~UpdateCallback() override;
 
-        auto Finalize() noexcept -> HRESULT;
+        auto finalize() noexcept -> HRESULT;
 
         // IProgress from IArchiveUpdateCallback2
         BIT7Z_STDMETHOD( SetTotal, UInt64 size );

@@ -17,11 +17,13 @@ namespace bit7z {
 
 class RenamedItem final : public GenericInputItem {
     public:
-        explicit RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path );
+        explicit RenamedItem( const BitInputArchive& inputArchive, uint32_t index, const tstring& newPath );
 
         BIT7Z_NODISCARD auto name() const -> tstring override;
 
         BIT7Z_NODISCARD auto isDir() const -> bool override;
+
+        BIT7Z_NODISCARD auto isSymLink() const -> bool override;
 
         BIT7Z_NODISCARD auto size() const -> uint64_t override;
 

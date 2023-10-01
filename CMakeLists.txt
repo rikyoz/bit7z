@@ -68,10 +68,12 @@ set( HEADERS
      src/internal/com.hpp
      src/internal/cstdinstream.hpp
      src/internal/cstdoutstream.hpp
+     src/internal/csymlinkinstream.hpp
      src/internal/cvolumeinstream.hpp
      src/internal/cvolumeoutstream.hpp
      src/internal/dateutil.hpp
      src/internal/extractcallback.hpp
+     src/internal/failuresourcecategory.hpp
      src/internal/fileextractcallback.hpp
      src/internal/fixedbufferextractcallback.hpp
      src/internal/formatdetect.hpp
@@ -87,6 +89,7 @@ set( HEADERS
      src/internal/macros.hpp
      src/internal/opencallback.hpp
      src/internal/operationcategory.hpp
+     src/internal/operationresult.hpp
      src/internal/processeditem.hpp
      src/internal/renameditem.hpp
      src/internal/stdinputitem.hpp
@@ -116,6 +119,7 @@ set( SOURCES
      src/bititemsvector.cpp
      src/bitoutputarchive.cpp
      src/bitpropvariant.cpp
+     src/bittypes.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferitem.cpp
      src/internal/bufferutil.cpp
@@ -129,10 +133,12 @@ set( SOURCES
      src/internal/cmultivolumeoutstream.cpp
      src/internal/cstdinstream.cpp
      src/internal/cstdoutstream.cpp
+     src/internal/csymlinkinstream.cpp
      src/internal/cvolumeinstream.cpp
      src/internal/cvolumeoutstream.cpp
      src/internal/dateutil.cpp
      src/internal/extractcallback.cpp
+     src/internal/failuresourcecategory.cpp
      src/internal/fileextractcallback.cpp
      src/internal/fixedbufferextractcallback.cpp
      src/internal/formatdetect.cpp
@@ -145,6 +151,7 @@ set( SOURCES
      src/internal/internalcategory.cpp
      src/internal/opencallback.cpp
      src/internal/operationcategory.cpp
+     src/internal/operationresult.cpp
      src/internal/processeditem.cpp
      src/internal/renameditem.cpp
      src/internal/stdinputitem.cpp
@@ -212,8 +219,9 @@ if( WIN32 )
 endif()
 
 if( UNIX )
-    target_compile_definitions( ${LIB_TARGET} PRIVATE EXTERNAL_CODECS _FILE_OFFSET_BITS=64 _LARGEFILE_SOURCE _REENTRANT
-                                                      ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE _LARGEFILE64_SOURCE _LARGEFILE_SOURCE _REENTRANT
+                                                      EXTERNAL_CODECS ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
+    target_compile_definitions( ${LIB_TARGET} PUBLIC _TIME_BITS=64 _FILE_OFFSET_BITS=64 )
     target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
 

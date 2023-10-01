@@ -27,10 +27,10 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
 
         auto currentVolume() -> const CMyComPtr< CVolumeInStream >&;
 
-        void addVolume( const fs::path& volume_path );
+        void addVolume( const fs::path& volumePath );
 
     public:
-        explicit CMultiVolumeInStream( const fs::path& first_volume );
+        explicit CMultiVolumeInStream( const fs::path& firstVolume );
 
         CMultiVolumeInStream( const CMultiVolumeInStream& ) = delete;
 

@@ -13,18 +13,19 @@
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/renameditem.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
 
-RenamedItem::RenamedItem( const BitInputArchive& input_archive, uint32_t index, const tstring& new_path )
-    : mInputArchive{ input_archive }, mIndex{ index }, mNewPath{ new_path } {}
+RenamedItem::RenamedItem( const BitInputArchive& inputArchive, uint32_t index, const tstring& newPath )
+    : mInputArchive{ inputArchive }, mIndex{ index }, mNewPath{ newPath } {}
 
 auto RenamedItem::name() const -> tstring {
-    return mNewPath.filename().string< tchar >();
+    return path_to_tstring( mNewPath.filename() );
 }
 
 auto RenamedItem::path() const -> tstring {
-    return mNewPath.string< tchar >();
+    return path_to_tstring( mNewPath );
 }
 
 auto RenamedItem::inArchivePath() const -> fs::path { return path(); }
@@ -41,23 +42,27 @@ auto RenamedItem::isDir() const -> bool {
     return mInputArchive.itemProperty( mIndex, BitProperty::IsDir ).getBool();
 }
 
+auto RenamedItem::isSymLink() const -> bool {
+    return mInputArchive.itemAt( mIndex ).isSymLink();
+}
+
 auto RenamedItem::size() const -> uint64_t {
     return mInputArchive.itemProperty( mIndex, BitProperty::Size ).getUInt64();
 }
 
 auto RenamedItem::creationTime() const -> FILETIME {
-    const BitPropVariant creation_time = mInputArchive.itemProperty( mIndex, BitProperty::CTime );
-    return creation_time.isFileTime() ? creation_time.getFileTime() : currentFileTime();
+    const BitPropVariant creationTime = mInputArchive.itemProperty( mIndex, BitProperty::CTime );
+    return creationTime.isFileTime() ? creationTime.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::lastAccessTime() const -> FILETIME {
-    const BitPropVariant access_time = mInputArchive.itemProperty( mIndex, BitProperty::ATime );
-    return access_time.isFileTime() ? access_time.getFileTime() : currentFileTime();
+    const BitPropVariant accessTime = mInputArchive.itemProperty( mIndex, BitProperty::ATime );
+    return accessTime.isFileTime() ? accessTime.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::lastWriteTime() const -> FILETIME {
-    const BitPropVariant write_time = mInputArchive.itemProperty( mIndex, BitProperty::MTime );
-    return write_time.isFileTime() ? write_time.getFileTime() : currentFileTime();
+    const BitPropVariant writeTime = mInputArchive.itemProperty( mIndex, BitProperty::MTime );
+    return writeTime.isFileTime() ? writeTime.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::attributes() const -> uint32_t {

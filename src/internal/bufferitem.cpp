@@ -10,6 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <utility>
+
 #include "internal/bufferitem.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/dateutil.hpp"
@@ -19,15 +21,15 @@ using std::vector;
 
 namespace bit7z {
 
-BufferItem::BufferItem( const vector< byte_t >& buffer, const tstring& name )
-    : mBuffer{ buffer }, mBufferName{ name } {}
+BufferItem::BufferItem( const vector< byte_t >& buffer, fs::path name )
+    : mBuffer{ buffer }, mBufferName{ std::move( name ) } {}
 
 auto BufferItem::name() const -> tstring {
-    return mBufferName.filename().string< tchar >();
+    return path_to_tstring( mBufferName.filename() );
 }
 
 auto BufferItem::path() const -> tstring {
-    return mBufferName.string< tchar >();
+    return path_to_tstring( mBufferName );
 }
 
 auto BufferItem::inArchivePath() const -> fs::path {
@@ -49,15 +51,15 @@ auto BufferItem::size() const noexcept -> uint64_t {
 }
 
 auto BufferItem::creationTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto BufferItem::lastAccessTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto BufferItem::lastWriteTime() const noexcept -> FILETIME {
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto BufferItem::attributes() const noexcept -> uint32_t {

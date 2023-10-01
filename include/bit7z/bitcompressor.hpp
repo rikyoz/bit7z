@@ -23,11 +23,17 @@ using std::vector;
 
 namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
-auto basename( const tstring& path ) -> tstring;
+auto stem( const tstring& path ) -> tstring;
 } // namespace fsutil
 } // namespace filesystem
 
 using namespace filesystem;
+
+#ifdef __cpp_if_constexpr
+#define BIT7Z_IF_CONSTEXPR if constexpr
+#else
+#define BIT7Z_IF_CONSTEXPR if
+#endif
 
 /**
  * @brief The BitCompressor template class allows compressing files into archives.
@@ -54,59 +60,54 @@ class BitCompressor : public BitAbstractArchiveCreator {
         /**
          * @brief Compresses a single file.
          *
-         * @param in_file       the file to be compressed.
-         * @param out_file      the path (relative or absolute) to the output archive file.
-         * @param input_name    (optional) the name to give to the compressed file inside the output archive.
+         * @param inFile       the file to be compressed.
+         * @param outFile      the path (relative or absolute) to the output archive file.
+         * @param inputName    (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input in_file,
-                           const tstring& out_file,
-                           const tstring& input_name = {} ) const {
-            /* Note: if in_file is a filesystem path (i.e., its type is const tstring&), we can deduce the archived
+        void compressFile( Input inFile,
+                           const tstring& outFile,
+                           const tstring& inputName = {} ) const {
+            /* Note: if inFile is a filesystem path (i.e., its type is const tstring&), we can deduce the archived
              * item filename using the original filename. Otherwise, if the user didn't specify the input file name,
              * we use the filename (without extension) of the output file path. */
             tstring name;
-#ifdef __cpp_if_constexpr
-            if constexpr ( !std::is_same_v< Input, const tstring& > ) {
-#else
-            //There's probably some compile-time SFINAE alternative for C++14, but life is too short ;)
-            if ( !std::is_same< Input, const tstring& >::value ) {
-#endif
-                name = input_name.empty() ? fsutil::basename( out_file ) : input_name;
+            BIT7Z_IF_CONSTEXPR( !std::is_same< Input, const tstring& >::value ) {
+                name = inputName.empty() ? fsutil::stem( outFile ) : inputName;
             }
 
-            BitOutputArchive output_archive{ *this, out_file };
-            output_archive.addFile( in_file, name );
-            output_archive.compressTo( out_file );
+            BitOutputArchive outputArchive{ *this, outFile };
+            outputArchive.addFile( inFile, name );
+            outputArchive.compressTo( outFile );
         }
 
         /**
          * @brief Compresses the input file to the output buffer.
          *
-         * @param in_file     the file to be compressed.
-         * @param out_buffer  the buffer going to contain the output archive.
-         * @param input_name  (optional) the name to give to the compressed file inside the output archive.
+         * @param inFile     the file to be compressed.
+         * @param outBuffer  the buffer going to contain the output archive.
+         * @param inputName  (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input in_file,
-                           vector< byte_t >& out_buffer,
-                           const tstring& input_name = {} ) const {
-            BitOutputArchive output_archive{ *this, out_buffer };
-            output_archive.addFile( in_file, input_name );
-            output_archive.compressTo( out_buffer );
+        void compressFile( Input inFile,
+                           vector< byte_t >& outBuffer,
+                           const tstring& inputName = {} ) const {
+            BitOutputArchive outputArchive{ *this, outBuffer };
+            outputArchive.addFile( inFile, inputName );
+            outputArchive.compressTo( outBuffer );
         }
 
         /**
          * @brief Compresses the input file to the output stream.
          *
-         * @param in_file     the file to be compressed.
-         * @param out_stream  the output stream.
-         * @param input_name  (optional) the name to give to the compressed file inside the output archive.
+         * @param inFile     the file to be compressed.
+         * @param outStream  the output stream.
+         * @param inputName  (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input in_file,
-                           ostream& out_stream,
-                           const tstring& input_name = {} ) const {
-            BitOutputArchive output_archive{ *this };
-            output_archive.addFile( in_file, input_name );
-            output_archive.compressTo( out_stream );
+        void compressFile( Input inFile,
+                           ostream& outStream,
+                           const tstring& inputName = {} ) const {
+            BitOutputArchive outputArchive{ *this };
+            outputArchive.addFile( inFile, inputName );
+            outputArchive.compressTo( outStream );
         }
 };
 

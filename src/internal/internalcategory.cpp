@@ -15,12 +15,12 @@
 
 namespace bit7z {
 
-auto internal_category_t::name() const noexcept -> const char* {
+auto InternalCategory::name() const noexcept -> const char* {
     return "bit7z";
 }
 
-auto internal_category_t::message( int error_value ) const -> std::string {
-    switch ( static_cast< BitError >( error_value ) ) {
+auto InternalCategory::message( int errorValue ) const -> std::string {
+    switch ( static_cast< BitError >( errorValue ) ) {
         case BitError::Fail:
             return "Unspecified error.";
         case BitError::FilterNotSpecified:
@@ -45,8 +45,6 @@ auto internal_category_t::message( int error_value ) const -> std::string {
             return "The item is a folder.";
         case BitError::ItemMarkedAsDeleted:
             return "The item is marked as deleted.";
-        case BitError::NoMatchingExtension:
-            return "No known extension found.";
         case BitError::NoMatchingItems:
             return "No matching item was found in the archive.";
         case BitError::NoMatchingSignature:
@@ -57,6 +55,8 @@ auto internal_category_t::message( int error_value ) const -> std::string {
             return "Requested the wrong variant type.";
         case BitError::UnsupportedOperation:
             return "Unsupported operation.";
+        case BitError::UnsupportedVariantType:
+            return "Unsupported variant type.";
         case BitError::WrongUpdateMode:
             return "Wrong update mode.";
         case BitError::InvalidZipPassword:
@@ -66,8 +66,8 @@ auto internal_category_t::message( int error_value ) const -> std::string {
     }
 }
 
-auto bit7z::internal_category_t::default_error_condition( int error_value ) const noexcept -> std::error_condition {
-    switch ( static_cast< BitError >( error_value ) ) {
+auto InternalCategory::default_error_condition( int errorValue ) const noexcept -> std::error_condition {
+    switch ( static_cast< BitError >( errorValue ) ) {
         case BitError::FilterNotSpecified:
         case BitError::FormatFeatureNotSupported:
         case BitError::IndicesNotSpecified:
@@ -85,17 +85,18 @@ auto bit7z::internal_category_t::default_error_condition( int error_value ) cons
             return std::make_error_condition( std::errc::no_such_file_or_directory );
         case BitError::RequestedWrongVariantType:
         case BitError::UnsupportedOperation:
-            return std::make_error_condition( std::errc::operation_not_supported );
+        case BitError::UnsupportedVariantType:
+            return std::make_error_condition( std::errc::not_supported );
         case BitError::ItemMarkedAsDeleted:
         case BitError::WrongUpdateMode:
             return std::make_error_condition( std::errc::operation_not_permitted );
         default:
-            return error_category::default_error_condition( error_value );
+            return error_category::default_error_condition( errorValue );
     }
 }
 
 auto internal_category() noexcept -> const std::error_category& {
-    static const internal_category_t instance{};
+    static const InternalCategory instance{};
     return instance;
 }
 

@@ -111,6 +111,11 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto threadsCount() const noexcept -> uint32_t;
 
         /**
+         * @return whether the archive creator stores symbolic links as links in the output archive.
+         */
+        BIT7Z_NODISCARD auto storeSymbolicLinks() const noexcept -> bool;
+
+        /**
          * @brief Sets up a password for the output archives.
          *
          * When setting a password, the produced archives will be encrypted using the default
@@ -134,14 +139,14 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          *
          * When setting a password, the produced archive will be encrypted using the default
          * cryptographic method of the output format. If the format is 7z, and the option
-         * "crypt_headers" is set to true, the headers of the archive will be encrypted,
+         * "cryptHeaders" is set to true, the headers of the archive will be encrypted,
          * resulting in a password request every time the output file will be opened.
          *
          * @note Calling setPassword when the output format doesn't support archive encryption
          * (e.g., GZip, BZip2, etc...) does not have any effects (in other words, it doesn't
          * throw exceptions, and it has no effects on compression operations).
          *
-         * @note Calling setPassword with "crypt_headers" set to true does not have effects on
+         * @note Calling setPassword with "cryptHeaders" set to true does not have effects on
          * formats different from 7z.
          *
          * @note After a password has been set, it will be used for every subsequent operation.
@@ -149,10 +154,10 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
          *
          * @param password          the password to be used when creating/updating archives.
-         * @param crypt_headers     if true, the headers of the output archives will be encrypted
+         * @param cryptHeaders     if true, the headers of the output archives will be encrypted
          *                          (valid only when using the 7z format).
          */
-        void setPassword( const tstring& password, bool crypt_headers );
+        void setPassword( const tstring& password, bool cryptHeaders );
 
         /**
          * @brief Sets the compression level to be used when creating/updating an archive.
@@ -171,16 +176,16 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         /**
          * @brief Sets the dictionary size to be used when creating/updating an archive.
          *
-         * @param dictionary_size the dictionary size desired.
+         * @param dictionarySize the dictionary size desired.
          */
-        void setDictionarySize( uint32_t dictionary_size );
+        void setDictionarySize( uint32_t dictionarySize );
 
         /**
          * @brief Sets the word size to be used when creating/updating an archive.
          *
-         * @param word_size the word size desired.
+         * @param wordSize the word size desired.
          */
-        void setWordSize( uint32_t word_size );
+        void setWordSize( uint32_t wordSize );
 
         /**
          * @brief Sets whether to use solid compression or not.
@@ -188,9 +193,9 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @note Setting the solid compression mode to true has effect only when using the 7z format with multiple
          * input files.
          *
-         * @param solid_mode    if true, it will be used the "solid compression" method.
+         * @param solidMode    if true, it will be used the "solid compression" method.
          */
-        void setSolidMode( bool solid_mode ) noexcept;
+        void setSolidMode( bool solidMode ) noexcept;
 
         /**
          * @brief Sets whether and how the creator can update existing archives or not.
@@ -210,30 +215,37 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @note If set to false, a subsequent compression operation may throw an exception
          *       if it targets an existing archive.
          *
-         * @param can_update if true, compressing operations will update existing archives.
+         * @param canUpdate if true, compressing operations will update existing archives.
          */
         BIT7Z_DEPRECATED_MSG( "Since v4.0; please use the overloaded function that takes an UpdateMode enumerator." )
-        void setUpdateMode( bool can_update );
+        void setUpdateMode( bool canUpdate );
 
         /**
-         * @brief Sets the volume_size (in bytes) of the output archive volumes.
+         * @brief Sets the volumeSize (in bytes) of the output archive volumes.
          *
          * @note This setting has effects only when the destination archive is on the filesystem.
          *
-         * @param volume_size    The dimension of a volume.
+         * @param volumeSize    The dimension of a volume.
          */
-        void setVolumeSize( uint64_t volume_size ) noexcept;
+        void setVolumeSize( uint64_t volumeSize ) noexcept;
 
         /**
          * @brief Sets the number of threads to be used when creating/updating an archive.
          *
-         * @param threads_count the number of threads desired.
+         * @param threadsCount the number of threads desired.
          */
-        void setThreadsCount( uint32_t threads_count ) noexcept;
+        void setThreadsCount( uint32_t threadsCount ) noexcept;
+
+        /**
+         * @brief Sets whether the creator will store symbolic links as links in the output archive.
+         *
+         * @param storeSymlinks    if true, symbolic links will be stored as links.
+         */
+        void setStoreSymbolicLinks( bool storeSymlinks ) noexcept;
 
         /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
-         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         * (e.g., https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
          * @tparam T    An integral type (i.e., a bool or an integer type).
          *
@@ -247,7 +259,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
 
         /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
-         * (e.g. https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
+         * (e.g., https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
          * For example, passing the string L"tm" with a false value while creating a .7z archive
          * will disable storing the last modified timestamps of the compressed files.
@@ -266,7 +278,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BitAbstractArchiveCreator( const Bit7zLibrary& lib,
                                    const BitInOutFormat& format,
                                    tstring password = {},
-                                   UpdateMode update_mode = UpdateMode::None );
+                                   UpdateMode updateMode = UpdateMode::None );
 
         BIT7Z_NODISCARD auto archiveProperties() const -> ArchiveProperties;
 
@@ -284,6 +296,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         bool mSolidMode;
         uint64_t mVolumeSize;
         uint32_t mThreadsCount;
+        bool mStoreSymbolicLinks;
         std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
 

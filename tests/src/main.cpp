@@ -15,10 +15,10 @@
 
 #include <iostream>
 
-#include "compiler.hpp"
-#include "filesystem.hpp"
-#include "flags.hpp"
-#include "shared_lib.hpp"
+#include "utils/compiler.hpp"
+#include "utils/filesystem.hpp"
+#include "utils/flags.hpp"
+#include "utils/shared_lib.hpp"
 
 auto main( int argc, char* argv[] ) -> int {
     using namespace bit7z::test;
@@ -28,7 +28,10 @@ auto main( int argc, char* argv[] ) -> int {
     std::cout << "Version: " << compiler::version << '\n';
     std::cout << "Target Architecture: " << compiler::target_arch << "\n\n";
 
-    std::cout << "[Standard Library]\n";
+    std::cout << "[C Runtime Library]\n";
+    std::cout << "Name: " << compiler::c_runtime << "\n\n";
+
+    std::cout << "[C++ Standard Library]\n";
     std::cout << "Name: " << compiler::standard_library << '\n';
     std::cout << "Version: " << compiler::standard_library_version << "\n\n";
 

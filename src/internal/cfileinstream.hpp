@@ -26,8 +26,8 @@ class CFileInStream : public CStdInStream {
 
     private:
         fs::ifstream mFileStream;
-        static constexpr auto buffer_size = 1024 * 1024; // 1 MiB
-        std::array< char, buffer_size > mBuffer;
+        static constexpr auto kBufferSize = 1024 * 1024; // 1 MiB
+        std::array< char, kBufferSize > mBuffer;
 };
 
 }  // namespace bit7z

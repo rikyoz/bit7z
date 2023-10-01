@@ -10,8 +10,8 @@
 #ifndef FILESYSTEM_HPP
 #define FILESYSTEM_HPP
 
-#include <bitfs.hpp>
-#include <bittypes.hpp>
+#include <bit7z/bitfs.hpp>
+#include <bit7z/bittypes.hpp>
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -28,7 +28,11 @@
 
 #include <catch2/catch.hpp>
 #include <internal/fs.hpp>
-#include "internal/util.hpp"
+#include <internal/util.hpp>
+
+#if defined(__MINGW32__) && defined(_WIO_DEFINED)
+#include "internal/fsutil.hpp"
+#endif
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
@@ -38,7 +42,7 @@ inline auto exe_path() -> fs::path {
 #ifdef _WIN32
     std::array< wchar_t, MAX_PATH > path{ 0 };
     GetModuleFileNameW( nullptr, path.data(), MAX_PATH );
-    return path.data();
+    return fs::path{ path.data() };
 #elif defined( __APPLE__ )
     std::array< char, PROC_PIDPATHINFO_MAXSIZE > result{ 0 };
     ssize_t result_size = proc_pidpath( getpid(), result.data(), result.size() );
@@ -67,16 +71,13 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
     return !error;
 }
 
-inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t > {
-    //INFO( in_file.string() )
-#if BIT7Z_USE_NATIVE_STRING
-    fs::ifstream ifs( widen(in_file.u8string()), fs::ifstream::binary );
-#else
-    fs::ifstream ifs( in_file, fs::ifstream::binary );
-#endif
-    REQUIRE( ifs.is_open() );
+inline auto load_file( fs::path const& inFile ) -> std::vector< bit7z::byte_t > {
+    fs::ifstream ifs{ inFile, fs::ifstream::binary };
+    if ( !ifs.is_open() ) {
+        return {};
+    }
     noskipws( ifs ); //no skip spaces!
-    auto size = fs::file_size( in_file );
+    auto size = fs::file_size( inFile );
     std::vector< bit7z::byte_t > result( size );
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
     ifs.read( reinterpret_cast<char*>( result.data() ), result.cend() - result.cbegin() );
@@ -84,10 +85,18 @@ inline auto load_file( fs::path const& in_file ) -> std::vector< bit7z::byte_t >
     return result;
 }
 
+#define REQUIRE_LOAD_FILE( var, in_file ) \
+    const auto (var) = load_file( in_file ); \
+    REQUIRE_FALSE( var.empty() )
+
+#define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
+    fs::ifstream (var){ in_file, std::ios::binary }; \
+    REQUIRE( (var).is_open() )
+
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder
     const tchar* ext;
-    bool is_dir;
+    bool isDir;
     std::size_t size;
     uint32_t crc32;
 };

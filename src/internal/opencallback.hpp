@@ -21,7 +21,7 @@
 
 namespace bit7z {
 
-using filesystem::FSItem;
+using filesystem::FilesystemItem;
 
 class OpenCallback final : public IArchiveOpenCallback,
                            public IArchiveOpenVolumeCallback,
@@ -66,7 +66,7 @@ class OpenCallback final : public IArchiveOpenCallback,
     private:
         bool mSubArchiveMode;
         std::wstring mSubArchiveName;
-        FSItem mFileItem;
+        FilesystemItem mFileItem;
         bool mPasswordWasAsked;
 };
 

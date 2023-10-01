@@ -19,23 +19,30 @@
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
+
+enum struct SymlinkPolicy {
+    Follow,
+    DoNotFollow
+};
+
 namespace fsutil {
 
-BIT7Z_NODISCARD auto basename( const tstring& path ) -> tstring;
+BIT7Z_NODISCARD auto stem( const tstring& path ) -> tstring;
 
 BIT7Z_NODISCARD auto extension( const fs::path& path ) -> tstring;
 
-BIT7Z_NODISCARD auto wildcardMatch( const tstring& pattern, const tstring& str ) -> bool;
+BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
 
-BIT7Z_NODISCARD auto getFileAttributesEx( const fs::path& filePath,
-                                          WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
+BIT7Z_NODISCARD auto get_file_attributes_ex( const fs::path& filePath,
+                                             SymlinkPolicy symlinkPolicy,
+                                             WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
 
-auto setFileModifiedTime( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
+auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
 
-auto setFileAttributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
+auto set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
 
-BIT7Z_NODISCARD auto inArchivePath( const fs::path& file_path,
-                                    const fs::path& search_path = fs::path() ) -> fs::path;
+BIT7Z_NODISCARD auto in_archive_path( const fs::path& filePath,
+                                      const fs::path& searchPath = fs::path{} ) -> fs::path;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 
@@ -56,6 +63,18 @@ BIT7Z_NODISCARD auto format_long_path( const fs::path& path ) -> fs::path;
  * This function is a temporary workaround, where we increase such a limit to the maximum value allowed by the OS.
  */
 void increase_opened_files_limit();
+
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+/**
+ * Sanitizes the given file path, removing any eventual Windows illegal character
+ * (https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file)
+ *
+ * @param path The path to be sanitized.
+ *
+ * @return the sanitized path, where illegal characters are replaced with the '_' character.
+ */
+auto sanitize_path( const fs::path& path ) -> fs::path;
+#endif
 
 }  // namespace fsutil
 }  // namespace filesystem

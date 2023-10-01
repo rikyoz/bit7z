@@ -14,8 +14,8 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/csymlinkinstream.hpp"
 #include "internal/fsitem.hpp"
-#include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
@@ -24,81 +24,86 @@ namespace filesystem {
 /* NOTES:
  * 1) mPath contains the path to the file, including the filename. It can be relative or absolute, according to what
  *    the user passes as the path parameter in the constructor.
- * 2) mSearchPath contains the search path in which the item was found (e.g., if FSIndexer is searching for items in
- *    "foo/bar/", each FSItem created for the elements it found will have mSearchPath == "foo/bar").
+ * 2) mSearchPath contains the search path in which the item was found (e.g., if FilesystemIndexer is searching for items in
+ *    "foo/bar/", each FilesystemItem created for the elements it found will have mSearchPath == "foo/bar").
  *    As in mPath, mSearchPath does not contain trailing / or \! *
  * 3) mInArchivePath is the path of the item in the archive. If not already given (i.e., the user doesn't want to custom
  *    the path of the file in the archive), the path in the archive is calculated from mPath and mSearchPath
  *    (see inArchivePath() method). */
 
-FSItem::FSItem( const fs::path& itemPath, fs::path inArchivePath )
+FilesystemItem::FilesystemItem( const fs::path& itemPath, fs::path inArchivePath, SymlinkPolicy symlinkPolicy )
     : mFileAttributeData(),
-      mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::inArchivePath( itemPath ) ) {
+      mInArchivePath( !inArchivePath.empty() ? std::move( inArchivePath ) : fsutil::in_archive_path( itemPath ) ),
+      mSymlinkPolicy{ symlinkPolicy } {
     std::error_code error;
 
     mFileEntry.assign( FORMAT_LONG_PATH( itemPath ), error );
     if ( error ) {
-        throw BitException( "Cannot read file entry", error, itemPath.string< tchar >() );
+        throw BitException( "Cannot read file entry", error, path_to_tstring( itemPath ) );
     }
     if ( !mFileEntry.exists( error ) ) { // NOLINT
         if ( !error ) { // call to "exists(error)" succeeded
             error = std::make_error_code( std::errc::no_such_file_or_directory );
         }
-        throw BitException( "Invalid path", error, itemPath.string< tchar >() );
+        throw BitException( "Invalid path", error, path_to_tstring( itemPath ) );
     }
     initAttributes( mFileEntry.path() );
 }
 
-FSItem::FSItem( fs::directory_entry entry, const fs::path& searchPath )
+FilesystemItem::FilesystemItem( fs::directory_entry entry, const fs::path& searchPath, SymlinkPolicy symlinkPolicy )
     : mFileEntry( std::move( entry ) ),
       mFileAttributeData(),
-      mInArchivePath( fsutil::inArchivePath( mFileEntry.path(), searchPath ) ) {
+      mInArchivePath( fsutil::in_archive_path( mFileEntry.path(), searchPath ) ),
+      mSymlinkPolicy{ symlinkPolicy } {
     initAttributes( mFileEntry.path() );
 }
 
-void FSItem::initAttributes( const fs::path& itemPath ) {
-    if ( !fsutil::getFileAttributesEx( itemPath.c_str(), mFileAttributeData ) ) {
+void FilesystemItem::initAttributes( const fs::path& itemPath ) {
+    if ( !fsutil::get_file_attributes_ex( itemPath.c_str(), mSymlinkPolicy, mFileAttributeData ) ) {
         //should not happen, but anyway...
-        throw BitException( "Could not retrieve file attributes", last_error_code(), itemPath.string< tchar >() );
+        throw BitException( "Could not retrieve file attributes", last_error_code(), path_to_tstring( itemPath ) );
     }
 }
 
-auto FSItem::isDots() const -> bool {
+auto FilesystemItem::isDots() const -> bool {
     const auto filename = mFileEntry.path().filename();
     return ( filename == "." || filename == ".." );
 }
 
-auto FSItem::isDir() const noexcept -> bool {
+auto FilesystemItem::isDir() const noexcept -> bool {
     std::error_code error;
     const bool res = mFileEntry.is_directory( error );
     return !error && res;
 }
 
-auto FSItem::size() const noexcept -> uint64_t {
+auto FilesystemItem::size() const noexcept -> uint64_t {
     std::error_code error;
+    if ( mSymlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
+        return fs::read_symlink( mFileEntry, error ).u8string().size();
+    }
     const auto res = mFileEntry.file_size( error );
     return !error ? res : 0;
 }
 
-auto FSItem::creationTime() const noexcept -> FILETIME {
+auto FilesystemItem::creationTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftCreationTime;
 }
 
-auto FSItem::lastAccessTime() const noexcept -> FILETIME {
+auto FilesystemItem::lastAccessTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftLastAccessTime;
 }
 
-auto FSItem::lastWriteTime() const noexcept -> FILETIME {
+auto FilesystemItem::lastWriteTime() const noexcept -> FILETIME {
     return mFileAttributeData.ftLastWriteTime;
 }
 
-auto FSItem::name() const -> tstring {
+auto FilesystemItem::name() const -> tstring {
     BIT7Z_MAYBE_UNUSED std::error_code error;
-    return fs::canonical( mFileEntry.path(), error ).filename().string< tchar >();
+    return path_to_tstring( fs::canonical( mFileEntry, error ).filename() );
 }
 
-auto FSItem::path() const -> tstring {
-    return mFileEntry.path().string< tchar >();
+auto FilesystemItem::path() const -> tstring {
+    return path_to_tstring( mFileEntry.path() );
 }
 
 /* Note: inArchivePath() returns the path that should be used inside the archive when compressing the item,
@@ -107,29 +112,39 @@ auto FSItem::path() const -> tstring {
  *
  * In particular, 7-zip behaves differently according to the kind of paths that are passed to it:
  * + Absolute paths (e.g. "C:\foo\bar\test.txt"):
- *   + The file is compressed without any directory structure (e.g. "test.txt"),
- *     unless it was inside a directory passed by the user and scanned by FSIndexer:
+ *   + The file is compressed without any directory structure (e.g., "test.txt"),
+ *     unless it was inside a directory passed by the user and scanned by FilesystemIndexer:
  *     in this case, only the directory structure is retained.
  *
  * + Relative paths containing the current directory or outside references
- *   (e.g. containing a "./" or "../" substring, like in "../foo/bar/test.txt"):
- *   + Same as absolute paths (e.g. "test.txt").
+ *   (e.g., containing a "./" or "../" substring, like in "../foo/bar/test.txt"):
+ *   + Same as absolute paths (e.g., "test.txt").
  *
- * + Relative paths (e.g. "foo/bar/test.txt"):
- *   + The file is compressed retaining the directory structure (e.g. "foo/bar/test.txt" in both example cases).
+ * + Relative paths (e.g., "foo/bar/test.txt"):
+ *   + The file is compressed retaining the directory structure (e.g., "foo/bar/test.txt" in both example cases).
  *
  * If the mInArchivePath is already given (i.e., the user wants a custom mapping of files), this one is returned.*/
-auto FSItem::inArchivePath() const -> fs::path {
+auto FilesystemItem::inArchivePath() const -> fs::path {
     return mInArchivePath;
 }
 
-auto FSItem::attributes() const noexcept -> uint32_t {
+auto FilesystemItem::attributes() const noexcept -> uint32_t {
     return mFileAttributeData.dwFileAttributes;
 }
 
-auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
+auto FilesystemItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
     if ( isDir() ) {
         return S_OK;
+    }
+
+    if ( mSymlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
+        try {
+            auto inStreamLoc = bit7z::make_com< CSymlinkInStream >( path() );
+            *inStream = inStreamLoc.Detach();
+            return S_OK;
+        } catch ( const BitException& ex ) {
+            return ex.nativeCode();
+        }
     }
 
     try {
@@ -139,6 +154,29 @@ auto FSItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
         return ex.nativeCode();
     }
     return S_OK;
+}
+
+auto FilesystemItem::filesystemPath() const -> const fs::path& {
+    return mFileEntry.path();
+}
+
+auto FilesystemItem::filesystemName() const -> fs::path {
+    BIT7Z_MAYBE_UNUSED std::error_code error;
+    return fs::canonical( mFileEntry, error ).filename();
+}
+
+auto FilesystemItem::itemProperty( BitProperty property ) const -> BitPropVariant {
+    std::error_code error;
+    if ( property == BitProperty::SymLink && mFileEntry.is_symlink( error ) ) {
+        const auto symlinkPath = fs::read_symlink( mFileEntry.path(), error );
+        return !error ? BitPropVariant{ path_to_wide_string( symlinkPath ) } : BitPropVariant{};
+    }
+    return GenericInputItem::itemProperty( property );
+}
+
+auto FilesystemItem::isSymLink() const -> bool {
+    BIT7Z_MAYBE_UNUSED std::error_code error;
+    return mFileEntry.is_symlink( error );
 }
 
 } // namespace filesystem

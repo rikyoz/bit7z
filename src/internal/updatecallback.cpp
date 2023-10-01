@@ -22,10 +22,10 @@ UpdateCallback::UpdateCallback( const BitOutputArchive& output )
       mNeedBeClosed{ false } {}
 
 UpdateCallback::~UpdateCallback() {
-    Finalize();
+    finalize();
 }
 
-auto UpdateCallback::Finalize() noexcept -> HRESULT {
+auto UpdateCallback::finalize() noexcept -> HRESULT {
     if ( mNeedBeClosed ) {
         mNeedBeClosed = false;
     }
@@ -58,12 +58,15 @@ STDMETHODIMP UpdateCallback::SetRatioInfo( const UInt64* inSize, const UInt64* o
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIANT* value ) noexcept try {
+STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propId, PROPVARIANT* value ) noexcept try {
     BitPropVariant prop;
-    if ( propID == kpidIsAnti ) {
+    if ( propId == kpidIsAnti ) {
         prop = false;
     } else {
-        prop = mOutputArchive.outputItemProperty( index, static_cast< BitProperty >( propID ) );
+        const auto property = static_cast< BitProperty >( propId );
+        if ( mOutputArchive.creator().storeSymbolicLinks() || property != BitProperty::SymLink ) {
+            prop = mOutputArchive.outputItemProperty( index, property );
+        }
     }
     *value = prop;
     prop.bstrVal = nullptr;
@@ -74,7 +77,7 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propID, PROPVARIA
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) noexcept {
-    RINOK( Finalize() )
+    RINOK( finalize() )
 
     if ( mHandler.fileCallback() ) {
         const BitPropVariant filePath = mOutputArchive.outputItemProperty( index, BitProperty::Path );

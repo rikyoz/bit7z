@@ -31,17 +31,17 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP OpenCallback::GetProperty( PROPID propID, PROPVARIANT* value ) noexcept try {
+STDMETHODIMP OpenCallback::GetProperty( PROPID property, PROPVARIANT* value ) noexcept try {
     BitPropVariant prop;
     if ( mSubArchiveMode ) {
-        if ( propID == kpidName ) {
+        if ( property == kpidName ) {
             prop = mSubArchiveName;
             // case kpidSize: prop = _subArchiveSize; break; // we don't use it for now.
         }
     } else {
-        switch ( propID ) {
+        switch ( property ) {
             case kpidName:
-                prop = WIDEN(mFileItem.name());
+                prop = path_to_wide_string( mFileItem.filesystemName() );
                 break;
             case kpidIsDir:
                 prop = mFileItem.isDir();
@@ -82,18 +82,18 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         if ( mFileItem.isDir() ) {
             return S_FALSE;
         }
-        auto stream_path = fs::path{ mFileItem.path() };
+        fs::path streamPath = mFileItem.filesystemPath();
         if ( name != nullptr ) {
-            stream_path = stream_path.parent_path();
-            stream_path.append( name );
-            const auto stream_status = fs::status( stream_path );
-            if ( !fs::exists( stream_status ) || fs::is_directory( stream_status ) ) {  // avoid exceptions using status
+            streamPath = streamPath.parent_path();
+            streamPath.append( name );
+            const auto streamStatus = fs::status( streamPath );
+            if ( !fs::exists( streamStatus ) || fs::is_directory( streamStatus ) ) {  // avoid exceptions using status
                 return S_FALSE;
             }
         }
 
         try {
-            auto inStreamTemp = bit7z::make_com< CFileInStream >( stream_path );
+            auto inStreamTemp = bit7z::make_com< CFileInStream >( streamPath );
             *inStream = inStreamTemp.Detach();
         } catch ( const BitException& ex ) {
             return ex.nativeCode();

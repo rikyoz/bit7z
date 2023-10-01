@@ -14,9 +14,9 @@
 
 #include <catch2/catch.hpp>
 
-#include "format.hpp"
-#include "filesystem.hpp"
-#include "shared_lib.hpp"
+#include "utils/format.hpp"
+#include "utils/filesystem.hpp"
+#include "utils/shared_lib.hpp"
 
 #include <bitarchivereader.hpp>
 #include <bitexception.hpp>
@@ -30,9 +30,9 @@ using namespace bit7z::test::filesystem;
 
 // Note: format detection by extension doesn't actually require the file to exist!
 TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
-    const fs::path old_current_dir = current_dir();
-    const auto test_dir = fs::path{ test_archives_dir } / "detection" / "valid";
-    REQUIRE( set_current_dir( test_dir ) );
+    const fs::path oldCurrentDir = current_dir();
+    const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";
+    REQUIRE( set_current_dir( testDir ) );
 
     auto test = GENERATE( TestInputFormat{ "7z", BitFormat::SevenZip },
                           TestInputFormat{ "7z.001", BitFormat::Split },
@@ -128,16 +128,16 @@ TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
                           TestInputFormat{ "zipx", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
-        REQUIRE( detectFormatFromExt( "valid." + test.extension ) == test.format );
+        REQUIRE( detect_format_from_extension( "valid." + test.extension ) == test.format );
     }
 
-    REQUIRE( set_current_dir( old_current_dir ) );
+    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
-    const fs::path old_current_dir = current_dir();
-    const auto test_dir = fs::path{ test_archives_dir } / "detection" / "valid";
-    REQUIRE( set_current_dir( test_dir ) );
+    const fs::path oldCurrentDir = current_dir();
+    const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";
+    REQUIRE( set_current_dir( testDir ) );
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -222,25 +222,25 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
                           TestInputFormat{ "zipx", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
-        // We might directly test the detectFormatFromSig function, but it would require us to include
+        // We might directly test the detect_format_from_signature function, but it would require us to include
         // too many internal headers, and it easily gives compilation problems.
-        // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid signature detection).
+        // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid detection via file extension).
 
-        const auto file_buffer = load_file( "valid." + test.extension );
-        const BitArchiveReader reader{ lib, file_buffer };
+        REQUIRE_LOAD_FILE( fileBuffer, "valid." + test.extension );
+        const BitArchiveReader reader{ lib, fileBuffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
 
-    REQUIRE( set_current_dir( old_current_dir ) );
+    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #ifdef _WIN32
 
 // For some reasons, 7-zip fails to open UDF files on Linux, so we test them only on Windows.
 TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatdetect]" ) {
-    const fs::path old_current_dir = current_dir();
-    const auto test_dir = fs::path{ test_archives_dir } / "detection" / "valid";
-    REQUIRE( set_current_dir( test_dir ) );
+    const fs::path oldCurrentDir = current_dir();
+    const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";
+    REQUIRE( set_current_dir( testDir ) );
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -249,33 +249,33 @@ TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatde
                           TestInputFormat{ "udf.iso", BitFormat::Udf } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
-        const auto file_buffer = load_file( "valid." + test.extension );
-        const BitArchiveReader reader{ lib, file_buffer };
+        REQUIRE_LOAD_FILE( fileBuffer, "valid." + test.extension );
+        const BitArchiveReader reader{ lib, fileBuffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
 
-    REQUIRE( set_current_dir( old_current_dir ) );
+    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #endif
 
 TEST_CASE( "formatdetect: Format detection of invalid archives", "[formatdetect]" ) {
-    const fs::path old_current_dir = current_dir();
-    const auto test_dir = fs::path{ test_archives_dir } / "detection";
-    REQUIRE( set_current_dir( test_dir ) );
+    const fs::path oldCurrentDir = current_dir();
+    const auto testDir = fs::path{ test_archives_dir } / "detection";
+    REQUIRE( set_current_dir( testDir ) );
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
     REQUIRE_THROWS_AS( BitArchiveReader( lib, BIT7Z_STRING( "small" ) ), BitException );
     REQUIRE_THROWS_AS( BitArchiveReader( lib, BIT7Z_STRING( "invalid" ) ), BitException );
 
-    REQUIRE( set_current_dir( old_current_dir ) );
+    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Issue #134)", "[formatdetect]" ) {
-    const fs::path old_current_dir = current_dir();
-    const auto test_dir = fs::path{ test_archives_dir } / "detection";
-    REQUIRE( set_current_dir( test_dir ) );
+    const fs::path oldCurrentDir = current_dir();
+    const auto testDir = fs::path{ test_archives_dir } / "detection";
+    REQUIRE( set_current_dir( testDir ) );
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -285,12 +285,27 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
     REQUIRE_NOTHROW( BitArchiveReader( lib, BIT7Z_STRING( "wrong_extension.rar" ) ) );
 
     // From buffer
-    auto file_buffer = load_file( "wrong_extension.rar" );
-    REQUIRE_THROWS( BitArchiveReader( lib, file_buffer, BitFormat::Rar ) );
-    REQUIRE_NOTHROW( BitArchiveReader( lib, file_buffer, BitFormat::SevenZip ) );
-    REQUIRE_NOTHROW( BitArchiveReader( lib, file_buffer ) );
+    auto fileBuffer = load_file( "wrong_extension.rar" );
+    REQUIRE_THROWS( BitArchiveReader( lib, fileBuffer, BitFormat::Rar ) );
+    REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer, BitFormat::SevenZip ) );
+    REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer ) );
 
-    REQUIRE( set_current_dir( old_current_dir ) );
+    REQUIRE( set_current_dir( oldCurrentDir ) );
+}
+
+TEST_CASE( "BitArchiveReader: Format detection of an archive file without extension", "[bitarchivereader]" ) {
+    const fs::path oldCurrentDir = current_dir();
+    const auto testDir = fs::path{ test_archives_dir } / "detection";
+    REQUIRE( set_current_dir( testDir ) );
+
+    REQUIRE( detect_format_from_extension( "noextension" ) == BitFormat::Auto );
+
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+    const BitArchiveReader reader{ lib, BIT7Z_STRING( "noextension" ) };
+    REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
+    REQUIRE_NOTHROW( reader.test() );
+
+    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #endif

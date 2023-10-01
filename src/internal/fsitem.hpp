@@ -10,21 +10,28 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
+#include "internal/fsutil.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/windows.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-class FSItem final : public GenericInputItem {
+class FilesystemItem final : public GenericInputItem {
     public:
-        explicit FSItem( const fs::path& itemPath, fs::path inArchivePath = fs::path() );
+        explicit FilesystemItem( const fs::path& itemPath,
+                                 fs::path inArchivePath = fs::path{},
+                                 SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
 
-        explicit FSItem( fs::directory_entry entry, const fs::path& searchPath );
+        explicit FilesystemItem( fs::directory_entry entry,
+                                 const fs::path& searchPath,
+                                 SymlinkPolicy symlinkPolicy );
 
         BIT7Z_NODISCARD auto isDots() const -> bool;
 
         BIT7Z_NODISCARD auto isDir() const noexcept -> bool override;
+
+        BIT7Z_NODISCARD auto isSymLink() const -> bool override;
 
         BIT7Z_NODISCARD auto size() const noexcept -> uint64_t override;
 
@@ -42,12 +49,20 @@ class FSItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
 
+        BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
+
         BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const -> HRESULT override;
+
+        BIT7Z_NODISCARD auto filesystemPath() const -> const fs::path&;
+
+        BIT7Z_NODISCARD auto filesystemName() const -> fs::path;
+
 
     private:
         fs::directory_entry mFileEntry;
         WIN32_FILE_ATTRIBUTE_DATA mFileAttributeData;
         fs::path mInArchivePath;
+        SymlinkPolicy mSymlinkPolicy;
 
         void initAttributes( const fs::path& itemPath );
 };

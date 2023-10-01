@@ -29,12 +29,12 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
         return S_OK;
     }
 
-    const auto old_pos = mOutputStream.tellp();
+    const auto oldPos = mOutputStream.tellp();
 
     mOutputStream.write( static_cast< const char* >( data ), size ); //-V2571
 
     if ( processedSize != nullptr ) {
-        *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - old_pos );
+        *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - oldPos );
     }
 
     return mOutputStream.bad() ? HRESULT_FROM_WIN32( ERROR_WRITE_FAULT ) : S_OK;
@@ -68,24 +68,24 @@ STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) noexcept {
         return E_FAIL;
     }
 
-    const auto old_pos = mOutputStream.tellp();
+    const auto oldPos = mOutputStream.tellp();
     mOutputStream.seekp( 0, ostream::end );
 
     if ( !mOutputStream ) {
         return E_FAIL;
     }
 
-    const auto current_pos = static_cast< uint64_t >( mOutputStream.tellp() );
-    if ( newSize < current_pos ) {
+    const auto currentPos = static_cast< uint64_t >( mOutputStream.tellp() );
+    if ( newSize < currentPos ) {
         return E_FAIL;
     }
 
-    const auto diff_pos = newSize - current_pos;
-    if ( diff_pos > 0 ) {
-        std::fill_n( std::ostream_iterator< char >( mOutputStream ), diff_pos, '\0' );
+    const auto diffPos = newSize - currentPos;
+    if ( diffPos > 0 ) {
+        std::fill_n( std::ostream_iterator< char >( mOutputStream ), diffPos, '\0' );
     }
 
-    mOutputStream.seekp( old_pos );
+    mOutputStream.seekp( oldPos );
 
     return !mOutputStream.fail() ? S_OK : E_FAIL;
 }

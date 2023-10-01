@@ -12,6 +12,7 @@
 
 #include "bitabstractarchiveopener.hpp"
 #include "bitarchiveiteminfo.hpp"
+#include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 
 struct IInArchive;
@@ -34,12 +35,12 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * the format argument must be specified.
          *
          * @param lib           the 7z library used.
-         * @param in_archive    the path to the archive to be read.
+         * @param inArchive     the path to the archive to be read.
          * @param format        the format of the input archive.
          * @param password      the password needed for opening the input archive.
          */
         BitArchiveReader( const Bit7zLibrary& lib,
-                          const tstring& in_archive,
+                          const tstring& inArchive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
@@ -52,12 +53,12 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * the format argument must be specified.
          *
          * @param lib           the 7z library used.
-         * @param in_archive    the input buffer containing the archive to be read.
+         * @param inArchive     the input buffer containing the archive to be read.
          * @param format        the format of the input archive.
          * @param password      the password needed for opening the input archive.
          */
         BitArchiveReader( const Bit7zLibrary& lib,
-                          const std::vector< byte_t >& in_archive,
+                          const std::vector< byte_t >& inArchive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
@@ -70,12 +71,12 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * the format argument must be specified.
          *
          * @param lib           the 7z library used.
-         * @param in_archive    the standard input stream of the archive to be read.
+         * @param inArchive     the standard input stream of the archive to be read.
          * @param format        the format of the input archive.
          * @param password      the password needed for opening the input archive.
          */
         BitArchiveReader( const Bit7zLibrary& lib,
-                          std::istream& in_archive,
+                          std::istream& inArchive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
@@ -130,6 +131,11 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         BIT7Z_NODISCARD auto hasEncryptedItems() const -> bool;
 
         /**
+         * @return true if and only if the archive has only encrypted items.
+         */
+        BIT7Z_NODISCARD auto isEncrypted() const -> bool;
+
+        /**
          * @return the number of volumes composing the archive.
          */
         BIT7Z_NODISCARD auto volumesCount() const -> uint32_t;
@@ -143,6 +149,62 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @return true if and only if the archive was created using solid compression.
          */
         BIT7Z_NODISCARD auto isSolid() const -> bool;
+
+        /**
+         * Checks if the given archive is header-encrypted or not.
+         *
+         * @tparam T The input type of the archive (i.e., file path, buffer, or standard stream).
+         *
+         * @param lib           the 7z library used.
+         * @param inArchive     the archive to be read.
+         * @param format        the format of the input archive.
+         *
+         * @return true if and only if the archive has at least one encrypted item.
+         */
+        template< typename T >
+        BIT7Z_NODISCARD
+        static auto isHeaderEncrypted( const Bit7zLibrary& lib,
+                                       T&& inArchive,
+                                       const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) -> bool {
+            try {
+                const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
+                return false;
+            } catch ( const BitException& ex ) {
+                return isOpenEncryptedError( ex.code() );
+            }
+        }
+
+        /**
+         * Checks if the given archive contains only encrypted items.
+         *
+         * @note A header-encrypted archive is also encrypted, but the contrary is not generally true.
+         *
+         * @note An archive might contain both plain and encrypted files; in this case, this function will
+         * return false.
+         *
+         * @tparam T The input type of the archive (i.e., file path, buffer, or standard stream).
+         *
+         * @param lib           the 7z library used.
+         * @param inArchive     the archive to be read.
+         * @param format        the format of the input archive.
+         *
+         * @return true if and only if the archive has only encrypted items.
+         */
+        template< typename T >
+        BIT7Z_NODISCARD
+        static auto isEncrypted( const Bit7zLibrary& lib,
+                                 T&& inArchive,
+                                 const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) -> bool {
+            try {
+                const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
+                return reader.isEncrypted();
+            } catch ( const BitException& ex ) {
+                return isOpenEncryptedError( ex.code() );
+            }
+        }
+
+    private:
+        static auto isOpenEncryptedError( std::error_code error ) -> bool;
 };
 
 using BitArchiveInfo BIT7Z_MAYBE_UNUSED BIT7Z_DEPRECATED_MSG("Since v4.0; please use BitArchiveReader.") = BitArchiveReader;

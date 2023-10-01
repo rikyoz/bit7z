@@ -17,11 +17,11 @@ using bit7z::BitProperty;
 using bit7z::BitPropVariant;
 using std::map;
 
-BitArchiveItemInfo::BitArchiveItemInfo( uint32_t item_index ) : BitArchiveItem( item_index ) {}
+BitArchiveItemInfo::BitArchiveItemInfo( uint32_t itemIndex ) : BitArchiveItem( itemIndex ) {}
 
 auto BitArchiveItemInfo::itemProperty( BitProperty property ) const -> BitPropVariant {
-    auto prop_it = mItemProperties.find( property );
-    return ( prop_it != mItemProperties.end() ? ( *prop_it ).second : BitPropVariant() );
+    const auto propIt = mItemProperties.find( property );
+    return ( propIt != mItemProperties.end() ? ( *propIt ).second : BitPropVariant() );
 }
 
 auto BitArchiveItemInfo::itemProperties() const -> map< BitProperty, BitPropVariant > {

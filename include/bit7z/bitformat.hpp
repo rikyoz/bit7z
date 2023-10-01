@@ -31,12 +31,12 @@ enum struct FormatFeatures : unsigned {
     MultipleMethods = 1u << 5   ///< The format can use different compression methods       (2^6 = 0100000)
 };
 
-template< typename E >
-using underlying_type_t = typename std::underlying_type< E >::type;
+template< typename Enum >
+using underlying_type_t = typename std::underlying_type< Enum >::type;
 
-template< typename E >
-inline constexpr auto to_underlying( E e ) noexcept -> underlying_type_t< E > {
-    return static_cast< underlying_type_t< E > >( e );
+template< typename Enum >
+inline constexpr auto to_underlying( Enum e ) noexcept -> underlying_type_t< Enum > {
+    return static_cast< underlying_type_t< Enum > >( e );
 }
 
 inline constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {

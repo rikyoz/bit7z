@@ -16,9 +16,6 @@
 #include "internal/com.hpp"
 #include "internal/guids.hpp"
 
-constexpr auto kPasswordNotDefined = "Password is not defined";
-constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
-
 namespace bit7z {
 
 /* On Windows, 7-zip's CMyUnknownImp class has a virtual destructor if the compiler is MinGW/GCC/Clang.

@@ -65,9 +65,9 @@ constexpr auto standard_library_version = __GNUC__;
 constexpr auto standard_library = "Microsoft STL";
 static const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
 #   if _MSC_VER >= 1900
-    constexpr auto msvc_major = _MSC_VER / 100 - 5;
+    constexpr auto msvc_major = ( _MSC_VER / 100 ) - 5;
 #   else
-    constexpr auto msvc_major = _MSC_VER / 100 - 6;
+    constexpr auto msvc_major = ( _MSC_VER / 100 ) - 6;
 #   endif
     constexpr auto msvc_minor = _MSC_VER % 100;
     return out << msvc_major << "." << msvc_minor;
@@ -75,6 +75,16 @@ static const auto standard_library_version = [](std::ostream& out) -> std::ostre
 #else
 constexpr auto standard_library = "Unknown";
 constexpr auto standard_library_version = "N/A";
+#endif
+
+#ifdef __GLIBC__
+constexpr auto c_runtime = "glibc";
+#elif defined( _UCRT )
+constexpr auto c_runtime = "ucrt + vcruntime";
+#elif defined( __MSVCRT_VERSION__ )
+constexpr auto c_runtime = "msvcrt";
+#else
+constexpr auto c_runtime = "Unknown";
 #endif
 
 // Compiler target architecture

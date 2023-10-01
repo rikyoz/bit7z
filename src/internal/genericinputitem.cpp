@@ -19,20 +19,12 @@ auto GenericInputItem::hasNewData() const noexcept -> bool {
     return true;
 }
 
-auto GenericInputItem::itemProperty( BitProperty propID ) const -> BitPropVariant {
+auto GenericInputItem::itemProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant prop;
-    switch ( propID ) {
-        case BitProperty::Path: {
-#if defined(_MSC_VER) || !defined(BIT7Z_USE_STANDARD_FILESYSTEM)
-            prop = inArchivePath().wstring();
-#else
-            // On some compilers and platforms (e.g., GCC before v12.3),
-            // the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
-            // So we simply convert to tstring, and then widen it if necessary.
-            prop = WIDEN( inArchivePath().string< tchar >() );
-#endif
+    switch ( property ) {
+        case BitProperty::Path:
+            prop = path_to_wide_string( inArchivePath() );
             break;
-        }
         case BitProperty::IsDir:
             prop = isDir();
             break;
@@ -55,6 +47,10 @@ auto GenericInputItem::itemProperty( BitProperty propID ) const -> BitPropVarian
             break;
     }
     return prop;
+}
+
+auto GenericInputItem::isSymLink() const -> bool {
+    return false;
 }
 
 } // namespace bit7z

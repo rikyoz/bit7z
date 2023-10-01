@@ -18,8 +18,6 @@
 using namespace std;
 using namespace NWindows;
 
-constexpr auto kCannotDeleteOutput = "Cannot delete output file";
-
 namespace bit7z {
 
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath )
@@ -32,8 +30,8 @@ void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time!
 }
 
-auto FileExtractCallback::finishOperation( OperationResult operation_result ) -> HRESULT {
-    const HRESULT result = operation_result != OperationResult::Success ? E_FAIL : S_OK;
+auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
+    const HRESULT result = operationResult != OperationResult::Success ? E_FAIL : S_OK;
     if ( mFileOutStream == nullptr ) {
         return result;
     }
@@ -49,11 +47,11 @@ auto FileExtractCallback::finishOperation( OperationResult operation_result ) ->
     }
 
     if ( mCurrentItem.isModifiedTimeDefined() ) {
-        filesystem::fsutil::setFileModifiedTime( mFilePathOnDisk, mCurrentItem.modifiedTime() );
+        filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem.modifiedTime() );
     }
 
     if ( mCurrentItem.areAttributesDefined() ) {
-        filesystem::fsutil::setFileAttributes( mFilePathOnDisk, mCurrentItem.attributes() );
+        filesystem::fsutil::set_file_attributes( mFilePathOnDisk, mCurrentItem.attributes() );
     }
     return result;
 }
@@ -61,7 +59,7 @@ auto FileExtractCallback::finishOperation( OperationResult operation_result ) ->
 auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
     fs::path filePath = mCurrentItem.path();
     if ( filePath.empty() ) {
-        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path( kEmptyFileAlias );
+        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path{ kEmptyFileAlias };
     } else if ( !mRetainDirectories ) {
         filePath = filePath.filename();
     } else {
@@ -70,11 +68,17 @@ auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
     return filePath;
 }
 
+constexpr auto kCannotDeleteOutput = "Cannot delete output file";
+
 auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+    mFilePathOnDisk = mDirectoryPath / filesystem::fsutil::sanitize_path( filePath );
+#else
     mFilePathOnDisk = mDirectoryPath / filePath;
+#endif
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
     if ( filesystem::fsutil::should_format_long_path( mFilePathOnDisk ) ) {
@@ -84,20 +88,28 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
-            mHandler.fileCallback()( filePath.string< tchar >() );
+#if defined( BIT7Z_USE_NATIVE_STRING )
+            const auto& filePathString = filePath.native();
+#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+            const auto filePathString = filePath.u8string();
+#else
+            const auto& nativePath = filePath.native();
+            const auto filePathString = narrow( nativePath.c_str(), nativePath.size() );
+#endif
+            mHandler.fileCallback()( filePathString );
         }
 
         std::error_code error;
         fs::create_directories( mFilePathOnDisk.parent_path(), error );
 
         if ( fs::exists( mFilePathOnDisk, error ) ) {
-            const OverwriteMode overwrite_mode = mHandler.overwriteMode();
+            const OverwriteMode overwriteMode = mHandler.overwriteMode();
 
-            switch ( overwrite_mode ) {
+            switch ( overwriteMode ) {
                 case OverwriteMode::None: {
                     throw BitException( kCannotDeleteOutput,
                                         make_hresult_code( E_ABORT ),
-                                        mFilePathOnDisk.string< tchar >() );
+                                        path_to_tstring( mFilePathOnDisk ) );
                 }
                 case OverwriteMode::Skip: {
                     return S_OK;
@@ -107,7 +119,7 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
                     if ( !fs::remove( mFilePathOnDisk, error ) ) {
                         throw BitException( kCannotDeleteOutput,
                                             make_hresult_code( E_ABORT ),
-                                            mFilePathOnDisk.string< tchar >() );
+                                            path_to_tstring( mFilePathOnDisk ) );
                     }
                     break;
                 }

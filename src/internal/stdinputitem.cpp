@@ -10,6 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <utility>
+
 #include "internal/cstdinstream.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/stdinputitem.hpp"
@@ -19,14 +21,14 @@ using std::istream;
 
 namespace bit7z {
 
-StdInputItem::StdInputItem( istream& stream, const tstring& path ) : mStream{ stream }, mStreamPath{ path } {}
+StdInputItem::StdInputItem( istream& stream, fs::path path ) : mStream{ stream }, mStreamPath{ std::move( path ) } {}
 
 auto StdInputItem::name() const -> tstring {
-    return mStreamPath.filename().string< tchar >();
+    return path_to_tstring( mStreamPath.filename() );
 }
 
 auto StdInputItem::path() const -> tstring {
-    return mStreamPath.string< tchar >();
+    return path_to_tstring( mStreamPath );
 }
 
 auto StdInputItem::inArchivePath() const -> fs::path {
@@ -44,23 +46,23 @@ auto StdInputItem::isDir() const noexcept -> bool {
 }
 
 auto StdInputItem::size() const -> uint64_t {
-    const auto original_pos = mStream.tellg();
+    const auto originalPos = mStream.tellg();
     mStream.seekg( 0, std::ios::end ); // seeking to the end of the stream
-    const auto result = static_cast< uint64_t >( mStream.tellg() - original_pos ); // size of the stream
-    mStream.seekg( original_pos ); // seeking back to the original position in the stream
+    const auto result = static_cast< uint64_t >( mStream.tellg() - originalPos ); // size of the stream
+    mStream.seekg( originalPos ); // seeking back to the original position in the stream
     return result;
 }
 
 auto StdInputItem::creationTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto StdInputItem::lastAccessTime() const noexcept -> FILETIME { //-V524
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto StdInputItem::lastWriteTime() const noexcept -> FILETIME {
-    return currentFileTime();
+    return current_file_time();
 }
 
 auto StdInputItem::attributes() const noexcept -> uint32_t {

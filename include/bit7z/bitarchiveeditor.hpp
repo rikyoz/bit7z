@@ -33,12 +33,12 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @brief Constructs a BitArchiveEditor object, reading the given archive file path.
          *
          * @param lib      the 7z library to use.
-         * @param in_file  the path to an input archive file.
+         * @param inFile   the path to an input archive file.
          * @param format   the input/output archive format.
          * @param password (optional) the password needed to read the input archive.
          */
         BitArchiveEditor( const Bit7zLibrary& lib,
-                          const tstring& in_file,
+                          const tstring& inFile,
                           const BitInOutFormat& format,
                           const tstring& password = {} );
 
@@ -65,71 +65,71 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @brief Requests to change the path of the item at the specified index with the given one.
          *
          * @param index    the index of the item to be renamed.
-         * @param new_path the new path (in the archive) desired for the item.
+         * @param newPath the new path (in the archive) desired for the item.
          */
-        void renameItem( uint32_t index, const tstring& new_path );
+        void renameItem( uint32_t index, const tstring& newPath );
 
         /**
-         * @brief Requests to change the path of the item from old_path to the new_path.
+         * @brief Requests to change the path of the item from oldPath to the newPath.
          *
-         * @param old_path the old path (in the archive) of the item to be renamed.
-         * @param new_path the new path (in the archive) desired for the item.
+         * @param oldPath the old path (in the archive) of the item to be renamed.
+         * @param newPath the new path (in the archive) desired for the item.
          */
-        void renameItem( const tstring& old_path, const tstring& new_path );
+        void renameItem( const tstring& oldPath, const tstring& newPath );
 
         /**
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given file.
          *
-         * @param index    the index of the item to be updated.
-         * @param in_file  the path to the file containing the new data for the item.
+         * @param index     the index of the item to be updated.
+         * @param inFile    the path to the file containing the new data for the item.
          */
-        void updateItem( uint32_t index, const tstring& in_file );
+        void updateItem( uint32_t index, const tstring& inFile );
 
         /**
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given buffer.
          *
          * @param index     the index of the item to be updated.
-         * @param in_buffer the buffer containing the new data for the item.
+         * @param inBuffer  the buffer containing the new data for the item.
          */
-        void updateItem( uint32_t index, const std::vector< byte_t >& in_buffer );
+        void updateItem( uint32_t index, const std::vector< byte_t >& inBuffer );
 
         /**
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given stream.
          *
          * @param index     the index of the item to be updated.
-         * @param in_stream the stream of new data for the item.
+         * @param inStream  the stream of new data for the item.
          */
-        void updateItem( uint32_t index, std::istream& in_stream );
+        void updateItem( uint32_t index, std::istream& inStream );
 
         /**
          * @brief Requests to update the content of the item at the specified path
          *        with the data from the given file.
          *
-         * @param item_path the path (in the archive) of the item to be updated.
-         * @param in_file   the path to the file containing the new data for the item.
+         * @param itemPath  the path (in the archive) of the item to be updated.
+         * @param inFile    the path to the file containing the new data for the item.
          */
-        void updateItem( const tstring& item_path, const tstring& in_file );
+        void updateItem( const tstring& itemPath, const tstring& inFile );
 
         /**
          * @brief Requests to update the content of the item at the specified path
          *        with the data from the given buffer.
          *
-         * @param item_path the path (in the archive) of the item to be updated.
-         * @param in_buffer the buffer containing the new data for the item.
+         * @param itemPath  the path (in the archive) of the item to be updated.
+         * @param inBuffer  the buffer containing the new data for the item.
          */
-        void updateItem( const tstring& item_path, const std::vector< byte_t >& in_buffer );
+        void updateItem( const tstring& itemPath, const std::vector< byte_t >& inBuffer );
 
         /**
          * @brief Requests to update the content of the item at the specified path
          *        with the data from the given stream.
          *
-         * @param item_path the path (in the archive) of the item to be updated.
-         * @param in_stream the stream of new data for the item.
+         * @param itemPath  the path (in the archive) of the item to be updated.
+         * @param inStream  the stream of new data for the item.
          */
-        void updateItem( const tstring& item_path, istream& in_stream );
+        void updateItem( const tstring& itemPath, istream& inStream );
 
         /**
          * @brief Marks the item at the given index as deleted.
@@ -141,9 +141,9 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         /**
          * @brief Marks the item at the given path (in the archive) as deleted.
          *
-         * @param item_path the path (in the archive) of the item to be deleted.
+         * @param itemPath the path (in the archive) of the item to be deleted.
          */
-        void deleteItem( const tstring& item_path );
+        void deleteItem( const tstring& itemPath );
 
         /**
          * @brief Applies the requested changes (i.e., rename/update/delete operations) to the input archive.
@@ -153,13 +153,13 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
     private:
         EditedItems mEditedItems;
 
-        auto findItem( const tstring& item_path ) -> uint32_t;
+        auto findItem( const tstring& itemPath ) -> uint32_t;
 
         void checkIndex( uint32_t index );
 
-        auto itemProperty( input_index index, BitProperty propID ) const -> BitPropVariant override;
+        auto itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant override;
 
-        auto itemStream( input_index index, ISequentialInStream** inStream ) const -> HRESULT override;
+        auto itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT override;
 
         auto hasNewData( uint32_t index ) const noexcept -> bool override;
 

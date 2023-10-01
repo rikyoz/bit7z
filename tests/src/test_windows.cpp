@@ -36,24 +36,24 @@ TEST_CASE( "winapi: Allocating BSTR string from nullptr C strings", "[winapi][st
     }
 
     SECTION( "Using a specific length" ) {
-        BSTR result_string = nullptr;
-        const size_t test_length = GENERATE( 0, 1, 42, 127, 128 );
+        BSTR resultString = nullptr;
+        const size_t testLength = GENERATE( 0, 1, 42, 127, 128 );
 
-        DYNAMIC_SECTION( "SysAllocStringLen with length " << test_length ) {
-            result_string = SysAllocStringLen( nullptr, test_length );
-            REQUIRE( SysStringLen( result_string ) == test_length );
-            REQUIRE( SysStringByteLen( result_string ) == test_length * sizeof( std::remove_pointer< BSTR >::type ) );
+        DYNAMIC_SECTION( "SysAllocStringLen with length " << testLength ) {
+            resultString = SysAllocStringLen( nullptr, testLength );
+            REQUIRE( SysStringLen( resultString ) == testLength );
+            REQUIRE( SysStringByteLen( resultString ) == testLength * sizeof( std::remove_pointer< BSTR >::type ) );
         }
 
-        DYNAMIC_SECTION( "SysAllocStringByteLen with byte length " << test_length ) {
-            result_string = SysAllocStringByteLen( nullptr, test_length );
-            REQUIRE( SysStringLen( result_string ) == test_length / sizeof( std::remove_pointer< BSTR >::type ) );
-            REQUIRE( SysStringByteLen( result_string ) == test_length );
+        DYNAMIC_SECTION( "SysAllocStringByteLen with byte length " << testLength ) {
+            resultString = SysAllocStringByteLen( nullptr, testLength );
+            REQUIRE( SysStringLen( resultString ) == testLength / sizeof( std::remove_pointer< BSTR >::type ) );
+            REQUIRE( SysStringByteLen( resultString ) == testLength );
         }
 
-        REQUIRE( result_string != nullptr );
-        REQUIRE( result_string == std::wstring{} );
-        REQUIRE_NOTHROW( SysFreeString( result_string ) );
+        REQUIRE( resultString != nullptr );
+        REQUIRE( resultString == std::wstring{} );
+        REQUIRE_NOTHROW( SysFreeString( resultString ) );
     }
 
     SECTION( "Using the max value for the length type" ) {
@@ -62,6 +62,7 @@ TEST_CASE( "winapi: Allocating BSTR string from nullptr C strings", "[winapi][st
         REQUIRE( SysAllocStringByteLen( nullptr, length ) == nullptr );
     }
 
+#if INTPTR_MAX == INT64_MAX
     SECTION( "Using a length value that wraps around" ) {
         auto length = 0xC0000000;
         REQUIRE( SysAllocStringLen( nullptr, length ) == nullptr );
@@ -76,6 +77,7 @@ TEST_CASE( "winapi: Allocating BSTR string from nullptr C strings", "[winapi][st
         REQUIRE( SysStringLen( string ) == length );
         REQUIRE_NOTHROW( SysFreeString( string ) );
     }
+#endif
 }
 
 TEST_CASE( "winapi: Handling nullptr BSTR strings", "[winapi][nullptr BSTR]" ) {
@@ -85,52 +87,52 @@ TEST_CASE( "winapi: Handling nullptr BSTR strings", "[winapi][nullptr BSTR]" ) {
 }
 
 TEST_CASE( "winapi: Allocating from wide strings", "[winapi][string allocation]" ) {
-    const auto* test_str = GENERATE( as< const wchar_t* >(),
-                                     L"",
-                                     L"h",
-                                     L"hello world!",
-                                     L"supercalifragilistichespiralidoso",
-                                     L"perché",
-                                     L"\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
+    const auto* testStr = GENERATE( as< const wchar_t* >(),
+                                    L"",
+                                    L"h",
+                                    L"hello world!",
+                                    L"supercalifragilistichespiralidoso",
+                                    L"perché",
+                                    L"\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
     );
 
-    DYNAMIC_SECTION( "Testing L" << Catch::StringMaker< std::wstring >::convert( test_str ) << " wide string" ) {
-        std::wstring expected_string;
-        BSTR result_string = nullptr;
+    DYNAMIC_SECTION( "Testing L" << Catch::StringMaker< std::wstring >::convert( testStr ) << " wide string" ) {
+        std::wstring expectedString;
+        BSTR resultString = nullptr;
 
         SECTION( "SysAllocString" ) {
-            expected_string = test_str;
-            result_string = SysAllocString( test_str );
+            expectedString = testStr;
+            resultString = SysAllocString( testStr );
         }
 
         SECTION( "SysAllocStringLen" ) {
-            expected_string = test_str;
-            result_string = SysAllocStringLen( test_str, expected_string.size() );
+            expectedString = testStr;
+            resultString = SysAllocStringLen( testStr, expectedString.size() );
         }
 
         SECTION( "SysAllocStringLen with half-length parameter" ) {
             // Note: flawfinder warns about potentially using non-null terminating strings,
             // but, in our case, the test string is guaranteed to be null-terminated!
-            expected_string = std::wstring{ test_str, std::wcslen( test_str ) / 2 }; // flawfinder: ignore
-            result_string = SysAllocStringLen( test_str, expected_string.size() );
+            expectedString = std::wstring{ testStr, std::wcslen( testStr ) / 2 }; // flawfinder: ignore
+            resultString = SysAllocStringLen( testStr, expectedString.size() );
         }
 
         SECTION( "SysAllocStringLen with zero length parameter" ) {
-            // expected_string is already empty here
-            result_string = SysAllocStringLen( test_str, 0 );
+            // expectedString is already empty here
+            resultString = SysAllocStringLen( testStr, 0 );
         }
 
-        REQUIRE( result_string != nullptr );
-        REQUIRE( result_string == expected_string );
-        REQUIRE( SysStringLen( result_string ) == expected_string.size() );
-        REQUIRE( SysStringByteLen( result_string ) == ( expected_string.size() * sizeof( OLECHAR ) ) );
+        REQUIRE( resultString != nullptr );
+        REQUIRE( resultString == expectedString );
+        REQUIRE( SysStringLen( resultString ) == expectedString.size() );
+        REQUIRE( SysStringByteLen( resultString ) == ( expectedString.size() * sizeof( OLECHAR ) ) );
 
-        REQUIRE_NOTHROW( SysFreeString( result_string ) );
+        REQUIRE_NOTHROW( SysFreeString( resultString ) );
     }
 }
 
 TEST_CASE( "winapi: Allocating from narrow strings", "[winapi][string allocation]" ) {
-    const auto* test_str = GENERATE( as< const char* >(),
+    const auto* testStr = GENERATE( as< const char* >(),
                                      "",
                                      "h",
                                      "hello world!",
@@ -139,34 +141,34 @@ TEST_CASE( "winapi: Allocating from narrow strings", "[winapi][string allocation
                                      "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
     );
 
-    DYNAMIC_SECTION( "Testing " << Catch::StringMaker< std::string >::convert( test_str ) << " string" ) {
-        BSTR result_string = nullptr;
-        std::string expected_string;
+    DYNAMIC_SECTION( "Testing " << Catch::StringMaker< std::string >::convert( testStr ) << " string" ) {
+        BSTR resultString = nullptr;
+        std::string expectedString;
 
         SECTION( "SysAllocStringByteLen" ) {
-            expected_string = test_str;
-            result_string = SysAllocStringByteLen( test_str, expected_string.size() );
+            expectedString = testStr;
+            resultString = SysAllocStringByteLen( testStr, expectedString.size() );
         }
 
         SECTION( "SysAllocStringByteLen with half-length parameter" ) {
             // Note: flawfinder warns about potentially using non-null terminating strings,
             // but, in our case, the test string is guaranteed to be null-terminated!
-            expected_string = std::string{ test_str, std::strlen( test_str ) / 2 }; // flawfinder: ignore
-            result_string = SysAllocStringByteLen( test_str, expected_string.size() );
+            expectedString = std::string{ testStr, std::strlen( testStr ) / 2 }; // flawfinder: ignore
+            resultString = SysAllocStringByteLen( testStr, expectedString.size() );
         }
 
         SECTION( "SysAllocStringByteLen with zero length parameter" ) {
-            // expected_string is already empty here
-            result_string = SysAllocStringByteLen( test_str, 0 );
+            // expectedString is already empty here
+            resultString = SysAllocStringByteLen( testStr, 0 );
         }
 
-        REQUIRE( result_string != nullptr );
+        REQUIRE( resultString != nullptr );
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-        REQUIRE( reinterpret_cast< const char* >( result_string ) == expected_string );
-        REQUIRE( SysStringLen( result_string ) == ( expected_string.size() / sizeof( OLECHAR ) ) );
-        REQUIRE( SysStringByteLen( result_string ) == expected_string.size() );
+        REQUIRE( reinterpret_cast< const char* >( resultString ) == expectedString );
+        REQUIRE( SysStringLen( resultString ) == ( expectedString.size() / sizeof( OLECHAR ) ) );
+        REQUIRE( SysStringByteLen( resultString ) == expectedString.size() );
 
-        REQUIRE_NOTHROW( SysFreeString( result_string ) );
+        REQUIRE_NOTHROW( SysFreeString( resultString ) );
     }
 }
 
