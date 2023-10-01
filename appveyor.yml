@@ -169,7 +169,6 @@ for:
     - git submodule update --init --recursive
     - mkdir build
     - cd build
-    - if "%compiler%"=="mingw" (rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe")
 
   build_script:
     - cmake .. -G "Ninja" %flags% -DCMAKE_BUILD_TYPE=Release
