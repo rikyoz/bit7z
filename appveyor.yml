@@ -13,21 +13,21 @@ environment:
   APPVEYOR_YML_DISABLE_PS_LINUX: true
 
   matrix:
-  #- compiler: msvc
-  #  arch: x86
-  #  flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
+  - compiler: msvc
+    arch: x86
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
 
-  #- compiler: msvc
-  #  arch: x64
-  #  flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
+  - compiler: msvc
+    arch: x64
+    flags: -DBIT7Z_STATIC_RUNTIME=OFF -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
 
-  #- compiler: msvc_mt
-  #  arch: x86
-  #  flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
+  - compiler: msvc_mt
+    arch: x86
+    flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
 
-  #- compiler: msvc_mt
-  #  arch: x64
-  #  flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
+  - compiler: msvc_mt
+    arch: x64
+    flags: -DBIT7Z_STATIC_RUNTIME=ON -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
 
   - compiler: mingw
     arch: x86
@@ -169,7 +169,6 @@ for:
     - git submodule update --init --recursive
     - mkdir build
     - cd build
-    # - if "%compiler%"=="mingw" (rename "C:\Program Files\Git\usr\bin\sh.exe" "sh2.exe")
 
   build_script:
     - cmake .. -G "Ninja" %flags% -DCMAKE_BUILD_TYPE=Release
