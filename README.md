@@ -278,7 +278,7 @@ You can also directly integrate the library into your project via CMake:
 
 + Download bit7z and copy it into a sub-directory of your project (e.g., `third_party`), or add it as a git submodule of your repository.
 + Then, use the command `add_subdirectory()` in your `CMakeLists.txt` to include bit7z.
-+ Finally, add the `bit7z` target using the `target_link_libraries()` command.
++ Finally, link the `bit7z` library using the `target_link_libraries()` command.
 
 For example:
 
