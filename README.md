@@ -36,7 +36,7 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Compression and extraction _to and from_ memory** and **C++ standard streams**.
 + Compression using **custom path aliases** for the items in the output archives.
 + **Selective extraction** of only specified files/folders **using wildcards** and **regular expressions**.
-+ Creation of **encrypted archives** (strong AES-256 encryption &mdash; only for 7z and ZIP formats).
++ Creation of **encrypted archives** (strong AES-256 encryption; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
 + Possibility to choose the **compression level** (if supported by the archive format), the **compression method** ([supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size**, and the **word size**.
 + **Automatic input archive format detection**.
@@ -274,10 +274,10 @@ cmake --build . -j --config Release
 
 A more detailed guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
-You can directly integrate the library into your project via CMake:
+You can also directly integrate the library into your project via CMake:
 
 + Download bit7z and copy it into a sub-directory of your project (e.g., `third_party`), or add it as a git submodule of your repository.
-+ You can then use the command `add_subdirectory()` in your `CMakeLists.txt` to include bit7z.
++ Then, use the command `add_subdirectory()` in your `CMakeLists.txt` to include bit7z.
 + Finally, add the `bit7z` target using the `target_link_libraries()` command.
 
 For example:
