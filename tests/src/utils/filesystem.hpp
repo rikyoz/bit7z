@@ -26,12 +26,6 @@
 #include <unistd.h> // for getpid
 #endif
 
-#if defined(__MINGW32__) && defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIO_DEFINED)
-#include <ext/stdio_filebuf.h>
-#include <fcntl.h>
-#include <share.h>
-#endif
-
 #include <catch2/catch.hpp>
 #include <internal/fs.hpp>
 #include <internal/util.hpp>
@@ -78,20 +72,10 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
 }
 
 inline auto load_file( fs::path const& inFile ) -> std::vector< bit7z::byte_t > {
-#if defined(__MINGW32__) && defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIO_DEFINED)
-    int fd;
-    const auto res = _wsopen_s( &fd, inFile.c_str(), _O_BINARY, _SH_DENYNO, _S_IREAD );
-    if ( res != 0 ) {
-        return {};
-    }
-    __gnu_cxx::stdio_filebuf<char> filebuf(fd, std::ios::in);
-    std::istream ifs( &filebuf );
-#else
     fs::ifstream ifs{ inFile, fs::ifstream::binary };
     if ( !ifs.is_open() ) {
         return {};
     }
-#endif
     noskipws( ifs ); //no skip spaces!
     auto size = fs::file_size( inFile );
     std::vector< bit7z::byte_t > result( size );
@@ -105,19 +89,9 @@ inline auto load_file( fs::path const& inFile ) -> std::vector< bit7z::byte_t > 
     const auto (var) = load_file( in_file ); \
     REQUIRE_FALSE( var.empty() )
 
-#if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
-#define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
-    fs::ifstream (var){}; \
-    *(var).rdbuf() = bit7z::filesystem::fsutil::open_filebuf<char>( in_file, std::ios::in | std::ios::binary ); \
-    if ( !(var).is_open() ) { \
-        (var).setstate( std::ios::failbit ); \
-    } \
-    REQUIRE( (var).is_open() )
-#else
 #define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
     fs::ifstream (var){ in_file, std::ios::binary }; \
     REQUIRE( (var).is_open() )
-#endif
 
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder

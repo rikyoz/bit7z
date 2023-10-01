@@ -31,14 +31,7 @@ CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileSt
 }
 
 void CFileInStream::openFile( const fs::path& filePath ) {
-#if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
-    *mFileStream.rdbuf() = filesystem::fsutil::open_filebuf<char>( filePath, std::ios::in | std::ios::binary );
-    if ( !mFileStream.is_open() ) {
-        mFileStream.setstate( std::ios::failbit );
-    }
-#else
     mFileStream.open( filePath, std::ios::in | std::ios::binary ); // flawfinder: ignore
-#endif
     if ( mFileStream.fail() ) {
         //Note: CFileInStream constructor does not directly throw exceptions since it is also used in nothrow functions.
         throw BitException( "Failed to open the archive file",

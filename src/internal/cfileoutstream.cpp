@@ -32,14 +32,7 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
         }
         throw BitException( "Failed to create the output file", error, path_to_tstring( mFilePath ) );
     }
-#if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
-    *mFileStream.rdbuf() = filesystem::fsutil::open_filebuf<char>( mFilePath, std::ios::out | std::ios::binary | std::ios::trunc );
-    if ( !mFileStream.is_open() ) {
-        mFileStream.setstate( std::ios::failbit );
-    }
-#else
     mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
-#endif
     if ( mFileStream.fail() ) {
         throw BitException( "Failed to open the output file",
                             make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
