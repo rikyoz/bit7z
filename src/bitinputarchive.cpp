@@ -101,7 +101,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* inStre
     if ( res != S_OK ) {
         const auto error = openCallback->passwordWasAsked() ?
                            make_error_code( OperationResult::OpenErrorEncrypted ) : make_hresult_code( res );
-        throw BitException( "Could not open the archive", error, name.string< tchar >() );
+        throw BitException( "Could not open the archive", error, path_to_tstring( name ) );
     }
 
     return inArchive.Detach();
@@ -122,7 +122,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arcPath )
     : mDetectedFormat{ detect_format( handler.format(), arcPath ) },
       mArchiveHandler{ handler },
-      mArchivePath{ arcPath.string< tchar >() } {
+      mArchivePath{ path_to_tstring( arcPath ) } {
     CMyComPtr< IInStream > fileStream;
     if ( *mDetectedFormat != BitFormat::Split && arcPath.extension() == ".001" ) {
         fileStream = bit7z::make_com< CMultiVolumeInStream, IInStream >( arcPath );

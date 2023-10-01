@@ -162,7 +162,8 @@ void BitOutputArchive::compressOut( IOutArchive* outArc,
                                     UpdateCallback* updateCallback ) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Update ) {
         for ( const auto& newItem : mNewItemsVector ) {
-            auto updatedItem = mInputArchive->find( newItem->inArchivePath().string< tchar >() );
+            auto newItemPath = path_to_tstring( newItem->inArchivePath() );
+            auto updatedItem = mInputArchive->find( newItemPath );
             if ( updatedItem != mInputArchive->cend() ) {
                 setDeletedIndex( updatedItem->index() );
             }
@@ -205,7 +206,7 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
         /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
          * existing destination file (as it should). So we explicitly remove it before! */
         if ( !fs::remove( outFile, error ) ) {
-            throw BitException( "Failed to delete the old archive file", error, outFile.string< tchar >() );
+            throw BitException( "Failed to delete the old archive file", error, path_to_tstring( outFile ) );
         }
 #endif
 
@@ -214,7 +215,7 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
         tmpFile += ".tmp";
         fs::rename( tmpFile, outFile, error );
         if ( error ) {
-            throw BitException( "Failed to overwrite the old archive file", error, outFile.string< tchar >() );
+            throw BitException( "Failed to overwrite the old archive file", error, path_to_tstring( outFile ) );
         }
     }
 }
