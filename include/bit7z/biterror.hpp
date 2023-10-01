@@ -44,6 +44,11 @@ enum struct BitError {
 
 auto make_error_code( BitError error ) -> std::error_code;
 
+/**
+ * @brief The BitFailureSource enum struct values represent bit7z error conditions.
+ * They can be used for performing queries on bit7z's `error_code`s, for the purpose
+ * of grouping, classification, or error translation.
+ */
 enum struct BitFailureSource {
     CRCError,
     DataAfterEnd,
