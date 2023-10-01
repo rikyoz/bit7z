@@ -232,7 +232,7 @@ The newest bit7z v4 introduced some significant breaking changes to the library'
 ## 💾 Download
 
 <div align="center">
-<a href="https://github.com/rikyoz/bit7z/releases"><img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?include_prereleases&sort=semver&label=Latest%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
+<a href="https://github.com/rikyoz/bit7z/releases"><img alt="GitHub Latest Release" src="https://img.shields.io/github/v/release/rikyoz/bit7z?sort=semver&label=Latest%20Release&style=social" height='36' style='border:0;height:36px;'/></a>
 <br/>
 <a href="https://github.com/rikyoz/bit7z/releases">
 <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/rikyoz/bit7z/total.svg?style=popout&label=Total%20Downloads&logo=icloud&logoColor=white"/></a>
