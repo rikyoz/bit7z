@@ -139,7 +139,7 @@ auto FilesystemItem::getStream( ISequentialInStream** inStream ) const -> HRESUL
 
     if ( mSymlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
         try {
-            auto inStreamLoc = bit7z::make_com< CSymlinkInStream >( path() );
+            auto inStreamLoc = bit7z::make_com< CSymlinkInStream >( filesystemPath() );
             *inStream = inStreamLoc.Detach();
             return S_OK;
         } catch ( const BitException& ex ) {
@@ -148,7 +148,7 @@ auto FilesystemItem::getStream( ISequentialInStream** inStream ) const -> HRESUL
     }
 
     try {
-        auto inStreamLoc = bit7z::make_com< CFileInStream >( path() );
+        auto inStreamLoc = bit7z::make_com< CFileInStream >( filesystemPath() );
         *inStream = inStreamLoc.Detach();
     } catch ( const BitException& ex ) {
         return ex.nativeCode();
