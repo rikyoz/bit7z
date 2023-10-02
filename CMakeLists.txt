@@ -221,7 +221,10 @@ endif()
 if( UNIX )
     target_compile_definitions( ${LIB_TARGET} PRIVATE _LARGEFILE64_SOURCE _LARGEFILE_SOURCE _REENTRANT
                                                       EXTERNAL_CODECS ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
-    target_compile_definitions( ${LIB_TARGET} PUBLIC _TIME_BITS=64 _FILE_OFFSET_BITS=64 )
+    target_compile_definitions( ${LIB_TARGET} PUBLIC _TIME_BITS=64 )
+    if ( ( NOT ANDROID ) OR ( ANDROID_PLATFORM GREATER_EQUAL 24 ) )
+        target_compile_definitions( ${LIB_TARGET} PUBLIC _FILE_OFFSET_BITS=64 )
+    endif()
     target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
 
