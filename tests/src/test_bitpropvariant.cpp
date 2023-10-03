@@ -689,90 +689,90 @@ TEST_CASE( "BitPropVariant: Moving string variants", "[BitPropVariant][copy]" ) 
 }
 
 TEST_CASE( "BitPropVariant: Equality operator", "[bitpropvariant][equality]" ) {
-    BitPropVariant a;
-    BitPropVariant b;
-    REQUIRE( a == b );
+    BitPropVariant first;
+    BitPropVariant second;
+    REQUIRE( first == second );
 
     SECTION( "Comparing equal variants" ) {
         SECTION( "Same signed integers" ) {
-            a = 42; // NOLINT(*-magic-numbers)
-            b = 42; // NOLINT(*-magic-numbers)
+            first = 42; // NOLINT(*-magic-numbers)
+            second = 42; // NOLINT(*-magic-numbers)
         }
 
         SECTION( "Same unsigned integers" ) {
-            a = 42u; // NOLINT(*-magic-numbers)
-            b = 42u; // NOLINT(*-magic-numbers)
+            first = 42u; // NOLINT(*-magic-numbers)
+            second = 42u; // NOLINT(*-magic-numbers)
         }
 
         SECTION( "Same booleans (true)" ) {
-            a = true;
-            b = true;
+            first = true;
+            second = true;
         }
 
         SECTION( "Same booleans (true)" ) {
-            a = false;
-            b = false;
+            first = false;
+            second = false;
         }
 
         SECTION( "Same C strings" ) {
-            a = L"hello world";
-            b = L"hello world";
-            REQUIRE( a.bstrVal != b.bstrVal );
+            first = L"hello world";
+            second = L"hello world";
+            REQUIRE( first.bstrVal != second.bstrVal );
         }
 
         SECTION( "Same std::wstrings" ) {
-            a = std::wstring( kTestWideString );
-            b = std::wstring( kTestWideString );
-            REQUIRE( a.bstrVal != b.bstrVal );
+            first = std::wstring( kTestWideString );
+            second = std::wstring( kTestWideString );
+            REQUIRE( first.bstrVal != second.bstrVal );
         }
 
-        REQUIRE( a == b );
+        REQUIRE( first == second );
     }
 
     SECTION( "Comparing different variants" ) {
         SECTION( "Different signed integers" ) {
-            a = 42; // NOLINT(*-magic-numbers)
-            b = 84; // NOLINT(*-magic-numbers)
+            first = 42; // NOLINT(*-magic-numbers)
+            second = 84; // NOLINT(*-magic-numbers)
         }
 
         SECTION( "Different unsigned integers" ) {
-            a = 42u; // NOLINT(*-magic-numbers)
-            b = 84u; // NOLINT(*-magic-numbers)
+            first = 42u; // NOLINT(*-magic-numbers)
+            second = 84u; // NOLINT(*-magic-numbers)
         }
 
         SECTION( "Integers with different signedness" ) {
-            a = 42; // NOLINT(*-magic-numbers)
-            b = 42u; // NOLINT(*-magic-numbers)
-            //unsigned 42 (b) is different from a signed 42 (a)!
+            first = 42; // NOLINT(*-magic-numbers)
+            second = 42u; // NOLINT(*-magic-numbers)
+            //unsigned 42 (second) is different from first signed 42 (first)!
         }
 
         SECTION( "Different booleans (1)" ) {
-            a = true;
-            b = false;
+            first = true;
+            second = false;
         }
 
         SECTION( "Different booleans (2)" ) {
-            a = false;
-            b = true;
+            first = false;
+            second = true;
         }
 
-        SECTION( "Integer and a string" ) {
-            a = 42; // NOLINT(*-magic-numbers)
-            b = L"ciao mondo";
+        SECTION( "Integer and first string" ) {
+            first = 42; // NOLINT(*-magic-numbers)
+            second = L"ciao mondo";
         }
 
         SECTION( "Different C strings" ) {
-            a = L"hello world";
-            b = L"ciao mondo";
-            REQUIRE( a.bstrVal != b.bstrVal );
+            first = L"hello world";
+            second = L"ciao mondo";
+            REQUIRE( first.bstrVal != second.bstrVal );
         }
 
         SECTION( "Different std::wstrings" ) {
-            a = std::wstring( L"hello world" );
-            b = std::wstring( L"ciao mondo" );
-            REQUIRE( a.bstrVal != b.bstrVal );
+            first = std::wstring( L"hello world" );
+            second = std::wstring( L"ciao mondo" );
+            REQUIRE( first.bstrVal != second.bstrVal );
         }
 
-        REQUIRE( a != b );
+        REQUIRE( first != second );
     }
 }

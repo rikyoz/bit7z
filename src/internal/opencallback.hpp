@@ -42,6 +42,7 @@ class OpenCallback final : public IArchiveOpenCallback,
 
         ~OpenCallback() override = default;
 
+        BIT7Z_NODISCARD
         auto passwordWasAsked() const -> bool;
 
         // IArchiveOpenCallback

@@ -45,10 +45,6 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
     RINOK( to_seekdir( seekOrigin, way ) )
 
-    /*if ( offset < 0 ) { // GZip uses negative offsets!
-        return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-    }*/
-
     mInputStream.seekg( static_cast< std::istream::off_type >( offset ), way );
 
     if ( mInputStream.bad() ) {

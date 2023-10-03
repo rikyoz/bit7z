@@ -778,7 +778,7 @@ TEST_CASE( "BitArchiveReader: Reading invalid archives", "[bitarchivereader]" ) 
                                         SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
                                         SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
                                         SingleFileArchive{ "rar", BitFormat::Rar5, 477870 },
-                                        //SingleFileArchive{ "tar", BitFormat::Tar, 479232 },
+                                        //SingleFileArchive{"tar", BitFormat::Tar, 479232},
                                         SingleFileArchive{ "wim", BitFormat::Wim, clouds.size },
                                         SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
                                         SingleFileArchive{ "zip", BitFormat::Zip, 476375 } );
@@ -1105,7 +1105,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
-TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file name", "[bitarchivereader]" ) {
+TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name", "[bitarchivereader]" ) {
     const fs::path oldCurrentDir = current_dir();
     const auto testDir = fs::path{ test_archives_dir } / "metadata" / "unicode";
     REQUIRE( set_current_dir( testDir ) );
@@ -1152,7 +1152,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file n
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
-TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file name (no path attribute stored)", "[bitarchivereader]" ) {
+TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2)", "[bitarchivereader]" ) {
     const fs::path oldCurrentDir = current_dir();
     const auto testDir = fs::path{ test_archives_dir } / "metadata" / "unicode";
     REQUIRE( set_current_dir( testDir ) );

@@ -236,7 +236,7 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
 
 #ifdef _WIN32
 
-// For some reasons, 7-zip fails to open UDF files on Linux, so we test them only on Windows.
+// For some reason, 7-zip fails to open UDF files on Linux, so we test them only on Windows.
 TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatdetect]" ) {
     const fs::path oldCurrentDir = current_dir();
     const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";

@@ -35,8 +35,8 @@ template< typename Enum >
 using underlying_type_t = typename std::underlying_type< Enum >::type;
 
 template< typename Enum >
-inline constexpr auto to_underlying( Enum e ) noexcept -> underlying_type_t< Enum > {
-    return static_cast< underlying_type_t< Enum > >( e );
+inline constexpr auto to_underlying( Enum enum_value ) noexcept -> underlying_type_t< Enum > {
+    return static_cast< underlying_type_t< Enum > >( enum_value );
 }
 
 inline constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {

@@ -387,4 +387,4 @@ auto BitInputArchive::ConstIterator::operator->() noexcept -> BitInputArchive::C
 BitInputArchive::ConstIterator::ConstIterator( uint32_t itemIndex, const BitInputArchive& itemArchive ) noexcept
     : mItemOffset( itemIndex, itemArchive ) {}
 
-}
+} // namespace bit7z
