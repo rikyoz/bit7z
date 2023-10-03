@@ -15,6 +15,7 @@
 #include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
 #include "internal/stdinputitem.hpp"
+#include "internal/util.hpp"
 
 using namespace bit7z;
 using filesystem::FilesystemItem;
@@ -39,7 +40,7 @@ void BitItemsVector::indexPaths( const std::vector< tstring >& inPaths, Indexing
     const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     for ( const auto& filePath : inPaths ) {
         const FilesystemItem item{ filePath,
-                                   options.retainFolderStructure ? filePath : BIT7Z_STRING( "" ),
+                                   options.retainFolderStructure ? tstring_to_path( filePath ) : fs::path{},
                                    symlinkPolicy };
         indexItem( item, options );
     }
@@ -48,7 +49,7 @@ void BitItemsVector::indexPaths( const std::vector< tstring >& inPaths, Indexing
 void BitItemsVector::indexPathsMap( const std::map< tstring, tstring >& inPaths, IndexingOptions options ) {
     const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     for ( const auto& filePair : inPaths ) {
-        const FilesystemItem item{ fs::path( filePair.first ), fs::path( filePair.second ), symlinkPolicy };
+        const FilesystemItem item{ tstring_to_path( filePair.first ), tstring_to_path( filePair.second ), symlinkPolicy };
         indexItem( item, options );
     }
 }
@@ -69,12 +70,13 @@ void BitItemsVector::indexItem( const FilesystemItem& item, IndexingOptions opti
 }
 
 void BitItemsVector::indexFile( const tstring& inFile, const tstring& name, bool followSymlinks ) {
-    if ( fs::is_directory( inFile ) ) {
+    const fs::path filePath = tstring_to_path( inFile );
+    if ( fs::is_directory( filePath ) ) {
         throw BitException( "Input path points to a directory, not a file",
                             std::make_error_code( std::errc::invalid_argument ), inFile );
     }
     const auto symlinkPolicy = followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    mItems.emplace_back( std::make_unique< FilesystemItem >( inFile, name, symlinkPolicy ) );
+    mItems.emplace_back( std::make_unique< FilesystemItem >( filePath, name, symlinkPolicy ) );
 }
 
 void BitItemsVector::indexBuffer( const vector< byte_t >& inBuffer, const tstring& name ) {

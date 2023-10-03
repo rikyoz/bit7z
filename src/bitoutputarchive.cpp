@@ -122,14 +122,14 @@ void BitOutputArchive::addFiles( const tstring& inDir, const tstring& filter, Fi
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.onlyFiles = true;
     options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexDirectory( inDir, filter, policy, options );
+    mNewItemsVector.indexDirectory( tstring_to_path( inDir ), filter, policy, options );
 }
 
 void BitOutputArchive::addDirectory( const tstring& inDir ) {
     IndexingOptions options{};
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexDirectory( inDir, BIT7Z_STRING( "" ), FilterPolicy::Include, options );
+    mNewItemsVector.indexDirectory( tstring_to_path( inDir ), BIT7Z_STRING( "" ), FilterPolicy::Include, options );
 }
 
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
@@ -222,7 +222,15 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
 
 void BitOutputArchive::compressTo( const tstring& outFile ) {
     using namespace bit7z::filesystem;
-    const fs::path outPath = FORMAT_LONG_PATH( outFile );
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    fs::path outPath = tstring_to_path( outFile );
+    if ( filesystem::fsutil::should_format_long_path( outPath ) ) {
+        outPath = filesystem::fsutil::format_long_path( path );
+    }
+#else
+    const fs::path outPath = tstring_to_path( outFile );
+#endif
+
     std::error_code error;
     if ( fs::exists( outPath, error ) ) {
         const OverwriteMode overwriteMode = mArchiveCreator.overwriteMode();
