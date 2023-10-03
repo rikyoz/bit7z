@@ -62,30 +62,30 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
         REQUIRE_THROWS_AS( (info).testItem( (info).itemsCount() ), BitException ); \
     } while( false )
 
-#define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem )                                              \
+#define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem )                                               \
     do {                                                                                                 \
         INFO( "Failed while checking file " << Catch::StringMaker< tstring >::convert( (item).name() ) ) \
-        REQUIRE( (item).isDir() == (expectedItem).fileInfo.isDir );                                    \
+        REQUIRE( (item).isDir() == (expectedItem).fileInfo.isDir );                                      \
                                                                                                          \
         if ( !(item).isDir() ) {                                                                         \
-            REQUIRE( (item).isEncrypted() == (expectedItem).isEncrypted );                              \
+            REQUIRE( (item).isEncrypted() == (expectedItem).isEncrypted );                               \
         }                                                                                                \
                                                                                                          \
         if ( format_has_path_metadata( format ) ) {                                                      \
-            REQUIRE( (item).extension() == (expectedItem).fileInfo.ext );                               \
-            REQUIRE( (item).name() == (expectedItem).fileInfo.name );                                   \
-            REQUIRE( (item).path() == (expectedItem).inArchivePath );                                   \
+            REQUIRE( (item).extension() == (expectedItem).fileInfo.ext );                                \
+            REQUIRE( (item).name() == (expectedItem).fileInfo.name );                                    \
+            REQUIRE( (item).path() == (expectedItem).inArchivePath );                                    \
         }                                                                                                \
                                                                                                          \
         if ( format_has_size_metadata( format ) ) {                                                      \
             /* Note: some archive formats (e.g. BZip2) do not provide the size metadata! */              \
-            REQUIRE( (item).size() == (expectedItem).fileInfo.size );                                   \
+            REQUIRE( (item).size() == (expectedItem).fileInfo.size );                                    \
         }                                                                                                \
                                                                                                          \
         if ( ( format_has_crc( format ) && !(item).itemProperty( BitProperty::CRC ).isEmpty() ) &&       \
-             ( format != BitFormat::Rar5 || !(item).isEncrypted() ) ) {                                  \
-            /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/                  \
-            REQUIRE( (item).crc() == (expectedItem).fileInfo.crc32 );                                   \
+             ( ( (format) != BitFormat::Rar5 ) || !(item).isEncrypted() ) ) {                            \
+            /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/                   \
+            REQUIRE( (item).crc() == (expectedItem).fileInfo.crc32 );                                    \
         }                                                                                                \
     } while( false )
 
@@ -113,18 +113,18 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
                                                                                                       \
         const bool archive_stores_paths = format_has_path_metadata( format );                         \
         size_t found_items = 0;                                                                       \
-        for ( const auto& archivedItem : archive_content.items ) {                                   \
+        for ( const auto& archivedItem : archive_content.items ) {                                    \
             for ( const auto& item : items ) {                                                        \
-                if ( archive_stores_paths || from_filesystem ) {                                      \
-                    if ( item.name() != archivedItem.fileInfo.name ) {                               \
+                if ( archive_stores_paths || (from_filesystem) ) {                                    \
+                    if ( item.name() != archivedItem.fileInfo.name ) {                                \
                         continue;                                                                     \
                     }                                                                                 \
                     REQUIRE( (info).find( item.path() ) != (info).cend() );                           \
                     REQUIRE( (info).contains( item.path() ) );                                        \
                 }                                                                                     \
-                REQUIRE( (info).isItemEncrypted( item.index() ) == archivedItem.isEncrypted );       \
-                REQUIRE( (info).isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );      \
-                REQUIRE_ARCHIVE_ITEM( format, item, archivedItem );                                  \
+                REQUIRE( (info).isItemEncrypted( item.index() ) == archivedItem.isEncrypted );        \
+                REQUIRE( (info).isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );        \
+                REQUIRE_ARCHIVE_ITEM( format, item, archivedItem );                                   \
                 found_items++;                                                                        \
                 break;                                                                                \
             }                                                                                         \

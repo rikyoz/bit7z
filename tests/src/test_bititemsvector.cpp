@@ -1917,7 +1917,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
         );
 #endif
 
-    DYNAMIC_SECTION ( "Indexing file " << testInput.inputFile.u8string() ) {
+    DYNAMIC_SECTION( "Indexing file " << testInput.inputFile.u8string() ) {
         REQUIRE_NOTHROW( itemsVector.indexFile( testInput.inputFile.string< bit7z::tchar >() ) );
 
         REQUIRE( itemsVector.size() == 1 );
@@ -1930,9 +1930,9 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
-#define UNICODE_TESTPATH(x) BIT7Z_STRING( x ),
+#define UNICODE_TEST_PATH(x) BIT7Z_STRING( x ),
 #else
-#define UNICODE_TESTPATH(x)
+#define UNICODE_TEST_PATH(x)
 #endif
 
 TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bititemsvector]" ) {
@@ -1942,18 +1942,17 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
     BitItemsVector itemsVector;
 
     const fs::path testInput = GENERATE( as< fs::path >(),
-        "Lorem Ipsum.pdf",
-        "italy.svg",
-        "noext",
-        UNICODE_TESTPATH( "σαράντα δύο.txt" )
-        "folder/clouds.jpg",
-        "folder/subfolder2/homework.doc",
-        "folder/subfolder2/The quick brown fox.pdf",
-        "folder/subfolder2/frequency.xlsx",
-        "dot.folder/hello.json"
-    );
+                                         "Lorem Ipsum.pdf",
+                                         "italy.svg",
+                                         "noext",
+                                         UNICODE_TEST_PATH( "σαράντα δύο.txt" )
+                                         "folder/clouds.jpg",
+                                         "folder/subfolder2/homework.doc",
+                                         "folder/subfolder2/The quick brown fox.pdf",
+                                         "folder/subfolder2/frequency.xlsx",
+                                         "dot.folder/hello.json" );
 
-    DYNAMIC_SECTION ( "Indexing file " << testInput.u8string() ) {
+    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() ) {
         REQUIRE_NOTHROW( itemsVector.indexFile( testInput.string< bit7z::tchar >(),
                                                  BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
@@ -1972,18 +1971,17 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
 
     const fs::path testInput = GENERATE( as< fs::path >(),
-        BIT7Z_STRING( "Lorem Ipsum.pdf" ),
-        BIT7Z_STRING( "italy.svg" ),
-        BIT7Z_STRING( "noext" ),
-        UNICODE_TESTPATH( "σαράντα δύο.txt" )
-        BIT7Z_STRING( "folder/clouds.jpg" ),
-        BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
-        BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
-        BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
-        BIT7Z_STRING( "dot.folder/hello.json" )
-    );
+                                         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
+                                         BIT7Z_STRING( "italy.svg" ),
+                                         BIT7Z_STRING( "noext" ),
+                                         UNICODE_TEST_PATH( "σαράντα δύο.txt" )
+                                         BIT7Z_STRING( "folder/clouds.jpg" ),
+                                         BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
+                                         BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
+                                         BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
+                                         BIT7Z_STRING( "dot.folder/hello.json" ) );
 
-    DYNAMIC_SECTION ( "Indexing file " << testInput.u8string() << " as a stream" ) {
+    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() << " as a stream" ) {
         REQUIRE_OPEN_IFSTREAM( input_stream, testInput );
         REQUIRE_NOTHROW( itemsVector.indexStream( input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
@@ -2002,16 +2000,15 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
 
     const fs::path testInput = GENERATE( as< fs::path >(),
-        BIT7Z_STRING( "Lorem Ipsum.pdf" ),
-        BIT7Z_STRING( "italy.svg" ),
-        BIT7Z_STRING( "noext" ),
-        UNICODE_TESTPATH( "σαράντα δύο.txt" )
-        BIT7Z_STRING( "folder/clouds.jpg" ),
-        BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
-        BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
-        BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
-        BIT7Z_STRING( "dot.folder/hello.json" )
-    );
+                                         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
+                                         BIT7Z_STRING( "italy.svg" ),
+                                         BIT7Z_STRING( "noext" ),
+                                         UNICODE_TEST_PATH( "σαράντα δύο.txt" )
+                                         BIT7Z_STRING( "folder/clouds.jpg" ),
+                                         BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
+                                         BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
+                                         BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
+                                         BIT7Z_STRING( "dot.folder/hello.json" ) );
 
     DYNAMIC_SECTION ( "Indexing file " << testInput.u8string() << " as a buffer" ) {
         REQUIRE_LOAD_FILE( input_buffer, testInput );

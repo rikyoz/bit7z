@@ -58,7 +58,7 @@ auto is_valid_dictionary_size( BitCompressionMethod method, uint32_t dictionaryS
     }
 }
 
-auto is_valid_word_size( const BitInOutFormat& format, BitCompressionMethod method, uint32_t wordSize ) noexcept -> bool {
+auto is_valid_word_size( const BitInOutFormat& fmt, BitCompressionMethod method, uint32_t wordSize ) noexcept -> bool {
     constexpr auto kMinLzmaWordSize = 5u;
     constexpr auto kMaxLzmaWordSize = 273u;
     constexpr auto kMinPpmdWordSize = 2u;
@@ -78,8 +78,8 @@ auto is_valid_word_size( const BitInOutFormat& format, BitCompressionMethod meth
             return wordSize >= kMinLzmaWordSize && wordSize <= kMaxLzmaWordSize;
         case BitCompressionMethod::Ppmd:
             return wordSize >= kMinPpmdWordSize && wordSize <=
-                                                   ( format == BitFormat::Zip ? kMaxZipPpmdWordSize
-                                                                                 : kMax7zPpmdWordSize );
+                                                   ( fmt == BitFormat::Zip ? kMaxZipPpmdWordSize
+                                                                           : kMax7zPpmdWordSize );
         case BitCompressionMethod::Deflate64:
             return wordSize >= kMinDeflateWordSize && wordSize <= kMaxDeflate64WordSize;
         case BitCompressionMethod::Deflate:
