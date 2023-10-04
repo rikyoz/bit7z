@@ -76,15 +76,15 @@ void BitItemsVector::indexFile( const tstring& inFile, const tstring& name, bool
                             std::make_error_code( std::errc::invalid_argument ), inFile );
     }
     const auto symlinkPolicy = followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    mItems.emplace_back( std::make_unique< FilesystemItem >( filePath, name, symlinkPolicy ) );
+    mItems.emplace_back( std::make_unique< FilesystemItem >( filePath, tstring_to_path( name ), symlinkPolicy ) );
 }
 
 void BitItemsVector::indexBuffer( const vector< byte_t >& inBuffer, const tstring& name ) {
-    mItems.emplace_back( std::make_unique< BufferItem >( inBuffer, name ) );
+    mItems.emplace_back( std::make_unique< BufferItem >( inBuffer, tstring_to_path( name ) ) );
 }
 
 void BitItemsVector::indexStream( std::istream& inStream, const tstring& name ) {
-    mItems.emplace_back( std::make_unique< StdInputItem >( inStream, name ) );
+    mItems.emplace_back( std::make_unique< StdInputItem >( inStream, tstring_to_path( name ) ) );
 }
 
 auto BitItemsVector::size() const -> size_t {

@@ -23,7 +23,7 @@ namespace bit7z {
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath )
     : ExtractCallback( inputArchive ),
       mInFilePath( inputArchive.archivePath() ),
-      mDirectoryPath( directoryPath ),
+      mDirectoryPath( tstring_to_path( directoryPath ) ),
       mRetainDirectories( inputArchive.handler().retainDirectories() ) {}
 
 void FileExtractCallback::releaseStream() {

@@ -18,6 +18,7 @@
 #include "internal/fsitem.hpp"
 #include "internal/renameditem.hpp"
 #include "internal/stdinputitem.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
 
@@ -61,7 +62,7 @@ void BitArchiveEditor::renameItem( const tstring& oldPath, const tstring& newPat
 void BitArchiveEditor::updateItem( uint32_t index, const tstring& inFile ) {
     checkIndex( index );
     auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< FilesystemItem >( inFile, itemName.getNativeString() );
+    mEditedItems[ index ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemName.getNativeString() );
 }
 
 void BitArchiveEditor::updateItem( uint32_t index, const std::vector< byte_t >& inBuffer ) {
@@ -77,7 +78,7 @@ void BitArchiveEditor::updateItem( uint32_t index, std::istream& inStream ) {
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const tstring& inFile ) {
-    mEditedItems[ findItem( itemPath ) ] = std::make_unique< FilesystemItem >( inFile, itemPath );
+    mEditedItems[ findItem( itemPath ) ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemPath );
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const std::vector< byte_t >& inBuffer ) {
