@@ -15,7 +15,7 @@ body:
       label: bit7z version
       multiple: true
       options:
-        - 4.0
+        - 4.0.x
         - 3.2.x
         - 3.1.x
         - 3.0.x
@@ -35,15 +35,20 @@ body:
         - BIT7Z_AUTO_PREFIX_LONG_PATHS
         - BIT7Z_BUILD_TESTS
         - BIT7Z_BUILD_DOCS
+        - BIT7Z_CUSTOM_7ZIP_PATH
+        - BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
         - BIT7Z_GENERATE_PIC
         - BIT7Z_LINK_LIBCPP
+        - BIT7Z_PATH_SANITIZATION
         - BIT7Z_REGEX_MATCHING
         - BIT7Z_STATIC_RUNTIME
         - BIT7Z_TESTS_FILESYSTEM
         - BIT7Z_TESTS_NO_SANITIZERS
         - BIT7Z_TESTS_USE_SYSTEM_7ZIP
+        - BIT7Z_USE_LEGACY_IUNKNOWN
         - BIT7Z_USE_NATIVE_STRING
         - BIT7Z_USE_STD_BYTE
+        - BIT7Z_USE_SYSTEM_CODEPAGE
         - BIT7Z_VS_LIBNAME_OUTDIR_STYLE
     validations:
       required: false
