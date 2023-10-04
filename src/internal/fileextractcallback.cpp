@@ -88,6 +88,8 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
+            // Here we don't use the path_to_tstring function to avoid allocating a string object
+            // when using BIT7Z_USE_NATIVE_STRING.
 #if defined( BIT7Z_USE_NATIVE_STRING )
             const auto& filePathString = filePath.native();
 #elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
