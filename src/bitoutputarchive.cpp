@@ -222,15 +222,7 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
 
 void BitOutputArchive::compressTo( const tstring& outFile ) {
     using namespace bit7z::filesystem;
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    fs::path outPath = tstring_to_path( outFile );
-    if ( filesystem::fsutil::should_format_long_path( outPath ) ) {
-        outPath = filesystem::fsutil::format_long_path( path );
-    }
-#else
     const fs::path outPath = tstring_to_path( outFile );
-#endif
-
     std::error_code error;
     if ( fs::exists( outPath, error ) ) {
         const OverwriteMode overwriteMode = mArchiveCreator.overwriteMode();
