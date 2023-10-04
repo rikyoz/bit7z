@@ -327,7 +327,7 @@ auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStr
         if ( fs::exists( path, error ) ) {
             error = std::make_error_code( std::errc::file_exists );
         }
-        mFailedFiles.emplace_back( path, error );
+        mFailedFiles.emplace_back( path_to_tstring( path ), error );
     }
     return res;
 }
