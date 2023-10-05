@@ -59,7 +59,7 @@ void FilesystemIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem
          *
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
         const bool itemMatches = ( !mOnlyFiles || !currentItem.isDir() ) &&
-                                 fsutil::wildcard_match( mFilter, currentItem.filesystemName() );
+                                 fsutil::wildcard_match( mFilter, currentItem.name() );
         if ( itemMatches == shouldIncludeMatchedItems ) {
             result.emplace_back( std::make_unique< FilesystemItem >( currentItem ) );
         }
