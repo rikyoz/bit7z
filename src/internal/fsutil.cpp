@@ -120,7 +120,17 @@ auto w_match( tstring::const_iterator patternIt, // NOLINT(misc-no-recursion)
     return strIt == strEnd;
 }
 
-auto fsutil::wildcard_match( const tstring& pattern, const tstring& str ) -> bool { // NOLINT(misc-no-recursion)
+auto fsutil::wildcard_match( const tstring& pattern, const fs::path& path ) -> bool { // NOLINT(misc-no-recursion)
+    /* When using the system codepage, a conversion from path to std::string might throw an exception
+     * if the path contains Unicode characters not supported by the current codepage.
+     * In this case, we use bit7z internal wide-to-narrow conversion function,
+     * which doesn't throw and substitutes invalid characters with a ?. */
+#ifdef BIT7Z_USE_SYSTEM_CODEPAGE
+    const native_string& native_str = path.native();
+    const tstring str = narrow( native_str.c_str(), native_str.size() );
+#else
+    const tstring str = path_to_tstring( path );
+#endif
     if ( pattern.empty() ) {
         return wildcard_match( BIT7Z_STRING( "*" ), str );
     }

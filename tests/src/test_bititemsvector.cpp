@@ -68,7 +68,6 @@ struct TestDirectory {
     vector< fs::path > expectedItems;
 };
 
-#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
     const fs::path oldCurrentDir = current_dir();
     REQUIRE( set_current_dir( test_filesystem_dir ) );
@@ -1612,7 +1611,6 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
 
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
-#endif
 
 struct TestPaths {
     vector< bit7z::tstring > inputPaths;

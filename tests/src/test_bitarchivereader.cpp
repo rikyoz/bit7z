@@ -1112,13 +1112,14 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name", "[bi
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    const auto old_locale = std::locale::global( std::locale("en_US.UTF8") );
-#endif
-    const auto* const arcFileName = BIT7Z_STRING( "αρχείο.7z" );
+    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
     SECTION( "Filesystem archive" ) {
-        const BitArchiveReader info( lib, arcFileName, BitFormat::SevenZip );
+#ifdef BIT7Z_USE_NATIVE_STRING
+        const BitArchiveReader info( lib, arcFileName.native(), BitFormat::SevenZip );
+#else
+        const BitArchiveReader info( lib, arcFileName.u8string(), BitFormat::SevenZip );
+#endif
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
         REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
@@ -1145,10 +1146,6 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name", "[bi
         REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
     }
 
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    std::locale::global( old_locale );
-#endif
-
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
@@ -1159,17 +1156,13 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    const auto old_locale = std::locale::global( std::locale("en_US.UTF8") );
+    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
+#ifdef BIT7Z_USE_NATIVE_STRING
+    const BitArchiveReader info( lib, arcFileName.native(), BitFormat::BZip2 );
+#else
+    const BitArchiveReader info( lib, arcFileName.u8string(), BitFormat::BZip2 );
 #endif
-
-    const auto* const arcFileName = BIT7Z_STRING( "クラウド.jpg.bz2" );
-    const BitArchiveReader info( lib, arcFileName, BitFormat::BZip2 );
     REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
-
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    std::locale::global( old_locale );
-#endif
 
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
