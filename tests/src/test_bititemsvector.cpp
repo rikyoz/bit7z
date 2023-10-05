@@ -1937,6 +1937,12 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
+#define UNICODE_TEST_PATH(x) BIT7Z_NATIVE_STRING( x ),
+#else
+#define UNICODE_TEST_PATH(x)
+#endif
+
 TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bititemsvector]" ) {
     const fs::path oldCurrentDir = current_dir();
     REQUIRE( set_current_dir( test_filesystem_dir ) );
@@ -1947,7 +1953,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
                                          "Lorem Ipsum.pdf",
                                          "italy.svg",
                                          "noext",
-                                         BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
+                                         UNICODE_TEST_PATH( "σαράντα δύο.txt" )
                                          "folder/clouds.jpg",
                                          "folder/subfolder2/homework.doc",
                                          "folder/subfolder2/The quick brown fox.pdf",
