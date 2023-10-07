@@ -21,18 +21,8 @@ auto HRESULTCategory::name() const noexcept -> const char* {
 }
 
 auto HRESULTCategory::message( int errorValue ) const -> std::string {
-#ifdef _MSC_VER
-    // MSVC compilers use FormatMessage, which supports both Win32 errors and HRESULT com errors.
-#   if _MSC_VER >= 1920
-    return std::system_category().message( errorValue );
-#   else
-    // Old versions of MSVC had a trailing \r\n in the error message, so we trim it.
-    auto error_message = std::system_category().message( errorValue );
-    error_message.erase( error_message.find_last_not_of( " \r\n" ) + 1 );
-    return error_message;
-#   endif
-#elif defined( __MINGW32__ )
-    // MinGW supports FormatMessageA!
+#ifdef _WIN32
+    // Note: also MinGW supports FormatMessageA!
     LPSTR messageBuffer = nullptr;
     auto msgSize = FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER |
                                    FORMAT_MESSAGE_FROM_SYSTEM |
@@ -43,7 +33,7 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
         return "Unknown error";
     }
     /* Note: strings obtained using FormatMessageA have a trailing space, and a \r\n pair of char.
-     *       Using the FORMAT_MESSAGE_MAX_WIDTH_MASK flag removes the ending \r\n but leaves the trailing space.
+     *       Using the flag FORMAT_MESSAGE_MAX_WIDTH_MASK removes the ending \r\n but leaves the trailing space.
      *       For this reason, we create the resulting std::string by considering msgSize - 1 as string size! */
     std::string errorMessage( messageBuffer, msgSize - 1 );
     LocalFree( messageBuffer );
