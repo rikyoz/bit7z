@@ -87,7 +87,7 @@ inline auto load_file( fs::path const& inFile ) -> std::vector< bit7z::byte_t > 
 
 #define REQUIRE_LOAD_FILE( var, in_file ) \
     const auto (var) = load_file( in_file ); \
-    REQUIRE_FALSE( var.empty() )
+    REQUIRE_FALSE( (var).empty() )
 
 #define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
     fs::ifstream (var){ in_file, std::ios::binary }; \

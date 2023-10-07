@@ -68,7 +68,6 @@ struct TestDirectory {
     vector< fs::path > expectedItems;
 };
 
-#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
     const fs::path oldCurrentDir = current_dir();
     REQUIRE( set_current_dir( test_filesystem_dir ) );
@@ -82,7 +81,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                BIT7Z_STRING( "σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 "dot.folder",
                 "dot.folder/hello.json",
                 "empty",
@@ -167,7 +166,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                BIT7Z_STRING( "σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 "dot.folder/hello.json",
                 "folder/clouds.jpg",
                 "folder/subfolder2/homework.doc",
@@ -245,7 +244,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
                 "./italy.svg",
                 "./Lorem Ipsum.pdf",
                 "./noext",
-                BIT7Z_STRING( "./σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "./σαράντα δύο.txt" ),
                 "./dot.folder",
                 "./dot.folder/hello.json",
                 "./empty",
@@ -329,7 +328,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                     "dot.folder",
                     "dot.folder/hello.json",
                     "empty",
@@ -403,7 +402,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                     "dot.folder/hello.json",
                     "folder/clouds.jpg",
                     "folder/subfolder2/homework.doc",
@@ -467,7 +466,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "dot.folder/hello.json",
                     "italy.svg",
                     "Lorem Ipsum.pdf",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                     "folder/clouds.jpg",
                     "folder/subfolder2/homework.doc",
                     "folder/subfolder2/The quick brown fox.pdf",
@@ -531,7 +530,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "dot.folder/hello.json",
                     "italy.svg",
                     "Lorem Ipsum.pdf",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                     "folder/clouds.jpg",
                     "folder/subfolder2/homework.doc",
                     "folder/subfolder2/The quick brown fox.pdf",
@@ -722,7 +721,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                 {
                     "italy.svg",
                     "noext",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                     "dot.folder",
                     "dot.folder/hello.json",
                     "empty",
@@ -841,7 +840,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                     "dot.folder",
                     "dot.folder/hello.json",
                     "empty",
@@ -923,7 +922,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "italy.svg",
                     "Lorem Ipsum.pdf",
                     "noext",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 }
             },
             TestDirectory{ "empty", {} },
@@ -976,7 +975,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "dot.folder/hello.json",
                     "italy.svg",
                     "Lorem Ipsum.pdf",
-                    BIT7Z_STRING( "σαράντα δύο.txt" ),
+                    BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 }
             },
             TestDirectory{ "empty", {} },
@@ -1032,7 +1031,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         options.onlyFiles = true;
 
         const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "italy.svg", "Lorem Ipsum.pdf", BIT7Z_STRING( "σαράντα δύο.txt" ), } },
+            TestDirectory{ ".", { "italy.svg", "Lorem Ipsum.pdf", BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ), } },
             TestDirectory{ "empty", {} },
             TestDirectory{ "./empty", {} },
             TestDirectory{ "folder", { "folder/clouds.jpg" } },
@@ -1214,7 +1213,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                BIT7Z_STRING( "σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 "empty",
                 "folder",
                 "folder/clouds.jpg",
@@ -1296,7 +1295,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
                 "test_filesystem/italy.svg",
                 "test_filesystem/Lorem Ipsum.pdf",
                 "test_filesystem/noext",
-                BIT7Z_STRING( "test_filesystem/σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "test_filesystem/σαράντα δύο.txt" ),
                 "test_filesystem/dot.folder",
                 "test_filesystem/dot.folder/hello.json",
                 "test_filesystem/empty",
@@ -1360,7 +1359,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
                 "test_filesystem/italy.svg",
                 "test_filesystem/Lorem Ipsum.pdf",
                 "test_filesystem/noext",
-                BIT7Z_STRING( "test_filesystem/σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "test_filesystem/σαράντα δύο.txt" ),
                 "test_filesystem/dot.folder",
                 "test_filesystem/dot.folder/hello.json",
                 "test_filesystem/empty",
@@ -1424,7 +1423,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/italy.svg",
                 "custom_folder/Lorem Ipsum.pdf",
                 "custom_folder/noext",
-                BIT7Z_STRING( "custom_folder/σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "custom_folder/σαράντα δύο.txt" ),
                 "custom_folder/empty",
                 "custom_folder/folder",
                 "custom_folder/folder/clouds.jpg",
@@ -1526,7 +1525,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "italy.svg",
                 "Lorem Ipsum.pdf",
                 "noext",
-                BIT7Z_STRING( "σαράντα δύο.txt" ),
+                BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 "empty",
                 "folder",
                 "folder/clouds.jpg",
@@ -1612,7 +1611,6 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
 
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
-#endif
 
 struct TestPaths {
     vector< bit7z::tstring > inputPaths;
@@ -1896,7 +1894,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
             TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
             TestFile{ "italy.svg", "italy.svg" },
             TestFile{ "noext", "noext" },
-            TestFile{ BIT7Z_STRING( "σαράντα δύο.txt" ), BIT7Z_STRING( "σαράντα δύο.txt" ) },
+            TestFile{ BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ), BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ) },
             TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
             TestFile{ "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
             TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
@@ -1917,12 +1915,20 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
         );
 #endif
 
-    DYNAMIC_SECTION ( "Indexing file " << testInput.inputFile.u8string() ) {
+    DYNAMIC_SECTION( "Indexing file " << testInput.inputFile.u8string() ) {
+#if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE_NOTHROW( itemsVector.indexFile( testInput.inputFile.string< bit7z::tchar >() ) );
+#else
+        REQUIRE_NOTHROW( itemsVector.indexFile( testInput.inputFile.u8string() ) );
+#endif
 
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].inArchivePath() == testInput.expectedItem );
+#if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile );
+#else
+        REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile.u8string() );
+#endif
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput.inputFile ) );
     }
 
@@ -1930,9 +1936,9 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
-#define UNICODE_TESTPATH(x) BIT7Z_STRING( x ),
+#define UNICODE_TEST_PATH(x) BIT7Z_NATIVE_STRING( x ),
 #else
-#define UNICODE_TESTPATH(x)
+#define UNICODE_TEST_PATH(x)
 #endif
 
 TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bititemsvector]" ) {
@@ -1942,23 +1948,31 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
     BitItemsVector itemsVector;
 
     const fs::path testInput = GENERATE( as< fs::path >(),
-        "Lorem Ipsum.pdf",
-        "italy.svg",
-        "noext",
-        UNICODE_TESTPATH( "σαράντα δύο.txt" )
-        "folder/clouds.jpg",
-        "folder/subfolder2/homework.doc",
-        "folder/subfolder2/The quick brown fox.pdf",
-        "folder/subfolder2/frequency.xlsx",
-        "dot.folder/hello.json"
-    );
+                                         "Lorem Ipsum.pdf",
+                                         "italy.svg",
+                                         "noext",
+                                         UNICODE_TEST_PATH( "σαράντα δύο.txt" )
+                                         "folder/clouds.jpg",
+                                         "folder/subfolder2/homework.doc",
+                                         "folder/subfolder2/The quick brown fox.pdf",
+                                         "folder/subfolder2/frequency.xlsx",
+                                         "dot.folder/hello.json" );
 
-    DYNAMIC_SECTION ( "Indexing file " << testInput.u8string() ) {
+    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() ) {
+#if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE_NOTHROW( itemsVector.indexFile( testInput.string< bit7z::tchar >(),
-                                                 BIT7Z_STRING( "custom_name.ext" ) ) );
+                                                BIT7Z_STRING( "custom_name.ext" ) ) );
+#else
+        REQUIRE_NOTHROW( itemsVector.indexFile( testInput.u8string(), BIT7Z_STRING( "custom_name.ext" ) ) );
+#endif
+
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].inArchivePath() == "custom_name.ext" );
+#if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE( itemsVector[ 0 ].path() == testInput );
+#else
+        REQUIRE( itemsVector[ 0 ].path() == testInput.u8string() );
+#endif
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
 
@@ -1972,18 +1986,17 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
 
     const fs::path testInput = GENERATE( as< fs::path >(),
-        BIT7Z_STRING( "Lorem Ipsum.pdf" ),
-        BIT7Z_STRING( "italy.svg" ),
-        BIT7Z_STRING( "noext" ),
-        UNICODE_TESTPATH( "σαράντα δύο.txt" )
-        BIT7Z_STRING( "folder/clouds.jpg" ),
-        BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
-        BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
-        BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
-        BIT7Z_STRING( "dot.folder/hello.json" )
-    );
+                                         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
+                                         BIT7Z_STRING( "italy.svg" ),
+                                         BIT7Z_STRING( "noext" ),
+                                         BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
+                                         BIT7Z_STRING( "folder/clouds.jpg" ),
+                                         BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
+                                         BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
+                                         BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
+                                         BIT7Z_STRING( "dot.folder/hello.json" ) );
 
-    DYNAMIC_SECTION ( "Indexing file " << testInput.u8string() << " as a stream" ) {
+    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() << " as a stream" ) {
         REQUIRE_OPEN_IFSTREAM( input_stream, testInput );
         REQUIRE_NOTHROW( itemsVector.indexStream( input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
@@ -2002,16 +2015,15 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
 
     const fs::path testInput = GENERATE( as< fs::path >(),
-        BIT7Z_STRING( "Lorem Ipsum.pdf" ),
-        BIT7Z_STRING( "italy.svg" ),
-        BIT7Z_STRING( "noext" ),
-        UNICODE_TESTPATH( "σαράντα δύο.txt" )
-        BIT7Z_STRING( "folder/clouds.jpg" ),
-        BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
-        BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
-        BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
-        BIT7Z_STRING( "dot.folder/hello.json" )
-    );
+                                         BIT7Z_STRING( "Lorem Ipsum.pdf" ),
+                                         BIT7Z_STRING( "italy.svg" ),
+                                         BIT7Z_STRING( "noext" ),
+                                         BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
+                                         BIT7Z_STRING( "folder/clouds.jpg" ),
+                                         BIT7Z_STRING( "folder/subfolder2/homework.doc" ),
+                                         BIT7Z_STRING( "folder/subfolder2/The quick brown fox.pdf" ),
+                                         BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
+                                         BIT7Z_STRING( "dot.folder/hello.json" ) );
 
     DYNAMIC_SECTION ( "Indexing file " << testInput.u8string() << " as a buffer" ) {
         REQUIRE_LOAD_FILE( input_buffer, testInput );

@@ -35,8 +35,8 @@ template< typename Enum >
 using underlying_type_t = typename std::underlying_type< Enum >::type;
 
 template< typename Enum >
-inline constexpr auto to_underlying( Enum e ) noexcept -> underlying_type_t< Enum > {
-    return static_cast< underlying_type_t< Enum > >( e );
+inline constexpr auto to_underlying( Enum enum_value ) noexcept -> underlying_type_t< Enum > {
+    return static_cast< underlying_type_t< Enum > >( enum_value );
 }
 
 inline constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {
@@ -176,6 +176,7 @@ extern const BitInFormat Auto;
 #endif
 extern const BitInFormat Rar;       ///< RAR Archive Format
 extern const BitInFormat Arj;       ///< ARJ Archive Format
+//NOLINTNEXTLINE(*-identifier-length)
 extern const BitInFormat Z;         ///< Z Archive Format
 extern const BitInFormat Lzh;       ///< LZH Archive Format
 extern const BitInFormat Cab;       ///< CAB Archive Format
@@ -193,6 +194,7 @@ extern const BitInFormat GPT;       ///< GPT Archive Format
 extern const BitInFormat Rar5;      ///< RAR5 Archive Format
 extern const BitInFormat IHex;      ///< IHEX Archive Format
 extern const BitInFormat Hxs;       ///< HXS Archive Format
+//NOLINTNEXTLINE(*-identifier-length)
 extern const BitInFormat TE;        ///< TE Archive Format
 extern const BitInFormat UEFIc;     ///< UEFIc Archive Format
 extern const BitInFormat UEFIs;     ///< UEFIs Archive Format
@@ -207,6 +209,7 @@ extern const BitInFormat Ntfs;      ///< NTFS Archive Format
 extern const BitInFormat Fat;       ///< FAT Archive Format
 extern const BitInFormat Mbr;       ///< MBR Archive Format
 extern const BitInFormat Vhd;       ///< VHD Archive Format
+//NOLINTNEXTLINE(*-identifier-length)
 extern const BitInFormat Pe;        ///< PE Archive Format
 extern const BitInFormat Elf;       ///< ELF Archive Format
 extern const BitInFormat Macho;     ///< MACHO Archive Format
@@ -226,6 +229,7 @@ extern const BitInFormat Cpio;      ///< CPIO Archive Format
 extern const BitInOutFormat Zip;        ///< ZIP Archive Format
 extern const BitInOutFormat BZip2;      ///< BZIP2 Archive Format
 extern const BitInOutFormat SevenZip;   ///< 7Z Archive Format
+//NOLINTNEXTLINE(*-identifier-length)
 extern const BitInOutFormat Xz;         ///< XZ Archive Format
 extern const BitInOutFormat Wim;        ///< WIM Archive Format
 extern const BitInOutFormat Tar;        ///< TAR Archive Format

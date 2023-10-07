@@ -31,7 +31,8 @@ BIT7Z_NODISCARD auto stem( const tstring& path ) -> tstring;
 
 BIT7Z_NODISCARD auto extension( const fs::path& path ) -> tstring;
 
-BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
+// Note: wildcard_match is "semi-public", so we cannot pass the path as fs::path!
+BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& path ) -> bool;
 
 BIT7Z_NODISCARD auto get_file_attributes_ex( const fs::path& filePath,
                                              SymlinkPolicy symlinkPolicy,

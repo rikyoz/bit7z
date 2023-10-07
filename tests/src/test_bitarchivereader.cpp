@@ -62,30 +62,30 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
         REQUIRE_THROWS_AS( (info).testItem( (info).itemsCount() ), BitException ); \
     } while( false )
 
-#define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem )                                              \
+#define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem )                                               \
     do {                                                                                                 \
         INFO( "Failed while checking file " << Catch::StringMaker< tstring >::convert( (item).name() ) ) \
-        REQUIRE( (item).isDir() == (expectedItem).fileInfo.isDir );                                    \
+        REQUIRE( (item).isDir() == (expectedItem).fileInfo.isDir );                                      \
                                                                                                          \
         if ( !(item).isDir() ) {                                                                         \
-            REQUIRE( (item).isEncrypted() == (expectedItem).isEncrypted );                              \
+            REQUIRE( (item).isEncrypted() == (expectedItem).isEncrypted );                               \
         }                                                                                                \
                                                                                                          \
         if ( format_has_path_metadata( format ) ) {                                                      \
-            REQUIRE( (item).extension() == (expectedItem).fileInfo.ext );                               \
-            REQUIRE( (item).name() == (expectedItem).fileInfo.name );                                   \
-            REQUIRE( (item).path() == (expectedItem).inArchivePath );                                   \
+            REQUIRE( (item).extension() == (expectedItem).fileInfo.ext );                                \
+            REQUIRE( (item).name() == (expectedItem).fileInfo.name );                                    \
+            REQUIRE( (item).path() == (expectedItem).inArchivePath );                                    \
         }                                                                                                \
                                                                                                          \
         if ( format_has_size_metadata( format ) ) {                                                      \
             /* Note: some archive formats (e.g. BZip2) do not provide the size metadata! */              \
-            REQUIRE( (item).size() == (expectedItem).fileInfo.size );                                   \
+            REQUIRE( (item).size() == (expectedItem).fileInfo.size );                                    \
         }                                                                                                \
                                                                                                          \
         if ( ( format_has_crc( format ) && !(item).itemProperty( BitProperty::CRC ).isEmpty() ) &&       \
-             ( format != BitFormat::Rar5 || !(item).isEncrypted() ) ) {                                  \
-            /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/                  \
-            REQUIRE( (item).crc() == (expectedItem).fileInfo.crc32 );                                   \
+             ( ( (format) != BitFormat::Rar5 ) || !(item).isEncrypted() ) ) {                            \
+            /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/                   \
+            REQUIRE( (item).crc() == (expectedItem).fileInfo.crc32 );                                    \
         }                                                                                                \
     } while( false )
 
@@ -113,18 +113,18 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
                                                                                                       \
         const bool archive_stores_paths = format_has_path_metadata( format );                         \
         size_t found_items = 0;                                                                       \
-        for ( const auto& archivedItem : archive_content.items ) {                                   \
+        for ( const auto& archivedItem : archive_content.items ) {                                    \
             for ( const auto& item : items ) {                                                        \
-                if ( archive_stores_paths || from_filesystem ) {                                      \
-                    if ( item.name() != archivedItem.fileInfo.name ) {                               \
+                if ( archive_stores_paths || (from_filesystem) ) {                                    \
+                    if ( item.name() != archivedItem.fileInfo.name ) {                                \
                         continue;                                                                     \
                     }                                                                                 \
                     REQUIRE( (info).find( item.path() ) != (info).cend() );                           \
                     REQUIRE( (info).contains( item.path() ) );                                        \
                 }                                                                                     \
-                REQUIRE( (info).isItemEncrypted( item.index() ) == archivedItem.isEncrypted );       \
-                REQUIRE( (info).isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );      \
-                REQUIRE_ARCHIVE_ITEM( format, item, archivedItem );                                  \
+                REQUIRE( (info).isItemEncrypted( item.index() ) == archivedItem.isEncrypted );        \
+                REQUIRE( (info).isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );        \
+                REQUIRE_ARCHIVE_ITEM( format, item, archivedItem );                                   \
                 found_items++;                                                                        \
                 break;                                                                                \
             }                                                                                         \
@@ -778,7 +778,7 @@ TEST_CASE( "BitArchiveReader: Reading invalid archives", "[bitarchivereader]" ) 
                                         SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
                                         SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
                                         SingleFileArchive{ "rar", BitFormat::Rar5, 477870 },
-                                        //SingleFileArchive{ "tar", BitFormat::Tar, 479232 },
+                                        //SingleFileArchive{"tar", BitFormat::Tar, 479232},
                                         SingleFileArchive{ "wim", BitFormat::Wim, clouds.size },
                                         SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
                                         SingleFileArchive{ "zip", BitFormat::Zip, 476375 } );
@@ -1105,20 +1105,21 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
-TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file name", "[bitarchivereader]" ) {
+TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name", "[bitarchivereader]" ) {
     const fs::path oldCurrentDir = current_dir();
     const auto testDir = fs::path{ test_archives_dir } / "metadata" / "unicode";
     REQUIRE( set_current_dir( testDir ) );
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    const auto old_locale = std::locale::global( std::locale("en_US.UTF8") );
-#endif
-    const auto* const arcFileName = BIT7Z_STRING( "αρχείο.7z" );
+    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
     SECTION( "Filesystem archive" ) {
-        const BitArchiveReader info( lib, arcFileName, BitFormat::SevenZip );
+#ifdef BIT7Z_USE_NATIVE_STRING
+        const BitArchiveReader info( lib, arcFileName.native(), BitFormat::SevenZip );
+#else
+        const BitArchiveReader info( lib, arcFileName.u8string(), BitFormat::SevenZip );
+#endif
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
         REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
@@ -1145,31 +1146,23 @@ TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file n
         REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
     }
 
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    std::locale::global( old_locale );
-#endif
-
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
-TEST_CASE( "BitArchiveReader: Correctly reading an archive with a Unicode file name (no path attribute stored)", "[bitarchivereader]" ) {
+TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2)", "[bitarchivereader]" ) {
     const fs::path oldCurrentDir = current_dir();
     const auto testDir = fs::path{ test_archives_dir } / "metadata" / "unicode";
     REQUIRE( set_current_dir( testDir ) );
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    const auto old_locale = std::locale::global( std::locale("en_US.UTF8") );
+    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
+#ifdef BIT7Z_USE_NATIVE_STRING
+    const BitArchiveReader info( lib, arcFileName.native(), BitFormat::BZip2 );
+#else
+    const BitArchiveReader info( lib, arcFileName.u8string(), BitFormat::BZip2 );
 #endif
-
-    const auto* const arcFileName = BIT7Z_STRING( "クラウド.jpg.bz2" );
-    const BitArchiveReader info( lib, arcFileName, BitFormat::BZip2 );
     REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
-
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING )
-    std::locale::global( old_locale );
-#endif
 
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }

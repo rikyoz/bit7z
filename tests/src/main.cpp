@@ -20,7 +20,7 @@
 #include "utils/flags.hpp"
 #include "utils/shared_lib.hpp"
 
-auto main( int argc, char* argv[] ) -> int {
+auto main( int argc, char* argv[] ) -> int try {
     using namespace bit7z::test;
 
     std::cout << "[Compiler]\n";
@@ -55,7 +55,10 @@ auto main( int argc, char* argv[] ) -> int {
     std::cout << "BIT7Z_AUTO_FORMAT: " << flags::auto_format << '\n';
     std::cout << "BIT7Z_REGEX_MATCHING: " << flags::regex_matching << '\n';
     std::cout << "BIT7Z_USE_NATIVE_STRING: " << flags::native_string << '\n';
-    std::cout << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << '\n' << std::endl;
+    std::cout << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << "\n\n";
+    std::cout.flush();
 
     return Catch::Session().run( argc, argv );
+} catch( ... ) {
+    return EXIT_FAILURE;
 }

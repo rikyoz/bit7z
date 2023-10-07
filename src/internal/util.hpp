@@ -36,28 +36,39 @@ auto widen( const std::string& narrowString ) -> std::wstring;
 #endif
 
 inline auto path_to_tstring( const fs::path& path ) -> tstring {
-    /* In an ideal world, we should only use the string< tchar >() function for converting a path to a tstring.
+    /* In an ideal world, we should only use fs::path's string< tchar >() function for converting a path to a tstring.
      * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
      * which is the default encoding of bit7z. */
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-    return path.u8string();
+#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
+    return path.wstring();
+#elif defined( _WIN32 ) && defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+    /* If we encounter a path with Unicode characters, MSVC will throw an exception
+     * while converting from a fs::path to std::string if any character is invalid in the system codepage.
+     * Hence, here we use bit7z's own string conversion function, which substitutes invalid Unicode characters
+     * with '?' characters. */
+    const auto& native_path = path.native();
+    return narrow( native_path.c_str(), native_path.size() );
 #else
-    return path.string< tchar >();
+    return path.u8string();
 #endif
 }
 
+#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+#define PATH_FROM_TSTRING( str ) fs::u8path( str )
+#else
+#define PATH_FROM_TSTRING( str ) fs::path{ str }
+#endif
+
 inline auto tstring_to_path( const tstring& str ) -> fs::path {
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    auto result = fs::u8path( str );
+    auto result = PATH_FROM_TSTRING( str );
     if ( filesystem::fsutil::should_format_long_path( result ) ) {
         result = filesystem::fsutil::format_long_path( result );
     }
     return result;
-#elif defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-    // By default, MSVC treats strings as encoded using the system codepage, but bit7z uses UTF-8.
-    return fs::u8path( str );
 #else
-    return fs::path{ str };
+    // By default, MSVC treats strings as encoded using the system codepage, but bit7z uses UTF-8.
+    return PATH_FROM_TSTRING( str );
 #endif
 }
 

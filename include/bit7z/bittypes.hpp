@@ -46,16 +46,16 @@ struct StringTraits;
 template<>
 struct StringTraits< char > {
     template< class T >
-    static inline auto convertToString( T&& value ) -> std::string {
-        return std::to_string( std::forward< T >( value ) );
+    static inline auto convertToString( T value ) -> std::string {
+        return std::to_string( value );
     }
 };
 
 template<>
 struct StringTraits< wchar_t > {
     template< class T >
-    static inline auto convertToString( T&& value ) -> std::wstring {
-        return std::to_wstring( std::forward< T >( value ) );
+    static inline auto convertToString( T value ) -> std::wstring {
+        return std::to_wstring( value );
     }
 };
 /** @endcond */
@@ -97,9 +97,9 @@ using tstring = std::basic_string< tchar >;
 using tregex = std::basic_regex< tchar >;
 #endif
 
-template< typename T >
-inline auto to_tstring( T&& arg ) -> std::basic_string< tchar > {
-    return StringTraits< tchar >::convertToString( std::forward< T >( arg ) );
+template< typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type >
+inline auto to_tstring( T arg ) -> std::basic_string< tchar > {
+    return StringTraits< tchar >::convertToString( arg );
 }
 
 /**

@@ -45,10 +45,6 @@ STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
     RINOK( to_seekdir( seekOrigin, way ) )
 
-    /*if ( offset < 0 ) { //Tar sometimes uses negative offsets
-        return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-    }*/
-
     mOutputStream.seekp( static_cast< std::ostream::off_type >( offset ), way );
 
     if ( mOutputStream.bad() ) {

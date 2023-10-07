@@ -21,15 +21,15 @@
 #ifdef __cpp_if_constexpr
 
 template< class T, class U >
-constexpr auto cmp_less( T t, U u ) noexcept -> bool {
+constexpr auto cmp_less( T first, U second ) noexcept -> bool {
     using UT = std::make_unsigned_t< T >;
     using UU = std::make_unsigned_t< U >;
     if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
-        return t < u;
+        return first < second;
     } else if constexpr ( std::is_signed< T >::value ) {
-        return t < 0 || UT( t ) < u;
+        return first < 0 || UT( first ) < second;
     } else {
-        return u >= 0 && t < UU( u );
+        return second >= 0 && first < UU( second );
     }
 }
 
@@ -56,13 +56,13 @@ cmp_less( T t, U u ) noexcept -> std::enable_if_t< !std::is_signed< T >::value &
 #endif
 
 template< class T, class U >
-constexpr auto cmp_greater( T t, U u ) noexcept -> bool {
-    return cmp_less( u, t );
+constexpr auto cmp_greater( T first, U second ) noexcept -> bool {
+    return cmp_less( second, first ); // NOLINT(*-suspicious-call-argument)
 }
 
 template< class T, class U >
-constexpr auto cmp_greater_equal( T t, U u ) noexcept -> bool {
-    return !cmp_less( t, u );
+constexpr auto cmp_greater_equal( T first, U second ) noexcept -> bool {
+    return !cmp_less( first, second );
 }
 
 namespace bit7z {

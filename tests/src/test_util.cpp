@@ -14,13 +14,10 @@
 
 #include <internal/util.hpp>
 
-#ifdef BIT7Z_USE_SYSTEM_CODEPAGE
-#include <internal/fs.hpp>
-#endif
+#if !defined( _WIN32 ) || ( !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE ) )
 
 #define NARROWING_TEST_STR( str ) std::make_tuple( L##str, (str) )
 
-#if !defined(_WIN32) || !defined(BIT7Z_USE_NATIVE_STRING)
 TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
     using bit7z::narrow;
 
@@ -41,14 +38,7 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
         }
     ) );
 
-#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
     REQUIRE( narrow( testInput, wcsnlen( testInput, 128 ) ) == testOutput );
-#else
-    try {
-        const auto testOutputAsString = bit7z::fs::u8path( testOutput ).string();
-        REQUIRE( narrow( testInput, wcsnlen( testInput, 128 ) ) == testOutputAsString );
-    } catch(...) {}
-#endif
 }
 
 #define WIDENING_TEST_STR( str ) std::make_tuple( (str), L##str )
@@ -70,14 +60,7 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
         }
     ) );
 
-#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
     REQUIRE( widen( testInput ) == testOutput );
-#else
-    try {
-        const auto testInputAsString = bit7z::fs::u8path( testInput ).string();
-        REQUIRE( widen( testInputAsString ) == testOutput );
-    } catch(...) {}
-#endif
 }
 #endif
 

@@ -16,9 +16,11 @@
 
 #ifdef _WIN32
 #ifdef BIT7Z_USE_SYSTEM_CODEPAGE
-#define CODEPAGE GetACP()
+#define CODEPAGE CP_ACP
+#define CODEPAGE_FLAGS 0
 #else
 #define CODEPAGE CP_UTF8
+#define CODEPAGE_FLAGS WC_NO_BEST_FIT_CHARS
 #endif
 #else
 #ifndef BIT7Z_USE_STANDARD_FILESYSTEM
@@ -44,7 +46,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
     }
 #ifdef _WIN32
     const int narrowStringSize = WideCharToMultiByte( CODEPAGE,
-                                                      WC_NO_BEST_FIT_CHARS,
+                                                      CODEPAGE_FLAGS,
                                                       wideString,
                                                       static_cast< int >( size ),
                                                       nullptr,
@@ -57,7 +59,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 
     std::string result( narrowStringSize, 0 );
     WideCharToMultiByte( CODEPAGE,
-                         WC_NO_BEST_FIT_CHARS,
+                         CODEPAGE_FLAGS,
                          wideString,
                          -1,
                          &result[ 0 ],  // NOLINT(readability-container-data-pointer)

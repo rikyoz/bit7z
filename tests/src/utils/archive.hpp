@@ -19,23 +19,27 @@ namespace test {
 using filesystem::ArchiveContent;
 
 class TestInputArchive {
-    TestInputFormat mFormat;
-    std::size_t mPackedSize;
-    const ArchiveContent& mContent;
+        TestInputFormat mFormat;
+        std::size_t mPackedSize;
+        const ArchiveContent& mContent;
 
-public:
-    TestInputArchive( std::string extension,
-                      const BitInFormat& format,
-                      std::size_t packedSize,
-                      const ArchiveContent& content );
+    public:
+        TestInputArchive( std::string extension,
+                          const BitInFormat& format,
+                          std::size_t packedSize,
+                          const ArchiveContent& content );
 
-    auto format() const -> const BitInFormat&;
+        BIT7Z_NODISCARD
+        auto format() const -> const BitInFormat&;
 
-    auto extension() const -> const std::string&;
+        BIT7Z_NODISCARD
+        auto extension() const -> const std::string&;
 
-    auto packedSize() const -> std::size_t;
+        BIT7Z_NODISCARD
+        auto packedSize() const -> std::size_t;
 
-    auto content() const -> const ArchiveContent&;
+        BIT7Z_NODISCARD
+        auto content() const -> const ArchiveContent&;
 };
 
 } // namespace test

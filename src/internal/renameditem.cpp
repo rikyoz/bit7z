@@ -18,7 +18,7 @@
 namespace bit7z {
 
 RenamedItem::RenamedItem( const BitInputArchive& inputArchive, uint32_t index, const tstring& newPath )
-    : mInputArchive{ inputArchive }, mIndex{ index }, mNewPath{ newPath } {}
+    : mInputArchive{ inputArchive }, mIndex{ index }, mNewPath{ tstring_to_path( newPath ) } {}
 
 auto RenamedItem::name() const -> tstring {
     return path_to_tstring( mNewPath.filename() );
@@ -28,7 +28,9 @@ auto RenamedItem::path() const -> tstring {
     return path_to_tstring( mNewPath );
 }
 
-auto RenamedItem::inArchivePath() const -> fs::path { return path(); }
+auto RenamedItem::inArchivePath() const -> fs::path {
+    return mNewPath;
+}
 
 auto RenamedItem::getStream( ISequentialInStream** /*inStream*/ ) const noexcept -> HRESULT {
     return S_OK;

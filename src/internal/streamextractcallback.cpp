@@ -54,4 +54,4 @@ auto StreamExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
     return S_OK;
 }
 
-}
+} // namespace bit7z

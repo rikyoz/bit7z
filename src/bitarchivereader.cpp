@@ -14,9 +14,7 @@
 #include <numeric>
 
 #include "bitarchivereader.hpp"
-#include "internal/extractcallback.hpp"
-
-#include <7zip/PropID.h>
+#include "internal/operationresult.hpp"
 
 using namespace bit7z;
 

@@ -13,6 +13,8 @@
 #include <system_error>
 #include <type_traits>
 
+#include "internal/com.hpp" // To be included before IArchive.h, since on Unix it redefines some of 7-zip's macros.
+
 #include <7zip/Archive/IArchive.h>
 
 using namespace NArchive::NExtract;

@@ -167,7 +167,6 @@ constexpr win32_error_test win32_tests[] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( ERROR_INVALID_PARAMETER ) },
     { ERROR_TEST( ERROR_OUTOFMEMORY ) },
     // ERROR_DIRECTORY should correspond to errc::not_a_directory; however, MSVC maps it to errc::invalid_argument
-    //{ ERROR_TEST( ERROR_DIRECTORY ) },
     { ERROR_TEST( ERROR_NEGATIVE_SEEK ) }, //ERROR_NEGATIVE_SEEK is not POSIX on p7zip
 #endif
     { ERROR_TEST( ERROR_OPEN_FAILED ) },
@@ -254,7 +253,7 @@ TEST_CASE( "BitException: Checking if failed files are moved to the exception co
     REQUIRE( exceptionFailedFiles.size() == 1 );
     REQUIRE( exceptionFailedFiles[ 0 ].first == BIT7Z_STRING( "hello.txt" ) );
     REQUIRE( exceptionFailedFiles[ 0 ].second == std::errc::bad_file_descriptor );
-    // Note: BitException should have cleared failedFiles so it is again usable!
+    // Note: BitException should have cleared failedFiles, so it is again usable!
     REQUIRE( failedFiles.empty() ); // NOLINT(bugprone-use-after-move) //-V1030
 }
 

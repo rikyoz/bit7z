@@ -122,14 +122,14 @@ void BitOutputArchive::addFiles( const tstring& inDir, const tstring& filter, Fi
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.onlyFiles = true;
     options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexDirectory( inDir, filter, policy, options );
+    mNewItemsVector.indexDirectory( tstring_to_path( inDir ), filter, policy, options );
 }
 
 void BitOutputArchive::addDirectory( const tstring& inDir ) {
     IndexingOptions options{};
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexDirectory( inDir, BIT7Z_STRING( "" ), FilterPolicy::Include, options );
+    mNewItemsVector.indexDirectory( tstring_to_path( inDir ), BIT7Z_STRING( "" ), FilterPolicy::Include, options );
 }
 
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
@@ -185,7 +185,7 @@ void BitOutputArchive::compressOut( IOutArchive* outArc,
 void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* updateCallback ) {
     // Note: if mInputArchive != nullptr, newArc will actually point to the same IInArchive object used by the old_arc
     // (see initUpdatableArchive function of BitInputArchive)!
-    const bool updatingArchive = mInputArchive != nullptr && mInputArchive->archivePath() == outFile;
+    const bool updatingArchive = mInputArchive != nullptr && tstring_to_path( mInputArchive->archivePath() ) == outFile;
     const CMyComPtr< IOutArchive > newArc = initOutArchive();
     CMyComPtr< IOutStream > outStream = initOutFileStream( outFile, updatingArchive );
     compressOut( newArc, outStream, updateCallback );
@@ -222,7 +222,7 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
 
 void BitOutputArchive::compressTo( const tstring& outFile ) {
     using namespace bit7z::filesystem;
-    const fs::path outPath = FORMAT_LONG_PATH( outFile );
+    const fs::path outPath = tstring_to_path( outFile );
     std::error_code error;
     if ( fs::exists( outPath, error ) ) {
         const OverwriteMode overwriteMode = mArchiveCreator.overwriteMode();
@@ -322,12 +322,12 @@ auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStr
 
     const HRESULT res = newItem.getStream( inStream );
     if ( FAILED( res ) ) {
-        auto path = newItem.path();
+        auto path = tstring_to_path( newItem.path() );
         std::error_code error;
         if ( fs::exists( path, error ) ) {
             error = std::make_error_code( std::errc::file_exists );
         }
-        mFailedFiles.emplace_back( path, error );
+        mFailedFiles.emplace_back( path_to_tstring( path ), error );
     }
     return res;
 }

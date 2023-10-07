@@ -106,7 +106,7 @@ auto BitArchiveItem::crc() const -> uint32_t {
 // On MSVC, these macros are not defined!
 #if !defined(S_ISLNK) && defined(S_IFMT)
 #ifndef S_IFLNK
-constexpr auto S_IFLNK = 0120000;
+constexpr auto S_IFLNK = 0xA000;
 #endif
 #define S_ISLNK( m ) (((m) & S_IFMT) == S_IFLNK)
 #endif
