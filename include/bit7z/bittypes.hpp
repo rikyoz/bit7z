@@ -62,6 +62,7 @@ struct StringTraits< wchar_t > {
 
 /**
  * Native string type of the system.
+ * @note On Windows, it is an alias of `std::wstring`.
  */
 #ifdef _WIN32
 using native_string = std::wstring;
