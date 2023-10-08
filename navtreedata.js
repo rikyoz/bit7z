@@ -30,20 +30,26 @@ var NAVTREE =
       [ "Notes", "index.html#autotoc_md3", null ]
     ] ],
     [ "🔥 Getting Started (Library Usage)", "index.html#autotoc_md4", [
-      [ "📂 Extracting files from an archive", "index.html#autotoc_md5", null ],
-      [ "💼 Compressing files into an archive", "index.html#autotoc_md6", null ],
-      [ "📑 Reading archive metadata", "index.html#autotoc_md7", null ]
+      [ "📂 Extracting Files from an Archive", "index.html#autotoc_md5", null ],
+      [ "💼 Compressing Files into an Archive", "index.html#autotoc_md6", null ],
+      [ "📑 Reading Archive Metadata", "index.html#autotoc_md7", null ],
+      [ "🚀 Upgrading from bit7z v3 to v4", "index.html#autotoc_md8", null ]
     ] ],
-    [ "🚀 Upgrading from bit7z v3 to v4", "index.html#autotoc_md8", null ],
     [ "💾 Download", "index.html#autotoc_md9", null ],
     [ "🧰 Requirements", "index.html#autotoc_md10", null ],
-    [ "⚙️ Building and using bit7z", "index.html#autotoc_md11", null ],
-    [ "☕️ Donate", "index.html#autotoc_md12", null ],
-    [ "📜 License", "index.html#autotoc_md13", null ],
+    [ "⚙️ Building and Using bit7z", "index.html#autotoc_md11", [
+      [ "📑 7-zip Version", "index.html#autotoc_md12", [
+        [ "Using 7-zip v23.01 on Linux and macOS", "index.html#autotoc_md13", null ]
+      ] ],
+      [ "🌐 String Encoding", "index.html#autotoc_md14", null ]
+    ] ],
+    [ "☕️ Donate", "index.html#autotoc_md15", null ],
+    [ "📜 License", "index.html#autotoc_md16", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ],
         [ "Variables", "namespacemembers_vars.html", null ],
         [ "Typedefs", "namespacemembers_type.html", null ],
         [ "Enumerations", "namespacemembers_enum.html", null ]
@@ -67,11 +73,11 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"classbit7z_1_1_bit_archive_editor.html#a3c51da9e188ad1d94d32013dfa8e8cb5",
-"classbit7z_1_1_bit_archive_reader.html#a72ca416beb7cd0e380bdd5faf5604425",
-"classbit7z_1_1_bit_compressor.html#abd20658db8a74cf1f9ccc15dca3e8d75",
-"classbit7z_1_1_bit_in_out_format.html#a82819b899c39531aa0216213fd751706",
-"namespacebit7z.html#ade55baa7a0b30fdfdfbcbaeff7a61f87"
+"classbit7z_1_1_bit_archive_editor.html#a3956707a15a52fbba33aced82b6806a9",
+"classbit7z_1_1_bit_archive_reader.html#a450f09c4e9fc8a5b9609103ef55667cb",
+"classbit7z_1_1_bit_compressor.html#a514aa3b4e51923e929d29ed9d550f069",
+"classbit7z_1_1_bit_file_compressor.html#ae5823ef37c0b5abbf459f8072a3f8e50",
+"index.html#autotoc_md5"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,6 +1,9 @@
 <map id="BitArchiveItem" name="BitArchiveItem">
-<area shape="rect" id="node1" title="The BitArchiveItem class represents a generic item inside an archive." alt="" coords="93,79,198,104"/>
-<area shape="rect" id="node3" href="$classbit7z_1_1_bit_archive_item_info.html" title="The BitArchiveItemInfo class represents an archived item and that stores all its properties for later..." alt="" coords="5,152,131,177"/>
-<area shape="rect" id="node4" href="$classbit7z_1_1_bit_archive_item_offset.html" title="The BitArchiveItemOffset class represents an archived item but doesn&#39;t store its properties." alt="" coords="155,152,293,177"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_generic_item.html" title="The BitGenericItem interface class represents a generic item (either inside or outside an archive)." alt="" coords="91,5,199,31"/>
+<area shape="rect" id="Node000001" title="The BitArchiveItem class represents a generic item inside an archive." alt="" coords="93,80,197,107"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_archive_item_info.html" title="The BitArchiveItemInfo class represents an archived item and that stores all its properties for later..." alt="" coords="5,155,130,181"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="122,119,83,156,79,152,119,115"/>
+<area shape="rect" id="Node000004" href="$classbit7z_1_1_bit_archive_item_offset.html" title="The BitArchiveItemOffset class represents an archived item but doesn&#39;t store its properties." alt="" coords="154,155,293,181"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="171,115,212,152,208,156,167,119"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_generic_item.html" title="The BitGenericItem interface class represents a generic item (either inside or outside an archive)." alt="" coords="91,5,199,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,47,148,80,142,80,142,47"/>
 </map>

@@ -1,4 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classbit7z_1_1_bit_in_format.html" title="The BitInFormat class specifies an extractable archive format." alt="" coords="5,5,95,31"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_in_out_format.html" title="The BitInOutFormat class specifies a format available for creating new archives and extract old ones." alt="" coords="143,5,253,31"/>
+<area shape="rect" id="Node000000" href="$classbit7z_1_1_bit_in_format.html" title="The BitInFormat class specifies an extractable archive format." alt="" coords="5,5,94,32"/>
+<area shape="rect" id="Node000001" href="$classbit7z_1_1_bit_in_out_format.html" title="The BitInOutFormat class specifies a format available for creating new archives and extract old ones." alt="" coords="142,5,251,32"/>
+<area shape="poly" id="edge15_Node000000_Node000001" title=" " alt="" coords="108,16,141,16,141,21,108,21"/>
 </map>

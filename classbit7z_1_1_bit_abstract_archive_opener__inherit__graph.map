@@ -1,6 +1,9 @@
 <map id="BitAbstractArchiveOpener" name="BitAbstractArchiveOpener">
-<area shape="rect" id="node1" title="The BitAbstractArchiveOpener abstract class represents a generic archive opener." alt="" coords="58,79,229,104"/>
-<area shape="rect" id="node3" href="$classbit7z_1_1_bit_archive_reader.html" title="The BitArchiveReader class allows reading metadata of archives, as well as extracting them." alt="" coords="5,152,127,177"/>
-<area shape="rect" id="node4" href="$classbit7z_1_1_bit_extractor.html" title="The BitExtractor template class allows extracting the content of archives from supported input types." alt="" coords="151,152,293,177"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="57,5,230,31"/>
+<area shape="rect" id="Node000001" title="The BitAbstractArchiveOpener abstract class represents a generic archive opener." alt="" coords="58,80,228,107"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_archive_reader.html" title="The BitArchiveReader class allows reading metadata of archives, as well as extracting them." alt="" coords="5,155,126,181"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="120,119,81,156,77,152,117,115"/>
+<area shape="rect" id="Node000004" href="$classbit7z_1_1_bit_extractor.html" title="The BitExtractor template class allows extracting the content of archives from supported input types." alt="" coords="150,155,293,181"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="169,115,210,152,206,156,165,119"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="57,5,229,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="146,47,146,80,140,80,140,47"/>
 </map>

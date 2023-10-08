@@ -1,6 +1,9 @@
 <map id="BitArchiveWriter" name="BitArchiveWriter">
-<area shape="rect" id="node1" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="119,152,233,177"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="7,79,177,104"/>
-<area shape="rect" id="node3" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,179,31"/>
-<area shape="rect" id="node4" href="$classbit7z_1_1_bit_output_archive.html" title="The BitOutputArchive class, given a creator object, allows creating new archives." alt="" coords="202,79,321,104"/>
+<area shape="rect" id="Node000001" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="118,155,233,181"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="6,80,177,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,114,163,152,159,156,115,118"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,178,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="94,47,94,80,89,80,89,47"/>
+<area shape="rect" id="Node000004" href="$classbit7z_1_1_bit_output_archive.html" title="The BitOutputArchive class, given a creator object, allows creating new archives." alt="" coords="200,80,319,107"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="236,118,192,156,188,152,232,114"/>
 </map>

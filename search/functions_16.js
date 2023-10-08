@@ -20,7 +20,7 @@ var searchData=
   ['wistream_17',['wistream',['http://en.cppreference.com/w/cpp/io/basic_istream/basic_istream.html',1,'std::wistream']]],
   ['wistringstream_18',['wistringstream',['http://en.cppreference.com/w/cpp/io/basic_istringstream/basic_istringstream.html',1,'std::wistringstream']]],
   ['wofstream_19',['wofstream',['http://en.cppreference.com/w/cpp/io/basic_ofstream/basic_ofstream.html',1,'std::wofstream']]],
-  ['wordsize_20',['wordSize',['../classbit7z_1_1_bit_abstract_archive_creator.html#a6e2cfb65872a6b21912c9fcf441e42fe',1,'bit7z::BitAbstractArchiveCreator']]],
+  ['wordsize_20',['wordSize',['../classbit7z_1_1_bit_abstract_archive_creator.html#a84f7a6f170ac6a4334e3b48008833716',1,'bit7z::BitAbstractArchiveCreator']]],
   ['wostream_21',['wostream',['http://en.cppreference.com/w/cpp/io/basic_ostream/basic_ostream.html',1,'std::wostream']]],
   ['wostringstream_22',['wostringstream',['http://en.cppreference.com/w/cpp/io/basic_ostringstream/basic_ostringstream.html',1,'std::wostringstream']]],
   ['wregex_23',['wregex',['http://en.cppreference.com/w/cpp/regex/basic_regex/basic_regex.html',1,'std::wregex']]],

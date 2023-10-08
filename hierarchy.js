@@ -33,7 +33,7 @@ var hierarchy =
       [ "BitArchiveWriter", "classbit7z_1_1_bit_archive_writer.html", null ]
     ] ],
     [ "BitPropVariant", "structbit7z_1_1_bit_prop_variant.html", null ],
-    [ "BitInputArchive::const_iterator", "classbit7z_1_1_bit_input_archive_1_1const__iterator.html", null ],
+    [ "ConstIterator", "classbit7z_1_1_bit_input_archive_1_1_const_iterator.html", null ],
     [ "system_error", "http://en.cppreference.com/w/cpp/error/system_error.html", [
       [ "BitException", "classbit7z_1_1_bit_exception.html", null ]
     ] ]

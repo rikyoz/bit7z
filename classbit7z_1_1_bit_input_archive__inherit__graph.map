@@ -1,4 +1,5 @@
 <map id="BitInputArchive" name="BitInputArchive">
-<area shape="rect" id="node1" title="The BitInputArchive class, given a handler object, allows reading/extracting the content of archives." alt="" coords="12,5,120,31"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_archive_reader.html" title="The BitArchiveReader class allows reading metadata of archives, as well as extracting them." alt="" coords="5,79,127,104"/>
+<area shape="rect" id="Node000001" title="The BitInputArchive class, given a handler object, allows reading/extracting the content of archives." alt="" coords="12,5,119,32"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_archive_reader.html" title="The BitArchiveReader class allows reading metadata of archives, as well as extracting them." alt="" coords="5,80,126,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="68,47,68,80,63,80,63,47"/>
 </map>

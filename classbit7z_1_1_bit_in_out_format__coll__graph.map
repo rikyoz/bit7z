@@ -1,4 +1,5 @@
 <map id="BitInOutFormat" name="BitInOutFormat">
-<area shape="rect" id="node1" title="The BitInOutFormat class specifies a format available for creating new archives and extract old ones." alt="" coords="5,79,116,104"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_in_format.html" title="The BitInFormat class specifies an extractable archive format." alt="" coords="16,5,105,31"/>
+<area shape="rect" id="Node000001" title="The BitInOutFormat class specifies a format available for creating new archives and extract old ones." alt="" coords="5,80,115,107"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_in_format.html" title="The BitInFormat class specifies an extractable archive format." alt="" coords="16,5,104,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="63,47,63,80,57,80,57,47"/>
 </map>

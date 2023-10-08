@@ -1,5 +1,7 @@
 <map id="BitArchiveItemInfo" name="BitArchiveItemInfo">
-<area shape="rect" id="node1" title="The BitArchiveItemInfo class represents an archived item and that stores all its properties for later..." alt="" coords="5,152,131,177"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_archive_item.html" title="The BitArchiveItem class represents a generic item inside an archive." alt="" coords="15,79,121,104"/>
-<area shape="rect" id="node3" href="$classbit7z_1_1_bit_generic_item.html" title="The BitGenericItem interface class represents a generic item (either inside or outside an archive)." alt="" coords="14,5,122,31"/>
+<area shape="rect" id="Node000001" title="The BitArchiveItemInfo class represents an archived item and that stores all its properties for later..." alt="" coords="5,155,130,181"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_archive_item.html" title="The BitArchiveItem class represents a generic item inside an archive." alt="" coords="15,80,120,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="70,122,70,154,65,154,65,122"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_generic_item.html" title="The BitGenericItem interface class represents a generic item (either inside or outside an archive)." alt="" coords="14,5,121,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="70,47,70,80,65,80,65,47"/>
 </map>

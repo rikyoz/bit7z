@@ -1,9 +1,16 @@
 <map id="BitAbstractArchiveCreator" name="BitAbstractArchiveCreator">
-<area shape="rect" id="node1" title="Abstract class representing a generic archive creator." alt="" coords="72,80,243,105"/>
-<area shape="rect" id="node3" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="5,243,157,283"/>
-<area shape="rect" id="node5" href="$classbit7z_1_1_bit_archive_writer.html" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="261,155,376,180"/>
-<area shape="rect" id="node7" href="$classbit7z_1_1_bit_compressor.html" title="The BitCompressor template class allows compressing files into archives." alt="" coords="77,155,237,180"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="71,5,244,31"/>
-<area shape="rect" id="node4" href="$classbit7z_1_1_bit_file_compressor.html" title="The BitFileCompressor class allows compressing files and directories." alt="" coords="17,332,146,357"/>
-<area shape="rect" id="node6" href="$classbit7z_1_1_bit_archive_editor.html" title="The BitArchiveEditor class allows creating new file archives or updating old ones." alt="" coords="261,250,376,275"/>
+<area shape="rect" id="Node000001" title="Abstract class representing a generic archive creator." alt="" coords="72,81,242,108"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="5,248,157,291"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="112,117,87,135,67,159,61,181,61,204,74,247,68,248,56,205,55,180,63,156,83,131,109,113"/>
+<area shape="rect" id="Node000005" href="$classbit7z_1_1_bit_archive_writer.html" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="261,157,376,184"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="199,112,292,154,290,159,197,117"/>
+<area shape="rect" id="Node000007" href="$classbit7z_1_1_bit_compressor.html" title="The BitCompressor template class allows compressing files into archives." alt="" coords="77,157,237,184"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="160,123,160,157,154,157,154,123"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="71,5,243,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,47,160,81,154,81,154,47"/>
+<area shape="rect" id="Node000004" href="$classbit7z_1_1_bit_file_compressor.html" title="The BitFileCompressor class allows compressing files and directories." alt="" coords="17,340,145,367"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="84,306,84,340,78,340,78,306"/>
+<area shape="rect" id="Node000006" href="$classbit7z_1_1_bit_archive_editor.html" title="The BitArchiveEditor class allows creating new file archives or updating old ones." alt="" coords="262,256,375,283"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="321,199,321,256,316,256,316,199"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="140,198,99,249,95,246,136,194"/>
 </map>

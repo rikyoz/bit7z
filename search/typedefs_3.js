@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['ratiocallback_0',['RatioCallback',['../namespacebit7z.html#ade55baa7a0b30fdfdfbcbaeff7a61f87',1,'bit7z']]]
+  ['passwordcallback_0',['PasswordCallback',['../namespacebit7z.html#a165ffeff2d1c081a013c1cf22fbd9d6d',1,'bit7z']]],
+  ['progresscallback_1',['ProgressCallback',['../namespacebit7z.html#a9c4784b43ccdc875d1804ab49d0f285f',1,'bit7z']]]
 ];

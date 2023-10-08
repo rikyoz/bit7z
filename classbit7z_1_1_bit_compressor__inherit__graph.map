@@ -1,7 +1,11 @@
 <map id="BitCompressor&lt; Input &gt;" name="BitCompressor&lt; Input &gt;">
-<area shape="rect" id="node1" title="The BitCompressor template class allows compressing files into archives." alt="" coords="12,155,172,180"/>
-<area shape="rect" id="node4" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="16,243,168,283"/>
-<area shape="rect" id="node2" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="7,80,177,105"/>
-<area shape="rect" id="node3" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,179,31"/>
-<area shape="rect" id="node5" href="$classbit7z_1_1_bit_file_compressor.html" title="The BitFileCompressor class allows compressing files and directories." alt="" coords="27,332,157,357"/>
+<area shape="rect" id="Node000001" title="The BitCompressor template class allows compressing files into archives." alt="" coords="12,157,171,184"/>
+<area shape="rect" id="Node000004" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="16,248,167,291"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="94,199,94,247,89,247,89,199"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="6,81,177,108"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,123,94,157,89,157,89,123"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,178,32"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="94,47,94,81,89,81,89,47"/>
+<area shape="rect" id="Node000005" href="$classbit7z_1_1_bit_file_compressor.html" title="The BitFileCompressor class allows compressing files and directories." alt="" coords="27,340,156,367"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="94,306,94,340,89,340,89,306"/>
 </map>

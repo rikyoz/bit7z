@@ -1,9 +1,10 @@
 var classbit7z_1_1_bit_generic_item =
 [
-    [ "attributes", "classbit7z_1_1_bit_generic_item.html#a203d5756895121b33616844e2e994e33", null ],
-    [ "isDir", "classbit7z_1_1_bit_generic_item.html#ab2b5f046bd1e075bba585299f73a7a57", null ],
-    [ "itemProperty", "classbit7z_1_1_bit_generic_item.html#a7afeee613dee4aacf16b459ee5f5455f", null ],
-    [ "name", "classbit7z_1_1_bit_generic_item.html#af0da2f7594500554ea32587e6434ef71", null ],
-    [ "path", "classbit7z_1_1_bit_generic_item.html#abb873597d968a097a6307a8d456bc5c4", null ],
-    [ "size", "classbit7z_1_1_bit_generic_item.html#ad6e91c334a35c6b6398de28ccbfaece2", null ]
+    [ "attributes", "classbit7z_1_1_bit_generic_item.html#a22c1768db38cb0a2a126c7cf8acb9660", null ],
+    [ "isDir", "classbit7z_1_1_bit_generic_item.html#aee3a0ef276335758a537b98aa2daf678", null ],
+    [ "isSymLink", "classbit7z_1_1_bit_generic_item.html#a79ff012af7908fd9c1f41282ebf0a4e8", null ],
+    [ "itemProperty", "classbit7z_1_1_bit_generic_item.html#a9be777a4e340cafc95dc715b05c87146", null ],
+    [ "name", "classbit7z_1_1_bit_generic_item.html#acef15b36cc25f691ff2df2ae94e9a18a", null ],
+    [ "path", "classbit7z_1_1_bit_generic_item.html#abda0a9561b2dd474871ae8d1499266a2", null ],
+    [ "size", "classbit7z_1_1_bit_generic_item.html#a4bfb920baf1313aba48ed52c0fc04722", null ]
 ];
