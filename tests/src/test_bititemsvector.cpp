@@ -69,7 +69,7 @@ struct TestInputPath {
 };
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -148,7 +148,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.onlyFiles = true;
@@ -222,7 +222,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structure)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.retainFolderStructure = true;
@@ -306,7 +306,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -812,7 +812,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtered)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1181,7 +1181,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1264,7 +1264,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1322,7 +1322,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recursively)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1384,7 +1384,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1484,7 +1484,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mapping)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1588,7 +1588,7 @@ struct TestInputPaths {
 };
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1648,7 +1648,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structure)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.retainFolderStructure = true;
@@ -1711,7 +1711,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.onlyFiles = true;
@@ -1772,7 +1772,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1840,7 +1840,7 @@ struct TestFile {
 };
 
 TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1897,7 +1897,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 #endif
 
 TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1932,7 +1932,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
 }
 
 TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1958,7 +1958,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
 }
 
 TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
-    const TestDirectory testDir{ test_filesystem_dir };
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
