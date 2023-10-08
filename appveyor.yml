@@ -62,8 +62,6 @@ environment:
     CXX: /usr/bin/clang++
 
 matrix:
-  fast_finish: true
-
   exclude:
   # Excluding GCC and Clang on Windows images, and MSVC on Ubuntu image.
   # Also, we compile MinGW binaries only on Visual Studio 2022 image.
