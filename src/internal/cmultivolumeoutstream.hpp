@@ -45,7 +45,7 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Total size of the output archive (sum of the volumes' sizes).
         uint64_t mFullSize;
 
-        vector <CMyComPtr< CVolumeOutStream >> mVolumes;
+        vector< CMyComPtr< CVolumeOutStream > > mVolumes;
 
     public:
         CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName );
