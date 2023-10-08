@@ -19,6 +19,7 @@
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
+#include <internal/util.hpp>
 #include <internal/windows.hpp>
 
 
@@ -1061,11 +1062,7 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name", "[bi
     fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
     SECTION( "Filesystem archive" ) {
-#ifdef BIT7Z_USE_NATIVE_STRING
-        const BitArchiveReader info( lib, arcFileName.native(), BitFormat::SevenZip );
-#else
-        const BitArchiveReader info( lib, arcFileName.u8string(), BitFormat::SevenZip );
-#endif
+        const BitArchiveReader info( lib, path_to_tstring( arcFileName ), BitFormat::SevenZip );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
         REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
@@ -1099,11 +1096,7 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
     fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
-#ifdef BIT7Z_USE_NATIVE_STRING
-    const BitArchiveReader info( lib, arcFileName.native(), BitFormat::BZip2 );
-#else
-    const BitArchiveReader info( lib, arcFileName.u8string(), BitFormat::BZip2 );
-#endif
+    const BitArchiveReader info( lib, path_to_tstring( arcFileName ), BitFormat::BZip2 );
     REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
 }
 #endif
