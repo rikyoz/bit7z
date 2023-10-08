@@ -79,10 +79,11 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 
 auto widen( const std::string& narrowString ) -> std::wstring {
 #ifdef _WIN32
+    const int narrowStringSize = static_cast< int >( narrowString.size() );
     const int wideStringSize = MultiByteToWideChar( CODEPAGE,
                                                     0,
                                                     narrowString.c_str(),
-                                                    static_cast< int >( narrowString.size() ),
+                                                    narrowStringSize,
                                                     nullptr,
                                                     0 );
     if ( wideStringSize == 0 ) {
@@ -93,7 +94,7 @@ auto widen( const std::string& narrowString ) -> std::wstring {
     MultiByteToWideChar( CODEPAGE,
                          0,
                          narrowString.c_str(),
-                         static_cast< int >( narrowString.size() ),
+                         narrowStringSize,
                          &result[ 0 ], // NOLINT(readability-container-data-pointer)
                          wideStringSize );
     return result;
