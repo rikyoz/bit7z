@@ -138,9 +138,7 @@ struct SingleFileArchive : public TestInputArchive {
 };
 
 TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "single_file";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -193,8 +191,6 @@ TEST_CASE( "BitArchiveReader: Reading archives containing only a single file", "
             REQUIRE_ARCHIVE_TESTS( info );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 struct MultipleFilesArchive : public TestInputArchive {
@@ -203,9 +199,7 @@ struct MultipleFilesArchive : public TestInputArchive {
 };
 
 TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "multiple_files";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -252,8 +246,6 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple files", "[bit
             REQUIRE_ARCHIVE_TESTS( info );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 struct MultipleItemsArchive : public TestInputArchive {
@@ -262,9 +254,7 @@ struct MultipleItemsArchive : public TestInputArchive {
 };
 
 TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files and folders)", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -312,8 +302,6 @@ TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files 
             REQUIRE_ARCHIVE_TESTS( info );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 struct EncryptedArchive : public TestInputArchive {
@@ -322,9 +310,7 @@ struct EncryptedArchive : public TestInputArchive {
 };
 
 TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "encrypted";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -399,15 +385,11 @@ TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items", "[bi
             REQUIRE_ARCHIVE_TESTS( info );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 /* Pull request #36 */
 TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "header_encrypted";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -499,9 +481,7 @@ TEST_CASE( "BitArchiveReader: Reading header-encrypted archives", "[bitarchivere
 }
 
 TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "split";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -572,9 +552,7 @@ struct EmptyArchive : public TestInputArchive {
 };
 
 TEST_CASE( "BitArchiveReader: Reading an empty archive", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "empty";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -610,14 +588,10 @@ TEST_CASE( "BitArchiveReader: Reading an empty archive", "[bitarchivereader]" ) 
             REQUIRE_ARCHIVE_TESTS( info );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "solid";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -644,8 +618,6 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
         REQUIRE( !info.isSolid() );
         REQUIRE_ARCHIVE_TESTS( info );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 /**
@@ -666,9 +638,7 @@ auto test_open_rar_archive( const Bit7zLibrary& lib, const tstring& inFile ) -> 
 }
 
 TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format version", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -680,8 +650,6 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
     SECTION( "Non-RAR archive" ) {
         REQUIRE_THROWS( test_open_rar_archive( lib, BIT7Z_STRING( "valid.zip" ) ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #define REQUIRE_ITEM_EQUAL( first, second ) \
@@ -699,9 +667,7 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
     } while ( false )
 
 TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -762,14 +728,10 @@ TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators
             }
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitArchiveReader: Reading invalid archives", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "testing";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -806,14 +768,10 @@ TEST_CASE( "BitArchiveReader: Reading invalid archives", "[bitarchivereader]" ) 
             REQUIRE_THROWS( info.test() );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should throw", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "extraction" / "single_file";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -869,8 +827,6 @@ TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should thr
             }
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #ifndef FILE_ATTRIBUTE_WINDOWS_MASK
@@ -982,9 +938,7 @@ constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
     } while ( false )
 
 TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "metadata" / "file_type";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -1030,8 +984,6 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
             REQUIRE_ITEM_READONLY( info, "read_only" );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
@@ -1056,9 +1008,7 @@ TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives", "[bi
     } while ( false )
 
 TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "metadata" / "unicode";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -1101,14 +1051,10 @@ TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names
             REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "metadata" / "unicode";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -1145,14 +1091,10 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name", "[bi
         REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
         REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2)", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "metadata" / "unicode";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -1163,17 +1105,13 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
     const BitArchiveReader info( lib, arcFileName.u8string(), BitFormat::BZip2 );
 #endif
     REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 #endif
 
 #ifdef BIT7Z_AUTO_FORMAT
 
 TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";
-    REQUIRE( set_current_dir( testDir ) );
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
@@ -1279,8 +1217,6 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
             }
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #endif
