@@ -105,4 +105,14 @@
 #   endif
 #endif
 
+#ifndef BIT7Z_DEPRECATED_TYPEDEF
+#   if defined( __GNUC__ ) && !defined( __clang__ ) && __GNUC__ < 7
+#       define BIT7Z_DEPRECATED_TYPEDEF( alias_name, alias_value, msg ) \
+                using alias_name BIT7Z_MAYBE_UNUSED __attribute__(( __deprecated__( msg ) )) = alias_value
+#   else
+#       define BIT7Z_DEPRECATED_TYPEDEF( alias_name, alias_value, msg ) \
+                using alias_name BIT7Z_MAYBE_UNUSED BIT7Z_DEPRECATED_MSG( msg ) = alias_value
+#   endif
+#endif
+
 #endif //BITDEFINES_HPP

@@ -337,7 +337,7 @@ class BitInputArchive {
                 friend class BitInputArchive;
         };
 
-        using const_iterator BIT7Z_MAYBE_UNUSED BIT7Z_DEPRECATED_MSG("Use ConstIterator") = ConstIterator;
+        BIT7Z_DEPRECATED_TYPEDEF( const_iterator, ConstIterator, "Use ConstIterator" );
 
         /**
          * @return an iterator to the first element of the archive; if the archive is empty,
