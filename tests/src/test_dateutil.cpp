@@ -21,23 +21,23 @@ using namespace bit7z;
  * We do not expect the conversion function to check whether the input is correct,
  * so we don't perform tests with wrong inputs. */
 
+struct DateConversionTest {
+    const char* name;
+    std::time_t dateTime;
+    FILETIME fileTime;
+};
+
 #ifndef _WIN32
 
 TEST_CASE( "fsutil: Date conversion from std::time_t to FILETIME", "[fsutil][date functions]" ) {
-    auto testDate = GENERATE( table< const char*, std::time_t, FILETIME >(
-        {
-            { "21 December 2012, 12:00", 1356091200, { 3017121792, 30269298 } },
-            { "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } }
-        }
-    ) );
+    auto testDate = GENERATE( as< DateConversionTest >(),
+                              DateConversionTest{ "21 December 2012, 12:00", 1356091200, { 3017121792, 30269298 } },
+                              DateConversionTest{ "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } } );
 
-    DYNAMIC_SECTION( "Date: " << std::get< 0 >( testDate ) ) {
-        const std::time_t input = std::get< 1 >( testDate );
-        const FILETIME expectedOutput = std::get< 2 >( testDate );
-
-        auto output = time_to_FILETIME( input );
-        REQUIRE( output.dwHighDateTime == expectedOutput.dwHighDateTime );
-        REQUIRE( output.dwLowDateTime == expectedOutput.dwLowDateTime );
+    DYNAMIC_SECTION( "Date: " << testDate.name ) {
+        auto output = time_to_FILETIME( testDate.dateTime );
+        REQUIRE( output.dwHighDateTime == testDate.fileTime.dwHighDateTime );
+        REQUIRE( output.dwLowDateTime == testDate.fileTime.dwLowDateTime );
     }
 }
 
@@ -47,32 +47,26 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
     using namespace std::chrono;
     using std::chrono::seconds;
 
-    auto testDate = GENERATE( table< const char*, FILETIME, std::time_t >(
-        {
-            { "21 December 2012, 12:00", { 3017121792, 30269298 }, 1356091200 },
-            { "1 January 1970, 00:00",   { 3577643008, 27111902 }, 0 }
-        }
-    ) );
+    auto testDate = GENERATE( as< DateConversionTest >(),
+                              DateConversionTest{ "21 December 2012, 12:00", 1356091200, { 3017121792, 30269298 } },
+                              DateConversionTest{ "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } } );
 
-    DYNAMIC_SECTION( "Date: " << std::get< 0 >( testDate ) ) {
-        const FILETIME input = std::get< 1 >( testDate );
-        const std::time_t expectedOutput = std::get< 2 >( testDate );
-
+    DYNAMIC_SECTION( "Date: " << testDate.name ) {
         std::time_t output{};
 
 #ifndef _WIN32
         SECTION( "FILETIME to std::filesystem::file_time_type" ) {
-            auto result = FILETIME_to_file_time_type( input );
+            auto result = FILETIME_to_file_time_type( testDate.fileTime );
             output = std::time_t{ duration_cast< seconds >( result.time_since_epoch() ).count() };
         }
 #endif
 
         SECTION( "FILETIME to bit7z::time_type" ) {
-            auto result = FILETIME_to_time_type( input );
+            auto result = FILETIME_to_time_type( testDate.fileTime );
             output = bit7z::time_type::clock::to_time_t( result );
         }
 
-        REQUIRE( output == expectedOutput );
+        REQUIRE( output == testDate.dateTime );
     }
 }
 #endif
