@@ -27,23 +27,7 @@ struct DateConversionTest {
     FILETIME fileTime;
 };
 
-#ifndef _WIN32
-
-TEST_CASE( "fsutil: Date conversion from std::time_t to FILETIME", "[fsutil][date functions]" ) {
-    auto testDate = GENERATE( as< DateConversionTest >(),
-                              DateConversionTest{ "21 December 2012, 12:00", 1356091200, { 3017121792, 30269298 } },
-                              DateConversionTest{ "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } } );
-
-    DYNAMIC_SECTION( "Date: " << testDate.name ) {
-        auto output = time_to_FILETIME( testDate.dateTime );
-        REQUIRE( output.dwHighDateTime == testDate.fileTime.dwHighDateTime );
-        REQUIRE( output.dwLowDateTime == testDate.fileTime.dwLowDateTime );
-    }
-}
-
-#endif
-
-TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date functions]" ) {
+TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
     using namespace std::chrono;
     using std::chrono::seconds;
 
@@ -52,21 +36,31 @@ TEST_CASE( "fsutil: Date conversion from FILETIME to time types", "[fsutil][date
                               DateConversionTest{ "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } } );
 
     DYNAMIC_SECTION( "Date: " << testDate.name ) {
-        std::time_t output{};
 
 #ifndef _WIN32
-        SECTION( "FILETIME to std::filesystem::file_time_type" ) {
-            auto result = FILETIME_to_file_time_type( testDate.fileTime );
-            output = std::time_t{ duration_cast< seconds >( result.time_since_epoch() ).count() };
+        SECTION( "From std::time_t to FILETIME" ) {
+            auto output = time_to_FILETIME( testDate.dateTime );
+            REQUIRE( output.dwHighDateTime == testDate.fileTime.dwHighDateTime );
+            REQUIRE( output.dwLowDateTime == testDate.fileTime.dwLowDateTime );
         }
 #endif
 
-        SECTION( "FILETIME to bit7z::time_type" ) {
-            auto result = FILETIME_to_time_type( testDate.fileTime );
-            output = bit7z::time_type::clock::to_time_t( result );
-        }
+        SECTION( "From FILETIME...") {
+            std::time_t output{};
+#ifndef _WIN32
+            SECTION( "...to std::filesystem::file_time_type" ) {
+                auto result = FILETIME_to_file_time_type( testDate.fileTime );
+                output = std::time_t{ duration_cast< seconds >( result.time_since_epoch() ).count() };
+            }
+#endif
 
-        REQUIRE( output == testDate.dateTime );
+            SECTION( "...to bit7z::time_type" ) {
+                auto result = FILETIME_to_time_type( testDate.fileTime );
+                output = bit7z::time_type::clock::to_time_t( result );
+            }
+
+            REQUIRE( output == testDate.dateTime );
+        }
     }
 }
 #endif
