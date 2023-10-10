@@ -21,12 +21,13 @@
 TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
     using bit7z::narrow;
 
-    REQUIRE( narrow( nullptr, 0 ).empty() );
-    REQUIRE( narrow( nullptr, 42 ).empty() );
-    REQUIRE( narrow( L"", 0 ).empty() );
+    SECTION( "Converting from nullptr C wide string" ) {
+        REQUIRE( narrow( nullptr, 0 ).empty() );
+        REQUIRE( narrow( nullptr, 42 ).empty() );
+    }
 
-    const wchar_t* testInput = nullptr;
-    const char* testOutput = nullptr;
+    std::wstring testInput;
+    std::string testOutput;
     std::tie( testInput, testOutput ) = GENERATE( table< const wchar_t*, const char* >(
         {
             NARROWING_TEST_STR( "" ),
@@ -38,7 +39,9 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
         }
     ) );
 
-    REQUIRE( narrow( testInput, wcsnlen( testInput, 128 ) ) == testOutput );
+    DYNAMIC_SECTION( "Converting L\"" << testOutput << "\" to narrow string" ) {
+        REQUIRE( narrow( testInput.c_str(), testInput.size() ) == testOutput );
+    }
 }
 
 #define WIDENING_TEST_STR( str ) std::make_tuple( (str), L##str )
@@ -47,8 +50,8 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
     using bit7z::widen;
     using std::make_tuple;
 
-    const char* testInput = nullptr;
-    const wchar_t* testOutput = nullptr;
+    std::string testInput;
+    std::wstring testOutput;
     std::tie( testInput, testOutput ) = GENERATE( table< const char*, const wchar_t* >(
         {
             WIDENING_TEST_STR( "" ),
@@ -60,7 +63,9 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
         }
     ) );
 
-    REQUIRE( widen( testInput ) == testOutput );
+    DYNAMIC_SECTION( "Converting \"" << testInput << "\" to wide string" ) {
+        REQUIRE( widen( testInput ) == testOutput );
+    }
 }
 #endif
 
