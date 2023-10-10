@@ -139,32 +139,26 @@ struct SingleFileArchive : public TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, single_file_content() } {}
 };
 
-class InputArchiveProxy {
-        const fs::path& mPath;
-    public:
-        InputArchiveProxy( const fs::path& path ) : mPath{ path } {}
+template< typename T >
+auto getInputArchive( const fs::path& path ) -> T = delete;
 
-        operator tstring() const {
-            return path_to_tstring( mPath );
-        }
+template<>
+inline auto getInputArchive< tstring >( const fs::path& path ) -> tstring {
+    return path_to_tstring( path );
+}
 
-        operator buffer_t() const {
-            return load_file( mPath );
-        }
+template<>
+inline auto getInputArchive< buffer_t >( const fs::path& path ) -> buffer_t {
+    return load_file( path );
+}
 
-        operator std::ifstream() const {
-            return std::ifstream{ mPath, std::ios::binary };
-        }
-};
+template<>
+inline auto getInputArchive< std::ifstream >( const fs::path& path ) -> std::ifstream {
+    return fs::ifstream{ path, std::ios::binary };
+}
 
-template <typename T>
+template< typename T >
 using is_filesystem_archive = std::is_same< bit7z::tstring, std::decay_t< T > >;
-
-template <typename T>
-using is_buffer_archive = std::is_same< bit7z::buffer_t, std::decay_t< T > >;
-
-template <typename T>
-using is_stream_archive = std::is_same< std::ifstream, std::decay_t< T > >;
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single file",
                     "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
@@ -189,7 +183,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const auto arcFileName = fs::path{ clouds.name }.concat( "." + testArchive.extension() );
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -225,7 +219,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_files." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -262,7 +256,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -299,7 +293,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "encrypted." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
 
         SECTION( "BitArchiveReader::isHeaderEncrypted must return false" ){
             REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
@@ -344,7 +338,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "header_encrypted." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
 
         SECTION( "BitArchiveReader::isHeaderEncrypted must return true" ){
             REQUIRE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
@@ -461,7 +455,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "empty." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -567,7 +561,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
 
         const auto archiveItems = info.items();
@@ -601,7 +595,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "ko_test." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         REQUIRE_THROWS( info.test() );
     }
@@ -646,7 +640,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format s
 
         if ( correctFormat.extension != wrongFormat.extension ) {
             DYNAMIC_SECTION( "Wrong format: " << wrongFormat.extension ) {
-                TestType inputArchive = InputArchiveProxy{ arcFileName };
+                TestType inputArchive = getInputArchive< TestType >( arcFileName );
                 REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, wrongFormat.format ) );
             }
         }
@@ -777,7 +771,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "file_type." + testFormat.extension;
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testFormat.format );
         REQUIRE_ITEM_DIRECTORY( info, "dir" );
         REQUIRE_ITEM_REGULAR( info, "regular" );
@@ -824,7 +818,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "unicode." + testFormat.extension;
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive = getInputArchive< TestType >( arcFileName );
         const BitArchiveReader info( lib, inputArchive, testFormat.format );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
@@ -841,7 +835,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file na
 
     fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
-    TestType inputArchive = InputArchiveProxy{ arcFileName };
+    TestType inputArchive = getInputArchive< TestType >( arcFileName );
     const BitArchiveReader info( lib, inputArchive, BitFormat::SevenZip );
     REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
     REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
