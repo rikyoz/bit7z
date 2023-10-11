@@ -63,19 +63,18 @@ auto in_archive_paths( const BitItemsVector& vector ) -> std::vector< fs::path >
     return paths;
 }
 
-struct TestDirectory {
+struct TestInputPath {
     fs::path path;
     vector< fs::path > expectedItems;
 };
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             ".",
             {
                 "italy.svg",
@@ -94,9 +93,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "empty", { "empty" } },
-        TestDirectory{ "./empty", { "empty" } },
-        TestDirectory{
+        TestInputPath{ "empty", { "empty" } },
+        TestInputPath{ "./empty", { "empty" } },
+        TestInputPath{
             "folder",
             {
                 "folder",
@@ -108,7 +107,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder",
             {
                 "folder",
@@ -120,7 +119,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "folder/subfolder2",
             {
                 "folder/subfolder2",
@@ -129,7 +128,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder/subfolder2",
             {
                 "subfolder2",
@@ -140,27 +139,24 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
         }
     );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path ) );
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.onlyFiles = true;
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             ".",
             {
                 "italy.svg",
@@ -174,9 +170,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "empty", { "empty" } },
-        TestDirectory{ "./empty", { "empty" } },
-        TestDirectory{
+        TestInputPath{ "empty", { "empty" } },
+        TestInputPath{ "./empty", { "empty" } },
+        TestInputPath{
             "folder",
             {
                 "folder",
@@ -186,7 +182,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder",
             {
                 "folder",
@@ -196,7 +192,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "folder/subfolder2",
             {
                 "folder/subfolder2",
@@ -205,7 +201,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder/subfolder2",
             {
                 "subfolder2",
@@ -216,28 +212,25 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
         }
     );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "" ),
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structure)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.retainFolderStructure = true;
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             ".",
             {
                 ".",
@@ -257,9 +250,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
                 "./folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "empty", { "empty" } },
-        TestDirectory{ "./empty", { "./empty" } },
-        TestDirectory{
+        TestInputPath{ "empty", { "empty" } },
+        TestInputPath{ "./empty", { "./empty" } },
+        TestInputPath{
             "folder",
             {
                 "folder",
@@ -271,7 +264,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder",
             {
                 "./folder",
@@ -283,7 +276,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
                 "./folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "folder/subfolder2",
             {
                 "folder/subfolder2",
@@ -292,7 +285,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder/subfolder2",
             {
                 "./folder/subfolder2",
@@ -303,26 +296,23 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
         }
     );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "" ),
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
     SECTION( "Wildcard filter *" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "italy.svg",
@@ -341,9 +331,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg",
@@ -354,7 +344,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg",
@@ -365,7 +355,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -373,7 +363,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -383,11 +373,11 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -395,8 +385,8 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         IndexingOptions options{};
         options.onlyFiles = true;
 
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "italy.svg",
@@ -410,9 +400,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg",
@@ -421,7 +411,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg",
@@ -430,7 +420,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -438,7 +428,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -448,18 +438,18 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Wildcard filter *.*" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "dot.folder",
@@ -473,9 +463,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg",
@@ -484,7 +474,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg",
@@ -493,7 +483,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -501,7 +491,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -511,11 +501,11 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.*" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -523,8 +513,8 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         IndexingOptions options{};
         options.onlyFiles = true;
 
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "dot.folder/hello.json",
@@ -537,9 +527,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg",
@@ -548,7 +538,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg",
@@ -557,7 +547,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -565,7 +555,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -575,12 +565,12 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.*" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -604,102 +594,102 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
     }
 
     SECTION( "Only PDF files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "Lorem Ipsum.pdf", "folder/subfolder2/The quick brown fox.pdf" } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", { "folder/subfolder2/The quick brown fox.pdf" } },
-            TestDirectory{ "./folder", { "subfolder2/The quick brown fox.pdf" } },
-            TestDirectory{ "folder/subfolder2", { "folder/subfolder2/The quick brown fox.pdf" } },
-            TestDirectory{ "./folder/subfolder2", { "The quick brown fox.pdf" } }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "Lorem Ipsum.pdf", "folder/subfolder2/The quick brown fox.pdf" } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", { "folder/subfolder2/The quick brown fox.pdf" } },
+            TestInputPath{ "./folder", { "subfolder2/The quick brown fox.pdf" } },
+            TestInputPath{ "folder/subfolder2", { "folder/subfolder2/The quick brown fox.pdf" } },
+            TestInputPath{ "./folder/subfolder2", { "The quick brown fox.pdf" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.pdf" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.pdf" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only SVG files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "italy.svg" } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", {} },
-            TestDirectory{ "./folder", {} },
-            TestDirectory{ "folder/subfolder2", {} },
-            TestDirectory{ "./folder/subfolder2", {} }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "italy.svg" } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", {} },
+            TestInputPath{ "./folder", {} },
+            TestInputPath{ "folder/subfolder2", {} },
+            TestInputPath{ "./folder/subfolder2", {} }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.svg" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.svg" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only JPG files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "folder/clouds.jpg" } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", { "folder/clouds.jpg" } },
-            TestDirectory{ "./folder", { "clouds.jpg" } },
-            TestDirectory{ "folder/subfolder2", {} },
-            TestDirectory{ "./folder/subfolder2", {} }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "folder/clouds.jpg" } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", { "folder/clouds.jpg" } },
+            TestInputPath{ "./folder", { "clouds.jpg" } },
+            TestInputPath{ "folder/subfolder2", {} },
+            TestInputPath{ "./folder/subfolder2", {} }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.jpg" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.jpg" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only DOC files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "folder/subfolder2/homework.doc" } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", { "folder/subfolder2/homework.doc" } },
-            TestDirectory{ "./folder", { "subfolder2/homework.doc" } },
-            TestDirectory{ "folder/subfolder2", { "folder/subfolder2/homework.doc" } },
-            TestDirectory{ "./folder/subfolder2", { "homework.doc" } }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "folder/subfolder2/homework.doc" } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", { "folder/subfolder2/homework.doc" } },
+            TestInputPath{ "./folder", { "subfolder2/homework.doc" } },
+            TestInputPath{ "folder/subfolder2", { "folder/subfolder2/homework.doc" } },
+            TestInputPath{ "./folder/subfolder2", { "homework.doc" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.doc" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.doc" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only XLSX files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "folder/subfolder2/frequency.xlsx" } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", { "folder/subfolder2/frequency.xlsx" } },
-            TestDirectory{ "./folder", { "subfolder2/frequency.xlsx" } },
-            TestDirectory{ "folder/subfolder2", { "folder/subfolder2/frequency.xlsx" } },
-            TestDirectory{ "./folder/subfolder2", { "frequency.xlsx" } }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "folder/subfolder2/frequency.xlsx" } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", { "folder/subfolder2/frequency.xlsx" } },
+            TestInputPath{ "./folder", { "subfolder2/frequency.xlsx" } },
+            TestInputPath{ "folder/subfolder2", { "folder/subfolder2/frequency.xlsx" } },
+            TestInputPath{ "./folder/subfolder2", { "frequency.xlsx" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.xlsx" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.xlsx" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only PNG files (no matching file)" ) {
-        const auto testDirectory = GENERATE( as < fs::path > {},
+        const auto testInput = GENERATE( as < fs::path > {},
                                               ".",
                                               "empty",
                                               "./empty",
@@ -708,15 +698,15 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                                               "folder/subfolder2",
                                               "./folder/subfolder2" );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory, BIT7Z_STRING( "*.png" ) ) );
+        DYNAMIC_SECTION ( "Indexing directory " << testInput ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput, BIT7Z_STRING( "*.png" ) ) );
             REQUIRE( itemsVector.size() == 0 );
         }
     }
 
     SECTION( "Only non-PDF files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "italy.svg",
@@ -733,9 +723,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg",
@@ -745,7 +735,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg",
@@ -755,14 +745,14 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                     "subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -771,61 +761,58 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.pdf" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.pdf" ),
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Wildcard filter * (excluding)" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", {} },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", {} },
-            TestDirectory{ "./folder", {} },
-            TestDirectory{ "folder/subfolder2", {} },
-            TestDirectory{ "./folder/subfolder2", {} }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", {} },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", {} },
+            TestInputPath{ "./folder", {} },
+            TestInputPath{ "folder/subfolder2", {} },
+            TestInputPath{ "./folder/subfolder2", {} }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Empty filter (excluding)" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", {} },
-            TestDirectory{ "empty", { "empty" } },
-            TestDirectory{ "./empty", { "empty" } },
-            TestDirectory{ "folder", { "folder" } },
-            TestDirectory{ "./folder", { "folder" } },
-            TestDirectory{ "folder/subfolder2", { "folder/subfolder2" } },
-            TestDirectory{ "./folder/subfolder2", { "subfolder2" } }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", {} },
+            TestInputPath{ "empty", { "empty" } },
+            TestInputPath{ "./empty", { "empty" } },
+            TestInputPath{ "folder", { "folder" } },
+            TestInputPath{ "./folder", { "folder" } },
+            TestInputPath{ "folder/subfolder2", { "folder/subfolder2" } },
+            TestInputPath{ "./folder/subfolder2", { "subfolder2" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtered)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
@@ -833,8 +820,8 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
     BitItemsVector itemsVector;
 
     SECTION( "Wildcard filter *" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "italy.svg",
@@ -853,9 +840,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg",
@@ -866,7 +853,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg",
@@ -877,7 +864,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -885,7 +872,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -893,7 +880,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "../test_filesystem/folder/subfolder2",
                 {
                     "homework.doc",
@@ -903,20 +890,20 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Wildcard filter * (only files)" ) {
         options.onlyFiles = true;
 
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "italy.svg",
@@ -925,21 +912,21 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -947,7 +934,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -957,18 +944,18 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Wildcard filter *.*" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{
                 ".",
                 {
                     "dot.folder",
@@ -978,21 +965,21 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
                 }
             },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{
                 "folder",
                 {
                     "folder/clouds.jpg"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder",
                 {
                     "clouds.jpg"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -1000,7 +987,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "./folder/subfolder2",
                 {
                     "homework.doc",
@@ -1008,7 +995,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "frequency.xlsx"
                 }
             },
-            TestDirectory{
+            TestInputPath{
                 "../test_filesystem/folder/subfolder2",
                 {
                     "homework.doc",
@@ -1018,25 +1005,25 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
             }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.*" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Wildcard filter *.* (only files)" ) {
         options.onlyFiles = true;
 
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "italy.svg", "Lorem Ipsum.pdf", BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ), } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", { "folder/clouds.jpg" } },
-            TestDirectory{ "./folder", { "clouds.jpg" } },
-            TestDirectory{
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "italy.svg", "Lorem Ipsum.pdf", BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ), } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", { "folder/clouds.jpg" } },
+            TestInputPath{ "./folder", { "clouds.jpg" } },
+            TestInputPath{
                 "folder/subfolder2",
                 {
                     "folder/subfolder2/homework.doc",
@@ -1044,15 +1031,15 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                     "folder/subfolder2/frequency.xlsx"
                 }
             },
-            TestDirectory{ "./folder/subfolder2", { "homework.doc", "The quick brown fox.pdf", "frequency.xlsx" } }
+            TestInputPath{ "./folder/subfolder2", { "homework.doc", "The quick brown fox.pdf", "frequency.xlsx" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.*" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1076,107 +1063,107 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
     }
 
     SECTION( "Only PDF files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "Lorem Ipsum.pdf" } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", {} },
-            TestDirectory{ "./folder", {} },
-            TestDirectory{ "folder/subfolder2", { "folder/subfolder2/The quick brown fox.pdf" } },
-            TestDirectory{ "./folder/subfolder2", { "The quick brown fox.pdf" } }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "Lorem Ipsum.pdf" } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", {} },
+            TestInputPath{ "./folder", {} },
+            TestInputPath{ "folder/subfolder2", { "folder/subfolder2/The quick brown fox.pdf" } },
+            TestInputPath{ "./folder/subfolder2", { "The quick brown fox.pdf" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.pdf" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.pdf" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only SVG files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", { "italy.svg" } },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", {} },
-            TestDirectory{ "./folder", {} },
-            TestDirectory{ "folder/subfolder2", {} },
-            TestDirectory{ "./folder/subfolder2", {} }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", { "italy.svg" } },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", {} },
+            TestInputPath{ "./folder", {} },
+            TestInputPath{ "folder/subfolder2", {} },
+            TestInputPath{ "./folder/subfolder2", {} }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.svg" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.svg" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only JPG files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", {} },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", { "folder/clouds.jpg" } },
-            TestDirectory{ "./folder", { "clouds.jpg" } },
-            TestDirectory{ "folder/subfolder2", {} },
-            TestDirectory{ "./folder/subfolder2", {} }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", {} },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", { "folder/clouds.jpg" } },
+            TestInputPath{ "./folder", { "clouds.jpg" } },
+            TestInputPath{ "folder/subfolder2", {} },
+            TestInputPath{ "./folder/subfolder2", {} }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.jpg" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.jpg" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only DOC files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", {} },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", {} },
-            TestDirectory{ "./folder", {} },
-            TestDirectory{ "folder/subfolder2", { "folder/subfolder2/homework.doc" } },
-            TestDirectory{ "./folder/subfolder2", { "homework.doc" } }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", {} },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", {} },
+            TestInputPath{ "./folder", {} },
+            TestInputPath{ "folder/subfolder2", { "folder/subfolder2/homework.doc" } },
+            TestInputPath{ "./folder/subfolder2", { "homework.doc" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.doc" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.doc" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only XLSX files" ) {
-        const auto testDirectory = GENERATE(
-            TestDirectory{ ".", {} },
-            TestDirectory{ "empty", {} },
-            TestDirectory{ "./empty", {} },
-            TestDirectory{ "folder", {} },
-            TestDirectory{ "./folder", {} },
-            TestDirectory{ "folder/subfolder2", { "folder/subfolder2/frequency.xlsx" } },
-            TestDirectory{ "./folder/subfolder2", { "frequency.xlsx" } }
+        const auto testInput = GENERATE(
+            TestInputPath{ ".", {} },
+            TestInputPath{ "empty", {} },
+            TestInputPath{ "./empty", {} },
+            TestInputPath{ "folder", {} },
+            TestInputPath{ "./folder", {} },
+            TestInputPath{ "folder/subfolder2", { "folder/subfolder2/frequency.xlsx" } },
+            TestInputPath{ "./folder/subfolder2", { "frequency.xlsx" } }
         );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "*.xlsx" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.xlsx" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
     SECTION( "Only PNG files (no matching file)" ) {
-        const auto testDirectory = GENERATE( as < fs::path > {},
+        const auto testInput = GENERATE( as < fs::path > {},
                                               ".",
                                               "empty",
                                               "./empty",
@@ -1185,27 +1172,24 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                               "folder/subfolder2",
                                               "./folder/subfolder2" );
 
-        DYNAMIC_SECTION ( "Indexing directory " << testDirectory ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory, BIT7Z_STRING( "*.png" ),
+        DYNAMIC_SECTION ( "Indexing directory " << testInput ) {
+            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput, BIT7Z_STRING( "*.png" ),
                                                           FilterPolicy::Include, options ) );
             REQUIRE( itemsVector.size() == 0 );
         }
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             ".",
             {
                 "dot.folder",
@@ -1224,9 +1208,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "empty", { "empty" } },
-        TestDirectory{ "./empty", { "empty" } },
-        TestDirectory{
+        TestInputPath{ "empty", { "empty" } },
+        TestInputPath{ "./empty", { "empty" } },
+        TestInputPath{
             "folder",
             {
                 "folder",
@@ -1238,7 +1222,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder",
             {
                 "folder",
@@ -1250,7 +1234,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "folder/subfolder2",
             {
                 "folder/subfolder2",
@@ -1259,7 +1243,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder/subfolder2",
             {
                 "subfolder2",
@@ -1270,25 +1254,22 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
         }
     );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "" ),
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             "../test_filesystem",
             {
                 "test_filesystem",
@@ -1308,8 +1289,8 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
                 "test_filesystem/folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "../test_filesystem/empty", { "empty" } },
-        TestDirectory{
+        TestInputPath{ "../test_filesystem/empty", { "empty" } },
+        TestInputPath{
             "../test_filesystem/folder",
             {
                 "folder",
@@ -1321,7 +1302,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "../test_filesystem/folder/subfolder2",
             {
                 "subfolder2",
@@ -1332,27 +1313,24 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
         }
     );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path ) );
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recursively)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             "../test_filesystem",
             {
                 "test_filesystem",
@@ -1372,8 +1350,8 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
                 "test_filesystem/folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "../test_filesystem/empty", { "empty" } },
-        TestDirectory{
+        TestInputPath{ "../test_filesystem/empty", { "empty" } },
+        TestInputPath{
             "../test_filesystem/folder",
             {
                 "folder",
@@ -1385,7 +1363,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "../test_filesystem/folder/subfolder2",
             {
                 "subfolder2",
@@ -1396,25 +1374,22 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
         }
     );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testDirectory.path, BIT7Z_STRING( "" ),
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
+        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             ".",
             {
                 "custom_folder",
@@ -1434,9 +1409,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "empty", { "custom_folder" } },
-        TestDirectory{ "./empty", { "custom_folder" } },
-        TestDirectory{
+        TestInputPath{ "empty", { "custom_folder" } },
+        TestInputPath{ "./empty", { "custom_folder" } },
+        TestInputPath{
             "folder",
             {
                 "custom_folder",
@@ -1448,7 +1423,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder",
             {
                 "custom_folder",
@@ -1460,7 +1435,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "folder/subfolder2",
             {
                 "custom_folder",
@@ -1469,7 +1444,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder/subfolder2",
             {
                 "custom_folder",
@@ -1478,7 +1453,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "../test_filesystem/folder/subfolder2",
             {
                 "custom_folder",
@@ -1487,7 +1462,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             fs::absolute( "../test_filesystem/folder/subfolder2" ),
             {
                 "custom_folder",
@@ -1497,27 +1472,24 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
             }
         } );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
         const std::map< bit7z::tstring, bit7z::tstring > pathMap{
-            { testDirectory.path.string< bit7z::tchar >(), BIT7Z_STRING( "custom_folder" ) }
+            { testInput.path.string< bit7z::tchar >(), BIT7Z_STRING( "custom_folder" ) }
         };
         REQUIRE_NOTHROW( itemsVector.indexPathsMap( pathMap ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mapping)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
-    const auto testDirectory = GENERATE(
-        TestDirectory{
+    const auto testInput = GENERATE(
+        TestInputPath{
             ".",
             {
                 "dot.folder",
@@ -1536,9 +1508,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{ "empty", { "empty" } },
-        TestDirectory{ "./empty", { "empty" } },
-        TestDirectory{
+        TestInputPath{ "empty", { "empty" } },
+        TestInputPath{ "./empty", { "empty" } },
+        TestInputPath{
             "folder",
             {
                 "folder",
@@ -1550,7 +1522,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder",
             {
                 "folder",
@@ -1562,7 +1534,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "folder/subfolder2",
             {
                 "folder/subfolder2",
@@ -1571,7 +1543,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "./folder/subfolder2",
             {
                 "subfolder2",
@@ -1580,7 +1552,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             "../test_filesystem/folder/subfolder2",
             {
                 "subfolder2",
@@ -1589,7 +1561,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
                 "subfolder2/frequency.xlsx"
             }
         },
-        TestDirectory{
+        TestInputPath{
             fs::absolute( "../test_filesystem/folder/subfolder2" ),
             {
                 "subfolder2",
@@ -1599,32 +1571,29 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
             }
         } );
 
-    DYNAMIC_SECTION ( "Indexing directory " << testDirectory.path ) {
+    DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
         const std::map< bit7z::tstring, bit7z::tstring > pathMap{
-            { testDirectory.path.string< bit7z::tchar >(), BIT7Z_STRING( "" ) }
+            { testInput.path.string< bit7z::tchar >(), BIT7Z_STRING( "" ) }
         };
         REQUIRE_NOTHROW( itemsVector.indexPathsMap( pathMap ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testDirectory.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
-struct TestPaths {
+struct TestInputPaths {
     vector< bit7z::tstring > inputPaths;
     vector< fs::path > expectedItems;
 };
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
     const auto testInput = GENERATE(
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "Lorem Ipsum.pdf" ),
                 BIT7Z_STRING( "folder/clouds.jpg" ),
@@ -1636,7 +1605,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "italy.svg" ),
                 BIT7Z_STRING( "dot.folder/hello.json" ),
@@ -1651,7 +1620,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "dot.folder" ),
                 BIT7Z_STRING( "empty" ),
@@ -1676,13 +1645,10 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structure)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.retainFolderStructure = true;
@@ -1690,7 +1656,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
     BitItemsVector itemsVector;
 
     const auto testInput = GENERATE(
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "Lorem Ipsum.pdf" ),
                 BIT7Z_STRING( "folder/clouds.jpg" ),
@@ -1702,7 +1668,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "italy.svg" ),
                 BIT7Z_STRING( "dot.folder/hello.json" ),
@@ -1717,7 +1683,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "dot.folder" ),
                 BIT7Z_STRING( "empty" ),
@@ -1742,13 +1708,10 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.onlyFiles = true;
@@ -1756,7 +1719,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
     BitItemsVector itemsVector;
 
     const auto testInput = GENERATE(
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "Lorem Ipsum.pdf" ),
                 BIT7Z_STRING( "folder/clouds.jpg" ),
@@ -1768,7 +1731,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "italy.svg" ),
                 BIT7Z_STRING( "dot.folder/hello.json" ),
@@ -1783,7 +1746,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "dot.folder" ),
                 BIT7Z_STRING( "empty" ),
@@ -1806,13 +1769,10 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     IndexingOptions options{};
     options.recursive = false;
@@ -1820,7 +1780,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bit
     BitItemsVector itemsVector;
 
     const auto testInput = GENERATE(
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "Lorem Ipsum.pdf" ),
                 BIT7Z_STRING( "folder/clouds.jpg" ),
@@ -1832,7 +1792,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bit
                 "folder/subfolder2/frequency.xlsx"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "italy.svg" ),
                 BIT7Z_STRING( "dot.folder/hello.json" ),
@@ -1843,7 +1803,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bit
                 "dot.folder/hello.json"
             }
         },
-        TestPaths{
+        TestInputPaths{
             {
                 BIT7Z_STRING( "dot.folder" ),
                 BIT7Z_STRING( "empty" ),
@@ -1857,8 +1817,6 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bit
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a directory as a file should fail", "[bititemsvector]" ) {
@@ -1882,8 +1840,7 @@ struct TestFile {
 };
 
 TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1931,8 +1888,6 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 #endif
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput.inputFile ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
@@ -1942,8 +1897,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 #endif
 
 TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -1975,13 +1929,10 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
 #endif
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -2004,13 +1955,10 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
         REQUIRE( itemsVector[ 0 ].path() == BIT7Z_STRING( "custom_name.ext" ) );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    static const TestDirectory testDir{ test_filesystem_dir };
 
     BitItemsVector itemsVector;
 
@@ -2033,6 +1981,4 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
         REQUIRE( itemsVector[ 0 ].path() == BIT7Z_STRING( "custom_name.ext" ) );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
-
-    REQUIRE( set_current_dir( oldCurrentDir ) );
 }

@@ -207,7 +207,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         static auto isOpenEncryptedError( std::error_code error ) -> bool;
 };
 
-using BitArchiveInfo BIT7Z_MAYBE_UNUSED BIT7Z_DEPRECATED_MSG("Since v4.0; please use BitArchiveReader.") = BitArchiveReader;
+BIT7Z_DEPRECATED_TYPEDEF( BitArchiveInfo, BitArchiveReader, "Since v4.0; please use BitArchiveReader." );
 
 }  // namespace bit7z
 

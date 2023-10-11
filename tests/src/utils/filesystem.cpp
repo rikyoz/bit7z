@@ -150,6 +150,14 @@ auto empty_content() -> const ArchiveContent& {
     return instance;
 }
 
+TestDirectory::TestDirectory( const fs::path& testDir ) : mOldCurrentDirectory{ current_dir() } {
+    set_current_dir( testDir );
+}
+
+TestDirectory::~TestDirectory() {
+    set_current_dir( mOldCurrentDirectory );
+}
+
 } // namespace filesystem
 } // namespace test
 } // namespace bit7z

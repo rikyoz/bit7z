@@ -137,6 +137,22 @@ auto encrypted_content() -> const ArchiveContent&;
 
 auto empty_content() -> const ArchiveContent&;
 
+class TestDirectory {
+        fs::path mOldCurrentDirectory;
+    public:
+        explicit TestDirectory( const fs::path& testDir );
+
+        explicit TestDirectory( const TestDirectory& ) = delete;
+
+        explicit TestDirectory( TestDirectory&& ) = delete;
+
+        auto operator=( const TestDirectory& ) -> TestDirectory& = delete;
+
+        auto operator=( TestDirectory&& ) -> TestDirectory& = delete;
+
+        ~TestDirectory();
+};
+
 #endif
 
 } // namespace filesystem

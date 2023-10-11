@@ -16,11 +16,18 @@ set( SOURCE_FILES
 # public API test sources
 set( PUBLIC_API_SOURCE_FILES
      src/test_bit7zlibrary.cpp
+     src/test_bitarchiveeditor.cpp
      src/test_bitarchivereader.cpp
+     src/test_bitarchivewriter.cpp
      src/test_biterror.cpp
      src/test_bitexception.cpp
      src/test_bitfilecompressor.cpp
-     src/test_bitpropvariant.cpp )
+     src/test_bitfileextractor.cpp
+     src/test_bitmemcompressor.cpp
+     src/test_bitmemextractor.cpp
+     src/test_bitpropvariant.cpp
+     src/test_bitstreamcompressor.cpp
+     src/test_bitstreamextractor.cpp )
 
 # internal API sources
 set( INTERNAL_API_SOURCE_FILES
@@ -122,10 +129,6 @@ endif()
 if( MSVC )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
     target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE /utf-8 )
-
-    # Needed by MSVC for defining the S_XXXX macros (used in BitArchiveReader tests)
-    target_compile_definitions( ${TESTS_TARGET} PRIVATE _CRT_INTERNAL_NONSTDC_NAMES=1 )
-    target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE _CRT_INTERNAL_NONSTDC_NAMES=1 )
 endif()
 
 if( WIN32 )

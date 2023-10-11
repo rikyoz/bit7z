@@ -17,10 +17,10 @@
 #ifdef _WIN32
 #ifdef BIT7Z_USE_SYSTEM_CODEPAGE
 #define CODEPAGE CP_ACP
-#define CODEPAGE_FLAGS 0
+#define CODEPAGE_WC_FLAGS WC_NO_BEST_FIT_CHARS
 #else
 #define CODEPAGE CP_UTF8
-#define CODEPAGE_FLAGS WC_NO_BEST_FIT_CHARS
+#define CODEPAGE_WC_FLAGS 0
 #endif
 #else
 #ifndef BIT7Z_USE_STANDARD_FILESYSTEM
@@ -46,7 +46,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
     }
 #ifdef _WIN32
     const int narrowStringSize = WideCharToMultiByte( CODEPAGE,
-                                                      CODEPAGE_FLAGS,
+                                                      CODEPAGE_WC_FLAGS,
                                                       wideString,
                                                       static_cast< int >( size ),
                                                       nullptr,
@@ -59,7 +59,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 
     std::string result( narrowStringSize, 0 );
     WideCharToMultiByte( CODEPAGE,
-                         CODEPAGE_FLAGS,
+                         CODEPAGE_WC_FLAGS,
                          wideString,
                          -1,
                          &result[ 0 ],  // NOLINT(readability-container-data-pointer)
@@ -79,10 +79,11 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
 
 auto widen( const std::string& narrowString ) -> std::wstring {
 #ifdef _WIN32
+    const int narrowStringSize = static_cast< int >( narrowString.size() );
     const int wideStringSize = MultiByteToWideChar( CODEPAGE,
                                                     0,
                                                     narrowString.c_str(),
-                                                    static_cast< int >( narrowString.size() ),
+                                                    narrowStringSize,
                                                     nullptr,
                                                     0 );
     if ( wideStringSize == 0 ) {
@@ -93,7 +94,7 @@ auto widen( const std::string& narrowString ) -> std::wstring {
     MultiByteToWideChar( CODEPAGE,
                          0,
                          narrowString.c_str(),
-                         static_cast< int >( narrowString.size() ),
+                         narrowStringSize,
                          &result[ 0 ], // NOLINT(readability-container-data-pointer)
                          wideStringSize );
     return result;
