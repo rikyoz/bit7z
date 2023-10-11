@@ -129,10 +129,6 @@ endif()
 if( MSVC )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
     target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE /utf-8 )
-
-    # Needed by MSVC for defining the S_XXXX macros (used in BitArchiveReader tests)
-    target_compile_definitions( ${TESTS_TARGET} PRIVATE _CRT_INTERNAL_NONSTDC_NAMES=1 )
-    target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE _CRT_INTERNAL_NONSTDC_NAMES=1 )
 endif()
 
 if( WIN32 )
