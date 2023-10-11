@@ -142,17 +142,17 @@ struct SingleFileArchive : public TestInputArchive {
 class InputArchiveProxy {
         const fs::path& mPath;
     public:
-        InputArchiveProxy( const fs::path& path ) : mPath{ path } {}
+        explicit InputArchiveProxy( const fs::path& path ) : mPath{ path } {}
 
-        operator tstring() const {
+        operator tstring() const { // NOLINT(*-explicit-constructor)
             return path_to_tstring( mPath );
         }
 
-        operator buffer_t() const {
+        operator buffer_t() const { // NOLINT(*-explicit-constructor)
             return load_file( mPath );
         }
 
-        operator std::ifstream() const {
+        operator std::ifstream() const { // NOLINT(*-explicit-constructor)
             return std::ifstream{ mPath, std::ios::binary };
         }
 };
