@@ -26,21 +26,43 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
         REQUIRE( narrow( nullptr, 42 ).empty() );
     }
 
-    std::wstring testInput;
-    std::string testOutput;
-    std::tie( testInput, testOutput ) = GENERATE( table< const wchar_t*, const char* >(
-        {
-            NARROWING_TEST_STR( "" ),
-            NARROWING_TEST_STR( "h" ),
-            NARROWING_TEST_STR( "hello world!" ),
-            NARROWING_TEST_STR( "supercalifragilistichespiralidoso" ),
-            NARROWING_TEST_STR( "perché" ),
-            NARROWING_TEST_STR( "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" ) // メタルガルルモン
-        }
-    ) );
+#if !defined( _LIBCPP_VERSION )
+    SECTION( "Converting wide strings with unencodable UTF-8 chars" ) {
+        std::wstring testInput = L"\xDC80";
+        std::string testOutput = narrow( testInput.c_str(), testInput.size() );
+#if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+        REQUIRE( testOutput == "\uFFFD" );
+#else
+        REQUIRE( testOutput == "\xED\xB2\x80" );
+#endif
 
-    DYNAMIC_SECTION( "Converting L\"" << testOutput << "\" to narrow string" ) {
-        REQUIRE( narrow( testInput.c_str(), testInput.size() ) == testOutput );
+        testInput = L"\xD843";
+        testOutput = narrow( testInput.c_str(), testInput.size() );
+#if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+        REQUIRE( testOutput == "\uFFFD" );
+#else
+        REQUIRE( testOutput == "\xED\xA1\x83" );
+#endif
+    }
+#endif
+
+    SECTION( "Converting wide strings without unencodable UTF-8 characters" ) {
+        std::wstring testInput;
+        std::string testOutput;
+        std::tie( testInput, testOutput ) = GENERATE( table< const wchar_t*, const char* >(
+            {
+                NARROWING_TEST_STR( "" ),
+                NARROWING_TEST_STR( "h" ),
+                NARROWING_TEST_STR( "hello world!" ),
+                NARROWING_TEST_STR( "supercalifragilistichespiralidoso" ),
+                NARROWING_TEST_STR( "perché" ),
+                NARROWING_TEST_STR( "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" ) // メタルガルルモン
+            }
+        ) );
+
+        DYNAMIC_SECTION( "Converting L\"" << testOutput << "\" to narrow string" ) {
+            REQUIRE( narrow( testInput.c_str(), testInput.size() ) == testOutput );
+        }
     }
 }
 
