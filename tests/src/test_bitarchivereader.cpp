@@ -23,7 +23,7 @@
 #include <internal/windows.hpp>
 
 // Needed by MSVC for defining the S_XXXX macros.
-#ifndef _CRT_INTERNAL_NONSTDC_NAMES
+#ifndef _CRT_INTERNAL_NONSTDC_NAMES // NOLINT(*-reserved-identifier)
 #define _CRT_INTERNAL_NONSTDC_NAMES 1
 #endif
 
@@ -143,29 +143,26 @@ struct SingleFileArchive : public TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, single_file_content() } {}
 };
 
-class InputArchiveProxy {
-        const fs::path& mPath;
-    public:
-        explicit InputArchiveProxy( const fs::path& path ) : mPath{ path } {}
+using stream_t = fs::ifstream;
 
-        operator tstring() const { // NOLINT(*-explicit-constructor)
-            return path_to_tstring( mPath );
-        }
+// Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
+void getInputArchive( const fs::path& path, tstring& archive ) {
+    archive = path_to_tstring( path );
+}
 
-        operator buffer_t() const { // NOLINT(*-explicit-constructor)
-            return load_file( mPath );
-        }
+void getInputArchive( const fs::path& path, buffer_t& archive ) {
+    archive = load_file( path );
+}
 
-        operator std::ifstream() const { // NOLINT(*-explicit-constructor)
-            return std::ifstream{ mPath, std::ios::binary };
-        }
-};
+void getInputArchive( const fs::path& path, stream_t& archive ) {
+    archive.open( path, std::ios::binary );
+}
 
 template< typename T >
 using is_filesystem_archive = std::is_same< bit7z::tstring, std::decay_t< T > >;
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single file",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -187,7 +184,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const auto arcFileName = fs::path{ clouds.name }.concat( "." + testArchive.extension() );
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -207,7 +205,7 @@ struct MultipleFilesArchive : public TestInputArchive {
 };
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple files",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -223,7 +221,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_files." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -243,7 +242,7 @@ struct MultipleItemsArchive : public TestInputArchive {
 };
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files and folders)",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -260,7 +259,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -280,7 +280,7 @@ struct EncryptedArchive : public TestInputArchive {
 };
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -297,7 +297,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "encrypted." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
 
         SECTION( "BitArchiveReader::isHeaderEncrypted must return false" ){
             REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
@@ -327,7 +328,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
 
 /* Pull request #36 */
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -342,7 +343,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "header_encrypted." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
 
         SECTION( "BitArchiveReader::isHeaderEncrypted must return true" ){
             REQUIRE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
@@ -445,7 +447,7 @@ struct EmptyArchive : public TestInputArchive {
 };
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -459,7 +461,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "empty." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
@@ -548,7 +551,7 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
     } while ( false )
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -565,7 +568,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
 
         const auto archiveItems = info.items();
@@ -581,7 +585,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
 }
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -599,14 +603,15 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "ko_test." + testArchive.extension();
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testArchive.format() );
         REQUIRE_THROWS( info.test() );
     }
 }
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should throw",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -644,7 +649,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format s
 
         if ( correctFormat.extension != wrongFormat.extension ) {
             DYNAMIC_SECTION( "Wrong format: " << wrongFormat.extension ) {
-                TestType inputArchive = InputArchiveProxy{ arcFileName };
+                TestType inputArchive{};
+                getInputArchive( arcFileName, inputArchive );
                 REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, wrongFormat.format ) );
             }
         }
@@ -760,7 +766,7 @@ constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
     } while ( false )
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -775,7 +781,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "file_type." + testFormat.extension;
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testFormat.format );
         REQUIRE_ITEM_DIRECTORY( info, "dir" );
         REQUIRE_ITEM_REGULAR( info, "regular" );
@@ -807,7 +814,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
     } while ( false )
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
@@ -822,7 +829,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "unicode." + testFormat.extension;
 
-        TestType inputArchive = InputArchiveProxy{ arcFileName };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( lib, inputArchive, testFormat.format );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
@@ -832,14 +840,15 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
 }
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name",
-                    "[bitarchivereader]", tstring, buffer_t, std::ifstream ) {
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
     fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
-    TestType inputArchive = InputArchiveProxy{ arcFileName };
+    TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
     const BitArchiveReader info( lib, inputArchive, BitFormat::SevenZip );
     REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
     REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
