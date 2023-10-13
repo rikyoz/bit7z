@@ -22,6 +22,7 @@ jobs:
         c_compiler: [gcc, clang, cl]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
+        bit7z_link_libcpp: [OFF, ON]
         bit7z_use_native_string: [OFF, ON]
         bit7z_auto_prefix_long_paths: [OFF, ON]
         bit7z_use_system_codepage: [OFF, ON]
@@ -52,8 +53,13 @@ jobs:
             c_compiler: gcc
           - os: windows-latest
             c_compiler: clang
+          - os: windows-latest
+            bit7z_link_libcpp: ON
           - os: ubuntu-latest
             c_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: gcc
+            bit7z_link_libcpp: ON
           - os: ubuntu-latest
             bit7z_use_native_string: ON
           - os: ubuntu-latest
@@ -64,6 +70,9 @@ jobs:
             bit7z_path_sanitization: ON
           - os: macos-latest
             c_compiler: cl
+          - os: macos-latest
+            c_compiler: gcc
+            bit7z_link_libcpp: ON
           - os: macos-latest
             bit7z_use_native_string: ON
           - os: macos-latest
@@ -96,6 +105,7 @@ jobs:
         -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }}
         -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }}
         -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }}
+        -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
         -DBIT7Z_USE_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }}
         -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }}
         -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }}
