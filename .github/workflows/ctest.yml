@@ -79,7 +79,7 @@ jobs:
       
     - name: Build 7z.so for tests
       shell: bash
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os != 'windows-latest'
       run: |
         git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
         cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
