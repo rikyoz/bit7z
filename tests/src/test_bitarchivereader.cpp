@@ -159,7 +159,7 @@ void getInputArchive( const fs::path& path, stream_t& archive ) {
 }
 
 template< typename T >
-using is_filesystem_archive = std::is_same< bit7z::tstring, std::decay< T >::type >;
+using is_filesystem_archive = std::is_same< bit7z::tstring, typename std::decay< T >::type >;
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single file",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
