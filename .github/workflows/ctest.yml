@@ -106,7 +106,7 @@ jobs:
         -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }}
         -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }}
         -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
-        -DBIT7Z_USE_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }}
+        -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }}
         -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }}
         -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }}
         -S ${{ github.workspace }}
