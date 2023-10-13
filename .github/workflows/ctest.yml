@@ -77,7 +77,7 @@ jobs:
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }}
       
-    - name: Build 7z.so for tests
+    - name: Build 7z.so for tests (Ubuntu)
       shell: bash
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -86,7 +86,7 @@ jobs:
         make -j -f ../../cmpl_gcc.mak
         cp b/g/7z.so ${{ github.workspace }}/bin/x64/7z.so
         
-    - name: Build 7z.so for tests
+    - name: Build 7z.so for tests (macOS)
       shell: bash
       if: matrix.os == 'macos-latest'
       run: |
