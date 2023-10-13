@@ -54,24 +54,24 @@ jobs:
             c_compiler: clang
           - os: ubuntu-latest
             c_compiler: cl
-          - os: ubuntu-latest  
-            bit7z_use_native_string: OFF
-          - os: ubuntu-latest  
-            bit7z_auto_prefix_long_paths: OFF
-          - os: ubuntu-latest  
-            bit7z_use_system_codepage: OFF
-          - os: ubuntu-latest  
-            bit7z_path_sanitization: OFF
+          - os: ubuntu-latest
+            bit7z_use_native_string: ON
+          - os: ubuntu-latest
+            bit7z_auto_prefix_long_paths: ON
+          - os: ubuntu-latest
+            bit7z_use_system_codepage: ON
+          - os: ubuntu-latest
+            bit7z_path_sanitization: ON
           - os: macos-latest
             c_compiler: cl
-          - os: macos-latest  
-            bit7z_use_native_string: OFF
-          - os: macos-latest  
-            bit7z_auto_prefix_long_paths: OFF
-          - os: macos-latest  
-            bit7z_use_system_codepage: OFF
-          - os: macos-latest  
-            bit7z_path_sanitization: OFF
+          - os: macos-latest
+            bit7z_use_native_string: ON
+          - os: macos-latest
+            bit7z_auto_prefix_long_paths: ON
+          - os: macos-latest
+            bit7z_use_system_codepage: ON
+          - os: macos-latest
+            bit7z_path_sanitization: ON
 
     steps:
     - uses: actions/checkout@v3
