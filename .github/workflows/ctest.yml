@@ -27,10 +27,6 @@ jobs:
             c_compiler: cl
             cpp_compiler: cl
             use_system_7zip: ON
-          - os: windows-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            use_system_7zip: ON
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
@@ -48,6 +44,8 @@ jobs:
             cpp_compiler: clang++
             use_system_7zip: OFF
         exclude:
+          - os: windows-latest
+            c_compiler: gcc
           - os: windows-latest
             c_compiler: clang
           - os: ubuntu-latest
