@@ -22,6 +22,10 @@ jobs:
         c_compiler: [gcc, clang, cl]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
+        bit7z_use_native_string: [OFF, ON]
+        bit7z_auto_prefix_long_paths: [OFF, ON]
+        bit7z_use_system_codepage: [OFF, ON]
+        bit7z_path_sanitization: [OFF, ON]
         include:
           - os: windows-latest
             c_compiler: cl
@@ -50,8 +54,24 @@ jobs:
             c_compiler: clang
           - os: ubuntu-latest
             c_compiler: cl
+          - os: ubuntu-latest  
+            bit7z_use_native_string: OFF
+          - os: ubuntu-latest  
+            bit7z_auto_prefix_long_paths: OFF
+          - os: ubuntu-latest  
+            bit7z_use_system_codepage: OFF
+          - os: ubuntu-latest  
+            bit7z_path_sanitization: OFF
           - os: macos-latest
             c_compiler: cl
+          - os: macos-latest  
+            bit7z_use_native_string: OFF
+          - os: macos-latest  
+            bit7z_auto_prefix_long_paths: OFF
+          - os: macos-latest  
+            bit7z_use_system_codepage: OFF
+          - os: macos-latest  
+            bit7z_path_sanitization: OFF
 
     steps:
     - uses: actions/checkout@v3
@@ -75,6 +95,10 @@ jobs:
         -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.use_system_7zip }}
         -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }}
         -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }}
+        -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }}
+        -DBIT7Z_USE_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }}
+        -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }}
+        -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }}
         -S ${{ github.workspace }}
 
     - name: Build bit7z
