@@ -136,6 +136,9 @@ jobs:
 
     - name: Test bit7z
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
+      env:
+        ASAN_OPTIONS: alloc_dealloc_mismatch=0
       # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-config ${{ matrix.build_type }} --output-on-failure
