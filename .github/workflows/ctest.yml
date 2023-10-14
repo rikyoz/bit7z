@@ -1,16 +1,15 @@
 # This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
 # See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: Test bit7z on multiple platforms
-
-on:
-  push:
-    branches: [ "feature/github-actions" ]
-  pull_request:
-    branches: [ "master" ]
+name: Test bit7z on multiple configurations
+on: [pull_request, push]
 
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    if: |
+      github.event_name == 'pull_request'
+      || contains(github.event.head_commit.message, '[test]')
+      || startsWith(github.ref, 'refs/tags/v')
 
     strategy:
       # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
