@@ -101,6 +101,7 @@ jobs:
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
         -DBIT7Z_BUILD_TESTS=ON
+        -DBIT7Z_ENABLE_SANITIZERS=ON
         -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.use_system_7zip }}
         -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }}
         -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }}

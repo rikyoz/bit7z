@@ -228,6 +228,9 @@ if( UNIX )
     target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
 
+# sanitizers
+include( cmake/Sanitizers.cmake )
+
 # tests
 if( BIT7Z_BUILD_TESTS )
     enable_testing()
