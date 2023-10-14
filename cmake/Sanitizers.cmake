@@ -32,12 +32,6 @@ if ( BIT7Z_ENABLE_SANITIZERS )
             set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_DEBUG} -fstack-protector" )
         endif()
 
-        # For some reasons, using the leak sanitizer on Clang 14 gives lots of 'undefined reference'
-        # issues during linking... ¯\_(ツ)_/¯
-        if( NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
-            add_sanitizer( leak )
-        endif()
-
         # For some reasons, the address sanitizer gives a CHECK failed error on versions of Clang before the 3.9
         # Also, on old versions of GCC the sanitizer give some false positives.
         if( ( NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "5.0" ) OR
@@ -52,6 +46,7 @@ if ( BIT7Z_ENABLE_SANITIZERS )
         add_sanitizer( float-divide-by-zero )
         add_sanitizer( implicit-conversion )
         add_sanitizer( integer )
+        add_sanitizer( leak )
         add_sanitizer( local-bounds )
         add_sanitizer( nullability )
         add_sanitizer( undefined )
