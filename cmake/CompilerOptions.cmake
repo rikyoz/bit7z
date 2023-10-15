@@ -122,6 +122,6 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0 )
         # Extra warning flags for GCC 7.0+
-        target_compile_options( ${LIB_TARGET} PRIVATE -Wduplicated-branches )
+        target_compile_options( ${LIB_TARGET} PRIVATE -Wduplicated-branches -Wrestrict )
     endif()
 endif()
