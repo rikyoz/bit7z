@@ -106,7 +106,7 @@ auto method_name( BitCompressionMethod method ) noexcept -> const wchar_t* {
         case BitCompressionMethod::Deflate64:
             return L"Deflate64";
         default:
-            return L"Unknown"; //this should not happen!
+            return L"Unknown"; // This should not happen.
     }
 }
 
@@ -216,7 +216,7 @@ void BitAbstractArchiveCreator::setCompressionMethod( BitCompressionMethod metho
     if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) ) {
         /* even though the compression method is valid, we set it only if the format supports
          * different methods than the default one (i.e., setting BitCompressionMethod::BZip2
-         * of a BitFormat::BZip2 archive does nothing!) */
+         * of a BitFormat::BZip2 archive does nothing) */
         mCompressionMethod = method;
         mDictionarySize = 0; //reset dictionary size to default value for the method
         mWordSize = 0; //reset word size to default value for the method
