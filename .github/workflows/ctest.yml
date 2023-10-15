@@ -71,7 +71,6 @@ jobs:
             c_compiler: cl
           - os: macos-latest
             c_compiler: gcc
-            bit7z_link_libcpp: ON
           - os: macos-latest
             bit7z_use_native_string: ON
           - os: macos-latest
