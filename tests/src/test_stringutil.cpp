@@ -17,7 +17,7 @@
 
 #define NARROWING_TEST_STR( str ) std::make_tuple( L##str, (str) )
 
-TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
+TEST_CASE( "util: Narrowing wide string to std::string", "[stringutil][narrow]" ) {
     using bit7z::narrow;
 
     SECTION( "Converting from nullptr C wide string" ) {
@@ -67,7 +67,7 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[util][narrow]" ) {
 
 #define WIDENING_TEST_STR( str ) std::make_tuple( (str), L##str )
 
-TEST_CASE( "util: Widening narrow string to std::wstring", "[util][widen]" ) {
+TEST_CASE( "util: Widening narrow string to std::wstring", "[stringutil][widen]" ) {
     using bit7z::widen;
     using std::make_tuple;
 
