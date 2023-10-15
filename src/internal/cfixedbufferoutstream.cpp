@@ -17,54 +17,6 @@
 #include "internal/cfixedbufferoutstream.hpp"
 #include "internal/util.hpp"
 
-/* Safe integer comparison like in C++20 */
-#ifdef __cpp_if_constexpr
-
-template< class T, class U >
-constexpr auto cmp_less( T first, U second ) noexcept -> bool {
-    using UT = std::make_unsigned_t< T >;
-    using UU = std::make_unsigned_t< U >;
-    if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
-        return first < second;
-    } else if constexpr ( std::is_signed< T >::value ) {
-        return first < 0 || UT( first ) < second;
-    } else {
-        return second >= 0 && first < UU( second );
-    }
-}
-
-#else // SFINAE implementation for C++14
-
-template< class T, class U >
-constexpr auto
-cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, bool > {
-    return t < u;
-}
-
-template< class T, class U >
-constexpr auto
-cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool > {
-    return t < 0 || std::make_unsigned_t< T >( t ) < u;
-}
-
-template< class T, class U >
-constexpr auto
-cmp_less( T t, U u ) noexcept -> std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool > {
-    return u >= 0 && t < std::make_unsigned_t< U >( u );
-}
-
-#endif
-
-template< class T, class U >
-constexpr auto cmp_greater( T first, U second ) noexcept -> bool {
-    return cmp_less( second, first ); // NOLINT(*-suspicious-call-argument)
-}
-
-template< class T, class U >
-constexpr auto cmp_greater_equal( T first, U second ) noexcept -> bool {
-    return !cmp_less( first, second );
-}
-
 namespace bit7z {
 
 CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
