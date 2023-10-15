@@ -12,7 +12,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 #if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
 #include "internal/fsutil.hpp"

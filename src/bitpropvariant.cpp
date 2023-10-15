@@ -14,11 +14,12 @@
 #include "biterror.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/dateutil.hpp"
+#include "internal/windows.hpp"
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 #define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, SysStringLen( bstr ) )
 #endif
 

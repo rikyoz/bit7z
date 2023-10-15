@@ -16,8 +16,8 @@
 #include "internal/archiveproperties.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
-#include "internal/fsutil.hpp"
 #include "internal/genericinputitem.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
 

@@ -18,7 +18,7 @@
 #include "internal/fsitem.hpp"
 #include "internal/renameditem.hpp"
 #include "internal/stdinputitem.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 namespace bit7z {
 

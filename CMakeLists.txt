@@ -95,6 +95,7 @@ set( HEADERS
      src/internal/stdinputitem.hpp
      src/internal/streamextractcallback.hpp
      src/internal/streamutil.hpp
+     src/internal/stringutil.hpp
      src/internal/updatecallback.hpp
      src/internal/util.hpp
      src/internal/windows.hpp )
@@ -156,8 +157,8 @@ set( SOURCES
      src/internal/renameditem.cpp
      src/internal/stdinputitem.cpp
      src/internal/streamextractcallback.cpp
+     src/internal/stringutil.cpp
      src/internal/updatecallback.cpp
-     src/internal/util.cpp
      src/internal/windows.cpp )
 
 # library output file name options

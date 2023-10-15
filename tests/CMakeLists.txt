@@ -37,6 +37,7 @@ set( INTERNAL_API_SOURCE_FILES
      src/test_dateutil.cpp
      src/test_fsutil.cpp
      src/test_util.cpp
+     src/test_stringutil.cpp
      src/test_windows.cpp
      src/test_formatdetect.cpp )
 

@@ -19,11 +19,11 @@
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
-#include <internal/util.hpp>
+#include <internal/stringutil.hpp>
 #include <internal/windows.hpp>
 
 // Needed by MSVC for defining the S_XXXX macros.
-#ifndef _CRT_INTERNAL_NONSTDC_NAMES // NOLINT(*-reserved-identifier)
+#ifndef _CRT_INTERNAL_NONSTDC_NAMES // NOLINT(*-reserved-identifier, *-dcl37-c)
 #define _CRT_INTERNAL_NONSTDC_NAMES 1
 #endif
 
@@ -469,6 +469,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
         } else {
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
+        REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
         REQUIRE_ARCHIVE_TESTS( info );
     }

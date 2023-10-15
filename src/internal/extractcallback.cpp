@@ -15,7 +15,7 @@
 #include "bitexception.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/operationcategory.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 namespace bit7z {
 

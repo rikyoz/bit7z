@@ -14,6 +14,7 @@
 #include "internal/bufferextractcallback.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/fs.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
 using namespace std;

@@ -15,7 +15,7 @@
 #include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
 #include "internal/stdinputitem.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 using namespace bit7z;
 using filesystem::FilesystemItem;

@@ -12,9 +12,10 @@
 
 #include <locale>
 
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 #ifdef _WIN32
+#include <Windows.h>
 #ifdef BIT7Z_USE_SYSTEM_CODEPAGE
 #define CODEPAGE CP_ACP
 #define CODEPAGE_WC_FLAGS WC_NO_BEST_FIT_CHARS

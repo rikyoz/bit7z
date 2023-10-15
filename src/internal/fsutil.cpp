@@ -23,7 +23,7 @@
 #endif
 
 #include "internal/fsutil.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 using namespace std;
 
