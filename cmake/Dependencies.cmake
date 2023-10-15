@@ -1,11 +1,14 @@
 # Downloading the CPM.cmake package manager
-set( CPM_DOWNLOAD_VERSION 0.38.5 )
+set( CPM_DOWNLOAD_VERSION 0.38.6 )
+set( CPM_DOWNLOAD_HASH 11c3fa5f1ba14f15d31c2fb63dbc8628ee133d81c8d764caad9a8db9e0bacb07 )
 set( CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake" )
-if( NOT ( EXISTS ${CPM_DOWNLOAD_LOCATION} ))
+if( NOT ( EXISTS ${CPM_DOWNLOAD_LOCATION} ) )
     message( STATUS "Downloading CPM.cmake to ${CPM_DOWNLOAD_LOCATION}" )
     file( DOWNLOAD
           https://github.com/cpm-cmake/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake
           ${CPM_DOWNLOAD_LOCATION}
+          SHOW_PROGRESS
+          EXPECTED_HASH SHA256=${CPM_DOWNLOAD_HASH}
     )
 endif()
 include( ${CPM_DOWNLOAD_LOCATION} )

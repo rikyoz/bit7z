@@ -340,7 +340,7 @@ struct OffsetSignature {
 #define bswap64 _byteswap_uint64
 #elif defined(__GNUC__) || defined(__clang__)
 //Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
-//      for checking the compiler version or using _has_builtin macro!
+//      for checking the compiler version or using the _has_builtin macro.
 #define bswap64 __builtin_bswap64
 #else
 static inline uint64_t bswap64( uint64_t x ) {
@@ -375,7 +375,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
             return *format;
         }
         signatureMask <<= kByteShift;    // left shifting the mask of one byte, so that
-        fileSignature &= signatureMask; // the least significant i bytes are masked (set to 0)
+        fileSignature &= signatureMask;  // the least significant i bytes are masked (set to 0)
     }
 
     static const OffsetSignature commonSignaturesWithOffset[] = { // NOLINT(*-avoid-c-arrays)
@@ -385,7 +385,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
         { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // Compress
         { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 0x7F 0x10 0xDA 0xBE
         { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // ustar
-        // Note: since GPT files contain also the FAT signature, GPT must be checked before!
+        /* Note: since GPT files contain also the FAT signature, we must check the GPT signature before the FAT one. */
         { 0x4546492050415254, 0x200, 8, BitFormat::GPT },    // EFI 0x20 PART
         { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat },    // U 0xAA
         { 0x4244000000000000, 0x400, 2, BitFormat::Hfs },    // BD
