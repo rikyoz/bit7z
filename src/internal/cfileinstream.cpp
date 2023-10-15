@@ -14,10 +14,6 @@
 #include "internal/cfileinstream.hpp"
 #include "internal/stringutil.hpp"
 
-#if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
-#include "internal/fsutil.hpp"
-#endif
-
 namespace bit7z {
 
 CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ), mBuffer{} {

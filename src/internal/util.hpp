@@ -17,10 +17,6 @@
 
 #include "internal/com.hpp"
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-#include "internal/fsutil.hpp"
-#endif
-
 namespace bit7z {
 
 constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {

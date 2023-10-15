@@ -35,7 +35,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, co
         return;
     }
 
-    if ( inArc.empty() ) { // No input file specified, so we are creating a totally new archive!
+    if ( inArc.empty() ) { // No input file specified, so we are creating a totally new archive.
         return;
     }
 
