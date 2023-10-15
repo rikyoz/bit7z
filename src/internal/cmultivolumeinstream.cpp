@@ -108,20 +108,23 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if adding the (negative) offset would result in the unsigned wrap around of the current position.
-    if ( offset < 0 && originPosition < static_cast< uint64_t >( -offset ) ) {
-        return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-    }
-
-    // Checking if adding the (positive) offset would result in the unsigned wrap around of the current position.
-    if ( offset > 0 ) {
+    // Checking if adding the offset would result in the unsigned wrap around of the current position.
+    if ( offset < 0 ) {
+        const auto positiveOffset = static_cast< uint64_t >( -offset );
+        if ( originPosition < positiveOffset ) {
+            return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
+        }
+        mCurrentPosition = originPosition - positiveOffset;
+    } else if ( offset == 0 ) {
+        mCurrentPosition = originPosition;
+    } else {
         const auto positiveOffset = static_cast< uint64_t >( offset );
         const uint64_t seekPosition = originPosition + positiveOffset;
         if ( seekPosition < originPosition || seekPosition < positiveOffset ) {
             return E_INVALIDARG;
         }
+        mCurrentPosition = seekPosition;
     }
-    mCurrentPosition = originPosition + offset;
 
     if ( newPosition != nullptr ) {
         *newPosition = mCurrentPosition;
