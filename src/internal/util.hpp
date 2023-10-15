@@ -98,9 +98,9 @@ constexpr auto cmp_less( T first, U second ) noexcept -> bool {
     if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
         return first < second;
     } else if constexpr ( std::is_signed< T >::value ) {
-        return first < 0 || UT( first ) < second;
+        return ( first < 0 ) || ( UT( first ) < second );
     } else {
-        return second >= 0 && first < UU( second );
+        return ( second >= 0 ) && ( first < UU( second ) );
     }
 }
 
@@ -115,13 +115,13 @@ cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value ==
 template< class T, class U >
 constexpr auto
 cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool > {
-    return t < 0 || std::make_unsigned_t< T >( t ) < u;
+    return ( t < 0 ) || ( std::make_unsigned_t< T >( t ) < u );
 }
 
 template< class T, class U >
 constexpr auto
 cmp_less( T t, U u ) noexcept -> std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool > {
-    return u >= 0 && t < std::make_unsigned_t< U >( u );
+    return ( u >= 0 ) && ( t < std::make_unsigned_t< U >( u ) );
 }
 
 #endif
