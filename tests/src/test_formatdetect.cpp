@@ -281,7 +281,7 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
     }
 }
 
-TEST_CASE( "BitArchiveReader: Format detection of an archive file without an extension", "[bitarchivereader]" ) {
+TEST_CASE( "formatdetect: Format detection of an archive file without an extension", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
     REQUIRE( detect_format_from_extension( "noextension" ) == BitFormat::Auto );
