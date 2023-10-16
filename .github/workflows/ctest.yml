@@ -40,10 +40,6 @@ jobs:
             cpp_compiler: clang++
             use_system_7zip: OFF
           - os: macos-latest
-            c_compiler: gcc
-            cpp_compiler: g++
-            use_system_7zip: OFF
-          - os: macos-latest
             c_compiler: clang
             cpp_compiler: clang++
             use_system_7zip: OFF
