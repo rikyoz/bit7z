@@ -10,11 +10,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "internal/formatdetect.hpp"
+
+// Note: the formatdetect.hpp header must be included before this ifdef since the BIT7Z_AUTO_FORMAT
+// flag might be manually specified in the bitdefines.hpp header (included by formatdetect.hpp).
 #ifdef BIT7Z_AUTO_FORMAT
 
 #include <algorithm>
-
-#include "internal/formatdetect.hpp"
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 #include <cwctype> // for std::iswdigit
