@@ -185,7 +185,7 @@ void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
 auto is_ascii( const tstring& str ) -> bool {
     return std::all_of( str.begin(), str.end(), []( tchar character ) -> bool {
         // Note: 7-zip supports the DEL character (code 127), while bit7z doesn't.
-        constexpr auto kFirstAsciiChar = 32; // A
+        constexpr auto kFirstAsciiChar = 32; // Space character
         constexpr auto kLastAsciiChar = 127;
         return character >= kFirstAsciiChar && character < kLastAsciiChar;
     } );
@@ -199,7 +199,7 @@ void BitAbstractArchiveCreator::setPassword( const tstring& password, bool crypt
     }
 #endif
     BitAbstractArchiveHandler::setPassword( password );
-    mCryptHeaders = ( password.length() > 0 ) && cryptHeaders;
+    mCryptHeaders = !password.empty() && cryptHeaders;
 }
 
 void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level ) noexcept {
