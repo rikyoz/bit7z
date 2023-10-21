@@ -351,16 +351,15 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setStoreSymbolicLinks(...) 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
     TestType compressor( lib, BitFormat::SevenZip );
-    REQUIRE( compressor.storeSymbolicLinks() == false );
+    REQUIRE_FALSE( compressor.storeSymbolicLinks() );
 
     compressor.setStoreSymbolicLinks( true );
-    REQUIRE( compressor.storeSymbolicLinks() == true );
-    REQUIRE( compressor.solidMode() == true );
+    REQUIRE( compressor.storeSymbolicLinks() );
+    REQUIRE( compressor.solidMode() );
 
     compressor.setStoreSymbolicLinks( false );
-    REQUIRE( compressor.storeSymbolicLinks() == false );
-    REQUIRE( compressor.solidMode() == false );
-
+    REQUIRE_FALSE( compressor.storeSymbolicLinks() );
+    REQUIRE_FALSE( compressor.solidMode() );
 }
 
 TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setThreadCount(...) / threadCount()",
