@@ -103,19 +103,22 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    uint64_t seekPosition{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
-            mAbsoluteOffset = static_cast< uint64_t >( offset );
             break;
         case STREAM_SEEK_CUR:
-            mAbsoluteOffset += static_cast< uint64_t >( offset );
+            seekPosition = mAbsoluteOffset;
             break;
         case STREAM_SEEK_END:
-            mAbsoluteOffset = mFullSize + static_cast< uint64_t >( offset );
+            seekPosition = mFullSize;
             break;
         default:
             return STG_E_INVALIDFUNCTION;
     }
+
+    RINOK( seek_to_offset( seekPosition, offset ) )
+    mAbsoluteOffset = seekPosition;
     mCurrentVolumeOffset = mAbsoluteOffset;
     if ( newPosition != nullptr ) {
         *newPosition = mAbsoluteOffset;

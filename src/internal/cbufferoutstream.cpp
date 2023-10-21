@@ -32,7 +32,7 @@ STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t newIndex{};
+    uint64_t newIndex{};
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {
@@ -44,8 +44,7 @@ STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* ne
     mCurrentPosition = mBuffer.begin() + static_cast< index_t >( newIndex );
 
     if ( newPosition != nullptr ) {
-        // Safe cast, since newIndex >=0 0
-        *newPosition = static_cast< UInt64 >( newIndex );
+        *newPosition = newIndex;
     }
 
     return S_OK;
@@ -62,14 +61,14 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
     }
 
     auto oldPos = ( mCurrentPosition - mBuffer.begin() );
-    const size_t newPos = oldPos + size;
+    const size_t newPos = static_cast< size_t >( oldPos ) + size;
     if ( newPos > mBuffer.size() ) {
         try {
             mBuffer.resize( newPos );
         } catch ( ... ) {
             return E_OUTOFMEMORY;
         }
-        mCurrentPosition = mBuffer.begin() + oldPos; //resize invalidated the old mCurrentPosition iterator
+        mCurrentPosition = mBuffer.begin() + oldPos; // resize(...) invalidated the old mCurrentPosition iterator
     }
 
     const auto* byteData = static_cast< const byte_t* >( data ); //-V2571

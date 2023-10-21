@@ -68,7 +68,7 @@ if( MSVC )
         endforeach()
     endif()
 else()
-    target_compile_options( ${LIB_TARGET} PRIVATE -Wall -Wextra -Werror )
+    target_compile_options( ${LIB_TARGET} PRIVATE -Wall -Wextra -Werror -Wconversion -Wsign-conversion )
 endif()
 
 # Extra warning flags for Clang

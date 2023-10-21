@@ -145,7 +145,7 @@ auto restore_symlink( const std::string& name ) -> bool {
     }
 
     // Shrinking the path string to its actual size.
-    linkPath.resize( ifs.gcount() );
+    linkPath.resize( static_cast< size_t >( ifs.gcount() ) );
 
     // No need to keep the file open.
     ifs.close();
@@ -212,7 +212,7 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
     } else if ( S_ISLNK( fileStat.st_mode ) ) {
         return true;
     } else if ( !S_ISDIR( fileStat.st_mode ) && ( attributes & FILE_ATTRIBUTE_READONLY ) != 0 ) {
-        fileStat.st_mode &= ~( S_IWUSR | S_IWGRP | S_IWOTH );
+        fileStat.st_mode &= static_cast< mode_t >( ~( S_IWUSR | S_IWGRP | S_IWOTH ) );
     }
 
     const fs::perms filePermissions = static_cast< fs::perms >( fileStat.st_mode & global_umask ) & fs::perms::mask;
