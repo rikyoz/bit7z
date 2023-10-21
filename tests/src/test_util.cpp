@@ -17,10 +17,12 @@
 using bit7z::check_overflow;
 using bit7z::clamp_cast;
 using bit7z::cmp_greater_equal;
-constexpr auto kMaxValue = ( std::numeric_limits< int64_t >::max )();
-constexpr auto kMinValue = ( std::numeric_limits< int64_t >::min )();
+using bit7z::seek_to_offset;
 
 TEST_CASE( "util: Calling check_overflow on a non-overflowing offset", "[util][check_overflow]" ) { //-V2008
+    constexpr auto kMaxValue = ( std::numeric_limits< int64_t >::max )();
+    constexpr auto kMinValue = ( std::numeric_limits< int64_t >::min )();
+
     REQUIRE_FALSE( check_overflow( kMaxValue, 0 ) );
     REQUIRE_FALSE( check_overflow( kMaxValue, -1 ) );
     REQUIRE_FALSE( check_overflow( kMaxValue, -42 ) );
@@ -69,6 +71,9 @@ TEST_CASE( "util: Calling check_overflow on a non-overflowing offset", "[util][c
 }
 
 TEST_CASE( "util: Calling check_overflow on an overflowing offset", "[util][check_overflow]" ) {
+    constexpr auto kMaxValue = ( std::numeric_limits< int64_t >::max )();
+    constexpr auto kMinValue = ( std::numeric_limits< int64_t >::min )();
+
     REQUIRE( check_overflow( kMaxValue, kMaxValue ) );
     REQUIRE( check_overflow( kMaxValue, 42 ) );
     REQUIRE( check_overflow( kMaxValue, 1 ) );
