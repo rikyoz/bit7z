@@ -143,7 +143,7 @@ template< typename To, typename From >
 inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
                                                                    have_same_signedness< To, From >::value &&
                                                                    sizeof( To ) >= sizeof( From ), To > {
-    return value;
+    return static_cast< To >( value );
 }
 
 template< typename T, typename I = T >
