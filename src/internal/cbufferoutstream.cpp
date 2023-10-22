@@ -78,7 +78,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         return E_OUTOFMEMORY;
     }
 
-    std::advance( mCurrentPosition, size );
+    std::advance( mCurrentPosition, clamp_cast< std::ptrdiff_t >( size ) );
 
     if ( processedSize != nullptr ) {
         *processedSize = size;
