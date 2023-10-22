@@ -265,7 +265,9 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-    auto testFile = GENERATE( BIT7Z_STRING( "wrong_extension.rar" ), BIT7Z_STRING( "wrong_extension.bz2" ) );
+    auto testFile = GENERATE( as< tstring >(),
+                              BIT7Z_STRING( "wrong_extension.rar" ),
+                              BIT7Z_STRING( "wrong_extension.bz2" ) );
 
     DYNAMIC_SECTION( "Reading file with a wrong extension: " << Catch::StringMaker< tstring >::convert( testFile ) ) {
         // From file
