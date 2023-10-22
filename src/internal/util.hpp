@@ -45,6 +45,8 @@ inline auto seek_to_offset( uint64_t& position, int64_t offset ) noexcept -> HRE
             return E_INVALIDARG;
         }
         position = seekPosition;
+    } else {
+        // No action needed
     }
     return S_OK;
 }

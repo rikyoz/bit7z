@@ -77,12 +77,12 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         return E_FAIL;
     }
 
-    uint32_t writeSize = size;
+    auto writeSize = static_cast< size_t >( size );
     size_t remainingSize = mBufferSize - mCurrentPosition; // The Seek method ensures mCurrentPosition < mBufferSize.
-    if ( size > remainingSize ) {
+    if ( writeSize > remainingSize ) {
         /* Writing only to the remaining part of the output buffer!
          * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe. */
-        writeSize = clamp_cast< uint32_t >( remainingSize );
+        writeSize = remainingSize;
     }
 
     const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
@@ -96,7 +96,8 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
     mCurrentPosition += writeSize;
 
     if ( processedSize != nullptr ) {
-        *processedSize = writeSize;
+        // Note: writeSize is not greater than size, which is UInt32, so the cast is safe.
+        *processedSize = static_cast< UInt32 >( writeSize );
     }
 
     return S_OK;
