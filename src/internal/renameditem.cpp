@@ -13,7 +13,7 @@
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/renameditem.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 namespace bit7z {
 

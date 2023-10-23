@@ -17,59 +17,11 @@
 #include "internal/cfixedbufferoutstream.hpp"
 #include "internal/util.hpp"
 
-/* Safe integer comparison like in C++20 */
-#ifdef __cpp_if_constexpr
-
-template< class T, class U >
-constexpr auto cmp_less( T first, U second ) noexcept -> bool {
-    using UT = std::make_unsigned_t< T >;
-    using UU = std::make_unsigned_t< U >;
-    if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
-        return first < second;
-    } else if constexpr ( std::is_signed< T >::value ) {
-        return first < 0 || UT( first ) < second;
-    } else {
-        return second >= 0 && first < UU( second );
-    }
-}
-
-#else // SFINAE implementation for C++14
-
-template< class T, class U >
-constexpr auto
-cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, bool > {
-    return t < u;
-}
-
-template< class T, class U >
-constexpr auto
-cmp_less( T t, U u ) noexcept -> std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, bool > {
-    return t < 0 || std::make_unsigned_t< T >( t ) < u;
-}
-
-template< class T, class U >
-constexpr auto
-cmp_less( T t, U u ) noexcept -> std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, bool > {
-    return u >= 0 && t < std::make_unsigned_t< U >( u );
-}
-
-#endif
-
-template< class T, class U >
-constexpr auto cmp_greater( T first, U second ) noexcept -> bool {
-    return cmp_less( second, first ); // NOLINT(*-suspicious-call-argument)
-}
-
-template< class T, class U >
-constexpr auto cmp_greater_equal( T first, U second ) noexcept -> bool {
-    return !cmp_less( first, second );
-}
-
 namespace bit7z {
 
 CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
     : mBuffer( buffer ), mBufferSize( size ), mCurrentPosition( 0 ) {
-    if ( size == 0 || cmp_greater( size, ( std::numeric_limits< int64_t >::max )() ) ) {
+    if ( size == 0 ) {
         throw BitException( "Could not initialize output buffer stream",
                             make_error_code( BitError::InvalidOutputBufferSize ) );
     }
@@ -82,43 +34,34 @@ STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t currentIndex{};
+    uint64_t seekIndex{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
             break;
         }
         case STREAM_SEEK_CUR: {
-            currentIndex = mCurrentPosition;
+            seekIndex = mCurrentPosition;
             break;
         }
         case STREAM_SEEK_END: {
-            currentIndex = static_cast< int64_t >( mBufferSize );
+            seekIndex = mBufferSize;
             break;
         }
         default:
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if the sum between the currentIndex and offset would result in an integer overflow or underflow
-    if ( check_overflow( currentIndex, offset ) ) {
+    RINOK( seek_to_offset( seekIndex, offset ) )
+
+    // Making sure seekIndex is a valid index within the buffer (i.e., it is less than mBufferSize).
+    if ( seekIndex >= mBufferSize ) {
         return E_INVALIDARG;
     }
 
-    const int64_t newIndex = currentIndex + offset;
-
-    // Making sure the newIndex value is between 0 and mBufferSize - 1
-    if ( newIndex < 0 ) {
-        return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-    }
-
-    if ( cmp_greater_equal( newIndex, mBufferSize ) ) {
-        return E_INVALIDARG;
-    }
-
-    mCurrentPosition = newIndex;
+    mCurrentPosition = clamp_cast< size_t >( seekIndex );
 
     if ( newPosition != nullptr ) {
-        *newPosition = newIndex;
+        *newPosition = seekIndex;
     }
 
     return S_OK;
@@ -134,11 +77,12 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         return E_FAIL;
     }
 
-    uint32_t writeSize = size;
-    if ( cmp_greater_equal( size, mBufferSize - mCurrentPosition ) ) {
+    auto writeSize = static_cast< size_t >( size );
+    size_t remainingSize = mBufferSize - mCurrentPosition; // The Seek method ensures mCurrentPosition < mBufferSize.
+    if ( writeSize > remainingSize ) {
         /* Writing only to the remaining part of the output buffer!
-         * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe! */
-        writeSize = static_cast< uint32_t >( mBufferSize - mCurrentPosition );
+         * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe. */
+        writeSize = remainingSize;
     }
 
     const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
@@ -152,7 +96,8 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
     mCurrentPosition += writeSize;
 
     if ( processedSize != nullptr ) {
-        *processedSize = writeSize;
+        // Note: writeSize is not greater than size, which is UInt32, so the cast is safe.
+        *processedSize = static_cast< UInt32 >( writeSize );
     }
 
     return S_OK;

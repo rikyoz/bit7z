@@ -16,86 +16,141 @@
 #include <type_traits>
 
 #include "internal/com.hpp"
-#include "internal/fs.hpp"
-
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-#include "internal/fsutil.hpp"
-#endif
 
 namespace bit7z {
-
-#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
-// On Windows, with native strings enabled, strings are already wide!
-#   define WIDEN( tstr ) tstr
-#else
-#   define WIDEN( tstr ) bit7z::widen(tstr)
-
-auto narrow( const wchar_t* wideString, size_t size ) -> std::string;
-
-auto widen( const std::string& narrowString ) -> std::wstring;
-#endif
-
-inline auto path_to_tstring( const fs::path& path ) -> tstring {
-    /* In an ideal world, we should only use fs::path's string< tchar >() function for converting a path to a tstring.
-     * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
-     * which is the default encoding of bit7z. */
-#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
-    return path.wstring();
-#elif defined( _WIN32 ) && defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-    /* If we encounter a path with Unicode characters, MSVC will throw an exception
-     * while converting from a fs::path to std::string if any character is invalid in the system codepage.
-     * Hence, here we use bit7z's own string conversion function, which substitutes invalid Unicode characters
-     * with '?' characters. */
-    const auto& native_path = path.native();
-    return narrow( native_path.c_str(), native_path.size() );
-#else
-    return path.u8string();
-#endif
-}
-
-#if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-#define PATH_FROM_TSTRING( str ) fs::u8path( str )
-#else
-#define PATH_FROM_TSTRING( str ) fs::path{ str }
-#endif
-
-inline auto tstring_to_path( const tstring& str ) -> fs::path {
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    auto result = PATH_FROM_TSTRING( str );
-    if ( filesystem::fsutil::should_format_long_path( result ) ) {
-        result = filesystem::fsutil::format_long_path( result );
-    }
-    return result;
-#else
-    // By default, MSVC treats strings as encoded using the system codepage, but bit7z uses UTF-8.
-    return PATH_FROM_TSTRING( str );
-#endif
-}
-
-inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
-#if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
-    return path.wstring();
-#else
-    /* On some compilers and platforms (e.g., GCC before v12.3),
-     * the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
-     * So we simply convert to tstring, and then widen it if necessary. */
-    return WIDEN( path.string< tchar >() );
-#endif
-}
 
 constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
     return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< int64_t >::max )() - offset ) ) ) ||
            ( ( offset < 0 ) && ( position < ( ( std::numeric_limits< int64_t >::min )() - offset ) ) );
 }
 
+#if defined(__clang__) && defined(__clang_major__) && (__clang_major__ >= 4)
+__attribute__((no_sanitize ("unsigned-integer-overflow")))
+#endif
+inline auto seek_to_offset( uint64_t& position, int64_t offset ) noexcept -> HRESULT {
+    // Checking if adding the offset would result in the unsigned wrap around of the current position.
+    if ( offset < 0 ) {
+        if ( offset == std::numeric_limits< int64_t >::min() ) {
+            return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
+        }
+        const auto positiveOffset = static_cast< uint64_t >( -offset );
+        if ( position < positiveOffset ) {
+            return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
+        }
+        position -= positiveOffset;
+    } else if ( offset > 0 ) {
+        const auto positiveOffset = static_cast< uint64_t >( offset );
+        const uint64_t seekPosition = position + positiveOffset;
+        if ( seekPosition < position ) {
+            return E_INVALIDARG;
+        }
+        position = seekPosition;
+    } else {
+        // No action needed
+    }
+    return S_OK;
+}
+
+/* Safe integer comparison like in C++20 */
+#ifdef __cpp_if_constexpr
+
+template< class T, class U >
+constexpr auto cmp_less( T first, U second ) noexcept -> bool {
+    using UT = std::make_unsigned_t< T >;
+    using UU = std::make_unsigned_t< U >;
+    if constexpr ( std::is_signed< T >::value == std::is_signed< U >::value ) {
+        return first < second;
+    } else if constexpr ( std::is_signed< T >::value ) {
+        return ( first < 0 ) || ( UT( first ) < second );
+    } else {
+        return ( second >= 0 ) && ( first < UU( second ) );
+    }
+}
+
+#else // SFINAE implementation for C++14
+
+template< class T, class U, std::enable_if_t< std::is_signed< T >::value == std::is_signed< U >::value, int > = 0 >
+constexpr auto cmp_less( T first, U second ) noexcept -> bool {
+    return first < second;
+}
+
+template< class T, class U, std::enable_if_t< std::is_signed< T >::value && !std::is_signed< U >::value, int > = 0 >
+constexpr auto cmp_less( T first, U second ) noexcept -> bool {
+    return ( first < 0 ) || ( std::make_unsigned_t< T >( first ) < second );
+}
+
+template< class T, class U, std::enable_if_t< !std::is_signed< T >::value && std::is_signed< U >::value, int > = 0 >
+constexpr auto cmp_less( T first, U second ) noexcept -> bool {
+    return ( second >= 0 ) && ( first < std::make_unsigned_t< U >( second ) );
+}
+
+#endif
+
+template< class T, class U >
+constexpr auto cmp_greater( T first, U second ) noexcept -> bool {
+    return cmp_less( second, first ); // NOLINT(*-suspicious-call-argument)
+}
+
+template< class T, class U >
+constexpr auto cmp_greater_equal( T first, U second ) noexcept -> bool {
+    return !cmp_less( first, second );
+}
+
 template< bool B >
 using bool_constant = std::integral_constant< bool, B >; // like C++17's std::bool_constant
+
+// TODO: Use a variable template like have_same_signedness_v; supported from GCC 5+, MSVC 2015 Update 2
+template< typename T, typename U >
+using have_same_signedness = bool_constant< std::is_signed< T >::value == std::is_signed< U >::value >;
+
+template< typename T, typename U >
+using are_both_signed = bool_constant< std::is_signed< T >::value && std::is_signed< U >::value >;
+
+template< typename T, typename U >
+using are_both_unsigned = bool_constant< std::is_unsigned< T >::value && std::is_unsigned< U >::value >;
+
+template< typename T, typename U >
+using are_both_integral = bool_constant< std::is_integral< T >::value && std::is_integral< U >::value >;
+
+template< typename To, typename From >
+using is_narrower_signed = bool_constant< are_both_signed< To, From >::value && sizeof( To ) < sizeof( From ) >;
+
+template< typename To, typename From >
+inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+                                                                   ( is_narrower_signed< To, From >::value ||
+                                                                     !have_same_signedness< From, To >::value ), To > {
+    constexpr auto kMaxValue = std::numeric_limits< To >::max();
+    if ( cmp_greater( value, kMaxValue ) ) {
+        return kMaxValue;
+    }
+
+    constexpr auto kMinValue = std::numeric_limits< To >::min();
+    if ( cmp_less( value, kMinValue ) ) {
+        return kMinValue;
+    }
+
+    return static_cast< To >( value );
+}
+
+template< typename To, typename From >
+inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_unsigned< From, To >::value &&
+                                                                   sizeof( To ) < sizeof( From ), To > {
+    constexpr auto kMaxValue = std::numeric_limits< To >::max();
+    return value > kMaxValue ? kMaxValue : static_cast< To >( value );
+}
+
+template< typename To, typename From >
+inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+                                                                   have_same_signedness< To, From >::value &&
+                                                                   sizeof( To ) >= sizeof( From ), To > {
+    return static_cast< To >( value );
+}
 
 template< typename T, typename I = T >
 using is_com_type = bool_constant< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value >;
 
 template< typename T, typename I = T, class... Args >
-inline auto make_com( Args&& ... args ) -> CMyComPtr< typename std::enable_if< is_com_type< T, I >::value, I >::type > {
+inline auto make_com( Args&& ... args ) -> CMyComPtr< std::enable_if_t< is_com_type< T, I >::value, I > > {
     return CMyComPtr< I >( new T( std::forward< Args >( args )... ) ); //-V2511
 }
 

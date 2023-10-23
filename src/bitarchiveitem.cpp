@@ -12,7 +12,7 @@
 
 #include "bitarchiveitem.hpp"
 #include "internal/fsutil.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 // For checking posix file attributes
 #include <sys/stat.h>

@@ -14,11 +14,7 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileoutstream.hpp"
-#include "internal/util.hpp"
-
-#if defined( _WIN32 ) && defined( __GLIBCXX__ ) && defined( _WIO_DEFINED )
-#include "internal/fsutil.hpp"
-#endif
+#include "internal/stringutil.hpp"
 
 namespace bit7z {
 
@@ -27,16 +23,14 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     std::error_code error;
     if ( !createAlways && fs::exists( mFilePath, error ) ) {
         if ( !error ) {
-            // the call to fs::exists succeeded, but the filePath exists, and this is an error!
+            // The call to fs::exists succeeded, but the filePath exists, and this is an error.
             error = std::make_error_code( std::errc::file_exists );
         }
         throw BitException( "Failed to create the output file", error, path_to_tstring( mFilePath ) );
     }
     mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
-        throw BitException( "Failed to open the output file",
-                            make_hresult_code( HRESULT_FROM_WIN32( ERROR_OPEN_FAILED ) ),
-                            path_to_tstring( mFilePath ) );
+        throw BitException( "Failed to open the output file", last_error_code(), path_to_tstring( mFilePath ) );
     }
 
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );

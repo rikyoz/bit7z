@@ -46,7 +46,7 @@ class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
     private:
         byte_t* mBuffer;
         size_t mBufferSize;
-        int64_t mCurrentPosition;
+        size_t mCurrentPosition;
 };
 
 }  // namespace bit7z

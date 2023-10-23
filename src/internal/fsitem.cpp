@@ -16,6 +16,7 @@
 #include "internal/cfileinstream.hpp"
 #include "internal/csymlinkinstream.hpp"
 #include "internal/fsitem.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)

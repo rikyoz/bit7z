@@ -26,6 +26,7 @@
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
 #ifdef BIT7Z_AUTO_FORMAT
@@ -69,7 +70,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* inStre
     CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( mArchiveHandler.format() );
 #endif
     // NOTE: CMyComPtr is still needed: if an error occurs, and an exception is thrown,
-    // the IInArchive object is deleted automatically!
+    // the IInArchive object is deleted automatically.
 
     // Creating open callback for the file
     auto openCallback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
@@ -85,9 +86,9 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* inStre
         /* User wanted auto-detection of the format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e., not BitFormat::Auto), this check is not performed,
-         *       and an exception is thrown (next if)!
+         *       and an exception is thrown (next if).
          * NOTE 2: If signature detection was already performed (detectedBySignature == false), it detected
-         *         a wrong format, no further check can be done, and an exception must be thrown (next if)! */
+         *         a wrong format, no further check can be done, and an exception must be thrown (next if). */
 
         /* Opening the file might have changed the current file pointer, so we reset it to the beginning of the file
          * to correctly read the file signature. */

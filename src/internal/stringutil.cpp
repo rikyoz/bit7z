@@ -12,9 +12,10 @@
 
 #include <locale>
 
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 #ifdef _WIN32
+#include <Windows.h>
 #ifdef BIT7Z_USE_SYSTEM_CODEPAGE
 #define CODEPAGE CP_ACP
 #define CODEPAGE_WC_FLAGS WC_NO_BEST_FIT_CHARS
@@ -57,7 +58,7 @@ auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
         return "";
     }
 
-    std::string result( narrowStringSize, 0 );
+    std::string result( static_cast< std::string::size_type >( narrowStringSize ), 0 );
     WideCharToMultiByte( CODEPAGE,
                          CODEPAGE_WC_FLAGS,
                          wideString,
@@ -90,7 +91,7 @@ auto widen( const std::string& narrowString ) -> std::wstring {
         return L"";
     }
 
-    std::wstring result( wideStringSize, 0 );
+    std::wstring result( static_cast< std::wstring::size_type >( wideStringSize ), 0 );
     MultiByteToWideChar( CODEPAGE,
                          0,
                          narrowString.c_str(),

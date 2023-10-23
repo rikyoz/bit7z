@@ -28,11 +28,6 @@
 
 #include <catch2/catch.hpp>
 #include <internal/fs.hpp>
-#include <internal/util.hpp>
-
-#if defined(__MINGW32__) && defined(_WIO_DEFINED)
-#include "internal/fsutil.hpp"
-#endif
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {

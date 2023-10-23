@@ -93,35 +93,22 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t originPosition; // NOLINT(cppcoreguidelines-init-variables)
+    uint64_t seekPosition{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
-            originPosition = 0;
             break;
         case STREAM_SEEK_CUR:
-            originPosition = mCurrentPosition;
+            seekPosition = mCurrentPosition;
             break;
         case STREAM_SEEK_END:
-            originPosition = mTotalSize;
+            seekPosition = mTotalSize;
             break;
         default:
             return STG_E_INVALIDFUNCTION;
     }
 
-    // Checking if adding the (negative) offset would result in the unsigned wrap around of the current position.
-    if ( offset < 0 && originPosition < static_cast< uint64_t >( -offset ) ) {
-        return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
-    }
-
-    // Checking if adding the (positive) offset would result in the unsigned wrap around of the current position.
-    if ( offset > 0 ) {
-        const auto positiveOffset = static_cast< uint64_t >( offset );
-        const uint64_t seekPosition = originPosition + positiveOffset;
-        if ( seekPosition < originPosition || seekPosition < positiveOffset ) {
-            return E_INVALIDARG;
-        }
-    }
-    mCurrentPosition = originPosition + offset;
+    RINOK( seek_to_offset( seekPosition, offset ) )
+    mCurrentPosition = seekPosition;
 
     if ( newPosition != nullptr ) {
         *newPosition = mCurrentPosition;

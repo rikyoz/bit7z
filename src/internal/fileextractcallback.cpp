@@ -13,6 +13,7 @@
 #include "bitexception.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
 using namespace std;

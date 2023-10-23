@@ -18,7 +18,7 @@
 #include "internal/fsitem.hpp"
 #include "internal/renameditem.hpp"
 #include "internal/stdinputitem.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 namespace bit7z {
 
@@ -51,43 +51,43 @@ BitArchiveEditor::~BitArchiveEditor() = default;
 
 void BitArchiveEditor::renameItem( uint32_t index, const tstring& newPath ) {
     checkIndex( index );
-    mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath );
+    mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath ); //-V108
 }
 
 void BitArchiveEditor::renameItem( const tstring& oldPath, const tstring& newPath ) {
     auto index = findItem( oldPath );
-    mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath );
+    mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath ); //-V108
 }
 
 void BitArchiveEditor::updateItem( uint32_t index, const tstring& inFile ) {
     checkIndex( index );
     auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemName.getNativeString() );
+    mEditedItems[ index ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemName.getNativeString() ); //-V108
 }
 
 void BitArchiveEditor::updateItem( uint32_t index, const std::vector< byte_t >& inBuffer ) {
     checkIndex( index );
     auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< BufferItem >( inBuffer, itemName.getNativeString() );
+    mEditedItems[ index ] = std::make_unique< BufferItem >( inBuffer, itemName.getNativeString() ); //-V108
 }
 
 void BitArchiveEditor::updateItem( uint32_t index, std::istream& inStream ) {
     checkIndex( index );
     auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< StdInputItem >( inStream, itemName.getNativeString() );
+    mEditedItems[ index ] = std::make_unique< StdInputItem >( inStream, itemName.getNativeString() ); //-V108
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const tstring& inFile ) {
-    mEditedItems[ findItem( itemPath ) ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ),
+    mEditedItems[ findItem( itemPath ) ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), //-V108
                                                                                tstring_to_path( itemPath ) );
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const std::vector< byte_t >& inBuffer ) {
-    mEditedItems[ findItem( itemPath ) ] = std::make_unique< BufferItem >( inBuffer, itemPath );
+    mEditedItems[ findItem( itemPath ) ] = std::make_unique< BufferItem >( inBuffer, itemPath ); //-V108
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStream ) {
-    mEditedItems[ findItem( itemPath ) ] = std::make_unique< StdInputItem >( inStream, itemPath );
+    mEditedItems[ findItem( itemPath ) ] = std::make_unique< StdInputItem >( inStream, itemPath ); //-V108
 }
 
 void BitArchiveEditor::deleteItem( uint32_t index ) {

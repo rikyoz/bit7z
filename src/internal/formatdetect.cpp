@@ -10,11 +10,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "internal/formatdetect.hpp"
+
+// Note: the formatdetect.hpp header must be included before this ifdef since the BIT7Z_AUTO_FORMAT
+// flag might be manually specified in the bitdefines.hpp header (included by formatdetect.hpp).
 #ifdef BIT7Z_AUTO_FORMAT
 
 #include <algorithm>
-
-#include "internal/formatdetect.hpp"
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 #include <cwctype> // for std::iswdigit
@@ -340,7 +342,7 @@ struct OffsetSignature {
 #define bswap64 _byteswap_uint64
 #elif defined(__GNUC__) || defined(__clang__)
 //Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
-//      for checking the compiler version or using _has_builtin macro!
+//      for checking the compiler version or using the _has_builtin macro.
 #define bswap64 __builtin_bswap64
 #else
 static inline uint64_t bswap64( uint64_t x ) {
@@ -361,6 +363,10 @@ auto read_signature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
     return bswap64( signature );
 }
 
+// Note: the left shifting of the signature mask might overflow, but it is intentional, so we suppress the sanitizer.
+#if defined(__clang__) && defined(__clang_major__) && (__clang_major__ >= 12)
+__attribute__((no_sanitize ("unsigned-shift-base")))
+#endif
 auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     constexpr auto kSignatureSize = 8U;
     constexpr auto kBaseSignatureMask = 0xFFFFFFFFFFFFFFFFULL;
@@ -375,7 +381,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
             return *format;
         }
         signatureMask <<= kByteShift;    // left shifting the mask of one byte, so that
-        fileSignature &= signatureMask; // the least significant i bytes are masked (set to 0)
+        fileSignature &= signatureMask;  // the least significant i bytes are masked (set to 0)
     }
 
     static const OffsetSignature commonSignaturesWithOffset[] = { // NOLINT(*-avoid-c-arrays)
@@ -385,7 +391,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
         { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // Compress
         { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 0x7F 0x10 0xDA 0xBE
         { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // ustar
-        // Note: since GPT files contain also the FAT signature, GPT must be checked before!
+        /* Note: since GPT files contain also the FAT signature, we must check the GPT signature before the FAT one. */
         { 0x4546492050415254, 0x200, 8, BitFormat::GPT },    // EFI 0x20 PART
         { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat },    // U 0xAA
         { 0x4244000000000000, 0x400, 2, BitFormat::Hfs },    // BD
@@ -446,7 +452,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
 #   define is_digit(ch) std::iswdigit(ch) != 0
 const auto to_lower = std::towlower;
 #else
-inline auto is_digit( unsigned char character ) -> bool {
+inline auto is_digit( char character ) -> bool {
     return std::isdigit( character ) != 0;
 }
 

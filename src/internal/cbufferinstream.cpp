@@ -38,11 +38,11 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
     /* Note: thanks to CBufferInStream::Seek, we can safely assume mCurrentPosition to always be a valid iterator;
      * so "remaining" will always be > 0 (and casts to unsigned types are safe) */
-    size_t remaining = mBuffer.cend() - mCurrentPosition;
-    if ( remaining > static_cast< size_t >( size ) ) {
-        /* The remaining buffer still to read is bigger than the buffer size requested by the user,
+    std::ptrdiff_t remaining = mBuffer.cend() - mCurrentPosition;
+    if ( cmp_greater( remaining, size ) ) {
+        /* The remaining buffer still to read is bigger than the read size requested by the user,
          * so we need to read just a "size" number of bytes. */
-        remaining = static_cast< size_t >( size );
+        remaining = static_cast< std::ptrdiff_t >( size );
     }
     /* Else, the user requested to read a number of bytes greater than or equal to the number
      * of remaining bytes to be read from the buffer.
@@ -54,7 +54,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
     if ( processedSize != nullptr ) {
         /* Note: even though on 64-bit systems "remaining" will be a 64-bit unsigned integer (size_t),
-         * its value cannot be greater than "size", which is a 32-bit unsigned int. Hence, this cast is safe! */
+         * its value cannot be greater than "size", which is a 32-bit unsigned int; hence, this cast is safe. */
         *processedSize = static_cast< UInt32 >( remaining );
     }
     return S_OK;
@@ -62,7 +62,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    int64_t newIndex{};
+    uint64_t newIndex{};
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {
@@ -75,7 +75,7 @@ STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* new
 
     if ( newPosition != nullptr ) {
         // Safe cast, since newIndex >= 0
-        *newPosition = static_cast< UInt64 >( newIndex );
+        *newPosition = newIndex;
     }
 
     return S_OK;

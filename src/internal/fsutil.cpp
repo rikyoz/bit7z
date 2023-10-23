@@ -23,7 +23,7 @@
 #endif
 
 #include "internal/fsutil.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 using namespace std;
 
@@ -145,7 +145,7 @@ auto restore_symlink( const std::string& name ) -> bool {
     }
 
     // Shrinking the path string to its actual size.
-    linkPath.resize( ifs.gcount() );
+    linkPath.resize( static_cast< size_t >( ifs.gcount() ) );
 
     // No need to keep the file open.
     ifs.close();
@@ -158,17 +158,17 @@ auto restore_symlink( const std::string& name ) -> bool {
     return !error && symlink( linkPath.c_str(), name.c_str() ) == 0;
 }
 
-static const mode_t global_umask = []() noexcept {
+static const mode_t global_umask = []() noexcept -> mode_t {
     // Getting and setting the current umask.
     // Note: flawfinder warns about umask with the mask set to 0;
     // however, we use it only to read the current umask,
-    // then we restore the old value, hence we can ignore the warning!
+    // then we restore the old value, hence we can ignore the warning.
     const mode_t currentUmask{ umask( 0 ) }; // flawfinder: ignore
 
     // Restoring the umask.
     umask( currentUmask ); // flawfinder: ignore
 
-    return static_cast<int>( fs::perms::all ) & ( ~currentUmask );
+    return static_cast< mode_t >( static_cast< int >( fs::perms::all ) & ( ~currentUmask ) );
 }();
 
 #endif
@@ -212,7 +212,7 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
     } else if ( S_ISLNK( fileStat.st_mode ) ) {
         return true;
     } else if ( !S_ISDIR( fileStat.st_mode ) && ( attributes & FILE_ATTRIBUTE_READONLY ) != 0 ) {
-        fileStat.st_mode &= ~( S_IWUSR | S_IWGRP | S_IWOTH );
+        fileStat.st_mode &= static_cast< mode_t >( ~( S_IWUSR | S_IWGRP | S_IWOTH ) );
     }
 
     const fs::perms filePermissions = static_cast< fs::perms >( fileStat.st_mode & global_umask ) & fs::perms::mask;
@@ -268,8 +268,9 @@ auto fsutil::get_file_attributes_ex( const fs::path& filePath,
     if ( ( statInfo.st_mode & S_IWUSR ) == 0 ) {
         fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
     }
-    constexpr auto kMask = 0xFFFF;
-    fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + ( ( statInfo.st_mode & kMask ) << 16 );
+    constexpr auto kMask = 0xFFFFu;
+    std::uint32_t unixAttributes = ( ( statInfo.st_mode & kMask ) << 16u );
+    fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + unixAttributes;
 
     // File times
     fileMetadata.ftCreationTime = time_to_FILETIME( statInfo.st_ctime );

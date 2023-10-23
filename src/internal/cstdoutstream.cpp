@@ -14,6 +14,7 @@
 
 #include "internal/cstdoutstream.hpp"
 #include "internal/streamutil.hpp"
+#include "internal/util.hpp"
 
 namespace bit7z {
 
@@ -31,7 +32,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 
     const auto oldPos = mOutputStream.tellp();
 
-    mOutputStream.write( static_cast< const char* >( data ), size ); //-V2571
+    mOutputStream.write( static_cast< const char* >( data ), clamp_cast< std::streamsize >( size ) ); //-V2571
 
     if ( processedSize != nullptr ) {
         *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - oldPos );

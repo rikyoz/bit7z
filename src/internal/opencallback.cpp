@@ -13,6 +13,7 @@
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/opencallback.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z {

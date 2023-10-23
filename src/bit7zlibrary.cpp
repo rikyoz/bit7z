@@ -13,8 +13,9 @@
 #include "bit7zlibrary.hpp"
 #include "bitexception.hpp"
 #include "bitformat.hpp"
+#include "internal/com.hpp"
 #include "internal/guids.hpp"
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 
 #include <7zip/Archive/IArchive.h>
 

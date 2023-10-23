@@ -13,6 +13,7 @@
 #ifndef _WIN32
 
 #include "bittypes.hpp"
+#include "internal/util.hpp"
 #include "internal/windows.hpp"
 
 #include <iostream>
@@ -50,10 +51,8 @@ using bstr_prefix_t = uint32_t;
  *   - We use C allocation functions instead of "new" since we must be able to also free BSTR objects
  *     allocated by 7-zip (which uses malloc). Never mix new/delete and malloc/free.
  *   - We use calloc instead of malloc, so that we do not have to manually add the termination character at the end.
- *   - The length parameter is an uint64_t, instead of the UINT parameter used in the WinAPI interface.
- *     This allows avoiding unsigned integer wrap around in SysAllocStringLen.
  * */
-auto AllocStringBuffer( LPCSTR str, uint64_t byteLength ) -> BSTR {
+auto AllocStringBuffer( LPCSTR str, uint32_t byteLength ) -> BSTR {
     // Maximum value that can be stored in the BSTR byteLength prefix.
     constexpr auto kMaxPrefixValue = std::numeric_limits< bstr_prefix_t >::max();
 
@@ -92,9 +91,10 @@ auto AllocStringBuffer( LPCSTR str, uint64_t byteLength ) -> BSTR {
 }
 
 auto SysAllocStringLen( const OLECHAR* str, UINT length ) -> BSTR {
-    auto byteLength = static_cast< uint64_t >( length ) * sizeof( OLECHAR );
+    auto byteLength = length * sizeof( OLECHAR );
+
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), byteLength );
+    return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), clamp_cast< std::uint32_t >( byteLength ) );
 }
 
 auto SysAllocStringByteLen( LPCSTR str, UINT length ) -> BSTR {
@@ -123,7 +123,7 @@ auto SysStringByteLen( BSTR bstrString ) -> UINT { // NOLINT(readability-non-con
 
 auto SysStringLen( BSTR bstrString ) -> UINT { // NOLINT(readability-non-const-parameter)
     // Same as SysStringByteLen, but we count how many OLECHARs are stored in the BSTR.
-    return SysStringByteLen( bstrString ) / sizeof( OLECHAR );
+    return SysStringByteLen( bstrString ) / static_cast< UINT >( sizeof( OLECHAR ) );
 }
 
 #endif

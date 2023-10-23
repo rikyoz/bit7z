@@ -19,7 +19,7 @@ auto seek( const buffer_t& buffer,
            const buffer_t::const_iterator& currentPosition,
            int64_t offset,
            uint32_t seekOrigin,
-           int64_t& newPosition ) -> HRESULT;
+           uint64_t& newPosition ) -> HRESULT;
 
 } // namespace bit7z
 

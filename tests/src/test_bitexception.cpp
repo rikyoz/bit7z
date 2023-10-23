@@ -10,7 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#if !defined(__GNUC__) || __GNUC__ >= 5
+#if !defined(__GNUC__) || __GNUC__ >= 5 || defined( __clang__ )
 
 #include <catch2/catch.hpp>
 
@@ -197,13 +197,14 @@ TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitExcep
             const auto exception = BitException( "Hello World", sys_error );
 #ifdef _WIN32
             REQUIRE( exception.nativeCode() == HRESULT_FROM_WIN32( test.error ) );
+            REQUIRE( exception.hresultCode() == exception.nativeCode() );
 #else
             REQUIRE( exception.nativeCode() == test.error );
-#endif
             if ( sys_error != std::errc::io_error ) { // Multiple Win32 errors might be mapped to the POSIX IO error.
                 REQUIRE( exception.hresultCode() == HRESULT_FROM_WIN32( test.error ) );
-                REQUIRE( exception.posixCode() == sys_error.default_error_condition().value() );
             }
+#endif
+            REQUIRE( exception.posixCode() == sys_error.default_error_condition().value() );
             REQUIRE( exception.what() == std::string{ "Hello World: " } + sys_error.message() );
         }
     }
@@ -253,7 +254,7 @@ TEST_CASE( "BitException: Checking if failed files are moved to the exception co
     REQUIRE( exceptionFailedFiles.size() == 1 );
     REQUIRE( exceptionFailedFiles[ 0 ].first == BIT7Z_STRING( "hello.txt" ) );
     REQUIRE( exceptionFailedFiles[ 0 ].second == std::errc::bad_file_descriptor );
-    // Note: BitException should have cleared failedFiles, so it is again usable!
+    // Note: BitException should have cleared failedFiles, so it is again usable.
     REQUIRE( failedFiles.empty() ); // NOLINT(bugprone-use-after-move) //-V1030
 }
 

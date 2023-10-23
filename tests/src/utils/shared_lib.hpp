@@ -21,8 +21,10 @@ namespace test {
 
 inline auto sevenzip_lib_path() -> tstring {
 #ifdef BIT7Z_TESTS_USE_SYSTEM_7ZIP
-#ifdef _WIN32
+#ifdef _WIN64
     static const tstring lib_path = BIT7Z_STRING( "C:\\Program Files\\7-Zip\\7z.dll" );
+#elif defined( _WIN32 )
+    static const tstring lib_path = BIT7Z_STRING( "C:\\Program Files (x86)\\7-Zip\\7z.dll" );
 #elif defined( __linux__ )
     static const tstring lib_path = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip's shared library
 #else

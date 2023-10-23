@@ -19,8 +19,12 @@ CVolumeOutStream::CVolumeOutStream( const fs::path& volumeName )
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    RINOK( CStdOutStream::Seek( offset, seekOrigin, newPosition ) )
-    mCurrentOffset = offset;
+    UInt64 pos{};
+    RINOK( CStdOutStream::Seek( offset, seekOrigin, &pos ) )
+    mCurrentOffset = pos;
+    if ( newPosition != nullptr ) {
+        *newPosition = pos;
+    }
     return S_OK;
 }
 

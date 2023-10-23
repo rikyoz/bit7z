@@ -1,0 +1,138 @@
+# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
+# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
+name: Test bit7z on multiple configurations
+on: [pull_request, push]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    if: |
+      github.event_name == 'pull_request'
+      || contains(github.event.head_commit.message, '[test]')
+      || startsWith(github.ref, 'refs/tags/v')
+
+    strategy:
+      # Set fail-fast to false to ensure that feedback is delivered for all matrix combinations. Consider changing this to true when your workflow is stable.
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: [Debug, Release]
+        c_compiler: [gcc, clang, cl]
+        bit7z_auto_format: [OFF, ON]
+        bit7z_regex_matching: [OFF, ON]
+        bit7z_link_libcpp: [OFF, ON]
+        bit7z_use_native_string: [OFF, ON]
+        bit7z_auto_prefix_long_paths: [OFF, ON]
+        bit7z_use_system_codepage: [OFF, ON]
+        bit7z_path_sanitization: [OFF, ON]
+        include:
+          - os: windows-latest
+            c_compiler: cl
+            cpp_compiler: cl
+            use_system_7zip: ON
+          - os: ubuntu-latest
+            c_compiler: gcc
+            cpp_compiler: g++
+            use_system_7zip: OFF
+          - os: ubuntu-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            use_system_7zip: OFF
+          - os: macos-latest
+            c_compiler: clang
+            cpp_compiler: clang++
+            use_system_7zip: OFF
+        exclude:
+          - os: windows-latest
+            c_compiler: gcc
+          - os: windows-latest
+            c_compiler: clang
+          - os: windows-latest
+            bit7z_link_libcpp: ON
+          - os: ubuntu-latest
+            c_compiler: cl
+          - os: ubuntu-latest
+            c_compiler: gcc
+            bit7z_link_libcpp: ON
+          - os: ubuntu-latest
+            bit7z_use_native_string: ON
+          - os: ubuntu-latest
+            bit7z_auto_prefix_long_paths: ON
+          - os: ubuntu-latest
+            bit7z_use_system_codepage: ON
+          - os: ubuntu-latest
+            bit7z_path_sanitization: ON
+          - os: macos-latest
+            c_compiler: cl
+          - os: macos-latest
+            c_compiler: gcc
+          - os: macos-latest
+            bit7z_use_native_string: ON
+          - os: macos-latest
+            bit7z_auto_prefix_long_paths: ON
+          - os: macos-latest
+            bit7z_use_system_codepage: ON
+          - os: macos-latest
+            bit7z_path_sanitization: ON
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set reusable strings
+      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+
+    - name: Configure CMake
+      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
+      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
+        -DBIT7Z_BUILD_TESTS=ON
+        -DBIT7Z_ENABLE_SANITIZERS=ON
+        -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.use_system_7zip }}
+        -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }}
+        -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }}
+        -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }}
+        -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
+        -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }}
+        -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }}
+        -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }}
+        -S ${{ github.workspace }}
+
+    - name: Build bit7z
+      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ matrix.build_type }} --parallel
+      
+    - name: Build 7z.so for tests (Ubuntu)
+      shell: bash
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+        git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
+        cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
+        make -j -f ../../cmpl_gcc.mak
+        cp b/g/7z.so ${{ github.workspace }}/bin/x64/7z.so
+        
+    - name: Build 7z.so for tests (macOS)
+      shell: bash
+      if: matrix.os == 'macos-latest'
+      run: |
+        git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
+        cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
+        make -j -f ../../cmpl_mac_x64.mak
+        cp b/m_x64/7z.so ${{ github.workspace }}/bin/x64/7z.so
+
+    - name: Test bit7z
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
+      env:
+        ASAN_OPTIONS: alloc_dealloc_mismatch=0
+      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
+      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      run: ctest --build-target bit7z-tests --build-config ${{ matrix.build_type }} --output-on-failure

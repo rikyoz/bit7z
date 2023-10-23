@@ -1973,7 +1973,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
                                          BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
                                          BIT7Z_STRING( "dot.folder/hello.json" ) );
 
-    DYNAMIC_SECTION ( "Indexing file " << testInput.u8string() << " as a buffer" ) {
+    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() << " as a buffer" ) {
         REQUIRE_LOAD_FILE( input_buffer, testInput );
         REQUIRE_NOTHROW( itemsVector.indexBuffer( input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );

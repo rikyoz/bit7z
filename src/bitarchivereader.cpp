@@ -39,7 +39,7 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
 auto BitArchiveReader::archiveProperties() const -> map< BitProperty, BitPropVariant > {
     map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
-        // Yeah, I know, I cast property twice (here and in archiveProperty), but the code is easier to read!
+        // We cast property twice (here and in archiveProperty), to make the code is easier to read.
         const auto property = static_cast< BitProperty >( i );
         const BitPropVariant propertyValue = archiveProperty( property );
         if ( !propertyValue.isEmpty() ) {
@@ -54,7 +54,7 @@ auto BitArchiveReader::items() const -> vector< BitArchiveItemInfo > {
     for ( uint32_t i = 0; i < itemsCount(); ++i ) {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
-            // Yeah, I know, I cast property twice (here and in itemProperty), but the code is easier to read!
+            // We cast property twice (here and in archiveProperty), to make the code is easier to read.
             const auto property = static_cast< BitProperty >( j );
             const auto propertyValue = itemProperty( i, property );
             if ( !propertyValue.isEmpty() ) {
@@ -90,7 +90,7 @@ auto BitArchiveReader::packSize() const -> uint64_t {
 
 auto BitArchiveReader::hasEncryptedItems() const -> bool {
     /* Note: simple encryption (i.e., not including the archive headers) can be detected only reading
-     *       the properties of the files in the archive, so we search for any encrypted file inside the archive! */
+     *       the properties of the files in the archive, so we search for any encrypted file inside the archive. */
     return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
         return !item.isDir() && item.isEncrypted();
     } );

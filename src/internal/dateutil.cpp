@@ -31,8 +31,9 @@ auto FILETIME_to_file_time_type( FILETIME fileTime ) -> fs::file_time_type {
     return fs::file_time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unixEpoch ) };
 }
 
-auto time_to_FILETIME( const std::time_t& timeValue ) -> FILETIME {
-    const uint64_t timeInSeconds = ( timeValue * 10000000ull ) + 116444736000000000; // NOLINT(*-magic-numbers)
+auto time_to_FILETIME( std::time_t timeValue ) -> FILETIME {
+    // NOLINTNEXTLINE(*-magic-numbers)
+    const uint64_t timeInSeconds = ( static_cast< uint64_t >( timeValue ) * 10000000ull ) + 116444736000000000;
     FILETIME fileTime{};
     fileTime.dwLowDateTime = static_cast< DWORD >( timeInSeconds );
     fileTime.dwHighDateTime = static_cast< DWORD >( timeInSeconds >> 32 );

@@ -16,6 +16,7 @@ set( SOURCE_FILES
 # public API test sources
 set( PUBLIC_API_SOURCE_FILES
      src/test_bit7zlibrary.cpp
+     src/test_bitabstractarchivecreator.cpp
      src/test_bitarchiveeditor.cpp
      src/test_bitarchivereader.cpp
      src/test_bitarchivewriter.cpp
@@ -36,6 +37,7 @@ set( INTERNAL_API_SOURCE_FILES
      src/test_dateutil.cpp
      src/test_fsutil.cpp
      src/test_util.cpp
+     src/test_stringutil.cpp
      src/test_windows.cpp
      src/test_formatdetect.cpp )
 
@@ -51,7 +53,7 @@ if( BIT7Z_TESTS_FILESYSTEM )
     include( FetchContent )
     FetchContent_Declare( bit7z-test-data
                           GIT_REPOSITORY https://github.com/rikyoz/bit7z-test-data.git
-                          GIT_TAG a2966c00854ecadb4dfdadbb30b48e7eeeb8772b
+                          GIT_TAG abc1adc273dd8dd17f55969838811f98872d77b8
                           GIT_SHALLOW ON
                           SOURCE_DIR ${BIT7Z_TESTS_DATA_DIR} )
     FetchContent_MakeAvailable( bit7z-test-data )
@@ -129,6 +131,9 @@ endif()
 if( MSVC )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
     target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE /utf-8 )
+else()
+    target_compile_options( ${TESTS_TARGET} PRIVATE -Wno-deprecated -Wno-deprecated-declarations )
+    target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE -Wno-deprecated -Wno-deprecated-declarations )
 endif()
 
 if( WIN32 )
@@ -148,8 +153,6 @@ if( WIN32 )
     target_sources( ${TESTS_TARGET_PUBLIC} PRIVATE res/encodingLegacy.${RES_EXTENSION} )
 endif()
 
-include( cmake/Sanitizers.cmake )
-
 # Catch2
 include( cmake/Catch2.cmake )
 target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
@@ -158,4 +161,3 @@ target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE Catch2::Catch2 )
 include( CTest )
 include( Catch )
 catch_discover_tests( ${TESTS_TARGET} )
-catch_discover_tests( ${TESTS_TARGET_PUBLIC} )

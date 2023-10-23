@@ -12,6 +12,7 @@
 
 #include "internal/cfileoutstream.hpp"
 #include "internal/updatecallback.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
 namespace bit7z {

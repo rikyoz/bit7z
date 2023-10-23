@@ -16,8 +16,8 @@
 #include "internal/archiveproperties.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
-#include "internal/fsutil.hpp"
 #include "internal/genericinputitem.hpp"
+#include "internal/stringutil.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
 
@@ -35,7 +35,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, co
         return;
     }
 
-    if ( inArc.empty() ) { // No input file specified, so we are creating a totally new archive!
+    if ( inArc.empty() ) { // No input file specified, so we are creating a totally new archive.
         return;
     }
 

@@ -28,7 +28,12 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
                                    FORMAT_MESSAGE_FROM_SYSTEM |
                                    FORMAT_MESSAGE_IGNORE_INSERTS |
                                    FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                                   nullptr, errorValue, 0, reinterpret_cast< LPSTR >( &messageBuffer ), 0, nullptr );
+                                   nullptr,
+                                   static_cast< DWORD >( errorValue ),
+                                   0,
+                                   reinterpret_cast< LPSTR >( &messageBuffer ), // NOLINT(*-pro-type-reinterpret-cast)
+                                   0,
+                                   nullptr );
     if ( msgSize == 0 ) {
         return "Unknown error";
     }
@@ -39,7 +44,7 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
     LocalFree( messageBuffer );
     return errorMessage;
 #else
-    // Note: same messages returned by FormatMessageA on Windows platform.
+    // Note: same messages returned by FormatMessageA on Windows.
     switch ( static_cast< HRESULT >( errorValue ) ) {
         case E_ABORT:
             return "Operation aborted";

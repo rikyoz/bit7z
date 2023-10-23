@@ -28,7 +28,7 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
-// Note: format detection by extension doesn't actually require the file to exist!
+// Note: format detection by extension doesn't actually require the file to exist.
 TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
@@ -265,19 +265,25 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-    // From file
-    REQUIRE_THROWS( BitArchiveReader( lib, BIT7Z_STRING( "wrong_extension.rar" ), BitFormat::Rar ) );
-    REQUIRE_NOTHROW( BitArchiveReader( lib, BIT7Z_STRING( "wrong_extension.rar" ), BitFormat::SevenZip ) );
-    REQUIRE_NOTHROW( BitArchiveReader( lib, BIT7Z_STRING( "wrong_extension.rar" ) ) );
+    auto testFile = GENERATE( as< tstring >(),
+                              BIT7Z_STRING( "wrong_extension.rar" ),
+                              BIT7Z_STRING( "wrong_extension.bz2" ) );
 
-    // From buffer
-    auto fileBuffer = load_file( "wrong_extension.rar" );
-    REQUIRE_THROWS( BitArchiveReader( lib, fileBuffer, BitFormat::Rar ) );
-    REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer, BitFormat::SevenZip ) );
-    REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer ) );
+    DYNAMIC_SECTION( "Reading file with a wrong extension: " << Catch::StringMaker< tstring >::convert( testFile ) ) {
+        // From file
+        REQUIRE_THROWS( BitArchiveReader( lib, testFile, BitFormat::Rar ) );
+        REQUIRE_NOTHROW( BitArchiveReader( lib, testFile, BitFormat::SevenZip ) );
+        REQUIRE_NOTHROW( BitArchiveReader( lib, testFile ) );
+
+        // From buffer
+        auto fileBuffer = load_file( testFile );
+        REQUIRE_THROWS( BitArchiveReader( lib, fileBuffer, BitFormat::Rar ) );
+        REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer, BitFormat::SevenZip ) );
+        REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer ) );
+    }
 }
 
-TEST_CASE( "BitArchiveReader: Format detection of an archive file without extension", "[bitarchivereader]" ) {
+TEST_CASE( "formatdetect: Format detection of an archive file without an extension", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
     REQUIRE( detect_format_from_extension( "noextension" ) == BitFormat::Auto );
@@ -288,4 +294,4 @@ TEST_CASE( "BitArchiveReader: Format detection of an archive file without extens
     REQUIRE_NOTHROW( reader.test() );
 }
 
-#endif
+#endif // BIT7Z_AUTO_FORMAT

@@ -5,7 +5,7 @@
 cmake_minimum_required( VERSION 3.11 )
 
 project( bit7z
-         VERSION 4.0.3
+         VERSION 4.0.4
          DESCRIPTION "A C++ static library offering a clean and simple interface to the 7-zip/p7zip shared libraries"
          HOMEPAGE_URL "https://github.com/rikyoz/bit7z/" )
 set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
@@ -95,6 +95,7 @@ set( HEADERS
      src/internal/stdinputitem.hpp
      src/internal/streamextractcallback.hpp
      src/internal/streamutil.hpp
+     src/internal/stringutil.hpp
      src/internal/updatecallback.hpp
      src/internal/util.hpp
      src/internal/windows.hpp )
@@ -156,8 +157,8 @@ set( SOURCES
      src/internal/renameditem.cpp
      src/internal/stdinputitem.cpp
      src/internal/streamextractcallback.cpp
+     src/internal/stringutil.cpp
      src/internal/updatecallback.cpp
-     src/internal/util.cpp
      src/internal/windows.cpp )
 
 # library output file name options
@@ -227,6 +228,9 @@ if( UNIX )
     endif()
     target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
+
+# sanitizers
+include( cmake/Sanitizers.cmake )
 
 # tests
 if( BIT7Z_BUILD_TESTS )

@@ -14,11 +14,12 @@
 #include "biterror.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/dateutil.hpp"
+#include "internal/windows.hpp"
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )
 #else
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 #define BSTR_TO_TSTRING( bstr ) bit7z::narrow( bstr, SysStringLen( bstr ) )
 #endif
 
@@ -156,7 +157,7 @@ BitPropVariant::BitPropVariant( uint64_t value ) noexcept: PROPVARIANT() {
 BitPropVariant::BitPropVariant( int8_t value ) noexcept: PROPVARIANT() {
     vt = VT_I1;
     wReserved1 = 0;
-    cVal = value;
+    cVal = static_cast< char >( value );
 }
 
 BitPropVariant::BitPropVariant( int16_t value ) noexcept: PROPVARIANT() {
@@ -331,7 +332,7 @@ auto BitPropVariant::getUInt64() const -> uint64_t {
 auto BitPropVariant::getInt8() const -> int8_t {
     switch ( vt ) {
         case VT_I1:
-            return cVal;
+            return static_cast< int8_t >( cVal );
         default: // not an 8-bits integer.
             throw BitException( "BitPropVariant is not an 8-bits integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );

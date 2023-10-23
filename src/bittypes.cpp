@@ -13,7 +13,7 @@
 #include "bittypes.hpp"
 
 #if defined( _WIN32 ) && !defined( BIT7Z_USE_NATIVE_STRING )
-#include "internal/util.hpp"
+#include "internal/stringutil.hpp"
 #endif
 
 namespace bit7z {
