@@ -24,9 +24,6 @@ constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcep
            ( ( offset < 0 ) && ( position < ( ( std::numeric_limits< int64_t >::min )() - offset ) ) );
 }
 
-#if defined(__clang__) && defined(__clang_major__) && (__clang_major__ >= 4)
-__attribute__((no_sanitize ("unsigned-integer-overflow")))
-#endif
 inline auto seek_to_offset( uint64_t& position, int64_t offset ) noexcept -> HRESULT {
     // Checking if adding the offset would result in the unsigned wrap around of the current position.
     if ( offset < 0 ) {

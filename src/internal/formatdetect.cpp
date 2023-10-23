@@ -364,9 +364,6 @@ auto read_signature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
 }
 
 // Note: the left shifting of the signature mask might overflow, but it is intentional, so we suppress the sanitizer.
-#if defined(__clang__) && defined(__clang_major__) && (__clang_major__ >= 12)
-__attribute__((no_sanitize ("unsigned-shift-base")))
-#endif
 auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     constexpr auto kSignatureSize = 8U;
     constexpr auto kBaseSignatureMask = 0xFFFFFFFFFFFFFFFFULL;
