@@ -433,7 +433,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
                     uint8_t, uint16_t, uint32_t, uint64_t ) {
     BitPropVariant propVariant;
 
-    TestType value = GENERATE( 0, 42, std::numeric_limits< TestType >::max() );
+    TestType value = GENERATE( as< TestType >(), 0, 42, std::numeric_limits< TestType >::max() );
 
     SECTION( "Using the unsigned integer constructor" ) {
         propVariant = BitPropVariant( value );
