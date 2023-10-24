@@ -10,7 +10,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bittypes.hpp"
 #include "internal/hresultcategory.hpp"
 #include "internal/windows.hpp"
 

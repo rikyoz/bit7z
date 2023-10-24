@@ -10,12 +10,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <algorithm> // for std::all_of
-
 #include "bitabstractarchivecreator.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/archiveproperties.hpp"
+
+#ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
+#include <algorithm> // for std::all_of
+#endif
 
 using namespace bit7z;
 

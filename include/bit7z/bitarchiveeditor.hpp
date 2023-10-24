@@ -10,9 +10,9 @@
 #ifndef BITARCHIVEEDITOR_HPP
 #define BITARCHIVEEDITOR_HPP
 
-#include <unordered_map>
-
 #include "bitarchivewriter.hpp"
+
+#include <unordered_map>
 
 namespace bit7z {
 

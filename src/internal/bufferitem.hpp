@@ -10,8 +10,7 @@
 #ifndef BUFFERITEM_HPP
 #define BUFFERITEM_HPP
 
-#include <string>
-
+#include "bittypes.hpp"
 #include "internal/genericinputitem.hpp"
 
 namespace bit7z {

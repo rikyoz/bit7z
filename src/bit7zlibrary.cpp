@@ -15,11 +15,12 @@
 #include "bitformat.hpp"
 #include "internal/com.hpp"
 #include "internal/guids.hpp"
-#include "internal/stringutil.hpp"
 
 #include <7zip/Archive/IArchive.h>
 
 #ifdef _WIN32
+#include "internal/stringutil.hpp"
+
 #   define Bit7zLoadLibrary( lib_name ) LoadLibraryW( WIDEN( (lib_name) ).c_str() )
 #   define ERROR_CODE( errc ) bit7z::last_error_code()
 #else

@@ -10,9 +10,6 @@
 #ifndef BITTYPES_HPP
 #define BITTYPES_HPP
 
-#include <string>
-#include <vector>
-
 // Must be included here since the user might have manually enabled a BIT7Z_* compilation option
 // by uncommenting the corresponding macro define in bitdefines.hpp.
 #include "bitdefines.hpp" // For BIT7Z_* macros.
@@ -20,6 +17,9 @@
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
 #endif
+
+#include <string>
+#include <vector>
 
 namespace bit7z {
 

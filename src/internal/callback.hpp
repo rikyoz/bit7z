@@ -10,8 +10,6 @@
 #ifndef CALLBACK_HPP
 #define CALLBACK_HPP
 
-#include <string>
-
 #include "bitabstractarchivehandler.hpp"
 #include "internal/com.hpp"
 #include "internal/guids.hpp"

@@ -10,13 +10,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <utility>
-
 #include "internal/bufferitem.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
+
+#include <utility>
 
 using std::vector;
 

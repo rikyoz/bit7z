@@ -10,9 +10,9 @@
 #ifndef BITARCHIVEITEMINFO_HPP
 #define BITARCHIVEITEMINFO_HPP
 
-#include <map>
-
 #include "bitarchiveitem.hpp"
+
+#include <map>
 
 namespace bit7z {
 

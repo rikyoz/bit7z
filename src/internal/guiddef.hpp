@@ -21,7 +21,6 @@
 #endif
 
 #include <array>
-#include <cstdint>
 #include <cstring> //for std::memcmp
 
 #include "internal/windows.hpp"

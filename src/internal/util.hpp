@@ -10,12 +10,12 @@
 #ifndef UTIL_HPP
 #define UTIL_HPP
 
+#include "internal/com.hpp"
+
 #include <cstdint>
 #include <limits>
 #include <string>
 #include <type_traits>
-
-#include "internal/com.hpp"
 
 namespace bit7z {
 

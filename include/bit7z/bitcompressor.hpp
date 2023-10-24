@@ -13,9 +13,9 @@
 #ifndef BITCOMPRESSOR_HPP
 #define BITCOMPRESSOR_HPP
 
-#include <vector>
-
 #include "bitoutputarchive.hpp"
+
+#include <vector>
 
 namespace bit7z {
 

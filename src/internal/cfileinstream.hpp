@@ -10,11 +10,10 @@
 #ifndef CFILEINSTREAM_HPP
 #define CFILEINSTREAM_HPP
 
-#include <array>
-
-#include "bitdefines.hpp"
 #include "internal/cstdinstream.hpp"
 #include "internal/fs.hpp"
+
+#include <array>
 
 namespace bit7z {
 

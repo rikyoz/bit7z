@@ -10,12 +10,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <exception>
-
 #include "bitexception.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/operationcategory.hpp"
 #include "internal/stringutil.hpp"
+
+#include <exception>
 
 namespace bit7z {
 

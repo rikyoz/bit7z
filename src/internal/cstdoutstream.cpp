@@ -10,11 +10,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <iterator>
-
 #include "internal/cstdoutstream.hpp"
 #include "internal/streamutil.hpp"
 #include "internal/util.hpp"
+
+#include <iterator>
 
 namespace bit7z {
 

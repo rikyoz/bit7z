@@ -10,7 +10,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <algorithm> //for std::adjacent_find
+#include "internal/fsutil.hpp"
+#include "internal/stringutil.hpp"
 
 #ifndef _WIN32
 #include <sys/resource.h> // for rlimit, getrlimit, and setrlimit
@@ -22,8 +23,7 @@
 #include <cwctype> // for iswdigit
 #endif
 
-#include "internal/fsutil.hpp"
-#include "internal/stringutil.hpp"
+#include <algorithm> //for std::adjacent_find
 
 using namespace std;
 

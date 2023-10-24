@@ -10,11 +10,11 @@
 #ifndef BITFILECOMPRESSOR_HPP
 #define BITFILECOMPRESSOR_HPP
 
+#include "bitcompressor.hpp"
+
 #include <map>
 #include <ostream>
 #include <vector>
-
-#include "bitcompressor.hpp"
 
 namespace bit7z {
 

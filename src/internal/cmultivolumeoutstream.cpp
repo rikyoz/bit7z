@@ -10,12 +10,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <utility>
-
 #include "bitexception.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
+
+#include <utility>
 
 namespace bit7z {
 

@@ -10,8 +10,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <locale>
-
 #include "internal/stringutil.hpp"
 
 #ifdef _WIN32
@@ -37,6 +35,8 @@
 using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
 #endif
+
+#include <locale>
 
 namespace bit7z {
 

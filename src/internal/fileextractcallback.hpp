@@ -10,15 +10,11 @@
 #ifndef FILEEXTRACTCALLBACK_HPP
 #define FILEEXTRACTCALLBACK_HPP
 
-#include <string>
-
 #include "internal/cfileoutstream.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/processeditem.hpp"
 
 namespace bit7z {
-
-using std::wstring;
 
 class FileExtractCallback final : public ExtractCallback {
     public:

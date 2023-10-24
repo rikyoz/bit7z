@@ -10,9 +10,9 @@
 #ifndef BITERROR_HPP
 #define BITERROR_HPP
 
-#include <system_error>
-
 #include "bitdefines.hpp"
+
+#include <system_error>
 
 namespace bit7z {
 

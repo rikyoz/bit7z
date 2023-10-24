@@ -10,12 +10,12 @@
 #ifndef DATEUTIL_HPP
 #define DATEUTIL_HPP
 
-#include <chrono>
-#include <ctime>
-
 #include "bitgenericitem.hpp"
 #include "bitwindows.hpp"
 #include "internal/fs.hpp"
+
+#include <chrono>
+#include <ctime>
 
 namespace bit7z {
 

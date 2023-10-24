@@ -10,12 +10,12 @@
 #ifndef BITEXCEPTION_HPP
 #define BITEXCEPTION_HPP
 
-#include <vector>
-#include <system_error>
-
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
+
+#include <vector>
+#include <system_error>
 
 namespace bit7z {
 

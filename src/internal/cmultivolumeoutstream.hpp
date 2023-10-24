@@ -10,16 +10,15 @@
 #ifndef CMULTIVOLUMEOUTSTREAM_HPP
 #define CMULTIVOLUMEOUTSTREAM_HPP
 
-#include <vector>
-#include <string>
-#include <cstdint>
-
 #include "internal/com.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/cvolumeoutstream.hpp"
 
 #include <7zip/IStream.h>
 
+#include <cstdint>
+#include <vector>
+#include <string>
 
 using std::vector;
 using std::wstring;

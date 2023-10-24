@@ -10,12 +10,10 @@
 #ifndef FSINDEXER_HPP
 #define FSINDEXER_HPP
 
-#include <string>
-#include <vector>
-#include <map>
-
 #include "bitabstractarchivehandler.hpp"
 #include "internal/fsitem.hpp"
+
+#include <vector>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {

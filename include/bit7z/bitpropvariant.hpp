@@ -10,12 +10,12 @@
 #ifndef BITPROPVARIANT_HPP
 #define BITPROPVARIANT_HPP
 
-#include <chrono>
-#include <cstdint>
-
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
+
+#include <chrono>
+#include <cstdint>
 
 namespace bit7z {
 

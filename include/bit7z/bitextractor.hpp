@@ -10,12 +10,12 @@
 #ifndef BITEXTRACTOR_HPP
 #define BITEXTRACTOR_HPP
 
-#include <algorithm>
-
 #include "bitabstractarchiveopener.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
+
+#include <algorithm>
 
 namespace bit7z {
 

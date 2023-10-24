@@ -10,11 +10,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <utility>
-
 #include "bitexception.hpp"
 #include "internal/cfileoutstream.hpp"
 #include "internal/stringutil.hpp"
+
+#include <utility>
 
 namespace bit7z {
 

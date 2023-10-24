@@ -10,14 +10,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <system_error>
-
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/csymlinkinstream.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
+
+#include <system_error>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {

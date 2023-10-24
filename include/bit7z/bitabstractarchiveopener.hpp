@@ -10,9 +10,6 @@
 #ifndef BITABSTRACTARCHIVEOPENER_HPP
 #define BITABSTRACTARCHIVEOPENER_HPP
 
-#include <vector>
-#include <map>
-
 #include "bitabstractarchivehandler.hpp"
 #include "bitformat.hpp"
 

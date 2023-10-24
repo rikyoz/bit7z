@@ -10,8 +10,6 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#include <system_error>
-
 #include "bitinputarchive.hpp"
 #include "internal/callback.hpp"
 #include "internal/macros.hpp"
@@ -20,6 +18,8 @@
 #include <7zip/Archive/IArchive.h>
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
+
+#include <system_error>
 
 using namespace NArchive::NExtract;
 

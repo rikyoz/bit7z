@@ -10,8 +10,6 @@
 #ifndef FSUTIL_HPP
 #define FSUTIL_HPP
 
-#include <string>
-
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "internal/fs.hpp"

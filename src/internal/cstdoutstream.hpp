@@ -10,14 +10,14 @@
 #ifndef CSTDOUTSTREAM_HPP
 #define CSTDOUTSTREAM_HPP
 
-#include <ostream>
-#include <cstdint>
-
 #include "internal/com.hpp"
 #include "internal/guids.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/IStream.h>
+
+#include <cstdint>
+#include <ostream>
 
 namespace bit7z {
 

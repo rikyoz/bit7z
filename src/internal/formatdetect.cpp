@@ -16,14 +16,6 @@
 // flag might be manually specified in the bitdefines.hpp header (included by formatdetect.hpp).
 #ifdef BIT7Z_AUTO_FORMAT
 
-#include <algorithm>
-
-#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
-#include <cwctype> // for std::iswdigit
-#else
-#include <cctype> // for std::isdigit
-#endif
-
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "internal/fsutil.hpp"
@@ -32,6 +24,14 @@
 #endif
 
 #include <7zip/IStream.h>
+
+#include <algorithm>
+
+#if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
+#include <cwctype> // for std::iswdigit
+#else
+#include <cctype> // for std::isdigit
+#endif
 
 /**
  * @brief Constexpr recursive implementation of the djb2 hashing function.

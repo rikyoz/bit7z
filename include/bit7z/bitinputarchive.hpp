@@ -9,13 +9,13 @@
 #ifndef BITINPUTARCHIVE_HPP
 #define BITINPUTARCHIVE_HPP
 
-#include <array>
-#include <map>
-
 #include "bitabstractarchivehandler.hpp"
 #include "bitarchiveitemoffset.hpp"
 #include "bitformat.hpp"
 #include "bitfs.hpp"
+
+#include <array>
+#include <map>
 
 struct IInStream;
 struct IInArchive;

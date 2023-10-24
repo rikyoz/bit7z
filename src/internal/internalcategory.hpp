@@ -10,10 +10,10 @@
 #ifndef INTERNALCATEGORY_HPP
 #define INTERNALCATEGORY_HPP
 
+#include "bitdefines.hpp"
+
 #include <system_error>
 #include <string>
-
-#include "bitdefines.hpp"
 
 namespace bit7z {
 

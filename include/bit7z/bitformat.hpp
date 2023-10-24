@@ -10,12 +10,11 @@
 #ifndef BITFORMAT_HPP
 #define BITFORMAT_HPP
 
-#include <bitset>
-#include <type_traits>
-
 #include "bitcompressionmethod.hpp"
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
+
+#include <type_traits>
 
 namespace bit7z {
 

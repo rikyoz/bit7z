@@ -10,11 +10,11 @@
 #ifndef CFILEOUTSTREAM_HPP
 #define CFILEOUTSTREAM_HPP
 
-#include <array>
-
 #include "bitdefines.hpp"
 #include "internal/cstdoutstream.hpp"
 #include "internal/fs.hpp"
+
+#include <array>
 
 namespace bit7z {
 

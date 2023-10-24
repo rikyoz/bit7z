@@ -10,12 +10,12 @@
 #ifndef BITITEMSVECTOR_HPP
 #define BITITEMSVECTOR_HPP
 
-#include <map>
-#include <memory>
-
 #include "bitabstractarchivehandler.hpp"
 #include "bitfs.hpp"
 #include "bittypes.hpp"
+
+#include <map>
+#include <memory>
 
 namespace bit7z {
 

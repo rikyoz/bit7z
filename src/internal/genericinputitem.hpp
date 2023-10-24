@@ -10,10 +10,10 @@
 #ifndef GENERICINPUTITEM_HPP
 #define GENERICINPUTITEM_HPP
 
-#include <cstdint>
-
 #include "bitgenericitem.hpp"
 #include "internal/fs.hpp"
+
+#include <cstdint>
 
 struct ISequentialInStream;
 

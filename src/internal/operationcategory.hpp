@@ -10,10 +10,10 @@
 #ifndef OPERATIONCATEGORY_HPP
 #define OPERATIONCATEGORY_HPP
 
+#include "bitdefines.hpp"
+
 #include <system_error>
 #include <string>
-
-#include "bitdefines.hpp"
 
 namespace bit7z {
 

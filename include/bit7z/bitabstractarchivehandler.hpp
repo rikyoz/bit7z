@@ -10,11 +10,11 @@
 #ifndef BITABSTRACTARCHIVEHANDLER_HPP
 #define BITABSTRACTARCHIVEHANDLER_HPP
 
-#include <cstdint>
-#include <functional>
-
 #include "bit7zlibrary.hpp"
 #include "bitdefines.hpp"
+
+#include <cstdint>
+#include <functional>
 
 namespace bit7z {
 

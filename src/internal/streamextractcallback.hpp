@@ -10,18 +10,15 @@
 #ifndef STREAMEXTRACTCALLBACK_HPP
 #define STREAMEXTRACTCALLBACK_HPP
 
-#include <vector>
-#include <map>
-
 #include "internal/extractcallback.hpp"
+
+#include <ostream>
 
 namespace bit7z {
 
-using std::ostream;
-
 class StreamExtractCallback final : public ExtractCallback {
     public:
-        StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream );
+        StreamExtractCallback( const BitInputArchive& inputArchive, std::ostream& outputStream );
 
         StreamExtractCallback( const StreamExtractCallback& ) = delete;
 
@@ -34,12 +31,12 @@ class StreamExtractCallback final : public ExtractCallback {
         ~StreamExtractCallback() override = default;
 
     private:
-        ostream& mOutputStream;
+        std::ostream& mOutputStream;
         CMyComPtr< IOutStream > mStdOutStream;
 
         void releaseStream() override;
 
-        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
+        auto getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
 }  // namespace bit7z

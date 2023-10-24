@@ -10,13 +10,13 @@
 #ifndef BITOUTPUTARCHIVE_HPP
 #define BITOUTPUTARCHIVE_HPP
 
-#include <istream>
-#include <set>
-
 #include "bitabstractarchivecreator.hpp"
 #include "bititemsvector.hpp"
 #include "bitexception.hpp" //for FailedFiles
 #include "bitpropvariant.hpp"
+
+#include <istream>
+#include <set>
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct ISequentialInStream;

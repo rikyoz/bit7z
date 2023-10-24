@@ -10,11 +10,11 @@
 #ifndef HRESULTCATEGORY_HPP
 #define HRESULTCATEGORY_HPP
 
-#include <system_error>
-#include <string>
-
 #include "bitdefines.hpp"
 #include "bitwindows.hpp"
+
+#include <system_error>
+#include <string>
 
 namespace bit7z {
 

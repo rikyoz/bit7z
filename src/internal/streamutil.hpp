@@ -10,9 +10,9 @@
 #ifndef STREAMUTIL_HPP
 #define STREAMUTIL_HPP
 
-#include <ios>
-
 #include "internal/windows.hpp"
+
+#include <ios>
 
 namespace bit7z {
 

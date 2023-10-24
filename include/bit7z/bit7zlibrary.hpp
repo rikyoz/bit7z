@@ -10,11 +10,11 @@
 #ifndef BIT7ZLIBRARY_HPP
 #define BIT7ZLIBRARY_HPP
 
-#include <string>
-
 #include "bitformat.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
+
+#include <string>
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct IInArchive;

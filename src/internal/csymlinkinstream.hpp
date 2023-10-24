@@ -10,11 +10,10 @@
 #ifndef CSYMLINKINSTREAM_HPP
 #define CSYMLINKINSTREAM_HPP
 
-#include <sstream>
-
-#include "bitdefines.hpp"
 #include "internal/cstdinstream.hpp"
 #include "internal/fs.hpp"
+
+#include <sstream>
 
 namespace bit7z {
 

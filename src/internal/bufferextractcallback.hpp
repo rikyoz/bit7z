@@ -10,10 +10,10 @@
 #ifndef BUFFEREXTRACTCALLBACK_HPP
 #define BUFFEREXTRACTCALLBACK_HPP
 
+#include "internal/extractcallback.hpp"
+
 #include <vector>
 #include <map>
-
-#include "internal/extractcallback.hpp"
 
 namespace bit7z {
 
