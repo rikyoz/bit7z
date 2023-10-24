@@ -112,7 +112,7 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
             return &BitFormat::Dmg;
         case str_hash( BIT7Z_STRING( "dll" ) ):
         case str_hash( BIT7Z_STRING( "exe" ) ):
-            //note: at least for now, we do not distinguish 7z SFX executables!
+            //note: at least for now, we do not distinguish 7z SFX executables.
             return &BitFormat::Pe;
         case str_hash( BIT7Z_STRING( "dylib" ) ):
             return &BitFormat::Macho;
@@ -273,7 +273,7 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
             return &BitFormat::Cpio;
         case kDebSignature:
             return &BitFormat::Deb;
-            /* DMG signature detection is not this simple
+            /* DMG signature detection is not so easy to detect.
             case 0x7801730D62626000:
                 return &BitFormat::Dmg;
             */

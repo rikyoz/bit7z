@@ -254,7 +254,7 @@ struct BitPropVariant final : public PROPVARIANT {
         /**
          * @brief BitPropVariant destructor.
          *
-         * @note This is not virtual to maintain the same memory layout of the base struct!
+         * @note This is not virtual to maintain the same memory layout of the base struct.
          */
         ~BitPropVariant();
 
@@ -279,7 +279,7 @@ struct BitPropVariant final : public PROPVARIANT {
         /**
          * @brief Assignment operator
          *
-         * @note this will work only for T types for which a BitPropVariant constructor is defined!
+         * @note this will work only for T types for which a BitPropVariant constructor is defined.
          *
          * @param value the value to be assigned to the object
          *

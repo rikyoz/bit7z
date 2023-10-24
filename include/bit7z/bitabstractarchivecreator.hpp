@@ -35,7 +35,7 @@ enum struct UpdateMode {
     None, ///< The creator will throw an exception (unless the OverwriteMode is not None).
     Append, ///< The creator will append the new items to the existing archive.
     Update, ///< New items whose path already exists in the archive will overwrite the old ones, other will be appended.
-    BIT7Z_DEPRECATED_ENUMERATOR( Overwrite, Update, "Since v4.0; please use the UpdateMode::Update enumerator." ) ///< @deprecated since v4.0; please use the UpdateMode::Update enumerator.
+    BIT7Z_DEPRECATED_ENUMERATOR( Overwrite, Update, "Since v4.0. Please use the UpdateMode::Update enumerator." ) ///< @deprecated since v4.0; please use the UpdateMode::Update enumerator.
 };
 
 /**
@@ -100,13 +100,13 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
 
         /**
          * @return the volume size (in bytes) used when creating multi-volume archives
-         *         (a 0 value means that all files are going in a single archive).
+         *         (a zero value means that all files are going in a single archive).
          */
         BIT7Z_NODISCARD auto volumeSize() const noexcept -> uint64_t;
 
         /**
          * @return the number of threads used when creating/updating an archive
-         *         (a 0 value means that it will use the 7-zip default value).
+         *         (a zero value means that it will use the 7-zip default value).
          */
         BIT7Z_NODISCARD auto threadsCount() const noexcept -> uint32_t;
 
@@ -210,14 +210,14 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         /**
          * @brief Sets whether the creator can update existing archives or not.
          *
-         * @deprecated since v4.0; it is provided just for an easier transition from the old v3 API.
+         * @deprecated since v4.0. It is provided just for an easier transition from the old v3 API.
          *
          * @note If set to false, a subsequent compression operation may throw an exception
          *       if it targets an existing archive.
          *
          * @param canUpdate if true, compressing operations will update existing archives.
          */
-        BIT7Z_DEPRECATED_MSG( "Since v4.0; please use the overloaded function that takes an UpdateMode enumerator." )
+        BIT7Z_DEPRECATED_MSG( "Since v4.0. Please use the overloaded function that takes an UpdateMode enumerator." )
         void setUpdateMode( bool canUpdate );
 
         /**

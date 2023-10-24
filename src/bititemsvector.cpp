@@ -27,7 +27,7 @@ void BitItemsVector::indexDirectory( const fs::path& inDir,
                                      FilterPolicy policy,
                                      IndexingOptions options ) {
     const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    // Note: if inDir is an invalid path, FilesystemItem constructor throws a BitException!
+    // Note: if inDir is an invalid path, FilesystemItem constructor throws a BitException.
     const FilesystemItem dirItem{ inDir, options.retainFolderStructure ? inDir : fs::path{}, symlinkPolicy };
     if ( filter.empty() && !dirItem.inArchivePath().empty() ) {
         mItems.emplace_back( std::make_unique< FilesystemItem >( dirItem ) );
@@ -49,7 +49,9 @@ void BitItemsVector::indexPaths( const std::vector< tstring >& inPaths, Indexing
 void BitItemsVector::indexPathsMap( const std::map< tstring, tstring >& inPaths, IndexingOptions options ) {
     const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     for ( const auto& filePair : inPaths ) {
-        const FilesystemItem item{ tstring_to_path( filePair.first ), tstring_to_path( filePair.second ), symlinkPolicy };
+        const FilesystemItem item{ tstring_to_path( filePair.first ),
+                                   tstring_to_path( filePair.second ),
+                                   symlinkPolicy };
         indexItem( item, options );
     }
 }
@@ -92,7 +94,7 @@ auto BitItemsVector::size() const -> size_t {
 }
 
 auto BitItemsVector::operator[]( GenericInputItemVector::size_type index ) const -> const GenericInputItem& {
-    // Note: here index is expected to be correct!
+    // Note: here index is expected to be correct.
     return *mItems[ index ];
 }
 

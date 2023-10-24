@@ -83,7 +83,7 @@ BitPropVariant::BitPropVariant() : PROPVARIANT() {
 }
 
 BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( other ) {
-    if ( vt == VT_BSTR ) { //until now, we've copied only the pointer to the string, hence we need a deep copy!
+    if ( vt == VT_BSTR ) { // Until now, we've copied only the pointer to the string, hence we need a deep copy.
         // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
         bstrVal = SysAllocStringByteLen( reinterpret_cast< LPCSTR >( other.bstrVal ),
                                          SysStringByteLen( other.bstrVal ) );
@@ -95,9 +95,9 @@ BitPropVariant::BitPropVariant( const BitPropVariant& other ) : PROPVARIANT( oth
 
 BitPropVariant::BitPropVariant( BitPropVariant&& other ) noexcept: PROPVARIANT( other ) {
     if ( vt == VT_BSTR ) {
-        /* this object and "other" share the pointer to the same string, but now the string belongs to this!
+        /* This object and "other" share the pointer to the same string, but now the string belongs to this.
          * Hence, if we set the other.bstrVal to nullptr, we prevent the bstrVal from being destroyed when
-         * the other object is deleted! */
+         * the other object is deleted. */
         other.bstrVal = nullptr;
     }
 }
@@ -257,7 +257,7 @@ auto BitPropVariant::getString() const -> tstring {
     if ( vt != VT_BSTR ) {
         throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
     }
-    //Note: a nullptr BSTR is semantically equivalent to an empty string!
+    // Note: a nullptr BSTR is semantically equivalent to an empty string.
     return bstrVal == nullptr ? tstring{} : BSTR_TO_TSTRING( bstrVal );
 }
 
@@ -496,7 +496,7 @@ void BitPropVariant::clear() noexcept {
 
 void BitPropVariant::internalClear() noexcept {
     if ( vt == VT_BSTR && bstrVal != nullptr ) {
-        ::SysFreeString( bstrVal ); //this was a string: since it is not needed anymore, we must free it!
+        ::SysFreeString( bstrVal ); // This object was a string: since it is not needed anymore, we must free it.
         bstrVal = nullptr;
     }
     wReserved1 = 0;

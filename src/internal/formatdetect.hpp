@@ -10,7 +10,7 @@
 #ifndef FORMATDETECT_HPP
 #define FORMATDETECT_HPP
 
-#include "bitdefines.hpp" // for BIT7Z_AUTO_FORMAT
+#include "bitdefines.hpp" // For BIT7Z_AUTO_FORMAT.
 
 #ifdef BIT7Z_AUTO_FORMAT
 

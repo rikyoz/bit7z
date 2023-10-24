@@ -194,7 +194,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
     REQUIRE ( set_current_dir( test_filesystem_dir ) );
 
     // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
-    //       directory, hence we must declare the vector inside the test case and not outside!
+    //       directory, hence we must declare the vector inside the test case and not outside.
     const std::array< TestItem, 28 > testItems{ {
         { ".",                                                 "" },
         { "./",                                                "" },

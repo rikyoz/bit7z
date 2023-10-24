@@ -94,7 +94,7 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD auto isEncrypted() const -> bool;
 
     protected:
-        uint32_t mItemIndex; //Note: it is not const since the subclass BitArchiveItemOffset can increment it!
+        uint32_t mItemIndex; // Note: it is not const since the subclass BitArchiveItemOffset can increment it.
 
         explicit BitArchiveItem( uint32_t itemIndex ) noexcept;
 };

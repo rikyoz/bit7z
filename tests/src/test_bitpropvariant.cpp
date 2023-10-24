@@ -385,7 +385,7 @@ auto variant_type() -> BitPropVariantType {
     if ( is_signed_with_size< T, 8 >::value ) {
         return BitPropVariantType::Int64;
     }
-    // Should not happen in the tests in which we use this function!
+    // Should not happen in the tests in which we use this function.
     return BitPropVariantType::Empty;
 }
 
@@ -663,26 +663,26 @@ TEST_CASE( "BitPropVariant: Moving string variants", "[BitPropVariant][copy]" ) 
 
     SECTION( "Move constructor" ) {
         // The move may invalidate propvariant.bstrVal (make it nullptr), so we copy the pointer
-        // and check the moved variant uses the same pointer!
+        // and check the moved variant uses the same pointer.
         BSTR testBstrVal = propVariant.bstrVal;
         const BitPropVariant moveVar( std::move( propVariant ) );
         REQUIRE( !moveVar.isEmpty() );
         REQUIRE( moveVar.vt == VT_BSTR );
         REQUIRE( moveVar.bstrVal ==
-                 testBstrVal ); //moveVar should point to the same BSTR object of the original propVariant!
+                 testBstrVal ); //moveVar should point to the same BSTR object of the original propVariant.
         REQUIRE( moveVar.getString() == kTestTstring );
         REQUIRE( moveVar.getNativeString() == kTestNativeString );
     }
 
     SECTION( "Move assignment" ) {
         // The move may invalidate propvariant.bstrVal (make it nullptr), so we copy the pointer
-        // and check if the moved variant uses the same pointer!
+        // and check if the moved variant uses the same pointer.
         BSTR testBstrVal = propVariant.bstrVal; // NOLINT(bugprone-use-after-move)
         const BitPropVariant moveVar = std::move( propVariant ); // cppcheck-suppress accessMoved
         REQUIRE( !moveVar.isEmpty() );
         REQUIRE( moveVar.vt == VT_BSTR );
         REQUIRE( moveVar.bstrVal ==
-                 testBstrVal ); //moveVar should point to the same BSTR object of the original propVariant!
+                 testBstrVal ); //moveVar should point to the same BSTR object of the original propVariant.
         REQUIRE( moveVar.getString() == kTestTstring );
         REQUIRE( moveVar.getNativeString() == kTestNativeString );
     }
@@ -743,7 +743,7 @@ TEST_CASE( "BitPropVariant: Equality operator", "[bitpropvariant][equality]" ) {
         SECTION( "Integers with different signedness" ) {
             first = 42; // NOLINT(*-magic-numbers)
             second = 42u; // NOLINT(*-magic-numbers)
-            //unsigned 42 (second) is different from first signed 42 (first)!
+            //unsigned 42 (second) is different from signed 42 (first).
         }
 
         SECTION( "Different booleans (1)" ) {

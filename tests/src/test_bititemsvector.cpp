@@ -584,7 +584,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
     }
 
     SECTION( "Wildcard filter *.folder (only files)" ) {
-        // Even if we are indexing non-recursively, the "dot.folder" matches the filter; hence, it must be indexed!
+        // Even if we are indexing non-recursively, the "dot.folder" matches the filter; hence, it must be indexed.
         IndexingOptions options{};
         options.onlyFiles = true;
 
@@ -1044,7 +1044,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
     }
 
     SECTION( "Wildcard filter *.folder" ) {
-        // Even if we are indexing non-recursively, the "dot.folder" matches the filter; hence, it must be indexed!
+        // Even if we are indexing non-recursively, the "dot.folder" matches the filter; hence, it must be indexed.
         REQUIRE_NOTHROW( itemsVector.indexDirectory( ".", BIT7Z_STRING( "*.folder" ),
                                                       FilterPolicy::Include, options ) );
 

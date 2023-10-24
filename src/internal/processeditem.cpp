@@ -102,7 +102,7 @@ void ProcessedItem::loadModifiedTime( const BitInputArchive& inputArchive, uint3
             break;
 
         default:
-            throw BitException( "Could not load last modified time of item", make_hresult_code( E_FAIL ) );
+            throw BitException( "Could not load the last modified time of item", make_hresult_code( E_FAIL ) );
     }
 }
 

@@ -31,8 +31,6 @@ using std::istream;
 
 using DeletedItems = std::set< uint32_t >;
 
-/* General note: I tried my best to explain how indices work here, but it is a bit complex. */
-
 /* We introduce a strong index type to differentiate between indices in the output
  * archive (uint32_t, as used by the UpdateCallback), and the corresponding indexes
  * in the input archive (InputIndex). In this way, we avoid implicit conversions
@@ -303,7 +301,7 @@ class BitOutputArchive {
          *  - Position i = index in range [0, itemsCount() - 1] used by UpdateCallback.
          *  - Value at position i = corresponding index in the input archive (type InputIndex).
          *
-         * If there are some deleted items, then i != mInputIndices[i]
+         * If there are some deleted items, then 'i' is not equal to mInputIndices[i]
          * (at least for values of i greater than the index of the first deleted item).
          *
          * Otherwise, if there are no deleted items, the vector is empty, and itemInputIndex(i)

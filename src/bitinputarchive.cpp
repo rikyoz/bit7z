@@ -196,7 +196,7 @@ auto BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const -> HRES
 auto BitInputArchive::detectedFormat() const noexcept -> const BitInFormat& {
 #ifdef BIT7Z_AUTO_FORMAT
     // Defensive programming: for how the archive format is detected,
-    // a correct BitInputArchive instance should have a non-null mDetectedFormat!
+    // a correct BitInputArchive instance should have a non-null mDetectedFormat.
     return mDetectedFormat == nullptr ? BitFormat::Auto : *mDetectedFormat;
 #else
     return *mDetectedFormat;
@@ -289,7 +289,7 @@ void BitInputArchive::extractTo( std::map< tstring, std::vector< byte_t > >& out
 }
 
 void BitInputArchive::test() const {
-    map< tstring, vector< byte_t > > dummyMap; // output map (not used since we are testing!)
+    map< tstring, vector< byte_t > > dummyMap; // output map (not used since we are testing).
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
     extract_arc( mInArchive, {}, extractCallback, ExtractMode::Test );
 }
@@ -301,7 +301,7 @@ void BitInputArchive::testItem( uint32_t index ) const {
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    map< tstring, vector< byte_t > > dummyMap; // output map (not used since we are testing!)
+    map< tstring, vector< byte_t > > dummyMap; // output map (not used since we are testing).
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
     extract_arc( mInArchive, { index }, extractCallback, ExtractMode::Test );
 }

@@ -37,7 +37,7 @@ auto RenamedItem::getStream( ISequentialInStream** /*inStream*/ ) const noexcept
 }
 
 auto RenamedItem::hasNewData() const noexcept -> bool {
-    return false; //just a new property (i.e., path/name), no new data!
+    return false; // just a new property (i.e., path/name), no new data.
 }
 
 auto RenamedItem::isDir() const -> bool {

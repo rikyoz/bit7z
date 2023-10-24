@@ -16,7 +16,7 @@
 
 #include <Common/MyTypes.h>
 
-/* Note: we must avoid including other headers of p7zip, like stdafx.h! */
+/* Note: we must avoid including other headers of p7zip, like stdafx.h. */
 
 /* Making sure constants and type aliases declared in bitwindows.hpp are usable by p7zip
  * as if they were not inside the bit7z namespace. */

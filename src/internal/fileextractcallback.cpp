@@ -28,7 +28,7 @@ FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, c
       mRetainDirectories( inputArchive.handler().retainDirectories() ) {}
 
 void FileExtractCallback::releaseStream() {
-    mFileOutStream.Release(); // We need to release the file to change its modified time!
+    mFileOutStream.Release(); // We need to release the file to change its modified time.
 }
 
 auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
@@ -41,7 +41,7 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
         return E_FAIL;
     }
 
-    mFileOutStream.Release(); // We need to release the file to change its modified time!
+    mFileOutStream.Release(); // We need to release the file to change its modified time.
 
     if ( extractMode() != ExtractMode::Extract ) { // No need to set attributes or modified time of the file.
         return result;

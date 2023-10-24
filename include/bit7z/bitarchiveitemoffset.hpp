@@ -40,7 +40,7 @@ class BitArchiveItemOffset final : public BitArchiveItem {
 
     private:
         /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::ConstIterator,
-         * to be CopyConstructible so that stl algorithms can be used with ConstIterator! */
+         * to be CopyConstructible so that stl algorithms can be used with ConstIterator. */
         const BitInputArchive* mArc;
 
         BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept;

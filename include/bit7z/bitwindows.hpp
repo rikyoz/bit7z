@@ -35,17 +35,17 @@
 #include <cstdint>
 #include <cstddef>
 
-// Avoiding accidentally including p7zip's MyWindows.h, so that its inclusion is not needed in client code!
+// Avoiding accidentally including p7zip's MyWindows.h, so that its inclusion is not needed in client code.
 #ifndef __MYWINDOWS_H
 #define __MYWINDOWS_H // NOLINT
 #endif
 
-// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code!
+// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code.
 #ifndef __MY_WINDOWS_H
 #define __MY_WINDOWS_H // NOLINT
 #endif
 
-// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code!
+// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code.
 #ifndef ZIP7_INC_MY_WINDOWS_H // 7-zip 23.01+
 #define ZIP7_INC_MY_WINDOWS_H
 #endif

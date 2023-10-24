@@ -74,7 +74,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
         /**
          * @brief Compresses a group of files.
          *
-         * @note Any path to a directory or to a not-existing file will be ignored!
+         * @note Any path to a directory or to a not-existing file will be ignored.
          *
          * @param inFiles  the path (relative or absolute) to the input files.
          * @param outFile  the path (relative or absolute) to the output archive file.
@@ -86,7 +86,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          *
          * @param inDir        the path (relative or absolute) to the input directory.
          * @param outFile      the path (relative or absolute) to the output archive file.
-         * @param recursive    (optional) if true, it searches files inside the sub-folders of inDir.
+         * @param recursive    (optional) if true, it searches files inside the subfolders of inDir.
          * @param filter       (optional) the filter to use when searching files inside inDir.
          */
         void compressFiles( const tstring& inDir,

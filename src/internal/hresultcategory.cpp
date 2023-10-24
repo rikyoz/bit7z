@@ -127,7 +127,7 @@ auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -
                  * Note 3: on Linux, most errorValue values returned by p7zip are POSIX error codes wrapped
                  * into a HRESULT value, hence the following line will return the correct error_condition.
                  * Some error codes returned by p7zip are, however, equal to the Windows code: such cases are
-                 * taken into account in the specific cases above!
+                 * taken into account in the specific cases above.
                  */
                 return std::system_category().default_error_condition( HRESULT_CODE( errorValue ) );
 #else

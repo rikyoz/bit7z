@@ -231,7 +231,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         /**
          * @brief Tests the given archive without extracting its content.
          *
-         * If the archive is not valid, a BitException is thrown!
+         * If the archive is not valid, a BitException is thrown.
          *
          * @param inArchive   the input archive to be tested.
          */

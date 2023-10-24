@@ -55,7 +55,7 @@ auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
         mHandler.fileCallback()( fullPath );
     }
 
-    //Note: using [] operator it creates the buffer if it does not already exist!
+    // Note: using [] operator it creates the buffer if it does not already exist.
     auto& outBuffer = mBuffersMap[ fullPath ];
     if ( !outBuffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {

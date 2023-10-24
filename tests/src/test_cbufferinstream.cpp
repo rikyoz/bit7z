@@ -99,9 +99,9 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
                          HRESULT_WIN32_ERROR_NEGATIVE_SEEK );
                 REQUIRE( newPosition == 0 );
 
-                // Note: The end of the stream is one element past the last one in the buffer,
-                //       so if we seek to an offset equal to the size of the buffer,
-                //       we reached the first element in the buffer!
+                /* Note: The end of the stream is one element past the last one in the buffer,
+                         so if we seek to an offset equal to the size of the buffer,
+                         we reached the first element in the buffer. */
                 REQUIRE( inStream.Seek( offset, STREAM_SEEK_END, &newPosition ) == S_OK );
                 REQUIRE( newPosition == 0 );
 
@@ -175,7 +175,7 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
                     SECTION( "To a position before the beginning of the stream (Boundary Value Analysis)" ) {
                         REQUIRE( inStream.Seek( -midOffset - 1, STREAM_SEEK_CUR, &newPosition ) ==
                                  HRESULT_WIN32_ERROR_NEGATIVE_SEEK );
-                        REQUIRE( newPosition == midOffset ); // The position within the stream didn't change!
+                        REQUIRE( newPosition == midOffset ); // The position within the stream didn't change.
                     }
 
                     SECTION( "To the end of the stream (Boundary Value Analysis)" ) {
@@ -215,7 +215,7 @@ TEST_CASE( "CBufferInStream: Reading an empty buffer stream", "[cbufferinstream]
     SECTION( "Trying to read more characters than the ones in the buffer" ) {
         REQUIRE( inStream.Read( &data, 42, &processedSize ) == S_OK );
         REQUIRE( processedSize == 0 );
-        REQUIRE( data == static_cast< byte_t >( 'A' ) ); // data was not changed!
+        REQUIRE( data == static_cast< byte_t >( 'A' ) ); // data was not changed.
     }
 }
 
@@ -343,14 +343,14 @@ TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][readin
 
         auto result = static_cast< byte_t >( 'A' ); // A character not in the buffer
         REQUIRE( inStream.Read( &result, 1, &processedSize ) == S_OK ); // Not an error,
-        REQUIRE( processedSize == 0 ); // but we didn't read anything, as expected!
-        REQUIRE( result == static_cast< byte_t >( 'A' ) ); // And hence, the result value was not changed!
+        REQUIRE( processedSize == 0 ); // but we didn't read anything, as expected.
+        REQUIRE( result == static_cast< byte_t >( 'A' ) ); // And hence, the result value was not changed.
     }
 
     SECTION( "Reading nothing from the stream" ) {
         auto result  = static_cast< byte_t >( 'A' ); // A character not in the buffer
         REQUIRE( inStream.Read( &result, 0, &processedSize ) == S_OK ); // Not an error,
-        REQUIRE( processedSize == 0 ); // but we didn't read anything, as expected!
-        REQUIRE( result == static_cast< byte_t >( 'A' ) ); // And hence, the result value was not changed!
+        REQUIRE( processedSize == 0 ); // but we didn't read anything, as expected.
+        REQUIRE( result == static_cast< byte_t >( 'A' ) ); // And hence, the result value was not changed.
     }
 }

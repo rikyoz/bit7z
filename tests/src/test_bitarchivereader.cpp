@@ -50,13 +50,13 @@ using namespace bit7z::test::filesystem;
 
 // Compile-time checks for BitArchiveItemInfo
 static_assert( std::is_copy_constructible< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not copy-constructible!" );
+               "BitArchiveItemInfo is not copy-constructible." );
 static_assert( std::is_copy_assignable< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not copy-assignable!" );
+               "BitArchiveItemInfo is not copy-assignable." );
 static_assert( std::is_move_constructible< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not move-constructible!" );
+               "BitArchiveItemInfo is not move-constructible." );
 static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not move-assignable!" );
+               "BitArchiveItemInfo is not move-assignable." );
 
 #define REQUIRE_ARCHIVE_TESTS( info )                                              \
     do {                                                                           \
@@ -512,11 +512,11 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
 auto test_open_rar_archive( const Bit7zLibrary& lib, const tstring& inFile ) -> const BitInFormat& {
     try {
         const BitArchiveReader info( lib, inFile, BitFormat::Rar );
-        //if BitArchiveReader constructor did not throw an exception, the archive is RAR (< 5.0)!
+        //if BitArchiveReader constructor did not throw an exception, the archive is RAR (< 5.0).
         return BitFormat::Rar;
     } catch ( const BitException& ) {
         /* the archive is not a RAR, and if it is not even a RAR5,
-           the following line will throw an exception (which we do not catch)! */
+           the following line will throw an exception (which we do not catch). */
         const BitArchiveReader info( lib, inFile, BitFormat::Rar5 );
         return BitFormat::Rar5;
     }

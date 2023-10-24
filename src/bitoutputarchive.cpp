@@ -183,8 +183,8 @@ void BitOutputArchive::compressOut( IOutArchive* outArc,
 }
 
 void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* updateCallback ) {
-    // Note: if mInputArchive != nullptr, newArc will actually point to the same IInArchive object used by the old_arc
-    // (see initUpdatableArchive function of BitInputArchive)!
+    // Note: if mInputArchive is not nullptr, newArc will actually point to the same IInArchive object
+    // used by the old_arc (see initUpdatableArchive function of BitInputArchive).
     const bool updatingArchive = mInputArchive != nullptr && tstring_to_path( mInputArchive->archivePath() ) == outFile;
     const CMyComPtr< IOutArchive > newArc = initOutArchive();
     CMyComPtr< IOutStream > outStream = initOutFileStream( outFile, updatingArchive );
@@ -339,7 +339,7 @@ auto BitOutputArchive::hasNewData( uint32_t index ) const noexcept -> bool {
 
 auto BitOutputArchive::hasNewProperties( uint32_t index ) const noexcept -> bool {
     /* Note: in BitOutputArchive, you can only add new items or overwrite (delete + add) existing ones.
-     * So if we have new data, we also have new properties! This is not true for BitArchiveEditor! */
+     * So if we have new data, we also have new properties; this is not true for BitArchiveEditor. */
     return hasNewData( index );
 }
 

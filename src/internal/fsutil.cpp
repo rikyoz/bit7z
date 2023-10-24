@@ -40,7 +40,7 @@ auto fsutil::extension( const fs::path& path ) -> tstring {
         return {};
     }
 
-    // We don't want the leading dot of the extension!
+    // Removing the leading dot of the extension.
     const tstring result = path_to_tstring( ext );
     return result.substr( 1 );
 }
