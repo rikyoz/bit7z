@@ -16,10 +16,8 @@
 #include "internal/util.hpp"
 #include "internal/windows.hpp"
 
-#include <iostream>
 #include <cstring>
 #include <limits>
-
 
 auto wcsnlen_s( const wchar_t* str, size_t maxSize ) -> size_t {
     if ( str == nullptr || maxSize == 0 ) {
@@ -74,7 +72,7 @@ auto AllocStringBuffer( LPCSTR str, uint32_t byteLength ) -> BSTR {
         return nullptr;
     }
 
-    // Storing the number of bytes of the BSTR as a prefix of it.
+    // Storing the BSTR's number of bytes as a prefix of it.
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     *reinterpret_cast< bstr_prefix_t* >( bstrBuffer ) = byteLength;
 
@@ -102,14 +100,16 @@ auto SysAllocStringByteLen( LPCSTR str, UINT length ) -> BSTR {
 }
 
 void SysFreeString( BSTR bstrString ) { // NOLINT(readability-non-const-parameter)
-    if ( bstrString != nullptr ) {
-        // We must delete the original memory buffer, which starts from the BSTR length prefix
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
-        auto* bstrBuffer = reinterpret_cast< byte_t* >( bstrString ) - sizeof( bstr_prefix_t );
-
-        // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
-        std::free( static_cast< void* >( bstrBuffer ) );
+    if ( bstrString == nullptr ) {
+        return;
     }
+
+    // We must delete the original memory buffer, which starts from the BSTR length prefix
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
+    auto* bstrBuffer = reinterpret_cast< byte_t* >( bstrString ) - sizeof( bstr_prefix_t );
+
+    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
+    std::free( static_cast< void* >( bstrBuffer ) );
 }
 
 auto SysStringByteLen( BSTR bstrString ) -> UINT { // NOLINT(readability-non-const-parameter)
