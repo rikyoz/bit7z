@@ -11,10 +11,22 @@
  */
 
 #include "bitarchivereader.hpp"
+#include "bitarchiveitem.hpp"
+#include "bitpropvariant.hpp"
+#include "bitarchiveiteminfo.hpp"
+#include "bitinputarchive.hpp"
+#include "bitabstractarchiveopener.hpp"
+#include "bitformat.hpp"
+#include "bittypes.hpp"
+#include "bit7zlibrary.hpp"
 #include "internal/operationresult.hpp"
 
 #include <algorithm>
+#include <istream>
+#include <map>
 #include <numeric>
+#include <system_error>
+#include <vector>
 
 namespace bit7z {
 

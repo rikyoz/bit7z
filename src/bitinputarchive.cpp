@@ -22,6 +22,7 @@
 #include "internal/cbufferinstream.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/cmultivolumeinstream.hpp"
+#include "internal/extractcallback.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
@@ -32,6 +33,8 @@
 #ifdef BIT7Z_AUTO_FORMAT
 #include "internal/formatdetect.hpp"
 #endif
+
+#include <vector>
 
 using namespace NWindows;
 using namespace NArchive;

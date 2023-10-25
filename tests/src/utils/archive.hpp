@@ -13,6 +13,12 @@
 #include "filesystem.hpp"
 #include "format.hpp"
 
+#include <bit7z/bitdefines.hpp>
+#include <bit7z/bitformat.hpp>
+
+#include <cstddef>
+#include <string>
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 

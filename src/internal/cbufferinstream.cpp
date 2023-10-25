@@ -16,8 +16,10 @@
 #pragma warning(disable:4996)
 #endif
 
+#include "bittypes.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/bufferutil.hpp"
+#include "internal/util.hpp"
 
 #include <algorithm> //for std::copy_n
 

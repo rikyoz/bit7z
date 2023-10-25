@@ -12,8 +12,11 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileoutstream.hpp"
+#include "internal/cstdoutstream.hpp"
 #include "internal/stringutil.hpp"
 
+#include <ios>
+#include <system_error>
 #include <utility>
 
 namespace bit7z {

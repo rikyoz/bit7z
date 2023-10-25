@@ -12,7 +12,11 @@
 
 #include <catch2/catch.hpp>
 
+#include <bitwindows.hpp>
 #include <internal/util.hpp>
+
+#include <cstdint>
+#include <limits>
 
 using bit7z::check_overflow;
 using bit7z::clamp_cast;

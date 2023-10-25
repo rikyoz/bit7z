@@ -13,8 +13,14 @@
 #ifndef BITCOMPRESSOR_HPP
 #define BITCOMPRESSOR_HPP
 
+#include "bitformat.hpp"
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
 
+#include <ostream>
+#include <type_traits>
 #include <vector>
 
 namespace bit7z {

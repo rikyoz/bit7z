@@ -10,9 +10,20 @@
 #ifndef BITARCHIVEEDITOR_HPP
 #define BITARCHIVEEDITOR_HPP
 
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitarchivewriter.hpp"
+#include "bitdefines.hpp"
+#include "bitformat.hpp"
+#include "bititemsvector.hpp"
+#include "bitpropvariant.hpp"
+#include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
 
+#include <istream>
 #include <unordered_map>
+#include <vector>
 
 namespace bit7z {
 

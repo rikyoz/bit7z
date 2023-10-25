@@ -14,22 +14,22 @@
 
 #include "utils/filesystem.hpp"
 
-#include <bit7z/bitexception.hpp>
+#include <bit7z/bitabstractarchivehandler.hpp>
 #include <bit7z/bititemsvector.hpp>
+#include <bit7z/bittypes.hpp>
 #include <internal/genericinputitem.hpp>
 
-#include <string>
+#include <algorithm>
 #include <iostream>
-#include <vector>
+#include <iterator>
 #include <map>
+#include <string>
+#include <vector>
 
-using std::wcout;
-using std::endl;
 using std::vector;
 using std::map;
 
 using bit7z::tstring;
-using bit7z::BitException;
 using bit7z::BitItemsVector;
 using bit7z::IndexingOptions;
 using namespace bit7z;

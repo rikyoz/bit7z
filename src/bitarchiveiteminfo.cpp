@@ -11,7 +11,10 @@
  */
 
 #include "bitarchiveiteminfo.hpp"
+#include "bitarchiveitem.hpp"
+#include "bitpropvariant.hpp"
 
+#include <cstdint>
 #include <map>
 
 namespace bit7z {

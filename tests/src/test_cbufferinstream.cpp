@@ -15,8 +15,11 @@
 
 #include <catch2/catch.hpp>
 
+#include <bit7z/bitwindows.hpp>
+#include <bit7z/bittypes.hpp>
 #include <internal/cbufferinstream.hpp>
 
+#include <cstring>
 #include <limits>
 
 using bit7z::byte_t;

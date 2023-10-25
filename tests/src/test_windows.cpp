@@ -14,11 +14,10 @@
 
 #include <catch2/catch.hpp>
 
-#include <array>
-#include <cstring>
-#include <iostream>
-
+#include <bitwindows.hpp>
 #include <internal/windows.hpp>
+
+#include <cstring>
 
 TEST_CASE( "winapi: Checking error code macros correct values", "[winapi]" ) {
 #ifdef MY__E_ERROR_NEGATIVE_SEEK

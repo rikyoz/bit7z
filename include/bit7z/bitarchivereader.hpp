@@ -10,10 +10,20 @@
 #ifndef BITARCHIVEREADER_HPP
 #define BITARCHIVEREADER_HPP
 
+#include "bit7zlibrary.hpp"
 #include "bitabstractarchiveopener.hpp"
 #include "bitarchiveiteminfo.hpp"
+#include "bitdefines.hpp"
 #include "bitexception.hpp"
+#include "bitformat.hpp"
 #include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+
+#include <istream>
+#include <map>
+#include <system_error>
+#include <vector>
 
 struct IInArchive;
 struct IOutArchive;

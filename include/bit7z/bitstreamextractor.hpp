@@ -10,7 +10,10 @@
 #ifndef BITSTREAMEXTRACTOR_HPP
 #define BITSTREAMEXTRACTOR_HPP
 
+#include "bitdefines.hpp"
 #include "bitextractor.hpp"
+
+#include <istream>
 
 namespace bit7z {
 

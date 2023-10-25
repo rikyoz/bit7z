@@ -12,6 +12,7 @@
 
 #include "bit7zlibrary.hpp"
 #include "bitdefines.hpp"
+#include "bittypes.hpp"
 
 #include <cstdint>
 #include <functional>

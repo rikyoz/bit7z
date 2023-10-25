@@ -9,10 +9,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-
-#include "bitexception.hpp"
 #include "internal/bufferextractcallback.hpp"
+
+#include "bitabstractarchivehandler.hpp"
+#include "bitexception.hpp"
+#include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/cbufferoutstream.hpp"
+#include "internal/extractcallback.hpp"
 #include "internal/fs.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"

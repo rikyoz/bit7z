@@ -11,12 +11,17 @@
  */
 
 #include "internal/bufferitem.hpp"
+
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
+#include <cstdint>
 #include <utility>
+#include <vector>
 
 namespace bit7z {
 

@@ -10,8 +10,11 @@
 #ifndef BITABSTRACTARCHIVEOPENER_HPP
 #define BITABSTRACTARCHIVEOPENER_HPP
 
+#include "bit7zlibrary.hpp"
 #include "bitabstractarchivehandler.hpp"
+#include "bitdefines.hpp"
 #include "bitformat.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
 

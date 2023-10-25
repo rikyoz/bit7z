@@ -12,13 +12,31 @@
 
 #include "bitarchiveeditor.hpp"
 
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivecreator.hpp"
+#include "bitarchiveitemoffset.hpp"
+#include "bitarchivewriter.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "bitoutputarchive.hpp"
+#include "bititemsvector.hpp"
+#include "bitpropvariant.hpp"
+#include "bitformat.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
 #include "internal/bufferitem.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/renameditem.hpp"
 #include "internal/stdinputitem.hpp"
 #include "internal/stringutil.hpp"
+
+#include <algorithm>
+#include <cstdint>
+#include <istream>
+#include <memory>
+#include <string>
+#include <system_error>
+#include <vector>
 
 namespace bit7z {
 

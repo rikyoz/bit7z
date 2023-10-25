@@ -9,13 +9,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
+#include "internal/cmultivolumeoutstream.hpp"
 
 #include "bitexception.hpp"
-#include "internal/cmultivolumeoutstream.hpp"
+#include "bittypes.hpp"
+#include "internal/cvolumeoutstream.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
+#include <algorithm>
 #include <utility>
+#include <system_error>
 
 namespace bit7z {
 

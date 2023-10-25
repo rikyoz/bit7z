@@ -10,7 +10,9 @@
 #ifndef BITFILEEXTRACTOR_HPP
 #define BITFILEEXTRACTOR_HPP
 
+#include "bitdefines.hpp"
 #include "bitextractor.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
 

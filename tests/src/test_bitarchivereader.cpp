@@ -16,9 +16,14 @@
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
 
+#include <bit7z/bit7zlibrary.hpp>
+#include <bit7z/bitarchiveiteminfo.hpp>
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
+#include <bit7z/bitpropvariant.hpp>
+#include <bit7z/bittypes.hpp>
+#include <internal/fs.hpp>
 #include <internal/stringutil.hpp>
 #include <internal/windows.hpp>
 
@@ -29,6 +34,10 @@
 
 // For checking posix file attributes.
 #include <sys/stat.h>
+
+#include <cstddef>
+#include <cstdint>
+#include <type_traits>
 
 // MSVC doesn't define these macros!
 #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)

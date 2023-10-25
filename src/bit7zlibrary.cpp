@@ -11,12 +11,18 @@
  */
 
 #include "bit7zlibrary.hpp"
+
+#include "bitdefines.hpp"
 #include "bitexception.hpp"
 #include "bitformat.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
 #include "internal/com.hpp"
 #include "internal/guids.hpp"
 
 #include <7zip/Archive/IArchive.h>
+
+#include <system_error>
 
 #ifdef _WIN32
 #include "internal/stringutil.hpp"

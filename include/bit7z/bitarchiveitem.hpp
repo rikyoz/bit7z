@@ -10,7 +10,10 @@
 #ifndef BITARCHIVEITEM_HPP
 #define BITARCHIVEITEM_HPP
 
+#include "bitdefines.hpp"
 #include "bitgenericitem.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
 

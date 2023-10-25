@@ -10,6 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitoutputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bitwindows.hpp"
+#include "internal/callback.hpp"
 #include "internal/cfileoutstream.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/stringutil.hpp"

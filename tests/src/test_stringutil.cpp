@@ -13,6 +13,9 @@
 
 #include <internal/stringutil.hpp>
 
+#include <string>
+#include <tuple>
+
 #if !defined( _WIN32 ) || ( !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE ) )
 
 #define NARROWING_TEST_STR( str ) std::make_tuple( L##str, (str) )

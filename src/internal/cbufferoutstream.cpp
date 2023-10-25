@@ -11,9 +11,13 @@
  */
 
 #include "internal/cbufferoutstream.hpp"
+
+#include "bittypes.hpp"
 #include "internal/bufferutil.hpp"
+#include "internal/util.hpp"
 
 #include <algorithm> //for std::copy_n
+#include <iterator>
 
 namespace bit7z {
 

@@ -15,8 +15,13 @@
 #endif
 
 #include "internal/cmultivolumeinstream.hpp"
+
+#include "bittypes.hpp"
+#include "internal/fs.hpp"
 #include "internal/util.hpp"
 #include "internal/fsutil.hpp"
+
+#include <cstddef>
 
 namespace bit7z {
 

@@ -18,6 +18,7 @@
 #include <regex>
 #endif
 
+#include <cstddef>
 #include <string>
 #include <vector>
 

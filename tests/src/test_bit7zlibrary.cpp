@@ -11,13 +11,16 @@
  */
 #include <catch2/catch.hpp>
 
+#include "utils/shared_lib.hpp"
+
 #include <bit7z/bit7zlibrary.hpp>
+#include <bit7z/bittypes.hpp>
 
 #if !defined(__GNUC__) || __GNUC__ >= 5
 #include <bit7z/bitexception.hpp>
 #endif
 
-#include "utils/shared_lib.hpp"
+#include <system_error>
 
 namespace bit7z {
 namespace test {

@@ -11,6 +11,9 @@
 #define BITSTREAMCOMPRESSOR_HPP
 
 #include "bitcompressor.hpp"
+#include "bitdefines.hpp"
+
+#include <istream>
 
 namespace bit7z {
 

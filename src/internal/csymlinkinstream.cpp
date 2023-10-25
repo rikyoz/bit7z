@@ -11,7 +11,12 @@
  */
 
 #include "internal/csymlinkinstream.hpp"
+
+#include "internal/cstdinstream.hpp"
 #include "internal/util.hpp"
+
+#include <system_error>
+#include <string>
 
 namespace bit7z {
 

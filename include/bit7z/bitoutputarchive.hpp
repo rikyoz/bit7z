@@ -11,12 +11,20 @@
 #define BITOUTPUTARCHIVE_HPP
 
 #include "bitabstractarchivecreator.hpp"
+#include "bitinputarchive.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "bititemsvector.hpp"
 #include "bitexception.hpp" //for FailedFiles
 #include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 
 #include <istream>
+#include <map>
+#include <memory>
+#include <ostream>
 #include <set>
+#include <utility>
+#include <vector>
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct ISequentialInStream;

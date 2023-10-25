@@ -11,12 +11,23 @@
  */
 #include <catch2/catch.hpp>
 
+#include "utils/shared_lib.hpp"
+
+#include <bit7z/bit7zlibrary.hpp>
+#include <bit7z/bitabstractarchivecreator.hpp>
+#include <bit7z/bitabstractarchivehandler.hpp>
 #include <bit7z/bitarchivewriter.hpp>
+#include <bit7z/bitcompressionmethod.hpp>
+#include <bit7z/bitcompressionlevel.hpp>
 #include <bit7z/bitfilecompressor.hpp>
+#include <bit7z/bitformat.hpp>
 #include <bit7z/bitmemcompressor.hpp>
 #include <bit7z/bitstreamcompressor.hpp>
+#include <bit7z/bittypes.hpp>
 
-#include "utils/shared_lib.hpp"
+#include <limits>
+#include <cstdint>
+#include <tuple>
 
 using namespace bit7z;
 using bit7z::Bit7zLibrary;

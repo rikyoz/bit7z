@@ -14,6 +14,9 @@
 #include "internal/streamutil.hpp"
 #include "internal/util.hpp"
 
+#include <istream>
+#include <ios>
+
 namespace bit7z {
 
 CStdInStream::CStdInStream( std::istream& inputStream ) : mInputStream( inputStream ) {}

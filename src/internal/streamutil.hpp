@@ -12,6 +12,7 @@
 
 #include "internal/windows.hpp"
 
+#include <cstdint>
 #include <ios>
 
 namespace bit7z {

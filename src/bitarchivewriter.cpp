@@ -10,8 +10,15 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitarchivewriter.hpp"
-#include "internal/fs.hpp"
+#include "bitformat.hpp"
+#include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
+
+#include <istream>
+#include <vector>
 
 namespace bit7z {
 

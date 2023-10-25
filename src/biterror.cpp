@@ -14,6 +14,8 @@
 #include "internal/failuresourcecategory.hpp"
 #include "internal/internalcategory.hpp"
 
+#include <system_error>
+
 namespace bit7z {
 
 auto make_error_code( BitError error ) -> std::error_code {

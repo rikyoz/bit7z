@@ -10,6 +10,7 @@
 #ifndef BUFFERITEM_HPP
 #define BUFFERITEM_HPP
 
+#include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "internal/genericinputitem.hpp"
 

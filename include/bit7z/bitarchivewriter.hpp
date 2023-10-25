@@ -10,7 +10,14 @@
 #ifndef BITARCHIVEWRITER_HPP
 #define BITARCHIVEWRITER_HPP
 
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivecreator.hpp"
+#include "bitformat.hpp"
 #include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
+
+#include <istream>
+#include <vector>
 
 namespace bit7z {
 

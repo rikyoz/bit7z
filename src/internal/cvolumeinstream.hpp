@@ -10,6 +10,7 @@
 #ifndef CVOLUMEINSTREAM_HPP
 #define CVOLUMEINSTREAM_HPP
 
+#include "bitdefines.hpp"
 #include "internal/cfileinstream.hpp"
 
 namespace bit7z {

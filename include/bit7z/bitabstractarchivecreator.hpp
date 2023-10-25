@@ -10,14 +10,20 @@
 #ifndef BITABSTRACTARCHIVECREATOR_HPP
 #define BITABSTRACTARCHIVECREATOR_HPP
 
+#include "bit7zlibrary.hpp"
 #include "bitabstractarchivehandler.hpp"
 #include "bitcompressionlevel.hpp"
 #include "bitcompressionmethod.hpp"
+#include "bitdefines.hpp"
 #include "bitformat.hpp"
 #include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 
 #include <map>
-#include <memory>
+#include <string>
+#include <type_traits>
+#include <ostream>
 
 struct IOutStream;
 struct ISequentialOutStream;

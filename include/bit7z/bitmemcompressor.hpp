@@ -11,6 +11,10 @@
 #define BITMEMCOMPRESSOR_HPP
 
 #include "bitcompressor.hpp"
+#include "bitdefines.hpp"
+#include "bittypes.hpp"
+
+#include <vector>
 
 namespace bit7z {
 

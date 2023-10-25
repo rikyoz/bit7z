@@ -14,7 +14,10 @@
 #include "internal/streamutil.hpp"
 #include "internal/util.hpp"
 
+#include <algorithm>
+#include <ios>
 #include <iterator>
+#include <ostream>
 
 namespace bit7z {
 

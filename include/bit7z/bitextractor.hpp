@@ -10,12 +10,24 @@
 #ifndef BITEXTRACTOR_HPP
 #define BITEXTRACTOR_HPP
 
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "bitabstractarchiveopener.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "bitformat.hpp"
 #include "bitinputarchive.hpp"
+#include "bittypes.hpp"
 
 #include <algorithm>
+#include <functional>
+#include <vector>
+#include <map>
+#include <ostream>
+
+#ifdef BIT7Z_REGEX_MATCHING
+#include <regex>
+#endif
 
 namespace bit7z {
 

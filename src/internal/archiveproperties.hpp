@@ -10,10 +10,14 @@
 #ifndef ARCHIVEPROPERTIES_HPP
 #define ARCHIVEPROPERTIES_HPP
 
+#include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
+#include "bitwindows.hpp"
 
+#include <cstddef>
 #include <map>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace bit7z {

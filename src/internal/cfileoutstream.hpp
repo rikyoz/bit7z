@@ -13,6 +13,7 @@
 #include "bitdefines.hpp"
 #include "internal/cstdoutstream.hpp"
 #include "internal/fs.hpp"
+#include "internal/macros.hpp"
 
 #include <array>
 

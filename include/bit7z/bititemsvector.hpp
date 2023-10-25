@@ -11,11 +11,14 @@
 #define BITITEMSVECTOR_HPP
 
 #include "bitabstractarchivehandler.hpp"
+#include "bitdefines.hpp"
 #include "bitfs.hpp"
 #include "bittypes.hpp"
 
+#include <istream>
 #include <map>
 #include <memory>
+#include <vector>
 
 namespace bit7z {
 

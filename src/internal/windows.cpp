@@ -9,13 +9,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-
 #ifndef _WIN32
 
 #include "bittypes.hpp"
 #include "internal/util.hpp"
 #include "internal/windows.hpp"
 
+#include <cstdint>
+#include <cstdlib>
 #include <cstring>
 #include <limits>
 

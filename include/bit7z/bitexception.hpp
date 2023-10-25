@@ -14,6 +14,8 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
+#include <string>
+#include <utility>
 #include <vector>
 #include <system_error>
 

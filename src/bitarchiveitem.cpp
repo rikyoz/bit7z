@@ -11,11 +11,16 @@
  */
 
 #include "bitarchiveitem.hpp"
+#include "bittypes.hpp"
+#include "bitdefines.hpp"
+#include "bitpropvariant.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 
 // For checking posix file attributes
 #include <sys/stat.h>
+
+#include <cstdint>
 
 namespace bit7z {
 

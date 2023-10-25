@@ -16,14 +16,20 @@
 #include <catch2/catch.hpp>
 
 #include <bit7z/bitpropvariant.hpp>
+#include <bit7z/bittypes.hpp>
+#include <bit7z/bitwindows.hpp>
 #ifndef _WIN32
 #include <internal/windows.hpp> // for VT_ enum constants
 #endif
 
-#include <map>
-#include <limits>
-#include <sstream>
+#include <cstdint>
 #include <cstring>
+#include <cwchar>
+#include <limits>
+#include <ios>
+#include <sstream>
+#include <type_traits>
+#include <utility>
 
 //-V::530,2008,2563,2608,3555 (Suppressing warnings in PVS-Studio)
 

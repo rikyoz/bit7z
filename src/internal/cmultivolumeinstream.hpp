@@ -17,6 +17,8 @@
 
 #include <7zip/IStream.h>
 
+#include <vector>
+
 namespace bit7z {
 
 class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {

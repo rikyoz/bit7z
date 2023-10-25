@@ -12,6 +12,8 @@
 
 #include "internal/callback.hpp"
 
+#include "bitabstractarchivehandler.hpp"
+
 namespace bit7z {
 
 Callback::Callback( const BitAbstractArchiveHandler& handler ) : mHandler( handler ) {}

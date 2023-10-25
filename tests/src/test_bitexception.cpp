@@ -15,9 +15,12 @@
 #include <catch2/catch.hpp>
 
 #include <bit7z/bitexception.hpp>
+#include <bit7z/bitwindows.hpp>
 #include <internal/windows.hpp>
 
 #include <iostream>
+#include <utility>
+#include <system_error>
 
 using bit7z::BitException;
 

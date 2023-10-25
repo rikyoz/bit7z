@@ -10,16 +10,34 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitabstractarchivecreator.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitoutputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bititemsvector.hpp"
+#include "bitinputarchive.hpp"
+#include "bitformat.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
 #include "internal/archiveproperties.hpp"
 #include "internal/cbufferoutstream.hpp"
+#include "internal/cfileoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
+#include "internal/cstdoutstream.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
+
+#include <ostream>
+#include <utility>
+#include <map>
+#include <istream>
+#include <vector>
+#include <memory>
+#include <system_error>
 
 namespace bit7z {
 

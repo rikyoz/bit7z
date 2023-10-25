@@ -17,6 +17,8 @@
 
 #include <7zip/IStream.h>
 
+#include <vector>
+
 namespace bit7z {
 
 class CBufferInStream final : public IInStream, public CMyUnknownImp {

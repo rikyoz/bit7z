@@ -16,6 +16,8 @@
 
 #include <Common/MyTypes.h> // For HRESULT_FROM_WIN32.
 
+#include <cstdint>
+
 /* Note: we must avoid including other headers of p7zip, like stdafx.h. */
 
 /* Making sure constants and type aliases declared in bitwindows.hpp are usable by p7zip

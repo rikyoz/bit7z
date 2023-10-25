@@ -12,6 +12,9 @@
 
 #include "internal/cvolumeinstream.hpp"
 
+#include "bitdefines.hpp"
+#include "internal/cfileinstream.hpp"
+
 namespace bit7z {
 
 CVolumeInStream::CVolumeInStream( const fs::path& volumePath, uint64_t globalOffset )

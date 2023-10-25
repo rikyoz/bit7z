@@ -15,7 +15,7 @@
 #include <bit7z/biterror.hpp>
 
 #ifndef BIT7Z_TESTS_PUBLIC_API_ONLY
-#include "internal/extractcallback.hpp"
+#include <internal/operationresult.hpp>
 #endif
 
 using bit7z::BitError;

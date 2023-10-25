@@ -9,10 +9,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
+#include "internal/cfixedbufferoutstream.hpp"
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
-#include "internal/cfixedbufferoutstream.hpp"
+#include "bittypes.hpp"
 #include "internal/util.hpp"
 
 #include <algorithm> //for std::copy_n

@@ -11,6 +11,10 @@
  */
 
 #include "bitabstractarchivehandler.hpp"
+#include "bittypes.hpp"
+#include "bit7zlibrary.hpp"
+
+#include <utility>
 
 namespace bit7z {
 

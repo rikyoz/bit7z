@@ -12,6 +12,9 @@
 
 #include "internal/cvolumeoutstream.hpp"
 
+#include "internal/cstdoutstream.hpp"
+#include "internal/cfileoutstream.hpp"
+
 namespace bit7z {
 
 CVolumeOutStream::CVolumeOutStream( const fs::path& volumeName )

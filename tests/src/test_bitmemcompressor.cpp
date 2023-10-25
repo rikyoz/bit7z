@@ -14,6 +14,8 @@
 
 #include "utils/shared_lib.hpp"
 
+#include <bit7z/bitformat.hpp>
+#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitmemcompressor.hpp>
 
 using namespace bit7z;

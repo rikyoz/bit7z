@@ -10,13 +10,17 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
 #include "bititemsvector.hpp"
+#include "bittypes.hpp"
 #include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/stdinputitem.hpp"
 #include "internal/stringutil.hpp"
 
+#include <cstddef>
 #include <istream>
 #include <system_error>
 #include <map>

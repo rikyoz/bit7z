@@ -10,7 +10,10 @@
 #ifndef BITFILECOMPRESSOR_HPP
 #define BITFILECOMPRESSOR_HPP
 
+#include "bit7zlibrary.hpp"
 #include "bitcompressor.hpp"
+#include "bitformat.hpp"
+#include "bittypes.hpp"
 
 #include <map>
 #include <ostream>

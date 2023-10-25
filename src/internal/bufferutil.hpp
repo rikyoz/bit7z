@@ -11,7 +11,7 @@
 #define BUFFERUTIL_HPP
 
 #include "bittypes.hpp"
-#include "internal/util.hpp"
+#include "bitwindows.hpp"
 
 namespace bit7z {
 

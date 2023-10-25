@@ -12,17 +12,14 @@
 
 #include <catch2/catch.hpp>
 
+#include "utils/filesystem.hpp"
+
 #include <bit7z/bitformat.hpp>
+#include <bit7z/bittypes.hpp>
 #include <internal/fsutil.hpp>
 
 #include <array>
-#include <vector>
-#include <map>
 
-#include "utils/filesystem.hpp"
-
-using std::vector;
-using std::map;
 using namespace bit7z;
 using namespace bit7z::filesystem::fsutil;
 

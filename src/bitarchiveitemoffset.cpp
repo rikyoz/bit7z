@@ -12,7 +12,11 @@
 
 #include "bitarchiveitemoffset.hpp"
 
+#include "bitarchiveitem.hpp"
 #include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+
+#include <cstdint>
 
 namespace bit7z {
 

@@ -10,6 +10,8 @@
 #ifndef BUFFEREXTRACTCALLBACK_HPP
 #define BUFFEREXTRACTCALLBACK_HPP
 
+#include "bitinputarchive.hpp"
+#include "bittypes.hpp"
 #include "internal/extractcallback.hpp"
 
 #include <vector>

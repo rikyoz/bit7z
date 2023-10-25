@@ -9,13 +9,23 @@
 #ifndef BITINPUTARCHIVE_HPP
 #define BITINPUTARCHIVE_HPP
 
+#include "bit7zlibrary.hpp"
 #include "bitabstractarchivehandler.hpp"
 #include "bitarchiveitemoffset.hpp"
+#include "bitdefines.hpp"
 #include "bitformat.hpp"
 #include "bitfs.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
 
 #include <array>
+#include <cstdint>
+#include <iterator>
+#include <istream>
 #include <map>
+#include <ostream>
+#include <vector>
 
 struct IInStream;
 struct IInArchive;

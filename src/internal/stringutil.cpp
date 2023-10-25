@@ -37,6 +37,7 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
 
 #include <locale>
+#include <string>
 
 namespace bit7z {
 

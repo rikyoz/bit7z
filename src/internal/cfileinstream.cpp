@@ -12,7 +12,11 @@
 
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/cstdinstream.hpp"
+#include "internal/fs.hpp"
 #include "internal/stringutil.hpp"
+
+#include <ios>
 
 namespace bit7z {
 
