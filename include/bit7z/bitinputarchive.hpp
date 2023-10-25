@@ -147,7 +147,7 @@ class BitInputArchive {
          * @brief Extracts the specified items to the chosen directory.
          *
          * @param outDir   the output directory where the extracted files will be put.
-         * @param indices  the array of indices of the files in the archive that must be extracted.
+         * @param indices  the indices of the files in the archive that must be extracted.
          */
         void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const;
 

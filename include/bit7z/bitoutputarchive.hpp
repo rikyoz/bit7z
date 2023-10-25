@@ -122,8 +122,8 @@ class BitOutputArchive {
         void addItems( const std::vector< tstring >& inPaths );
 
         /**
-         * @brief Adds all the items that can be found by indexing the keys of the given map of filesystem paths;
-         *       the corresponding mapped values are the user-defined paths wanted inside the output archive.
+         * @brief Adds all the items that can be found by indexing the keys of the given filesystem paths map;
+         *        the corresponding mapped values are the user-defined paths wanted inside the output archive.
          *
          * @param inPaths map of filesystem paths with the corresponding user-defined path desired inside the
          *                 output archive.

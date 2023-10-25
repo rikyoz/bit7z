@@ -49,7 +49,7 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
         return; // Input file was correctly read by base class BitOutputArchive constructor
     }
 
-    /* Note: BitArchiveWriter doesn't require an input file, but BitArchiveEditor does! */
+    /* Note: BitArchiveWriter doesn't require an input file, but BitArchiveEditor does. */
     if ( inFile.empty() ) {
         throw BitException( "Could not open archive", make_error_code( BitError::InvalidArchivePath ) );
     }
@@ -142,7 +142,7 @@ void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
 
 void BitArchiveEditor::applyChanges() {
     if ( !hasNewItems() && mEditedItems.empty() && !hasDeletedIndexes() ) {
-        // Nothing to do here!
+        // Nothing to do here.
         return;
     }
     auto archivePath = inputArchive()->archivePath();

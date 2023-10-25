@@ -140,7 +140,7 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
 
             if ( buffer.size() > 1 ) {
                 SECTION( "To the middle of the stream" ) {
-                    // Note: Calculating the offset of the midpoint item of the buffer from the end of the buffer stream
+                    // Note: Calculating the offset of the buffer's midpoint item from the end of the buffer stream
                     //       (which is one element past the last item of the buffer).
                     const Int64 midOffset = -( ( static_cast< Int64 >( bufferSize ) / 2 ) + 1 );
                     REQUIRE( inStream.Seek( midOffset, STREAM_SEEK_END, &newPosition ) == S_OK );

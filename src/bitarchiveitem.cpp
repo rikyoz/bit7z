@@ -107,7 +107,7 @@ auto BitArchiveItem::crc() const -> uint32_t {
     return crc.isUInt32() ? crc.getUInt32() : 0;
 }
 
-// On MSVC, these macros are not defined!
+// On MSVC, these macros are not defined, so we define them here.
 #if !defined(S_ISLNK) && defined(S_IFMT)
 #ifndef S_IFLNK
 constexpr auto S_IFLNK = 0xA000;
