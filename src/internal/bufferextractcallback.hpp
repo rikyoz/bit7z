@@ -17,13 +17,10 @@
 
 namespace bit7z {
 
-using std::vector;
-using std::map;
-
 class BufferExtractCallback final : public ExtractCallback {
     public:
         BufferExtractCallback( const BitInputArchive& inputArchive,
-                               map< tstring, vector< byte_t > >& buffersMap );
+                               std::map< tstring, std::vector< byte_t > >& buffersMap );
 
         BufferExtractCallback( const BufferExtractCallback& ) = delete;
 
@@ -36,7 +33,7 @@ class BufferExtractCallback final : public ExtractCallback {
         ~BufferExtractCallback() override = default;
 
     private:
-        map< tstring, vector< byte_t > >& mBuffersMap;
+        std::map< tstring, std::vector< byte_t > >& mBuffersMap;
         CMyComPtr< ISequentialOutStream > mOutMemStream;
 
         void releaseStream() override;

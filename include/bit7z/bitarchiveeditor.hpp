@@ -16,8 +16,6 @@
 
 namespace bit7z {
 
-using std::vector;
-
 using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
 
 /**
@@ -129,7 +127,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param itemPath  the path (in the archive) of the item to be updated.
          * @param inStream  the stream of new data for the item.
          */
-        void updateItem( const tstring& itemPath, istream& inStream );
+        void updateItem( const tstring& itemPath, std::istream& inStream );
 
         /**
          * @brief Marks the item at the given index as deleted.

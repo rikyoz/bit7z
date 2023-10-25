@@ -34,7 +34,7 @@ FilesystemIndexer::FilesystemIndexer( FilesystemItem directory,
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
 // NOLINTNEXTLINE(misc-no-recursion)
-void FilesystemIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
+void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result,
                                             bool recursive,
                                             const fs::path& prefix ) {
     fs::path path = mDirItem.filesystemPath();

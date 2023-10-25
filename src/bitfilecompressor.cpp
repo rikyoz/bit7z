@@ -16,8 +16,11 @@
 #include "bitoutputarchive.hpp"
 #include "internal/fs.hpp"
 
-using namespace std;
-using namespace bit7z;
+#include <ostream>
+#include <map>
+#include <vector>
+
+namespace bit7z {
 
 BitFileCompressor::BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitCompressor( lib, format ) {}
@@ -89,3 +92,5 @@ void BitFileCompressor::compress( const std::map< tstring, tstring >& inPaths, s
     outputArchive.addItems( inPaths );
     outputArchive.compressTo( outStream );
 }
+
+} // namespace bit7z

@@ -23,7 +23,7 @@
 
 namespace bit7z {
 
-CBufferInStream::CBufferInStream( const vector< byte_t >& inBuffer )
+CBufferInStream::CBufferInStream( const std::vector< byte_t >& inBuffer )
     : mBuffer( inBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW

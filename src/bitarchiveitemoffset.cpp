@@ -14,7 +14,7 @@
 
 #include "bitinputarchive.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 BitArchiveItemOffset::BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept
     : BitArchiveItem( itemIndex ), mArc( &inputArchive ) {}
@@ -41,3 +41,5 @@ auto BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const
 auto BitArchiveItemOffset::itemProperty( BitProperty property ) const -> BitPropVariant {
     return mArc != nullptr ? mArc->itemProperty( mItemIndex, property ) : BitPropVariant();
 }
+
+} // namespace bit7z

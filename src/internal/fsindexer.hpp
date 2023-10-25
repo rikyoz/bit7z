@@ -18,9 +18,6 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-using std::vector;
-using std::unique_ptr;
-
 class FilesystemIndexer final {
     public:
         explicit FilesystemIndexer( FilesystemItem directory,
@@ -29,7 +26,7 @@ class FilesystemIndexer final {
                                     SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
                                     bool onlyFiles = false );
 
-        void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
+        void listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result,
                                  bool recursive,
                                  const fs::path& prefix = fs::path{} );
 

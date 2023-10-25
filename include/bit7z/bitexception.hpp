@@ -19,7 +19,6 @@
 
 namespace bit7z {
 
-using std::system_error;
 using FailedFiles = std::vector< std::pair< tstring, std::error_code > >;
 
 auto make_hresult_code( HRESULT res ) noexcept -> std::error_code;
@@ -29,7 +28,7 @@ auto last_error_code() noexcept -> std::error_code;
 /**
  * @brief The BitException class represents a generic exception thrown from the bit7z classes.
  */
-class BitException final : public system_error {
+class BitException final : public std::system_error {
     public:
 #ifdef _WIN32
         using native_code_type = HRESULT;

@@ -27,8 +27,6 @@ class CMyComPtr;
 
 namespace bit7z {
 
-using std::istream;
-
 using DeletedItems = std::set< uint32_t >;
 
 /* We introduce a strong index type to differentiate between indices in the output
@@ -289,7 +287,7 @@ class BitOutputArchive {
     private:
         const BitAbstractArchiveCreator& mArchiveCreator;
 
-        unique_ptr< BitInputArchive > mInputArchive;
+        std::unique_ptr< BitInputArchive > mInputArchive;
         uint32_t mInputArchiveItemsCount;
 
         BitItemsVector mNewItemsVector;

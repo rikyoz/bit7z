@@ -17,8 +17,7 @@
 // For checking posix file attributes
 #include <sys/stat.h>
 
-using namespace bit7z;
-using namespace bit7z::filesystem;
+namespace bit7z {
 
 BitArchiveItem::BitArchiveItem( uint32_t itemIndex ) noexcept
     : mItemIndex( itemIndex ) {}
@@ -51,7 +50,7 @@ auto BitArchiveItem::extension() const -> tstring {
         return tstring{};
     }
     const BitPropVariant extension = itemProperty( BitProperty::Extension );
-    return extension.isEmpty() ? fsutil::extension( name() ) : extension.getString();
+    return extension.isEmpty() ? filesystem::fsutil::extension( name() ) : extension.getString();
 }
 
 auto BitArchiveItem::path() const -> tstring {
@@ -124,3 +123,5 @@ auto BitArchiveItem::isSymLink() const -> bool {
     }
     return ( itemAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;
 }
+
+} // namespace bit7z

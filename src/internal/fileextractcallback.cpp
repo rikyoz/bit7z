@@ -16,7 +16,6 @@
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
-using namespace std;
 using namespace NWindows;
 
 namespace bit7z {

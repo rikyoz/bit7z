@@ -446,10 +446,6 @@ struct BitPropVariant final : public PROPVARIANT {
 
     private:
         void internalClear() noexcept;
-
-        friend auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
-
-        friend auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
 };
 
 auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;

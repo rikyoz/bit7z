@@ -20,11 +20,9 @@
 
 namespace bit7z {
 
-using std::istream;
-
 class CStdInStream : public IInStream, public CMyUnknownImp {
     public:
-        explicit CStdInStream( istream& inputStream );
+        explicit CStdInStream( std::istream& inputStream );
 
         CStdInStream( const CStdInStream& ) = delete;
 
@@ -45,7 +43,7 @@ class CStdInStream : public IInStream, public CMyUnknownImp {
         MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835
 
     private:
-        istream& mInputStream;
+        std::istream& mInputStream;
 };
 
 }  // namespace bit7z

@@ -14,12 +14,11 @@
 #include "internal/streamextractcallback.hpp"
 #include "internal/util.hpp"
 
-using namespace std;
 using namespace NWindows;
 
 namespace bit7z {
 
-StreamExtractCallback::StreamExtractCallback( const BitInputArchive& inputArchive, ostream& outputStream )
+StreamExtractCallback::StreamExtractCallback( const BitInputArchive& inputArchive, std::ostream& outputStream )
     : ExtractCallback( inputArchive ),
       mOutputStream( outputStream ) {}
 

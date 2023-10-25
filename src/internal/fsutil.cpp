@@ -25,8 +25,6 @@
 
 #include <algorithm> //for std::adjacent_find
 
-using namespace std;
-
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 

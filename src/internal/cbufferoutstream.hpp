@@ -19,11 +19,9 @@
 
 namespace bit7z {
 
-using std::vector;
-
 class CBufferOutStream final : public IOutStream, public CMyUnknownImp {
     public:
-        explicit CBufferOutStream( vector< byte_t >& outBuffer );
+        explicit CBufferOutStream( std::vector< byte_t >& outBuffer );
 
         CBufferOutStream( const CBufferOutStream& ) = delete;
 

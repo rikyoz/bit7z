@@ -15,11 +15,9 @@
 
 namespace bit7z {
 
-using std::vector;
-
 class BufferItem final : public GenericInputItem {
     public:
-        explicit BufferItem( const vector< byte_t >& buffer, fs::path name );
+        explicit BufferItem( const std::vector< byte_t >& buffer, fs::path name );
 
         BIT7Z_NODISCARD auto name() const -> tstring override;
 
@@ -42,7 +40,7 @@ class BufferItem final : public GenericInputItem {
         BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
 
     private:
-        const vector< byte_t >& mBuffer;
+        const std::vector< byte_t >& mBuffer;
         fs::path mBufferName;
 };
 

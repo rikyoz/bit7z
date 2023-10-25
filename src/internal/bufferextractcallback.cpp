@@ -17,12 +17,10 @@
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
-using namespace std;
-
 namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
-                                              map< tstring, vector< byte_t > >& buffersMap )
+                                              std::map< tstring, std::vector< byte_t > >& buffersMap )
     : ExtractCallback( inputArchive ),
       mBuffersMap( buffersMap ) {}
 

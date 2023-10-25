@@ -32,7 +32,7 @@
 #   define ERROR_CODE( errc ) std::make_error_code( errc )  //same behavior as boost::shared_library
 #endif
 
-using namespace bit7z;
+namespace bit7z {
 
 Bit7zLibrary::Bit7zLibrary( const tstring& libraryPath ) : mLibrary( Bit7zLoadLibrary( libraryPath ) ) {
     if ( mLibrary == nullptr ) {
@@ -111,3 +111,5 @@ auto Bit7zLibrary::initOutArchive( const BitInOutFormat& format ) const -> CMyCo
     }
     return outArchive;
 }
+
+} // namespace bit7z

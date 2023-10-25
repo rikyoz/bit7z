@@ -23,8 +23,6 @@ struct IOutArchive;
 
 namespace bit7z {
 
-using std::vector;
-
 /**
  * @brief The BitInputArchive class, given a handler object, allows reading/extracting the content of archives.
  */

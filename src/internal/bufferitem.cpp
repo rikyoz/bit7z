@@ -18,11 +18,9 @@
 
 #include <utility>
 
-using std::vector;
-
 namespace bit7z {
 
-BufferItem::BufferItem( const vector< byte_t >& buffer, fs::path name )
+BufferItem::BufferItem( const std::vector< byte_t >& buffer, fs::path name )
     : mBuffer{ buffer }, mBufferName{ std::move( name ) } {}
 
 auto BufferItem::name() const -> tstring {

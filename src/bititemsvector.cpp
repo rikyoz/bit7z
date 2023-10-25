@@ -17,7 +17,14 @@
 #include "internal/stdinputitem.hpp"
 #include "internal/stringutil.hpp"
 
-using namespace bit7z;
+#include <istream>
+#include <system_error>
+#include <map>
+#include <vector>
+#include <memory>
+
+namespace bit7z {
+
 using filesystem::FilesystemItem;
 using filesystem::FilesystemIndexer;
 using filesystem::SymlinkPolicy;
@@ -81,7 +88,7 @@ void BitItemsVector::indexFile( const tstring& inFile, const tstring& name, bool
     mItems.emplace_back( std::make_unique< FilesystemItem >( filePath, tstring_to_path( name ), symlinkPolicy ) );
 }
 
-void BitItemsVector::indexBuffer( const vector< byte_t >& inBuffer, const tstring& name ) {
+void BitItemsVector::indexBuffer( const std::vector< byte_t >& inBuffer, const tstring& name ) {
     mItems.emplace_back( std::make_unique< BufferItem >( inBuffer, tstring_to_path( name ) ) );
 }
 
@@ -117,3 +124,5 @@ auto BitItemsVector::cend() const noexcept -> GenericInputItemVector::const_iter
 /* Note: separate declaration/definition of the default destructor is needed to use an incomplete type
  *       for the unique_ptr objects stored in the vector. */
 BitItemsVector::~BitItemsVector() = default;
+
+} // namespace bit7z

@@ -21,8 +21,6 @@
 
 namespace bit7z {
 
-using std::ostream;
-
 class CStdOutStream : public IOutStream, public CMyUnknownImp {
     public:
         explicit CStdOutStream( std::ostream& outputStream );
@@ -48,7 +46,7 @@ class CStdOutStream : public IOutStream, public CMyUnknownImp {
         MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511 //-V835
 
     private:
-        ostream& mOutputStream;
+        std::ostream& mOutputStream;
 };
 
 }  // namespace bit7z

@@ -66,7 +66,7 @@ STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) noexcept {
     }
 
     const auto oldPos = mOutputStream.tellp();
-    mOutputStream.seekp( 0, ostream::end );
+    mOutputStream.seekp( 0, std::ostream::end );
 
     if ( !mOutputStream ) {
         return E_FAIL;

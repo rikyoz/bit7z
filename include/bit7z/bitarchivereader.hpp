@@ -98,12 +98,12 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @return a map of all the available (i.e., non-empty) archive properties and their respective values.
          */
-        BIT7Z_NODISCARD auto archiveProperties() const -> map< BitProperty, BitPropVariant >;
+        BIT7Z_NODISCARD auto archiveProperties() const -> std::map< BitProperty, BitPropVariant >;
 
         /**
          * @return a vector of all the archive items as BitArchiveItem objects.
          */
-        BIT7Z_NODISCARD auto items() const -> vector< BitArchiveItemInfo >;
+        BIT7Z_NODISCARD auto items() const -> std::vector< BitArchiveItemInfo >;
 
         /**
          * @return the number of folders contained in the archive.

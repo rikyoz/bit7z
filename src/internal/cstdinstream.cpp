@@ -16,7 +16,7 @@
 
 namespace bit7z {
 
-CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
+CStdInStream::CStdInStream( std::istream& inputStream ) : mInputStream( inputStream ) {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {

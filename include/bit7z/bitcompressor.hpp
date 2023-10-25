@@ -19,15 +19,11 @@
 
 namespace bit7z {
 
-using std::vector;
-
 namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
 namespace fsutil {
 auto stem( const tstring& path ) -> tstring;
 } // namespace fsutil
 } // namespace filesystem
-
-using namespace filesystem;
 
 #ifdef __cpp_if_constexpr
 #define BIT7Z_IF_CONSTEXPR if constexpr
@@ -72,7 +68,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
              * we use the filename (without extension) of the output file path. */
             tstring name;
             BIT7Z_IF_CONSTEXPR( !std::is_same< Input, const tstring& >::value ) {
-                name = inputName.empty() ? fsutil::stem( outFile ) : inputName;
+                name = inputName.empty() ? filesystem::fsutil::stem( outFile ) : inputName;
             }
 
             BitOutputArchive outputArchive{ *this, outFile };
@@ -88,7 +84,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param inputName  (optional) the name to give to the compressed file inside the output archive.
          */
         void compressFile( Input inFile,
-                           vector< byte_t >& outBuffer,
+                           std::vector< byte_t >& outBuffer,
                            const tstring& inputName = {} ) const {
             BitOutputArchive outputArchive{ *this, outBuffer };
             outputArchive.addFile( inFile, inputName );
@@ -103,7 +99,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param inputName  (optional) the name to give to the compressed file inside the output archive.
          */
         void compressFile( Input inFile,
-                           ostream& outStream,
+                           std::ostream& outStream,
                            const tstring& inputName = {} ) const {
             BitOutputArchive outputArchive{ *this };
             outputArchive.addFile( inFile, inputName );

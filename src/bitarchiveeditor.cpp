@@ -22,8 +22,6 @@
 
 namespace bit7z {
 
-using std::istream;
-
 BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& inFile,
                                     const BitInOutFormat& format,

@@ -16,7 +16,7 @@
 #include <algorithm>
 #include <numeric>
 
-using namespace bit7z;
+namespace bit7z {
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& inArchive,
@@ -36,8 +36,8 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
-auto BitArchiveReader::archiveProperties() const -> map< BitProperty, BitPropVariant > {
-    map< BitProperty, BitPropVariant > result;
+auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPropVariant > {
+    std::map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
         // We cast property twice (here and in archiveProperty), to make the code is easier to read.
         const auto property = static_cast< BitProperty >( i );
@@ -49,8 +49,8 @@ auto BitArchiveReader::archiveProperties() const -> map< BitProperty, BitPropVar
     return result;
 }
 
-auto BitArchiveReader::items() const -> vector< BitArchiveItemInfo > {
-    vector< BitArchiveItemInfo > result;
+auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
+    std::vector< BitArchiveItemInfo > result;
     for ( uint32_t i = 0; i < itemsCount(); ++i ) {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
@@ -127,3 +127,5 @@ auto BitArchiveReader::isOpenEncryptedError( std::error_code error ) -> bool {
     static const auto encryptedError = make_error_code( OperationResult::OpenErrorEncrypted );
     return error == encryptedError;
 }
+
+} // namespace bit7z

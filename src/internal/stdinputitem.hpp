@@ -14,11 +14,9 @@
 
 namespace bit7z {
 
-using std::istream;
-
 class StdInputItem final : public GenericInputItem {
     public:
-        explicit StdInputItem( istream& stream, fs::path path );
+        explicit StdInputItem( std::istream& stream, fs::path path );
 
         BIT7Z_NODISCARD auto name() const -> tstring override;
 
@@ -41,7 +39,7 @@ class StdInputItem final : public GenericInputItem {
         BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const -> HRESULT override;
 
     private:
-        istream& mStream;
+        std::istream& mStream;
         fs::path mStreamPath;
 };
 

@@ -20,9 +20,6 @@
 #include <vector>
 #include <string>
 
-using std::vector;
-using std::wstring;
-
 namespace bit7z {
 
 class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
@@ -44,7 +41,7 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Total size of the output archive (sum of the volumes' sizes).
         uint64_t mFullSize;
 
-        vector< CMyComPtr< CVolumeOutStream > > mVolumes;
+        std::vector< CMyComPtr< CVolumeOutStream > > mVolumes;
 
     public:
         CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName );

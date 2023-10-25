@@ -12,7 +12,7 @@
 
 #include "bitabstractarchiveopener.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 BitAbstractArchiveOpener::BitAbstractArchiveOpener( const Bit7zLibrary& lib,
                                                     const BitInFormat& format,
@@ -26,3 +26,5 @@ auto BitAbstractArchiveOpener::format() const noexcept -> const BitInFormat& {
 auto BitAbstractArchiveOpener::extractionFormat() const noexcept -> const BitInFormat& {
     return mFormat;
 }
+
+} // namespace bit7z

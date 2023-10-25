@@ -16,17 +16,19 @@
 #include "internal/operationcategory.hpp"
 #include "internal/windows.hpp"
 
-auto bit7z::make_hresult_code( HRESULT res ) noexcept -> std::error_code {
+#include <string>
+#include <utility>
+#include <system_error>
+
+namespace bit7z {
+
+auto make_hresult_code( HRESULT res ) noexcept -> std::error_code {
     return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };
 }
 
-auto bit7z::last_error_code() noexcept -> std::error_code {
+auto last_error_code() noexcept -> std::error_code {
     return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
 }
-
-using bit7z::BitException;
-using bit7z::FailedFiles;
-using bit7z::tstring;
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
     : std::system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
@@ -120,3 +122,5 @@ auto BitException::posixCode() const noexcept -> int {
     }
     return error.value(); // On POSIX systems, std::system_category == std::generic_category
 }
+
+} // namespace bit7z

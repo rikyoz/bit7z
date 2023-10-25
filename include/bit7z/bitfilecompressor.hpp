@@ -18,12 +18,6 @@
 
 namespace bit7z {
 
-using std::vector;
-using std::map;
-using std::ostream;
-
-using namespace filesystem;
-
 /**
  * @brief The BitFileCompressor class allows compressing files and directories.
  * The compressed archives can be saved to the filesystem, standard streams, or memory buffers.

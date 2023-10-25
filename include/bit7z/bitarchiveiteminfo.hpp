@@ -16,9 +16,6 @@
 
 namespace bit7z {
 
-using std::wstring;
-using std::map;
-
 /**
  * @brief The BitArchiveItemInfo class represents an archived item and that stores all its properties for later use.
  */
@@ -36,10 +33,10 @@ class BitArchiveItemInfo final : public BitArchiveItem {
         /**
          * @return a map of all the available (i.e., non-empty) item properties and their respective values.
          */
-        BIT7Z_NODISCARD auto itemProperties() const -> map< BitProperty, BitPropVariant >;
+        BIT7Z_NODISCARD auto itemProperties() const -> std::map< BitProperty, BitPropVariant >;
 
     private:
-        map< BitProperty, BitPropVariant > mItemProperties;
+        std::map< BitProperty, BitPropVariant > mItemProperties;
 
         /* BitArchiveItem objects can be created and updated only by BitArchiveReader */
         explicit BitArchiveItemInfo( uint32_t itemIndex );

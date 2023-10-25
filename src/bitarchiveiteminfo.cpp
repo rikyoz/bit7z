@@ -12,10 +12,9 @@
 
 #include "bitarchiveiteminfo.hpp"
 
-using bit7z::BitArchiveItemInfo;
-using bit7z::BitProperty;
-using bit7z::BitPropVariant;
-using std::map;
+#include <map>
+
+namespace bit7z {
 
 BitArchiveItemInfo::BitArchiveItemInfo( uint32_t itemIndex ) : BitArchiveItem( itemIndex ) {}
 
@@ -24,10 +23,12 @@ auto BitArchiveItemInfo::itemProperty( BitProperty property ) const -> BitPropVa
     return ( propIt != mItemProperties.end() ? ( *propIt ).second : BitPropVariant() );
 }
 
-auto BitArchiveItemInfo::itemProperties() const -> map< BitProperty, BitPropVariant > {
+auto BitArchiveItemInfo::itemProperties() const -> std::map< BitProperty, BitPropVariant > {
     return mItemProperties;
 }
 
 void BitArchiveItemInfo::setProperty( BitProperty property, const BitPropVariant& value ) {
     mItemProperties[ property ] = value;
 }
+
+} // namespace bit7z

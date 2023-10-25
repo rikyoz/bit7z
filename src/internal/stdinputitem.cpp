@@ -18,11 +18,10 @@
 
 #include <utility>
 
-using std::istream;
-
 namespace bit7z {
 
-StdInputItem::StdInputItem( istream& stream, fs::path path ) : mStream{ stream }, mStreamPath{ std::move( path ) } {}
+StdInputItem::StdInputItem( std::istream& stream, fs::path path )
+    : mStream{ stream }, mStreamPath{ std::move( path ) } {}
 
 auto StdInputItem::name() const -> tstring {
     return path_to_tstring( mStreamPath.filename() );

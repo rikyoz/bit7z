@@ -19,10 +19,6 @@
 
 namespace bit7z {
 
-using std::vector;
-using std::map;
-using std::unique_ptr;
-
 namespace filesystem {
 class FilesystemItem;
 } // namespace filesystem

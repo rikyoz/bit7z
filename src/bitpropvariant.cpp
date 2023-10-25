@@ -25,7 +25,7 @@
 
 constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
 
-using namespace bit7z;
+namespace bit7z {
 
 auto lookup_type( VARTYPE type ) -> BitPropVariantType {
     switch ( type ) {
@@ -61,19 +61,6 @@ auto lookup_type( VARTYPE type ) -> BitPropVariantType {
             throw BitException( "Property type is not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
 }
-
-namespace bit7z { // Note: Clang doesn't find the operator if it is not inside the namespace.
-
-/* Needed for comparing FILETIME objects in BitPropVariant */
-inline auto operator==( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
-#ifdef _WIN32
-    return CompareFileTime( &ft1, &ft2 ) == 0;
-#else
-    return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
-#endif
-}
-
-} // namespace bit7z
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
@@ -505,11 +492,20 @@ void BitPropVariant::internalClear() noexcept {
     uhVal.QuadPart = 0;
 }
 
-auto bit7z::operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
+/* Needed for comparing FILETIME objects in BitPropVariant */
+inline auto operator==( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
+#ifdef _WIN32
+    return CompareFileTime( &ft1, &ft2 ) == 0;
+#else
+    return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
+#endif
+}
+
+auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
     return !( lhs == rhs );
 }
 
-auto bit7z::operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
+auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
     if ( lhs.vt != rhs.vt ) {
         return false;
     }
@@ -546,3 +542,5 @@ auto bit7z::operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) n
             return false;
     }
 }
+
+} // namespace bit7z

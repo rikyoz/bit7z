@@ -12,7 +12,7 @@
 
 #include "bitabstractarchivehandler.hpp"
 
-using namespace bit7z;
+namespace bit7z {
 
 BitAbstractArchiveHandler::BitAbstractArchiveHandler( const Bit7zLibrary& lib,
                                                       tstring password,
@@ -97,3 +97,5 @@ void BitAbstractArchiveHandler::setPasswordCallback( const PasswordCallback& cal
 void BitAbstractArchiveHandler::setOverwriteMode( OverwriteMode mode ) {
     mOverwriteMode = mode;
 }
+
+} // namespace bit7z

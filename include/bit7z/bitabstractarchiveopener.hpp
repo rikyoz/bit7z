@@ -15,8 +15,6 @@
 
 namespace bit7z {
 
-using std::ostream;
-
 /**
  * @brief The BitAbstractArchiveOpener abstract class represents a generic archive opener.
  */

@@ -24,8 +24,6 @@ struct ISequentialOutStream;
 
 namespace bit7z {
 
-using std::ostream;
-
 class ArchiveProperties;
 
 /**
