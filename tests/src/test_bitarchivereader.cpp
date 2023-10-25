@@ -318,7 +318,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
         }
 
         SECTION( "Opening the archive with no password should allow reading the archive, but tests() should throw" ) {
-            BitArchiveReader info( lib, inputArchive, testArchive.format() );
+            const BitArchiveReader info( lib, inputArchive, testArchive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
@@ -855,7 +855,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file na
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
+    const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
     TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
@@ -871,7 +871,7 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
+    const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
     const BitArchiveReader info( lib, path_to_tstring( arcFileName ), BitFormat::BZip2 );
     REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
 }

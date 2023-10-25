@@ -191,7 +191,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint16_t", 
     REQUIRE( clamp_cast< std::uint16_t >( TestType{ 42u } ) == std::uint16_t{ 42u } );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::uint16_t maxDestinationValue{ std::numeric_limits< std::uint16_t >::max() };
+    const std::uint16_t maxDestinationValue{ std::numeric_limits< std::uint16_t >::max() };
     if ( maxValue >= maxDestinationValue ) {
         REQUIRE( clamp_cast< std::uint16_t >( maxValue ) == maxDestinationValue );
         REQUIRE( clamp_cast< std::uint16_t >( static_cast< TestType >( maxDestinationValue ) ) == maxDestinationValue );
@@ -207,7 +207,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint32_t", 
     REQUIRE( clamp_cast< std::uint32_t >( TestType{ 42u } ) == std::uint32_t{ 42u } );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::uint32_t maxDestinationValue{ std::numeric_limits< std::uint32_t >::max() };
+    const std::uint32_t maxDestinationValue{ std::numeric_limits< std::uint32_t >::max() };
     if ( maxValue >= maxDestinationValue ) {
         REQUIRE( clamp_cast< std::uint32_t >( maxValue ) == maxDestinationValue );
         REQUIRE( clamp_cast< std::uint32_t >( static_cast< TestType >( maxDestinationValue ) ) == maxDestinationValue );
@@ -240,7 +240,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint8_t", "[u
     REQUIRE( clamp_cast< std::uint8_t >( minValue ) == 0u );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::uint8_t maxDestinationValue{ std::numeric_limits< std::uint8_t >::max() };
+    const std::uint8_t maxDestinationValue{ std::numeric_limits< std::uint8_t >::max() };
     if ( cmp_greater_equal( maxValue, maxDestinationValue ) ) {
         REQUIRE( clamp_cast< std::uint8_t >( maxValue ) == maxDestinationValue );
     } else {
@@ -261,7 +261,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint16_t", "[
     REQUIRE( clamp_cast< std::uint16_t >( minValue ) == 0u );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::uint16_t maxDestinationValue{ std::numeric_limits< std::uint16_t >::max() };
+    const std::uint16_t maxDestinationValue{ std::numeric_limits< std::uint16_t >::max() };
     if ( cmp_greater_equal( maxValue, maxDestinationValue ) ) {
         REQUIRE( clamp_cast< std::uint16_t >( maxValue ) == maxDestinationValue );
     } else {
@@ -282,7 +282,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint32_t", "[
     REQUIRE( clamp_cast< std::uint32_t >( minValue ) == 0u );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::uint32_t maxDestinationValue{ std::numeric_limits< std::uint32_t >::max() };
+    const std::uint32_t maxDestinationValue{ std::numeric_limits< std::uint32_t >::max() };
     if ( cmp_greater_equal( maxValue, maxDestinationValue ) ) {
         REQUIRE( clamp_cast< std::uint32_t >( maxValue ) == maxDestinationValue );
     } else {
@@ -324,7 +324,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int16_t", "
     REQUIRE( clamp_cast< std::int16_t >( TestType{ 42u } ) == std::int16_t{ 42 } );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::int16_t maxDestinationValue{ std::numeric_limits< std::int16_t >::max() };
+    const std::int16_t maxDestinationValue{ std::numeric_limits< std::int16_t >::max() };
     if ( cmp_greater_equal( maxValue, maxDestinationValue ) ) {
         REQUIRE( clamp_cast< std::int16_t >( maxValue ) == maxDestinationValue );
     } else { // widening
@@ -339,7 +339,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int32_t", "
     REQUIRE( clamp_cast< std::int32_t >( TestType{ 42u } ) == std::int32_t{ 42 } );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::int32_t maxDestinationValue{ std::numeric_limits< std::int32_t >::max() };
+    const std::int32_t maxDestinationValue{ std::numeric_limits< std::int32_t >::max() };
     if ( cmp_greater_equal( maxValue, maxDestinationValue ) ) {
         REQUIRE( clamp_cast< std::int32_t >( maxValue ) == maxDestinationValue );
     } else { // widening
@@ -354,7 +354,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int64_t", "
     REQUIRE( clamp_cast< std::int64_t >( TestType{ 42u } ) == std::int64_t{ 42 } );
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::int64_t maxDestinationValue{ std::numeric_limits< std::int64_t >::max() };
+    const std::int64_t maxDestinationValue{ std::numeric_limits< std::int64_t >::max() };
     if ( cmp_greater_equal( maxValue, maxDestinationValue ) ) {
         REQUIRE( clamp_cast< std::int64_t >( maxValue ) == maxDestinationValue );
     } else { // widening
@@ -389,7 +389,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int16_t", "[u
     REQUIRE( clamp_cast< std::int16_t >( TestType{ -42 } ) == std::int16_t{ -42 } );
 
     TestType minValue{ std::numeric_limits< TestType >::min() };
-    std::int16_t minDestinationValue{ std::numeric_limits< std::int16_t >::min() };
+    const std::int16_t minDestinationValue{ std::numeric_limits< std::int16_t >::min() };
     if ( minValue <= minDestinationValue ) {
         REQUIRE( clamp_cast< std::int16_t >( minValue ) == minDestinationValue );
     } else {
@@ -397,7 +397,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int16_t", "[u
     }
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::int16_t maxDestinationValue{ std::numeric_limits< std::int16_t >::max() };
+    const std::int16_t maxDestinationValue{ std::numeric_limits< std::int16_t >::max() };
     if ( maxValue >= maxDestinationValue ) {
         REQUIRE( clamp_cast< std::int16_t >( maxValue ) == maxDestinationValue );
     } else {
@@ -415,7 +415,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int32_t", "[u
     REQUIRE( clamp_cast< std::int32_t >( TestType{ -42 } ) == std::int32_t{ -42 } );
 
     TestType minValue{ std::numeric_limits< TestType >::min() };
-    std::int32_t minDestinationValue{ std::numeric_limits< std::int32_t >::min() };
+    const std::int32_t minDestinationValue{ std::numeric_limits< std::int32_t >::min() };
     if ( minValue <= minDestinationValue ) {
         REQUIRE( clamp_cast< std::int32_t >( minValue ) == minDestinationValue );
     } else {
@@ -423,7 +423,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int32_t", "[u
     }
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::int32_t maxDestinationValue{ std::numeric_limits< std::int32_t >::max() };
+    const std::int32_t maxDestinationValue{ std::numeric_limits< std::int32_t >::max() };
     if ( maxValue >= maxDestinationValue ) {
         REQUIRE( clamp_cast< std::int32_t >( maxValue ) == maxDestinationValue );
     } else {
@@ -441,7 +441,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from std::int64_t to std::int64_t", "[util
     REQUIRE( clamp_cast< std::int64_t >( TestType{ -42 } ) == std::int64_t{ -42 } );
 
     TestType minValue{ std::numeric_limits< TestType >::max() };
-    std::int64_t minDestinationValue{ std::numeric_limits< std::int64_t >::min() };
+    const std::int64_t minDestinationValue{ std::numeric_limits< std::int64_t >::min() };
     if ( minValue <= minDestinationValue ) {
         REQUIRE( clamp_cast< std::int64_t >( minValue ) == minDestinationValue );
     } else {
@@ -449,7 +449,7 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from std::int64_t to std::int64_t", "[util
     }
 
     TestType maxValue{ std::numeric_limits< TestType >::max() };
-    std::int64_t maxDestinationValue{ std::numeric_limits< std::int64_t >::max() };
+    const std::int64_t maxDestinationValue{ std::numeric_limits< std::int64_t >::max() };
     if ( maxValue >= maxDestinationValue ) {
         REQUIRE( clamp_cast< std::int64_t >( maxValue ) == maxDestinationValue );
     } else {
