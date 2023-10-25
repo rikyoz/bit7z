@@ -14,7 +14,7 @@
 
 #ifndef _WIN32
 
-#include <Common/MyTypes.h>
+#include <Common/MyTypes.h> // For HRESULT_FROM_WIN32.
 
 /* Note: we must avoid including other headers of p7zip, like stdafx.h. */
 
@@ -31,24 +31,30 @@ using UInt16 = uint16_t;
 using UInt32 = uint32_t;
 
 // Win32 file attributes flags
+// Note: on Windows, they are signed integers, while here we declare them as unsigned
+// to avoid sign conflicts in our code.
 #ifndef FILE_ATTRIBUTE_READONLY
-constexpr auto FILE_ATTRIBUTE_READONLY       = 1;
+constexpr auto FILE_ATTRIBUTE_READONLY       = 1u;
+#endif
+
+#ifndef FILE_ATTRIBUTE_HIDDEN
+constexpr auto FILE_ATTRIBUTE_HIDDEN         = 2u;
 #endif
 
 #ifndef FILE_ATTRIBUTE_DIRECTORY
-constexpr auto FILE_ATTRIBUTE_DIRECTORY      = 16;
+constexpr auto FILE_ATTRIBUTE_DIRECTORY      = 16u;
 #endif
 
 #ifndef FILE_ATTRIBUTE_ARCHIVE
-constexpr auto FILE_ATTRIBUTE_ARCHIVE        = 32;
+constexpr auto FILE_ATTRIBUTE_ARCHIVE        = 32u;
 #endif
 
 #ifndef FILE_ATTRIBUTE_NORMAL
-constexpr auto FILE_ATTRIBUTE_NORMAL         = 128;
+constexpr auto FILE_ATTRIBUTE_NORMAL         = 128u;
 #endif
 
 #ifndef FILE_ATTRIBUTE_REPARSE_POINT
-constexpr auto FILE_ATTRIBUTE_REPARSE_POINT  = 1024;
+constexpr auto FILE_ATTRIBUTE_REPARSE_POINT  = 1024u;
 #endif
 
 constexpr auto MAX_PATHNAME_LEN = 1024;
@@ -170,7 +176,9 @@ constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY__E_ERROR_NEGATIVE_SEEK;
 constexpr auto FACILITY_CODE = FACILITY_ERRNO;
 constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = MY_E_ERROR_NEGATIVE_SEEK;
 #else // p7zip or 7-zip on Windows
+#ifdef _WIN32 // 7-zip on Windows
 constexpr auto FACILITY_CODE = FACILITY_WIN32;
+#endif
 constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = __HRESULT_FROM_WIN32( ERROR_NEGATIVE_SEEK );
 #endif
 #endif
