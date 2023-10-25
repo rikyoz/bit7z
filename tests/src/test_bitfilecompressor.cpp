@@ -11,8 +11,11 @@
  */
 #include <catch2/catch.hpp>
 
-#include <bit7z/bitfilecompressor.hpp>
+#include "utils/shared_lib.hpp"
+
 #include <bit7z/bitformat.hpp>
+#include <bit7z/bit7zlibrary.hpp>
+#include <bit7z/bitfilecompressor.hpp>
 
 using namespace bit7z;
 using bit7z::Bit7zLibrary;
@@ -20,6 +23,9 @@ using bit7z::BitFileCompressor;
 using bit7z::BitInOutFormat;
 
 TEST_CASE( "BitFileCompressor: TODO", "[bitfilecompressor]" ) {
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
+    const BitFileCompressor fileCompressor{ lib, BitFormat::SevenZip};
+    REQUIRE( fileCompressor.compressionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }
 
