@@ -151,6 +151,9 @@ if( WIN32 )
     message( STATUS "Using legacy string encoding for tests: ON" )
     target_sources( ${TESTS_TARGET} PRIVATE res/encodingLegacy.${RES_EXTENSION} )
     target_sources( ${TESTS_TARGET_PUBLIC} PRIVATE res/encodingLegacy.${RES_EXTENSION} )
+
+    target_compile_definitions( ${TESTS_TARGET} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX )
+    target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX )
 endif()
 
 # Catch2

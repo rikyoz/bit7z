@@ -215,7 +215,7 @@ target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include
 # 7-zip compilation definitions
 target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
 if( WIN32 )
-    target_compile_definitions( ${LIB_TARGET} PRIVATE _WINDOWS )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE _WINDOWS WIN32_LEAN_AND_MEAN NOMINMAX )
     target_link_libraries( ${LIB_TARGET} PUBLIC oleaut32 )
 endif()
 

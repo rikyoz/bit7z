@@ -10,10 +10,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
 #include "bitinputarchive.hpp"
 
 #include "biterror.hpp"

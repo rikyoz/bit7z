@@ -13,10 +13,6 @@
 #include <bit7z/bitfs.hpp>
 #include <bit7z/bittypes.hpp>
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
 #ifdef _WIN32
 #include <array>
 #include <Windows.h>
