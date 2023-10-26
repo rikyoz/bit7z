@@ -10,9 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitarchivewriter.hpp"
+
 #include "bit7zlibrary.hpp"
 #include "bitabstractarchivecreator.hpp"
-#include "bitarchivewriter.hpp"
 #include "bitformat.hpp"
 #include "bitoutputarchive.hpp"
 #include "bittypes.hpp"

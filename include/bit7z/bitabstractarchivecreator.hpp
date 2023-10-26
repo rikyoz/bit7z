@@ -23,7 +23,6 @@
 #include <map>
 #include <string>
 #include <type_traits>
-#include <ostream>
 
 struct IOutStream;
 struct ISequentialOutStream;

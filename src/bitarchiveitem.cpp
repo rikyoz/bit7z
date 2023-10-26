@@ -11,9 +11,10 @@
  */
 
 #include "bitarchiveitem.hpp"
-#include "bittypes.hpp"
+
 #include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 

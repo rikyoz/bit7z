@@ -11,14 +11,15 @@
  */
 
 #include "internal/fsutil.hpp"
+
 #include "internal/stringutil.hpp"
 
 #ifndef _WIN32
+#include "internal/dateutil.hpp"
+
 #include <sys/resource.h> // for rlimit, getrlimit, and setrlimit
 #include <sys/stat.h>
 #include <unistd.h>
-
-#include "internal/dateutil.hpp"
 #elif defined( BIT7Z_PATH_SANITIZATION )
 #include <cwctype> // for iswdigit
 #endif

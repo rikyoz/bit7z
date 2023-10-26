@@ -10,9 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bititemsvector.hpp"
+
 #include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
-#include "bititemsvector.hpp"
 #include "bittypes.hpp"
 #include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
@@ -22,10 +23,10 @@
 
 #include <cstddef>
 #include <istream>
-#include <system_error>
 #include <map>
-#include <vector>
 #include <memory>
+#include <system_error>
+#include <vector>
 
 namespace bit7z {
 

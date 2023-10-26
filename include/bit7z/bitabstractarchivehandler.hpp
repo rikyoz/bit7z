@@ -22,30 +22,30 @@ namespace bit7z {
 class BitInFormat;
 
 /**
- * @brief A std::function whose argument is the total size of the ongoing operation.
+ * @brief A function whose argument is the total size of the ongoing operation.
  */
 using TotalCallback = std::function< void( uint64_t ) >;
 
 /**
- * @brief A std::function whose argument is the currently processed size of the ongoing operation and returns
+ * @brief A function whose argument is the currently processed size of the ongoing operation and returns
  *        true or false whether the operation must continue or not.
  */
 using ProgressCallback = std::function< bool( uint64_t ) >;
 
 /**
- * @brief A std::function whose arguments are the current processed input size, and the current output size of the
+ * @brief A function whose arguments are the current processed input size, and the current output size of the
  *        ongoing operation.
  */
 using RatioCallback = std::function< void( uint64_t, uint64_t ) >;
 
 /**
- * @brief A std::function whose argument is the path, in the archive, of the file currently being processed
+ * @brief A function whose argument is the path, in the archive, of the file currently being processed
  *        by the ongoing operation.
  */
 using FileCallback = std::function< void( tstring ) >;
 
 /**
- * @brief A std::function returning the password to be used to handle an archive.
+ * @brief A function returning the password to be used to handle an archive.
  */
 using PasswordCallback = std::function< tstring() >;
 

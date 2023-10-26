@@ -10,9 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "internal/stdinputitem.hpp"
+
 #include "internal/cstdinstream.hpp"
 #include "internal/dateutil.hpp"
-#include "internal/stdinputitem.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 

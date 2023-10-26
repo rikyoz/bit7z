@@ -11,8 +11,9 @@
  */
 
 #include "bitformat.hpp"
-#include "bittypes.hpp"
+
 #include "bitcompressionmethod.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
 

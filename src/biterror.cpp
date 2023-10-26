@@ -11,6 +11,7 @@
  */
 
 #include "biterror.hpp"
+
 #include "internal/failuresourcecategory.hpp"
 #include "internal/internalcategory.hpp"
 

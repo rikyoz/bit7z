@@ -11,10 +11,10 @@
 #define BITOUTPUTARCHIVE_HPP
 
 #include "bitabstractarchivecreator.hpp"
-#include "bitinputarchive.hpp"
 #include "bitabstractarchivehandler.hpp"
-#include "bititemsvector.hpp"
 #include "bitexception.hpp" //for FailedFiles
+#include "bitinputarchive.hpp"
+#include "bititemsvector.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 

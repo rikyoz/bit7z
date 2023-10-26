@@ -16,8 +16,8 @@
 
 #include <chrono>
 #include <cstdint>
-#include <type_traits>
 #include <string>
+#include <type_traits>
 
 namespace bit7z {
 

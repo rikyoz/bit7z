@@ -11,14 +11,15 @@
  */
 
 #include "bitarchivereader.hpp"
-#include "bitarchiveitem.hpp"
-#include "bitpropvariant.hpp"
-#include "bitarchiveiteminfo.hpp"
-#include "bitinputarchive.hpp"
+
+#include "bit7zlibrary.hpp"
 #include "bitabstractarchiveopener.hpp"
+#include "bitarchiveitem.hpp"
+#include "bitarchiveiteminfo.hpp"
+#include "bitpropvariant.hpp"
+#include "bitinputarchive.hpp"
 #include "bitformat.hpp"
 #include "bittypes.hpp"
-#include "bit7zlibrary.hpp"
 #include "internal/operationresult.hpp"
 
 #include <algorithm>

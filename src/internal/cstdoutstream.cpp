@@ -11,6 +11,7 @@
  */
 
 #include "internal/cstdoutstream.hpp"
+
 #include "internal/streamutil.hpp"
 #include "internal/util.hpp"
 

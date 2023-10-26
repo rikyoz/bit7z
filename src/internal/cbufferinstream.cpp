@@ -16,8 +16,9 @@
 #pragma warning(disable:4996)
 #endif
 
-#include "bittypes.hpp"
 #include "internal/cbufferinstream.hpp"
+
+#include "bittypes.hpp"
 #include "internal/bufferutil.hpp"
 #include "internal/util.hpp"
 

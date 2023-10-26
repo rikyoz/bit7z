@@ -25,8 +25,8 @@
 #include "internal/extractcallback.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
-#include "internal/streamextractcallback.hpp"
 #include "internal/opencallback.hpp"
+#include "internal/streamextractcallback.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 

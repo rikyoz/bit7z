@@ -14,9 +14,9 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
-#include <string>
 #include <utility>
 #include <vector>
+#include <string>
 #include <system_error>
 
 namespace bit7z {

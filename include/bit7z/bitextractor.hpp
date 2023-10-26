@@ -21,8 +21,8 @@
 
 #include <algorithm>
 #include <functional>
-#include <vector>
 #include <map>
+#include <vector>
 #include <ostream>
 
 #ifdef BIT7Z_REGEX_MATCHING

@@ -11,6 +11,7 @@
  */
 
 #include "bitexception.hpp"
+
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 #include "internal/internalcategory.hpp"

@@ -10,8 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitexception.hpp"
 #include "internal/fsindexer.hpp"
+
+#include "bitexception.hpp"
 #include "internal/fsutil.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)

@@ -10,9 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "internal/renameditem.hpp"
+
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
-#include "internal/renameditem.hpp"
 #include "internal/stringutil.hpp"
 
 namespace bit7z {

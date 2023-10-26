@@ -18,8 +18,8 @@
 
 #include "bittypes.hpp"
 #include "internal/fs.hpp"
-#include "internal/util.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/util.hpp"
 
 #include <cstddef>
 

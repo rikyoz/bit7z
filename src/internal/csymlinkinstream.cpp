@@ -15,8 +15,8 @@
 #include "internal/cstdinstream.hpp"
 #include "internal/util.hpp"
 
-#include <system_error>
 #include <string>
+#include <system_error>
 
 namespace bit7z {
 

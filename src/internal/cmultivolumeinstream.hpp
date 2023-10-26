@@ -12,8 +12,8 @@
 
 #include "internal/com.hpp"
 #include "internal/cvolumeinstream.hpp"
-#include "internal/macros.hpp"
 #include "internal/guiddef.hpp"
+#include "internal/macros.hpp"
 
 #include <7zip/IStream.h>
 

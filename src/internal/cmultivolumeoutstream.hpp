@@ -11,14 +11,14 @@
 #define CMULTIVOLUMEOUTSTREAM_HPP
 
 #include "internal/com.hpp"
-#include "internal/guiddef.hpp"
 #include "internal/cvolumeoutstream.hpp"
+#include "internal/guiddef.hpp"
 
 #include <7zip/IStream.h>
 
 #include <cstdint>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace bit7z {
 

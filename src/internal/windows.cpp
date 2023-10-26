@@ -11,9 +11,10 @@
  */
 #ifndef _WIN32
 
+#include "internal/windows.hpp"
+
 #include "bittypes.hpp"
 #include "internal/util.hpp"
-#include "internal/windows.hpp"
 
 #include <cstdint>
 #include <cstdlib>

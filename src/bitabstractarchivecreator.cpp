@@ -11,14 +11,15 @@
  */
 
 #include "bitabstractarchivecreator.hpp"
-#include "bitcompressionlevel.hpp"
-#include "bitabstractarchivehandler.hpp"
+
 #include "bit7zlibrary.hpp"
+#include "bitabstractarchivehandler.hpp"
+#include "bitcompressionlevel.hpp"
 #include "bitcompressionmethod.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
-#include "bittypes.hpp"
 #include "bitformat.hpp"
+#include "bittypes.hpp"
 #include "internal/archiveproperties.hpp"
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK

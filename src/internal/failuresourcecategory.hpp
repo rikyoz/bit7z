@@ -10,6 +10,8 @@
 #ifndef FAILURESOURCECATEGORY_HPP
 #define FAILURESOURCECATEGORY_HPP
 
+#include "bitdefines.hpp"
+
 #include <system_error>
 
 namespace bit7z {

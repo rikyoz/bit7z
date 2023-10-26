@@ -10,8 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "biterror.hpp"
 #include "internal/failuresourcecategory.hpp"
+
+#include "biterror.hpp"
 #include "internal/operationcategory.hpp"
 #include "internal/operationresult.hpp"
 

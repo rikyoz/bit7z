@@ -12,8 +12,8 @@
 
 #include "internal/cvolumeoutstream.hpp"
 
-#include "internal/cstdoutstream.hpp"
 #include "internal/cfileoutstream.hpp"
+#include "internal/cstdoutstream.hpp"
 
 namespace bit7z {
 

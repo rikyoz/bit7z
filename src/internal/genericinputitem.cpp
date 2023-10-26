@@ -11,6 +11,7 @@
  */
 
 #include "internal/genericinputitem.hpp"
+
 #include "internal/stringutil.hpp"
 
 namespace bit7z {

@@ -11,8 +11,8 @@
 #define BITARCHIVEITEMINFO_HPP
 
 #include "bitarchiveitem.hpp"
-#include "bitpropvariant.hpp"
 #include "bitdefines.hpp"
+#include "bitpropvariant.hpp"
 
 #include <map>
 

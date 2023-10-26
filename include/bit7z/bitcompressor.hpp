@@ -13,9 +13,9 @@
 #ifndef BITCOMPRESSOR_HPP
 #define BITCOMPRESSOR_HPP
 
-#include "bitformat.hpp"
 #include "bit7zlibrary.hpp"
 #include "bitabstractarchivecreator.hpp"
+#include "bitformat.hpp"
 #include "bitoutputarchive.hpp"
 #include "bittypes.hpp"
 

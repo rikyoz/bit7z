@@ -11,6 +11,7 @@
  */
 
 #include "internal/hresultcategory.hpp"
+
 #include "internal/windows.hpp"
 
 namespace bit7z {

@@ -10,17 +10,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitexception.hpp"
-#include "biterror.hpp"
 #include "bitpropvariant.hpp"
+
+#include "biterror.hpp"
+#include "bitexception.hpp"
 #include "bittypes.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/windows.hpp"
 
 #include <cwchar>
-#include <utility>
 #include <string>
 #include <system_error>
+#include <utility>
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 ) // Windows
 #define BSTR_TO_TSTRING( bstr ) std::wstring( bstr, ::SysStringLen( bstr ) )

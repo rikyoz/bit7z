@@ -11,6 +11,7 @@
  */
 
 #include "bitarchiveiteminfo.hpp"
+
 #include "bitarchiveitem.hpp"
 #include "bitpropvariant.hpp"
 
