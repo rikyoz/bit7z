@@ -16,6 +16,10 @@ inputs:
   sevenzip_version:
     description: 'Version of 7-Zip to use for the tests'
     required: true
+  shell:
+    description: 'The shell to be used for executing the steps'
+    required: false
+    default: bash
   
 runs:
   using: "composite"
@@ -28,7 +32,7 @@ runs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Configure CMake
-      shell: bash
+      shell: ${{ inputs.shell }}
       run: >
         cmake -B ${{ steps.strings.outputs.build-output-dir }}
         -DCMAKE_CXX_COMPILER=${{ inputs.cpp_compiler }}
@@ -41,12 +45,12 @@ runs:
         -S ${{ github.workspace }}
 
     - name: Build bit7z
-      shell: bash
+      shell: ${{ inputs.shell }}
       # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ inputs.build_type }} --parallel
 
     - name: Test bit7z
-      shell: bash
+      shell: ${{ inputs.shell }}
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
       env:
