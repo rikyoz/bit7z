@@ -22,10 +22,13 @@ jobs:
         include:
           - c_compiler: gcc-11
             cpp_compiler: g++-11
+            enable_sanitizers: OFF
           - c_compiler: gcc-12
             cpp_compiler: g++-12
+            enable_sanitizers: OFF
           - c_compiler: clang
-            cpp_compiler: clang++
+            cpp_compiler: clang++            
+            enable_sanitizers: ON
 
     steps:
     - uses: actions/checkout@v3
@@ -36,6 +39,7 @@ jobs:
         c_compiler: ${{ matrix.c_compiler }}
         cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: 23.01
+        enable_sanitizers: ${{ matrix.enable_sanitizers }}
         build_type: ${{ matrix.build_type }}
         build_flags: |
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

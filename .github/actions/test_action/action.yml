@@ -20,6 +20,10 @@ inputs:
     description: 'The shell to be used for executing the steps'
     required: false
     default: bash
+  enable_sanitizers:
+    description: 'Enable sanitizer for testing bit7z'
+    required: false
+    default: ON
   
 runs:
   using: "composite"
