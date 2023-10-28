@@ -16,6 +16,8 @@
 
 namespace bit7z {
 
+class BitInputArchive;
+
 class StreamExtractCallback final : public ExtractCallback {
     public:
         StreamExtractCallback( const BitInputArchive& inputArchive, std::ostream& outputStream );

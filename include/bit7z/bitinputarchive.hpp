@@ -25,7 +25,6 @@
 #include <istream>
 #include <map>
 #include <ostream>
-#include <vector>
 
 struct IInStream;
 struct IInArchive;
@@ -63,7 +62,7 @@ class BitInputArchive {
          *                 be used for reading the input archive
          * @param inBuffer the buffer containing the input archive
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler, const std::vector< byte_t >& inBuffer );
+        BitInputArchive( const BitAbstractArchiveHandler& handler, const buffer_t& inBuffer );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive by reading the given input stream.
@@ -152,7 +151,7 @@ class BitInputArchive {
         void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( std::vector< byte_t >& outBuffer, uint32_t index = 0 ) const {
+        inline void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {
             extractTo( outBuffer, index );
         }
 
@@ -162,7 +161,7 @@ class BitInputArchive {
          * @param outBuffer   the output buffer where the content of the archive will be put.
          * @param index       the index of the file to be extracted.
          */
-        void extractTo( std::vector< byte_t >& outBuffer, uint32_t index = 0 ) const;
+        void extractTo( buffer_t& outBuffer, uint32_t index = 0 ) const;
 
         template< std::size_t N >
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
@@ -231,7 +230,7 @@ class BitInputArchive {
         void extractTo( std::ostream& outStream, uint32_t index = 0 ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( std::map< tstring, std::vector< byte_t > >& outMap ) const {
+        inline void extract( std::map< tstring, buffer_t >& outMap ) const {
             extractTo( outMap );
         }
 
@@ -241,7 +240,7 @@ class BitInputArchive {
          *
          * @param outMap   the output map.
          */
-        void extractTo( std::map< tstring, std::vector< byte_t > >& outMap ) const;
+        void extractTo( std::map< tstring, buffer_t >& outMap ) const;
 
         /**
          * @brief Tests the archive without extracting its content.

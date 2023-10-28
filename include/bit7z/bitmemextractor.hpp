@@ -14,14 +14,12 @@
 #include "bitextractor.hpp"
 #include "bittypes.hpp"
 
-#include <vector>
-
 namespace bit7z {
 
 /**
  * @brief The BitMemExtractor alias allows extracting the content of in-memory archives.
  */
-using BitMemExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const std::vector< byte_t >& >;
+using BitMemExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const buffer_t& >;
 
 } // namespace bit7z
 

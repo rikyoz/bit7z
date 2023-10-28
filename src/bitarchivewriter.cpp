@@ -19,7 +19,6 @@
 #include "bittypes.hpp"
 
 #include <istream>
-#include <vector>
 
 namespace bit7z {
 
@@ -34,7 +33,7 @@ BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
       BitOutputArchive( *this, inArchive ) {}
 
 BitArchiveWriter::BitArchiveWriter( const Bit7zLibrary& lib,
-                                    const std::vector< byte_t >& inArchive,
+                                    const buffer_t& inArchive,
                                     const BitInOutFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveCreator( lib, format, password, UpdateMode::Append ),

@@ -21,7 +21,6 @@
 
 #include <ostream>
 #include <type_traits>
-#include <vector>
 
 namespace bit7z {
 
@@ -90,7 +89,7 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param inputName  (optional) the name to give to the compressed file inside the output archive.
          */
         void compressFile( Input inFile,
-                           std::vector< byte_t >& outBuffer,
+                           buffer_t& outBuffer,
                            const tstring& inputName = {} ) const {
             BitOutputArchive outputArchive{ *this, outBuffer };
             outputArchive.addFile( inFile, inputName );

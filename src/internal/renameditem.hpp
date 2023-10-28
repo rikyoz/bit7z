@@ -10,10 +10,11 @@
 #ifndef RENAMEDITEM_HPP
 #define RENAMEDITEM_HPP
 
-#include "bitinputarchive.hpp"
 #include "internal/genericinputitem.hpp"
 
 namespace bit7z {
+
+class BitInputArchive;
 
 class RenamedItem final : public GenericInputItem {
     public:

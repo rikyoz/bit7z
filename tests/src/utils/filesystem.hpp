@@ -62,14 +62,14 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
     return !error;
 }
 
-inline auto load_file( fs::path const& inFile ) -> std::vector< bit7z::byte_t > {
+inline auto load_file( fs::path const& inFile ) -> buffer_t {
     fs::ifstream ifs{ inFile, fs::ifstream::binary };
     if ( !ifs.is_open() ) {
         return {};
     }
     noskipws( ifs ); //no skip spaces!
     auto size = fs::file_size( inFile );
-    std::vector< bit7z::byte_t > result( size );
+    buffer_t result( size );
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
     ifs.read( reinterpret_cast<char*>( result.data() ), result.cend() - result.cbegin() );
     //note: using basic_ifstream with istreambuf_iterator<std::byte> would be cleaner, but it is 10x slower.

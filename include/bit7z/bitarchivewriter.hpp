@@ -17,7 +17,6 @@
 #include "bittypes.hpp"
 
 #include <istream>
-#include <vector>
 
 namespace bit7z {
 
@@ -56,7 +55,7 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param password      (optional) the password needed to read the input archive.
          */
         BitArchiveWriter( const Bit7zLibrary& lib,
-                          const std::vector< byte_t >& inArchive,
+                          const buffer_t& inArchive,
                           const BitInOutFormat& format,
                           const tstring& password = {} );
 

@@ -18,7 +18,6 @@
 #include <istream>
 #include <map>
 #include <memory>
-#include <vector>
 
 namespace bit7z {
 
@@ -113,7 +112,7 @@ class BitItemsVector final {
          * @param inBuffer  the buffer containing the file to be indexed in the vector.
          * @param name      user-defined path to be used inside archives.
          */
-        void indexBuffer( const std::vector< byte_t >& inBuffer, const tstring& name );
+        void indexBuffer( const buffer_t& inBuffer, const tstring& name );
 
         /**
          * @brief Indexes the given standard input stream, using the given name as a path when compressed in archives.

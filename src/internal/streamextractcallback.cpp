@@ -12,6 +12,7 @@
 
 #include "internal/streamextractcallback.hpp"
 
+#include "bitinputarchive.hpp"
 #include "internal/cstdoutstream.hpp"
 #include "internal/util.hpp"
 

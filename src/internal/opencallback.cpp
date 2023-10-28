@@ -12,6 +12,7 @@
 
 #include "internal/opencallback.hpp"
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/stringutil.hpp"

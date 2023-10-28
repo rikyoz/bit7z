@@ -14,12 +14,13 @@
 
 #ifdef BIT7Z_AUTO_FORMAT
 
-#include "bitformat.hpp"
 #include "bitfs.hpp"
 
 struct IInStream;
 
 namespace bit7z {
+
+class BitInFormat;
 
 auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat&;
 

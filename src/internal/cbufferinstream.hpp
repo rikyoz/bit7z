@@ -17,13 +17,11 @@
 
 #include <7zip/IStream.h>
 
-#include <vector>
-
 namespace bit7z {
 
 class CBufferInStream final : public IInStream, public CMyUnknownImp {
     public:
-        explicit CBufferInStream( const std::vector< byte_t >& inBuffer );
+        explicit CBufferInStream( const buffer_t& inBuffer );
 
         CBufferInStream( const CBufferInStream& ) = delete;
 

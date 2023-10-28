@@ -12,7 +12,9 @@
 
 #include "internal/extractcallback.hpp"
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
+#include "bitinputarchive.hpp"
 #include "internal/operationcategory.hpp"
 #include "internal/stringutil.hpp"
 
@@ -138,6 +140,26 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     }
 
     return StringToBstr( pass.c_str(), password );
+}
+
+auto ExtractCallback::isItemFolder( uint32_t index ) const -> bool {
+    return mInputArchive.isItemFolder( index );
+}
+
+auto ExtractCallback::itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant {
+    return mInputArchive.itemProperty( index, property );
+}
+
+auto ExtractCallback::inputArchive() const -> const BitInputArchive& {
+    return mInputArchive;
+}
+
+auto ExtractCallback::errorException() const -> const std::exception_ptr& {
+    return mErrorException;
+}
+
+auto ExtractCallback::extractMode() const -> ExtractMode {
+    return mExtractMode;
 }
 
 } // namespace bit7z

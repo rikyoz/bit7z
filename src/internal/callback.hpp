@@ -10,7 +10,6 @@
 #ifndef CALLBACK_HPP
 #define CALLBACK_HPP
 
-#include "bitabstractarchivehandler.hpp"
 #include "internal/com.hpp"
 #include "internal/guids.hpp"
 
@@ -27,6 +26,8 @@ namespace bit7z {
 #ifndef CALLBACK_DESTRUCTOR // MSVC or Unix compiler
 #   define CALLBACK_DESTRUCTOR( x ) virtual x
 #endif
+
+class BitAbstractArchiveHandler;
 
 class Callback : protected CMyUnknownImp {
     public:

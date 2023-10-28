@@ -36,7 +36,6 @@
 #include <memory>
 #include <string>
 #include <system_error>
-#include <vector>
 
 namespace bit7z {
 
@@ -81,7 +80,7 @@ void BitArchiveEditor::updateItem( uint32_t index, const tstring& inFile ) {
     mEditedItems[ index ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemName.getNativeString() ); //-V108
 }
 
-void BitArchiveEditor::updateItem( uint32_t index, const std::vector< byte_t >& inBuffer ) {
+void BitArchiveEditor::updateItem( uint32_t index, const buffer_t& inBuffer ) {
     checkIndex( index );
     auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< BufferItem >( inBuffer, itemName.getNativeString() ); //-V108
@@ -98,7 +97,7 @@ void BitArchiveEditor::updateItem( const tstring& itemPath, const tstring& inFil
                                                                                tstring_to_path( itemPath ) );
 }
 
-void BitArchiveEditor::updateItem( const tstring& itemPath, const std::vector< byte_t >& inBuffer ) {
+void BitArchiveEditor::updateItem( const tstring& itemPath, const buffer_t& inBuffer ) {
     mEditedItems[ findItem( itemPath ) ] = std::make_unique< BufferItem >( inBuffer, itemPath ); //-V108
 }
 

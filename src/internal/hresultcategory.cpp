@@ -22,7 +22,7 @@ auto HRESULTCategory::name() const noexcept -> const char* {
 
 auto HRESULTCategory::message( int errorValue ) const -> std::string {
 #ifdef _WIN32
-    // Note: also MinGW supports FormatMessageA!
+    // Note: also MinGW supports FormatMessageA, so we use it.
     LPSTR messageBuffer = nullptr;
     auto msgSize = FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER |
                                    FORMAT_MESSAGE_FROM_SYSTEM |

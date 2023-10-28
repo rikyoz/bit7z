@@ -21,13 +21,13 @@
 
 namespace bit7z {
 
-CBufferOutStream::CBufferOutStream( std::vector< byte_t >& outBuffer )
+CBufferOutStream::CBufferOutStream( buffer_t& outBuffer )
     : mBuffer( outBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
     try {
-        mBuffer.resize( static_cast< std::vector< byte_t >::size_type >( newSize ) );
+        mBuffer.resize( static_cast< buffer_t::size_type >( newSize ) );
         return S_OK;
     } catch ( ... ) {
         return E_OUTOFMEMORY;

@@ -15,6 +15,8 @@
 
 namespace bit7z {
 
+class BitInputArchive;
+
 class FixedBufferExtractCallback final : public ExtractCallback {
     public:
         FixedBufferExtractCallback( const BitInputArchive& inputArchive, byte_t* buffer, size_t size );

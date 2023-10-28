@@ -10,7 +10,7 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
-#include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
 #include "internal/callback.hpp"
 #include "internal/macros.hpp"
 #include "internal/operationresult.hpp"
@@ -24,6 +24,8 @@
 using namespace NArchive::NExtract;
 
 namespace bit7z {
+
+class BitInputArchive;
 
 constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 
@@ -68,9 +70,7 @@ class ExtractCallback : public Callback,
         BIT7Z_STDMETHOD( SetOperationResult, Int32 operationResult );
 
         BIT7Z_NODISCARD
-        inline auto errorException() const -> const std::exception_ptr& {
-            return mErrorException;
-        }
+        auto errorException() const -> const std::exception_ptr&;
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835
@@ -79,24 +79,16 @@ class ExtractCallback : public Callback,
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
         BIT7Z_NODISCARD
-        inline auto extractMode() const -> ExtractMode {
-            return mExtractMode;
-        }
+        auto extractMode() const -> ExtractMode;
 
         BIT7Z_NODISCARD
-        inline auto isItemFolder( uint32_t index ) const -> bool {
-            return mInputArchive.isItemFolder( index );
-        }
+        auto isItemFolder( uint32_t index ) const -> bool;
 
         BIT7Z_NODISCARD
-        inline auto itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant {
-            return mInputArchive.itemProperty( index, property );
-        }
+        auto itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant;
 
         BIT7Z_NODISCARD
-        inline auto inputArchive() const -> const BitInputArchive& {
-            return mInputArchive;
-        }
+        auto inputArchive() const -> const BitInputArchive&;
 
         virtual auto finishOperation( OperationResult operationResult ) -> HRESULT;
 

@@ -27,7 +27,6 @@
 #include <map>
 #include <numeric>
 #include <system_error>
-#include <vector>
 
 namespace bit7z {
 
@@ -38,7 +37,7 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const std::vector< byte_t >& inArchive,
+                                    const buffer_t& inArchive,
                                     const BitInFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}

@@ -21,11 +21,10 @@
 
 #include <cstdint>
 #include <utility>
-#include <vector>
 
 namespace bit7z {
 
-BufferItem::BufferItem( const std::vector< byte_t >& buffer, fs::path name )
+BufferItem::BufferItem( const buffer_t& buffer, fs::path name )
     : mBuffer{ buffer }, mBufferName{ std::move( name ) } {}
 
 auto BufferItem::name() const -> tstring {

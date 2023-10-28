@@ -12,6 +12,7 @@
 
 #include "internal/renameditem.hpp"
 
+#include "bitinputarchive.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"

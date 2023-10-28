@@ -78,8 +78,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, co
     mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                                    const std::vector< bit7z::byte_t >& inBuffer )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const buffer_t& inBuffer )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( !inBuffer.empty() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, inBuffer );
@@ -114,7 +113,7 @@ void BitOutputArchive::addFile( const tstring& inFile, const tstring& name ) {
                                !mArchiveCreator.storeSymbolicLinks() );
 }
 
-void BitOutputArchive::addFile( const std::vector< byte_t >& inBuffer, const tstring& name ) {
+void BitOutputArchive::addFile( const buffer_t& inBuffer, const tstring& name ) {
     mNewItemsVector.indexBuffer( inBuffer, name );
 }
 
@@ -258,7 +257,7 @@ void BitOutputArchive::compressTo( const tstring& outFile ) {
     compressToFile( outPath, updateCallback );
 }
 
-void BitOutputArchive::compressTo( std::vector< byte_t >& outBuffer ) {
+void BitOutputArchive::compressTo( buffer_t& outBuffer ) {
     if ( !outBuffer.empty() ) {
         const OverwriteMode overwriteMode = mArchiveCreator.overwriteMode();
         if ( overwriteMode == OverwriteMode::Skip ) {

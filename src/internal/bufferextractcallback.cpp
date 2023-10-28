@@ -25,7 +25,7 @@
 namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
-                                              std::map< tstring, std::vector< byte_t > >& buffersMap )
+                                              std::map< tstring, buffer_t >& buffersMap )
     : ExtractCallback( inputArchive ),
       mBuffersMap( buffersMap ) {}
 

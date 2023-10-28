@@ -14,8 +14,9 @@
 #include "bitwindows.hpp"
 #include "internal/fs.hpp"
 
-#include <chrono>
+#ifndef _WIN32
 #include <ctime>
+#endif
 
 namespace bit7z {
 

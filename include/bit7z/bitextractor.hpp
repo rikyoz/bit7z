@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <functional>
 #include <map>
-#include <vector>
 #include <ostream>
 
 #ifdef BIT7Z_REGEX_MATCHING
@@ -81,7 +80,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outBuffer   the output buffer where the content of the extracted file will be put.
          * @param index        the index of the file to be extracted from the archive.
          */
-        void extract( Input inArchive, std::vector< byte_t >& outBuffer, uint32_t index = 0 ) const {
+        void extract( Input inArchive, buffer_t& outBuffer, uint32_t index = 0 ) const {
             BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
         }
@@ -105,7 +104,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param inArchive    the input archive to be extracted.
          * @param outMap       the output map.
          */
-        void extract( Input inArchive, std::map< tstring, std::vector< byte_t > >& outMap ) const {
+        void extract( Input inArchive, std::map< tstring, buffer_t >& outMap ) const {
             BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outMap );
         }
@@ -141,7 +140,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          */
         void extractMatching( Input inArchive,
                               const tstring& itemFilter,
-                              std::vector< byte_t >& outBuffer,
+                              buffer_t& outBuffer,
                               FilterPolicy policy = FilterPolicy::Include ) const {
             if ( itemFilter.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
@@ -221,7 +220,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          */
         void extractMatchingRegex( Input inArchive,
                                    const tstring& regex,
-                                   std::vector< byte_t >& outBuffer,
+                                   buffer_t& outBuffer,
                                    FilterPolicy policy = FilterPolicy::Include ) const {
             if ( regex.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
@@ -278,7 +277,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         void extractMatchingFilter( Input inArchive,
-                                    std::vector< byte_t >& outBuffer,
+                                    buffer_t& outBuffer,
                                     FilterPolicy policy,
                                     const std::function< bool( const tstring& ) >& filter ) const {
             BitInputArchive inputArchive( *this, inArchive );

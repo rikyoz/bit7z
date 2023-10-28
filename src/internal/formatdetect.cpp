@@ -18,6 +18,7 @@
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "bitformat.hpp"
 #include "internal/fsutil.hpp"
 #ifndef _WIN32
 #include "internal/guiddef.hpp"

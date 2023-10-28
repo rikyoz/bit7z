@@ -13,6 +13,7 @@
 #include "internal/fileextractcallback.hpp"
 
 #include "bitexception.hpp"
+#include "bitinputarchive.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"

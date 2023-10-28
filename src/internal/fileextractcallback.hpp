@@ -16,6 +16,8 @@
 
 namespace bit7z {
 
+class BitInputArchive;
+
 class FileExtractCallback final : public ExtractCallback {
     public:
         FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath );

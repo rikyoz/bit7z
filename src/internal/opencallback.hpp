@@ -10,7 +10,6 @@
 #ifndef OPENCALLBACK_HPP
 #define OPENCALLBACK_HPP
 
-#include "bitabstractarchivehandler.hpp"
 #include "internal/callback.hpp"
 #include "internal/com.hpp"
 #include "internal/fsitem.hpp"
@@ -22,6 +21,8 @@
 namespace bit7z {
 
 using filesystem::FilesystemItem;
+
+class BitAbstractArchiveHandler;
 
 class OpenCallback final : public IArchiveOpenCallback,
                            public IArchiveOpenVolumeCallback,

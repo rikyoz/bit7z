@@ -24,7 +24,6 @@
 #include <ostream>
 #include <set>
 #include <utility>
-#include <vector>
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct ISequentialInStream;
@@ -95,7 +94,7 @@ class BitOutputArchive {
          *                  be used for creating the new archive and reading the (optional) input archive.
          * @param inBuffer  the buffer containing an input archive file.
          */
-        BitOutputArchive( const BitAbstractArchiveCreator& creator, const std::vector< byte_t >& inBuffer );
+        BitOutputArchive( const BitAbstractArchiveCreator& creator, const buffer_t& inBuffer );
 
         /**
          * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
@@ -146,7 +145,7 @@ class BitOutputArchive {
          * @param inBuffer  the buffer containing the file to be added to the output archive.
          * @param name      user-defined path to be used inside the output archive.
          */
-        void addFile( const std::vector< byte_t >& inBuffer, const tstring& name );
+        void addFile( const buffer_t& inBuffer, const tstring& name );
 
         /**
          * @brief Adds the given standard input stream, using the given name as a path when compressed
@@ -214,7 +213,7 @@ class BitOutputArchive {
          *
          * @param outBuffer the output buffer.
          */
-        void compressTo( std::vector< byte_t >& outBuffer );
+        void compressTo( buffer_t& outBuffer );
 
         /**
          * @brief Compresses all the items added to this object to the specified buffer.

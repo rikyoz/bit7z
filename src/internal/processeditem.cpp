@@ -13,6 +13,8 @@
 #include "internal/processeditem.hpp"
 
 #include "bitexception.hpp"
+#include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
 
 namespace bit7z {
 

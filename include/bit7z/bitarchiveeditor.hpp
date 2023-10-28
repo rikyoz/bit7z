@@ -23,7 +23,6 @@
 
 #include <istream>
 #include <unordered_map>
-#include <vector>
 
 namespace bit7z {
 
@@ -102,7 +101,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param inBuffer  the buffer containing the new data for the item.
          */
-        void updateItem( uint32_t index, const std::vector< byte_t >& inBuffer );
+        void updateItem( uint32_t index, const buffer_t& inBuffer );
 
         /**
          * @brief Requests to update the content of the item at the specified index
@@ -129,7 +128,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param itemPath  the path (in the archive) of the item to be updated.
          * @param inBuffer  the buffer containing the new data for the item.
          */
-        void updateItem( const tstring& itemPath, const std::vector< byte_t >& inBuffer );
+        void updateItem( const tstring& itemPath, const buffer_t& inBuffer );
 
         /**
          * @brief Requests to update the content of the item at the specified path

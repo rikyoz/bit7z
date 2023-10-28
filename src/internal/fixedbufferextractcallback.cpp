@@ -12,6 +12,7 @@
 
 #include "internal/fixedbufferextractcallback.hpp"
 
+#include "bitabstractarchivehandler.hpp"
 #include "internal/cfixedbufferoutstream.hpp"
 #include "internal/util.hpp"
 

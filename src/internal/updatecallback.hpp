@@ -10,7 +10,6 @@
 #ifndef UPDATECALLBACK_HPP
 #define UPDATECALLBACK_HPP
 
-#include "bitoutputarchive.hpp"
 #include "internal/callback.hpp"
 #include "internal/macros.hpp"
 
@@ -19,6 +18,8 @@
 #include <7zip/IPassword.h>
 
 namespace bit7z {
+
+class BitOutputArchive;
 
 class UpdateCallback final : public Callback,
                              public IArchiveUpdateCallback2,

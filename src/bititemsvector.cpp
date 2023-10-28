@@ -93,7 +93,7 @@ void BitItemsVector::indexFile( const tstring& inFile, const tstring& name, bool
     mItems.emplace_back( std::make_unique< FilesystemItem >( filePath, tstring_to_path( name ), symlinkPolicy ) );
 }
 
-void BitItemsVector::indexBuffer( const std::vector< byte_t >& inBuffer, const tstring& name ) {
+void BitItemsVector::indexBuffer( const buffer_t& inBuffer, const tstring& name ) {
     mItems.emplace_back( std::make_unique< BufferItem >( inBuffer, tstring_to_path( name ) ) );
 }
 

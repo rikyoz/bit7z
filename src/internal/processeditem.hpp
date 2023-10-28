@@ -10,11 +10,12 @@
 #ifndef PROCESSEDITEM_HPP
 #define PROCESSEDITEM_HPP
 
-#include "bitinputarchive.hpp"
 #include "internal/fs.hpp"
 #include "internal/windows.hpp"
 
 namespace bit7z {
+
+class BitInputArchive;
 
 class ProcessedItem final {
     public:
