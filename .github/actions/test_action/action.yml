@@ -25,7 +25,6 @@ runs:
   using: "composite"
   steps:
     - name: Set reusable strings
-      # Turn repeated input strings (such as the build output directory) into step outputs. These step outputs can be used throughout the workflow file.
       id: strings
       shell: bash
       run: |
@@ -68,7 +67,6 @@ runs:
 
     - name: Build bit7z
       shell: ${{ inputs.shell }}
-      # Build your program with the given configuration. Note that --config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ inputs.build_type }} --parallel
 
     - name: Test bit7z
@@ -77,6 +75,4 @@ runs:
       # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
-      # Execute tests defined by the CMake configuration. Note that --build-config is needed because the default Windows generator is a multi-config generator (Visual Studio generator).
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
       run: ctest --build-target bit7z-tests --build-config ${{ inputs.build_type }} --output-on-failure
