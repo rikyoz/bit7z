@@ -15,20 +15,46 @@ jobs:
 
       matrix:
         build_type: [Debug, Release]
-        c_compiler: [gcc, clang]
+        c_compiler: [gcc-9, gcc-10, gcc-11, gcc-12, gcc-13, clang-13, clang-14, clang-15]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
         bit7z_7zip_version: [22.01, 23.01]
         include:
-          - c_compiler: gcc
-            cpp_compiler: g++
+          - c_compiler: gcc-9
+            cpp_compiler: g++-9
             use_system_7zip: OFF
-          - c_compiler: clang
-            cpp_compiler: clang++
+          - c_compiler: gcc-10
+            cpp_compiler: g++-10
+            use_system_7zip: OFF
+          - c_compiler: gcc-11
+            cpp_compiler: g++-11
+            use_system_7zip: OFF
+          - c_compiler: gcc-12
+            cpp_compiler: g++-12
+            use_system_7zip: OFF
+          - c_compiler: gcc-13
+            cpp_compiler: g++-13
+            use_system_7zip: OFF
+          - c_compiler: clang-13
+            cpp_compiler: clang++-13
+            use_system_7zip: OFF
+          - c_compiler: clang-14
+            cpp_compiler: clang++-14
+            use_system_7zip: OFF
+          - c_compiler: clang-15
+            cpp_compiler: clang++-15
             use_system_7zip: OFF
         exclude:
-          - c_compiler: gcc
+          - c_compiler: gcc-9
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-10
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-11
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-12
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-13
             bit7z_link_libcpp: ON
 
     steps:
