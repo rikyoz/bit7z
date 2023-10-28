@@ -22,17 +22,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-        
-    - name: Build 7z.so for tests
-      shell: bash
-      run: |
-        mkdir -p ${{ github.workspace }}/bin/x64/
-        git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
-        git -C ${{ github.workspace }}/../7-zip fetch --tags
-        git -C ${{ github.workspace }}/../7-zip checkout v${{ matrix.bit7z_7zip_version }}
-        cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
-        make -j -f ../../cmpl_mac_x64.mak
-        cp b/m_x64/7z.so ${{ github.workspace }}/bin/x64/7z.so
 
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
