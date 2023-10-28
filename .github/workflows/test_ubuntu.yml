@@ -62,12 +62,12 @@ jobs:
 
     - name: Fix missing libc++ and libc++abi packages for clang-13 compiler
       shell: bash
-      if: ${{ contains(matrix.c_compiler, 'clang-13') }}
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-13') }}
       run: sudo apt-get purge libc++-14-dev libc++abi-14-dev -y && sudo apt-get install libc++-13-dev libc++abi-13-dev -y
       
     - name: Fix missing libc++ and libc++abi packages for clang-15 compiler
       shell: bash
-      if: ${{ contains(matrix.c_compiler, 'clang-15') }}
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-15') }}
       run: sudo apt-get purge libc++-14-dev libc++abi-14-dev -y && sudo apt-get install libc++-15-dev libc++abi-15-dev -y
 
     - name: Building and testing bit7z
