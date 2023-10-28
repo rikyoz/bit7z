@@ -42,7 +42,7 @@ runs:
         -DCMAKE_C_COMPILER=${{ inputs.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
         -DBIT7Z_BUILD_TESTS=ON
-        -DBIT7Z_ENABLE_SANITIZERS=ON
+        -DBIT7Z_ENABLE_SANITIZERS=${{ inputs.enable_sanitizers }}
         -DBIT7Z_7ZIP_VERSION="${{ inputs.sevenzip_version }}"
         ${{ inputs.build_flags }}
         -S ${{ github.workspace }}
