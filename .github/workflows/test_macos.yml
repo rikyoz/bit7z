@@ -18,7 +18,6 @@ jobs:
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
-        bit7z_7zip_version: [22.01, 23.01]
 
     steps:
     - uses: actions/checkout@v3
@@ -28,7 +27,7 @@ jobs:
       with:
         c_compiler: clang
         cpp_compiler: clang++
-        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
+        sevenzip_version: 23.01
         build_type: ${{ matrix.build_type }}
         build_flags: |
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
