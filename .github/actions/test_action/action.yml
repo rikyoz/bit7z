@@ -34,11 +34,6 @@ runs:
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
-    - name: Fix missing libc++ and libc++abi packages for clang compiler
-      if: |
-        runner.os == 'Linux' && ${{ contains(inputs.c_compiler, 'clang') }}
-      run: apt-get install libc++-*-dev libc++abi-*-dev
-
     - name: Configure CMake
       shell: ${{ inputs.shell }}
       run: >
