@@ -2,7 +2,7 @@ name: Test bit7z on Windows with multiple configurations
 on: [pull_request, push]
 
 jobs:
-  build:
+  build_win:
     runs-on: windows-latest
     if: |
       github.event_name == 'pull_request'

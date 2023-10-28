@@ -2,7 +2,7 @@ name: Test bit7z on Ubuntu with multiple configurations
 on: [pull_request, push]
 
 jobs:
-  build:
+  build_linux:
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'pull_request'
