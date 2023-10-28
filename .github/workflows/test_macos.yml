@@ -14,9 +14,17 @@ jobs:
 
       matrix:
         build_type: [Debug, Release]
+        c_compiler: [gcc-11, gcc-12, clang]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
+        include:
+          - c_compiler: gcc-11
+            cpp_compiler: g++-11
+          - c_compiler: gcc-12
+            cpp_compiler: g++-12
+          - c_compiler: clang
+            cpp_compiler: clang++
 
     steps:
     - uses: actions/checkout@v3
@@ -24,8 +32,8 @@ jobs:
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
       with:
-        c_compiler: clang
-        cpp_compiler: clang++
+        c_compiler: ${{ matrix.c_compiler }}
+        cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: 23.01
         build_type: ${{ matrix.build_type }}
         build_flags: |
