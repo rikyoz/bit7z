@@ -21,6 +21,7 @@ jobs:
         bit7z_auto_prefix_long_paths: [OFF, ON]
         bit7z_use_system_codepage: [OFF, ON]
         bit7z_path_sanitization: [OFF, ON]
+        bit7z_7zip_version: [22.01, 23.01]
 
     steps:
     - uses: actions/checkout@v3
@@ -31,5 +32,6 @@ jobs:
         c_compiler: cl
         cpp_compiler: cl
         build_type: ${{ matrix.build_type }}
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
         build_flags: |
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=ON -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }} -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }} -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }}

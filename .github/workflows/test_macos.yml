@@ -18,6 +18,7 @@ jobs:
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
+        bit7z_7zip_version: [22.01, 23.01]
 
     steps:
     - uses: actions/checkout@v3
@@ -27,6 +28,8 @@ jobs:
       run: |
         mkdir -p ${{ github.workspace }}/bin/x64/
         git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
+        git -C ${{ github.workspace }}/../7-zip fetch --tags
+        git -C ${{ github.workspace }}/../7-zip checkout v${{ matrix.bit7z_7zip_version }}
         cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
         make -j -f ../../cmpl_mac_x64.mak
         cp b/m_x64/7z.so ${{ github.workspace }}/bin/x64/7z.so
@@ -36,6 +39,7 @@ jobs:
       with:
         c_compiler: clang
         cpp_compiler: clang++
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
         build_type: ${{ matrix.build_type }}
         build_flags: |
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
