@@ -50,8 +50,6 @@ using std::size_t;
 namespace bit7z {
 
 // Win32 type aliases
-using FARPROC = void*;
-using HMODULE = void*;
 using HRESULT = int;
 using OLECHAR = wchar_t;
 using BSTR = OLECHAR*;

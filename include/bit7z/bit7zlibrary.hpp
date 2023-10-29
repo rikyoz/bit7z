@@ -12,8 +12,8 @@
 
 #include "bitdefines.hpp"
 #include "bitformat.hpp"
+#include "bitsharedlibrary.hpp"
 #include "bittypes.hpp"
-#include "bitwindows.hpp"
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct IInArchive;
@@ -74,7 +74,7 @@ class Bit7zLibrary final {
         /**
          * @brief Destructs the Bit7zLibrary object, freeing the loaded shared library.
          */
-        ~Bit7zLibrary();
+        ~Bit7zLibrary() = default;
 
         /**
          * @brief Set the 7-zip shared library to use large memory pages.
@@ -82,8 +82,8 @@ class Bit7zLibrary final {
         void setLargePageMode();
 
     private:
-        HMODULE mLibrary;
-        FARPROC mCreateObjectFunc;
+        BitSharedLibrary mLibrary;
+        LibrarySymbol mCreateObjectFunc;
 
         BIT7Z_NODISCARD
         auto initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive >;

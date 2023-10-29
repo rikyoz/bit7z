@@ -24,47 +24,15 @@
 
 #include <system_error>
 
-#ifdef _WIN32
-#include "internal/stringutil.hpp"
-
-#   define Bit7zLoadLibrary( lib_name ) LoadLibraryW( WIDEN( (lib_name) ).c_str() )
-#   define ERROR_CODE( errc ) bit7z::last_error_code()
-#else
-#   include <dlfcn.h>
-
-#   define Bit7zLoadLibrary( lib_name ) dlopen( (lib_name).c_str(), RTLD_LAZY )
-#   define GetProcAddress dlsym
-#   define FreeLibrary dlclose
-#   define ERROR_CODE( errc ) std::make_error_code( errc )  //same behavior as boost::shared_library
-#endif
-
 namespace bit7z {
 
-Bit7zLibrary::Bit7zLibrary( const tstring& libraryPath ) : mLibrary( Bit7zLoadLibrary( libraryPath ) ) {
-    if ( mLibrary == nullptr ) {
-        throw BitException( "Failed to load the 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
-    }
-
-    mCreateObjectFunc = GetProcAddress( mLibrary, "CreateObject" );
-
-    if ( mCreateObjectFunc == nullptr ) {
-        FreeLibrary( mLibrary );
-        throw BitException( "Failed to get CreateObject function", ERROR_CODE( std::errc::invalid_seek ) );
-    }
-}
-
-Bit7zLibrary::~Bit7zLibrary() {
-    FreeLibrary( mLibrary );
-}
+Bit7zLibrary::Bit7zLibrary( const tstring& libraryPath )
+    : mLibrary{ libraryPath }, mCreateObjectFunc{ mLibrary.getSymbol( "CreateObject" ) } {}
 
 void Bit7zLibrary::setLargePageMode() {
     using SetLargePageMode = HRESULT ( WINAPI* )();
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    auto pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode" ) );
-    if ( pSetLargePageMode == nullptr ) {
-        throw BitException( "Failed to get SetLargePageMode function", ERROR_CODE( std::errc::invalid_seek ) );
-    }
+    auto pSetLargePageMode = mLibrary.getFunction< SetLargePageMode >( "SetLargePageMode" );
     const HRESULT res = pSetLargePageMode();
     if ( res != S_OK ) {
         throw BitException( "Failed to set the large page mode", make_hresult_code( res ) );
@@ -90,7 +58,7 @@ constexpr auto interface_id< IOutArchive >() -> const GUID& {
 
 template< typename T >
 BIT7Z_NODISCARD
-auto create_archive_object( FARPROC creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
+inline auto create_archive_object( LibrarySymbol creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
     const auto formatID = format_guid( format );

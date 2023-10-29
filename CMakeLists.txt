@@ -46,6 +46,7 @@ set( PUBLIC_HEADERS
      include/bit7z/bitmemextractor.hpp
      include/bit7z/bitoutputarchive.hpp
      include/bit7z/bitpropvariant.hpp
+     include/bit7z/bitsharedlibrary.hpp
      include/bit7z/bitstreamcompressor.hpp
      include/bit7z/bitstreamextractor.hpp
      include/bit7z/bittypes.hpp
@@ -120,6 +121,7 @@ set( SOURCES
      src/bititemsvector.cpp
      src/bitoutputarchive.cpp
      src/bitpropvariant.cpp
+     src/bitsharedlibrary.cpp
      src/bittypes.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferitem.cpp

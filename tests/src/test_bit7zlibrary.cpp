@@ -27,7 +27,7 @@ namespace test {
 
 TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bit7zlibrary]" ) {
     REQUIRE_THROWS_WITH( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
-                         Catch::Matchers::StartsWith( "Failed to load the 7-zip library" ) );
+                         Catch::Matchers::StartsWith( "Failed to load the library" ) );
 
 #ifdef _WIN32
     REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
