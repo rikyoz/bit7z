@@ -19,6 +19,7 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 #include "internal/com.hpp"
+#include "internal/guiddef.hpp"
 #include "internal/guids.hpp"
 
 #include <7zip/Archive/IArchive.h>

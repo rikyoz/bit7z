@@ -14,6 +14,8 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
+#include <type_traits>
+
 namespace bit7z {
 
 #ifdef _WIN32

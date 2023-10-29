@@ -12,6 +12,7 @@
 
 #include "bitdefines.hpp"
 
+#include <string>
 #include <system_error>
 
 namespace bit7z {

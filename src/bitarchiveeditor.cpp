@@ -74,6 +74,8 @@ void BitArchiveEditor::renameItem( const tstring& oldPath, const tstring& newPat
 }
 
 void BitArchiveEditor::updateItem( uint32_t index, const tstring& inFile ) {
+    using filesystem::FilesystemItem;
+
     checkIndex( index );
     auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemName.getNativeString() ); //-V108

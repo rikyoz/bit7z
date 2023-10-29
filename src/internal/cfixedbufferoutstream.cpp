@@ -82,7 +82,8 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
     }
 
     auto writeSize = static_cast< size_t >( size );
-    size_t remainingSize = mBufferSize - mCurrentPosition; // The Seek method ensures mCurrentPosition < mBufferSize.
+    // The Seek method ensures mCurrentPosition < mBufferSize.
+    const size_t remainingSize = mBufferSize - mCurrentPosition;
     if ( writeSize > remainingSize ) {
         /* Writing only to the remaining part of the output buffer!
          * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe. */

@@ -30,8 +30,11 @@
 #include <cwctype> // for iswdigit
 #endif
 
-#include <algorithm> //for std::adjacent_find
+#ifdef _WIN32
 #include <cstdio>
+#endif
+
+#include <algorithm> //for std::adjacent_find
 #include <string>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)

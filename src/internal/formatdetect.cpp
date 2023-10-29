@@ -19,6 +19,7 @@
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitformat.hpp"
+#include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 #ifndef _WIN32
 #include "internal/guiddef.hpp"
@@ -27,6 +28,9 @@
 #include <7zip/IStream.h>
 
 #include <algorithm>
+#include <cstdlib>
+#include <cstdint>
+#include <ios>
 
 #if defined(BIT7Z_USE_NATIVE_STRING) && defined(_WIN32)
 #include <cwctype> // for std::iswdigit

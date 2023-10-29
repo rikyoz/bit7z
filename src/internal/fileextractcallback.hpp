@@ -10,6 +10,7 @@
 #ifndef FILEEXTRACTCALLBACK_HPP
 #define FILEEXTRACTCALLBACK_HPP
 
+#include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "internal/cfileoutstream.hpp"
 #include "internal/extractcallback.hpp"

@@ -12,6 +12,7 @@
 
 #include "bitinputarchive.hpp"
 
+#include "bitarchiveitemoffset.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitpropvariant.hpp"
@@ -35,9 +36,16 @@
 #include "internal/formatdetect.hpp"
 #endif
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <exception>
 #include <istream>
+#include <limits>
+#include <map>
+#include <ostream>
+#include <string>
+#include <utility>
 #include <vector>
 
 using namespace NWindows;

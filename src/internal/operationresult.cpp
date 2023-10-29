@@ -14,6 +14,8 @@
 
 #include "internal/operationcategory.hpp"
 
+#include <system_error>
+
 namespace bit7z {
 
 auto make_error_code( OperationResult error ) -> std::error_code {

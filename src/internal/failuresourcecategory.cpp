@@ -16,6 +16,8 @@
 #include "internal/operationcategory.hpp"
 #include "internal/operationresult.hpp"
 
+#include <7zip/Archive/IArchive.h>
+
 #include <string>
 #include <system_error>
 

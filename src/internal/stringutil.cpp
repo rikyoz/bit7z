@@ -36,6 +36,7 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
 #endif
 
+#include <cstddef>
 #include <locale>
 #include <string>
 

@@ -10,7 +10,9 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
+#include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/callback.hpp"
 #include "internal/macros.hpp"
 #include "internal/operationresult.hpp"
