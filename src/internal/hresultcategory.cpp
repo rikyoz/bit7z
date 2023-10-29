@@ -42,7 +42,7 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
     }
     /* Note: strings obtained using FormatMessageA have a trailing space, and a \r\n pair of char.
      *       Using the flag FORMAT_MESSAGE_MAX_WIDTH_MASK removes the ending \r\n but leaves the trailing space.
-     *       For this reason, we create the resulting std::string by considering msgSize - 1 as string size! */
+     *       For this reason, we create the resulting std::string by considering msgSize - 1 as string size. */
     std::string errorMessage( messageBuffer, msgSize - 1 );
     LocalFree( messageBuffer );
     return errorMessage;

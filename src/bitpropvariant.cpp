@@ -261,7 +261,7 @@ auto BitPropVariant::getNativeString() const -> native_string {
     if ( vt != VT_BSTR ) {
         throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
     }
-    //Note: a nullptr BSTR is semantically equivalent to an empty string!
+    // Note: a nullptr BSTR is semantically equivalent to an empty string.
     return bstrVal == nullptr ? native_string{} : native_string{ bstrVal, ::SysStringLen( bstrVal ) };
 #else
     return getString();
@@ -273,7 +273,7 @@ auto BitPropVariant::getUInt8() const -> uint8_t {
         case VT_UI1:
             return bVal;
         default: // not an 8-bits unsigned integer.
-            throw BitException( "BitPropVariant is not an 8-bits unsigned integer",
+            throw BitException( "BitPropVariant is not an 8-bit unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -285,7 +285,7 @@ auto BitPropVariant::getUInt16() const -> uint16_t {
         case VT_UI2:
             return uiVal;
         default: // not a 16-bits unsigned integer.
-            throw BitException( "BitPropVariant is not a 16-bits unsigned integer",
+            throw BitException( "BitPropVariant is not a 16-bit unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -301,7 +301,7 @@ auto BitPropVariant::getUInt32() const -> uint32_t {
         case VT_UI4:
             return ulVal;
         default: // not a 32-bits unsigned integer.
-            throw BitException( "BitPropVariant is not a 32-bits unsigned integer",
+            throw BitException( "BitPropVariant is not a 32-bit unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -319,7 +319,7 @@ auto BitPropVariant::getUInt64() const -> uint64_t {
         case VT_UI8:
             return uhVal.QuadPart;
         default: // not a 64-bits unsigned integer.
-            throw BitException( "BitPropVariant is not a 64-bits unsigned integer",
+            throw BitException( "BitPropVariant is not a 64-bit unsigned integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -329,7 +329,7 @@ auto BitPropVariant::getInt8() const -> int8_t {
         case VT_I1:
             return static_cast< int8_t >( cVal );
         default: // not an 8-bits integer.
-            throw BitException( "BitPropVariant is not an 8-bits integer",
+            throw BitException( "BitPropVariant is not an 8-bit integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -341,7 +341,7 @@ auto BitPropVariant::getInt16() const -> int16_t {
         case VT_I2:
             return iVal;
         default: // not a 16-bits integer.
-            throw BitException( "BitPropVariant is not a 16-bits integer",
+            throw BitException( "BitPropVariant is not a 16-bit integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -357,7 +357,7 @@ auto BitPropVariant::getInt32() const -> int32_t {
         case VT_I4:
             return lVal;
         default: // not a 32-bits integer.
-            throw BitException( "BitPropVariant is not a 32-bits integer",
+            throw BitException( "BitPropVariant is not a 32-bit integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
@@ -375,7 +375,7 @@ auto BitPropVariant::getInt64() const -> int64_t {
         case VT_I8:
             return hVal.QuadPart;
         default: // not a 64-bits integer.
-            throw BitException( "BitPropVariant is not a 64-bits integer",
+            throw BitException( "BitPropVariant is not a 64-bit integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
