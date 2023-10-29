@@ -33,6 +33,8 @@
 
 constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVariant string";
 
+// NOLINTBEGIN(*-pro-type-union-access)
+
 namespace bit7z {
 
 auto lookup_type( VARTYPE type ) -> BitPropVariantType {
@@ -505,7 +507,7 @@ inline auto operator==( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
 #ifdef _WIN32
     return CompareFileTime( &ft1, &ft2 ) == 0;
 #else
-    return ft1.dwHighDateTime == ft2.dwHighDateTime && ft1.dwLowDateTime == ft2.dwLowDateTime;
+    return ( ft1.dwHighDateTime == ft2.dwHighDateTime ) && ( ft1.dwLowDateTime == ft2.dwLowDateTime );
 #endif
 }
 
@@ -552,3 +554,5 @@ auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept
 }
 
 } // namespace bit7z
+
+// NOLINTEND(*-pro-type-union-access)

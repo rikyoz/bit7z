@@ -20,8 +20,8 @@
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 #include <filesystem>
 #else
-/* Notes: we use this forward declaration to avoid including private headers (e.g. fs.hpp).
- *        Since some public API headers include bitgenericitem.hpp (e.g. "bitoutputarchive.hpp"),
+/* Notes: we use this forward declaration to avoid including private headers (e.g., fs.hpp).
+ *        Since some public API headers include bitgenericitem.hpp (e.g., "bitoutputarchive.hpp"),
  *        including private headers here would result in the "leaking" out of these latter in the public API.*/
 namespace ghc {
 namespace filesystem {
