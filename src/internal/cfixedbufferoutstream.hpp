@@ -17,6 +17,8 @@
 
 #include <7zip/IStream.h>
 
+#include <cstddef>
+
 namespace bit7z {
 
 class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {

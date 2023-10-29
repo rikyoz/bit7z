@@ -18,6 +18,7 @@
 #include "internal/dateutil.hpp"
 #include "internal/windows.hpp"
 
+#include <cstdint>
 #include <cwchar>
 #include <string>
 #include <system_error>

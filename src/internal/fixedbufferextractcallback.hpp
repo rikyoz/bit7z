@@ -13,6 +13,9 @@
 #include "bittypes.hpp"
 #include "internal/extractcallback.hpp"
 
+#include <cstddef>
+#include <cstdint>
+
 namespace bit7z {
 
 class BitInputArchive;

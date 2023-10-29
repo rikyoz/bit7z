@@ -12,6 +12,7 @@
 
 #include "internal/fsutil.hpp"
 
+#include "bittypes.hpp"
 #include "internal/stringutil.hpp"
 
 #ifndef _WIN32
@@ -30,6 +31,8 @@
 #endif
 
 #include <algorithm> //for std::adjacent_find
+#include <cstdio>
+#include <string>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {

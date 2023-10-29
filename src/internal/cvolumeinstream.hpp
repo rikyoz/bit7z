@@ -13,6 +13,8 @@
 #include "bitdefines.hpp"
 #include "internal/cfileinstream.hpp"
 
+#include <cstdint>
+
 namespace bit7z {
 
 class CVolumeInStream final : public CFileInStream {

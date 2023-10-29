@@ -17,6 +17,7 @@
 #include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
+#include "internal/windows.hpp"
 
 // For checking posix file attributes
 #include <sys/stat.h>

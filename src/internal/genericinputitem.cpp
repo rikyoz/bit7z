@@ -12,6 +12,7 @@
 
 #include "internal/genericinputitem.hpp"
 
+#include "bitpropvariant.hpp"
 #include "internal/stringutil.hpp"
 
 namespace bit7z {

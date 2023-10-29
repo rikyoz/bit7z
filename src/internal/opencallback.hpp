@@ -10,6 +10,8 @@
 #ifndef OPENCALLBACK_HPP
 #define OPENCALLBACK_HPP
 
+#include "bitdefines.hpp"
+#include "bittypes.hpp"
 #include "internal/callback.hpp"
 #include "internal/com.hpp"
 #include "internal/fsitem.hpp"
@@ -17,6 +19,8 @@
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/IPassword.h>
+
+#include <string>
 
 namespace bit7z {
 

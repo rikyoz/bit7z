@@ -13,8 +13,14 @@
 #include "internal/fixedbufferextractcallback.hpp"
 
 #include "bitabstractarchivehandler.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/cfixedbufferoutstream.hpp"
+#include "internal/extractcallback.hpp"
 #include "internal/util.hpp"
+
+#include <cstddef>
+#include <cstdint>
 
 namespace bit7z {
 

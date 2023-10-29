@@ -13,6 +13,8 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
+#include <cstdint>
+
 namespace bit7z {
 
 auto seek( const buffer_t& buffer,

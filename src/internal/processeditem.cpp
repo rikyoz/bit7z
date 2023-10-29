@@ -15,6 +15,9 @@
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 #include "bitpropvariant.hpp"
+#include "internal/windows.hpp"
+
+#include <cstdint>
 
 namespace bit7z {
 

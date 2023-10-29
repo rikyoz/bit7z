@@ -12,11 +12,18 @@
 
 #include "internal/fileextractcallback.hpp"
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
+#include "extractcallback.hpp"
+#include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
+#include "operationresult.hpp"
+
+#include <cstdint>
+#include <system_error>
 
 using namespace NWindows;
 

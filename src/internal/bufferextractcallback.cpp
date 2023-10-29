@@ -22,6 +22,9 @@
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
+#include <cstdint>
+#include <map>
+
 namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,

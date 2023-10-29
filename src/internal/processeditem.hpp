@@ -10,8 +10,11 @@
 #ifndef PROCESSEDITEM_HPP
 #define PROCESSEDITEM_HPP
 
+#include "bitdefines.hpp"
 #include "internal/fs.hpp"
 #include "internal/windows.hpp"
+
+#include <cstdint>
 
 namespace bit7z {
 

@@ -10,7 +10,12 @@
 #ifndef STDINPUTITEM_HPP
 #define STDINPUTITEM_HPP
 
+#include "bitdefines.hpp"
+#include "bittypes.hpp"
 #include "internal/genericinputitem.hpp"
+
+#include <cstdint>
+#include <istream>
 
 namespace bit7z {
 

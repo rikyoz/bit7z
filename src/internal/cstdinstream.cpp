@@ -15,6 +15,7 @@
 #include "internal/streamutil.hpp"
 #include "internal/util.hpp"
 
+#include <cstdint>
 #include <istream>
 #include <ios>
 

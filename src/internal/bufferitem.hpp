@@ -14,6 +14,8 @@
 #include "bittypes.hpp"
 #include "internal/genericinputitem.hpp"
 
+#include <cstdint>
+
 namespace bit7z {
 
 class BufferItem final : public GenericInputItem {

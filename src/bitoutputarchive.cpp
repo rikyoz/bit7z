@@ -32,6 +32,8 @@
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
 
+#include <cstddef>
+#include <cstdint>
 #include <istream>
 #include <map>
 #include <memory>

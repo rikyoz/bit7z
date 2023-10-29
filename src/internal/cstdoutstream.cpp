@@ -16,6 +16,7 @@
 #include "internal/util.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <ios>
 #include <iterator>
 #include <ostream>

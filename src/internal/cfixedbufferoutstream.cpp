@@ -18,6 +18,8 @@
 #include "internal/util.hpp"
 
 #include <algorithm> //for std::copy_n
+#include <cstdint>
+#include <cstddef>
 
 namespace bit7z {
 

@@ -19,6 +19,8 @@
 #include "internal/util.hpp"
 
 #include <algorithm>
+#include <cstddef>
+#include <cstdint>
 #include <utility>
 #include <system_error>
 

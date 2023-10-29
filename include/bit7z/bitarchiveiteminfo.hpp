@@ -14,6 +14,7 @@
 #include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
 
+#include <cstdint>
 #include <map>
 
 namespace bit7z {

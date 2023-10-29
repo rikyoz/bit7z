@@ -14,6 +14,9 @@
 
 #include "internal/windows.hpp"
 
+#include <string>
+#include <system_error>
+
 namespace bit7z {
 
 auto HRESULTCategory::name() const noexcept -> const char* {

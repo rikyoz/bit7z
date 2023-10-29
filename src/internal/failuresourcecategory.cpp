@@ -16,6 +16,9 @@
 #include "internal/operationcategory.hpp"
 #include "internal/operationresult.hpp"
 
+#include <string>
+#include <system_error>
+
 namespace bit7z {
 
 auto FailureSourceCategory::name() const noexcept -> const char* {

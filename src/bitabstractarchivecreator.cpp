@@ -26,7 +26,9 @@
 #include <algorithm> // for std::all_of
 #endif
 
+#include <cstdint>
 #include <utility>
+#include <string>
 
 namespace bit7z {
 

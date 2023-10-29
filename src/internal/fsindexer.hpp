@@ -11,8 +11,12 @@
 #define FSINDEXER_HPP
 
 #include "bitabstractarchivehandler.hpp"
+#include "bittypes.hpp"
 #include "internal/fsitem.hpp"
+#include "internal/fsutil.hpp"
+#include "internal/genericinputitem.hpp"
 
+#include <memory>
 #include <vector>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)

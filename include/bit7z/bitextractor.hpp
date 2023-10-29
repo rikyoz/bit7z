@@ -20,9 +20,11 @@
 #include "bittypes.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <map>
 #include <ostream>
+#include <vector>
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>

@@ -12,11 +12,15 @@
 
 #include "internal/stdinputitem.hpp"
 
+#include "bittypes.hpp"
 #include "internal/cstdinstream.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
+#include <ios>
+#include <cstdint>
+#include <istream>
 #include <utility>
 
 namespace bit7z {

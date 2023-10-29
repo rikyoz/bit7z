@@ -17,6 +17,7 @@
 
 #include <7zip/IStream.h>
 
+#include <cstdint>
 #include <vector>
 
 namespace bit7z {

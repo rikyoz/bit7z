@@ -12,8 +12,10 @@
 
 #include "internal/updatecallback.hpp"
 
+#include "bitexception.hpp"
 #include "bitoutputarchive.hpp"
 #include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "bitwindows.hpp"
 #include "internal/callback.hpp"
 #include "internal/cfileoutstream.hpp"

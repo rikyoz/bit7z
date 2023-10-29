@@ -15,9 +15,11 @@
 #include "bitfs.hpp"
 #include "bittypes.hpp"
 
+#include <cstddef>
 #include <istream>
 #include <map>
 #include <memory>
+#include <vector>
 
 namespace bit7z {
 

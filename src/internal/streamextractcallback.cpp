@@ -13,8 +13,14 @@
 #include "internal/streamextractcallback.hpp"
 
 #include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/cstdoutstream.hpp"
+#include "internal/extractcallback.hpp"
 #include "internal/util.hpp"
+
+#include <cstdint>
+#include <ostream>
 
 using namespace NWindows;
 

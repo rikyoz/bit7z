@@ -14,14 +14,19 @@
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+#include "bitformat.hpp"
 #include "internal/bufferextractcallback.hpp"
 #include "internal/cbufferinstream.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/cmultivolumeinstream.hpp"
+#include "internal/cstdinstream.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/opencallback.hpp"
+#include "internal/operationresult.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
@@ -30,6 +35,9 @@
 #include "internal/formatdetect.hpp"
 #endif
 
+#include <cstdint>
+#include <exception>
+#include <istream>
 #include <vector>
 
 using namespace NWindows;

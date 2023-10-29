@@ -20,6 +20,7 @@
 
 #include <cstddef>
 #include <string>
+#include <type_traits>
 #include <vector>
 
 namespace bit7z {

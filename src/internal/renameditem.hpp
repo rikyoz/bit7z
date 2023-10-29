@@ -12,6 +12,11 @@
 
 #include "internal/genericinputitem.hpp"
 
+#include "bitdefines.hpp"
+#include "bittypes.hpp"
+
+#include <cstdint>
+
 namespace bit7z {
 
 class BitInputArchive;

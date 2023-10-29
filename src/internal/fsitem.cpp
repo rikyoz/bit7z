@@ -12,13 +12,20 @@
 
 #include "internal/fsitem.hpp"
 
+#include "bitdefines.hpp"
 #include "bitexception.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/cfileinstream.hpp"
 #include "internal/csymlinkinstream.hpp"
+#include "internal/fsutil.hpp"
+#include "internal/genericinputitem.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
+#include <cstdint>
 #include <system_error>
+#include <utility>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {

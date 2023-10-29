@@ -12,8 +12,17 @@
 
 #include "internal/fsindexer.hpp"
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
+#include "bittypes.hpp"
+#include "internal/fsitem.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/genericinputitem.hpp"
+
+#include <memory>
+#include <vector>
+#include <system_error>
+#include <utility>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {

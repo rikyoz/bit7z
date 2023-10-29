@@ -13,9 +13,13 @@
 #include "internal/renameditem.hpp"
 
 #include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/dateutil.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
+
+#include <cstdint>
 
 namespace bit7z {
 

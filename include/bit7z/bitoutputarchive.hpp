@@ -18,12 +18,14 @@
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 
+#include <cstdint>
 #include <istream>
 #include <map>
 #include <memory>
 #include <ostream>
 #include <set>
 #include <utility>
+#include <vector>
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct ISequentialInStream;

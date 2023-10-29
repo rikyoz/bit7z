@@ -16,6 +16,7 @@
 
 #include <7zip/IStream.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <vector>
 

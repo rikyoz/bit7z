@@ -19,7 +19,6 @@
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bitformat.hpp"
-#include "bititemsvector.hpp"
 #include "bitoutputarchive.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"

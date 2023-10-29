@@ -20,6 +20,8 @@
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
 #include <string>
 #include <type_traits>

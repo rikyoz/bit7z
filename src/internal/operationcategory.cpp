@@ -12,7 +12,10 @@
 
 #include "internal/operationcategory.hpp"
 
-#include "extractcallback.hpp"
+#include "internal/operationresult.hpp"
+
+#include <system_error>
+#include <string>
 
 namespace bit7z {
 

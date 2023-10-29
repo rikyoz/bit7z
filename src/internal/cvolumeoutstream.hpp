@@ -14,6 +14,8 @@
 #include "internal/cfileoutstream.hpp"
 #include "internal/macros.hpp"
 
+#include <cstdint>
+
 namespace bit7z {
 
 class CVolumeOutStream final : public CFileOutStream {

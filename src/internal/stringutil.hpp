@@ -13,6 +13,9 @@
 #include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 
+#include <cstddef>
+#include <string>
+
 namespace bit7z {
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )

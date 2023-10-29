@@ -21,6 +21,7 @@
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 
+#include <cstdint>
 #include <istream>
 #include <unordered_map>
 

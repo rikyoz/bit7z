@@ -10,7 +10,7 @@
 #ifndef DATEUTIL_HPP
 #define DATEUTIL_HPP
 
-#include "bitgenericitem.hpp"
+#include "bitpropvariant.hpp"
 #include "bitwindows.hpp"
 #include "internal/fs.hpp"
 

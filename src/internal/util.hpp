@@ -14,7 +14,6 @@
 
 #include <cstdint>
 #include <limits>
-#include <string>
 #include <type_traits>
 
 namespace bit7z {

@@ -20,11 +20,13 @@
 #include "bitwindows.hpp"
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <iterator>
 #include <istream>
 #include <map>
 #include <ostream>
+#include <vector>
 
 struct IInStream;
 struct IInArchive;

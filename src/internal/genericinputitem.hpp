@@ -10,10 +10,10 @@
 #ifndef GENERICINPUTITEM_HPP
 #define GENERICINPUTITEM_HPP
 
+#include "bitdefines.hpp"
 #include "bitgenericitem.hpp"
+#include "bitpropvariant.hpp"
 #include "internal/fs.hpp"
-
-#include <cstdint>
 
 struct ISequentialInStream;
 

@@ -11,6 +11,7 @@
 #define UPDATECALLBACK_HPP
 
 #include "internal/callback.hpp"
+#include "internal/com.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/Archive/IArchive.h>

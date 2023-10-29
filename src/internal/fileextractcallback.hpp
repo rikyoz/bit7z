@@ -10,9 +10,13 @@
 #ifndef FILEEXTRACTCALLBACK_HPP
 #define FILEEXTRACTCALLBACK_HPP
 
+#include "bittypes.hpp"
 #include "internal/cfileoutstream.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/processeditem.hpp"
+#include "internal/operationresult.hpp"
+
+#include <cstdint>
 
 namespace bit7z {
 

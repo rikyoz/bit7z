@@ -23,6 +23,9 @@
 #include "internal/util.hpp"
 
 #include <algorithm> //for std::copy_n
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
 
 namespace bit7z {
 

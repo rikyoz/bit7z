@@ -10,9 +10,14 @@
 #ifndef FSITEM_HPP
 #define FSITEM_HPP
 
+#include "bitdefines.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/genericinputitem.hpp"
 #include "internal/windows.hpp"
+
+#include <cstdint>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {

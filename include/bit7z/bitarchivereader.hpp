@@ -20,9 +20,11 @@
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 
+#include <cstdint>
 #include <istream>
 #include <map>
 #include <system_error>
+#include <vector>
 
 struct IInArchive;
 struct IOutArchive;

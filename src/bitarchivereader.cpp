@@ -23,10 +23,12 @@
 #include "internal/operationresult.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <istream>
 #include <map>
 #include <numeric>
 #include <system_error>
+#include <vector>
 
 namespace bit7z {
 

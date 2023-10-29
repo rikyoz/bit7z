@@ -19,7 +19,8 @@
 #include <7zip/ICoder.h>
 #include <7zip/IPassword.h>
 
-#include <system_error>
+#include <cstdint>
+#include <exception>
 
 using namespace NArchive::NExtract;
 
