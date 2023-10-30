@@ -11,14 +11,14 @@
 #define MACROS_HPP
 
 //p7zip defines IUnknown with a virtual destructor, while Windows' IUnknown has a non-virtual destructor
-#if defined( _WIN32 ) || !defined( BIT7Z_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN )
+#if defined( _WIN32 ) || !defined( BIT7Z_USE_LEGACY_IUNKNOWN )
 #define MY_UNKNOWN_DESTRUCTOR( x ) x
 #else
 #define MY_UNKNOWN_DESTRUCTOR( x ) x override
 #endif
 
 // Some stream classes are non-final (e.g., CStdOutStream), so on Windows they must have a virtual destructor
-#if defined( _WIN32 ) || !defined( BIT7Z_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN )
+#if defined( _WIN32 ) || !defined( BIT7Z_USE_LEGACY_IUNKNOWN )
 #define MY_UNKNOWN_VIRTUAL_DESTRUCTOR( x ) virtual x
 #else
 #define MY_UNKNOWN_VIRTUAL_DESTRUCTOR( x ) MY_UNKNOWN_DESTRUCTOR(x)
