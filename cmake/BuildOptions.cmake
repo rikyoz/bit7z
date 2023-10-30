@@ -56,7 +56,7 @@ if( NOT BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
             message( STATUS "Detected 7-zip version: ${BIT7Z_7ZIP_VERSION}" )
 
             if ( BIT7Z_7ZIP_VERSION VERSION_LESS_EQUAL 16.04 AND UNIX )
-                message( STATUS "Detected p7zip version: ${BIT7Z_P7ZIP_VERSION}" )
+                message( STATUS "Detected p7zip's source code!" )
                 target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_FOR_P7ZIP )
             endif()
         endif()
