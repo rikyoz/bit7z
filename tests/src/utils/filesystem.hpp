@@ -22,7 +22,6 @@
 #include <unistd.h> // for getpid
 #endif
 
-#include <catch2/catch.hpp>
 #include <internal/fs.hpp>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)

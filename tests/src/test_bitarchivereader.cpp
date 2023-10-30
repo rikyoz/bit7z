@@ -9,7 +9,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-#include <catch2/catch.hpp>
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_template_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
 
 #include "utils/archive.hpp"
 #include "utils/filesystem.hpp"
@@ -78,7 +81,7 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
 
 #define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem )                                               \
     do {                                                                                                 \
-        INFO( "Failed while checking file " << Catch::StringMaker< tstring >::convert( (item).name() ) ) \
+        INFO( "Failed while checking file " << Catch::StringMaker< tstring >::convert( (item).name() ) );\
         REQUIRE( (item).isDir() == (expectedItem).fileInfo.isDir );                                      \
                                                                                                          \
         if ( !(item).isDir() ) {                                                                         \
@@ -402,7 +405,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
             const fs::path arcFileName = "clouds.jpg." + testArchive.extension() + ".001";
 
-            INFO( "Archive file: " << arcFileName )
+            INFO( "Archive file: " << arcFileName );
 
             SECTION( "Opening as a split archive" ) {
                 const BitArchiveReader info( lib, arcFileName.string< tchar >(), BitFormat::Split );

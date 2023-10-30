@@ -10,7 +10,9 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <catch2/catch.hpp>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
 
 #include "utils/filesystem.hpp"
 
@@ -143,7 +145,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
         REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -217,7 +219,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -301,7 +303,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -377,7 +379,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -443,7 +445,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -505,7 +507,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -570,7 +572,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -580,7 +582,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         const std::vector< fs::path > expectedItems{ "dot.folder" };
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( expectedItems ) );
     }
 
     SECTION( "Wildcard filter *.folder (only files)" ) {
@@ -608,7 +610,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.pdf" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -627,7 +629,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.svg" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -646,7 +648,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.jpg" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -665,7 +667,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.doc" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -684,7 +686,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
             REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.xlsx" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -766,7 +768,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -786,7 +788,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -806,7 +808,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 }
@@ -895,7 +897,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -949,7 +951,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1010,7 +1012,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1039,7 +1041,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1051,7 +1053,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         const std::vector< fs::path > expectedItems{ "dot.folder" };
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( expectedItems ) );
     }
 
     SECTION( "Wildcard filter *.folder (only files)" ) {
@@ -1078,7 +1080,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1098,7 +1100,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1118,7 +1120,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1138,7 +1140,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1158,7 +1160,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-            REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+            REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
         }
     }
 
@@ -1259,7 +1261,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -1317,7 +1319,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
         REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -1379,7 +1381,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -1479,7 +1481,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
         REQUIRE_NOTHROW( itemsVector.indexPathsMap( pathMap ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -1578,7 +1580,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
         REQUIRE_NOTHROW( itemsVector.indexPathsMap( pathMap ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-        REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+        REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
     }
 }
 
@@ -1644,7 +1646,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
     REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-    REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+    REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structure)", "[bititemsvector]" ) {
@@ -1707,7 +1709,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
     REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths, options ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-    REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+    REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititemsvector]" ) {
@@ -1768,7 +1770,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
     REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths, options ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-    REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+    REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bititemsvector]" ) {
@@ -1816,7 +1818,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bit
     REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths, options ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
-    REQUIRE_THAT( indexedPaths, Catch::UnorderedEquals( testInput.expectedItems ) );
+    REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a directory as a file should fail", "[bititemsvector]" ) {

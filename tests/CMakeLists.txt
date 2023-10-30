@@ -157,10 +157,12 @@ if( WIN32 )
 endif()
 
 # Catch2
-include( cmake/Catch2.cmake )
-target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
-target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE Catch2::Catch2 )
+CPMAddPackage( "gh:catchorg/Catch2@3.4.0" )
+list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/extras" )
+set( CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON )
 
 include( CTest )
 include( Catch )
+target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
+target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE Catch2::Catch2 )
 catch_discover_tests( ${TESTS_TARGET} )

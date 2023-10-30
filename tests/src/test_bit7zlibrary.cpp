@@ -9,16 +9,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
-#include <catch2/catch.hpp>
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_predicate.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bit7zlibrary.hpp>
-#include <bit7z/bittypes.hpp>
-
-#if !defined(__GNUC__) || __GNUC__ >= 5
 #include <bit7z/bitexception.hpp>
-#endif
+#include <bit7z/bittypes.hpp>
 
 #include <system_error>
 
@@ -35,8 +35,8 @@ TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bi
                             Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& ex ) -> bool {
                                 return std::strncmp( ex.code().category().name(), "HRESULT", 8 );
                             }, "Error code should be E_FAIL" ) );
-#elif !defined(__GNUC__) || __GNUC__ >= 5
-    REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
+#else
+    REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.so" ) ),
                             BitException,
                             Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& ex ) -> bool {
                                 return ex.code() == std::errc::bad_file_descriptor;
@@ -46,7 +46,7 @@ TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bi
 
 TEST_CASE( "Bit7zLibrary: Normal construction", "[bit7zlibrary]" ) {
     const auto libPath = sevenzip_lib_path();
-    INFO( "Library path: " << fs::path{ libPath }.string() )
+    INFO( "Library path: " << fs::path{ libPath }.string() );
 
     REQUIRE_NOTHROW( Bit7zLibrary{ libPath } );
 }
