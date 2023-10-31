@@ -13,12 +13,21 @@ if( NOT ( EXISTS ${CPM_DOWNLOAD_LOCATION} ) )
 endif()
 include( ${CPM_DOWNLOAD_LOCATION} )
 
+# No custom path to 7-Zip's source code was specified by the user, so we download it.
 if( BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
-    # 7-zip source code
-    CPMAddPackage( NAME 7-zip
-                   GITHUB_REPOSITORY "rikyoz/7-Zip"
-                   VERSION ${BIT7Z_7ZIP_VERSION}
-                   DOWNLOAD_ONLY YES )
+    if ( BIT7Z_BUILD_FOR_P7ZIP )
+        # p7zip source code (calling the package as 7-zip just for simplify the code).
+        CPMAddPackage( NAME 7-zip
+                       GITHUB_REPOSITORY "rikyoz/p7zip"
+                       VERSION 16.02
+                       DOWNLOAD_ONLY YES )
+    else()
+        # 7-zip source code
+        CPMAddPackage( NAME 7-zip
+                       GITHUB_REPOSITORY "rikyoz/7-Zip"
+                       VERSION ${BIT7Z_7ZIP_VERSION}
+                       DOWNLOAD_ONLY YES )
+    endif()
     if( 7-zip_ADDED )
         message( STATUS "7-zip source code available at ${7-zip_SOURCE_DIR}" )
         add_library( 7-zip INTERFACE IMPORTED )

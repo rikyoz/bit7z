@@ -19,32 +19,25 @@ jobs:
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
-        bit7z_7zip_version: [22.01, 23.01]
+        bit7z_7zip_version: [16.02, 22.01, 23.01]
+        bit7z_build_for_p7zip: [OFF, ON]
         include:
           - c_compiler: gcc-9
             cpp_compiler: g++-9
-            use_system_7zip: OFF
           - c_compiler: gcc-10
             cpp_compiler: g++-10
-            use_system_7zip: OFF
           - c_compiler: gcc-11
             cpp_compiler: g++-11
-            use_system_7zip: OFF
           - c_compiler: gcc-12
             cpp_compiler: g++-12
-            use_system_7zip: OFF
           - c_compiler: gcc-13
             cpp_compiler: g++-13
-            use_system_7zip: OFF
           - c_compiler: clang-13
             cpp_compiler: clang++-13
-            use_system_7zip: OFF
           - c_compiler: clang-14
             cpp_compiler: clang++-14
-            use_system_7zip: OFF
           - c_compiler: clang-15
             cpp_compiler: clang++-15
-            use_system_7zip: OFF
         exclude:
           - c_compiler: gcc-9
             bit7z_link_libcpp: ON
@@ -56,6 +49,24 @@ jobs:
             bit7z_link_libcpp: ON
           - c_compiler: gcc-13
             bit7z_link_libcpp: ON
+          - c_compiler: gcc-9
+            bit7z_7zip_version: 16.02
+          - c_compiler: gcc-10
+            bit7z_7zip_version: 16.02
+          - c_compiler: gcc-11
+            bit7z_7zip_version: 16.02
+          - c_compiler: gcc-12
+            bit7z_7zip_version: 16.02
+          - c_compiler: clang-13
+            bit7z_7zip_version: 16.02
+          - c_compiler: clang-14
+            bit7z_7zip_version: 16.02
+          - bit7z_7zip_version: 16.02
+            bit7z_build_for_p7zip: OFF
+          - bit7z_7zip_version: 23.01
+            bit7z_build_for_p7zip: ON
+          - bit7z_7zip_version: 22.01
+            bit7z_build_for_p7zip: ON
 
     steps:
     - uses: actions/checkout@v3
@@ -78,4 +89,4 @@ jobs:
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
         build_type: ${{ matrix.build_type }}
         build_flags: |
-            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

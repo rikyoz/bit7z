@@ -208,7 +208,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
         if ( testArchive.format() == BitFormat::Rar || testArchive.format() == BitFormat::Rar5 ) {
             SKIP( "Can't test Rar/Rar5 format using p7zip" );
         }
@@ -252,7 +252,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
         if ( testArchive.format() == BitFormat::Rar || testArchive.format() == BitFormat::Rar5 ) {
             SKIP( "Can't test Rar/Rar5 format using p7zip" );
         }
@@ -297,7 +297,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
         if ( testArchive.format() == BitFormat::Rar || testArchive.format() == BitFormat::Rar5 ) {
             SKIP( "Can't test Rar/Rar5 format using p7zip" );
         }
@@ -355,7 +355,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
             if ( testArchive.format() == BitFormat::Rar || testArchive.format() == BitFormat::Rar5 ) {
                 SKIP( "Can't test Rar/Rar5 format using p7zip" );
             }
@@ -411,7 +411,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
             if ( testArchive.format() == BitFormat::Rar || testArchive.format() == BitFormat::Rar5 ) {
                 SKIP( "Can't test Rar/Rar5 format using p7zip" );
             }
@@ -471,7 +471,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         const ArchivedItem expectedItem{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.items()[ 0 ], expectedItem );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
         SKIP( "Can't test Rar5 format using p7zip" );
 #else
         REQUIRE_ARCHIVE_TESTS( info );
@@ -488,7 +488,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         const ArchivedItem expectedItem{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.items()[ 0 ], expectedItem );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
         SKIP( "Can't test Rar format using p7zip" );
 #else
         REQUIRE_ARCHIVE_TESTS( info );
@@ -545,7 +545,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
         const BitArchiveReader info( lib, BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
         REQUIRE( info.isSolid() );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
         SKIP( "Can't test Rar5 format using p7zip" );
 #else
         REQUIRE_ARCHIVE_TESTS( info );
@@ -562,7 +562,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
         const BitArchiveReader info( lib, BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
         REQUIRE( !info.isSolid() );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
         SKIP( "Can't test Rar5 format using p7zip" );
 #else
         REQUIRE_ARCHIVE_TESTS( info );
@@ -1026,7 +1026,7 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
             const BitArchiveReader reader{ lib, file.string< bit7z::tchar >() };
             REQUIRE( reader.detectedFormat() == test.format );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
             if ( test.format == BitFormat::Rar || test.format == BitFormat::Rar5 ) {
                 SKIP( "Can't test Rar/Rar5 format using p7zip" );
             }
@@ -1043,7 +1043,7 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
             const BitArchiveReader reader{ lib, fileStream };
             REQUIRE( reader.detectedFormat() == test.format );
 
-#ifdef BIT7Z_FOR_P7ZIP
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
             if ( test.format == BitFormat::Rar || test.format == BitFormat::Rar5 ) {
                 SKIP( "Can't test Rar/Rar5 format using p7zip" );
             }
