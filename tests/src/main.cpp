@@ -40,7 +40,7 @@ auto main( int argc, char* argv[] ) -> int try {
     std::clog << "Executable path: " << filesystem::exe_path().string() << '\n';
     std::clog << "7-zip shared library: ";
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
-    std::wcout << sevenzip_lib_path() << "\n";
+    std::wclog << sevenzip_lib_path() << "\n";
 #else
     std::clog << sevenzip_lib_path() << '\n';
 #endif
