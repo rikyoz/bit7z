@@ -73,17 +73,10 @@ runs:
       shell: ${{ inputs.shell }}
       run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ inputs.build_type }} --parallel
 
-    - name: Test bit7z (Windows)
+    - name: Test bit7z
       shell: ${{ inputs.shell }}
-      if: runner.os == 'Windows'
-      working-directory: ${{ steps.strings.outputs.build-output-dir }}
-      run: ${{ github.workspace }}/bin/x64/bit7z-tests.exe
-
-    - name: Test bit7z (Linux/macOS)
-      shell: ${{ inputs.shell }}
-      if: runner.os != 'Windows'
       working-directory: ${{ steps.strings.outputs.build-output-dir }}
       # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
-      run: ${{ github.workspace }}/bin/x64/bit7z-tests
+      run: ctest --build-target bit7z-tests --build-config ${{ inputs.build_type }} --output-on-failure
