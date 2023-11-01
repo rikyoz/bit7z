@@ -49,7 +49,7 @@ runs:
         
     - name: Build 7z.so for tests (Ubuntu)
       shell: bash
-      if: runner.os == 'Linux'
+      if: runner.os == 'Linux' && ${{ inputs.sevenzip_version != 16.02 }}
       run: |
         git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
         git -C ${{ github.workspace }}/../7-zip fetch --tags
