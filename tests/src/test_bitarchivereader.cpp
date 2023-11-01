@@ -18,6 +18,7 @@
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
+#include "utils/source_location.hpp"
 
 #include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitarchiveiteminfo.hpp>
@@ -70,100 +71,96 @@ static_assert( std::is_move_constructible< BitArchiveItemInfo >::value,
 static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
                "BitArchiveItemInfo is not move-assignable." );
 
+void require_archive_tests( const BitArchiveReader& info, const source_location& location ) {
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-#define REQUIRE_ARCHIVE_TESTS( info )                                                  \
-    do {                                                                               \
-        const auto& detectedFormat = (info).detectedFormat();                          \
-        if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) { \
-            break;                                                                     \
-        }                                                                              \
-        REQUIRE_NOTHROW( (info).test() );                                              \
-        for ( uint32_t index = 0; index < (info).itemsCount(); ++index ) {             \
-            REQUIRE_NOTHROW( (info).testItem( index ) );                               \
-        }                                                                              \
-        REQUIRE_THROWS_AS( (info).testItem( (info).itemsCount() ), BitException );     \
-    } while( false )
-#else
-#define REQUIRE_ARCHIVE_TESTS( info )                                                    \
-    do {                                                                                 \
-        REQUIRE_NOTHROW( (info).test() );                                                \
-        for ( uint32_t index = 0; index < (info).itemsCount(); ++index ) {               \
-            REQUIRE_NOTHROW( (info).testItem( index ) );                                 \
-        }                                                                                \
-        REQUIRE_THROWS_AS( (info).testItem( (info).itemsCount() ), BitException );       \
-    } while( false )
+    const auto& detectedFormat = (info).detectedFormat();
+    if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
+        return;
+    }
 #endif
+    REQUIRE_NOTHROW( ( info ).test() );
+    for ( uint32_t index = 0; index < ( info ).itemsCount(); ++index ) {
+        REQUIRE_NOTHROW( ( info ).testItem( index ) );
+    }
+    REQUIRE_THROWS_AS( ( info ).testItem( ( info ).itemsCount() ), BitException );
+}
 
-#define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem )                                               \
-    do {                                                                                                 \
-        INFO( "Failed while checking file " << Catch::StringMaker< tstring >::convert( (item).name() ) );\
-        REQUIRE( (item).isDir() == (expectedItem).fileInfo.isDir );                                      \
-                                                                                                         \
-        if ( !(item).isDir() ) {                                                                         \
-            REQUIRE( (item).isEncrypted() == (expectedItem).isEncrypted );                               \
-        }                                                                                                \
-                                                                                                         \
-        if ( format_has_path_metadata( format ) ) {                                                      \
-            REQUIRE( (item).extension() == (expectedItem).fileInfo.ext );                                \
-            REQUIRE( (item).name() == (expectedItem).fileInfo.name );                                    \
-            REQUIRE( (item).path() == (expectedItem).inArchivePath );                                    \
-        }                                                                                                \
-                                                                                                         \
-        if ( format_has_size_metadata( format ) ) {                                                      \
-            /* Note: some archive formats (e.g. BZip2) do not provide the size metadata! */              \
-            REQUIRE( (item).size() == (expectedItem).fileInfo.size );                                    \
-        }                                                                                                \
-                                                                                                         \
-        if ( ( format_has_crc( format ) && !(item).itemProperty( BitProperty::CRC ).isEmpty() ) &&       \
-             ( ( (format) != BitFormat::Rar5 ) || !(item).isEncrypted() ) ) {                            \
-            /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/                   \
-            REQUIRE( (item).crc() == (expectedItem).fileInfo.crc32 );                                    \
-        }                                                                                                \
-    } while( false )
+void require_archive_item( const BitInFormat& format,
+                           const BitArchiveItem& item,
+                           const ArchivedItem& expectedItem,
+                           const source_location& location ) {
+    INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) );
+    INFO( "  from " << location.file_name() << ":" << location.line() );
+    REQUIRE( item.isDir() == expectedItem.fileInfo.isDir );
 
-#define REQUIRE_ARCHIVE_CONTENT( info, input )                                                        \
-    do {                                                                                              \
-        REQUIRE_FALSE( (info).archiveProperties().empty() );                                          \
-                                                                                                      \
-        const auto& archive_content = (input).content();                                              \
-        REQUIRE( (info).itemsCount() == archive_content.items.size() );                               \
-        REQUIRE( (info).filesCount() == archive_content.fileCount );                                  \
-        REQUIRE( (info).foldersCount() == archive_content.items.size() - archive_content.fileCount ); \
-                                                                                                      \
-        const auto& format = (info).format();                                                         \
-        if ( format_has_size_metadata( format ) ) {                                                   \
-            REQUIRE( (info).size() == archive_content.size );                                         \
-            REQUIRE( (info).packSize() == (input).packedSize() );                                     \
-        }                                                                                             \
-                                                                                                      \
-        REQUIRE_FALSE( (info).isMultiVolume() );                                                      \
-        REQUIRE( (info).volumesCount() == 1 );                                                        \
-                                                                                                      \
-        std::vector< BitArchiveItemInfo > items;                                                      \
-        REQUIRE_NOTHROW( items = (info).items() );                                                    \
-        REQUIRE( items.size() == (info).itemsCount() );                                               \
-                                                                                                      \
-        const bool archive_stores_paths = format_has_path_metadata( format );                         \
-        const bool from_filesystem = !(info).archivePath().empty();                                   \
-        size_t found_items = 0;                                                                       \
-        for ( const auto& archivedItem : archive_content.items ) {                                    \
-            for ( const auto& item : items ) {                                                        \
-                if ( archive_stores_paths || (from_filesystem) ) {                                    \
-                    if ( item.name() != archivedItem.fileInfo.name ) {                                \
-                        continue;                                                                     \
-                    }                                                                                 \
-                    REQUIRE( (info).find( item.path() ) != (info).cend() );                           \
-                    REQUIRE( (info).contains( item.path() ) );                                        \
-                }                                                                                     \
-                REQUIRE( (info).isItemEncrypted( item.index() ) == archivedItem.isEncrypted );        \
-                REQUIRE( (info).isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );        \
-                REQUIRE_ARCHIVE_ITEM( format, item, archivedItem );                                   \
-                found_items++;                                                                        \
-                break;                                                                                \
-            }                                                                                         \
-        }                                                                                             \
-        REQUIRE( items.size() == found_items );                                                       \
-    } while ( false )
+    if ( !item.isDir() ) {
+        REQUIRE( item.isEncrypted() == expectedItem.isEncrypted );
+    }
+
+    if ( format_has_path_metadata( format ) ) {
+        REQUIRE( item.extension() == expectedItem.fileInfo.ext );
+        REQUIRE( item.name() == expectedItem.fileInfo.name );
+        REQUIRE( item.path() == expectedItem.inArchivePath );
+    }
+
+    if ( format_has_size_metadata( format ) ) {
+        /* Note: some archive formats (e.g. BZip2) do not provide the size metadata! */
+        REQUIRE( item.size() == expectedItem.fileInfo.size );
+    }
+
+    if ( ( format_has_crc( format ) && !item.itemProperty( BitProperty::CRC ).isEmpty() ) &&
+         ( ( format != BitFormat::Rar5 ) || !item.isEncrypted() ) ) {
+        /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/
+        REQUIRE( item.crc() == expectedItem.fileInfo.crc32 );
+    }
+}
+
+inline void require_archive_content( const BitArchiveReader& info,
+                                     const TestInputArchive& input,
+                                     const source_location& location ) {
+    INFO( "Failed while checking content of " << Catch::StringMaker< tstring >::convert( info.archivePath() ) );
+    INFO( "  from " << location.file_name() << ":" << location.line() );
+    REQUIRE_FALSE( info.archiveProperties().empty() );
+
+    const auto& archive_content = input.content();
+    REQUIRE( info.itemsCount() == archive_content.items.size() );
+    REQUIRE( info.filesCount() == archive_content.fileCount );
+    REQUIRE( info.foldersCount() == ( archive_content.items.size() - archive_content.fileCount ) );
+
+    const auto& format = info.format();
+    if ( format_has_size_metadata( format ) ) {
+        REQUIRE( info.size() == archive_content.size );
+        REQUIRE( info.packSize() == input.packedSize() );
+    }
+
+    REQUIRE_FALSE( info.isMultiVolume() );
+    REQUIRE( info.volumesCount() == 1 );
+
+    std::vector< BitArchiveItemInfo > items;
+    REQUIRE_NOTHROW( items = info.items() );
+    REQUIRE( items.size() == info.itemsCount() );
+
+    const bool archive_stores_paths = format_has_path_metadata( format );
+    const bool from_filesystem = !info.archivePath().empty();
+    size_t found_items = 0;
+    for ( const auto& archivedItem : archive_content.items ) {
+        for ( const auto& item : items ) {
+            if ( archive_stores_paths || (from_filesystem) ) {
+                if ( item.name() != archivedItem.fileInfo.name ) {
+                    continue;
+                }
+                REQUIRE( info.find( item.path() ) != info.cend() );
+                REQUIRE( info.contains( item.path() ) );
+            }
+            REQUIRE( info.isItemEncrypted( item.index() ) == archivedItem.isEncrypted );
+            REQUIRE( info.isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );
+            require_archive_item( format, item, archivedItem, location );
+            found_items++;
+            break;
+        }
+    }
+    REQUIRE( items.size() == found_items );
+}
 
 struct SingleFileArchive : public TestInputArchive {
     SingleFileArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
@@ -219,8 +216,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
-        REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_content( info, testArchive, BIT7Z_CURRENT_LOCATION );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
     }
 }
 
@@ -254,8 +251,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
-        REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_content( info, testArchive, BIT7Z_CURRENT_LOCATION );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
     }
 }
 
@@ -290,8 +287,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
-        REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_content( info, testArchive, BIT7Z_CURRENT_LOCATION );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
     }
 }
 
@@ -333,7 +330,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
             const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
-            REQUIRE_ARCHIVE_CONTENT( info, testArchive );
+            require_archive_content( info, testArchive, BIT7Z_CURRENT_LOCATION );
             REQUIRE_THROWS( info.test() );
         }
 
@@ -341,8 +338,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
             const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
-            REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-            REQUIRE_ARCHIVE_TESTS( info );
+            require_archive_content( info, testArchive, BIT7Z_CURRENT_LOCATION );
+            require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
         }
     }
 }
@@ -388,8 +385,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
             const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
-            REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-            REQUIRE_ARCHIVE_TESTS( info );
+            require_archive_content( info, testArchive, BIT7Z_CURRENT_LOCATION );
+            require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
         }
     }
 }
@@ -418,7 +415,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 REQUIRE( info.volumesCount() == 3 );
                 REQUIRE( info.itemsCount() == 1 );
                 REQUIRE( info.items()[ 0 ].name() == arcFileName.stem().string< tchar >() );
-                REQUIRE_ARCHIVE_TESTS( info );
+                require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
             }
 
             SECTION( "Opening as a whole archive" ) {
@@ -427,8 +424,11 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                                              testArchive.format() );
                 // REQUIRE( info.isMultiVolume() );
                 // REQUIRE( info.volumesCount() == 3 );
-                REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
-                REQUIRE_ARCHIVE_TESTS( info );
+                require_archive_item( testArchive.format(),
+                                      info.items()[ 0 ],
+                                      testArchive.content().items[ 0 ],
+                                      BIT7Z_CURRENT_LOCATION );
+                require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
             }
         }
     }
@@ -441,10 +441,10 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         REQUIRE( info.itemsCount() == 1 );
 
         const ArchivedItem expectedItem{ clouds, clouds.name };
-        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.items()[ 0 ], expectedItem );
+        require_archive_item( BitFormat::Rar5, info.items()[ 0 ], expectedItem, BIT7Z_CURRENT_LOCATION );
 
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
 #endif
     }
 
@@ -456,10 +456,10 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         REQUIRE( info.itemsCount() == 1 );
 
         const ArchivedItem expectedItem{ clouds, clouds.name };
-        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.items()[ 0 ], expectedItem );
+        require_archive_item( BitFormat::Rar, info.items()[ 0 ], expectedItem, BIT7Z_CURRENT_LOCATION );
 
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
 #endif
     }
 }
@@ -491,8 +491,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.isEncrypted() );
-        REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_content( info, testArchive, BIT7Z_CURRENT_LOCATION );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
     }
 }
 
@@ -502,7 +502,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     SECTION( "Solid 7z" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
         REQUIRE( info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
     }
 
     SECTION( "Solid RAR" ) {
@@ -510,14 +510,14 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
         REQUIRE( info.isSolid() );
 
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
 #endif
     }
 
     SECTION( "Non solid 7z" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
         REQUIRE( !info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
     }
 
     SECTION( "Non-solid RAR" ) {
@@ -525,7 +525,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
         REQUIRE( !info.isSolid() );
 
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
+        require_archive_tests( info, BIT7Z_CURRENT_LOCATION );
 #endif
     }
 }
