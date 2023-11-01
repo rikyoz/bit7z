@@ -15,13 +15,10 @@
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitformat.hpp>
-#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitarchiveeditor.hpp>
 
 using namespace bit7z;
 
 TEST_CASE( "BitArchiveEditor: TODO", "[bitarchiveeditor]" ) {
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    REQUIRE_THROWS( BitArchiveEditor{ lib, BIT7Z_STRING( "non_existent.7z" ), BitFormat::SevenZip } );
+    REQUIRE_THROWS( BitArchiveEditor{ test::sevenzip_lib(), BIT7Z_STRING( "non_existent.7z" ), BitFormat::SevenZip } );
 }

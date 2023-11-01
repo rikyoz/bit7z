@@ -15,14 +15,11 @@
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitformat.hpp>
-#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitmemextractor.hpp>
 
 using namespace bit7z;
 
 TEST_CASE( "BitMemExtractor: TODO", "[bitmemxtractor]" ) {
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const BitMemExtractor memExtractor{lib, BitFormat::SevenZip};
+    const BitMemExtractor memExtractor{ test::sevenzip_lib(), BitFormat::SevenZip };
     REQUIRE( memExtractor.extractionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }

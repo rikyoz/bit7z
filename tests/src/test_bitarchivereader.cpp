@@ -177,8 +177,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testArchive = GENERATE( as< SingleFileArchive >(),
                                        SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
                                        SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
@@ -198,7 +196,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
         } else {
@@ -227,8 +225,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testArchive = GENERATE( as< MultipleFilesArchive >(),
                                         MultipleFilesArchive{ "7z", BitFormat::SevenZip, 22074 },
                                         MultipleFilesArchive{ "iso", BitFormat::Iso, italy.size + lorem_ipsum.size },
@@ -242,7 +238,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
         } else {
@@ -271,8 +267,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testArchive = GENERATE( as< MultipleItemsArchive >(),
                                         MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
                                         MultipleItemsArchive{ "iso", BitFormat::Iso, 615351 },
@@ -287,7 +281,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
         } else {
@@ -316,8 +310,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto* const password = BIT7Z_STRING( "helloworld" );
 
     const auto testArchive = GENERATE( as< EncryptedArchive >(),
@@ -334,15 +326,17 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
         getInputArchive( arcFileName, inputArchive );
 
         SECTION( "BitArchiveReader::isHeaderEncrypted must return false" ){
-            REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
+            REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( test::sevenzip_lib(),
+                                                                inputArchive,
+                                                                testArchive.format() ) );
         }
 
         SECTION( "BitArchiveReader::isEncrypted must return true" ){
-            REQUIRE( BitArchiveReader::isEncrypted( lib, inputArchive, testArchive.format() ) );
+            REQUIRE( BitArchiveReader::isEncrypted( test::sevenzip_lib(), inputArchive, testArchive.format() ) );
         }
 
         SECTION( "Opening the archive with no password should allow reading the archive, but tests() should throw" ) {
-            const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+            const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
@@ -350,7 +344,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
         }
 
         SECTION( "Opening the archive with the correct password should pass all the checks" ) {
-            const BitArchiveReader info( lib, inputArchive, testArchive.format(), password );
+            const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
@@ -371,8 +365,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto* const password = BIT7Z_STRING( "helloworld" );
 
     const auto testArchive = GENERATE( as< EncryptedArchive >(),
@@ -387,26 +379,26 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
         getInputArchive( arcFileName, inputArchive );
 
         SECTION( "BitArchiveReader::isHeaderEncrypted must return true" ){
-            REQUIRE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
+            REQUIRE( BitArchiveReader::isHeaderEncrypted( test::sevenzip_lib(), inputArchive, testArchive.format() ) );
         }
 
         SECTION( "BitArchiveReader::isEncrypted must return true" ){
-            REQUIRE( BitArchiveReader::isEncrypted( lib, inputArchive, testArchive.format() ) );
+            REQUIRE( BitArchiveReader::isEncrypted( test::sevenzip_lib(), inputArchive, testArchive.format() ) );
         }
 
 
         SECTION( "Opening the archive with no password should throw an exception" ) {
-            REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, testArchive.format() ) );
+            REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, testArchive.format() ) );
         }
 
 
         SECTION( "Opening the archive with a wrong password should throw an exception" ) {
-            REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, testArchive.format(),
+            REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, testArchive.format(),
                                               BIT7Z_STRING( "wrong_password" ) ) );
         }
 
         SECTION( "Opening the archive with the correct password should pass the tests" ) {
-            const BitArchiveReader info( lib, inputArchive, testArchive.format(), password );
+            const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
@@ -425,8 +417,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
 TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bitarchivereader]" ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     SECTION( "Split archive (non-RAR)" ) {
         const auto testArchive = GENERATE( as< SingleFileArchive >(),
                                             SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
@@ -443,7 +433,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
             INFO( "Archive file: " << arcFileName );
 
             SECTION( "Opening as a split archive" ) {
-                const BitArchiveReader info( lib, arcFileName.string< tchar >(), BitFormat::Split );
+                const BitArchiveReader info( test::sevenzip_lib(), arcFileName.string< tchar >(), BitFormat::Split );
                 REQUIRE( info.isMultiVolume() );
                 REQUIRE( info.volumesCount() == 3 );
                 REQUIRE( info.itemsCount() == 1 );
@@ -452,7 +442,9 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
             }
 
             SECTION( "Opening as a whole archive" ) {
-                const BitArchiveReader info( lib, arcFileName.string< tchar >(), testArchive.format() );
+                const BitArchiveReader info( test::sevenzip_lib(),
+                                             arcFileName.string< tchar >(),
+                                             testArchive.format() );
                 // REQUIRE( info.isMultiVolume() );
                 // REQUIRE( info.volumesCount() == 3 );
                 REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
@@ -463,7 +455,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
     SECTION( "Multi-volume RAR5" ) {
         const fs::path arcFileName = "clouds.jpg.part1.rar";
-        const BitArchiveReader info( lib, arcFileName.string< tchar >(), BitFormat::Rar5 );
+        const BitArchiveReader info( test::sevenzip_lib(), arcFileName.string< tchar >(), BitFormat::Rar5 );
         REQUIRE( info.isMultiVolume() );
         REQUIRE( info.volumesCount() == 3 );
         REQUIRE( info.itemsCount() == 1 );
@@ -480,7 +472,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
     SECTION( "Multi-volume RAR4" ) {
         const fs::path arcFileName = "clouds.jpg.rar";
-        const BitArchiveReader info( lib, arcFileName.string< tchar >(), BitFormat::Rar );
+        const BitArchiveReader info( test::sevenzip_lib(), arcFileName.string< tchar >(), BitFormat::Rar );
         REQUIRE( info.isMultiVolume() );
         REQUIRE( info.volumesCount() == 3 );
         REQUIRE( info.itemsCount() == 1 );
@@ -505,8 +497,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testArchive = GENERATE( as< EmptyArchive >(),
                                        EmptyArchive{ "7z", BitFormat::SevenZip, 0 },
     // EmptyArchive{ "tar", BitFormat::Tar, 0 }, // TODO: Check why it fails opening
@@ -518,7 +508,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
         if( is_filesystem_archive< TestType >::value ) {
             REQUIRE( info.archivePath() == arcFileName );
         } else {
@@ -533,16 +523,14 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
 TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     SECTION( "Solid 7z" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
+        const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
         REQUIRE( info.isSolid() );
         REQUIRE_ARCHIVE_TESTS( info );
     }
 
     SECTION( "Solid RAR" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
+        const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
         REQUIRE( info.isSolid() );
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
@@ -553,13 +541,13 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     }
 
     SECTION( "Non solid 7z" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
+        const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
         REQUIRE( !info.isSolid() );
         REQUIRE_ARCHIVE_TESTS( info );
     }
 
     SECTION( "Non-solid RAR" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
+        const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
         REQUIRE( !info.isSolid() );
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
@@ -590,15 +578,13 @@ auto test_open_rar_archive( const Bit7zLibrary& lib, const tstring& inFile ) -> 
 TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format version", "[bitarchivereader]" ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     SECTION( "Valid RAR archives" ) {
-        REQUIRE( test_open_rar_archive( lib, BIT7Z_STRING( "valid.rar4.rar" ) ) == BitFormat::Rar );
-        REQUIRE( test_open_rar_archive( lib, BIT7Z_STRING( "valid.rar5.rar" ) ) == BitFormat::Rar5 );
+        REQUIRE( test_open_rar_archive( test::sevenzip_lib(), BIT7Z_STRING( "valid.rar4.rar" ) ) == BitFormat::Rar );
+        REQUIRE( test_open_rar_archive( test::sevenzip_lib(), BIT7Z_STRING( "valid.rar5.rar" ) ) == BitFormat::Rar5 );
     }
 
     SECTION( "Non-RAR archive" ) {
-        REQUIRE_THROWS( test_open_rar_archive( lib, BIT7Z_STRING( "valid.zip" ) ) );
+        REQUIRE_THROWS( test_open_rar_archive( test::sevenzip_lib(), BIT7Z_STRING( "valid.zip" ) ) );
     }
 }
 
@@ -620,8 +606,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testArchive = GENERATE( as< MultipleItemsArchive >(),
                                         MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
                                         MultipleItemsArchive{ "iso", BitFormat::Iso, 615351 },
@@ -636,7 +620,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
 
         const auto archiveItems = info.items();
 
@@ -654,8 +638,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testArchive = GENERATE( as< SingleFileArchive >(),
                                         SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
                                         SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
@@ -671,7 +653,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
         REQUIRE_THROWS( info.test() );
     }
 }
@@ -679,8 +661,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should throw",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
     const auto correctFormat = GENERATE( as< TestInputFormat >(),
                                          TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -717,7 +697,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format s
             DYNAMIC_SECTION( "Wrong format: " << wrongFormat.extension ) {
                 TestType inputArchive{};
                 getInputArchive( arcFileName, inputArchive );
-                REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, wrongFormat.format ) );
+                REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, wrongFormat.format ) );
             }
         }
     }
@@ -835,8 +815,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
                                       TestInputFormat{ "rar", BitFormat::Rar5 },
@@ -849,7 +827,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testFormat.format );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
         REQUIRE_ITEM_DIRECTORY( info, "dir" );
         REQUIRE_ITEM_REGULAR( info, "regular" );
         REQUIRE_ITEM_SYMLINK( info, "symlink" );
@@ -883,8 +861,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
                                       TestInputFormat{ "rar", BitFormat::Rar5 },
@@ -897,7 +873,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testFormat.format );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
         REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
         REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
         REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
@@ -909,13 +885,11 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file na
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
     TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-    const BitArchiveReader info( lib, inputArchive, BitFormat::SevenZip );
+    const BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
     REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
     REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
     REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
@@ -925,10 +899,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file na
 TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2)", "[bitarchivereader]" ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
-    const BitArchiveReader info( lib, path_to_tstring( arcFileName ), BitFormat::BZip2 );
+    const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
     REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
 }
 #endif
@@ -937,8 +909,6 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
 
 TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]" ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
     auto test = GENERATE( TestInputFormat{ "7z", BitFormat::SevenZip },
                           TestInputFormat{ "ar", BitFormat::Deb },
@@ -1023,7 +993,7 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
     DYNAMIC_SECTION( "Test extension: " << test.extension ) {
         SECTION( "Filesystem archive (extension + signature)" ) {
             const fs::path file = "valid." + test.extension;
-            const BitArchiveReader reader{ lib, file.string< bit7z::tchar >() };
+            const BitArchiveReader reader{ test::sevenzip_lib(), file.string< bit7z::tchar >() };
             REQUIRE( reader.detectedFormat() == test.format );
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
@@ -1040,7 +1010,7 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
         SECTION( "Archive stream (signature) from a file" ) {
             REQUIRE_OPEN_IFSTREAM( fileStream, "valid." + test.extension );
 
-            const BitArchiveReader reader{ lib, fileStream };
+            const BitArchiveReader reader{ test::sevenzip_lib(), fileStream };
             REQUIRE( reader.detectedFormat() == test.format );
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP

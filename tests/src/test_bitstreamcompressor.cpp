@@ -15,14 +15,11 @@
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitformat.hpp>
-#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitstreamcompressor.hpp>
 
 using namespace bit7z;
 
 TEST_CASE( "BitStreamCompressor: TODO", "[bitstreamcompressor]" ) {
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const BitStreamCompressor streamCompressor{lib, BitFormat::SevenZip};
+    const BitStreamCompressor streamCompressor{ test::sevenzip_lib(), BitFormat::SevenZip };
     REQUIRE( streamCompressor.compressionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }

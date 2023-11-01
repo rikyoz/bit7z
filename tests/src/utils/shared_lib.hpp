@@ -10,6 +10,7 @@
 #ifndef SHARED_LIB_HPP
 #define SHARED_LIB_HPP
 
+#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bittypes.hpp>
 
 #ifndef BIT7Z_USE_SYSTEM_7ZIP
@@ -36,6 +37,11 @@ inline auto sevenzip_lib_path() -> tstring {
     static const auto lib_path = ( filesystem::exe_path().parent_path() / "7z.so" ).string();
 #endif
     return lib_path;
+}
+
+inline auto sevenzip_lib() -> const Bit7zLibrary& {
+    static const Bit7zLibrary lib{ sevenzip_lib_path() };
+    return lib;
 }
 
 } // namespace test

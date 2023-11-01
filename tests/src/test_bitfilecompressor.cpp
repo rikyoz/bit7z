@@ -24,9 +24,7 @@ using bit7z::BitFileCompressor;
 using bit7z::BitInOutFormat;
 
 TEST_CASE( "BitFileCompressor: TODO", "[bitfilecompressor]" ) {
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const BitFileCompressor fileCompressor{ lib, BitFormat::SevenZip};
+    const BitFileCompressor fileCompressor{ test::sevenzip_lib(), BitFormat::SevenZip};
     REQUIRE( fileCompressor.compressionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }
 

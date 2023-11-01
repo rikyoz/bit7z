@@ -15,14 +15,11 @@
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitformat.hpp>
-#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitarchivewriter.hpp>
 
 using namespace bit7z;
 
 TEST_CASE( "BitArchiveWriter: TODO", "[bitarchivewriter]" ) {
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const BitArchiveWriter writer{lib, BitFormat::SevenZip};
+    const BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
     REQUIRE( writer.compressionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }

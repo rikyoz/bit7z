@@ -134,8 +134,6 @@ TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
 TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     auto test = GENERATE( TestInputFormat{ "7z", BitFormat::SevenZip },
                           TestInputFormat{ "ar", BitFormat::Deb },
                           TestInputFormat{ "arj", BitFormat::Arj },
@@ -222,7 +220,7 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
         // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid detection via file extensions).
 
         REQUIRE_LOAD_FILE( fileBuffer, "valid." + test.extension );
-        const BitArchiveReader reader{ lib, fileBuffer };
+        const BitArchiveReader reader{ test::sevenzip_lib(), fileBuffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
 }
@@ -235,15 +233,13 @@ TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatde
     const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";
     REQUIRE( set_current_dir( testDir ) );
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
     auto test = GENERATE( TestInputFormat{ "udf", BitFormat::Udf },
                           TestInputFormat{ "udf.img", BitFormat::Udf },
                           TestInputFormat{ "udf.iso", BitFormat::Udf } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
         REQUIRE_LOAD_FILE( fileBuffer, "valid." + test.extension );
-        const BitArchiveReader reader{ lib, fileBuffer };
+        const BitArchiveReader reader{ test::sevenzip_lib(), fileBuffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
 
@@ -289,8 +285,7 @@ TEST_CASE( "formatdetect: Format detection of an archive file without an extensi
 
     REQUIRE( detect_format_from_extension( "noextension" ) == BitFormat::Auto );
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-    const BitArchiveReader reader{ lib, BIT7Z_STRING( "noextension" ) };
+    const BitArchiveReader reader{ test::sevenzip_lib(), BIT7Z_STRING( "noextension" ) };
     REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
     REQUIRE_NOTHROW( reader.test() );
 }
