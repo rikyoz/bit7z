@@ -79,4 +79,4 @@ runs:
       # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
-      run: ctest --build-target bit7z-tests --build-config ${{ inputs.build_type }} --output-on-failure
+      run: ctest --build-target bit7z-tests --build-config ${{ inputs.build_type }} --output-on-failure -j 4
