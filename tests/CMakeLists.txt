@@ -165,5 +165,4 @@ include( CTest )
 include( Catch )
 target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
 target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE Catch2::Catch2 )
-catch_discover_tests( ${TESTS_TARGET}
-                      DISCOVERY_MODE PRE_TEST )
+catch_discover_tests( ${TESTS_TARGET} )
