@@ -679,109 +679,41 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format s
 constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
 #endif
 
-#define REQUIRE_ITEM_DIRECTORY( info, item_name )                                                     \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE( iterator->isDir() );                                                                 \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY );    \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( S_ISDIR( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISREG( posix_attributes ) );                                                  \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+void require_item_type( const BitArchiveReader& info,
+                        const tstring& itemName,
+                        fs::file_type fileType,
+                        std::uint32_t winAttributes,
+                        source_location location ) {
+    INFO( "Failed checking required item " << Catch::StringMaker< tstring >::convert( itemName ) );
+    INFO( "  from " << location.file_name() << ":" << location.line() );
+    auto iterator = info.find( itemName );
+    REQUIRE( iterator != info.cend() );
+    REQUIRE( iterator->name() == itemName );
 
-#define REQUIRE_ITEM_REGULAR( info, item_name )                                                       \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+    bool expectedDir = ( fileType == fs::file_type::directory );
+    bool expectedSymlink = ( fileType == fs::file_type::symlink );
+    REQUIRE( iterator->isDir() == expectedDir );
+    REQUIRE( iterator->isSymLink() == expectedSymlink );
 
-#define REQUIRE_ITEM_SYMLINK( info, item_name )                                                       \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE( iterator->isSymLink() );                                                        \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( !S_ISREG( posix_attributes ) );                                                  \
-            REQUIRE( S_ISLNK( posix_attributes ) );                                                   \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+    auto item_attributes = iterator->attributes();
+    if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {
+        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == ( expectedDir ? FILE_ATTRIBUTE_DIRECTORY : 0 ) );
+        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == ( winAttributes & FILE_ATTRIBUTE_HIDDEN ) );
+        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == ( winAttributes & FILE_ATTRIBUTE_READONLY ) );
+    }
+    if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
+        auto posix_attributes = item_attributes >> 16U;
+        REQUIRE( S_ISDIR( posix_attributes ) == expectedDir );
+        REQUIRE( S_ISREG( posix_attributes ) == ( !expectedDir && !expectedSymlink ) );
+        REQUIRE( S_ISLNK( posix_attributes ) == expectedSymlink );
+    }
+}
 
-#define REQUIRE_ITEM_HIDDEN( info, item_name )                                                        \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == FILE_ATTRIBUTE_HIDDEN );          \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+#define REQUIRE_ITEM_TYPE( info, item_name, file_type ) \
+    require_item_type( (info), BIT7Z_STRING( item_name ), (file_type), 0, BIT7Z_CURRENT_LOCATION )
 
-#define REQUIRE_ITEM_READONLY( info, item_name )                                                      \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == FILE_ATTRIBUTE_READONLY );      \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+#define REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, item_name, file_type, win_attributes ) \
+    require_item_type( (info), BIT7Z_STRING( item_name ), (file_type), (win_attributes), BIT7Z_CURRENT_LOCATION )
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
@@ -800,34 +732,15 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
-        REQUIRE_ITEM_DIRECTORY( info, "dir" );
-        REQUIRE_ITEM_REGULAR( info, "regular" );
-        REQUIRE_ITEM_SYMLINK( info, "symlink" );
-        REQUIRE_ITEM_HIDDEN( info, "hidden" );
-        REQUIRE_ITEM_READONLY( info, "read_only" );
+        REQUIRE_ITEM_TYPE( info, "dir", fs::file_type::directory );
+        REQUIRE_ITEM_TYPE( info, "regular", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "symlink", fs::file_type::symlink );
+        REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, "hidden", fs::file_type::regular, FILE_ATTRIBUTE_HIDDEN );
+        REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, "read_only", fs::file_type::regular, FILE_ATTRIBUTE_READONLY );
     }
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
-#define REQUIRE_ITEM_UNICODE( info, item_name )                                                       \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
@@ -846,10 +759,10 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
-        REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
-        REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
-        REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
-        REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
+        REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );
     }
 }
 
@@ -862,10 +775,10 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file na
     TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
     const BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
-    REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
-    REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
-    REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
-    REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
+    REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );
 }
 
 TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2)", "[bitarchivereader]" ) {
@@ -873,7 +786,7 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
     const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
-    REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
+    REQUIRE_ITEM_TYPE( info, "クラウド.jpg", fs::file_type::regular );
 }
 #endif
 
