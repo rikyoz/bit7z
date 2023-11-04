@@ -1,4 +1,4 @@
-name: Test bit7z on Windows with multiple configurations
+name: Test on Windows
 on: [pull_request, push]
 
 jobs:

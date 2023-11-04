@@ -1,4 +1,4 @@
-name: Test bit7z on macOS with multiple configurations
+name: Test on macOS
 on: [pull_request, push]
 
 jobs:

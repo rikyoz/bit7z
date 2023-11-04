@@ -1,4 +1,4 @@
-name: Test bit7z on Ubuntu with multiple configurations
+name: Test on Ubuntu
 on: [pull_request, push]
 
 jobs:
