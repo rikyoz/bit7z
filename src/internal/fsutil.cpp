@@ -18,6 +18,11 @@
 #include <unistd.h>
 
 #include "internal/dateutil.hpp"
+
+// For some reason, GCC on macOS requires including <climits> for defining OPEN_MAX.
+#if defined( __APPLE__ ) && !defined( __clang__ )
+#include <climits>
+#endif
 #elif defined( BIT7Z_PATH_SANITIZATION )
 #include <cwctype> // for iswdigit
 #endif
@@ -199,7 +204,7 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
     }
 
     if ( ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) != 0 ) {
-        fileStat.st_mode = attributes >> 16U;
+        fileStat.st_mode = static_cast< mode_t >( attributes >> 16U );
         if ( S_ISLNK( fileStat.st_mode ) ) {
             return restore_symlink( filePath );
         }
