@@ -55,6 +55,8 @@ auto InternalCategory::message( int errorValue ) const -> std::string {
             return "No known signature found.";
         case BitError::NonEmptyOutputBuffer:
             return "The output buffer is not empty.";
+        case BitError::NullOutputBuffer:
+            return "Null output buffer.";
         case BitError::RequestedWrongVariantType:
             return "Requested the wrong variant type.";
         case BitError::UnsupportedOperation:
@@ -83,6 +85,7 @@ auto InternalCategory::default_error_condition( int errorValue ) const noexcept 
         case BitError::InvalidWordSize:
         case BitError::ItemIsAFolder:
         case BitError::NonEmptyOutputBuffer:
+        case BitError::NullOutputBuffer:
         case BitError::InvalidZipPassword:
             return std::make_error_condition( std::errc::invalid_argument );
         case BitError::NoMatchingItems:

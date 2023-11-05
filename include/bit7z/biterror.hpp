@@ -36,6 +36,7 @@ enum struct BitError {
     NoMatchingItems,
     NoMatchingSignature,
     NonEmptyOutputBuffer,
+    NullOutputBuffer,
     RequestedWrongVariantType,
     UnsupportedOperation,
     UnsupportedVariantType,
