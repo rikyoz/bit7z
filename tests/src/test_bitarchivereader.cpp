@@ -568,20 +568,6 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
     }
 }
 
-#define REQUIRE_ITEM_EQUAL( first, second ) \
-    do {                                              \
-        REQUIRE( (first).index() == (second).index() ); \
-        REQUIRE( (first).name() == (second).name() ); \
-        REQUIRE( (first).path() == (second).path() ); \
-        REQUIRE( (first).isDir() == (second).isDir() ); \
-        REQUIRE( (first).crc() == (second).crc() ); \
-        REQUIRE( (first).extension() == (second).extension() ); \
-        REQUIRE( (first).isEncrypted() == (second).isEncrypted() ); \
-        REQUIRE( (first).size() == (second).size() ); \
-        REQUIRE( (first).packSize() == (second).packSize() ); \
-        REQUIRE( (first).attributes() == (second).attributes() ); \
-    } while ( false )
-
 TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
@@ -609,7 +595,16 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
 
         for ( const auto& iteratedItem : info ) {
             const auto& archivedItem = archiveItems[ iteratedItem.index() ];
-            REQUIRE_ITEM_EQUAL( archivedItem, iteratedItem );
+            REQUIRE( archivedItem.index() == iteratedItem.index() );
+            REQUIRE( archivedItem.name() == iteratedItem.name() );
+            REQUIRE( archivedItem.path() == iteratedItem.path() );
+            REQUIRE( archivedItem.isDir() == iteratedItem.isDir() );
+            REQUIRE( archivedItem.crc() == iteratedItem.crc() );
+            REQUIRE( archivedItem.extension() == iteratedItem.extension() );
+            REQUIRE( archivedItem.isEncrypted() == iteratedItem.isEncrypted() );
+            REQUIRE( archivedItem.size() == iteratedItem.size() );
+            REQUIRE( archivedItem.packSize() == iteratedItem.packSize() );
+            REQUIRE( archivedItem.attributes() == iteratedItem.attributes() );
         }
     }
 }
