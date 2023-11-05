@@ -114,9 +114,20 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
     REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() ) );
     REQUIRE( dummyBuffer.empty() );
 
+    REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() + 1 ) );
+    REQUIRE( dummyBuffer.empty() );
+
+    // Note: this value must be different from any file size that we can encounter inside the tested archives.
+    constexpr size_t dummyBufferSize = 42;
+    buffer_t dummyBuffer2( dummyBufferSize, static_cast< byte_t >( '\0' ) );
     for( size_t i = 0; i < info.itemsCount(); ++i ) {
         REQUIRE_THROWS( info.extractTo( nullptr, 0, i ) );
-        REQUIRE_THROWS( info.extractTo( nullptr, 64, i ) );
+        REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, i ) );
+        REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), i ) );
+
+        REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], 0, i ) );
+        REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], dummyBufferSize, i ) );
+        REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], std::numeric_limits< std::size_t >::max(), i ) );
 
         if ( !info.isItemFolder( i ) ) {
             const auto itemSize = info.itemAt( i ).size();
@@ -131,14 +142,18 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
                     REQUIRE( crc32( outputBuffer ) == item_crc );
                 }
             } else {
-                buffer_t dummyBuffer2( 64, static_cast< byte_t >( '\0' ) );
                 REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], itemSize, i ) );
             }
         }
     }
 
     REQUIRE_THROWS( info.extractTo( nullptr, 0, info.itemsCount() ) );
-    REQUIRE_THROWS( info.extractTo( nullptr, 64, info.itemsCount() ) );
+    REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, info.itemsCount() ) );
+    REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), info.itemsCount() ) );
+
+    REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], 0, info.itemsCount() ) );
+    REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], dummyBufferSize, info.itemsCount() ) );
+    REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], std::numeric_limits< std::size_t >::max(), info.itemsCount() ) );
 }
 
 #define REQUIRE_ARCHIVE_EXTRACTS( info ) \
