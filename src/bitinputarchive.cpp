@@ -253,14 +253,19 @@ void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const
 }
 
 void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t index ) const {
+    if ( buffer == nullptr ) {
+        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
+                            make_error_code( BitError::NullOutputBuffer ) );
+    }
+
     const uint32_t numberItems = itemsCount();
     if ( index >= numberItems ) {
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
+        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { // Consider only files, not folders
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
