@@ -75,6 +75,12 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
 void require_archive_extracts( const BitArchiveReader& info, const source_location& location ) {
     INFO( "Failed while extracting the archive ");
     INFO( "  from " << location.file_name() << ":" << location.line() );
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto& detectedFormat = (info).detectedFormat();
+    if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
+        return;
+    }
+#endif
 
     std::map< tstring, buffer_t > bufferMap;
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );

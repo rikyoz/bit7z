@@ -19,7 +19,7 @@ if( BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
         # p7zip source code (calling the package as 7-zip just for simplify the code).
         CPMAddPackage( NAME 7-zip
                        GITHUB_REPOSITORY "rikyoz/p7zip"
-                       VERSION 16.02
+                       VERSION ${BIT7Z_7ZIP_VERSION}
                        DOWNLOAD_ONLY YES )
     else()
         # 7-zip source code
