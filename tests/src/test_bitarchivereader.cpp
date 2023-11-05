@@ -15,6 +15,7 @@
 #include <catch2/generators/catch_generators.hpp>
 
 #include "utils/archive.hpp"
+#include "utils/crc.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
@@ -71,6 +72,78 @@ static_assert( std::is_move_constructible< BitArchiveItemInfo >::value,
 static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
                "BitArchiveItemInfo is not move-assignable." );
 
+void require_archive_extracts( const BitArchiveReader& info, const source_location& location ) {
+    INFO( "Failed while extracting the archive ");
+    INFO( "  from " << location.file_name() << ":" << location.line() );
+
+    std::map< tstring, buffer_t > bufferMap;
+    REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
+    REQUIRE( bufferMap.size() == info.filesCount() );
+    if ( !format_has_crc( info.detectedFormat() ) || info.detectedFormat() == BitFormat::Rar5 ) {
+        return;
+    }
+    for( const auto& entry : bufferMap ) {
+        auto item = info.find( entry.first );
+        REQUIRE( item != info.cend() );
+        const auto item_crc = item->crc();
+        if ( item_crc > 0 ) {
+            REQUIRE( crc32( entry.second ) == item_crc );
+        }
+    }
+
+    for( size_t i = 0; i < info.itemsCount(); ++i ) {
+        buffer_t outputBuffer;
+        if ( info.isItemFolder( i ) ) {
+            REQUIRE_THROWS( info.extractTo( outputBuffer, i ) );
+            REQUIRE( outputBuffer.empty() );
+        } else {
+            REQUIRE_NOTHROW( info.extractTo( outputBuffer, i ) );
+            const auto item_crc = info.itemAt( i ).crc();
+            if ( item_crc > 0 ) {
+                REQUIRE( crc32( outputBuffer ) == item_crc );
+            } else if ( info.detectedFormat() != BitFormat::Chm && info.detectedFormat() != BitFormat::Elf &&
+                        info.detectedFormat() != BitFormat::Macho && info.detectedFormat() != BitFormat::Ntfs &&
+                        info.detectedFormat() != BitFormat::Swf ) {
+                // TODO: Check why these formats can't be extracted to a buffer
+                REQUIRE_FALSE( outputBuffer.empty() );
+            }
+        }
+    }
+
+    buffer_t dummyBuffer;
+    REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() ) );
+    REQUIRE( dummyBuffer.empty() );
+
+    for( size_t i = 0; i < info.itemsCount(); ++i ) {
+        REQUIRE_THROWS( info.extractTo( nullptr, 0, i ) );
+        REQUIRE_THROWS( info.extractTo( nullptr, 64, i ) );
+
+        if ( !info.isItemFolder( i ) ) {
+            const auto itemSize = info.itemAt( i ).size();
+            REQUIRE_THROWS( info.extractTo( nullptr, itemSize, i ) );
+
+            if ( itemSize > 0 ) {
+                buffer_t outputBuffer( itemSize, static_cast< byte_t >( '\0' ) );
+                REQUIRE_NOTHROW( info.extractTo( &outputBuffer[ 0 ], itemSize, i ) );
+
+                const auto item_crc = info.itemAt( i ).crc();
+                if ( item_crc > 0 ) {
+                    REQUIRE( crc32( outputBuffer ) == item_crc );
+                }
+            } else {
+                buffer_t dummyBuffer2( 64, static_cast< byte_t >( '\0' ) );
+                REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], itemSize, i ) );
+            }
+        }
+    }
+
+    REQUIRE_THROWS( info.extractTo( nullptr, 0, info.itemsCount() ) );
+    REQUIRE_THROWS( info.extractTo( nullptr, 64, info.itemsCount() ) );
+}
+
+#define REQUIRE_ARCHIVE_EXTRACTS( info ) \
+    require_archive_extracts( info, BIT7Z_CURRENT_LOCATION )
+
 void require_archive_tests( const BitArchiveReader& info, const source_location& location ) {
     INFO( "Failed while testing the archive ");
     INFO( "  from " << location.file_name() << ":" << location.line() );
@@ -80,11 +153,11 @@ void require_archive_tests( const BitArchiveReader& info, const source_location&
         return;
     }
 #endif
-    REQUIRE_NOTHROW( ( info ).test() );
-    for ( uint32_t index = 0; index < ( info ).itemsCount(); ++index ) {
-        REQUIRE_NOTHROW( ( info ).testItem( index ) );
+    REQUIRE_NOTHROW( info.test() );
+    for ( uint32_t index = 0; index < info.itemsCount(); ++index ) {
+        REQUIRE_NOTHROW( info.testItem( index ) );
     }
-    REQUIRE_THROWS_AS( ( info ).testItem( ( info ).itemsCount() ), BitException );
+    REQUIRE_THROWS_AS( info.testItem( info.itemsCount() ), BitException );
 }
 
 #define REQUIRE_ARCHIVE_TESTS( info ) \
@@ -229,6 +302,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
         REQUIRE_ARCHIVE_TESTS( info );
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -264,6 +338,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
         REQUIRE_ARCHIVE_TESTS( info );
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -300,6 +375,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
         REQUIRE_ARCHIVE_TESTS( info );
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -343,6 +419,13 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
             REQUIRE_THROWS( info.test() );
+
+            std::map< tstring, buffer_t > dummyMap;
+            REQUIRE_THROWS( info.extractTo( dummyMap ) );
+            for ( const auto& entry : dummyMap ) {
+                // TODO: Check if extractTo should not write or clear the map when the extraction fails
+                REQUIRE( entry.second.empty() );
+            }
         }
 
         SECTION( "Opening the archive with the correct password should pass all the checks" ) {
@@ -351,6 +434,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
             REQUIRE_ARCHIVE_TESTS( info );
+            REQUIRE_ARCHIVE_EXTRACTS( info );
         }
     }
 }
@@ -398,6 +482,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
             REQUIRE_ARCHIVE_TESTS( info );
+            REQUIRE_ARCHIVE_EXTRACTS( info );
         }
     }
 }
@@ -427,6 +512,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 REQUIRE( info.itemsCount() == 1 );
                 REQUIRE( info.items()[ 0 ].name() == arcFileName.stem().string< tchar >() );
                 REQUIRE_ARCHIVE_TESTS( info );
+                REQUIRE_ARCHIVE_EXTRACTS( info );
             }
 
             SECTION( "Opening as a whole archive" ) {
@@ -437,6 +523,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 // REQUIRE( info.volumesCount() == 3 );
                 REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
                 REQUIRE_ARCHIVE_TESTS( info );
+                REQUIRE_ARCHIVE_EXTRACTS( info );
             }
         }
     }
@@ -454,6 +541,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
 #endif
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Multi-volume RAR4" ) {
@@ -469,6 +557,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
 #endif
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -501,6 +590,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
         REQUIRE_ARCHIVE_TESTS( info );
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -511,6 +601,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
         REQUIRE( info.isSolid() );
         REQUIRE_ARCHIVE_TESTS( info );
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Solid RAR" ) {
@@ -520,12 +611,14 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
 #endif
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Non solid 7z" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
         REQUIRE( !info.isSolid() );
         REQUIRE_ARCHIVE_TESTS( info );
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Non-solid RAR" ) {
@@ -535,6 +628,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
 #endif
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -630,6 +724,10 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
         REQUIRE_THROWS( info.test() );
+
+        std::map< tstring, buffer_t > dummyMap;
+        REQUIRE_THROWS( info.extractTo( dummyMap ) );
+        // TODO: Check if extractTo should not write or clear the map when the extraction fails
     }
 }
 
@@ -891,6 +989,9 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
             if ( test.format != BitFormat::Mslz && test.extension != "part2.rar" && test.extension != "part3.rar" ) {
 #endif
                 REQUIRE_NOTHROW( reader.test() );
+                if ( test.format != BitFormat::Ppmd ) { // TODO: Check why Ppmd extraction fails!
+                    REQUIRE_ARCHIVE_EXTRACTS( reader );
+                }
             }
         }
 
@@ -908,6 +1009,9 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
             if ( test.format != BitFormat::Mslz && test.extension.find( "part" ) != 0 ) {
 #endif
                 REQUIRE_NOTHROW( reader.test() );
+                if ( test.format != BitFormat::Ppmd ) { // TODO: Check why Ppmd extraction fails!
+                    REQUIRE_ARCHIVE_EXTRACTS( reader );
+                }
             }
         }
     }
