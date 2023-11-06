@@ -23,6 +23,9 @@ jobs:
         bit7z_path_sanitization: [OFF, ON]
         bit7z_7zip_version: [22.01, 23.01]
 
+    name: |
+      ${{ matrix.build_type }} build, 7-Zip: ${{ matrix.bit7z_7zip_version }}, AUTO_FORMAT: ${{ matrix.bit7z_auto_format }}, REGEX_MATCHING: ${{ matrix.bit7z_regex_matching }}, USE_NATIVE_STRING: ${{ matrix.bit7z_use_native_string }}, AUTO_PREFIX_LONG_PATHS: ${{ matrix.bit7z_auto_prefix_long_paths }}, USE_SYSTEM_CODEPAGE: ${{ matrix.bit7z_use_system_codepage }}, PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }}
+
     steps:
     - uses: actions/checkout@v3
 

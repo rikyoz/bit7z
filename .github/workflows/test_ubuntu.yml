@@ -68,6 +68,9 @@ jobs:
           - bit7z_7zip_version: 22.01
             bit7z_build_for_p7zip: ON
 
+    name: |
+      ${{ matrix.build_type }} build, Compiler: ${{ matrix.c_compiler }}, 7-Zip: ${{ matrix.bit7z_7zip_version }}, AUTO_FORMAT: ${{ matrix.bit7z_auto_format }}, REGEX_MATCHING: ${{ matrix.bit7z_regex_matching }}, LINK_LIBCPP: ${{ matrix.bit7z_link_libcpp }}, BUILD_FOR_P7ZIP: ${{ matrix.bit7z_build_for_p7zip }}
+
     steps:
     - uses: actions/checkout@v3
 

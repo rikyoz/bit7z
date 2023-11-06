@@ -35,6 +35,9 @@ jobs:
           - c_compiler: gcc-12
             bit7z_link_libcpp: ON
 
+    name: |
+      ${{ matrix.build_type }} build, Compiler: ${{ matrix.c_compiler }}, AUTO_FORMAT: ${{ matrix.bit7z_auto_format }}, REGEX_MATCHING: ${{ matrix.bit7z_regex_matching }}, LINK_LIBCPP: ${{ matrix.bit7z_link_libcpp }}
+
     steps:
     - uses: actions/checkout@v3
 
