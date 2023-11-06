@@ -100,14 +100,14 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
     }
 
     SECTION( "Extracting each item to a buffer" ) {
-        for ( size_t i = 0; i < info.itemsCount(); ++i ) {
+        for ( const auto& item : info ) {
             buffer_t outputBuffer;
-            if ( info.isItemFolder( i ) ) {
-                REQUIRE_THROWS( info.extractTo( outputBuffer, i ) );
+            if ( item.isDir() ) {
+                REQUIRE_THROWS( info.extractTo( outputBuffer, item.index() ) );
                 REQUIRE( outputBuffer.empty() );
             } else {
-                REQUIRE_NOTHROW( info.extractTo( outputBuffer, i ) );
-                const auto item_crc = info.itemAt( i ).crc();
+                REQUIRE_NOTHROW( info.extractTo( outputBuffer, item.index() ) );
+                const auto item_crc = item.crc();
                 if ( item_crc > 0 ) {
                     REQUIRE( crc32( outputBuffer ) == item_crc );
                 } else if ( info.detectedFormat() != BitFormat::Chm && info.detectedFormat() != BitFormat::Elf &&
@@ -131,32 +131,33 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
 
 
     SECTION( "Extracting each item to a fixed size buffer" ) {
-        // Note: this value must be different from any file size that we can encounter inside the tested archives.
+        // Note: this value must be different from any file size we can encounter inside the tested archives.
         constexpr size_t dummyBufferSize = 42;
         buffer_t dummyBuffer2( dummyBufferSize, static_cast< byte_t >( '\0' ) );
-        for ( size_t i = 0; i < info.itemsCount(); ++i ) {
-            REQUIRE_THROWS( info.extractTo( nullptr, 0, i ) );
-            REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, i ) );
-            REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), i ) );
+        for ( const auto& item : info ) {
+            const auto itemIndex = item.index();
+            REQUIRE_THROWS( info.extractTo( nullptr, 0, itemIndex ) );
+            REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, itemIndex ) );
+            REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), itemIndex ) );
 
-            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], 0, i ) );
-            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], dummyBufferSize, i ) );
-            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], std::numeric_limits< std::size_t >::max(), i ) );
+            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], 0, itemIndex ) );
+            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], dummyBufferSize, itemIndex ) );
+            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], std::numeric_limits< std::size_t >::max(), itemIndex ) );
 
-            if ( !info.isItemFolder( i ) ) {
-                const auto itemSize = info.itemAt( i ).size();
-                REQUIRE_THROWS( info.extractTo( nullptr, itemSize, i ) );
+            if ( !item.isDir() ) {
+                const auto itemSize = item.size();
+                REQUIRE_THROWS( info.extractTo( nullptr, itemSize, itemIndex ) );
 
                 if ( itemSize > 0 ) {
                     buffer_t outputBuffer( itemSize, static_cast< byte_t >( '\0' ) );
-                    REQUIRE_NOTHROW( info.extractTo( &outputBuffer[ 0 ], itemSize, i ) );
+                    REQUIRE_NOTHROW( info.extractTo( &outputBuffer[ 0 ], itemSize, itemIndex ) );
 
-                    const auto item_crc = info.itemAt( i ).crc();
+                    const auto item_crc = item.crc();
                     if ( item_crc > 0 ) {
                         REQUIRE( crc32( outputBuffer ) == item_crc );
                     }
                 } else {
-                    REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], itemSize, i ) );
+                    REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], itemSize, itemIndex ) );
                 }
             }
         }
