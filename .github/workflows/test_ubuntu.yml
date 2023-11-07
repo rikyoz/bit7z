@@ -69,7 +69,7 @@ jobs:
             bit7z_build_for_p7zip: ON
 
     name: |
-      Ubuntu, ${{ matrix.c_compiler }}, ${{ matrix.build_type }}, 7-Zip ${{ matrix.bit7z_7zip_version }}, AUTO_FORMAT: ${{ matrix.bit7z_auto_format }}, REGEX_MATCHING: ${{ matrix.bit7z_regex_matching }}, LINK_LIBCPP: ${{ matrix.bit7z_link_libcpp }}, BUILD_FOR_P7ZIP: ${{ matrix.bit7z_build_for_p7zip }}
+      Ubuntu, ${{ matrix.c_compiler }}, ${{ matrix.build_type }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
 
     steps:
     - uses: actions/checkout@v3
