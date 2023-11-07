@@ -36,7 +36,7 @@ jobs:
             bit7z_link_libcpp: ON
 
     name: |
-      macOS, ${{ matrix.c_compiler }}, ${{ matrix.build_type }}, AUTO_FORMAT: ${{ matrix.bit7z_auto_format }}, REGEX_MATCHING: ${{ matrix.bit7z_regex_matching }}, LINK_LIBCPP: ${{ matrix.bit7z_link_libcpp }}
+      macOS, ${{ matrix.c_compiler }}, ${{ matrix.build_type }}${{ matrix.bit7z_auto_format == 'ON' && ', AUTO_FORMAT' || '' }}${{ matrix.bit7z_regex_matching == 'ON' && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_link_libcpp == 'ON' && ', LINK_LIBCPP' || '' }}
 
     steps:
     - uses: actions/checkout@v3
