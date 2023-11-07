@@ -100,8 +100,8 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
     }
 
     SECTION( "Extracting each item to a buffer" ) {
+        buffer_t outputBuffer;
         for ( const auto& item : info ) {
-            buffer_t outputBuffer;
             if ( item.isDir() ) {
                 REQUIRE_THROWS( info.extractTo( outputBuffer, item.index() ) );
                 REQUIRE( outputBuffer.empty() );
@@ -117,6 +117,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
                     REQUIRE_FALSE( outputBuffer.empty() );
                 }
             }
+            outputBuffer.clear();
         }
 
         {
@@ -134,6 +135,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
         // Note: this value must be different from any file size we can encounter inside the tested archives.
         constexpr size_t dummyBufferSize = 42;
         buffer_t dummyBuffer2( dummyBufferSize, static_cast< byte_t >( '\0' ) );
+        buffer_t outputBuffer;
         for ( const auto& item : info ) {
             const auto itemIndex = item.index();
             REQUIRE_THROWS( info.extractTo( nullptr, 0, itemIndex ) );
@@ -149,7 +151,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
                 REQUIRE_THROWS( info.extractTo( nullptr, itemSize, itemIndex ) );
 
                 if ( itemSize > 0 ) {
-                    buffer_t outputBuffer( itemSize, static_cast< byte_t >( '\0' ) );
+                    outputBuffer.resize( itemSize, static_cast< byte_t >( '\0' ) );
                     REQUIRE_NOTHROW( info.extractTo( &outputBuffer[ 0 ], itemSize, itemIndex ) );
 
                     const auto item_crc = item.crc();
@@ -159,6 +161,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
                 } else {
                     REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], itemSize, itemIndex ) );
                 }
+                outputBuffer.clear();
             }
         }
 
