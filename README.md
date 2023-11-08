@@ -1,6 +1,6 @@
 <h1 align="center">bit7z</h1>
 
-<h3 align="center">A C++ static library offering a clean and simple interface to the 7-zip shared libraries</h3>
+<h3 align="center"><a href="#">&#x200B;</a>A C++ static library offering a clean and simple interface to the 7-zip shared libraries</h3>
 
 <!-- navbar -->
 <p align="center">
