@@ -66,9 +66,8 @@ void extract_arc( IInArchive* inArchive,
         const auto& errorException = extractCallback->errorException();
         if ( errorException ) {
             std::rethrow_exception( errorException );
-        } else {
-            throw BitException( "Could not extract the archive", make_hresult_code( res ) );
         }
+        throw BitException( "Could not extract the archive", make_hresult_code( res ) );
     }
 }
 
