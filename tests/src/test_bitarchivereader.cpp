@@ -772,6 +772,9 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
 
+    // The italy.svg file in the ko_test archives is different from the one used for filesystem tests
+    static constexpr auto italy_ko_crc32 = 0x2ADFB3AF;
+
     const auto testArchive = GENERATE( as< SingleFileArchive >(),
                                         SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
                                         SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
@@ -793,6 +796,31 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
         std::map< tstring, buffer_t > dummyMap;
         REQUIRE_THROWS( info.extractTo( dummyMap ) );
         // TODO: Check if extractTo should not write or clear the map when the extraction fails
+
+        buffer_t outputBuffer;
+        std::ostringstream outputStream;
+        if ( info.itemsCount() == 1 ) {
+            REQUIRE_THROWS( info.extractTo( outputBuffer, 0 ) );
+            REQUIRE( outputBuffer.empty() );
+
+            REQUIRE_THROWS( info.extractTo( outputStream, 0 ) );
+            // Note: we might have written some data to the stream before 7-zip failed!
+        } else if ( info.itemsCount() == 2 ) {
+            REQUIRE_NOTHROW( info.extractTo( outputBuffer, 0 ) );
+            REQUIRE( crc32( outputBuffer ) == italy_ko_crc32 );
+
+            REQUIRE_NOTHROW( info.extractTo( outputStream, 0 ) );
+            REQUIRE( crc32( outputStream.str() ) == italy_ko_crc32 );
+
+            outputBuffer.clear();
+            REQUIRE_THROWS( info.extractTo( outputBuffer, 1 ) );
+            REQUIRE( outputBuffer.empty() );
+
+            outputStream.str("");
+            outputStream.clear();
+            REQUIRE_THROWS( info.extractTo( outputStream, 1 ) );
+            // Note: we might have written some data to the stream before 7-zip failed!
+        }
     }
 }
 
