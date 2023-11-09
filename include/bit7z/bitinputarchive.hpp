@@ -336,7 +336,7 @@ class BitInputArchive {
                  *
                  * @return a pointer to the pointed-to element in the archive.
                  */
-                auto operator->() noexcept -> pointer;
+                auto operator->() const noexcept -> pointer;
 
             private:
                 BitArchiveItemOffset mItemOffset;

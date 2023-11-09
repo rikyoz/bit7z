@@ -401,7 +401,7 @@ auto BitInputArchive::ConstIterator::operator*() noexcept -> BitInputArchive::Co
     return mItemOffset;
 }
 
-auto BitInputArchive::ConstIterator::operator->() noexcept -> BitInputArchive::ConstIterator::pointer {
+auto BitInputArchive::ConstIterator::operator->() const noexcept -> BitInputArchive::ConstIterator::pointer {
     return &mItemOffset;
 }
 
