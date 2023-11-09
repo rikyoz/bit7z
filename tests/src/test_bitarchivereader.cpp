@@ -32,11 +32,6 @@
 #include <internal/stringutil.hpp>
 #include <internal/windows.hpp>
 
-// Needed by MSVC for defining the S_XXXX macros.
-#ifndef _CRT_INTERNAL_NONSTDC_NAMES // NOLINT(*-reserved-identifier, *-dcl37-c)
-#define _CRT_INTERNAL_NONSTDC_NAMES 1
-#endif
-
 // For checking posix file attributes.
 #include <sys/stat.h>
 
@@ -910,7 +905,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file na
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
     TestType inputArchive{};
-        getInputArchive( arcFileName, inputArchive );
+    getInputArchive( arcFileName, inputArchive );
     const BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
     REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
     REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
