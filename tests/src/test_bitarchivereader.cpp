@@ -746,6 +746,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
         REQUIRE( info.begin() == info.cbegin() );
         REQUIRE( info.end() == info.cend() );
 
+        REQUIRE( (info.begin()++) == info.begin() );
+
         for ( const auto& iteratedItem : info ) {
             const auto& archivedItem = archiveItems[ iteratedItem.index() ];
             REQUIRE( archivedItem.index() == iteratedItem.index() );
@@ -758,7 +760,11 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
             REQUIRE( archivedItem.size() == iteratedItem.size() );
             REQUIRE( archivedItem.packSize() == iteratedItem.packSize() );
             REQUIRE( archivedItem.attributes() == iteratedItem.attributes() );
+            REQUIRE( info.itemAt( archivedItem.index() ) == iteratedItem );
         }
+
+        REQUIRE_THROWS( info.itemAt( info.itemsCount() ) );
+        REQUIRE_THROWS( info.itemAt( info.itemsCount() + 1 ) );
     }
 }
 
