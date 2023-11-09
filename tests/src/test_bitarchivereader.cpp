@@ -37,6 +37,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <sstream>
 #include <type_traits>
 
 // MSVC doesn't define these macros!
@@ -169,6 +170,33 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
         REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ],
                                         std::numeric_limits< std::size_t >::max(),
                                         info.itemsCount() ) );
+    }
+
+    SECTION( "Extracting each item to std::ostream" ) {
+        for ( const auto& item : info ) {
+            std::ostringstream outputStream;
+            if ( item.isDir() ) {
+                REQUIRE_THROWS( info.extractTo( outputStream, item.index() ) );
+                REQUIRE( outputStream.str().empty() );
+            } else {
+                REQUIRE_NOTHROW( info.extractTo( outputStream, item.index() ) );
+                const auto item_crc = item.crc();
+                if ( item_crc > 0 ) {
+                    REQUIRE( crc32( outputStream.str() ) == item_crc );
+                } else {
+                    REQUIRE_FALSE( outputStream.str().empty() );
+                }
+            }
+        }
+
+        {
+            std::ostringstream outputStream;
+            REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() ) );
+            REQUIRE( outputStream.str().empty() );
+
+            REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() + 1 ) );
+            REQUIRE( outputStream.str().empty() );
+        }
     }
 }
 
