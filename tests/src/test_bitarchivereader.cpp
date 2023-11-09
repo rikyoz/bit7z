@@ -138,9 +138,9 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
             REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, itemIndex ) );
             REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), itemIndex ) );
 
-            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], 0, itemIndex ) );
-            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], dummyBufferSize, itemIndex ) );
-            REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], std::numeric_limits< std::size_t >::max(), itemIndex ) );
+            REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), 0, itemIndex ) );
+            REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), dummyBufferSize, itemIndex ) );
+            REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), std::numeric_limits< std::size_t >::max(), itemIndex ) );
 
             if ( !item.isDir() ) {
                 const auto itemSize = item.size();
@@ -148,14 +148,14 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
 
                 if ( itemSize > 0 ) {
                     outputBuffer.resize( itemSize, static_cast< byte_t >( '\0' ) );
-                    REQUIRE_NOTHROW( info.extractTo( &outputBuffer[ 0 ], itemSize, itemIndex ) );
+                    REQUIRE_NOTHROW( info.extractTo( outputBuffer.data(), itemSize, itemIndex ) );
 
                     const auto item_crc = item.crc();
                     if ( item_crc > 0 ) {
                         REQUIRE( crc32( outputBuffer ) == item_crc );
                     }
                 } else {
-                    REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], itemSize, itemIndex ) );
+                    REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), itemSize, itemIndex ) );
                 }
                 outputBuffer.clear();
             }
@@ -165,9 +165,9 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
         REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, info.itemsCount() ) );
         REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), info.itemsCount() ) );
 
-        REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], 0, info.itemsCount() ) );
-        REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ], dummyBufferSize, info.itemsCount() ) );
-        REQUIRE_THROWS( info.extractTo( &dummyBuffer2[ 0 ],
+        REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), 0, info.itemsCount() ) );
+        REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), dummyBufferSize, info.itemsCount() ) );
+        REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(),
                                         std::numeric_limits< std::size_t >::max(),
                                         info.itemsCount() ) );
     }
@@ -305,7 +305,7 @@ inline void require_archive_content( const BitArchiveReader& info,
 #define REQUIRE_ARCHIVE_CONTENT( info, input ) \
     require_archive_content( info, input, BIT7Z_CURRENT_LOCATION )
 
-struct SingleFileArchive : public TestInputArchive {
+struct SingleFileArchive : TestInputArchive {
     SingleFileArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
         : TestInputArchive{ std::move( extension ), format, packedSize, single_file_content() } {}
 };
@@ -365,7 +365,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
     }
 }
 
-struct MultipleFilesArchive : public TestInputArchive {
+struct MultipleFilesArchive : TestInputArchive {
     MultipleFilesArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
         : TestInputArchive{ std::move( extension ), format, packedSize, multiple_files_content() } {}
 };
@@ -401,7 +401,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
     }
 }
 
-struct MultipleItemsArchive : public TestInputArchive {
+struct MultipleItemsArchive : TestInputArchive {
     MultipleItemsArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
         : TestInputArchive{ std::move( extension ), format, packedSize, multiple_items_content() } {}
 };
@@ -438,7 +438,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
     }
 }
 
-struct EncryptedArchive : public TestInputArchive {
+struct EncryptedArchive : TestInputArchive {
     EncryptedArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
         : TestInputArchive{ std::move( extension ), format, packedSize, encrypted_content() } {}
 };
@@ -620,7 +620,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
     }
 }
 
-struct EmptyArchive : public TestInputArchive {
+struct EmptyArchive : TestInputArchive {
     EmptyArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
         : TestInputArchive{ std::move( extension ), format, packedSize, empty_content() } {}
 };
