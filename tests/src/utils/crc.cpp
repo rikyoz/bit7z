@@ -60,16 +60,19 @@ static constexpr std::array< uint32_t, 256 > table = {
     0x2D02EF8DU
 };
 
-namespace bit7z {
+namespace bit7z { // NOLINT(*-concat-nested-namespaces)
 namespace test {
 
-auto crc32( const buffer_t& buffer, uint32_t initial ) -> uint32_t {
+// NOLINTNEXTLINE(*-easily-swappable-parameters)
+auto crc32( const void* buffer, std::size_t length, uint32_t initial ) -> uint32_t {
     static constexpr uint32_t crc_mask = 0xFFFFFFFFU;
     static constexpr auto last_byte_mask = 0xFFU;
 
     uint32_t crc = initial ^ crc_mask;
-    for ( uint8_t byte : buffer ) {
-        crc = table.at( byte ^ ( crc & last_byte_mask ) ) ^ ( crc >> 8 );
+    const auto* byte_buffer = static_cast< const uint8_t* >(buffer);
+    for ( std::size_t i = 0; i < length; ++i ) {
+        // NOLINTNEXTLINE(*-pro-bounds-pointer-arithmetic)
+        crc = table.at( byte_buffer[ i ] ^ ( crc & last_byte_mask ) ) ^ ( crc >> 8 );
     }
     return crc ^ crc_mask;
 }
