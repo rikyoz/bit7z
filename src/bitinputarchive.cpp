@@ -163,7 +163,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
 
 auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant archiveProperty;
-    const HRESULT res = mInArchive->GetArchiveProperty( static_cast<PROPID>( property ), &archiveProperty );
+    const HRESULT res = mInArchive->GetArchiveProperty( static_cast< PROPID >( property ), &archiveProperty );
     if ( res != S_OK ) {
         throw BitException( "Could not retrieve archive property", make_hresult_code( res ) );
     }

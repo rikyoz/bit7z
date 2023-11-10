@@ -81,7 +81,7 @@ auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
 }
 
 auto BitArchiveReader::foldersCount() const -> uint32_t {
-    return std::count_if( cbegin(), cend(), []( const BitArchiveItem& item ) {
+    return std::count_if( cbegin(), cend(), []( const BitArchiveItem& item ) -> bool {
         return item.isDir();
     } );
 }
@@ -91,13 +91,13 @@ auto BitArchiveReader::filesCount() const -> uint32_t {
 }
 
 auto BitArchiveReader::size() const -> uint64_t {
-    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) -> uint64_t {
         return item.isDir() ? accumulator : accumulator + item.size();
     } );
 }
 
 auto BitArchiveReader::packSize() const -> uint64_t {
-    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) {
+    return std::accumulate( cbegin(), cend(), 0ull, []( uint64_t accumulator, const BitArchiveItem& item ) -> uint64_t {
         return item.isDir() ? accumulator : accumulator + item.packSize();
     } );
 }
@@ -105,7 +105,7 @@ auto BitArchiveReader::packSize() const -> uint64_t {
 auto BitArchiveReader::hasEncryptedItems() const -> bool {
     /* Note: simple encryption (i.e., not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive. */
-    return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
+    return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) -> bool {
         return !item.isDir() && item.isEncrypted();
     } );
 }
