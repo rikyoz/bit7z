@@ -137,7 +137,7 @@ auto BitArchiveReader::volumesCount() const -> uint32_t {
     return volumesCount.isEmpty() ? 1 : volumesCount.getUInt32();
 }
 
-auto BitArchiveReader::isOpenEncryptedError( std::error_code error ) -> bool {
+auto BitArchiveReader::isOpenEncryptedError( std::error_code error ) noexcept -> bool {
     static const auto encryptedError = make_error_code( OperationResult::OpenErrorEncrypted );
     return error == encryptedError;
 }

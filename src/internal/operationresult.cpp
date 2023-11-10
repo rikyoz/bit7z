@@ -18,7 +18,7 @@
 
 namespace bit7z {
 
-auto make_error_code( OperationResult error ) -> std::error_code {
+auto make_error_code( OperationResult error ) noexcept -> std::error_code {
     return { static_cast< int >( error ), operation_category() };
 }
 

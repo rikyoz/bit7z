@@ -40,7 +40,7 @@ enum struct OperationResult {
     EmptyPassword = ( 2 * NOperationResult::kWrongPassword ) + 3,
 };
 
-auto make_error_code( OperationResult error ) -> std::error_code;
+auto make_error_code( OperationResult error ) noexcept -> std::error_code;
 
 } // namespace bit7z
 

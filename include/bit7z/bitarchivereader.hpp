@@ -176,7 +176,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         BIT7Z_NODISCARD
         static auto isHeaderEncrypted( const Bit7zLibrary& lib,
                                        T&& inArchive,
-                                       const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) -> bool {
+                                       const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) noexcept -> bool {
             try {
                 const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
                 return false;
@@ -205,7 +205,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         BIT7Z_NODISCARD
         static auto isEncrypted( const Bit7zLibrary& lib,
                                  T&& inArchive,
-                                 const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) -> bool {
+                                 const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) noexcept -> bool {
             try {
                 const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
                 return reader.isEncrypted();
@@ -215,7 +215,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         }
 
     private:
-        static auto isOpenEncryptedError( std::error_code error ) -> bool;
+        static auto isOpenEncryptedError( std::error_code error ) noexcept -> bool;
 };
 
 BIT7Z_DEPRECATED_TYPEDEF( BitArchiveInfo, BitArchiveReader, "Since v4.0. Please use BitArchiveReader." );
