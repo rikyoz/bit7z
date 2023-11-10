@@ -25,6 +25,7 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bitexception.cpp
      src/test_bitfilecompressor.cpp
      src/test_bitfileextractor.cpp
+     src/test_bitinputarchive.cpp
      src/test_bitmemcompressor.cpp
      src/test_bitmemextractor.cpp
      src/test_bitpropvariant.cpp

@@ -15,9 +15,11 @@
 
 #include <bit7z/bitdefines.hpp>
 #include <bit7z/bitformat.hpp>
+#include <internal/stringutil.hpp>
 
 #include <cstddef>
 #include <string>
+#include <type_traits>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
@@ -47,6 +49,24 @@ class TestInputArchive {
         BIT7Z_NODISCARD
         auto content() const -> const ArchiveContent&;
 };
+
+using stream_t = fs::ifstream;
+
+// Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
+inline void getInputArchive( const fs::path& path, tstring& archive ) {
+    archive = path_to_tstring( path );
+}
+
+inline void getInputArchive( const fs::path& path, buffer_t& archive ) {
+    archive = filesystem::load_file( path );
+}
+
+inline void getInputArchive( const fs::path& path, stream_t& archive ) {
+    archive.open( path, std::ios::binary );
+}
+
+template< typename T >
+using is_filesystem_archive = std::is_same< bit7z::tstring, typename std::decay< T >::type >;
 
 } // namespace test
 } // namespace bit7z

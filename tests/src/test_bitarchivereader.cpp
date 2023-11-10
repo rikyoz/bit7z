@@ -68,160 +68,6 @@ static_assert( std::is_move_constructible< BitArchiveItemInfo >::value,
 static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
                "BitArchiveItemInfo is not move-assignable." );
 
-void require_archive_extracts( const BitArchiveReader& info, const source_location& location ) {
-    INFO( "Failed while extracting the archive ");
-    INFO( "  from " << location.file_name() << ":" << location.line() );
-#ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto& detectedFormat = (info).detectedFormat();
-    if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
-        return;
-    }
-#endif
-
-    SECTION( "Extracting to a map of buffers" ) {
-        std::map< tstring, buffer_t > bufferMap;
-        REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
-        REQUIRE( bufferMap.size() == info.filesCount() );
-        if ( !format_has_crc( info.detectedFormat() ) || info.detectedFormat() == BitFormat::Rar5 ) {
-            return;
-        }
-        for( const auto& entry : bufferMap ) {
-            auto item = info.find( entry.first );
-            REQUIRE( item != info.cend() );
-            const auto item_crc = item->crc();
-            if ( item_crc > 0 ) {
-                REQUIRE( crc32( entry.second ) == item_crc );
-            }
-        }
-    }
-
-    SECTION( "Extracting each item to a buffer" ) {
-        buffer_t outputBuffer;
-        for ( const auto& item : info ) {
-            if ( item.isDir() ) {
-                REQUIRE_THROWS( info.extractTo( outputBuffer, item.index() ) );
-                REQUIRE( outputBuffer.empty() );
-            } else {
-                REQUIRE_NOTHROW( info.extractTo( outputBuffer, item.index() ) );
-                const auto item_crc = item.crc();
-                if ( item_crc > 0 ) {
-                    REQUIRE( crc32( outputBuffer ) == item_crc );
-                } else if ( info.detectedFormat() != BitFormat::Chm && info.detectedFormat() != BitFormat::Elf &&
-                            info.detectedFormat() != BitFormat::Macho && info.detectedFormat() != BitFormat::Ntfs &&
-                            info.detectedFormat() != BitFormat::Swf ) {
-                    // TODO: Check why these formats can't be extracted to a buffer
-                    REQUIRE_FALSE( outputBuffer.empty() );
-                }
-            }
-            outputBuffer.clear();
-        }
-
-        {
-            buffer_t dummyBuffer;
-            REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() ) );
-            REQUIRE( dummyBuffer.empty() );
-
-            REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() + 1 ) );
-            REQUIRE( dummyBuffer.empty() );
-        }
-    }
-
-
-    SECTION( "Extracting each item to a fixed size buffer" ) {
-        // Note: this value must be different from any file size we can encounter inside the tested archives.
-        constexpr size_t dummyBufferSize = 42;
-        buffer_t dummyBuffer2( dummyBufferSize, static_cast< byte_t >( '\0' ) );
-        buffer_t outputBuffer;
-        for ( const auto& item : info ) {
-            const auto itemIndex = item.index();
-            REQUIRE_THROWS( info.extractTo( nullptr, 0, itemIndex ) );
-            REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, itemIndex ) );
-            REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), itemIndex ) );
-
-            REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), 0, itemIndex ) );
-            REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), dummyBufferSize, itemIndex ) );
-            REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), std::numeric_limits< std::size_t >::max(), itemIndex ) );
-
-            if ( !item.isDir() ) {
-                const auto itemSize = item.size();
-                REQUIRE_THROWS( info.extractTo( nullptr, itemSize, itemIndex ) );
-
-                if ( itemSize > 0 ) {
-                    outputBuffer.resize( itemSize, static_cast< byte_t >( '\0' ) );
-                    REQUIRE_NOTHROW( info.extractTo( outputBuffer.data(), itemSize, itemIndex ) );
-
-                    const auto item_crc = item.crc();
-                    if ( item_crc > 0 ) {
-                        REQUIRE( crc32( outputBuffer ) == item_crc );
-                    }
-                } else {
-                    REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), itemSize, itemIndex ) );
-                }
-                outputBuffer.clear();
-            }
-        }
-
-        REQUIRE_THROWS( info.extractTo( nullptr, 0, info.itemsCount() ) );
-        REQUIRE_THROWS( info.extractTo( nullptr, dummyBufferSize, info.itemsCount() ) );
-        REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), info.itemsCount() ) );
-
-        REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), 0, info.itemsCount() ) );
-        REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), dummyBufferSize, info.itemsCount() ) );
-        REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(),
-                                        std::numeric_limits< std::size_t >::max(),
-                                        info.itemsCount() ) );
-    }
-
-    SECTION( "Extracting each item to std::ostream" ) {
-        for ( const auto& item : info ) {
-            std::ostringstream outputStream;
-            if ( item.isDir() ) {
-                REQUIRE_THROWS( info.extractTo( outputStream, item.index() ) );
-                REQUIRE( outputStream.str().empty() );
-            } else {
-                REQUIRE_NOTHROW( info.extractTo( outputStream, item.index() ) );
-                const auto item_crc = item.crc();
-                if ( item_crc > 0 ) {
-                    REQUIRE( crc32( outputStream.str() ) == item_crc );
-                } else {
-                    REQUIRE_FALSE( outputStream.str().empty() );
-                }
-            }
-        }
-
-        {
-            std::ostringstream outputStream;
-            REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() ) );
-            REQUIRE( outputStream.str().empty() );
-
-            REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() + 1 ) );
-            REQUIRE( outputStream.str().empty() );
-        }
-    }
-}
-
-#define REQUIRE_ARCHIVE_EXTRACTS( info ) \
-    require_archive_extracts( info, BIT7Z_CURRENT_LOCATION )
-
-void require_archive_tests( const BitArchiveReader& info, const source_location& location ) {
-    INFO( "Failed while testing the archive ");
-    INFO( "  from " << location.file_name() << ":" << location.line() );
-#ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto& detectedFormat = (info).detectedFormat();
-    if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
-        return;
-    }
-#endif
-    REQUIRE_NOTHROW( info.test() );
-    for ( uint32_t index = 0; index < info.itemsCount(); ++index ) {
-        REQUIRE_NOTHROW( info.testItem( index ) );
-    }
-    REQUIRE_THROWS_AS( info.testItem( info.itemsCount() ), BitException );
-}
-
-#define REQUIRE_ARCHIVE_TESTS( info ) \
-    require_archive_tests( info, BIT7Z_CURRENT_LOCATION )
-
 void require_archive_item( const BitInFormat& format,
                            const BitArchiveItem& item,
                            const ArchivedItem& expectedItem,
@@ -310,24 +156,6 @@ struct SingleFileArchive : TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, single_file_content() } {}
 };
 
-using stream_t = fs::ifstream;
-
-// Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
-void getInputArchive( const fs::path& path, tstring& archive ) {
-    archive = path_to_tstring( path );
-}
-
-void getInputArchive( const fs::path& path, buffer_t& archive ) {
-    archive = load_file( path );
-}
-
-void getInputArchive( const fs::path& path, stream_t& archive ) {
-    archive.open( path, std::ios::binary );
-}
-
-template< typename T >
-using is_filesystem_archive = std::is_same< bit7z::tstring, typename std::decay< T >::type >;
-
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single file",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
@@ -360,8 +188,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -396,8 +222,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -433,8 +257,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple item
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -492,8 +314,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-            REQUIRE_ARCHIVE_TESTS( info );
-            REQUIRE_ARCHIVE_EXTRACTS( info );
         }
     }
 }
@@ -540,8 +360,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-            REQUIRE_ARCHIVE_TESTS( info );
-            REQUIRE_ARCHIVE_EXTRACTS( info );
         }
     }
 }
@@ -570,8 +388,6 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 REQUIRE( info.volumesCount() == 3 );
                 REQUIRE( info.itemsCount() == 1 );
                 REQUIRE( info.items()[ 0 ].name() == arcFileName.stem().string< tchar >() );
-                REQUIRE_ARCHIVE_TESTS( info );
-                REQUIRE_ARCHIVE_EXTRACTS( info );
             }
 
             SECTION( "Opening as a whole archive" ) {
@@ -581,8 +397,6 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 // REQUIRE( info.isMultiVolume() );
                 // REQUIRE( info.volumesCount() == 3 );
                 REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
-                REQUIRE_ARCHIVE_TESTS( info );
-                REQUIRE_ARCHIVE_EXTRACTS( info );
             }
         }
     }
@@ -596,11 +410,6 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
         const ArchivedItem expectedItem{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.items()[ 0 ], expectedItem );
-
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
-#endif
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Multi-volume RAR4" ) {
@@ -612,11 +421,6 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
         const ArchivedItem expectedItem{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.items()[ 0 ], expectedItem );
-
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
-#endif
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -648,8 +452,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
         }
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -659,35 +461,21 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     SECTION( "Solid 7z" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
         REQUIRE( info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Solid RAR" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
         REQUIRE( info.isSolid() );
-
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
-#endif
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Non solid 7z" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
         REQUIRE( !info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 
     SECTION( "Non-solid RAR" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
         REQUIRE( !info.isSolid() );
-
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
-        REQUIRE_ARCHIVE_TESTS( info );
-#endif
-        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
@@ -746,7 +534,8 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
         REQUIRE( info.begin() == info.cbegin() );
         REQUIRE( info.end() == info.cend() );
 
-        REQUIRE( (info.begin()++) == info.begin() );
+        const auto begin = info.begin()++;
+        REQUIRE( begin == info.begin() );
 
         for ( const auto& iteratedItem : info ) {
             const auto& archivedItem = archiveItems[ iteratedItem.index() ];
@@ -765,107 +554,6 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and 
 
         REQUIRE_THROWS( info.itemAt( info.itemsCount() ) );
         REQUIRE_THROWS( info.itemAt( info.itemsCount() + 1 ) );
-    }
-}
-
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
-
-    // The italy.svg file in the ko_test archives is different from the one used for filesystem tests
-    static constexpr auto italy_ko_crc32 = 0x2ADFB3AF;
-
-    const auto testArchive = GENERATE( as< SingleFileArchive >(),
-                                        SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
-                                        SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
-                                        SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
-                                        SingleFileArchive{ "rar", BitFormat::Rar5, 477870 },
-                                        //SingleFileArchive{"tar", BitFormat::Tar, 479232},
-                                        SingleFileArchive{ "wim", BitFormat::Wim, clouds.size },
-                                        SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
-                                        SingleFileArchive{ "zip", BitFormat::Zip, 476375 } );
-
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
-        const fs::path arcFileName = "ko_test." + testArchive.extension();
-
-        TestType inputArchive{};
-        getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format() );
-        REQUIRE_THROWS( info.test() );
-
-        std::map< tstring, buffer_t > dummyMap;
-        REQUIRE_THROWS( info.extractTo( dummyMap ) );
-        // TODO: Check if extractTo should not write or clear the map when the extraction fails
-
-        buffer_t outputBuffer;
-        std::ostringstream outputStream;
-        if ( info.itemsCount() == 1 ) {
-            REQUIRE_THROWS( info.extractTo( outputBuffer, 0 ) );
-            REQUIRE( outputBuffer.empty() );
-
-            REQUIRE_THROWS( info.extractTo( outputStream, 0 ) );
-            // Note: we might have written some data to the stream before 7-zip failed!
-        } else if ( info.itemsCount() == 2 ) {
-            REQUIRE_NOTHROW( info.extractTo( outputBuffer, 0 ) );
-            REQUIRE( crc32( outputBuffer ) == italy_ko_crc32 );
-
-            REQUIRE_NOTHROW( info.extractTo( outputStream, 0 ) );
-            REQUIRE( crc32( outputStream.str() ) == italy_ko_crc32 );
-
-            outputBuffer.clear();
-            REQUIRE_THROWS( info.extractTo( outputBuffer, 1 ) );
-            REQUIRE( outputBuffer.empty() );
-
-            outputStream.str("");
-            outputStream.clear();
-            REQUIRE_THROWS( info.extractTo( outputStream, 1 ) );
-            // Note: we might have written some data to the stream before 7-zip failed!
-        }
-    }
-}
-
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should throw",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
-
-    const auto correctFormat = GENERATE( as< TestInputFormat >(),
-                                         TestInputFormat{ "7z", BitFormat::SevenZip },
-                                         TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                         TestInputFormat{ "gz", BitFormat::GZip },
-                                         TestInputFormat{ "iso", BitFormat::Iso },
-                                         TestInputFormat{ "lzh", BitFormat::Lzh },
-                                         TestInputFormat{ "lzma", BitFormat::Lzma },
-                                         TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                         TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                         TestInputFormat{ "tar", BitFormat::Tar },
-                                         TestInputFormat{ "wim", BitFormat::Wim },
-                                         TestInputFormat{ "xz", BitFormat::Xz },
-                                         TestInputFormat{ "zip", BitFormat::Zip } );
-
-    const auto wrongFormat = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
-
-    DYNAMIC_SECTION( "Archive format: " << correctFormat.extension ) {
-        const auto arcFileName = fs::path{ clouds.name }.concat( "." + correctFormat.extension );
-
-        if ( correctFormat.extension != wrongFormat.extension ) {
-            DYNAMIC_SECTION( "Wrong format: " << wrongFormat.extension ) {
-                TestType inputArchive{};
-                getInputArchive( arcFileName, inputArchive );
-                REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, wrongFormat.format ) );
-            }
-        }
     }
 }
 
