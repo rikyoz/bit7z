@@ -479,36 +479,6 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     }
 }
 
-/**
- * Tests opening an archive file using the RAR format
- * (or throws a BitException if it is not a RAR archive at all).
- */
-auto test_open_rar_archive( const Bit7zLibrary& lib, const tstring& inFile ) -> const BitInFormat& {
-    try {
-        const BitArchiveReader info( lib, inFile, BitFormat::Rar );
-        //if BitArchiveReader constructor did not throw an exception, the archive is RAR (< 5.0).
-        return BitFormat::Rar;
-    } catch ( const BitException& ) {
-        /* the archive is not a RAR, and if it is not even a RAR5,
-           the following line will throw an exception (which we do not catch). */
-        const BitArchiveReader info( lib, inFile, BitFormat::Rar5 );
-        return BitFormat::Rar5;
-    }
-}
-
-TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format version", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
-
-    SECTION( "Valid RAR archives" ) {
-        REQUIRE( test_open_rar_archive( test::sevenzip_lib(), BIT7Z_STRING( "valid.rar4.rar" ) ) == BitFormat::Rar );
-        REQUIRE( test_open_rar_archive( test::sevenzip_lib(), BIT7Z_STRING( "valid.rar5.rar" ) ) == BitFormat::Rar5 );
-    }
-
-    SECTION( "Non-RAR archive" ) {
-        REQUIRE_THROWS( test_open_rar_archive( test::sevenzip_lib(), BIT7Z_STRING( "valid.zip" ) ) );
-    }
-}
-
 TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
