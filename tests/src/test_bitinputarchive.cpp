@@ -579,54 +579,15 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format sh
     }
 }
 
-/*
-#ifndef FILE_ATTRIBUTE_WINDOWS_MASK
-constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
-#endif
-
-void require_item_type( const BitArchiveReader& info,
-                        const tstring& itemName,
-                        fs::file_type fileType,
-                        std::uint32_t winAttributes,
-                        source_location location ) {
-    INFO( "Failed checking required item " << Catch::StringMaker< tstring >::convert( itemName ) );
-    INFO( "  from " << location.file_name() << ":" << location.line() );
-    auto iterator = info.find( itemName );
-    REQUIRE( iterator != info.cend() );
-    REQUIRE( iterator->name() == itemName );
-
-    bool expectedDir = ( fileType == fs::file_type::directory );
-    bool expectedSymlink = ( fileType == fs::file_type::symlink );
-    REQUIRE( iterator->isDir() == expectedDir );
-    REQUIRE( iterator->isSymLink() == expectedSymlink );
-
-    auto item_attributes = iterator->attributes();
-    if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {
-        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == ( expectedDir ? FILE_ATTRIBUTE_DIRECTORY : 0 ) );
-        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == ( winAttributes & FILE_ATTRIBUTE_HIDDEN ) );
-        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == ( winAttributes & FILE_ATTRIBUTE_READONLY ) );
-    }
-    if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        auto posix_attributes = item_attributes >> 16U;
-        REQUIRE( S_ISDIR( posix_attributes ) == expectedDir );
-        REQUIRE( S_ISREG( posix_attributes ) == ( !expectedDir && !expectedSymlink ) );
-        REQUIRE( S_ISLNK( posix_attributes ) == expectedSymlink );
-    }
-}
-
-#define REQUIRE_ITEM_TYPE( info, item_name, file_type ) \
-    require_item_type( (info), BIT7Z_STRING( item_name ), (file_type), 0, BIT7Z_CURRENT_LOCATION )
-
-#define REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, item_name, file_type, win_attributes ) \
-    require_item_type( (info), BIT7Z_STRING( item_name ), (file_type), (win_attributes), BIT7Z_CURRENT_LOCATION )
-
-TEMPLATE_TEST_CASE( "BitInputArchive: Correctly reading file type inside archives",
+TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with different file types inside",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
+    // Note: for some reason, 7-Zip fails to test or extract Rar archives containing symbolic links.
+
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "rar", BitFormat::Rar5 },
+                                      //TestInputFormat{ "rar", BitFormat::Rar5 },
                                       TestInputFormat{ "tar", BitFormat::Tar },
                                       TestInputFormat{ "wim", BitFormat::Wim },
                                       TestInputFormat{ "zip", BitFormat::Zip } );
@@ -637,17 +598,15 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Correctly reading file type inside archive
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
-        REQUIRE_ITEM_TYPE( info, "dir", fs::file_type::directory );
-        REQUIRE_ITEM_TYPE( info, "regular", fs::file_type::regular );
-        REQUIRE_ITEM_TYPE( info, "symlink", fs::file_type::symlink );
-        REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, "hidden", fs::file_type::regular, FILE_ATTRIBUTE_HIDDEN );
-        REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, "read_only", fs::file_type::regular, FILE_ATTRIBUTE_READONLY );
+
+        REQUIRE_ARCHIVE_TESTS( info );
+        REQUIRE_ARCHIVE_EXTRACTS( info );
     }
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 
-TEMPLATE_TEST_CASE( "BitInputArchive: Correctly reading archive items with Unicode names",
+TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Unicode items",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
@@ -664,14 +623,18 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Correctly reading archive items with Unico
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
-        REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
+#ifndef BIT7Z_BUILD_FOR_P7ZIP
+        REQUIRE_ARCHIVE_TESTS( info );
+#endif
+        REQUIRE_ARCHIVE_EXTRACTS( info );
+/*        REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
         REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
         REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
-        REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );*/
     }
 }
 
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading an archive with a Unicode file name",
+TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
@@ -680,18 +643,26 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading an archive with a Unicode file nam
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
     const BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
-    REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
+#ifndef BIT7Z_BUILD_FOR_P7ZIP
+    REQUIRE_ARCHIVE_TESTS( info );
+#endif
+    REQUIRE_ARCHIVE_EXTRACTS( info );
+    /*REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
     REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
     REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
-    REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );*/
 }
 
-TEST_CASE( "BitInputArchive: Reading an archive with a Unicode file name (bzip2)", "[bitinputarchive]" ) {
+TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name (bzip2)",
+           "[bitinputarchive]" ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
     const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
-    REQUIRE_ITEM_TYPE( info, "クラウド.jpg", fs::file_type::regular );
+#ifndef BIT7Z_BUILD_FOR_P7ZIP
+    REQUIRE_ARCHIVE_TESTS( info );
+#endif
+    REQUIRE_ARCHIVE_EXTRACTS( info );
+    //REQUIRE_ITEM_TYPE( info, "クラウド.jpg", fs::file_type::regular );
 }
 #endif
- */
