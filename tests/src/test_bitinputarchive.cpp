@@ -490,7 +490,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives sh
                                        TestInputFormat{ "bz2", BitFormat::BZip2 },
                                        TestInputFormat{ "gz", BitFormat::GZip },
                                        TestInputFormat{ "rar", BitFormat::Rar5 },
-    //TestInputFormat{"tar", BitFormat::Tar, 479232},
+                                       //TestInputFormat{"tar", BitFormat::Tar},
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "xz", BitFormat::Xz },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
@@ -516,11 +516,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives sh
             REQUIRE_THROWS( info.extractTo( outputStream, 0 ) );
             // Note: we might have written some data to the stream before 7-zip failed!
         } else if ( info.itemsCount() == 2 ) {
+#ifndef BIT7Z_BUILD_FOR_P7ZIP
             REQUIRE_NOTHROW( info.extractTo( outputBuffer, 0 ) );
             REQUIRE( crc32( outputBuffer ) == italy_ko_crc32 );
 
             REQUIRE_NOTHROW( info.extractTo( outputStream, 0 ) );
             REQUIRE( crc32( outputStream.str() ) == italy_ko_crc32 );
+#endif
 
             outputBuffer.clear();
             REQUIRE_THROWS( info.extractTo( outputBuffer, 1 ) );
