@@ -50,7 +50,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
         std::map< tstring, buffer_t > bufferMap;
         REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
         REQUIRE( bufferMap.size() == info.filesCount() );
-        if ( !format_has_crc( info.detectedFormat() ) || info.detectedFormat() == BitFormat::Rar5 ) {
+        if ( !format_has_crc( info.detectedFormat() ) ) {
             return;
         }
         for( const auto& entry : bufferMap ) {
@@ -58,7 +58,11 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
             REQUIRE( item != info.cend() );
             const auto item_crc = item->crc();
             if ( item_crc > 0 ) {
-                REQUIRE( crc32( entry.second ) == item_crc );
+                if ( info.detectedFormat() == BitFormat::Lzh ) {
+                    REQUIRE( crc16( entry.second ) == item_crc );
+                } else if ( info.detectedFormat() != BitFormat::Rar5 || !item->isEncrypted() ) {
+                    REQUIRE( crc32( entry.second ) == item_crc );
+                }
             }
         }
     }
@@ -66,6 +70,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
     SECTION( "Extracting each item to a buffer" ) {
         buffer_t outputBuffer;
         for ( const auto& item : info ) {
+            INFO( "Item at the index " << item.index() << " named '" << item.name() << "'" );
             if ( item.isDir() ) {
                 REQUIRE_THROWS( info.extractTo( outputBuffer, item.index() ) );
                 REQUIRE( outputBuffer.empty() );
@@ -73,10 +78,14 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
                 REQUIRE_NOTHROW( info.extractTo( outputBuffer, item.index() ) );
                 const auto item_crc = item.crc();
                 if ( item_crc > 0 ) {
-                    REQUIRE( crc32( outputBuffer ) == item_crc );
+                    if ( info.detectedFormat() == BitFormat::Lzh ) {
+                        REQUIRE( crc16( outputBuffer ) == item_crc );
+                    } else if ( info.detectedFormat() != BitFormat::Rar5 || !item.isEncrypted() ) {
+                        REQUIRE( crc32( outputBuffer ) == item_crc );
+                    }
                 } else if ( info.detectedFormat() != BitFormat::Chm && info.detectedFormat() != BitFormat::Elf &&
                             info.detectedFormat() != BitFormat::Macho && info.detectedFormat() != BitFormat::Ntfs &&
-                            info.detectedFormat() != BitFormat::Swf ) {
+                            info.detectedFormat() != BitFormat::Swf && (info.detectedFormat() != BitFormat::Wim || item.isSymLink()) ) {
                     // TODO: Check why these formats can't be extracted to a buffer
                     REQUIRE_FALSE( outputBuffer.empty() );
                 }
@@ -120,7 +129,11 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
 
                     const auto item_crc = item.crc();
                     if ( item_crc > 0 ) {
-                        REQUIRE( crc32( outputBuffer ) == item_crc );
+                        if ( info.detectedFormat() == BitFormat::Lzh ) {
+                            REQUIRE( crc16( outputBuffer ) == item_crc );
+                        } else if ( info.detectedFormat() != BitFormat::Rar5 || !item.isEncrypted() ) {
+                            REQUIRE( crc32( outputBuffer ) == item_crc );
+                        }
                     }
                 } else {
                     REQUIRE_THROWS( info.extractTo( dummyBuffer2.data(), itemSize, itemIndex ) );
@@ -142,6 +155,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
 
     SECTION( "Extracting each item to std::ostream" ) {
         for ( const auto& item : info ) {
+            INFO( "Item at the index " << item.index() << " named '" << item.name() << "'" );
             std::ostringstream outputStream;
             if ( item.isDir() ) {
                 REQUIRE_THROWS( info.extractTo( outputStream, item.index() ) );
@@ -150,8 +164,12 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
                 REQUIRE_NOTHROW( info.extractTo( outputStream, item.index() ) );
                 const auto item_crc = item.crc();
                 if ( item_crc > 0 ) {
-                    REQUIRE( crc32( outputStream.str() ) == item_crc );
-                } else {
+                    if ( info.detectedFormat() == BitFormat::Lzh ) {
+                        REQUIRE( crc16( outputStream.str() ) == item_crc );
+                    } else if ( info.detectedFormat() != BitFormat::Rar5 || !item.isEncrypted() ) {
+                        REQUIRE( crc32( outputStream.str() ) == item_crc );
+                    }
+                } else if ( info.detectedFormat() != BitFormat::Wim || item.isSymLink() ) {
                     REQUIRE_FALSE( outputStream.str().empty() );
                 }
             }
