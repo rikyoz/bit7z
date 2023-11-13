@@ -541,6 +541,7 @@ void require_item_type( const BitArchiveReader& info,
     auto iterator = info.find( itemName );
     REQUIRE( iterator != info.cend() );
     REQUIRE( iterator->name() == itemName );
+    REQUIRE( iterator->path() == itemName );
 
     bool expectedDir = ( fileType == fs::file_type::directory );
     bool expectedSymlink = ( fileType == fs::file_type::symlink );
