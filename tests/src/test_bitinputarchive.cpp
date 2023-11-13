@@ -21,7 +21,6 @@
 #include "utils/shared_lib.hpp"
 #include "utils/source_location.hpp"
 
-#include <bit7z/bitarchiveiteminfo.hpp>
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
@@ -647,10 +646,6 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Uni
         REQUIRE_ARCHIVE_TESTS( info );
 #endif
         REQUIRE_ARCHIVE_EXTRACTS( info );
-/*        REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
-        REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
-        REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
-        REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );*/
     }
 }
 
@@ -667,10 +662,6 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a U
     REQUIRE_ARCHIVE_TESTS( info );
 #endif
     REQUIRE_ARCHIVE_EXTRACTS( info );
-    /*REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
-    REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
-    REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
-    REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );*/
 }
 
 TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name (bzip2)",
@@ -683,6 +674,5 @@ TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode fi
     REQUIRE_ARCHIVE_TESTS( info );
 #endif
     REQUIRE_ARCHIVE_EXTRACTS( info );
-    //REQUIRE_ITEM_TYPE( info, "クラウド.jpg", fs::file_type::regular );
 }
 #endif
