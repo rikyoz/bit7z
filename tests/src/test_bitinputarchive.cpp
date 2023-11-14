@@ -69,7 +69,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
     SECTION( "Extracting each item to a buffer" ) {
         buffer_t outputBuffer;
         for ( const auto& item : info ) {
-            INFO( "Item at the index " << item.index() << " named '" << item.name() << "'" );
+            INFO( "Item at the index " << item.index() << " named '" << tstring_to_path( item.name() ).u8string() << "'" );
             if ( item.isDir() ) {
                 REQUIRE_THROWS( info.extractTo( outputBuffer, item.index() ) );
                 REQUIRE( outputBuffer.empty() );
@@ -154,7 +154,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
 
     SECTION( "Extracting each item to std::ostream" ) {
         for ( const auto& item : info ) {
-            INFO( "Item at the index " << item.index() << " named '" << item.name() << "'" );
+            INFO( "Item at the index " << item.index() << " named '" << tstring_to_path( item.name() ).u8string() << "'" );
             std::ostringstream outputStream;
             if ( item.isDir() ) {
                 REQUIRE_THROWS( info.extractTo( outputStream, item.index() ) );
