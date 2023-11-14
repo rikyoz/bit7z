@@ -49,18 +49,17 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
         std::map< tstring, buffer_t > bufferMap;
         REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
         REQUIRE( bufferMap.size() == info.filesCount() );
-        if ( !format_has_crc( info.detectedFormat() ) ) {
-            return;
-        }
-        for( const auto& entry : bufferMap ) {
-            auto item = info.find( entry.first );
-            REQUIRE( item != info.cend() );
-            const auto item_crc = item->crc();
-            if ( item_crc > 0 ) {
-                if ( info.detectedFormat() == BitFormat::Lzh ) {
-                    REQUIRE( crc16( entry.second ) == item_crc );
-                } else if ( info.detectedFormat() != BitFormat::Rar5 || !item->isEncrypted() ) {
-                    REQUIRE( crc32( entry.second ) == item_crc );
+        if ( format_has_crc( info.detectedFormat() ) ) {
+            for( const auto& entry : bufferMap ) {
+                auto item = info.find( entry.first );
+                REQUIRE( item != info.cend() );
+                const auto item_crc = item->crc();
+                if ( item_crc > 0 ) {
+                    if ( info.detectedFormat() == BitFormat::Lzh ) {
+                        REQUIRE( crc16( entry.second ) == item_crc );
+                    } else if ( info.detectedFormat() != BitFormat::Rar5 || !item->isEncrypted() ) {
+                        REQUIRE( crc32( entry.second ) == item_crc );
+                    }
                 }
             }
         }
