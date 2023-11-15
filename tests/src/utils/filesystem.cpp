@@ -158,6 +158,34 @@ TestDirectory::~TestDirectory() {
     set_current_dir( mOldCurrentDirectory );
 }
 
+auto create_temp_directory( const std::string& name ) -> fs::path {
+    const auto tempDir = fs::temp_directory_path() / name;
+    if ( !fs::exists( tempDir ) ) { // Creating the temp directory since it doesn't exist.
+        fs::create_directory( tempDir );
+    } else if ( !fs::is_empty( tempDir ) ) { // The temp directory already exists, but it contains some files.
+        for ( const auto& entry : fs::directory_iterator( tempDir ) ) {
+            fs::remove_all( entry );
+        }
+    }
+    return tempDir;
+}
+
+TempDirectory::TempDirectory( const std::string& dirName, TempDirectoryPolicy policy )
+    : mDirectory{ create_temp_directory( dirName ) }, mPolicy{ policy } {}
+
+TempDirectory::~TempDirectory() {
+    if ( mPolicy == TempDirectoryPolicy::CleanupOnExit ) {
+        fs::remove_all( mDirectory );
+    }
+}
+
+auto TempDirectory::path() -> const fs::path& {
+    return mDirectory;
+}
+
+TempTestDirectory::TempTestDirectory( const std::string& dirName, TempDirectoryPolicy policy )
+    : TempDirectory{ dirName, policy }, TestDirectory{ path() } {}
+
 } // namespace filesystem
 } // namespace test
 } // namespace bit7z

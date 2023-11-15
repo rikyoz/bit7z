@@ -128,7 +128,6 @@ auto encrypted_content() -> const ArchiveContent&;
 auto empty_content() -> const ArchiveContent&;
 
 class TestDirectory {
-        fs::path mOldCurrentDirectory;
     public:
         explicit TestDirectory( const fs::path& testDir );
 
@@ -141,6 +140,41 @@ class TestDirectory {
         auto operator=( TestDirectory&& ) -> TestDirectory& = delete;
 
         ~TestDirectory();
+
+    private:
+        fs::path mOldCurrentDirectory;
+};
+
+enum struct TempDirectoryPolicy : std::uint8_t {
+    CleanupOnExit,
+    KeepOnExit
+};
+
+class TempDirectory {
+    public:
+        explicit TempDirectory( const std::string& dirName,
+                                TempDirectoryPolicy policy = TempDirectoryPolicy::CleanupOnExit );
+
+        explicit TempDirectory( const TempDirectory& ) = delete;
+
+        explicit TempDirectory( TempDirectory&& ) = delete;
+
+        auto operator=( const TempDirectory& ) -> TempDirectory& = delete;
+
+        auto operator=( TempDirectory&& ) -> TempDirectory& = delete;
+
+        ~TempDirectory();
+
+        auto path() -> const fs::path&;
+
+    private:
+        fs::path mDirectory;
+        TempDirectoryPolicy mPolicy;
+};
+
+struct TempTestDirectory : TempDirectory, TestDirectory {
+    explicit TempTestDirectory( const std::string& dirName,
+                                TempDirectoryPolicy policy = TempDirectoryPolicy::CleanupOnExit );
 };
 
 #endif
