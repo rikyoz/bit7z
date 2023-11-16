@@ -162,16 +162,16 @@ if( WIN32 )
 endif()
 
 # Catch2
-CPMAddPackage( "gh:catchorg/Catch2@3.4.0" )
+CPMAddPackage( NAME Catch2
+               VERSION 3.4.0
+               OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
+               GITHUB_REPOSITORY "catchorg/Catch2" )
 list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/extras" )
-set( CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON )
-set( CATCH_CONFIG_CONSOLE_WIDTH "512" CACHE STRING "" FORCE )
 
 include( CTest )
 include( Catch )
 target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
 target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE Catch2::Catch2 )
-target_compile_definitions( Catch2 PUBLIC CATCH_CONFIG_CONSOLE_WIDTH=512 )
 target_compile_definitions( ${TESTS_TARGET} PRIVATE CATCH_CONFIG_CONSOLE_WIDTH=512 )
 target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE CATCH_CONFIG_CONSOLE_WIDTH=512 )
 catch_discover_tests( ${TESTS_TARGET} )
