@@ -36,7 +36,7 @@ using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
 void require_archive_extracts( const BitArchiveReader& info, const source_location& location ) {
-    INFO( "Failed while extracting the archive ");
+    INFO( "Failed while extracting the archive " );
     INFO( "  from " << location.file_name() << ":" << location.line() );
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
     const auto& detectedFormat = (info).detectedFormat();
@@ -47,6 +47,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
 
     SECTION( "Extracting to the filesystem" ) {
         TempTestDirectory testDir{ "test_bitinputarchive" };
+        INFO( "Temp folder: " << testDir.path() );
         REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testDir.path() ) ) );
         for ( const auto& item : info ) {
             const auto itemPath = PATH_FROM_TSTRING( item.path() );
