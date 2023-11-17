@@ -49,12 +49,12 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
         TempTestDirectory testDir{ "test_bitinputarchive" };
         REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testDir.path() ) ) );
         for ( const auto& item : info ) {
-            const auto itemPath = tstring_to_path( item.path() );
+            const auto itemPath = PATH_FROM_TSTRING( item.path() );
             INFO( "Item with the path '" << itemPath.u8string() << "'" );
             if ( format_has_path_metadata( info.detectedFormat() ) ) {
                 REQUIRE( fs::exists( itemPath ) );
             } else if ( !info.archivePath().empty() ) {
-                REQUIRE( fs::exists( tstring_to_path( info.archivePath() ).stem() ) );
+                REQUIRE( fs::exists( PATH_FROM_TSTRING( info.archivePath() ).stem() ) );
             } else {
                 REQUIRE( fs::exists( "[Content]" ) );
             }
@@ -93,7 +93,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
     SECTION( "Extracting each item to a buffer" ) {
         buffer_t outputBuffer;
         for ( const auto& item : info ) {
-            INFO( "Item at the index " << item.index() << " named '" << tstring_to_path( item.name() ).u8string() << "'" );
+            INFO( "Item at the index " << item.index() << " named '" << PATH_FROM_TSTRING( item.name() ).u8string() << "'" );
             if ( item.isDir() ) {
                 REQUIRE_THROWS( info.extractTo( outputBuffer, item.index() ) );
                 REQUIRE( outputBuffer.empty() );
@@ -178,7 +178,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
 
     SECTION( "Extracting each item to std::ostream" ) {
         for ( const auto& item : info ) {
-            INFO( "Item at the index " << item.index() << " named '" << tstring_to_path( item.name() ).u8string() << "'" );
+            INFO( "Item at the index " << item.index() << " named '" << PATH_FROM_TSTRING( item.name() ).u8string() << "'" );
             std::ostringstream outputStream;
             if ( item.isDir() ) {
                 REQUIRE_THROWS( info.extractTo( outputStream, item.index() ) );
