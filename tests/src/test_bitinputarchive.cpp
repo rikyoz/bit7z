@@ -236,7 +236,7 @@ void require_archive_tests( const BitArchiveReader& info, const source_location&
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing only a single file",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -265,7 +265,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing multiple files",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
 
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -288,7 +288,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing multiple items (files and folders)",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -312,7 +312,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing encrypted items",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
 
     const auto* const password = BIT7Z_STRING( "helloworld" );
 
@@ -352,7 +352,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 /* Pull request #36 */
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting header-encrypted archives",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
 
     const auto* const password = BIT7Z_STRING( "helloworld" );
 
@@ -385,7 +385,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting header-encrypted ar
 }
 
 TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bitinputarchive]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
 
     SECTION( "Split archive (non-RAR)" ) {
         const auto testFormat = GENERATE( as< TestInputFormat >(),
@@ -439,7 +439,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an empty archive",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
 
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -459,7 +459,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an empty archive",
 }
 
 TEST_CASE( "BitInputArchive: Testing and extracting solid archives", "[bitinputarchive]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
 
     SECTION( "Solid 7z" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
@@ -508,7 +508,7 @@ auto test_open_rar_archive( const Bit7zLibrary& lib, const tstring& inFile ) -> 
 }
 
 TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format version", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
     SECTION( "Valid RAR archives" ) {
         REQUIRE( test_open_rar_archive( test::sevenzip_lib(), BIT7Z_STRING( "valid.rar4.rar" ) ) == BitFormat::Rar );
@@ -522,7 +522,7 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives should throw",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
 
     // The italy.svg file in the ko_test archives is different from the one used for filesystem tests
     static constexpr auto italy_ko_crc32 = 0x2ADFB3AF;
@@ -580,7 +580,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives sh
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format should throw",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const auto correctFormat = GENERATE( as< TestInputFormat >(),
                                          TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -625,7 +625,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format sh
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with different file types inside",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
     // Note: for some reason, 7-Zip fails to test or extract Rar archives containing symbolic links.
 
@@ -657,7 +657,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with dif
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Unicode items",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -681,7 +681,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Uni
 
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
@@ -696,7 +696,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a U
 
 TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name (bzip2)",
            "[bitinputarchive]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
     const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );

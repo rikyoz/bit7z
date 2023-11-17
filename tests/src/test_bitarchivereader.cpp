@@ -158,7 +158,7 @@ struct SingleFileArchive : TestInputArchive {
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single file",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const auto testArchive = GENERATE( as< SingleFileArchive >(),
                                        SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
@@ -198,7 +198,7 @@ struct MultipleFilesArchive : TestInputArchive {
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple files",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
 
     const auto testArchive = GENERATE( as< MultipleFilesArchive >(),
                                         MultipleFilesArchive{ "7z", BitFormat::SevenZip, 22074 },
@@ -232,7 +232,7 @@ struct MultipleItemsArchive : TestInputArchive {
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files and folders)",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const auto testArchive = GENERATE( as< MultipleItemsArchive >(),
                                         MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
@@ -267,7 +267,7 @@ struct EncryptedArchive : TestInputArchive {
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
 
     const auto* const password = BIT7Z_STRING( "helloworld" );
 
@@ -321,7 +321,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
 /* Pull request #36 */
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
 
     const auto* const password = BIT7Z_STRING( "helloworld" );
 
@@ -365,7 +365,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
 }
 
 TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
 
     SECTION( "Split archive (non-RAR)" ) {
         const auto testArchive = GENERATE( as< SingleFileArchive >(),
@@ -431,7 +431,7 @@ struct EmptyArchive : TestInputArchive {
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
 
     const auto testArchive = GENERATE( as< EmptyArchive >(),
                                        EmptyArchive{ "7z", BitFormat::SevenZip, 0 },
@@ -456,7 +456,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
 }
 
 TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
 
     SECTION( "Solid 7z" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
@@ -481,7 +481,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const auto testArchive = GENERATE( as< MultipleItemsArchive >(),
                                         MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
@@ -570,7 +570,7 @@ void require_item_type( const BitArchiveReader& info,
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -597,7 +597,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
@@ -621,7 +621,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
 
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
@@ -635,7 +635,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file na
 }
 
 TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2)", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
     const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
@@ -646,7 +646,7 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
 #ifdef BIT7Z_AUTO_FORMAT
 
 TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
     auto test = GENERATE( TestInputFormat{ "7z", BitFormat::SevenZip },
                           TestInputFormat{ "ar", BitFormat::Deb },
