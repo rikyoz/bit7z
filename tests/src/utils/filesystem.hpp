@@ -89,6 +89,7 @@ struct FilesystemItemInfo {
     bool isDir;
     std::size_t size;
     uint32_t crc32;
+    uint16_t crc16;
 };
 
 extern const FilesystemItemInfo italy;

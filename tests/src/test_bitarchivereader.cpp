@@ -15,7 +15,6 @@
 #include <catch2/generators/catch_generators.hpp>
 
 #include "utils/archive.hpp"
-#include "utils/crc.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
@@ -91,10 +90,14 @@ void require_archive_item( const BitInFormat& format,
         REQUIRE( item.size() == expectedItem.fileInfo.size );
     }
 
-    if ( ( format_has_crc( format ) && !item.itemProperty( BitProperty::CRC ).isEmpty() ) &&
-         ( ( format != BitFormat::Rar5 ) || !item.isEncrypted() ) ) {
-        /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/
-        REQUIRE( item.crc() == expectedItem.fileInfo.crc32 );
+    const auto itemCrc = item.crc();
+    if ( itemCrc != 0 && ( ( format != BitFormat::Rar5 ) || !item.isEncrypted() ) ) {
+        /* Encrypted Rar5 archives have random CRCs values. */
+        if ( format_has_crc32( format ) ) {
+            REQUIRE( itemCrc == expectedItem.fileInfo.crc32 );
+        } else if ( format_has_crc16( format ) ) {
+            REQUIRE( itemCrc == expectedItem.fileInfo.crc16 );
+        }
     }
 }
 
@@ -131,7 +134,7 @@ inline void require_archive_content( const BitArchiveReader& info,
     size_t found_items = 0;
     for ( const auto& archivedItem : archive_content.items ) {
         for ( const auto& item : items ) {
-            if ( archive_stores_paths || (from_filesystem) ) {
+            if ( archive_stores_paths || from_filesystem ) {
                 if ( item.name() != archivedItem.fileInfo.name ) {
                     continue;
                 }

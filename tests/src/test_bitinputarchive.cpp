@@ -75,7 +75,7 @@ void require_archive_extracts( const BitArchiveReader& info, const source_locati
         std::map< tstring, buffer_t > bufferMap;
         REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
         REQUIRE( bufferMap.size() == info.filesCount() );
-        if ( format_has_crc( info.detectedFormat() ) ) {
+        if ( format_has_crc32( info.detectedFormat() ) ) {
             for( const auto& entry : bufferMap ) {
                 auto item = info.find( entry.first );
                 REQUIRE( item != info.cend() );

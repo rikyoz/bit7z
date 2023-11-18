@@ -20,23 +20,27 @@ const FilesystemItemInfo italy{ BIT7Z_STRING( "italy.svg" ),
                                 BIT7Z_STRING( "svg" ),
                                 false,
                                 267,
-                                0x2214F4E9 };
+                                0x2214F4E9,
+                                0xE94D };
 
 const FilesystemItemInfo lorem_ipsum{ BIT7Z_STRING( "Lorem Ipsum.pdf" ),
                                       BIT7Z_STRING( "pdf" ),
                                       false,
                                       38170,
-                                      0xC0629B8E };
+                                      0xC0629B8E,
+                                      0x4D7D };
 
 const FilesystemItemInfo noext{ BIT7Z_STRING( "noext" ),
                                 BIT7Z_STRING( "" ),
                                 false,
                                 34,
-                                0xDE536DF9 };
+                                0xDE536DF9,
+                                0xEB1D };
 
 const FilesystemItemInfo dot_folder{ BIT7Z_STRING( "dot.folder" ),
                                      BIT7Z_STRING( "" ),
                                      true,
+                                     0,
                                      0,
                                      0 };
 
@@ -44,11 +48,13 @@ const FilesystemItemInfo hello_json{ BIT7Z_STRING( "hello.json" ),
                                      BIT7Z_STRING( "json" ),
                                      false,
                                      29,
-                                     0x794FDB10 };
+                                     0x794FDB10,
+                                     0x226B };
 
 const FilesystemItemInfo empty_folder{ BIT7Z_STRING( "empty" ),
                                        BIT7Z_STRING( "" ),
                                        true,
+                                       0,
                                        0,
                                        0 };
 
@@ -56,11 +62,13 @@ const FilesystemItemInfo folder{ BIT7Z_STRING( "folder" ),
                                  BIT7Z_STRING( "" ),
                                  true,
                                  0,
+                                 0,
                                  0 };
 
 const FilesystemItemInfo subfolder{ BIT7Z_STRING( "subfolder" ),
                                     BIT7Z_STRING( "" ),
                                     true,
+                                    0,
                                     0,
                                     0 };
 
@@ -68,31 +76,36 @@ const FilesystemItemInfo subfolder2{ BIT7Z_STRING( "subfolder2" ),
                                      BIT7Z_STRING( "" ),
                                      true,
                                      0,
+                                     0,
                                      0 };
 
 const FilesystemItemInfo homework{ BIT7Z_STRING( "homework.doc" ),
                                    BIT7Z_STRING( "doc" ),
                                    false,
                                    31232,
-                                   0x1734526A };
+                                   0x1734526A,
+                                   0x8E04 };
 
 const FilesystemItemInfo quick_brown{ BIT7Z_STRING( "The quick brown fox.pdf" ),
                                       BIT7Z_STRING( "pdf" ),
                                       false,
                                       45933,
-                                      0x3A4DCE2A };
+                                      0x3A4DCE2A,
+                                      0xF922 };
 
 const FilesystemItemInfo frequency{ BIT7Z_STRING( "frequency.xlsx" ),
                                     BIT7Z_STRING( "xlsx" ),
                                     false,
                                     20803,
-                                    0xA140E471 };
+                                    0xA140E471,
+                                    0x1F5A };
 
 const FilesystemItemInfo clouds{ BIT7Z_STRING( "clouds.jpg" ),
                                  BIT7Z_STRING( "jpg" ),
                                  false,
                                  478883,
-                                 0x515D4B66 };
+                                 0x515D4B66,
+                                 0x784E };
 
 auto single_file_content() -> const ArchiveContent& {
     static const ArchiveContent instance{ 1, clouds.size, { { clouds, clouds.name, false } } };
