@@ -234,6 +234,7 @@ void require_archive_tests( const BitArchiveReader& info, const source_location&
 
 /* Note: throughout this unit test we will use BitArchiveReader for testing BitInputArchive's specific methods. */
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing only a single file",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
@@ -263,6 +264,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing multiple files",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
@@ -286,6 +288,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing multiple items (files and folders)",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
@@ -310,6 +313,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing encrypted items",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
@@ -349,7 +353,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
     }
 }
 
-/* Pull request #36 */
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting header-encrypted archives",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
@@ -437,6 +441,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an empty archive",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
@@ -520,6 +525,7 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives should throw",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
@@ -578,6 +584,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives sh
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format should throw",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
@@ -623,6 +630,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format sh
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with different file types inside",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
@@ -655,6 +663,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with dif
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Unicode items",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
@@ -679,6 +688,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Uni
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };

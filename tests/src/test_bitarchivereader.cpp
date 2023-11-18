@@ -156,6 +156,7 @@ struct SingleFileArchive : TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, single_file_content() } {}
 };
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single file",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
@@ -196,6 +197,7 @@ struct MultipleFilesArchive : TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, multiple_files_content() } {}
 };
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple files",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
@@ -230,6 +232,7 @@ struct MultipleItemsArchive : TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, multiple_items_content() } {}
 };
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files and folders)",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
@@ -265,6 +268,7 @@ struct EncryptedArchive : TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, encrypted_content() } {}
 };
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
@@ -319,6 +323,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
 }
 
 /* Pull request #36 */
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
@@ -429,6 +434,7 @@ struct EmptyArchive : TestInputArchive {
         : TestInputArchive{ std::move( extension ), format, packedSize, empty_content() } {}
 };
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
@@ -479,6 +485,7 @@ TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
@@ -568,6 +575,7 @@ void require_item_type( const BitArchiveReader& info,
 #define REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, item_name, file_type, win_attributes ) \
     require_item_type( (info), BIT7Z_STRING( item_name ), (file_type), (win_attributes), BIT7Z_CURRENT_LOCATION )
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
@@ -595,6 +603,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archiv
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
@@ -619,6 +628,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unic
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name",
                     "[bitarchivereader]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
