@@ -20,12 +20,9 @@
 #include "utils/shared_lib.hpp"
 #include "utils/source_location.hpp"
 
-#include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitarchiveiteminfo.hpp>
 #include <bit7z/bitarchivereader.hpp>
-#include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
-#include <bit7z/bitpropvariant.hpp>
 #include <bit7z/bittypes.hpp>
 #include <internal/fs.hpp>
 #include <internal/stringutil.hpp>
