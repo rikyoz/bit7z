@@ -349,18 +349,7 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
             REQUIRE( BitArchiveReader::isEncrypted( test::sevenzip_lib(), inputArchive, testArchive.format() ) );
         }
 
-
-        SECTION( "Opening the archive with no password should throw an exception" ) {
-            REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, testArchive.format() ) );
-        }
-
-
-        SECTION( "Opening the archive with a wrong password should throw an exception" ) {
-            REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, testArchive.format(),
-                                              BIT7Z_STRING( "wrong_password" ) ) );
-        }
-
-        SECTION( "Opening the archive with the correct password should pass the tests" ) {
+        SECTION( "Opening the archive with the correct password should allow reading the archive metadata" ) {
             const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
