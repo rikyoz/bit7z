@@ -22,15 +22,15 @@ struct TestInputFormat {
     const BitInFormat& format;
 };
 
-inline auto format_has_path_metadata( const BitInFormat& format ) -> bool {
+inline auto format_has_path_metadata( const BitInFormat& format ) noexcept -> bool {
     return ( format != BitFormat::BZip2 ) && ( format != BitFormat::Lzma ) && ( format != BitFormat::Xz );
 }
 
-inline auto format_has_size_metadata( const BitInFormat& format ) -> bool {
+inline auto format_has_size_metadata( const BitInFormat& format ) noexcept -> bool {
     return ( format != BitFormat::BZip2 ) && ( format != BitFormat::Lzma );
 }
 
-inline auto format_has_crc( const BitInFormat& format ) -> bool {
+inline auto format_has_crc( const BitInFormat& format ) noexcept -> bool {
     return ( format != BitFormat::BZip2 ) &&
            ( format != BitFormat::Iso ) &&
            ( format != BitFormat::Lzh ) && // Actually, Lzh provides a CRC, but it is not a CRC32 like other formats.
@@ -40,7 +40,7 @@ inline auto format_has_crc( const BitInFormat& format ) -> bool {
            ( format != BitFormat::Xz );
 }
 
-inline auto format_compresses_files( const BitInFormat& format ) -> bool {
+inline auto format_compresses_files( const BitInFormat& format ) noexcept -> bool {
     return ( format != BitFormat::Iso ) && ( format != BitFormat::Tar ) && ( format != BitFormat::Wim );
 }
 
