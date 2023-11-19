@@ -204,10 +204,10 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple file
 
     const auto testArchive = GENERATE( as< MultipleFilesArchive >(),
                                         MultipleFilesArchive{ "7z", BitFormat::SevenZip, 22074 },
-                                        MultipleFilesArchive{ "iso", BitFormat::Iso, italy.size + lorem_ipsum.size },
+                                        MultipleFilesArchive{ "iso", BitFormat::Iso, italy.size + loremIpsum.size },
                                         MultipleFilesArchive{ "rar", BitFormat::Rar5, 23040 },
                                         MultipleFilesArchive{ "tar", BitFormat::Tar, 38912 },
-                                        MultipleFilesArchive{ "wim", BitFormat::Wim, italy.size + lorem_ipsum.size },
+                                        MultipleFilesArchive{ "wim", BitFormat::Wim, italy.size + loremIpsum.size },
                                         MultipleFilesArchive{ "zip", BitFormat::Zip, 23222 } );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {

@@ -93,16 +93,16 @@ struct FilesystemItemInfo {
 };
 
 extern const FilesystemItemInfo italy;
-extern const FilesystemItemInfo lorem_ipsum;
+extern const FilesystemItemInfo loremIpsum;
 extern const FilesystemItemInfo noext;
-extern const FilesystemItemInfo dot_folder;
-extern const FilesystemItemInfo hello_json;
-extern const FilesystemItemInfo empty_folder;
+extern const FilesystemItemInfo dotFolder;
+extern const FilesystemItemInfo helloJson;
+extern const FilesystemItemInfo emptyFolder;
 extern const FilesystemItemInfo folder;
 extern const FilesystemItemInfo subfolder;
 extern const FilesystemItemInfo subfolder2;
 extern const FilesystemItemInfo homework;
-extern const FilesystemItemInfo quick_brown;
+extern const FilesystemItemInfo quickBrown;
 extern const FilesystemItemInfo frequency;
 extern const FilesystemItemInfo clouds;
 

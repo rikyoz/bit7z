@@ -23,12 +23,12 @@ const FilesystemItemInfo italy{ BIT7Z_STRING( "italy.svg" ),
                                 0x2214F4E9,
                                 0xE94D };
 
-const FilesystemItemInfo lorem_ipsum{ BIT7Z_STRING( "Lorem Ipsum.pdf" ),
-                                      BIT7Z_STRING( "pdf" ),
-                                      false,
-                                      38170,
-                                      0xC0629B8E,
-                                      0x4D7D };
+const FilesystemItemInfo loremIpsum{ BIT7Z_STRING( "Lorem Ipsum.pdf" ),
+                                     BIT7Z_STRING( "pdf" ),
+                                     false,
+                                     38170,
+                                     0xC0629B8E,
+                                     0x4D7D };
 
 const FilesystemItemInfo noext{ BIT7Z_STRING( "noext" ),
                                 BIT7Z_STRING( "" ),
@@ -37,26 +37,26 @@ const FilesystemItemInfo noext{ BIT7Z_STRING( "noext" ),
                                 0xDE536DF9,
                                 0xEB1D };
 
-const FilesystemItemInfo dot_folder{ BIT7Z_STRING( "dot.folder" ),
-                                     BIT7Z_STRING( "" ),
-                                     true,
-                                     0,
-                                     0,
-                                     0 };
+const FilesystemItemInfo dotFolder{ BIT7Z_STRING( "dot.folder" ),
+                                    BIT7Z_STRING( "" ),
+                                    true,
+                                    0,
+                                    0,
+                                    0 };
 
-const FilesystemItemInfo hello_json{ BIT7Z_STRING( "hello.json" ),
-                                     BIT7Z_STRING( "json" ),
-                                     false,
-                                     29,
-                                     0x794FDB10,
-                                     0x226B };
+const FilesystemItemInfo helloJson{ BIT7Z_STRING( "hello.json" ),
+                                    BIT7Z_STRING( "json" ),
+                                    false,
+                                    29,
+                                    0x794FDB10,
+                                    0x226B };
 
-const FilesystemItemInfo empty_folder{ BIT7Z_STRING( "empty" ),
-                                       BIT7Z_STRING( "" ),
-                                       true,
-                                       0,
-                                       0,
-                                       0 };
+const FilesystemItemInfo emptyFolder{ BIT7Z_STRING( "empty" ),
+                                      BIT7Z_STRING( "" ),
+                                      true,
+                                      0,
+                                      0,
+                                      0 };
 
 const FilesystemItemInfo folder{ BIT7Z_STRING( "folder" ),
                                  BIT7Z_STRING( "" ),
@@ -86,12 +86,12 @@ const FilesystemItemInfo homework{ BIT7Z_STRING( "homework.doc" ),
                                    0x1734526A,
                                    0x8E04 };
 
-const FilesystemItemInfo quick_brown{ BIT7Z_STRING( "The quick brown fox.pdf" ),
-                                      BIT7Z_STRING( "pdf" ),
-                                      false,
-                                      45933,
-                                      0x3A4DCE2A,
-                                      0xF922 };
+const FilesystemItemInfo quickBrown{ BIT7Z_STRING( "The quick brown fox.pdf" ),
+                                     BIT7Z_STRING( "pdf" ),
+                                     false,
+                                     45933,
+                                     0x3A4DCE2A,
+                                     0xF922 };
 
 const FilesystemItemInfo frequency{ BIT7Z_STRING( "frequency.xlsx" ),
                                     BIT7Z_STRING( "xlsx" ),
@@ -114,9 +114,9 @@ auto single_file_content() -> const ArchiveContent& {
 
 auto multiple_files_content() -> const ArchiveContent& {
     static const ArchiveContent instance{ 2,
-                                          italy.size + lorem_ipsum.size,
+                                          italy.size + loremIpsum.size,
                                           { { italy, italy.name, false },
-                                            { lorem_ipsum, lorem_ipsum.name, false } } };
+                                            { loremIpsum, loremIpsum.name, false } } };
     return instance;
 }
 
@@ -124,18 +124,18 @@ auto multiple_items_content() -> const ArchiveContent& {
     static const ArchiveContent instance{ 8,
                                           615351,
                                           { { italy, "italy.svg", false },
-                                            { lorem_ipsum, "Lorem Ipsum.pdf", false },
+                                            { loremIpsum, "Lorem Ipsum.pdf", false },
                                             { noext, "noext", false },
-                                            { dot_folder, "dot.folder", false },
-                                            { hello_json, "dot.folder/hello.json", false },
-                                            { empty_folder, "empty", false },
+                                            { dotFolder, "dot.folder", false },
+                                            { helloJson, "dot.folder/hello.json", false },
+                                            { emptyFolder, "empty", false },
                                             { folder, "folder", false },
                                             { clouds, "folder/clouds.jpg", false },
                                             { subfolder, "folder/subfolder", false },
                                             { subfolder2, "folder/subfolder2", false },
                                             { frequency, "folder/subfolder2/frequency.xlsx", false },
                                             { homework, "folder/subfolder2/homework.doc", false },
-                                            { quick_brown, "folder/subfolder2/The quick brown fox.pdf", false } } };
+                                            { quickBrown, "folder/subfolder2/The quick brown fox.pdf", false } } };
     return instance;
 }
 
@@ -143,18 +143,18 @@ auto encrypted_content() -> const ArchiveContent& {
     static const ArchiveContent instance{ 8,
                                           615351,
                                           { { italy, "italy.svg", true },
-                                            { lorem_ipsum, "Lorem Ipsum.pdf", true },
+                                            { loremIpsum, "Lorem Ipsum.pdf", true },
                                             { noext, "noext", true },
-                                            { dot_folder, "dot.folder", false },
-                                            { hello_json, "dot.folder/hello.json", true },
-                                            { empty_folder, "empty", false },
+                                            { dotFolder, "dot.folder", false },
+                                            { helloJson, "dot.folder/hello.json", true },
+                                            { emptyFolder, "empty", false },
                                             { folder, "folder", false },
                                             { clouds, "folder/clouds.jpg", true },
                                             { subfolder, "folder/subfolder", false },
                                             { subfolder2, "folder/subfolder2", false },
                                             { frequency, "folder/subfolder2/frequency.xlsx", true },
                                             { homework, "folder/subfolder2/homework.doc", true },
-                                            { quick_brown, "folder/subfolder2/The quick brown fox.pdf", true } } };
+                                            { quickBrown, "folder/subfolder2/The quick brown fox.pdf", true } } };
     return instance;
 }
 
