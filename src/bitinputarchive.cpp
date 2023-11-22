@@ -164,7 +164,15 @@ auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const
                             make_hresult_code( res ) );
     }
     if ( property == BitProperty::Path && itemProperty.isEmpty() && itemsCount() == 1 ) {
-        itemProperty = path_to_wide_string( tstring_to_path( mArchivePath ).stem() );
+        auto itemPath = tstring_to_path( mArchivePath );
+        if ( itemPath.empty() ) {
+            itemProperty = kEmptyFileWideAlias;
+        } else {
+            if ( *mDetectedFormat != BitFormat::Split && itemPath.extension() == ".001" ) {
+                itemPath = itemPath.stem();
+            }
+            itemProperty = path_to_wide_string( itemPath.stem() );
+        }
     }
     return itemProperty;
 }
