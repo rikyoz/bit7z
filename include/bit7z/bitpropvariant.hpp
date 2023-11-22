@@ -289,7 +289,7 @@ struct BitPropVariant final : public PROPVARIANT {
          */
         template< typename T >
         auto operator=( const T& value ) noexcept( std::is_integral< T >::value ) -> BitPropVariant& {
-            *this = BitPropVariant( value );
+            *this = BitPropVariant{ value };
             return *this;
         }
 
