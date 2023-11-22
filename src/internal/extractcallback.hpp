@@ -31,6 +31,7 @@ namespace bit7z {
 class BitInputArchive;
 
 constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
+constexpr auto kEmptyFileWideAlias = L"[Content]";
 
 enum struct ExtractMode {
     Extract = NAskMode::kExtract,
