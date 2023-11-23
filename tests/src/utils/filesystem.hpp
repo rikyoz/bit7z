@@ -86,7 +86,7 @@ inline auto load_file( fs::path const& inFile ) -> buffer_t {
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder
     const tchar* ext;
-    bool isDir;
+    fs::file_type type;
     std::size_t size;
     uint32_t crc32;
     uint16_t crc16;
@@ -105,6 +105,11 @@ extern const FilesystemItemInfo homework;
 extern const FilesystemItemInfo quickBrown;
 extern const FilesystemItemInfo frequency;
 extern const FilesystemItemInfo clouds;
+extern const FilesystemItemInfo dir;
+extern const FilesystemItemInfo hidden;
+extern const FilesystemItemInfo readOnly;
+extern const FilesystemItemInfo regular;
+extern const FilesystemItemInfo symlink;
 
 struct ArchivedItem {
     const FilesystemItemInfo& fileInfo;
@@ -127,6 +132,12 @@ auto multiple_items_content() -> const ArchiveContent&;
 auto encrypted_content() -> const ArchiveContent&;
 
 auto empty_content() -> const ArchiveContent&;
+
+auto unicode_content() -> const ArchiveContent&;
+
+auto file_type_content() -> const ArchiveContent&;
+
+auto no_path_content() -> const ArchiveContent&;
 
 class TestDirectory {
     public:

@@ -33,7 +33,7 @@ inline auto format_has_size_metadata( const BitInFormat& format ) noexcept -> bo
 inline auto format_has_crc32( const BitInFormat& format ) noexcept -> bool {
     return ( format != BitFormat::BZip2 ) &&
            ( format != BitFormat::Iso ) &&
-           ( format != BitFormat::Lzh ) && // Actually, Lzh provides a CRC, but it is not a CRC32 like other formats.
+           ( format != BitFormat::Lzh ) && // Actually, Lzh provides a CRC, but it uses the CRC16/ARC algorithm.
            ( format != BitFormat::Lzma ) &&
            ( format != BitFormat::Tar ) &&
            ( format != BitFormat::Wim ) &&

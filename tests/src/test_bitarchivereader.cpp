@@ -70,7 +70,7 @@ void require_archive_item( const BitInFormat& format,
                            const source_location& location ) {
     INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) );
     INFO( "  from " << location.file_name() << ":" << location.line() );
-    REQUIRE( item.isDir() == expectedItem.fileInfo.isDir );
+    REQUIRE( item.isDir() == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
 
     if ( !item.isDir() ) {
         REQUIRE( item.isEncrypted() == expectedItem.isEncrypted );
@@ -139,7 +139,7 @@ inline void require_archive_content( const BitArchiveReader& info,
                 REQUIRE( info.contains( item.path() ) );
             }
             REQUIRE( info.isItemEncrypted( item.index() ) == archivedItem.isEncrypted );
-            REQUIRE( info.isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );
+            REQUIRE( info.isItemFolder( item.index() ) == ( archivedItem.fileInfo.type == fs::file_type::directory ) );
             require_archive_item( format, item, archivedItem, location );
             found_items++;
             break;
