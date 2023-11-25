@@ -690,7 +690,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with dif
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
 
         REQUIRE_ARCHIVE_TESTS( info );
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+        // p7zip doesn't correctly report symbolic links in Wim and Tar archives.
+        if ( testFormat.format != BitFormat::Wim && testFormat.format != BitFormat::Tar ) {
+#else
+        // 7-Zip doesn't correctly report symbolic links in Wim archives.
         if ( testFormat.format != BitFormat::Wim ) {
+#endif
             // TODO(fix): Wim format gives some issues when extracting symbolic links.
             REQUIRE_ARCHIVE_EXTRACTS( info, file_type_content().items );
         }
