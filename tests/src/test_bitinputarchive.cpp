@@ -20,7 +20,7 @@
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
-#include "utils/source_location.hpp"
+#include "utils/sourcelocation.hpp"
 
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
@@ -55,7 +55,7 @@ using ExpectedItems = std::vector< ArchivedItem >;
 
 void require_extracts_to_filesystem( const BitArchiveReader& info,
                                      const ExpectedItems& expectedItems,
-                                     const source_location& location ) {
+                                     const SourceLocation& location ) {
     TempTestDirectory testDir{ "test_bitinputarchive_" + random_test_id() };
     INFO( "Test directory: " << testDir.path() );
 
@@ -86,7 +86,7 @@ void require_extracts_to_filesystem( const BitArchiveReader& info,
 
 void require_extracts_to_buffers_map( const BitArchiveReader& info,
                                       const ExpectedItems& expectedItems,
-                                      const source_location& location ) {
+                                      const SourceLocation& location ) {
     std::map< tstring, buffer_t > bufferMap;
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
     REQUIRE( bufferMap.size() == info.filesCount() );
@@ -106,7 +106,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info,
 
 void require_extracts_to_buffers( const BitArchiveReader& info,
                                   const ExpectedItems& expectedItems,
-                                  const source_location& location ) {
+                                  const SourceLocation& location ) {
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
@@ -137,7 +137,7 @@ void require_extracts_to_buffers( const BitArchiveReader& info,
 
 void require_extracts_to_fixed_buffers( const BitArchiveReader& info,
                                         const ExpectedItems& expectedItems,
-                                        const source_location& location ) {
+                                        const SourceLocation& location ) {
     // Note: this value must be different from any file size we can encounter inside the tested archives.
     constexpr size_t invalidBufferSize = 42;
     buffer_t invalidBuffer( invalidBufferSize, static_cast< byte_t >( '\0' ) );
@@ -208,7 +208,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info,
 
 void require_extracts_to_streams( const BitArchiveReader& info,
                                   const ExpectedItems& expectedItems,
-                                  const source_location& location ) {
+                                  const SourceLocation& location ) {
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
 
@@ -241,7 +241,7 @@ void require_extracts_to_streams( const BitArchiveReader& info,
 
 void require_archive_extracts( const BitArchiveReader& info,
                                const std::vector< ArchivedItem >& expectedItems,
-                               const source_location& location ) {
+                               const SourceLocation& location ) {
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
     const auto& detectedFormat = (info).detectedFormat();
     if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
@@ -276,7 +276,7 @@ void require_archive_extracts( const BitArchiveReader& info,
 #define REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems ) \
     require_archive_extracts( info, expectedItems, BIT7Z_CURRENT_LOCATION )
 
-void require_archive_tests( const BitArchiveReader& info, const source_location& location ) {
+void require_archive_tests( const BitArchiveReader& info, const SourceLocation& location ) {
     INFO( "Failed while testing the archive" );
     INFO( "Check called from " << location.file_name() << ":" << location.line() );
 #ifdef BIT7Z_BUILD_FOR_P7ZIP

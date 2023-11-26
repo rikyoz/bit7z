@@ -18,7 +18,7 @@
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
-#include "utils/source_location.hpp"
+#include "utils/sourcelocation.hpp"
 
 #include <bit7z/bitarchiveiteminfo.hpp>
 #include <bit7z/bitarchivereader.hpp>
@@ -67,7 +67,7 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
 void require_archive_item( const BitInFormat& format,
                            const BitArchiveItem& item,
                            const ArchivedItem& expectedItem,
-                           const source_location& location ) {
+                           const SourceLocation& location ) {
     INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) );
     INFO( "  from " << location.file_name() << ":" << location.line() );
     REQUIRE( item.isDir() == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
@@ -103,7 +103,7 @@ void require_archive_item( const BitInFormat& format,
 
 inline void require_archive_content( const BitArchiveReader& info,
                                      const TestInputArchive& input,
-                                     const source_location& location ) {
+                                     const SourceLocation& location ) {
     INFO( "Failed while checking content of " << Catch::StringMaker< tstring >::convert( info.archivePath() ) );
     INFO( "  from " << location.file_name() << ":" << location.line() );
     REQUIRE_FALSE( info.archiveProperties().empty() );
@@ -531,7 +531,7 @@ void require_item_type( const BitArchiveReader& info,
                         const tstring& itemName,
                         fs::file_type fileType,
                         std::uint32_t winAttributes,
-                        source_location location ) {
+                        SourceLocation location ) {
     INFO( "Failed checking required item " << Catch::StringMaker< tstring >::convert( itemName ) );
     INFO( "  from " << location.file_name() << ":" << location.line() );
     auto iterator = info.find( itemName );
