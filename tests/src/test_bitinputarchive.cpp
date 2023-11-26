@@ -62,7 +62,7 @@ void require_extracts_to_filesystem( const BitArchiveReader& info, const Expecte
         REQUIRE( fs::is_empty( testDir.path() ) );
     } else {
         for ( const auto& expectedItem : expectedItems ) {
-            INFO( "Checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
+            INFO( "Failed while checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
 
             // Note: there's no need to check the file with fs::exists
             //       since the file's type check already includes the check for the file existence.
@@ -87,7 +87,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
     REQUIRE( bufferMap.size() == info.filesCount() );
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
         auto expectedPath = expectedItem.inArchivePath;
         expectedPath.make_preferred();
         const auto& extractedItem = bufferMap.find( path_to_tstring( expectedPath ) );
@@ -103,7 +103,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
 void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
         const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
         REQUIRE( extractedItem != info.cend() );
         if ( extractedItem->isDir() ) {
@@ -135,7 +135,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
     buffer_t invalidBuffer( invalidBufferSize, static_cast< byte_t >( '\0' ) );
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
         const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
         REQUIRE( extractedItem != info.cend() );
 
@@ -200,7 +200,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
 
 void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
 
         const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
         REQUIRE( extractedItem != info.cend() );
@@ -239,8 +239,8 @@ void require_archive_extracts( const BitArchiveReader& info,
     }
 #endif
 
+    INFO( "From " << location.file_name() << ":" << location.line() );
     INFO( "Failed while extracting the archive" );
-    INFO( "Check called from " << location.file_name() << ":" << location.line() );
 
     SECTION( "Extracting to a temporary filesystem folder" ) {
         require_extracts_to_filesystem( info, expectedItems );
@@ -267,8 +267,8 @@ void require_archive_extracts( const BitArchiveReader& info,
     require_archive_extracts( info, expectedItems, BIT7Z_CURRENT_LOCATION )
 
 void require_archive_tests( const BitArchiveReader& info, const SourceLocation& location ) {
+    INFO( "From " << location.file_name() << ":" << location.line() );
     INFO( "Failed while testing the archive" );
-    INFO( "Check called from " << location.file_name() << ":" << location.line() );
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
     const auto& detectedFormat = (info).detectedFormat();
     if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
