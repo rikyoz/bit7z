@@ -240,7 +240,7 @@ void require_extracts_to_streams( const BitArchiveReader& info,
 }
 
 void require_archive_extracts( const BitArchiveReader& info,
-                               const std::vector< ArchivedItem >& expectedItems,
+                               const ExpectedItems& expectedItems,
                                const SourceLocation& location ) {
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
     const auto& detectedFormat = (info).detectedFormat();
@@ -791,8 +791,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode fi
 #ifndef BIT7Z_BUILD_FOR_P7ZIP
     REQUIRE_ARCHIVE_TESTS( info );
 #endif
-    const std::vector< ArchivedItem > expectedItems{
-        ArchivedItem{ clouds, BIT7Z_NATIVE_STRING( "クラウド.jpg" ), false } };
+    const ExpectedItems expectedItems{ ArchivedItem{ clouds, BIT7Z_NATIVE_STRING( "クラウド.jpg" ), false } };
     REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems );
 }
 
