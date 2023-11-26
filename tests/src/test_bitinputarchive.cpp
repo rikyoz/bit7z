@@ -116,17 +116,15 @@ void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedIt
         }
     }
 
-    {
-        buffer_t dummyBuffer;
-        REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() ) );
-        REQUIRE( dummyBuffer.empty() );
+    buffer_t dummyBuffer;
+    REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() ) );
+    REQUIRE( dummyBuffer.empty() );
 
-        REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() + 1 ) );
-        REQUIRE( dummyBuffer.empty() );
+    REQUIRE_THROWS( info.extractTo( dummyBuffer, info.itemsCount() + 1 ) );
+    REQUIRE( dummyBuffer.empty() );
 
-        REQUIRE_THROWS( info.extractTo( dummyBuffer, std::numeric_limits< std::uint32_t >::max() ) );
-        REQUIRE( dummyBuffer.empty() );
-    }
+    REQUIRE_THROWS( info.extractTo( dummyBuffer, std::numeric_limits< std::uint32_t >::max() ) );
+    REQUIRE( dummyBuffer.empty() );
 }
 
 void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
@@ -147,9 +145,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
 
         REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), 0, itemIndex ) );
         REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), invalidBufferSize, itemIndex ) );
-        REQUIRE_THROWS( info.extractTo( invalidBuffer.data(),
-                                        std::numeric_limits< std::size_t >::max(),
-                                        itemIndex ) );
+        REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), std::numeric_limits< std::size_t >::max(), itemIndex ) );
 
         if ( expectedItem.fileInfo.type == fs::file_type::directory ) {
             continue;
@@ -216,17 +212,15 @@ void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedIt
         }
     }
 
-    {
-        std::ostringstream outputStream;
-        REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() ) );
-        REQUIRE( outputStream.str().empty() );
+    std::ostringstream outputStream;
+    REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() ) );
+    REQUIRE( outputStream.str().empty() );
 
-        REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() + 1 ) );
-        REQUIRE( outputStream.str().empty() );
+    REQUIRE_THROWS( info.extractTo( outputStream, info.itemsCount() + 1 ) );
+    REQUIRE( outputStream.str().empty() );
 
-        REQUIRE_THROWS( info.extractTo( outputStream, std::numeric_limits< std::uint32_t >::max() ) );
-        REQUIRE( outputStream.str().empty() );
-    }
+    REQUIRE_THROWS( info.extractTo( outputStream, std::numeric_limits< std::uint32_t >::max() ) );
+    REQUIRE( outputStream.str().empty() );
 }
 
 void require_archive_extracts( const BitArchiveReader& info,
