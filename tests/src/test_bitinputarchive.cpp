@@ -53,9 +53,7 @@ auto random_test_id() -> std::string {
 
 using ExpectedItems = std::vector< ArchivedItem >;
 
-void require_extracts_to_filesystem( const BitArchiveReader& info,
-                                     const ExpectedItems& expectedItems,
-                                     const SourceLocation& location ) {
+void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     TempTestDirectory testDir{ "test_bitinputarchive_" + random_test_id() };
     INFO( "Test directory: " << testDir.path() );
 
@@ -84,9 +82,7 @@ void require_extracts_to_filesystem( const BitArchiveReader& info,
     }
 }
 
-void require_extracts_to_buffers_map( const BitArchiveReader& info,
-                                      const ExpectedItems& expectedItems,
-                                      const SourceLocation& location ) {
+void require_extracts_to_buffers_map( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     std::map< tstring, buffer_t > bufferMap;
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
     REQUIRE( bufferMap.size() == info.filesCount() );
@@ -104,9 +100,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info,
     }
 }
 
-void require_extracts_to_buffers( const BitArchiveReader& info,
-                                  const ExpectedItems& expectedItems,
-                                  const SourceLocation& location ) {
+void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
@@ -135,9 +129,7 @@ void require_extracts_to_buffers( const BitArchiveReader& info,
     }
 }
 
-void require_extracts_to_fixed_buffers( const BitArchiveReader& info,
-                                        const ExpectedItems& expectedItems,
-                                        const SourceLocation& location ) {
+void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     // Note: this value must be different from any file size we can encounter inside the tested archives.
     constexpr size_t invalidBufferSize = 42;
     buffer_t invalidBuffer( invalidBufferSize, static_cast< byte_t >( '\0' ) );
@@ -206,9 +198,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info,
                                     std::numeric_limits< std::uint32_t >::max() ) );
 }
 
-void require_extracts_to_streams( const BitArchiveReader& info,
-                                  const ExpectedItems& expectedItems,
-                                  const SourceLocation& location ) {
+void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
 
@@ -253,23 +243,23 @@ void require_archive_extracts( const BitArchiveReader& info,
     INFO( "Check called from " << location.file_name() << ":" << location.line() );
 
     SECTION( "Extracting to a temporary filesystem folder" ) {
-        require_extracts_to_filesystem( info, expectedItems, location );
+        require_extracts_to_filesystem( info, expectedItems );
     }
 
     SECTION( "Extracting to a map of buffers" ) {
-        require_extracts_to_buffers_map( info, expectedItems, location );
+        require_extracts_to_buffers_map( info, expectedItems );
     }
 
     SECTION( "Extracting each item to a buffer" ) {
-        require_extracts_to_buffers( info, expectedItems, location );
+        require_extracts_to_buffers( info, expectedItems );
     }
 
     SECTION( "Extracting each item to a fixed size buffer" ) {
-        require_extracts_to_fixed_buffers( info, expectedItems, location );
+        require_extracts_to_fixed_buffers( info, expectedItems );
     }
 
     SECTION( "Extracting each item to std::ostream" ) {
-        require_extracts_to_streams( info, expectedItems, location );
+        require_extracts_to_streams( info, expectedItems );
     }
 }
 
