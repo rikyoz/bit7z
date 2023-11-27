@@ -52,14 +52,13 @@ void require_extracts_to_filesystem( const BitArchiveReader& info, const Expecte
             //       since the file's type check already includes the check for the file existence.
             const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
             REQUIRE( fileStatus.type() == expectedItem.fileInfo.type );
-            if ( expectedItem.fileInfo.type == fs::file_type::regular ) {
+            if ( fs::is_regular_file( fileStatus ) ) {
                 REQUIRE( crc32( load_file( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
-            } else if ( expectedItem.fileInfo.type == fs::file_type::symlink ) {
+            } else if ( fs::is_symlink( fileStatus ) ) {
                 const auto symlink = fs::read_symlink( expectedItem.inArchivePath );
                 REQUIRE( crc32( symlink.u8string() ) == expectedItem.fileInfo.crc32 );
             }
-            if ( expectedItem.fileInfo.type != fs::file_type::directory ||
-                 fs::is_empty( expectedItem.inArchivePath ) ) {
+            if ( !fs::is_directory( fileStatus ) || fs::is_empty( expectedItem.inArchivePath ) ) {
                 REQUIRE_NOTHROW( fs::remove( expectedItem.inArchivePath ) );
             }
         }
@@ -72,9 +71,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
     REQUIRE( bufferMap.size() == info.filesCount() );
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Failed while checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
-        auto expectedPath = expectedItem.inArchivePath;
-        expectedPath.make_preferred();
-        const auto& extractedItem = bufferMap.find( path_to_tstring( expectedPath ) );
+        const auto& extractedItem = bufferMap.find( path_to_tstring( expectedItem.inArchivePath ) );
         if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
             REQUIRE( extractedItem != bufferMap.end() );
             REQUIRE( crc32( extractedItem->second ) == expectedItem.fileInfo.crc32 );
