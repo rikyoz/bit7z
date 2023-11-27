@@ -467,18 +467,14 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
     SECTION( "Multi-volume RAR5" ) {
         const fs::path arcFileName = "clouds.jpg.part1.rar";
         const BitArchiveReader info( test::sevenzip_lib(), arcFileName.string< tchar >(), BitFormat::Rar5 );
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
-#endif
         REQUIRE_ARCHIVE_EXTRACTS( info, single_file_content().items );
     }
 
     SECTION( "Multi-volume RAR4" ) {
         const fs::path arcFileName = "clouds.jpg.rar";
         const BitArchiveReader info( test::sevenzip_lib(), arcFileName.string< tchar >(), BitFormat::Rar );
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
-#endif
         REQUIRE_ARCHIVE_EXTRACTS( info, single_file_content().items );
     }
 }
@@ -516,9 +512,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting solid archives", "[bitinputa
 
     SECTION( "Solid RAR" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
-#endif
         REQUIRE_ARCHIVE_EXTRACTS( info, multiple_items_content().items );
     }
 
@@ -530,9 +524,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting solid archives", "[bitinputa
 
     SECTION( "Non-solid RAR" ) {
         const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
-#endif
         REQUIRE_ARCHIVE_EXTRACTS( info, multiple_items_content().items );
     }
 }
@@ -727,9 +719,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Uni
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
         REQUIRE_ARCHIVE_TESTS( info );
-#endif
         REQUIRE_ARCHIVE_EXTRACTS( info, unicode_content().items );
     }
 }
@@ -744,9 +734,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a U
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
     const BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
     REQUIRE_ARCHIVE_TESTS( info );
-#endif
     REQUIRE_ARCHIVE_EXTRACTS( info, unicode_content().items );
 }
 
@@ -756,9 +744,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode fi
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
     const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
     REQUIRE_ARCHIVE_TESTS( info );
-#endif
     const ExpectedItems expectedItems{ ArchivedItem{ clouds, BIT7Z_NATIVE_STRING( "クラウド.jpg" ), false } };
     REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems );
 }
