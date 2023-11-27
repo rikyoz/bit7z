@@ -10,7 +10,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <catch2/catch_get_random_seed.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
@@ -30,31 +29,16 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <random>
 #include <sstream>
 
 using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
-auto random_test_id() -> std::string {
-    static constexpr auto hex_digits = "0123456789abcdef";
-    static constexpr auto hex_count = 16;
-
-    thread_local static std::default_random_engine random_engine{ Catch::getSeed() };
-    thread_local static std::uniform_int_distribution<> distribution{ 0, hex_count - 1 };
-
-    std::string str( 8, '\0' );
-    for ( char& str_char : str ) {
-        str_char = hex_digits[ distribution( random_engine ) ]; // NOLINT(*-pro-bounds-pointer-arithmetic)
-    }
-    return str;
-}
-
 using ExpectedItems = std::vector< ArchivedItem >;
 
 void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
-    TempTestDirectory testDir{ "test_bitinputarchive_" + random_test_id() };
+    TempTestDirectory testDir{ "test_bitinputarchive" };
     INFO( "Test directory: " << testDir.path() );
 
     REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testDir.path() ) ) );
@@ -464,7 +448,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
                                              BitFormat::Split );
                 REQUIRE_ARCHIVE_TESTS( info );
 
-                TempTestDirectory extractionTestDir{ "test_bitinputarchive_" + random_test_id() };
+                TempTestDirectory extractionTestDir{ "test_bitinputarchive" };
                 REQUIRE_NOTHROW( info.extractTo( path_to_tstring( extractionTestDir.path() ) ) );
                 REQUIRE( fs::exists( wholeArcFileName ) );
                 REQUIRE( fs::remove( wholeArcFileName ) );

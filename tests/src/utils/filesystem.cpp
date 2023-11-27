@@ -10,7 +10,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include <catch2/catch_get_random_seed.hpp>
+
 #include "filesystem.hpp"
+
+#include <random>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
@@ -242,6 +246,20 @@ TestDirectory::~TestDirectory() {
     set_current_dir( mOldCurrentDirectory );
 }
 
+auto random_test_id() -> std::string {
+    static constexpr auto hex_digits = "0123456789abcdef";
+    static constexpr auto hex_count = 16;
+
+    thread_local static std::default_random_engine random_engine{ Catch::getSeed() };
+    thread_local static std::uniform_int_distribution<> distribution{ 0, hex_count - 1 };
+
+    std::string str( 8, '\0' );
+    for ( char& str_char : str ) {
+        str_char = hex_digits[ distribution( random_engine ) ]; // NOLINT(*-pro-bounds-pointer-arithmetic)
+    }
+    return str;
+}
+
 auto create_temp_directory( const std::string& name ) -> fs::path {
     const auto tempDir = fs::temp_directory_path() / name;
     if ( !fs::exists( tempDir ) ) { // Creating the temp directory since it doesn't exist.
@@ -255,7 +273,7 @@ auto create_temp_directory( const std::string& name ) -> fs::path {
 }
 
 TempDirectory::TempDirectory( const std::string& dirName, TempDirectoryPolicy policy )
-    : mDirectory{ create_temp_directory( dirName ) }, mPolicy{ policy } {}
+    : mDirectory{ create_temp_directory( dirName + "_" + random_test_id() ) }, mPolicy{ policy } {}
 
 TempDirectory::~TempDirectory() {
     if ( mPolicy == TempDirectoryPolicy::CleanupOnExit && fs::is_empty( mDirectory ) ) {
