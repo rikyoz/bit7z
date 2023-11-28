@@ -37,6 +37,29 @@ using namespace bit7z::test::filesystem;
 
 using ExpectedItems = std::vector< ArchivedItem >;
 
+void require_filesystem_item( const ArchivedItem& expectedItem, const SourceLocation& location ) {
+    INFO( "From " << location.file_name() << ":" << location.line() );
+
+    // Note: there's no need to check the file with fs::exists
+    //       since the file's type check already includes the check for the file existence.
+    const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
+    REQUIRE( fileStatus.type() == expectedItem.fileInfo.type );
+    if ( fs::is_regular_file( fileStatus ) ) {
+        REQUIRE( crc32( load_file( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
+    }
+#ifndef _WIN32
+    if ( fs::is_symlink( fileStatus ) ) {
+        const auto symlink = fs::read_symlink( expectedItem.inArchivePath );
+        REQUIRE( crc32( symlink.u8string() ) == expectedItem.fileInfo.crc32 );
+    }
+#endif
+    if ( !fs::is_directory( fileStatus ) || fs::is_empty( expectedItem.inArchivePath ) ) {
+        REQUIRE_NOTHROW( fs::remove( expectedItem.inArchivePath ) );
+    }
+}
+
+#define REQUIRE_FILESYSTEM_ITEM( expectedItem ) require_filesystem_item( expectedItem, BIT7Z_CURRENT_LOCATION )
+
 void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     TempTestDirectory testDir{ "test_bitinputarchive" };
     INFO( "Test directory: " << testDir.path() );
@@ -47,22 +70,35 @@ void require_extracts_to_filesystem( const BitArchiveReader& info, const Expecte
     } else {
         for ( const auto& expectedItem : expectedItems ) {
             INFO( "Failed while checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
-
-            // Note: there's no need to check the file with fs::exists
-            //       since the file's type check already includes the check for the file existence.
-            const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
-            REQUIRE( fileStatus.type() == expectedItem.fileInfo.type );
-            if ( fs::is_regular_file( fileStatus ) ) {
-                REQUIRE( crc32( load_file( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
-            } else if ( fs::is_symlink( fileStatus ) ) {
-                const auto symlink = fs::read_symlink( expectedItem.inArchivePath );
-                REQUIRE( crc32( symlink.u8string() ) == expectedItem.fileInfo.crc32 );
-            }
-            if ( !fs::is_directory( fileStatus ) || fs::is_empty( expectedItem.inArchivePath ) ) {
-                REQUIRE_NOTHROW( fs::remove( expectedItem.inArchivePath ) );
-            }
+            REQUIRE_FILESYSTEM_ITEM( expectedItem );
         }
     }
+}
+
+void require_extracts_items_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
+    TempTestDirectory testDir{ "test_bitinputarchive" };
+    INFO( "Test directory: " << testDir.path() );
+
+    const auto testPath = path_to_tstring( testDir.path() );
+    const auto itemsCount = static_cast< uint32_t >( expectedItems.size() );
+    for ( const auto& expectedItem : expectedItems ) {
+        const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        REQUIRE_NOTHROW( info.extractTo( testPath, { extractedItem->index() } ) );
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
+    }
+
+    for ( const auto& expectedItem : expectedItems ) {
+        const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        // The vector of indices contains a valid index, and an invalid one, so the extraction should fail.
+        REQUIRE_THROWS( info.extractTo( testPath, { extractedItem->index(), itemsCount } ) );
+        REQUIRE( fs::is_empty( testDir.path() ) );
+    }
+
+    REQUIRE_THROWS( info.extractTo( testPath, { itemsCount } ) );
+    REQUIRE( fs::is_empty( testDir.path() ) );
+
+    REQUIRE_THROWS( info.extractTo( testPath, { std::numeric_limits< uint32_t >::max() }) );
+    REQUIRE( fs::is_empty( testDir.path() ) );
 }
 
 void require_extracts_to_buffers_map( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
@@ -219,6 +255,10 @@ void require_archive_extracts( const BitArchiveReader& info,
 
     SECTION( "Extracting to a temporary filesystem folder" ) {
         require_extracts_to_filesystem( info, expectedItems );
+    }
+
+    SECTION( "Extracting specific items to a temporary filesystem folder" ) {
+        require_extracts_items_to_filesystem( info, expectedItems );
     }
 
     SECTION( "Extracting to a map of buffers" ) {
