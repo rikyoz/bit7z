@@ -145,12 +145,19 @@ class BitInputArchive {
         }
 
         /**
+         * @brief Extracts the archive to the chosen directory.
+         *
+         * @param outDir   the output directory where the extracted files will be put.
+         */
+        void extractTo( const tstring& outDir ) const;
+
+        /**
          * @brief Extracts the specified items to the chosen directory.
          *
          * @param outDir   the output directory where the extracted files will be put.
          * @param indices  the indices of the files in the archive that must be extracted.
          */
-        void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const;
+        void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         inline void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {

@@ -169,18 +169,6 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             }
 
             BitInputArchive inputArchive( *this, inArchive );
-            uint32_t nItems = inputArchive.itemsCount();
-            // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
-            const auto findRes = std::find_if( indices.cbegin(),
-                                               indices.cend(),
-                                               [ &nItems ]( uint32_t index ) -> bool {
-                                                    return index >= nItems;
-                                                } );
-            if ( findRes != indices.cend() ) {
-                throw BitException( "Cannot extract item at the index " + std::to_string( *findRes ),
-                                    make_error_code( BitError::InvalidIndex ) );
-            }
-
             inputArchive.extractTo( outDir, indices );
         }
 

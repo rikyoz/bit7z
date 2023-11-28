@@ -233,7 +233,26 @@ auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandle
     return mArchiveHandler;
 }
 
+void BitInputArchive::extractTo( const tstring& outDir ) const {
+    auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
+    extract_arc( mInArchive, {}, callback );
+}
+
+inline auto findInvalidIndex( const std::vector< uint32_t >& indices,
+                              uint32_t itemsCount ) -> std::vector< uint32_t >::const_iterator {
+    return std::find_if( indices.cbegin(), indices.cend(), [&]( uint32_t index ) -> bool {
+        return index >= itemsCount;
+    });
+}
+
 void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const {
+    // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
+    const auto invalidIndex = findInvalidIndex( indices, itemsCount() );
+    if ( invalidIndex != indices.cend() ) {
+        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
     extract_arc( mInArchive, indices, callback );
 }
