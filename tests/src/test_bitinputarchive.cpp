@@ -86,6 +86,7 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     const auto itemsCount = static_cast< uint32_t >( expectedItems.size() );
     for ( const auto& expectedItem : expectedItems ) {
         const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        REQUIRE( extractedItem != info.cend() );
         REQUIRE_NOTHROW( info.extractTo( testPath, { extractedItem->index() } ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
@@ -118,6 +119,7 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
 
     for ( const auto& expectedItem : expectedItems ) {
         const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        REQUIRE( extractedItem != info.cend() );
         // The vector of indices contains a valid index, and an invalid one, so the extraction should fail.
         REQUIRE_THROWS( info.extractTo( testPath, { extractedItem->index(), itemsCount } ) );
         REQUIRE( fs::is_empty( testDir.path() ) );
