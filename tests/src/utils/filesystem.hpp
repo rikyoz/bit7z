@@ -111,7 +111,7 @@ extern const FilesystemItemInfo readOnly;
 extern const FilesystemItemInfo regular;
 extern const FilesystemItemInfo symlink;
 
-struct ArchivedItem {
+struct ExpectedItem {
     const FilesystemItemInfo& fileInfo;
     fs::path inArchivePath;
     bool isEncrypted;
@@ -120,7 +120,7 @@ struct ArchivedItem {
 struct ArchiveContent {
     std::size_t fileCount;
     std::size_t size;
-    std::vector< ArchivedItem > items;
+    std::vector< ExpectedItem > items;
 };
 
 auto single_file_content() -> const ArchiveContent&;

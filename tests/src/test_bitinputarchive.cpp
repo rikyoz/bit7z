@@ -38,10 +38,10 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
-using ExpectedItems = std::vector< ArchivedItem >;
+using ExpectedItems = std::vector< ExpectedItem >;
 
-inline auto extracted_item( const BitArchiveReader& archive,
-                            const ArchivedItem& expectedItem ) -> BitArchiveReader::ConstIterator {
+inline auto archive_item( const BitArchiveReader& archive,
+                          const ExpectedItem& expectedItem ) -> BitArchiveReader::ConstIterator {
     if ( archive.retainDirectories() ) {
         return archive.find( path_to_tstring( expectedItem.inArchivePath ) );
     }
@@ -51,7 +51,7 @@ inline auto extracted_item( const BitArchiveReader& archive,
     } );
 }
 
-void require_filesystem_item( const ArchivedItem& expectedItem, const SourceLocation& location ) {
+void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location ) {
     INFO( "From " << location.file_name() << ":" << location.line() );
     INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() );
 
@@ -95,9 +95,9 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
 
     const auto testPath = path_to_tstring( testDir.path() );
     for ( const auto& expectedItem : expectedItems ) {
-        const auto extractedItem = extracted_item( info, expectedItem );
-        REQUIRE( extractedItem != info.cend() );
-        REQUIRE_NOTHROW( info.extractTo( testPath, { extractedItem->index() } ) );
+        const auto archiveItem = archive_item( info, expectedItem );
+        REQUIRE( archiveItem != info.cend() );
+        REQUIRE_NOTHROW( info.extractTo( testPath, { archiveItem->index() } ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
     REQUIRE( fs::is_empty( testDir.path() ) );
@@ -129,10 +129,10 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     }
 
     for ( const auto& expectedItem : expectedItems ) {
-        const auto extractedItem = extracted_item( info, expectedItem );
-        REQUIRE( extractedItem != info.cend() );
+        const auto archiveItem = archive_item( info, expectedItem );
+        REQUIRE( archiveItem != info.cend() );
         // The vector of indices contains a valid index, and an invalid one, so the extraction should fail.
-        REQUIRE_THROWS( info.extractTo( testPath, { extractedItem->index(), info.itemsCount() } ) );
+        REQUIRE_THROWS( info.extractTo( testPath, { archiveItem->index(), info.itemsCount() } ) );
         REQUIRE( fs::is_empty( testDir.path() ) );
     }
 
@@ -163,13 +163,13 @@ void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedIt
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
-        const auto extractedItem = extracted_item( info, expectedItem );
-        REQUIRE( extractedItem != info.cend() );
-        if ( extractedItem->isDir() ) {
-            REQUIRE_THROWS( info.extractTo( outputBuffer, extractedItem->index() ) );
+        const auto archiveItem = archive_item( info, expectedItem );
+        REQUIRE( archiveItem != info.cend() );
+        if ( archiveItem->isDir() ) {
+            REQUIRE_THROWS( info.extractTo( outputBuffer, archiveItem->index() ) );
             REQUIRE( outputBuffer.empty() );
         } else {
-            REQUIRE_NOTHROW( info.extractTo( outputBuffer, extractedItem->index() ) );
+            REQUIRE_NOTHROW( info.extractTo( outputBuffer, archiveItem->index() ) );
             REQUIRE( crc32( outputBuffer ) == expectedItem.fileInfo.crc32 );
             outputBuffer.clear();
         }
@@ -193,10 +193,10 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
-        const auto extractedItem = extracted_item( info, expectedItem );
-        REQUIRE( extractedItem != info.cend() );
+        const auto archiveItem = archive_item( info, expectedItem );
+        REQUIRE( archiveItem != info.cend() );
 
-        const auto itemIndex = extractedItem->index();
+        const auto itemIndex = archiveItem->index();
         REQUIRE_THROWS( info.extractTo( nullptr, 0, itemIndex ) );
         REQUIRE_THROWS( info.extractTo( nullptr, invalidBufferSize, itemIndex ) );
         REQUIRE_THROWS( info.extractTo( nullptr, expectedItem.fileInfo.size, itemIndex ) );
@@ -257,10 +257,10 @@ void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedIt
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
 
-        const auto extractedItem = extracted_item( info, expectedItem );
-        REQUIRE( extractedItem != info.cend() );
+        const auto archiveItem = archive_item( info, expectedItem );
+        REQUIRE( archiveItem != info.cend() );
 
-        const auto itemIndex = extractedItem->index();
+        const auto itemIndex = archiveItem->index();
         std::ostringstream outputStream;
         if ( expectedItem.fileInfo.type == fs::file_type::directory ) {
             REQUIRE_THROWS( info.extractTo( outputStream, itemIndex ) );
@@ -824,7 +824,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode fi
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
     const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
     REQUIRE_ARCHIVE_TESTS( info );
-    const ExpectedItems expectedItems{ ArchivedItem{ clouds, BIT7Z_NATIVE_STRING( "クラウド.jpg" ), false } };
+    const ExpectedItems expectedItems{ ExpectedItem{ clouds, BIT7Z_NATIVE_STRING( "クラウド.jpg" ), false } };
     REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems );
 }
 

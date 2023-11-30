@@ -66,7 +66,7 @@ static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
 
 void require_archive_item( const BitInFormat& format,
                            const BitArchiveItem& item,
-                           const ArchivedItem& expectedItem,
+                           const ExpectedItem& expectedItem,
                            const SourceLocation& location ) {
     INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) );
     INFO( "  from " << location.file_name() << ":" << location.line() );
@@ -402,7 +402,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         REQUIRE( info.volumesCount() == 3 );
         REQUIRE( info.itemsCount() == 1 );
 
-        const ArchivedItem expectedItem{ clouds, clouds.name };
+        const ExpectedItem expectedItem{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.items()[ 0 ], expectedItem );
     }
 
@@ -413,7 +413,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         REQUIRE( info.volumesCount() == 3 );
         REQUIRE( info.itemsCount() == 1 );
 
-        const ArchivedItem expectedItem{ clouds, clouds.name };
+        const ExpectedItem expectedItem{ clouds, clouds.name };
         REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.items()[ 0 ], expectedItem );
     }
 }
