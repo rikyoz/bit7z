@@ -40,6 +40,17 @@ using namespace bit7z::test::filesystem;
 
 using ExpectedItems = std::vector< ArchivedItem >;
 
+inline auto extracted_item( const BitArchiveReader& archive,
+                            const ArchivedItem& expectedItem ) -> BitArchiveReader::ConstIterator {
+    if ( archive.retainDirectories() ) {
+        return archive.find( path_to_tstring( expectedItem.inArchivePath ) );
+    }
+
+    return std::find_if( archive.cbegin(), archive.cend(), [ &expectedItem]( const BitArchiveItem& item ) -> bool {
+        return item.name() == expectedItem.fileInfo.name;
+    } );
+}
+
 void require_filesystem_item( const ArchivedItem& expectedItem, const SourceLocation& location ) {
     INFO( "From " << location.file_name() << ":" << location.line() );
     INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() );
@@ -83,17 +94,17 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     INFO( "Test directory: " << testDir.path() );
 
     const auto testPath = path_to_tstring( testDir.path() );
-    const auto itemsCount = static_cast< uint32_t >( expectedItems.size() );
     for ( const auto& expectedItem : expectedItems ) {
-        const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        const auto extractedItem = extracted_item( info, expectedItem );
         REQUIRE( extractedItem != info.cend() );
         REQUIRE_NOTHROW( info.extractTo( testPath, { extractedItem->index() } ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
     REQUIRE( fs::is_empty( testDir.path() ) );
 
-    std::vector< uint32_t > testIndices( expectedItems.size() );
+    std::vector< uint32_t > testIndices( info.itemsCount() );
     std::iota( testIndices.begin(), testIndices.end(), 0 );
+    CAPTURE( testIndices );
     REQUIRE_NOTHROW( info.extractTo( testPath, testIndices ) );
     for ( const auto& expectedItem : expectedItems ) {
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
@@ -118,14 +129,14 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     }
 
     for ( const auto& expectedItem : expectedItems ) {
-        const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        const auto extractedItem = extracted_item( info, expectedItem );
         REQUIRE( extractedItem != info.cend() );
         // The vector of indices contains a valid index, and an invalid one, so the extraction should fail.
-        REQUIRE_THROWS( info.extractTo( testPath, { extractedItem->index(), itemsCount } ) );
+        REQUIRE_THROWS( info.extractTo( testPath, { extractedItem->index(), info.itemsCount() } ) );
         REQUIRE( fs::is_empty( testDir.path() ) );
     }
 
-    REQUIRE_THROWS( info.extractTo( testPath, { itemsCount } ) );
+    REQUIRE_THROWS( info.extractTo( testPath, { info.itemsCount() } ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 
     REQUIRE_THROWS( info.extractTo( testPath, { std::numeric_limits< uint32_t >::max() } ) );
@@ -152,7 +163,7 @@ void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedIt
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
-        const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        const auto extractedItem = extracted_item( info, expectedItem );
         REQUIRE( extractedItem != info.cend() );
         if ( extractedItem->isDir() ) {
             REQUIRE_THROWS( info.extractTo( outputBuffer, extractedItem->index() ) );
@@ -182,7 +193,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
-        const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        const auto extractedItem = extracted_item( info, expectedItem );
         REQUIRE( extractedItem != info.cend() );
 
         const auto itemIndex = extractedItem->index();
@@ -246,7 +257,7 @@ void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedIt
     for ( const auto& expectedItem : expectedItems ) {
         INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
 
-        const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
+        const auto extractedItem = extracted_item( info, expectedItem );
         REQUIRE( extractedItem != info.cend() );
 
         const auto itemIndex = extractedItem->index();
@@ -818,3 +829,28 @@ TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode fi
 }
 
 #endif
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive without retaining directories",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+        info.setRetainDirectories( false );
+        REQUIRE_ARCHIVE_EXTRACTS( info, flat_items_content().items );
+    }
+}

@@ -238,6 +238,22 @@ auto no_path_content() -> const ArchiveContent& {
     return instance;
 }
 
+auto flat_items_content() -> const ArchiveContent& {
+    static const ArchiveContent instance{
+        8,
+        615351,
+        { { italy, "italy.svg", false },
+          { loremIpsum, "Lorem Ipsum.pdf", false },
+          { noext, "noext", false },
+          { helloJson, "hello.json", false },
+          { clouds, "clouds.jpg", false },
+          { frequency, "frequency.xlsx", false },
+          { homework, "homework.doc", false },
+          { quickBrown, "The quick brown fox.pdf", false } }
+    };
+    return instance;
+}
+
 TestDirectory::TestDirectory( const fs::path& testDir ) : mOldCurrentDirectory{ current_dir() } {
     set_current_dir( testDir );
 }

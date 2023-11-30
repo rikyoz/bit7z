@@ -139,6 +139,8 @@ auto file_type_content() -> const ArchiveContent&;
 
 auto no_path_content() -> const ArchiveContent&;
 
+auto flat_items_content() -> const ArchiveContent&;
+
 class TestDirectory {
     public:
         explicit TestDirectory( const fs::path& testDir );
