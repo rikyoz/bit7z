@@ -27,8 +27,11 @@
 #include <bit7z/bittypes.hpp>
 #include <internal/fs.hpp>
 
+#include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <numeric>
+#include <random>
 #include <sstream>
 
 using namespace bit7z;
@@ -39,6 +42,7 @@ using ExpectedItems = std::vector< ArchivedItem >;
 
 void require_filesystem_item( const ArchivedItem& expectedItem, const SourceLocation& location ) {
     INFO( "From " << location.file_name() << ":" << location.line() );
+    INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() );
 
     // Note: there's no need to check the file with fs::exists
     //       since the file's type check already includes the check for the file existence.
@@ -69,7 +73,6 @@ void require_extracts_to_filesystem( const BitArchiveReader& info, const Expecte
         REQUIRE( fs::is_empty( testDir.path() ) );
     } else {
         for ( const auto& expectedItem : expectedItems ) {
-            INFO( "Failed while checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
             REQUIRE_FILESYSTEM_ITEM( expectedItem );
         }
     }
@@ -86,6 +89,32 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
         REQUIRE_NOTHROW( info.extractTo( testPath, { extractedItem->index() } ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
+    REQUIRE( fs::is_empty( testDir.path() ) );
+
+    std::vector< uint32_t > testIndices( expectedItems.size() );
+    std::iota( testIndices.begin(), testIndices.end(), 0 );
+    REQUIRE_NOTHROW( info.extractTo( testPath, testIndices ) );
+    for ( const auto& expectedItem : expectedItems ) {
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
+    }
+    REQUIRE( fs::is_empty( testDir.path() ) );
+
+    // For some reason, 7-Zip doesn't like reversed or random indices when extracting Rar archives.
+    if ( info.detectedFormat() != BitFormat::Rar ) {
+        std::reverse( testIndices.begin(), testIndices.end() );
+        REQUIRE_NOTHROW( info.extractTo( testPath, testIndices ) );
+        for ( const auto& expectedItem : expectedItems ) {
+            REQUIRE_FILESYSTEM_ITEM( expectedItem );
+        }
+        REQUIRE( fs::is_empty( testDir.path() ) );
+
+        std::shuffle( testIndices.begin(), testIndices.end(), std::mt19937{ std::random_device{}() } );
+        REQUIRE_NOTHROW( info.extractTo( testPath, testIndices ) );
+        for ( const auto& expectedItem : expectedItems ) {
+            REQUIRE_FILESYSTEM_ITEM( expectedItem );
+        }
+        REQUIRE( fs::is_empty( testDir.path() ) );
+    }
 
     for ( const auto& expectedItem : expectedItems ) {
         const auto extractedItem = info.find( path_to_tstring( expectedItem.inArchivePath ) );
@@ -97,7 +126,7 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     REQUIRE_THROWS( info.extractTo( testPath, { itemsCount } ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 
-    REQUIRE_THROWS( info.extractTo( testPath, { std::numeric_limits< uint32_t >::max() }) );
+    REQUIRE_THROWS( info.extractTo( testPath, { std::numeric_limits< uint32_t >::max() } ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 }
 
@@ -106,7 +135,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
     REQUIRE( bufferMap.size() == info.filesCount() );
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking extracted item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
         const auto& extractedItem = bufferMap.find( path_to_tstring( expectedItem.inArchivePath ) );
         if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
             REQUIRE( extractedItem != bufferMap.end() );
