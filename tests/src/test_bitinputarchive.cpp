@@ -326,6 +326,43 @@ void require_archive_extracts( const BitArchiveReader& info,
 #define REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems ) \
     require_archive_extracts( info, expectedItems, BIT7Z_CURRENT_LOCATION )
 
+void require_archive_extract_fails( const BitArchiveReader& info, const SourceLocation& location ) {
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto& detectedFormat = (info).detectedFormat();
+    if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
+        return;
+    }
+#endif
+
+    INFO( "From " << location.file_name() << ":" << location.line() );
+    INFO( "Failed while extracting the archive" );
+
+    SECTION( "Extracting to a temporary filesystem folder should fail" ) {
+        TempTestDirectory testDir{ "test_bitinputarchive" };
+        INFO( "Test directory: " << testDir.path() );
+        REQUIRE_THROWS( info.extractTo( path_to_tstring( testDir.path() ) ) );
+        // TODO: Make some guarantees on what remains after a failed extraction
+        for ( const auto& item : fs::directory_iterator( testDir.path() ) ) {
+            if ( item.is_regular_file() ) {
+                REQUIRE( fs::is_empty( item ) );
+            }
+            REQUIRE( fs::remove_all( item ) );
+        }
+    }
+
+    SECTION( "Extracting to a map of buffers" ) {
+        std::map< tstring, buffer_t > mapBuffers;
+        REQUIRE_THROWS( info.extractTo( mapBuffers ) );
+        for ( const auto& entry : mapBuffers ) {
+            // TODO: Check if extractTo should not write or clear the map when the extraction fails
+            REQUIRE( entry.second.empty() );
+        }
+    }
+}
+
+#define REQUIRE_ARCHIVE_EXTRACT_FAILS( info ) \
+    require_archive_extract_fails( info, BIT7Z_CURRENT_LOCATION )
+
 void require_archive_tests( const BitArchiveReader& info, const SourceLocation& location ) {
     INFO( "From " << location.file_name() << ":" << location.line() );
     INFO( "Failed while testing the archive" );
@@ -453,13 +490,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
         SECTION( "Opening the archive with no password is allowed, but testing and extraction should throw" ) {
             BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
             REQUIRE_THROWS( info.test() );
-
-            std::map< tstring, buffer_t > dummyMap;
-            REQUIRE_THROWS( info.extractTo( dummyMap ) );
-            for ( const auto& entry : dummyMap ) {
-                // TODO: Check if extractTo should not write or clear the map when the extraction fails
-                REQUIRE( entry.second.empty() );
-            }
+            REQUIRE_ARCHIVE_EXTRACT_FAILS( info );
 
             // After setting the password, the archive can be extracted.
             info.setPassword( password );
@@ -468,15 +499,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 
             info.clearPassword();
             REQUIRE_THROWS( info.test() );
-            REQUIRE_THROWS( info.extractTo( dummyMap ) );
-            for ( const auto& entry : dummyMap ) {
-                // TODO: Check if extractTo should not write or clear the map when the extraction fails
-                REQUIRE( entry.second.empty() );
-            }
+            REQUIRE_ARCHIVE_EXTRACT_FAILS( info );
 
             info.setPasswordCallback( [ &password ]() -> tstring {
                 return password;
-            });
+            } );
             REQUIRE_ARCHIVE_TESTS( info );
             REQUIRE_ARCHIVE_EXTRACTS( info, encrypted_content().items );
         }
