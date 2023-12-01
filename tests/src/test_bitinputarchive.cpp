@@ -871,6 +871,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
@@ -878,14 +879,25 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
                                       TestInputFormat{ "iso", BitFormat::Iso },
                                       TestInputFormat{ "lzh", BitFormat::Lzh },
                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
-                                      TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                      TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-#endif
                                       TestInputFormat{ "tar", BitFormat::Tar },
                                       TestInputFormat{ "wim", BitFormat::Wim },
                                       TestInputFormat{ "xz", BitFormat::Xz },
                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
+    const auto testFormat = GENERATE( as< TestInputFormat >(),
+                                      TestInputFormat{ "7z", BitFormat::SevenZip },
+                                      TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                      TestInputFormat{ "gz", BitFormat::GZip },
+                                      TestInputFormat{ "iso", BitFormat::Iso },
+                                      TestInputFormat{ "lzh", BitFormat::Lzh },
+                                      TestInputFormat{ "lzma", BitFormat::Lzma },
+                                      TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                      TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                      TestInputFormat{ "tar", BitFormat::Tar },
+                                      TestInputFormat{ "wim", BitFormat::Wim },
+                                      TestInputFormat{ "xz", BitFormat::Xz },
+                                      TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const auto arcFileName = fs::path{ clouds.name }.concat( "." + testFormat.extension );
@@ -947,16 +959,23 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
 TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "iso", BitFormat::Iso },
-#ifndef BIT7Z_BUILD_FOR_P7ZIP
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-#endif
                                        TestInputFormat{ "tar", BitFormat::Tar },
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
+#else
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
@@ -976,7 +995,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
             return true;
         } );
 
-        double finalRatio;
+        double finalRatio = 0.0;
         info.setRatioCallback( [ &finalRatio ]( uint64_t processedInput, uint64_t processedOutput ) {
             if ( processedOutput == 0 ) {
                 return;
