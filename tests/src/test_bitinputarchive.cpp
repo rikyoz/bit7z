@@ -451,7 +451,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
         getInputArchive( arcFileName, inputArchive );
 
         SECTION( "Opening the archive with no password is allowed, but testing and extraction should throw" ) {
-            const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
+            BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
             REQUIRE_THROWS( info.test() );
 
             std::map< tstring, buffer_t > dummyMap;
@@ -460,6 +460,25 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
                 // TODO: Check if extractTo should not write or clear the map when the extraction fails
                 REQUIRE( entry.second.empty() );
             }
+
+            // After setting the password, the archive can be extracted.
+            info.setPassword( password );
+            REQUIRE_ARCHIVE_TESTS( info );
+            REQUIRE_ARCHIVE_EXTRACTS( info, encrypted_content().items );
+
+            info.clearPassword();
+            REQUIRE_THROWS( info.test() );
+            REQUIRE_THROWS( info.extractTo( dummyMap ) );
+            for ( const auto& entry : dummyMap ) {
+                // TODO: Check if extractTo should not write or clear the map when the extraction fails
+                REQUIRE( entry.second.empty() );
+            }
+
+            info.setPasswordCallback( [ &password ]() -> tstring {
+                return password;
+            });
+            REQUIRE_ARCHIVE_TESTS( info );
+            REQUIRE_ARCHIVE_EXTRACTS( info, encrypted_content().items );
         }
 
         SECTION( "Opening the archive with the correct password should allow testing and extraction without issues" ) {
