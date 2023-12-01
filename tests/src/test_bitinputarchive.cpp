@@ -13,6 +13,9 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_template_test_macros.hpp>
 #include <catch2/generators/catch_generators.hpp>
+#include <catch2/matchers/catch_matchers_predicate.hpp>
+#include <catch2/matchers/catch_matchers_quantifiers.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
 
 #include "utils/archive.hpp"
 #include "utils/crc.hpp"
@@ -46,7 +49,7 @@ inline auto archive_item( const BitArchiveReader& archive,
         return archive.find( path_to_tstring( expectedItem.inArchivePath ) );
     }
 
-    return std::find_if( archive.cbegin(), archive.cend(), [ &expectedItem]( const BitArchiveItem& item ) -> bool {
+    return std::find_if( archive.cbegin(), archive.cend(), [ &expectedItem ]( const BitArchiveItem& item ) -> bool {
         return item.name() == expectedItem.fileInfo.name;
     } );
 }
@@ -852,5 +855,201 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive without retaining di
         BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
         info.setRetainDirectories( false );
         REQUIRE_ARCHIVE_EXTRACTS( info, flat_items_content().items );
+    }
+}
+
+template< typename TestType >
+inline auto overwritten_file_path( const BitInFormat& format ) -> fs::path {
+    if ( is_filesystem_archive< TestType >::value || format_has_path_metadata( format ) ) {
+        return clouds.name;
+    }
+    return "[Content]";
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various OverwriteMode settings",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto testFormat = GENERATE( as< TestInputFormat >(),
+                                      TestInputFormat{ "7z", BitFormat::SevenZip },
+                                      TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                      TestInputFormat{ "gz", BitFormat::GZip },
+                                      TestInputFormat{ "iso", BitFormat::Iso },
+                                      TestInputFormat{ "lzh", BitFormat::Lzh },
+                                      TestInputFormat{ "lzma", BitFormat::Lzma },
+#ifndef BIT7Z_BUILD_FOR_P7ZIP
+                                      TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                      TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+#endif
+                                      TestInputFormat{ "tar", BitFormat::Tar },
+                                      TestInputFormat{ "wim", BitFormat::Wim },
+                                      TestInputFormat{ "xz", BitFormat::Xz },
+                                      TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+        const auto arcFileName = fs::path{ clouds.name }.concat( "." + testFormat.extension );
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
+
+        TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir.path() );
+
+        const auto expectedFile = overwritten_file_path< TestType >( testFormat.format );
+        REQUIRE_FALSE( fs::exists( expectedFile ) );
+        {
+            fs::ofstream dummyFile{ expectedFile };
+        }
+        REQUIRE( fs::is_empty( expectedFile ) );
+        REQUIRE( fs::exists( expectedFile ) );
+
+        SECTION( "OverwriteMode::None" ) {
+            // After setting OverwriteMode::Overwrite, extracting should not throw.
+            info.setOverwriteMode( OverwriteMode::None );
+
+            // By default, BitArchiveReader uses OverwriteMode::None, so extracting again should throw.
+            REQUIRE_THROWS( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE( fs::exists( expectedFile ) );
+            REQUIRE( fs::is_empty( expectedFile ) );
+            REQUIRE( fs::remove( expectedFile ) );
+
+            // Verifying that if we remove the file, we can now extract it.
+            REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE( fs::exists( expectedFile ) );
+            REQUIRE( crc32( load_file( expectedFile ) ) == clouds.crc32 );
+        }
+
+        SECTION( "OverwriteMode::Overwrite" ) {
+            // After setting OverwriteMode::Overwrite, extracting should not throw.
+            info.setOverwriteMode( OverwriteMode::Overwrite );
+
+            REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE( fs::exists( expectedFile ) );
+            REQUIRE( crc32( load_file( expectedFile ) ) == clouds.crc32 );
+        }
+
+        SECTION( "OverwriteMode::Skip" ) {
+            // After setting OverwriteMode::Skip, extracting should not throw and not extracting anything.
+            info.setOverwriteMode( OverwriteMode::Skip );
+
+            REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE( fs::exists( expectedFile ) );
+            REQUIRE( fs::is_empty( expectedFile ) );
+        }
+        REQUIRE( fs::remove( expectedFile ) );
+    }
+}
+
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+#ifndef BIT7Z_BUILD_FOR_P7ZIP
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+#endif
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        uint64_t totalSize = 0;
+        info.setTotalCallback( [ &totalSize ]( uint64_t total ) {
+            totalSize = total;
+        } );
+
+        std::vector< uint64_t > progressValues;
+        info.setProgressCallback( [ &progressValues ]( uint64_t progress ) -> bool {
+            progressValues.push_back( progress );
+            return true;
+        } );
+
+        double finalRatio;
+        info.setRatioCallback( [ &finalRatio ]( uint64_t processedInput, uint64_t processedOutput ) {
+            if ( processedOutput == 0 ) {
+                return;
+            }
+            finalRatio = static_cast< double >( processedInput ) / static_cast< double >( processedOutput );
+        } );
+
+        std::vector< tstring > visitedFiles;
+        info.setFileCallback( [ &visitedFiles ]( const tstring& file ) {
+            visitedFiles.push_back( file );
+        } );
+
+        const auto& expectedItems = multiple_items_content().items;
+
+        SECTION( "When extracting to the filesystem" ) {
+            TempTestDirectory testOutDir{ "test_bitinputarchive" };
+            INFO( "Output directory: " << testOutDir.path() );
+            require_extracts_to_filesystem( info, expectedItems );
+        }
+
+        SECTION( "When extracting to a buffer map" ) {
+            require_extracts_to_buffers_map( info, expectedItems );
+        }
+
+        std::vector< tstring > expectedPaths;
+        expectedPaths.reserve( expectedItems.size() );
+        for ( const auto& expectedItem : expectedItems ) {
+            if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
+                expectedPaths.push_back( path_to_tstring( expectedItem.inArchivePath ) );
+            }
+        }
+
+        // Checking that the total callback was called at least once (it should be called only once by 7-Zip).
+        REQUIRE( totalSize == multiple_items_content().size );
+
+        // Checking that the progress callback was called at least once.
+        REQUIRE( !progressValues.empty() );
+
+        using namespace Catch::Matchers;
+
+        // For some reason, the Tar format makes the progress decrease in some cases,
+        // and it is not always less than the total size ¯\_(ツ)_/¯.
+        if ( testArchive.format != BitFormat::Tar ) {
+            // Checking that the values reported by the progress callback are increasing.
+            uint64_t lastProgress = 0;
+            REQUIRE_THAT( progressValues,
+                          AllMatch( Predicate< uint64_t >( [ &lastProgress ]( uint64_t progress ) -> bool {
+                              const bool result = progress >= lastProgress;
+                              lastProgress = progress;
+                              return result;
+                          } ) ) );
+
+            // Checking that all the values reported by the progress callback ar less than or equal to the total size.
+            REQUIRE_THAT( progressValues, AllMatch( Predicate< uint64_t >( [ &totalSize ]( uint64_t progress ) -> bool {
+                return progress <= totalSize;
+            } ) ) );
+
+            // TODO: Fix 7-Zip not calling the progress callback on last extracted block in these formats
+            if ( testArchive.format != BitFormat::Iso && testArchive.format != BitFormat::Rar5 ) {
+                REQUIRE( progressValues.back() == totalSize );
+            }
+        }
+
+        // Checking that the final value reported by the ratio callback makes sense.
+        if ( testArchive.format == BitFormat::Tar ) { // The Tar format has some space overhead, so the ratio is > 1.0.
+            REQUIRE( finalRatio > 1.0 );
+        } else if ( testArchive.format == BitFormat::Iso || testArchive.format == BitFormat::Wim ) {
+            REQUIRE( finalRatio == 1.0 ); // In this case, it is safe to use equal comparison with doubles.
+        } else {
+            REQUIRE( finalRatio < 1.0 );
+        }
+
+        // Checking that the paths reported by the file callback are the ones we expected.
+        REQUIRE_THAT( visitedFiles, UnorderedEquals( expectedPaths ) );
     }
 }
