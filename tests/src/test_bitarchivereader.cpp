@@ -54,16 +54,6 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
-// Compile-time checks for BitArchiveItemInfo
-static_assert( std::is_copy_constructible< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not copy-constructible." );
-static_assert( std::is_copy_assignable< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not copy-assignable." );
-static_assert( std::is_move_constructible< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not move-constructible." );
-static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not move-assignable." );
-
 void require_archive_item( const BitInFormat& format,
                            const BitArchiveItem& item,
                            const ExpectedItem& expectedItem,

@@ -19,6 +19,7 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bit7zlibrary.cpp
      src/test_bitabstractarchivecreator.cpp
      src/test_bitarchiveeditor.cpp
+     src/test_bitarchiveiteminfo.cpp
      src/test_bitarchivereader.cpp
      src/test_bitarchivewriter.cpp
      src/test_biterror.cpp
