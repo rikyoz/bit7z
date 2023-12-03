@@ -385,7 +385,7 @@ void require_archive_tests( const BitArchiveReader& info, const SourceLocation& 
 /* Note: throughout this unit test we will use BitArchiveReader for testing BitInputArchive's specific methods. */
 
 TEST_CASE( "BitInputArchive: Opening a non-existing archive should throw an exception" ) {
-    REQUIRE_THROWS( BitArchiveReader{ test::sevenzip_lib(), "non-existing.7z", BitFormat::SevenZip } );
+    REQUIRE_THROWS( BitArchiveReader{ test::sevenzip_lib(), BIT7Z_STRING( "non-existing.7z" ), BitFormat::SevenZip } );
     REQUIRE_THROWS( BitArchiveReader{ test::sevenzip_lib(), buffer_t{}, BitFormat::SevenZip } );
 
     fs::ifstream nonExistingStream{ "non-existing.7z" };
