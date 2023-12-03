@@ -112,8 +112,8 @@ inline auto crc( const crc_table< Bits >& table, const void* buffer, std::size_t
     uint_t< Bits > crc = initial ^ mask;
     const auto* byte_buffer = static_cast< const uint8_t* >( buffer );
     for ( std::size_t i = 0; i < length; ++i ) {
-        // NOLINTNEXTLINE(*-pro-bounds-pointer-arithmetic)
-        crc = table.at( byte_buffer[ i ] ^ ( crc & last_byte_mask ) ) ^ (crc >> 8);
+        // NOLINTNEXTLINE(*-pro-bounds-pointer-arithmetic, *-pro-bounds-constant-array-index)
+        crc = table[ byte_buffer[ i ] ^ ( crc & last_byte_mask ) ] ^ (crc >> 8);
     }
     return crc ^ mask;
 }
