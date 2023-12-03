@@ -93,7 +93,7 @@ endif()
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
     target_compile_options( ${LIB_TARGET} PRIVATE -Wshadow -Wcast-align -Wunused -Wtrampolines
                             -Woverloaded-virtual -Wformat=2 -Wdouble-promotion -Wlogical-op )
-    if( NOT MINGW AND BIT7Z_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN )
+    if( NOT MINGW AND BIT7Z_USE_LEGACY_IUNKNOWN )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wnon-virtual-dtor )
     endif()
     if( MINGW )
