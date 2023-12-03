@@ -91,7 +91,7 @@ endif()
 
 # Extra warning flags for GCC
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
-    target_compile_options( ${LIB_TARGET} PRIVATE -Wshadow -Wcast-align -Wunused
+    target_compile_options( ${LIB_TARGET} PRIVATE -Wshadow -Wcast-align -Wunused -Wtrampolines
                             -Woverloaded-virtual -Wformat=2 -Wdouble-promotion -Wlogical-op )
     if( NOT MINGW AND BIT7Z_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wnon-virtual-dtor )
