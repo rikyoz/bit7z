@@ -159,15 +159,9 @@ class TestDirectory {
         fs::path mOldCurrentDirectory;
 };
 
-enum struct TempDirectoryPolicy : std::uint8_t {
-    CleanupOnExit,
-    KeepOnExit
-};
-
 class TempDirectory {
     public:
-        explicit TempDirectory( const std::string& dirName,
-                                TempDirectoryPolicy policy = TempDirectoryPolicy::CleanupOnExit );
+        explicit TempDirectory( const std::string& dirName );
 
         explicit TempDirectory( const TempDirectory& ) = delete;
 
@@ -183,12 +177,10 @@ class TempDirectory {
 
     private:
         fs::path mDirectory;
-        TempDirectoryPolicy mPolicy;
 };
 
 struct TempTestDirectory : TempDirectory, TestDirectory {
-    explicit TempTestDirectory( const std::string& dirName,
-                                TempDirectoryPolicy policy = TempDirectoryPolicy::CleanupOnExit );
+    explicit TempTestDirectory( const std::string& dirName );
 };
 
 #endif

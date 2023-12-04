@@ -288,11 +288,11 @@ auto create_temp_directory( const std::string& name ) -> fs::path {
     return tempDir;
 }
 
-TempDirectory::TempDirectory( const std::string& dirName, TempDirectoryPolicy policy )
-    : mDirectory{ create_temp_directory( dirName + "_" + random_test_id() ) }, mPolicy{ policy } {}
+TempDirectory::TempDirectory( const std::string& dirName )
+    : mDirectory{ create_temp_directory( dirName + "_" + random_test_id() ) } {}
 
 TempDirectory::~TempDirectory() {
-    if ( mPolicy == TempDirectoryPolicy::CleanupOnExit && fs::is_empty( mDirectory ) ) {
+    if ( fs::is_empty( mDirectory ) ) {
         fs::remove( mDirectory );
     }
 }
@@ -301,8 +301,8 @@ auto TempDirectory::path() -> const fs::path& {
     return mDirectory;
 }
 
-TempTestDirectory::TempTestDirectory( const std::string& dirName, TempDirectoryPolicy policy )
-    : TempDirectory{ dirName, policy }, TestDirectory{ path() } {}
+TempTestDirectory::TempTestDirectory( const std::string& dirName )
+    : TempDirectory{ dirName }, TestDirectory{ path() } {}
 
 } // namespace filesystem
 } // namespace test
