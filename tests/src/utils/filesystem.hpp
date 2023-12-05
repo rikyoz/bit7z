@@ -173,11 +173,18 @@ class TempDirectory {
 
         ~TempDirectory();
 
-        auto path() -> const fs::path&;
+        BIT7Z_NODISCARD
+        auto path() const -> const fs::path&;
+
+        operator tstring() const; // NOLINT(*-explicit-constructor)
 
     private:
         fs::path mDirectory;
 };
+
+inline auto operator<<( std::ostream& stream, const TempDirectory& dir ) -> std::ostream& {
+    return stream << dir.path().u8string();
+}
 
 struct TempTestDirectory : TempDirectory, TestDirectory {
     explicit TempTestDirectory( const std::string& dirName );

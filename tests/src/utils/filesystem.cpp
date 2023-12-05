@@ -12,6 +12,8 @@
 
 #include <catch2/catch_get_random_seed.hpp>
 
+#include <internal/stringutil.hpp>
+
 #include "filesystem.hpp"
 
 #include <random>
@@ -297,8 +299,12 @@ TempDirectory::~TempDirectory() {
     }
 }
 
-auto TempDirectory::path() -> const fs::path& {
+auto TempDirectory::path() const -> const fs::path& {
     return mDirectory;
+}
+
+TempDirectory::operator tstring() const {
+    return path_to_tstring( mDirectory );
 }
 
 TempTestDirectory::TempTestDirectory( const std::string& dirName )

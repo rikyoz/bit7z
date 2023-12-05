@@ -80,9 +80,9 @@ void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLoca
 
 void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     TempTestDirectory testDir{ "test_bitinputarchive" };
-    INFO( "Test directory: " << testDir.path() );
+    INFO( "Test directory: " << testDir );
 
-    REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testDir.path() ) ) );
+    REQUIRE_NOTHROW( info.extractTo( testDir ) );
     if ( expectedItems.empty() ) {
         REQUIRE( fs::is_empty( testDir.path() ) );
     } else {
@@ -94,13 +94,12 @@ void require_extracts_to_filesystem( const BitArchiveReader& info, const Expecte
 
 void require_extracts_items_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     TempTestDirectory testDir{ "test_bitinputarchive" };
-    INFO( "Test directory: " << testDir.path() );
+    INFO( "Test directory: " << testDir );
 
-    const auto testPath = path_to_tstring( testDir.path() );
     for ( const auto& expectedItem : expectedItems ) {
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
-        REQUIRE_NOTHROW( info.extractTo( testPath, { archiveItem->index() } ) );
+        REQUIRE_NOTHROW( info.extractTo( testDir, { archiveItem->index() } ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
     REQUIRE( fs::is_empty( testDir.path() ) );
@@ -108,7 +107,7 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     std::vector< uint32_t > testIndices( info.itemsCount() );
     std::iota( testIndices.begin(), testIndices.end(), 0 );
     CAPTURE( testIndices );
-    REQUIRE_NOTHROW( info.extractTo( testPath, testIndices ) );
+    REQUIRE_NOTHROW( info.extractTo( testDir, testIndices ) );
     for ( const auto& expectedItem : expectedItems ) {
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
@@ -117,14 +116,14 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     // For some reason, 7-Zip doesn't like reversed or random indices when extracting Rar archives.
     if ( info.detectedFormat() != BitFormat::Rar ) {
         std::reverse( testIndices.begin(), testIndices.end() );
-        REQUIRE_NOTHROW( info.extractTo( testPath, testIndices ) );
+        REQUIRE_NOTHROW( info.extractTo( testDir, testIndices ) );
         for ( const auto& expectedItem : expectedItems ) {
             REQUIRE_FILESYSTEM_ITEM( expectedItem );
         }
         REQUIRE( fs::is_empty( testDir.path() ) );
 
         std::shuffle( testIndices.begin(), testIndices.end(), std::mt19937{ std::random_device{}() } );
-        REQUIRE_NOTHROW( info.extractTo( testPath, testIndices ) );
+        REQUIRE_NOTHROW( info.extractTo( testDir, testIndices ) );
         for ( const auto& expectedItem : expectedItems ) {
             REQUIRE_FILESYSTEM_ITEM( expectedItem );
         }
@@ -135,14 +134,14 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
         // The vector of indices contains a valid index, and an invalid one, so the extraction should fail.
-        REQUIRE_THROWS( info.extractTo( testPath, { archiveItem->index(), info.itemsCount() } ) );
+        REQUIRE_THROWS( info.extractTo( testDir, { archiveItem->index(), info.itemsCount() } ) );
         REQUIRE( fs::is_empty( testDir.path() ) );
     }
 
-    REQUIRE_THROWS( info.extractTo( testPath, { info.itemsCount() } ) );
+    REQUIRE_THROWS( info.extractTo( testDir, { info.itemsCount() } ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 
-    REQUIRE_THROWS( info.extractTo( testPath, { std::numeric_limits< uint32_t >::max() } ) );
+    REQUIRE_THROWS( info.extractTo( testDir, { std::numeric_limits< uint32_t >::max() } ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 }
 
@@ -339,8 +338,8 @@ void require_archive_extract_fails( const BitArchiveReader& info, const SourceLo
 
     SECTION( "Extracting to a temporary filesystem folder should fail" ) {
         TempTestDirectory testDir{ "test_bitinputarchive" };
-        INFO( "Test directory: " << testDir.path() );
-        REQUIRE_THROWS( info.extractTo( path_to_tstring( testDir.path() ) ) );
+        INFO( "Test directory: " << testDir );
+        REQUIRE_THROWS( info.extractTo( testDir ) );
         // TODO: Make some guarantees on what remains after a failed extraction
         for ( const auto& item : fs::directory_iterator( testDir.path() ) ) {
             if ( item.is_regular_file() ) {
@@ -585,7 +584,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
                 REQUIRE_ARCHIVE_TESTS( info );
 
                 TempTestDirectory extractionTestDir{ "test_bitinputarchive" };
-                REQUIRE_NOTHROW( info.extractTo( path_to_tstring( extractionTestDir.path() ) ) );
+                REQUIRE_NOTHROW( info.extractTo( extractionTestDir ) );
                 REQUIRE( fs::exists( wholeArcFileName ) );
                 REQUIRE( fs::remove( wholeArcFileName ) );
             }
@@ -961,7 +960,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
         BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
 
         TempTestDirectory testOutDir{ "test_bitinputarchive" };
-        INFO( "Output directory: " << testOutDir.path() );
+        INFO( "Output directory: " << testOutDir );
 
         const auto expectedFile = overwritten_file_path< TestType >( testFormat.format );
         REQUIRE_FALSE( fs::exists( expectedFile ) );
@@ -976,13 +975,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
             info.setOverwriteMode( OverwriteMode::None );
 
             // By default, BitArchiveReader uses OverwriteMode::None, so extracting again should throw.
-            REQUIRE_THROWS( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE_THROWS( info.extractTo( testOutDir ) );
             REQUIRE( fs::exists( expectedFile ) );
             REQUIRE( fs::is_empty( expectedFile ) );
             REQUIRE( fs::remove( expectedFile ) );
 
             // Verifying that if we remove the file, we can now extract it.
-            REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
             REQUIRE( fs::exists( expectedFile ) );
             REQUIRE( crc32( load_file( expectedFile ) ) == clouds.crc32 );
         }
@@ -991,7 +990,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
             // After setting OverwriteMode::Overwrite, extracting should not throw.
             info.setOverwriteMode( OverwriteMode::Overwrite );
 
-            REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
             REQUIRE( fs::exists( expectedFile ) );
             REQUIRE( crc32( load_file( expectedFile ) ) == clouds.crc32 );
         }
@@ -1000,7 +999,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
             // After setting OverwriteMode::Skip, extracting should not throw and not extracting anything.
             info.setOverwriteMode( OverwriteMode::Skip );
 
-            REQUIRE_NOTHROW( info.extractTo( path_to_tstring( testOutDir.path() ) ) );
+            REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
             REQUIRE( fs::exists( expectedFile ) );
             REQUIRE( fs::is_empty( expectedFile ) );
         }
@@ -1066,7 +1065,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
 
         SECTION( "When extracting to the filesystem" ) {
             TempTestDirectory testOutDir{ "test_bitinputarchive" };
-            INFO( "Output directory: " << testOutDir.path() );
+            INFO( "Output directory: " << testOutDir );
             require_extracts_to_filesystem( info, expectedItems );
         }
 
