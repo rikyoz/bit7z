@@ -34,8 +34,7 @@ class OpenCallback final : public IArchiveOpenCallback,
                            public ICryptoGetTextPassword,
                            public Callback {
     public:
-        explicit OpenCallback( const BitAbstractArchiveHandler& handler,
-                               const fs::path& filename = BIT7Z_STRING( "." ) );
+        explicit OpenCallback( const BitAbstractArchiveHandler& handler, fs::path archivePath = fs::path{} );
 
         OpenCallback( const OpenCallback& ) = delete;
 
@@ -72,7 +71,7 @@ class OpenCallback final : public IArchiveOpenCallback,
     private:
         bool mSubArchiveMode;
         std::wstring mSubArchiveName;
-        FilesystemItem mFileItem;
+        fs::path mArchivePath;
         bool mPasswordWasAsked;
 };
 

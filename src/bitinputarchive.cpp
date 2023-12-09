@@ -151,14 +151,14 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto bufStream = bit7z::make_com< CBufferInStream, IInStream >( inBuffer );
-    mInArchive = openArchiveStream( BIT7Z_STRING( "." ), bufStream );
+    mInArchive = openArchiveStream( fs::path{}, bufStream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& inStream )
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto stdStream = bit7z::make_com< CStdInStream, IInStream >( inStream );
-    mInArchive = openArchiveStream( BIT7Z_STRING( "." ), stdStream );
+    mInArchive = openArchiveStream( fs::path{}, stdStream );
 }
 
 auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {
