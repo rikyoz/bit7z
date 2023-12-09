@@ -16,10 +16,15 @@
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
+#include <utility>
+
 namespace bit7z {
 
-OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, const fs::path& filename )
-    : Callback( handler ), mSubArchiveMode( false ), mFileItem( filename ), mPasswordWasAsked{ false } {}
+OpenCallback::OpenCallback( const BitAbstractArchiveHandler& handler, fs::path archivePath )
+    : Callback( handler ),
+      mSubArchiveMode( false ),
+      mArchivePath{ std::move( archivePath ) },
+      mPasswordWasAsked{ false } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::SetTotal( const UInt64* /* files */, const UInt64* /* bytes */ ) noexcept {
@@ -34,40 +39,11 @@ STDMETHODIMP OpenCallback::SetCompleted( const UInt64* /* files */, const UInt64
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::GetProperty( PROPID property, PROPVARIANT* value ) noexcept try {
     BitPropVariant prop;
-    if ( mSubArchiveMode ) {
-        if ( property == kpidName ) {
-            prop = mSubArchiveName;
-            // case kpidSize: prop = _subArchiveSize; break; // we don't use it for now.
-        }
-    } else {
-        switch ( property ) {
-            case kpidName:
-                prop = path_to_wide_string( mFileItem.filesystemName() );
-                break;
-            case kpidIsDir:
-                prop = mFileItem.isDir();
-                break;
-            case kpidSize:
-                prop = mFileItem.size();
-                break;
-            case kpidAttrib:
-                prop = mFileItem.attributes();
-                break;
-            case kpidCTime:
-                prop = mFileItem.creationTime();
-                break;
-            case kpidATime:
-                prop = mFileItem.lastAccessTime();
-                break;
-            case kpidMTime:
-                prop = mFileItem.lastWriteTime();
-                break;
-            default: //prop is empty
-                break;
-        }
+    if ( property == kpidName ) {
+        prop = mSubArchiveMode ? mSubArchiveName : path_to_wide_string( mArchivePath.filename() );
     }
     *value = prop;
-    prop.bstrVal = nullptr;
+    prop.bstrVal = nullptr; // NOLINT(*-pro-type-union-access)
     return S_OK;
 } catch ( const BitException& ex ) {
     return ex.hresultCode();
@@ -80,10 +56,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         if ( mSubArchiveMode ) {
             return S_FALSE;
         }
-        if ( mFileItem.isDir() ) {
-            return S_FALSE;
-        }
-        fs::path streamPath = mFileItem.filesystemPath();
+        fs::path streamPath = mArchivePath;
         if ( name != nullptr ) {
             streamPath = streamPath.parent_path();
             streamPath.append( name );
