@@ -1,14 +1,17 @@
 name: Test on macOS
-on: [pull_request, push]
+on:
+  pull_request:
+  push:
+    paths:
+    - 'cmake/**'
+    - 'include/**'
+    - 'src/**'
+    - 'tests/**'
+    - 'CMakeLists.txt'
 
 jobs:
   build_macos:
     runs-on: macos-latest
-    if: |
-      github.event_name == 'pull_request'
-      || contains(github.event.head_commit.message, '[test]')
-      || contains(github.event.head_commit.message, '[test-macos]')
-      || startsWith(github.ref, 'refs/tags/v')
 
     strategy:
       fail-fast: false
