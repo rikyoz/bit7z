@@ -198,7 +198,7 @@ deploy:
   tag: $(APPVEYOR_REPO_TAG_NAME)
   description: 'Binaries of Bit7z %bit7z_version%'
   auth_token:
-    secure: +dbEuB5+rqsaUx/pMZVdKBpFvgN/E8/ZayhzgsfHnypYI1JnGGSpN3enE5Fvx5Oq
+    secure: 5b0wRmYrS2S5MEu+5rslOkBY//wJ+ShwhxNeOhxaAaMjTYRbSDqe4cme0CukKSgp
   artifact: /.*\.7z/
   draft: true
   prerelease: false
