@@ -21,6 +21,10 @@ auto GenericInputItem::hasNewData() const noexcept -> bool {
     return true;
 }
 
+auto GenericInputItem::isSymLink() const -> bool {
+    return false;
+}
+
 auto GenericInputItem::itemProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant prop;
     switch ( property ) {
@@ -49,10 +53,6 @@ auto GenericInputItem::itemProperty( BitProperty property ) const -> BitPropVari
             break;
     }
     return prop;
-}
-
-auto GenericInputItem::isSymLink() const -> bool {
-    return false;
 }
 
 } // namespace bit7z

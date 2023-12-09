@@ -42,6 +42,10 @@ class BufferItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
 
+        BIT7Z_NODISCARD auto filesystemPath() const -> const fs::path& override;
+
+        BIT7Z_NODISCARD auto filesystemName() const -> fs::path override;
+
     private:
         const buffer_t& mBuffer;
         fs::path mBufferName;

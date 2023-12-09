@@ -69,4 +69,12 @@ auto BufferItem::attributes() const noexcept -> uint32_t {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
 
+auto BufferItem::filesystemPath() const -> const fs::path& {
+    return mBufferName;
+}
+
+auto BufferItem::filesystemName() const -> fs::path {
+    return mBufferName.filename();
+}
+
 } // namespace bit7z

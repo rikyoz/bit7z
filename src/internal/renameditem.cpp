@@ -77,4 +77,12 @@ auto RenamedItem::attributes() const -> uint32_t {
     return mInputArchive.itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
 }
 
+auto RenamedItem::filesystemPath() const -> const fs::path& {
+    return mNewPath;
+}
+
+auto RenamedItem::filesystemName() const -> fs::path {
+    return mNewPath.filename();
+}
+
 } // namespace bit7z

@@ -43,6 +43,10 @@ class StdInputItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto getStream( ISequentialInStream** inStream ) const -> HRESULT override;
 
+        BIT7Z_NODISCARD auto filesystemPath() const -> const fs::path& override;
+
+        BIT7Z_NODISCARD auto filesystemName() const -> fs::path override;
+
     private:
         std::istream& mStream;
         fs::path mStreamPath;

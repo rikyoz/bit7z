@@ -74,4 +74,12 @@ auto StdInputItem::attributes() const noexcept -> uint32_t {
     return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
 
+auto StdInputItem::filesystemPath() const -> const fs::path& {
+    return mStreamPath;
+}
+
+auto StdInputItem::filesystemName() const -> fs::path {
+    return mStreamPath.filename();
+}
+
 } // namespace bit7z

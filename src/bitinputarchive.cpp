@@ -178,10 +178,10 @@ auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const
                             make_hresult_code( res ) );
     }
     if ( property == BitProperty::Path && itemProperty.isEmpty() && itemsCount() == 1 ) {
-        auto itemPath = tstring_to_path( mArchivePath );
-        if ( itemPath.empty() ) {
+        if ( mArchivePath.empty() ) {
             itemProperty = kEmptyFileWideAlias;
         } else {
+            auto itemPath = tstring_to_path( mArchivePath );
             if ( *mDetectedFormat != BitFormat::Split && itemPath.extension() == ".001" ) {
                 itemPath = itemPath.stem();
             }

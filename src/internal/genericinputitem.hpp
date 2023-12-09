@@ -20,8 +20,6 @@ struct ISequentialInStream;
 namespace bit7z {
 
 struct GenericInputItem : public BitGenericItem {
-    BIT7Z_NODISCARD auto isSymLink() const -> bool override;
-
     BIT7Z_NODISCARD virtual auto inArchivePath() const -> fs::path = 0;
 
     BIT7Z_NODISCARD virtual auto getStream( ISequentialInStream** inStream ) const -> HRESULT = 0;
@@ -32,7 +30,13 @@ struct GenericInputItem : public BitGenericItem {
 
     BIT7Z_NODISCARD virtual auto lastWriteTime() const -> FILETIME = 0;
 
+    BIT7Z_NODISCARD virtual auto filesystemPath() const -> const fs::path& = 0;
+
+    BIT7Z_NODISCARD virtual auto filesystemName() const -> fs::path = 0;
+
     BIT7Z_NODISCARD virtual auto hasNewData() const noexcept -> bool;
+
+    BIT7Z_NODISCARD auto isSymLink() const -> bool override;
 
     BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
