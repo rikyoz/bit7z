@@ -17,6 +17,11 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
+#if (!defined(__apple_build_version__) && defined(__clang__) && (__clang_major__ >= 9)) || \
+        (!defined(__clang__) && defined(__GNUC__))
+#define BIT7Z_COMPILER_SUPPORT_SOURCE_BUILTINS
+#endif
+
 /**
  * A naive version of C++20's std::source_location.
  */
@@ -25,18 +30,18 @@ struct SourceLocation final {
         using number_type = std::uint_least32_t;
 
 
-#ifdef _MSC_VER
-        BIT7Z_NODISCARD
-        static constexpr auto current( const char* fileName,
-                                       const char* functionName,
-                                       number_type lineNumber ) noexcept -> SourceLocation {
-            return { fileName, functionName, lineNumber };
-        }
-#else
+#ifdef BIT7Z_COMPILER_SUPPORT_SOURCE_BUILTINS
         BIT7Z_NODISCARD
         static constexpr auto current( const char* fileName = __builtin_FILE(),
                                        const char* functionName = __builtin_FUNCTION(),
                                        number_type lineNumber = __builtin_LINE() ) noexcept -> SourceLocation {
+            return { fileName, functionName, lineNumber };
+        }
+#else
+        BIT7Z_NODISCARD
+        static constexpr auto current( const char* fileName,
+                                       const char* functionName,
+                                       number_type lineNumber ) noexcept -> SourceLocation {
             return { fileName, functionName, lineNumber };
         }
 #endif
@@ -76,10 +81,10 @@ struct SourceLocation final {
         number_type mLineNumber;
 };
 
-#ifdef _MSC_VER
-#define BIT7Z_CURRENT_LOCATION SourceLocation::current( __FILE__, __FUNCTION__, __LINE__ )
-#else
+#ifdef BIT7Z_COMPILER_SUPPORT_SOURCE_BUILTINS
 #define BIT7Z_CURRENT_LOCATION SourceLocation::current()
+#else
+#define BIT7Z_CURRENT_LOCATION SourceLocation::current( __FILE__, __FUNCTION__, __LINE__ )
 #endif
 
 } // namespace test
