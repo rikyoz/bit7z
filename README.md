@@ -74,7 +74,7 @@ try { // bit7z classes can throw BitException objects
     // Extracting a simple archive
     extractor.extract( "path/to/archive.7z", "out/dir/" );
 
-    // Extracting a specific file
+    // Extracting a specific file inside an archive
     extractor.extractMatching( "path/to/archive.7z", "file.pdf", "out/dir/" );
 
     // Extracting the first file of an archive to a buffer
@@ -181,28 +181,27 @@ try { // bit7z classes can throw BitException objects
     BitArchiveReader arc{ lib, "archive.7z", BitFormat::SevenZip };
 
     // Printing archive metadata
-    std::cout << "Archive properties" << std::endl;
-    std::cout << "  Items count: "   << arc.itemsCount() << std::endl;
-    std::cout << "  Folders count: " << arc.foldersCount() << std::endl;
-    std::cout << "  Files count: "   << arc.filesCount() << std::endl;
-    std::cout << "  Size: "          << arc.size() << std::endl;
-    std::cout << "  Packed size: "   << arc.packSize() << std::endl;
-    std::cout << std::endl;
+    std::cout << "Archive properties\n";
+    std::cout << "  Items count: "   << arc.itemsCount() << '\n';
+    std::cout << "  Folders count: " << arc.foldersCount() << '\n';
+    std::cout << "  Files count: "   << arc.filesCount() << '\n';
+    std::cout << "  Size: "          << arc.size() <<'\n';
+    std::cout << "  Packed size: "   << arc.packSize() << "\n\n";
 
     // Printing the metadata of the archived items
     std::cout << "Archived items";
-    auto arc_items = arc.items();
-    for ( auto& item : arc_items ) {
-        std::cout << std::endl;
-        std::cout << "  Item index: "   << item.index() << std::endl;
-        std::cout << "    Name: "        << item.name() << std::endl;
-        std::cout << "    Extension: "   << item.extension() << std::endl;
-        std::cout << "    Path: "        << item.path() << std::endl;
-        std::cout << "    IsDir: "       << item.isDir() << std::endl;
-        std::cout << "    Size: "        << item.size() << std::endl;
-        std::cout << "    Packed size: " << item.packSize() << std::endl;
-        std::cout << "    CRC: "         << item.crc() << std::endl;
+    for ( const auto& item : arc ) {
+        std::cout << '\n';
+        std::cout << "  Item index: "    << item.index() << '\n';
+        std::cout << "    Name: "        << item.name() << '\n';
+        std::cout << "    Extension: "   << item.extension() << '\n';
+        std::cout << "    Path: "        << item.path() << '\n';
+        std::cout << "    IsDir: "       << item.isDir() << '\n';
+        std::cout << "    Size: "        << item.size() << '\n';
+        std::cout << "    Packed size: " << item.packSize() << '\n';
+        std::cout << "    CRC: " << std::hex << item.crc() << std::dec << '\n';
     }
+    std::cout.flush();
 } catch ( const bit7z::BitException& ex ) { /* Do something with ex.what()...*/ }
 ```
 
