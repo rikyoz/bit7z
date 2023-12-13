@@ -51,17 +51,15 @@ set( TESTS_TARGET_PUBLIC bit7z-tests-public )
 add_executable( ${TESTS_TARGET_PUBLIC} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES} )
 
 if( BIT7Z_TESTS_FILESYSTEM )
-    set( BIT7Z_TESTS_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/data )
+    CPMAddPackage( NAME bit7z_test_data
+                   GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
+                   VERSION 1.0
+                   DOWNLOAD_ONLY YES )
+    if( bit7z_test_data_ADDED )
+        set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )
+        message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
+    endif()
 
-    include( FetchContent )
-    FetchContent_Declare( bit7z-test-data
-                          GIT_REPOSITORY https://github.com/rikyoz/bit7z-test-data.git
-                          GIT_TAG abc1adc273dd8dd17f55969838811f98872d77b8
-                          GIT_SHALLOW ON
-                          SOURCE_DIR ${BIT7Z_TESTS_DATA_DIR} )
-    FetchContent_MakeAvailable( bit7z-test-data )
-
-    message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
     target_compile_definitions( ${TESTS_TARGET} PRIVATE
                                 BIT7Z_TESTS_FILESYSTEM
                                 BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
