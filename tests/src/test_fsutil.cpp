@@ -213,7 +213,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
         { "./../test_filesystem/",                            "test_filesystem" },
         { "./../test_filesystem/folder/",                     "folder" },
         { fs::absolute( "." ),                                "test_filesystem" },
-        { fs::absolute( "../" ),                              "bit7z_test_data" },
+        { fs::absolute( "../" ),                              fs::path{ test_data_dir }.filename() },
         { fs::absolute( "./italy.svg" ),                      "italy.svg" },
         { fs::absolute( "./folder" ),                         "folder" },
         { fs::absolute( "./folder/" ),                        "folder" },
