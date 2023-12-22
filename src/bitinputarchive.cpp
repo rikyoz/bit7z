@@ -137,14 +137,14 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto bufStream = bit7z::make_com< CBufferInStream, IInStream >( inBuffer );
-    mInArchive = openArchiveStream( BIT7Z_STRING( "." ), bufStream );
+    mInArchive = openArchiveStream( fs::path{}, bufStream );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& inStream )
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto stdStream = bit7z::make_com< CStdInStream, IInStream >( inStream );
-    mInArchive = openArchiveStream( BIT7Z_STRING( "." ), stdStream );
+    mInArchive = openArchiveStream( fs::path{}, stdStream );
 }
 
 auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {
@@ -164,7 +164,15 @@ auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const
                             make_hresult_code( res ) );
     }
     if ( property == BitProperty::Path && itemProperty.isEmpty() && itemsCount() == 1 ) {
-        itemProperty = path_to_wide_string( tstring_to_path( mArchivePath ).stem() );
+        auto itemPath = tstring_to_path( mArchivePath );
+        if ( itemPath.empty() ) {
+            itemProperty = kEmptyFileWideAlias;
+        } else {
+            if ( *mDetectedFormat != BitFormat::Split && itemPath.extension() == ".001" ) {
+                itemPath = itemPath.stem();
+            }
+            itemProperty = path_to_wide_string( itemPath.stem() );
+        }
     }
     return itemProperty;
 }
@@ -211,7 +219,26 @@ auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandle
     return mArchiveHandler;
 }
 
+void BitInputArchive::extractTo( const tstring& outDir ) const {
+    auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
+    extract_arc( mInArchive, {}, callback );
+}
+
+inline auto findInvalidIndex( const std::vector< uint32_t >& indices,
+                              uint32_t itemsCount ) -> std::vector< uint32_t >::const_iterator {
+    return std::find_if( indices.cbegin(), indices.cend(), [&]( uint32_t index ) -> bool {
+        return index >= itemsCount;
+    });
+}
+
 void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const {
+    // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
+    const auto invalidIndex = findInvalidIndex( indices, itemsCount() );
+    if ( invalidIndex != indices.cend() ) {
+        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
     extract_arc( mInArchive, indices, callback );
 }
@@ -253,14 +280,19 @@ void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const
 }
 
 void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t index ) const {
+    if ( buffer == nullptr ) {
+        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
+                            make_error_code( BitError::NullOutputBuffer ) );
+    }
+
     const uint32_t numberItems = itemsCount();
     if ( index >= numberItems ) {
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
+        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::InvalidIndex ) );
     }
 
     if ( isItemFolder( index ) ) { // Consider only files, not folders
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
+        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
