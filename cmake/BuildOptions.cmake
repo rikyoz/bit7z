@@ -41,6 +41,9 @@ if( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
     target_compile_definitions( ${LIB_TARGET} PRIVATE BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
 endif()
 
+option( BIT7Z_DISABLE_USE_STD_FILESYSTEM "Disable using the standard filesystem library (always use ghc::filesystem)" )
+message( STATUS "Disable using std::filesystem: ${BIT7Z_DISABLE_USE_STD_FILESYSTEM}" )
+
 set( BIT7Z_CUSTOM_7ZIP_PATH "" CACHE STRING "A custom path to the 7-zip source code" )
 if( NOT BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
     if( NOT EXISTS ${BIT7Z_CUSTOM_7ZIP_PATH}/CPP AND NOT EXISTS ${BIT7Z_CUSTOM_7ZIP_PATH}/DOC/readme.txt )

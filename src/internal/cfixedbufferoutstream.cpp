@@ -10,6 +10,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#ifdef _MSC_VER
+#define _SCL_SECURE_NO_WARNINGS
+#endif
+
 #include "internal/cfixedbufferoutstream.hpp"
 
 #include "biterror.hpp"
@@ -92,6 +96,7 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
 
     const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
     try {
+        // TODO: Use std::span, gsl::span, or a custom span class (e.g., BufferView).
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         std::copy_n( byteData, writeSize, &mBuffer[ mCurrentPosition ] ); //-V2563
     } catch ( ... ) {
