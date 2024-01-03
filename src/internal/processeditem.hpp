@@ -11,6 +11,7 @@
 #define PROCESSEDITEM_HPP
 
 #include "bitdefines.hpp"
+#include "bitpropvariant.hpp"
 #include "internal/fs.hpp"
 #include "internal/windows.hpp"
 
@@ -32,15 +33,28 @@ class ProcessedItem final {
 
         BIT7Z_NODISCARD auto areAttributesDefined() const -> bool;
 
+        BIT7Z_NODISCARD auto hasModifiedTime() const -> bool;
+
         BIT7Z_NODISCARD auto modifiedTime() const -> FILETIME;
 
-        BIT7Z_NODISCARD auto isModifiedTimeDefined() const -> bool;
+#ifdef _WIN32
+        BIT7Z_NODISCARD auto hasCreationTime() const -> bool;
+
+        BIT7Z_NODISCARD auto creationTime() const -> FILETIME;
+
+        BIT7Z_NODISCARD auto hasAccessTime() const -> bool;
+
+        BIT7Z_NODISCARD auto accessTime() const -> FILETIME;
+#endif
 
     private:
         fs::path mFilePath;
 
-        FILETIME mModifiedTime;
-        bool mIsModifiedTimeDefined;
+        BitPropVariant mModifiedTime;
+#ifdef _WIN32
+        BitPropVariant mCreationTime;
+        BitPropVariant mAccessTime;
+#endif
 
         uint32_t mAttributes;
         bool mAreAttributesDefined;
@@ -49,7 +63,7 @@ class ProcessedItem final {
 
         void loadAttributes( const BitInputArchive& inputArchive, uint32_t itemIndex );
 
-        void loadModifiedTime( const BitInputArchive& inputArchive, uint32_t itemIndex );
+        void loadTimeMetadata( const BitInputArchive& inputArchive, uint32_t itemIndex );
 };
 
 }  // namespace bit7z

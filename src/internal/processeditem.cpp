@@ -22,12 +22,12 @@
 namespace bit7z {
 
 ProcessedItem::ProcessedItem()
-    : mModifiedTime{}, mIsModifiedTimeDefined{ false }, mAttributes{ 0 }, mAreAttributesDefined{ false } {}
+    : mAttributes{ 0 }, mAreAttributesDefined{ false } {}
 
 void ProcessedItem::loadItemInfo( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
     loadFilePath( inputArchive, itemIndex );
     loadAttributes( inputArchive, itemIndex );
-    loadModifiedTime( inputArchive, itemIndex );
+    loadTimeMetadata( inputArchive, itemIndex );
 }
 
 auto ProcessedItem::path() const -> fs::path {
@@ -38,9 +38,31 @@ auto ProcessedItem::attributes() const -> uint32_t {
     return mAttributes;
 }
 
-auto ProcessedItem::modifiedTime() const -> FILETIME {
-    return mModifiedTime;
+auto ProcessedItem::hasModifiedTime() const -> bool {
+    return mModifiedTime.isFileTime();
 }
+
+auto ProcessedItem::modifiedTime() const -> FILETIME {
+    return mModifiedTime.getFileTime();
+}
+
+#ifdef _WIN32
+auto ProcessedItem::hasCreationTime() const -> bool {
+    return mCreationTime.isFileTime();
+}
+
+auto ProcessedItem::creationTime() const -> FILETIME {
+    return mCreationTime.getFileTime();
+}
+
+auto ProcessedItem::hasAccessTime() const -> bool {
+    return mAccessTime.isFileTime();
+}
+
+auto ProcessedItem::accessTime() const -> FILETIME {
+    return mAccessTime.getFileTime();
+}
+#endif
 
 void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
     const BitPropVariant prop = inputArchive.itemProperty( itemIndex, BitProperty::Path );
@@ -94,30 +116,16 @@ void ProcessedItem::loadAttributes( const BitInputArchive& inputArchive, uint32_
     }
 }
 
-void ProcessedItem::loadModifiedTime( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
-    const BitPropVariant modifiedTime = inputArchive.itemProperty( itemIndex, BitProperty::MTime );
-
-    switch ( modifiedTime.type() ) {
-        case BitPropVariantType::Empty:
-            mIsModifiedTimeDefined = false;
-            break;
-
-        case BitPropVariantType::FileTime:
-            mModifiedTime = modifiedTime.getFileTime();
-            mIsModifiedTimeDefined = true;
-            break;
-
-        default:
-            throw BitException( "Could not load the last modified time of item", make_hresult_code( E_FAIL ) );
-    }
+void ProcessedItem::loadTimeMetadata( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
+    mModifiedTime = inputArchive.itemProperty( itemIndex, BitProperty::MTime );
+#ifdef _WIN32
+    mCreationTime = inputArchive.itemProperty( itemIndex, BitProperty::CTime );
+    mAccessTime = inputArchive.itemProperty( itemIndex, BitProperty::ATime );
+#endif
 }
 
 auto ProcessedItem::areAttributesDefined() const -> bool {
     return mAreAttributesDefined;
-}
-
-auto ProcessedItem::isModifiedTimeDefined() const -> bool {
-    return mIsModifiedTimeDefined;
 }
 
 } // namespace bit7z
