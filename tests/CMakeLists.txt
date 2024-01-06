@@ -53,7 +53,7 @@ add_executable( ${TESTS_TARGET_PUBLIC} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES
 if( BIT7Z_TESTS_FILESYSTEM )
     CPMAddPackage( NAME bit7z_test_data
                    GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
-                   VERSION 1.0
+                   VERSION 1.1
                    DOWNLOAD_ONLY YES )
     if( bit7z_test_data_ADDED )
         set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )

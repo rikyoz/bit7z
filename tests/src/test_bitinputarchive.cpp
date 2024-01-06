@@ -1007,6 +1007,149 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
     }
 }
 
+#ifdef _WIN32
+auto get_file_time( const fs::path& filePath, FILETIME& creation, FILETIME& access, FILETIME& modified ) -> bool {
+    HANDLE hFile = ::CreateFileW( filePath.c_str(),
+                                  GENERIC_READ | FILE_READ_ATTRIBUTES,
+                                  FILE_SHARE_READ,
+                                  nullptr,
+                                  OPEN_EXISTING,
+                                  0,
+                                  nullptr );
+    if ( hFile == INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
+        return false;
+    }
+    auto result = GetFileTime( hFile, &creation, &access, &modified );
+    CloseHandle( hFile );
+    return result != FALSE;
+}
+#endif
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem should preserve time metadata",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
+
+    const auto item = info.itemAt( 0 );
+#ifdef _WIN32
+    // Creation time.
+    const BitPropVariant expectedCTime = item.itemProperty( BitProperty::CTime );
+    REQUIRE( expectedCTime.isFileTime() );
+
+    const FILETIME expectedCreationTime = expectedCTime.getFileTime();
+    REQUIRE( expectedCreationTime.dwLowDateTime != 0 );
+    REQUIRE( expectedCreationTime.dwHighDateTime != 0 );
+
+    // Access time.
+    const BitPropVariant expectedATime = item.itemProperty( BitProperty::ATime );
+    REQUIRE( expectedATime.isFileTime() );
+
+    const FILETIME expectedAccessTime = expectedATime.getFileTime();
+    REQUIRE( expectedAccessTime.dwLowDateTime != 0 );
+    REQUIRE( expectedAccessTime.dwHighDateTime != 0 );
+
+    // Modified time.
+    const BitPropVariant expectedMTime = item.itemProperty( BitProperty::MTime );
+    REQUIRE( expectedMTime.isFileTime() );
+
+    const FILETIME expectedModifiedTime = expectedMTime.getFileTime();
+    REQUIRE( expectedModifiedTime.dwLowDateTime != 0 );
+    REQUIRE( expectedModifiedTime.dwHighDateTime != 0 );
+#else
+    namespace chrono = std::chrono;
+    const auto expectedModifiedTime = chrono::time_point_cast< chrono::seconds >( item.lastWriteTime() );
+#endif
+
+    TempTestDirectory testOutDir{ "test_bitinputarchive" };
+    INFO( "Output directory: " << testOutDir );
+
+    REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
+
+    const auto expectedFile = testOutDir.path() / clouds.name;
+#ifdef _WIN32
+    FILETIME creationTime{};
+    FILETIME accessTime{};
+    FILETIME modifiedTime{};
+    REQUIRE( get_file_time( expectedFile, creationTime, accessTime, modifiedTime ) );
+
+    REQUIRE( CompareFileTime( &creationTime, &expectedCreationTime ) == 0 );
+    REQUIRE( CompareFileTime( &accessTime, &expectedAccessTime ) == 0 );
+    REQUIRE( CompareFileTime( &modifiedTime, &expectedModifiedTime ) == 0 );
+#else
+    const auto modifiedTime = chrono::time_point_cast< chrono::seconds >( fs::last_write_time( expectedFile ) );
+    REQUIRE( modifiedTime.time_since_epoch() == expectedModifiedTime.time_since_epoch() );
+#endif
+
+    REQUIRE( fs::remove( expectedFile ) );
+}
+
+#ifdef _WIN32
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive not having time metadata should use current time",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    // Note: the clouds.jpg.zip file was created without storing access/creation time metadata.
+    const auto arcFileName = fs::path{ clouds.name }.concat( ".zip" );
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::Zip );
+
+    const auto item = info.itemAt( 0 );
+
+    // Creation time must be an empty FILETIME.
+    const BitPropVariant storedCTime = item.itemProperty( BitProperty::CTime );
+    REQUIRE( storedCTime.isFileTime() );
+
+    const FILETIME storedCreationTime = storedCTime.getFileTime();
+    REQUIRE( storedCreationTime.dwLowDateTime == 0 );
+    REQUIRE( storedCreationTime.dwHighDateTime == 0 );
+
+    // Access time must be an empty FILETIME.
+    const BitPropVariant storedATime = item.itemProperty( BitProperty::ATime );
+    REQUIRE( storedATime.isFileTime() );
+
+    const FILETIME storedAccessTime = storedATime.getFileTime();
+    REQUIRE( storedAccessTime.dwLowDateTime == 0 );
+    REQUIRE( storedAccessTime.dwHighDateTime == 0 );
+
+    // Getting the current system time (to be compared with the extracted creation/access time metadata).
+    FILETIME expectedTime{};
+    GetSystemTimeAsFileTime( &expectedTime );
+
+    // Modified time (the archive contains this metadata, so it is expected to be set in the extracted file).
+    const BitPropVariant expectedMTime = item.itemProperty( BitProperty::MTime );
+    REQUIRE( expectedMTime.isFileTime() );
+
+    const FILETIME expectedModifiedTime = expectedMTime.getFileTime();
+    REQUIRE( expectedModifiedTime.dwLowDateTime != 0 );
+    REQUIRE( expectedModifiedTime.dwHighDateTime != 0 );
+
+    TempTestDirectory testOutDir{ "test_bitinputarchive" };
+    INFO( "Output directory: " << testOutDir );
+
+    REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
+
+    const auto expectedFile = testOutDir.path() / clouds.name;
+    FILETIME creationTime{};
+    FILETIME accessTime{};
+    FILETIME modifiedTime{};
+    REQUIRE( get_file_time( expectedFile, creationTime, accessTime, modifiedTime ) );
+
+    REQUIRE( CompareFileTime( &creationTime, &expectedTime ) >= 0 );
+    REQUIRE( CompareFileTime( &accessTime, &expectedTime ) >= 0 );
+    REQUIRE( CompareFileTime( &modifiedTime, &expectedModifiedTime ) == 0 );
+
+    REQUIRE( fs::remove( expectedFile ) );
+}
+#endif
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarchive]", tstring, buffer_t, stream_t ) {
