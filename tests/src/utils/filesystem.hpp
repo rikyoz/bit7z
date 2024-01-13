@@ -61,6 +61,10 @@ inline auto set_current_dir( const fs::path& dir ) -> bool {
     return !error;
 }
 
+#ifdef _WIN32
+BIT7Z_NODISCARD auto get_file_comment( const fs::path& filePath ) -> std::wstring;
+#endif
+
 inline auto load_file( fs::path const& inFile ) -> buffer_t {
     fs::ifstream ifs{ inFile, fs::ifstream::binary };
     if ( !ifs.is_open() ) {

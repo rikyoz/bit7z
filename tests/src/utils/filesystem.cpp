@@ -18,6 +18,23 @@
 
 #include <random>
 
+#ifdef _WIN32
+#ifdef __MINGW32__
+// To make DEFINE_PROPERTYKEY work.
+#define INITGUID
+#endif
+
+#include <internal/com.hpp>
+
+#include <objbase.h>
+#include <propkeydef.h>
+#include <shobjidl.h>
+
+// Some old versions of MinGW do not define PKEY_Comment in propkey.h,
+// so we instead include propkeydef.h and define it ourselves.
+DEFINE_PROPERTYKEY(PKEY_Comment, 0xF29F85E0, 0x4FF9, 0x1068, 0xAB, 0x91, 0x08, 0x00, 0x2B, 0x27, 0xB3, 0xD9, 6);
+#endif
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
@@ -255,6 +272,50 @@ auto flat_items_content() -> const ArchiveContent& {
     };
     return instance;
 }
+
+#ifdef _WIN32
+BIT7Z_NODISCARD
+auto get_property_as_string( IPropertyStore *propertyStore, REFPROPERTYKEY key ) -> std::wstring {
+    // Note: we can't use BitPropVariant here, as it only supports BSTRs, while the comment property
+    // is usually stored as a wide string (VT_LPWSTR).
+    PROPVARIANT property;
+    HRESULT result = propertyStore->GetValue( key, &property );
+    if ( FAILED( result ) ) {
+        return L"";
+    }
+    std::wstring propertyString{ property.bstrVal }; // NOLINT(*-pro-type-union-access)
+    PropVariantClear( &property );
+    return propertyString;
+}
+
+class CCoInitialize {
+        HRESULT m_hr;
+    public:
+        CCoInitialize() : m_hr{ CoInitialize( nullptr ) } {}
+
+        CCoInitialize( const CCoInitialize& ) = delete;
+
+        CCoInitialize( CCoInitialize&& ) = delete;
+
+        ~CCoInitialize() {
+            if ( SUCCEEDED( m_hr ) ) {
+                CoUninitialize();
+            }
+        }
+
+        auto operator=( const CCoInitialize& ) -> CCoInitialize& = delete;
+
+        auto operator=( CCoInitialize&& ) -> CCoInitialize& = delete;
+};
+
+BIT7Z_NODISCARD
+auto get_file_comment( const fs::path& filePath ) -> std::wstring {
+    CCoInitialize init;
+    CMyComPtr< IPropertyStore > propertyStore{};
+    SHGetPropertyStoreFromParsingName( filePath.c_str(), nullptr, GPS_READWRITE, IID_PPV_ARGS( &propertyStore ) );
+    return get_property_as_string( propertyStore, PKEY_Comment );
+}
+#endif
 
 TestDirectory::TestDirectory( const fs::path& testDir ) : mOldCurrentDirectory{ current_dir() } {
     set_current_dir( testDir );

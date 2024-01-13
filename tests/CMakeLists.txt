@@ -53,7 +53,7 @@ add_executable( ${TESTS_TARGET_PUBLIC} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES
 if( BIT7Z_TESTS_FILESYSTEM )
     CPMAddPackage( NAME bit7z_test_data
                    GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
-                   VERSION 1.1
+                   VERSION 1.3
                    DOWNLOAD_ONLY YES )
     if( bit7z_test_data_ADDED )
         set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )
@@ -145,8 +145,8 @@ if( WIN32 )
         set( CMAKE_RC_COMPILER_INIT windres )
         SET( CMAKE_RC_COMPILE_OBJECT "<CMAKE_RC_COMPILER> <FLAGS> -O coff <DEFINES> -i <SOURCE> -o <OBJECT>" )
         ENABLE_LANGUAGE( RC )
-        target_compile_definitions( ${TESTS_TARGET} PRIVATE WINDRES )
-        target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE WINDRES )
+        target_compile_definitions( ${TESTS_TARGET} PRIVATE WINDRES NTDDI_VERSION=NTDDI_VISTA )
+        target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE WINDRES NTDDI_VERSION=NTDDI_VISTA )
         set( RES_EXTENSION "rc" )
     else()
         set( RES_EXTENSION "manifest" )
@@ -158,6 +158,9 @@ if( WIN32 )
 
     target_compile_definitions( ${TESTS_TARGET} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX )
     target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX )
+
+    target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} shell32 ole32 )
+    target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE ${LIB_TARGET} shell32 ole32 )
 endif()
 
 # Catch2

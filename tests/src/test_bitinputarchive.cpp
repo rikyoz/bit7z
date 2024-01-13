@@ -1149,6 +1149,31 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive not having time meta
 
     REQUIRE( fs::remove( expectedFile ) );
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a file with a comment should preserve it",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_comment" };
+
+    TestType inputArchive{};
+    getInputArchive( "commented.7z", inputArchive );
+    BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
+
+    TempTestDirectory testOutDir{ "test_bitinputarchive" };
+    INFO( "Output directory: " << testOutDir );
+
+    REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
+
+    const auto expectedFile = testOutDir.path() / "commented.jpg";
+    REQUIRE( fs::exists( expectedFile ) );
+
+    std::wstring comment = get_file_comment( expectedFile );
+    REQUIRE( comment == LR"({"data":{"pictureId":"738298be446d47f4b3933a4cc68ab6a2","appversion":"8.0.0",)"
+                        LR"("stickerId":"","filterId":"","infoStickerId":"","imageEffectId":"",)"
+                        LR"("playId":"","activityName":"","os":"android","product":"retouch"},)"
+                        LR"("source_type":"douyin_beauty_me"})" );
+    REQUIRE( fs::remove( expectedFile ) );
+}
 #endif
 
 // NOLINTNEXTLINE(*-err58-cpp)
