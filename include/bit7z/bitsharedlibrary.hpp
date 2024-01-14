@@ -26,13 +26,34 @@ using LibraryHandle = void*;
 using LibrarySymbol = void*;
 #endif
 
+#ifdef _WIN32
+template< typename T >
+struct remove_stdcall {
+    using type = T;
+};
 
+template< typename Ret, typename... Args >
+struct remove_stdcall< Ret __stdcall( Args... ) > {
+    using type = Ret(Args...);
+};
+
+template< typename T >
+using remove_stdcall_t = typename remove_stdcall< T >::type;
+
+template< typename T >
+using remove_stdcall_pointer_t = remove_stdcall_t< typename std::remove_pointer< T >::type >;
+#endif
 
 template< typename T >
 struct is_function_pointer {
     static const bool value =
+#ifdef _WIN32
+        std::is_pointer< T >::value && std::is_function< remove_stdcall_pointer_t< T > >::value;
+#else
         std::is_pointer< T >::value && std::is_function< typename std::remove_pointer< T >::type >::value;
+#endif
 };
+
 
 class BitSharedLibrary {
     public:
