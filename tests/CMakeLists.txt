@@ -21,7 +21,6 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bitarchiveeditor.cpp
      src/test_bitarchiveiteminfo.cpp
      src/test_bitarchivereader.cpp
-     src/test_bitarchivewriter.cpp
      src/test_biterror.cpp
      src/test_bitexception.cpp
      src/test_bitfilecompressor.cpp
@@ -29,6 +28,7 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bitinputarchive.cpp
      src/test_bitmemcompressor.cpp
      src/test_bitmemextractor.cpp
+     src/test_bitoutputarchive.cpp
      src/test_bitpropvariant.cpp
      src/test_bitstreamcompressor.cpp
      src/test_bitstreamextractor.cpp )
