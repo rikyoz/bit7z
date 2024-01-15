@@ -38,7 +38,7 @@ endif()
 option( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK "Disable checking if password is ASCII when compressing using Zip format" )
 message( STATUS "Disable Zip ASCII password check: ${BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK}" )
 if( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
-    target_compile_definitions( ${LIB_TARGET} PRIVATE BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
+    target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
 endif()
 
 option( BIT7Z_DISABLE_USE_STD_FILESYSTEM "Disable using the standard filesystem library (always use ghc::filesystem)" )
