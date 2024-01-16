@@ -63,7 +63,7 @@ auto BitAbstractArchiveHandler::passwordCallback() const -> PasswordCallback {
     return mPasswordCallback;
 }
 
-auto BitAbstractArchiveHandler::overwriteMode() const -> OverwriteMode {
+auto BitAbstractArchiveHandler::overwriteMode() const noexcept -> OverwriteMode {
     return mOverwriteMode;
 }
 

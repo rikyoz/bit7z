@@ -239,8 +239,8 @@ void BitInputArchive::extractTo( const tstring& outDir ) const {
 }
 
 inline auto findInvalidIndex( const std::vector< uint32_t >& indices,
-                              uint32_t itemsCount ) -> std::vector< uint32_t >::const_iterator {
-    return std::find_if( indices.cbegin(), indices.cend(), [&]( uint32_t index ) -> bool {
+                              uint32_t itemsCount ) noexcept -> std::vector< uint32_t >::const_iterator {
+    return std::find_if( indices.cbegin(), indices.cend(), [&itemsCount]( uint32_t index ) noexcept -> bool {
         return index >= itemsCount;
     });
 }

@@ -138,7 +138,7 @@ class BitAbstractArchiveHandler {
         /**
          * @return the current OverwriteMode.
          */
-        BIT7Z_NODISCARD auto overwriteMode() const -> OverwriteMode;
+        BIT7Z_NODISCARD auto overwriteMode() const noexcept -> OverwriteMode;
 
         /**
          * @brief Sets up a password to be used by the archive handler.

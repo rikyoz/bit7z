@@ -166,7 +166,7 @@ auto ExtractCallback::errorException() const -> const std::exception_ptr& {
     return mErrorException;
 }
 
-auto ExtractCallback::extractMode() const -> ExtractMode {
+auto ExtractCallback::extractMode() const noexcept -> ExtractMode {
     return mExtractMode;
 }
 

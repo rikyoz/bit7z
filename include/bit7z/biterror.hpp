@@ -44,7 +44,7 @@ enum struct BitError {
     InvalidZipPassword,
 };
 
-auto make_error_code( BitError error ) -> std::error_code;
+auto make_error_code( BitError error ) noexcept -> std::error_code;
 
 /**
  * @brief The BitFailureSource enum struct values represent bit7z error conditions.
@@ -67,7 +67,7 @@ enum struct BitFailureSource {
     WrongPassword
 };
 
-auto make_error_condition( BitFailureSource failureSource ) -> std::error_condition;
+auto make_error_condition( BitFailureSource failureSource ) noexcept -> std::error_condition;
 
 }  // namespace bit7z
 

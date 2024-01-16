@@ -19,11 +19,11 @@
 
 namespace bit7z {
 
-auto make_error_code( BitError error ) -> std::error_code {
+auto make_error_code( BitError error ) noexcept -> std::error_code {
     return { static_cast< int >( error ), internal_category() };
 }
 
-auto make_error_condition( BitFailureSource failureSource ) -> std::error_condition {
+auto make_error_condition( BitFailureSource failureSource ) noexcept -> std::error_condition {
     return { static_cast< int >( failureSource ), source_category() };
 }
 

@@ -83,7 +83,7 @@ class ExtractCallback : public Callback,
         explicit ExtractCallback( const BitInputArchive& inputArchive );
 
         BIT7Z_NODISCARD
-        auto extractMode() const -> ExtractMode;
+        auto extractMode() const noexcept -> ExtractMode;
 
         BIT7Z_NODISCARD
         auto isItemFolder( uint32_t index ) const -> bool;
