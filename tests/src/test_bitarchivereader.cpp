@@ -10,9 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_template_test_macros.hpp>
-#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch.hpp>
 
 #include "utils/archive.hpp"
 #include "utils/filesystem.hpp"
@@ -58,8 +56,8 @@ void require_archive_item( const BitInFormat& format,
                            const BitArchiveItem& item,
                            const ExpectedItem& expectedItem,
                            const SourceLocation& location ) {
-    INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) );
-    INFO( "  from " << location.file_name() << ":" << location.line() );
+    INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) )
+    INFO( "  from " << location.file_name() << ":" << location.line() )
     REQUIRE( item.isDir() == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
 
     if ( !item.isDir() ) {
@@ -94,8 +92,8 @@ void require_archive_item( const BitInFormat& format,
 inline void require_archive_content( const BitArchiveReader& info,
                                      const TestInputArchive& input,
                                      const SourceLocation& location ) {
-    INFO( "Failed while checking content of " << Catch::StringMaker< tstring >::convert( info.archivePath() ) );
-    INFO( "  from " << location.file_name() << ":" << location.line() );
+    INFO( "Failed while checking content of " << Catch::StringMaker< tstring >::convert( info.archivePath() ) )
+    INFO( "  from " << location.file_name() << ":" << location.line() )
     REQUIRE_FALSE( info.archiveProperties().empty() );
 
     const auto& archive_content = input.content();
@@ -364,7 +362,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
             const fs::path arcFileName = "clouds.jpg." + testArchive.extension() + ".001";
 
-            INFO( "Archive file: " << arcFileName );
+            INFO( "Archive file: " << arcFileName )
 
             SECTION( "Opening as a split archive" ) {
                 const BitArchiveReader info( test::sevenzip_lib(), arcFileName.string< tchar >(), BitFormat::Split );
@@ -522,8 +520,8 @@ void require_item_type( const BitArchiveReader& info,
                         fs::file_type fileType,
                         std::uint32_t winAttributes,
                         SourceLocation location ) {
-    INFO( "Failed checking required item " << Catch::StringMaker< tstring >::convert( itemName ) );
-    INFO( "  from " << location.file_name() << ":" << location.line() );
+    INFO( "Failed checking required item " << Catch::StringMaker< tstring >::convert( itemName ) )
+    INFO( "  from " << location.file_name() << ":" << location.line() )
     auto iterator = info.find( itemName );
     REQUIRE( iterator != info.cend() );
     REQUIRE( iterator->name() == itemName );

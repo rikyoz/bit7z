@@ -10,9 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/matchers/catch_matchers_predicate.hpp>
-#include <catch2/matchers/catch_matchers_string.hpp>
+#include <catch2/catch.hpp>
 
 #include "utils/shared_lib.hpp"
 
@@ -46,7 +44,7 @@ TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bi
 
 TEST_CASE( "Bit7zLibrary: Normal construction", "[bit7zlibrary]" ) {
     const auto libPath = sevenzip_lib_path();
-    INFO( "Library path: " << fs::path{ libPath }.string() );
+    INFO( "Library path: " << fs::path{ libPath }.string() )
 
     REQUIRE_NOTHROW( Bit7zLibrary{ libPath } );
 }

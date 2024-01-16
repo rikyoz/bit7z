@@ -10,7 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <catch2/catch_get_random_seed.hpp>
+#include <catch2/catch.hpp>
 
 #include <internal/stringutil.hpp>
 
@@ -329,7 +329,7 @@ auto random_test_id() -> std::string {
     static constexpr auto hex_digits = "0123456789abcdef";
     static constexpr auto hex_count = 16;
 
-    thread_local static std::default_random_engine random_engine{ Catch::getSeed() };
+    thread_local static std::default_random_engine random_engine{ Catch::rngSeed() };
     thread_local static std::uniform_int_distribution<> distribution{ 0, hex_count - 1 };
 
     std::string str( 8, '\0' );

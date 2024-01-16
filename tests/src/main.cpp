@@ -12,7 +12,7 @@
 
 #define CATCH_CONFIG_RUNNER
 
-#include <catch2/catch_session.hpp> // IMPORTANT: it must be included before any other includes.
+#include <catch2/catch.hpp> // IMPORTANT: it must be included before any other includes.
 
 #include <iostream>
 

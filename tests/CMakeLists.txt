@@ -165,10 +165,10 @@ endif()
 
 # Catch2
 CPMAddPackage( NAME Catch2
-               VERSION 3.5.1
+               VERSION 2.13.10
                OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
                GITHUB_REPOSITORY "catchorg/Catch2" )
-list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/extras" )
+list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/contrib" )
 
 include( CTest )
 include( Catch )

@@ -10,8 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/generators/catch_generators.hpp>
+#include <catch2/catch.hpp>
 
 #include <bit7z/bitwindows.hpp>
 #include <bit7z/bittypes.hpp>
@@ -163,7 +162,7 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
                 SECTION( "Seeking from the midpoint of the stream" ) {
                     // First, we seek to the midpoint of the stream
                     const Int64 midOffset = static_cast< Int64 >( bufferSize ) / 2;
-                    INFO( "Middle offset value: " << midOffset );
+                    INFO( "Middle offset value: " << midOffset )
                     REQUIRE( inStream.Seek( midOffset, STREAM_SEEK_SET, nullptr ) == S_OK );
                     REQUIRE( inStream.Seek( 0, STREAM_SEEK_CUR, &newPosition ) == S_OK );
                     REQUIRE( newPosition == midOffset );

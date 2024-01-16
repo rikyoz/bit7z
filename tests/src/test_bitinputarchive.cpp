@@ -10,12 +10,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <catch2/catch_test_macros.hpp>
-#include <catch2/catch_template_test_macros.hpp>
-#include <catch2/generators/catch_generators.hpp>
-#include <catch2/matchers/catch_matchers_predicate.hpp>
-#include <catch2/matchers/catch_matchers_quantifiers.hpp>
-#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <catch2/catch.hpp>
 
 #include "utils/archive.hpp"
 #include "utils/crc.hpp"
@@ -55,8 +50,8 @@ inline auto archive_item( const BitArchiveReader& archive,
 }
 
 void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location ) {
-    INFO( "From " << location.file_name() << ":" << location.line() );
-    INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() );
+    INFO( "From " << location.file_name() << ":" << location.line() )
+    INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() )
 
     // Note: there's no need to check the file with fs::exists
     //       since the file's type check already includes the check for the file existence.
@@ -80,7 +75,7 @@ void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLoca
 
 void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     TempTestDirectory testDir{ "test_bitinputarchive" };
-    INFO( "Test directory: " << testDir );
+    INFO( "Test directory: " << testDir )
 
     REQUIRE_NOTHROW( info.extractTo( testDir ) );
     if ( expectedItems.empty() ) {
@@ -94,7 +89,7 @@ void require_extracts_to_filesystem( const BitArchiveReader& info, const Expecte
 
 void require_extracts_items_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     TempTestDirectory testDir{ "test_bitinputarchive" };
-    INFO( "Test directory: " << testDir );
+    INFO( "Test directory: " << testDir )
 
     for ( const auto& expectedItem : expectedItems ) {
         const auto archiveItem = archive_item( info, expectedItem );
@@ -150,7 +145,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
     REQUIRE( bufferMap.size() == info.filesCount() );
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
         const auto& extractedItem = bufferMap.find( path_to_tstring( expectedItem.inArchivePath ) );
         if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
             REQUIRE( extractedItem != bufferMap.end() );
@@ -164,7 +159,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
 void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
         if ( archiveItem->isDir() ) {
@@ -194,7 +189,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
     buffer_t invalidBuffer( invalidBufferSize, static_cast< byte_t >( '\0' ) );
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
 
@@ -257,7 +252,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
 
 void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" );
+        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
 
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
@@ -294,8 +289,8 @@ void require_archive_extracts( const BitArchiveReader& info,
     }
 #endif
 
-    INFO( "From " << location.file_name() << ":" << location.line() );
-    INFO( "Failed while extracting the archive" );
+    INFO( "From " << location.file_name() << ":" << location.line() )
+    INFO( "Failed while extracting the archive" )
 
     SECTION( "Extracting to a temporary filesystem folder" ) {
         require_extracts_to_filesystem( info, expectedItems );
@@ -333,12 +328,12 @@ void require_archive_extract_fails( const BitArchiveReader& info, const SourceLo
     }
 #endif
 
-    INFO( "From " << location.file_name() << ":" << location.line() );
-    INFO( "Failed while extracting the archive" );
+    INFO( "From " << location.file_name() << ":" << location.line() )
+    INFO( "Failed while extracting the archive" )
 
     SECTION( "Extracting to a temporary filesystem folder should fail" ) {
         TempTestDirectory testDir{ "test_bitinputarchive" };
-        INFO( "Test directory: " << testDir );
+        INFO( "Test directory: " << testDir )
         REQUIRE_THROWS( info.extractTo( testDir ) );
         // TODO: Make some guarantees on what remains after a failed extraction
         for ( const auto& item : fs::directory_iterator( testDir.path() ) ) {
@@ -363,8 +358,8 @@ void require_archive_extract_fails( const BitArchiveReader& info, const SourceLo
     require_archive_extract_fails( info, BIT7Z_CURRENT_LOCATION )
 
 void require_archive_tests( const BitArchiveReader& info, const SourceLocation& location ) {
-    INFO( "From " << location.file_name() << ":" << location.line() );
-    INFO( "Failed while testing the archive" );
+    INFO( "From " << location.file_name() << ":" << location.line() )
+    INFO( "Failed while testing the archive" )
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
     const auto& detectedFormat = (info).detectedFormat();
     if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
@@ -575,7 +570,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
             const auto wholeArcFileName = std::string{ "clouds.jpg." } + testFormat.extension;
             const fs::path splitArcFileName = wholeArcFileName + ".001";
 
-            INFO( "Archive file: " << splitArcFileName );
+            INFO( "Archive file: " << splitArcFileName )
 
             SECTION( "Opening as a split archive" ) {
                 const BitArchiveReader info( test::sevenzip_lib(),
@@ -960,7 +955,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
         BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
 
         TempTestDirectory testOutDir{ "test_bitinputarchive" };
-        INFO( "Output directory: " << testOutDir );
+        INFO( "Output directory: " << testOutDir )
 
         const auto expectedFile = overwritten_file_path< TestType >( testFormat.format );
         REQUIRE_FALSE( fs::exists( expectedFile ) );
@@ -1067,7 +1062,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
 #endif
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
-    INFO( "Output directory: " << testOutDir );
+    INFO( "Output directory: " << testOutDir )
 
     REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
 
@@ -1133,7 +1128,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive not having time meta
     REQUIRE( expectedModifiedTime.dwHighDateTime != 0 );
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
-    INFO( "Output directory: " << testOutDir );
+    INFO( "Output directory: " << testOutDir )
 
     REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
 
@@ -1160,7 +1155,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a file with a comment should pr
     BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
-    INFO( "Output directory: " << testOutDir );
+    INFO( "Output directory: " << testOutDir )
 
     REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
 
@@ -1233,7 +1228,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
 
         SECTION( "When extracting to the filesystem" ) {
             TempTestDirectory testOutDir{ "test_bitinputarchive" };
-            INFO( "Output directory: " << testOutDir );
+            INFO( "Output directory: " << testOutDir )
             require_extracts_to_filesystem( info, expectedItems );
         }
 
@@ -1260,19 +1255,14 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
         // For some reason, the Tar format makes the progress decrease in some cases,
         // and it is not always less than the total size ¯\_(ツ)_/¯.
         if ( testArchive.format != BitFormat::Tar ) {
-            // Checking that the values reported by the progress callback are increasing.
+            // Checking that the values reported by the progress callback are increasing,
+            // and less than or equal to the total size.
             uint64_t lastProgress = 0;
-            REQUIRE_THAT( progressValues,
-                          AllMatch( Predicate< uint64_t >( [ &lastProgress ]( uint64_t progress ) -> bool {
-                              const bool result = progress >= lastProgress;
-                              lastProgress = progress;
-                              return result;
-                          } ) ) );
-
-            // Checking that all the values reported by the progress callback ar less than or equal to the total size.
-            REQUIRE_THAT( progressValues, AllMatch( Predicate< uint64_t >( [ &totalSize ]( uint64_t progress ) -> bool {
-                return progress <= totalSize;
-            } ) ) );
+            for ( uint64_t progress : progressValues ) {
+                REQUIRE( progress >= lastProgress );
+                REQUIRE( progress <= totalSize );
+                lastProgress = progress;
+            }
 
             // TODO: Fix 7-Zip not calling the progress callback on last extracted block in these formats
             if ( testArchive.format != BitFormat::Iso && testArchive.format != BitFormat::Rar5 ) {
