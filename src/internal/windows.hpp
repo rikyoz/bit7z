@@ -90,8 +90,9 @@ constexpr auto WIN32_MASK = 0x0000FFFF;
 
 /* Note: p7zip uses FACILITY_WIN32, 7-zip version of HRESULT_FROM_WIN32 uses FACILITY_ERRNO. */
 inline constexpr auto HRESULT_FROM_WIN32( unsigned int x ) -> HRESULT {
-    auto res = static_cast< HRESULT >( x );
-    return ( res > 0 ) ? static_cast< HRESULT >( ( x & WIN32_MASK ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 ) : res;
+    return ( static_cast< HRESULT >( x ) > 0 ) ?
+                static_cast< HRESULT >( ( x & WIN32_MASK ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 ) :
+                static_cast< HRESULT >( x );
 }
 
 constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;

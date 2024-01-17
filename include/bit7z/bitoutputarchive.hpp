@@ -55,7 +55,7 @@ using DeletedItems = std::set< uint32_t >;
  * Note: given an InputIndex i:
  *         if i < mInputArchiveItemsCount, the item is old (old item in the input archive);
  *         if i >= mInputArchiveItemsCount, the item is new (added by the user); */
-enum class InputIndex : std::uint32_t {};
+enum class InputIndex : std::uint32_t {}; // NOLINT(*-enum-size)
 
 class UpdateCallback;
 

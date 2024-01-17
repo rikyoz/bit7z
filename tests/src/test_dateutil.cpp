@@ -14,6 +14,8 @@
 
 #include <internal/dateutil.hpp>
 
+#include <ctime> // For std::time_t (on MSVC 2015).
+
 using namespace bit7z;
 
 /* Note: std::time_t is usually a UNIX timestamp, so we are using only dates after the UNIX epoch datetime.

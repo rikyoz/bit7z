@@ -39,7 +39,7 @@ TEST_CASE( "BitOutputArchive: Compressing a commented file should preserve the c
     REQUIRE_NOTHROW( writer.addFile( path_to_tstring( commentedFile ) ) );
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
-    INFO( "Output directory: " << testOutDir );
+    INFO( "Output directory: " << testOutDir )
 
     const auto* const outputArchive = BIT7Z_STRING( "commented.7z" );
     REQUIRE_NOTHROW( writer.compressTo( outputArchive ) );

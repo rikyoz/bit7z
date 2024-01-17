@@ -313,7 +313,7 @@ auto get_file_comment( const fs::path& filePath ) -> std::wstring {
     CCoInitialize init;
     CMyComPtr< IPropertyStore > propertyStore{};
     SHGetPropertyStoreFromParsingName( filePath.c_str(), nullptr, GPS_READWRITE, IID_PPV_ARGS( &propertyStore ) );
-    return get_property_as_string( propertyStore, PKEY_Comment );
+    return propertyStore != nullptr ? get_property_as_string( propertyStore, PKEY_Comment ) : L"";
 }
 #endif
 
