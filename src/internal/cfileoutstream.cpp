@@ -30,7 +30,12 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     }
     mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
+#if defined( __MINGW32__ ) || defined( __MINGW64__ )
+        error = std::error_code{ errno, std::generic_category() };
+        throw BitException( "Failed to open the output file", error, path_to_tstring( mFilePath ) );
+#else
         throw BitException( "Failed to open the output file", last_error_code(), path_to_tstring( mFilePath ) );
+#endif
     }
 
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );
