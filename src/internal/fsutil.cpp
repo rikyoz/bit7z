@@ -227,27 +227,41 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
 #endif
 }
 
+#ifdef _WIN32
+auto fsutil::set_file_time( const fs::path& filePath,
+                            FILETIME creation,
+                            FILETIME access,
+                            FILETIME modified ) noexcept -> bool {
+    if ( filePath.empty() ) {
+        return false;
+    }
+
+    bool res = false;
+    HANDLE hFile = ::CreateFile( filePath.c_str(),
+                                 GENERIC_READ | FILE_WRITE_ATTRIBUTES,
+                                 FILE_SHARE_READ,
+                                 nullptr,
+                                 OPEN_EXISTING,
+                                 0,
+                                 nullptr );
+    if ( hFile != INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
+        res = ::SetFileTime( hFile, &creation, &access, &modified ) != FALSE;
+        CloseHandle( hFile );
+    }
+    return res;
+}
+#else
 auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
 
-#ifdef _WIN32
-    bool res = false;
-    HANDLE hFile = ::CreateFile( filePath.c_str(), GENERIC_READ | FILE_WRITE_ATTRIBUTES, FILE_SHARE_READ, nullptr,
-                                 OPEN_EXISTING, 0, nullptr );
-    if ( hFile != INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
-        res = ::SetFileTime( hFile, nullptr, nullptr, &ftModified ) != FALSE;
-        CloseHandle( hFile );
-    }
-    return res;
-#else
     std::error_code error;
     auto fileTime = FILETIME_to_file_time_type( ftModified );
     fs::last_write_time( filePath, fileTime, error );
     return !error;
-#endif
 }
+#endif
 
 auto fsutil::get_file_attributes_ex( const fs::path& filePath,
                                      SymlinkPolicy symlinkPolicy,
