@@ -219,6 +219,10 @@ if( WIN32 )
     target_link_libraries( ${LIB_TARGET} PUBLIC oleaut32 )
 endif()
 
+if( MINGW )
+    target_link_libraries( ${LIB_TARGET} PUBLIC uuid )
+endif()
+
 if( UNIX )
     target_compile_definitions( ${LIB_TARGET} PRIVATE _LARGEFILE64_SOURCE _LARGEFILE_SOURCE _REENTRANT
                                                       EXTERNAL_CODECS ENV_UNIX BREAK_HANDLER USE_WIN_FILE )
