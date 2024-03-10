@@ -43,6 +43,9 @@ endif()
 
 option( BIT7Z_DISABLE_USE_STD_FILESYSTEM "Disable using the standard filesystem library (always use ghc::filesystem)" )
 message( STATUS "Disable using std::filesystem: ${BIT7Z_DISABLE_USE_STD_FILESYSTEM}" )
+if( BIT7Z_DISABLE_USE_STD_FILESYSTEM )
+    target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_DISABLE_USE_STD_FILESYSTEM )
+endif()
 
 set( BIT7Z_CUSTOM_7ZIP_PATH "" CACHE STRING "A custom path to the 7-zip source code" )
 if( NOT BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
