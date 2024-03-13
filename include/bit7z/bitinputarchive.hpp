@@ -327,14 +327,14 @@ class BitInputArchive {
                  *
                  * @return a reference to the pointed-to element in the archive.
                  */
-                auto operator*() noexcept -> reference;
+                auto operator*() const noexcept -> reference;
 
                 /**
                  * @brief Accesses the pointed-to element in the archive.
                  *
                  * @return a pointer to the pointed-to element in the archive.
                  */
-                auto operator->() noexcept -> pointer;
+                auto operator->() const noexcept -> pointer;
 
             private:
                 BitArchiveItemOffset mItemOffset;
