@@ -38,7 +38,12 @@ BIT7Z_NODISCARD auto get_file_attributes_ex( const fs::path& filePath,
                                              SymlinkPolicy symlinkPolicy,
                                              WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
 
+#ifdef _WIN32
+// TODO: In future, use std::optional instead of empty FILETIME objects.
+auto set_file_time( const fs::path& filePath, FILETIME creation, FILETIME access, FILETIME modified ) noexcept -> bool;
+#else
 auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
+#endif
 
 auto set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
 

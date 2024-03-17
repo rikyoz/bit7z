@@ -47,9 +47,16 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
         return result;
     }
 
-    if ( mCurrentItem.isModifiedTimeDefined() ) {
+#ifdef _WIN32
+    const auto creationTime = mCurrentItem.hasCreationTime() ? mCurrentItem.creationTime() : FILETIME{};
+    const auto accessTime = mCurrentItem.hasAccessTime() ? mCurrentItem.accessTime() : FILETIME{};
+    const auto modifiedTime = mCurrentItem.hasModifiedTime() ? mCurrentItem.modifiedTime() : FILETIME{};
+    filesystem::fsutil::set_file_time( mFilePathOnDisk, creationTime, accessTime, modifiedTime );
+#else
+    if ( mCurrentItem.hasModifiedTime() ) {
         filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem.modifiedTime() );
     }
+#endif
 
     if ( mCurrentItem.areAttributesDefined() ) {
         filesystem::fsutil::set_file_attributes( mFilePathOnDisk, mCurrentItem.attributes() );

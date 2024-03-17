@@ -137,7 +137,7 @@ auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
     if ( mInputArchive == nullptr ) {
         newArc = mArchiveCreator.library().initOutArchive( mArchiveCreator.compressionFormat() );
     } else {
-        mInputArchive->initUpdatableArchive( &newArc );
+        (void)mInputArchive->initUpdatableArchive( &newArc ); // TODO: Handle errors
     }
     setArchiveProperties( newArc );
     return newArc;
