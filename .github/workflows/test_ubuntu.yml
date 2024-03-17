@@ -3,6 +3,8 @@ on:
   pull_request:
   push:
     paths:
+    - '.github/actions/**'
+    - '.github/workflows/test_ubuntu.yml'
     - 'cmake/**'
     - 'include/**'
     - 'src/**'
