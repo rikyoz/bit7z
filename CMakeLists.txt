@@ -5,7 +5,7 @@
 cmake_minimum_required( VERSION 3.11 )
 
 project( bit7z
-         VERSION 4.0.4
+         VERSION 4.0.6
          DESCRIPTION "A C++ static library offering a clean and simple interface to the 7-zip/p7zip shared libraries"
          HOMEPAGE_URL "https://github.com/rikyoz/bit7z/" )
 set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
@@ -219,6 +219,10 @@ target_compile_definitions( ${LIB_TARGET} PRIVATE UNICODE _UNICODE )
 if( WIN32 )
     target_compile_definitions( ${LIB_TARGET} PRIVATE _WINDOWS WIN32_LEAN_AND_MEAN NOMINMAX )
     target_link_libraries( ${LIB_TARGET} PUBLIC oleaut32 )
+endif()
+
+if( MINGW )
+    target_link_libraries( ${LIB_TARGET} PUBLIC uuid )
 endif()
 
 if( UNIX )

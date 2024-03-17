@@ -336,7 +336,7 @@ class BitInputArchive {
                  *
                  * @return a reference to the pointed-to element in the archive.
                  */
-                auto operator*() noexcept -> reference;
+                auto operator*() const noexcept -> reference;
 
                 /**
                  * @brief Accesses the pointed-to element in the archive.

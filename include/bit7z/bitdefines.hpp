@@ -14,6 +14,7 @@
  * and you can't enable them via CMake. */
 //#define BIT7Z_AUTO_FORMAT
 //#define BIT7Z_AUTO_PREFIX_LONG_PATHS
+//#define BIT7Z_DISABLE_USE_STD_FILESYSTEM
 //#define BIT7Z_REGEX_MATCHING
 //#define BIT7Z_USE_STD_BYTE
 //#define BIT7Z_USE_NATIVE_STRING
@@ -26,11 +27,13 @@
 #   define BIT7Z_CPP_STANDARD 11
 #endif
 
-#if defined( __cpp_lib_filesystem )
-#   define BIT7Z_USE_STANDARD_FILESYSTEM
-#elif BIT7Z_CPP_STANDARD >= 17 && defined( __has_include )
-#   if __has_include( <filesystem> )
+#ifndef BIT7Z_DISABLE_USE_STD_FILESYSTEM
+#   if defined( __cpp_lib_filesystem )
 #       define BIT7Z_USE_STANDARD_FILESYSTEM
+#   elif BIT7Z_CPP_STANDARD >= 17 && defined( __has_include )
+#       if __has_include( <filesystem> )
+#           define BIT7Z_USE_STANDARD_FILESYSTEM
+#       endif
 #   endif
 #endif
 

@@ -10,6 +10,7 @@
 #ifndef PROCESSEDITEM_HPP
 #define PROCESSEDITEM_HPP
 
+#include "bitinputarchive.hpp"
 #include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/fs.hpp"

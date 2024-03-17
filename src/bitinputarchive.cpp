@@ -423,7 +423,7 @@ BitInputArchive::ConstIterator::operator!=( const BitInputArchive::ConstIterator
     return !( *this == other );
 }
 
-auto BitInputArchive::ConstIterator::operator*() noexcept -> BitInputArchive::ConstIterator::reference {
+auto BitInputArchive::ConstIterator::operator*() const noexcept -> BitInputArchive::ConstIterator::reference {
     return mItemOffset;
 }
 
