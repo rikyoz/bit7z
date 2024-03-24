@@ -142,7 +142,7 @@ class BitInputArchive {
         BIT7Z_NODISCARD auto handler() const noexcept -> const BitAbstractArchiveHandler&;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const {
+        void extract( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const {
             extractTo( outDir, indices );
         }
 
@@ -162,7 +162,7 @@ class BitInputArchive {
         void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {
+        void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {
             extractTo( outBuffer, index );
         }
 
@@ -213,7 +213,7 @@ class BitInputArchive {
         }
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const {
+        void extract( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const {
             extractTo( buffer, size, index );
         }
 
@@ -228,7 +228,7 @@ class BitInputArchive {
         void extractTo( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( std::ostream& outStream, uint32_t index = 0 ) const {
+        void extract( std::ostream& outStream, uint32_t index = 0 ) const {
             extractTo( outStream, index );
         }
 
@@ -241,7 +241,7 @@ class BitInputArchive {
         void extractTo( std::ostream& outStream, uint32_t index = 0 ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( std::map< tstring, buffer_t >& outMap ) const {
+        void extract( std::map< tstring, buffer_t >& outMap ) const {
             extractTo( outMap );
         }
 
