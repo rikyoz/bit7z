@@ -106,30 +106,96 @@ void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStre
     mEditedItems[ findItem( itemPath ) ] = std::make_unique< StdInputItem >( inStream, itemPath ); //-V108
 }
 
-void BitArchiveEditor::deleteItem( uint32_t index ) {
+void BitArchiveEditor::deleteItem( uint32_t index, DeletePolicy policy ) {
     if ( index >= inputArchiveItemsCount() ) {
         throw BitException( "Cannot delete item at index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
-    mEditedItems.erase( index );
-    setDeletedIndex( index );
+
+    markItemAsDeleted( index );
+
+    const auto& deletedItem = inputArchive()->itemAt( index );
+    if ( !deletedItem.isDir() || policy == DeletePolicy::ItemOnly ) {
+        return;
+    }
+
+    const auto deletedPath = deletedItem.nativePath() + fs::path::preferred_separator;
+    if ( deletedPath.size() <= 1 ) { // The original path was empty
+        return;
+    }
+
+    for ( const auto& item: *inputArchive() ) {
+        if ( starts_with( item.nativePath(), deletedPath ) ) {
+            markItemAsDeleted( item.index() );
+        }
+    }
 }
 
-void BitArchiveEditor::deleteItem( const tstring& itemPath ) {
-    auto res = std::find_if( inputArchive()->cbegin(), inputArchive()->cend(),
-                             // Note: we don't use auto for the parameter type to support compilation with GCC 4.9
-                             [ &, this ]( const BitArchiveItemOffset& archiveItem ) {
-                                 if ( archiveItem.path() == itemPath ) {
-                                     mEditedItems.erase( archiveItem.index() );
-                                     setDeletedIndex( archiveItem.index() );
-                                     return true;
-                                 }
-                                 return false;
-                             } );
-    if ( res == inputArchive()->cend() ) {
-        throw BitException( "Could not mark the item as deleted",
+/**
+ * Determines if the given itemPath is within the specified base directory.
+ *
+ * @param itemPath The path to the item to be checked.
+ * @param isDir    A boolean indicating whether the itemPath represents a directory.
+ * @param base     The base directory against which the itemPath is checked.
+ *
+ * @return true if the itemPath is located within the base directory, false otherwise.
+ */
+inline auto isInsidePath( const fs::path& itemPath, bool isDir, const fs::path& base ) -> bool {
+    const auto relativePath = itemPath.lexically_relative( base ).native();
+    /* The relative path of the item with respect to the base directory can be:
+     * 1) A single dot component;
+     * 2) A path not starting with a dot-dot component (i.e., the item is inside the base path);
+     * 3) A path starting with a dot-dot component (i.e., the item is outside the base path).
+     *
+     * This function is called after having evaluated itemPath == base to false;
+     * also, 7-Zip reports folder paths without trailing separators.
+     * Hence, the first case can be restricted further to only the case
+     * where the base path has a trailing path separator: this means that if
+     * the relative path is a single dot, the item must be a folder to be considered inside the base path.
+     *
+     * The remaining cases 2 and 3 are checked as follows:
+     *   - Either the relative path doesn't start with two dots (and then the item is inside the base path) or
+     *   - It starts with two dots, but it is not a dot-dot component (e.g., a normal filename starting with two dots).
+     */
+    return ( relativePath != BIT7Z_NATIVE_STRING( "." ) || isDir ) &&
+           ( !starts_with( relativePath, BIT7Z_NATIVE_STRING( ".." ) ) ||
+             ( relativePath.size() > 2 && !isPathSeparator( relativePath[ 2 ] ) ) );
+}
+
+void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy ) {
+    // The path to be deleted must be relative to the root of the archive.
+    if ( itemPath.empty() || isPathSeparator( itemPath.front() ) ) {
+        throw BitException( "Could not mark any path as deleted",
+                            std::make_error_code( std::errc::invalid_argument ), itemPath );
+    }
+
+    bool deleted = false;
+
+    // Normalized form of the path to be deleted inside the archive.
+    const auto deletedPath = tstring_to_path( itemPath ).lexically_normal();
+    for ( const auto& item: *inputArchive() ) {
+        const fs::path path = item.nativePath();
+
+        // The current item is marked as deleted if either:
+        //  - it is lexicographically equivalent to the path to be deleted; or
+        //  - we need to recursively delete directories,
+        //    and the path of the item is (lexicographically) inside the path to be deleted.
+        if ( path == deletedPath ||
+             ( policy == DeletePolicy::RecurseDirs && isInsidePath( path, item.isDir(), deletedPath ) ) ) {
+            markItemAsDeleted( item.index() );
+            deleted = true;
+        }
+    }
+
+    if ( !deleted ) {
+        throw BitException( "Could not mark any path as deleted",
                             std::make_error_code( std::errc::no_such_file_or_directory ), itemPath );
     }
+}
+
+void BitArchiveEditor::markItemAsDeleted( uint32_t index ) {
+    mEditedItems.erase( index );
+    setDeletedIndex( index );
 }
 
 void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
