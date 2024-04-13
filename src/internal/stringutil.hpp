@@ -74,6 +74,34 @@ inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
 #endif
 }
 
+inline auto starts_with( const native_string& str, const native_string& prefix ) -> bool {
+    return str.rfind( prefix, 0 ) == 0;
+}
+
+/**
+ * Checks if the given character is a valid path separator on the target platform.
+ *
+ * @note On Windows, both / and \ are considered as path separators.
+ *       On other platforms, only / is considered a path separator.
+ *
+ * @param character the character value to be checked.
+ *
+ * @return true if the character is a valid path separator on the target platform, false otherwise.
+ */
+inline auto isPathSeparator( char character ) -> bool {
+#ifdef _WIN32
+    return character == '/' || character == '\\';
+#else
+    return character == '/';
+#endif
+}
+
+#ifdef _WIN32
+inline auto isPathSeparator( wchar_t character ) -> bool {
+    return character == L'/' || character == L'\\';
+}
+#endif
+
 } // namespace bit7z
 
 #endif //STRINGUTIL_HPP
