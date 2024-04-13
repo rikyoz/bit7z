@@ -69,6 +69,15 @@ auto BitArchiveItem::path() const -> tstring {
     return path.getString();
 }
 
+auto BitArchiveItem::nativePath() const -> native_string {
+    BitPropVariant path = itemProperty( BitProperty::Path );
+    if ( path.isEmpty() ) {
+        path = itemProperty( BitProperty::Name );
+        return path.isEmpty() ? native_string{} : path.getNativeString();
+    }
+    return path.getNativeString();
+}
+
 auto BitArchiveItem::size() const -> uint64_t {
     const BitPropVariant size = itemProperty( BitProperty::Size );
     return size.isEmpty() ? 0 : size.getUInt64();
