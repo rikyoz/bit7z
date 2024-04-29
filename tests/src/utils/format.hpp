@@ -17,10 +17,16 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
-struct TestInputFormat {
+template<typename FormatType>
+struct TestFormat {
+    using Type = FormatType;
+
     std::string extension;
-    const BitInFormat& format;
+    const FormatType& format;
 };
+
+using TestInputFormat = TestFormat< BitInFormat >;
+using TestOutputFormat = TestFormat< BitInOutFormat >;
 
 inline auto format_has_path_metadata( const BitInFormat& format ) noexcept -> bool {
     return ( format != BitFormat::BZip2 ) && ( format != BitFormat::Lzma ) && ( format != BitFormat::Xz );

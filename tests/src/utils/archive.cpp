@@ -12,27 +12,90 @@
 
 #include "archive.hpp"
 
+#include <catch2/catch.hpp>
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
-TestInputArchive::TestInputArchive( std::string extension, const BitInFormat& format,
-                                    std::size_t packedSize, const ArchiveContent& content )
-    : mFormat{ std::move( extension ), format }, mPackedSize{ packedSize }, mContent{ content } {}
+void require_archive_item( const BitInFormat& format,
+                           const BitArchiveItem& item,
+                           const ExpectedItem& expectedItem,
+                           const SourceLocation& location ) {
+    INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) )
+    INFO( "  from " << location.file_name() << ":" << location.line() )
+    REQUIRE( item.isDir() == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
 
-auto TestInputArchive::format() const -> const BitInFormat& {
-    return mFormat.format;
+    if ( !item.isDir() ) {
+        REQUIRE( item.isEncrypted() == expectedItem.isEncrypted );
+    }
+
+    if ( format_has_path_metadata( format ) ) {
+        REQUIRE( item.extension() == expectedItem.fileInfo.ext );
+        REQUIRE( item.name() == expectedItem.fileInfo.name );
+        REQUIRE( item.path() == expectedItem.inArchivePath );
+    }
+
+    if ( format_has_size_metadata( format ) ) {
+        /* Note: some archive formats (e.g. BZip2) do not provide the size metadata! */
+        REQUIRE( item.size() == expectedItem.fileInfo.size );
+    }
+
+    const auto itemCrc = item.crc();
+    if ( itemCrc != 0 && ( ( format != BitFormat::Rar5 ) || !item.isEncrypted() ) ) {
+        /* Encrypted Rar5 archives have random CRCs values. */
+        if ( format_has_crc32( format ) ) {
+            REQUIRE( itemCrc == expectedItem.fileInfo.crc32 );
+        } else if ( format_has_crc16( format ) ) {
+            REQUIRE( itemCrc == expectedItem.fileInfo.crc16 );
+        }
+    }
 }
 
-auto TestInputArchive::packedSize() const -> std::size_t {
-    return mPackedSize;
-}
+void require_archive_content( const BitArchiveReader& info,
+                              const TestArchiveContent& input,
+                              const SourceLocation& location ) {
+    INFO( "Failed while checking content of " << Catch::StringMaker< tstring >::convert( info.archivePath() ) )
+    INFO( "  from " << location.file_name() << ":" << location.line() )
+    REQUIRE_FALSE( info.archiveProperties().empty() );
 
-auto TestInputArchive::content() const -> const ArchiveContent& {
-    return mContent;
-}
+    const auto& expectedArchiveContent = input.content();
+    REQUIRE( info.itemsCount() == expectedArchiveContent.items.size() );
+    REQUIRE( info.filesCount() == expectedArchiveContent.fileCount );
+    REQUIRE( info.foldersCount() == ( expectedArchiveContent.items.size() - expectedArchiveContent.fileCount ) );
 
-auto TestInputArchive::extension() const -> const std::string& {
-    return mFormat.extension;
+    const auto& format = info.format();
+    if ( format_has_size_metadata( format ) ) {
+        REQUIRE( info.size() == expectedArchiveContent.size );
+        REQUIRE( info.packSize() == input.packedSize() );
+    }
+
+    REQUIRE_FALSE( info.isMultiVolume() );
+    REQUIRE( info.volumesCount() == 1 );
+
+    std::vector< BitArchiveItemInfo > items;
+    REQUIRE_NOTHROW( items = info.items() );
+    REQUIRE( items.size() == info.itemsCount() );
+
+    const bool archiveStoresPaths = format_has_path_metadata( format );
+    const bool fromFilesystem = !info.archivePath().empty();
+    size_t found_items = 0;
+    for ( const auto& expectedItem : expectedArchiveContent.items ) {
+        for ( const auto& item : items ) {
+            if ( archiveStoresPaths || fromFilesystem ) {
+                if ( item.name() != expectedItem.fileInfo.name ) {
+                    continue;
+                }
+                REQUIRE( info.find( item.path() ) != info.cend() );
+                REQUIRE( info.contains( item.path() ) );
+            }
+            REQUIRE( info.isItemEncrypted( item.index() ) == expectedItem.isEncrypted );
+            REQUIRE( info.isItemFolder( item.index() ) == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
+            require_archive_item( format, item, expectedItem, location );
+            found_items++;
+            break;
+        }
+    }
+    REQUIRE( items.size() == found_items );
 }
 
 } // namespace test

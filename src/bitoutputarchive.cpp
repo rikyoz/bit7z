@@ -70,6 +70,7 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, co
                             make_error_code( BitError::WrongUpdateMode ) );
     }
 
+    // TODO: Add support for updating single-file bz2, gz, and xz archives when updated archive still contains one file.
     if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         //Update mode is set, but the format does not support adding more files.
         throw BitException( "Cannot update the existing archive",
