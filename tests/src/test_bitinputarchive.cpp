@@ -56,6 +56,7 @@ void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLoca
     // Note: there's no need to check the file with fs::exists
     //       since the file's type check already includes the check for the file existence.
     const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
+    REQUIRE( fs::exists( fileStatus ) );
     REQUIRE( fileStatus.type() == expectedItem.fileInfo.type );
     if ( fs::is_regular_file( fileStatus ) ) {
         REQUIRE( crc32( load_file( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
