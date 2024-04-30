@@ -329,7 +329,7 @@ auto random_test_id() -> std::string {
     static constexpr auto hex_digits = "0123456789abcdef";
     static constexpr auto hex_count = 16;
 
-    thread_local static std::default_random_engine random_engine{ Catch::rngSeed() };
+    thread_local static std::default_random_engine random_engine{ std::random_device{}() };
     thread_local static std::uniform_int_distribution<> distribution{ 0, hex_count - 1 };
 
     std::string str( 8, '\0' );
