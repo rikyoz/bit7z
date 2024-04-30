@@ -77,7 +77,7 @@ runs:
         cat ${{ github.workspace }}/../7-zip/CPP/7zip/warn_clang_mac.mak
         cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
         make -j -f ../../cmpl_mac_x64.mak
-        cp b/m_x64/7z.so ${{ github.workspace }}/bin/x64/7z.so
+        mkdir -p ${{ github.workspace }}/bin/x64/ && cp b/m_x64/7z.so ${{ github.workspace }}/bin/x64/7z.so
 
     - name: Build bit7z
       shell: ${{ inputs.shell }}
