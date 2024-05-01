@@ -14,6 +14,9 @@ on:
 jobs:
   build_win:
     runs-on: windows-latest
+    if: |
+      !contains(github.event.head_commit.message, '[test-macos]')
+      && !contains(github.event.head_commit.message, '[test-linux]')
 
     strategy:
       fail-fast: false
