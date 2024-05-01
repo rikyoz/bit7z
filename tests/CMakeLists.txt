@@ -163,6 +163,11 @@ if( WIN32 )
     target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE ${LIB_TARGET} shell32 ole32 )
 endif()
 
+if ( APPLE AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64" )
+    target_link_options( ${TESTS_TARGET} PRIVATE -Wl,-ld_classic )
+    target_link_options( ${TESTS_TARGET_PUBLIC} PRIVATE -Wl,-ld_classic )
+endif()
+
 # Catch2
 CPMAddPackage( NAME Catch2
                VERSION 2.13.10
