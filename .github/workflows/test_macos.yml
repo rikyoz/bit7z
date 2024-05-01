@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [macos-latest, macos-12]
         build_type: [Debug, Release]
-        c_compiler: [gcc-11, gcc-12, clang]
+        c_compiler: [gcc-11, gcc-12, gcc-13, clang]
         arch: [x64, arm64]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
@@ -33,6 +33,9 @@ jobs:
           - c_compiler: gcc-12
             cpp_compiler: g++-12
             enable_sanitizers: OFF
+          - c_compiler: gcc-13
+            cpp_compiler: g++-13
+            enable_sanitizers: OFF
           - c_compiler: clang
             cpp_compiler: clang++            
             enable_sanitizers: ON
@@ -40,6 +43,8 @@ jobs:
           - c_compiler: gcc-11
             bit7z_link_libcpp: ON
           - c_compiler: gcc-12
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-13
             bit7z_link_libcpp: ON
           - os: macos-latest
             arch: x64
