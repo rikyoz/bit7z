@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [macos-latest, macos-13]
+        os: [macos-latest, macos-12]
         build_type: [Debug, Release]
         c_compiler: [gcc-11, gcc-12, clang]
         arch: [x64, arm64]
