@@ -81,7 +81,7 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
                 // POSIX error code wrapped in a HRESULT value (e.g., through HRESULT_FROM_WIN32 macro)
                 return std::system_category().message( HRESULT_CODE( errorValue ) );
             }
-            return "Unknown error";
+            return "Unknown HRESULT error (code " + std::to_string( errorValue ) + ").";
     }
 #endif
 }

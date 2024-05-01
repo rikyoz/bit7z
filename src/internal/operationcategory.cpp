@@ -52,7 +52,7 @@ auto OperationCategory::message( int errorValue ) const -> std::string {
         case OperationResult::UnsupportedMethod:
             return "Unsupported method.";
         default:
-            return "Unknown error.";
+            return "Unknown operation error (code " + std::to_string( errorValue ) + ").";
     }
 }
 

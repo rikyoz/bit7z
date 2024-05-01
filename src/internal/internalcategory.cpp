@@ -68,7 +68,7 @@ auto InternalCategory::message( int errorValue ) const -> std::string {
         case BitError::InvalidZipPassword:
             return "7-Zip only supports printable ASCII characters for passwords when creating Zip archives.";
         default:
-            return "Unknown error.";
+            return "Unknown internal error (code " + std::to_string( errorValue ) + ").";
     }
 }
 
