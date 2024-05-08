@@ -67,6 +67,14 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD auto nativePath() const -> native_string;
 
         /**
+         * @note Same as path(), but returning a wide string (the internal string type used by 7-Zip on all OSes).
+         *
+         * @return the path of the item in the archive, if available or inferable from the name, or an empty string
+         *         otherwise.
+         */
+        BIT7Z_NODISCARD auto rawPath() const -> sevenzip_string;
+
+        /**
          * @return the uncompressed size of the item.
          */
         BIT7Z_NODISCARD auto size() const -> uint64_t override;
