@@ -312,6 +312,12 @@ struct BitPropVariant final : public PROPVARIANT {
         BIT7Z_NODISCARD auto getNativeString() const -> native_string;
 
         /**
+         * @return the raw string value of this variant
+         * (it throws an exception if the variant is not a string).
+         */
+        BIT7Z_NODISCARD auto getRawString() const -> sevenzip_string;
+
+        /**
          * @return the 8-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8-bit unsigned integer).
          */

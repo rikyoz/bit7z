@@ -251,23 +251,30 @@ auto BitPropVariant::getBool() const -> bool {
 }
 
 auto BitPropVariant::getString() const -> tstring {
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
+    return getRawString();
+#else
     if ( vt != VT_BSTR ) {
         throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
     }
     // Note: a nullptr BSTR is semantically equivalent to an empty string.
-    return bstrVal == nullptr ? tstring{} : BSTR_TO_TSTRING( bstrVal );
+    return bstrVal == nullptr ? tstring{} : bit7z::narrow( bstrVal, SysStringLen( bstrVal ) );
+#endif
 }
 
 auto BitPropVariant::getNativeString() const -> native_string {
 #ifdef _WIN32
-    if ( vt != VT_BSTR ) {
-        throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
-    }
-    // Note: a nullptr BSTR is semantically equivalent to an empty string.
-    return bstrVal == nullptr ? native_string{} : native_string{ bstrVal, ::SysStringLen( bstrVal ) };
+    return getRawString();
 #else
     return getString();
 #endif
+}
+
+auto BitPropVariant::getRawString() const -> sevenzip_string {
+    if ( vt != VT_BSTR ) {
+        throw BitException( "BitPropVariant is not a string", make_error_code( BitError::RequestedWrongVariantType ) );
+    }
+    return bstrVal == nullptr ? sevenzip_string{} : sevenzip_string{ bstrVal, ::SysStringLen( bstrVal ) };
 }
 
 auto BitPropVariant::getUInt8() const -> uint8_t {

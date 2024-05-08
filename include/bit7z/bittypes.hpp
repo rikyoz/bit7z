@@ -63,6 +63,12 @@ struct StringTraits< wchar_t > {
 /** @endcond */
 
 /**
+ * The string type used internally by 7-Zip.
+ * @Note 7-Zip always uses wide strings on all platforms.
+ */
+using sevenzip_string = std::wstring;
+
+/**
  * Native string type of the system.
  * @note On Windows, it is an alias of `std::wstring`.
  */
