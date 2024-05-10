@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required( VERSION 3.11 )
+cmake_minimum_required( VERSION 3.14 )
 
 project( bit7z
          VERSION 4.0.7
