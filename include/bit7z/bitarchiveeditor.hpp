@@ -151,16 +151,13 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         /**
          * @brief Marks the item(s) with the given path (in the archive) as deleted.
          *
-         * @note By default, if a matching item is a folder, only its metadata is deleted, not the files within it.
-         *       If instead the policy is set to DeletePolicy::RecurseDirs,
-         *       then the items within the folder will also be deleted.
-         *
-         * @note If the specified path ends with a trailing path separator, only matching folders will be deleted
-         *       (and the items they contain will be deleted according to the policy).
+         * @note By default, an item is marked as deleted if its path is lexicographically equivalent to the given path.
+         *       If a marked item is a folder, only its metadata will be deleted, not the files within it,
+         *       _unless_ the policy is set to DeletePolicy::RecurseDirs.
          *
          * @note Generally, an archive may contain two or more items with the same paths;
          *       if this is the case, all of them will be marked as deleted if they match the given path
-         *       (the same rules about trailing path separators and policy apply).
+         *       (the same rules about the policy apply).
          *
          * @param itemPath the path (in the archive) of the item to be deleted.
          * @param policy   the policy to be used when deleting items.
