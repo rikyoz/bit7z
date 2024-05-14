@@ -290,7 +290,7 @@ The library is highly customizable: for a detailed list of the available build o
 
 ### 📌 7-zip Version
 
-While configuring bit7z via CMake, it automatically downloads the latest version of 7-zip currently supported by the library.
+While configuring bit7z via CMake, it automatically downloads the latest version of 7-zip supported by the library.
 
 Optionally, you can specify a different version of 7-zip via the CMake option `BIT7Z_7ZIP_VERSION` (e.g., `-DBIT7Z_7ZIP_VERSION="22.01"`).
 
@@ -300,19 +300,22 @@ Please note that, in general, it is best to use the same version of 7-zip of the
 
 #### Using 7-zip v23.01 on Linux and macOS
 
+By default, bit7z is compatible with the `7z.so` from 7-zip v23.01 and later.
+
+If instead you plan to use the `7z.so` from p7zip or from 7-zip v22.01 and earlier, you have two options for making bit7z compatible with it:
+
++ Configure bit7z with the CMake option `-DBIT7Z_USE_LEGACY_IUNKNOWN=ON`; _or_
++ Configure bit7z for an older version of 7-zip (e.g., `-DBIT7Z_7ZIP_VERSION="22.01"`).
+
+<details>
+  <summary>Expand for more details</summary>
 _On Linux and macOS_, 7-zip v23.01 introduced breaking changes to the IUnknown interface.
 As a result, if you build bit7z for such a version of 7-zip (the default), it will not support using the shared libraries from previous versions of 7-zip (or from p7zip).
 Conversely, bit7z made for earlier versions of 7-zip or for p7zip is incompatible with the shared libraries from 7-zip v23.01 and later.
 
-Hence:
-
-+ If you plan to use the `7z.so` from p7zip or from 7-zip v22.01 and earlier, you have two options for making bit7z compatible with it:
-  + Enabling the CMake option `BIT7Z_USE_LEGACY_IUNKNOWN` while configuring bit7z (e.g., `-DBIT7Z_USE_LEGACY_IUNKNOWN=ON`); or
-  + Build bit7z for an older version of 7-zip (e.g., `-DBIT7Z_7ZIP_VERSION="22.01"`).
-+ If you plan to use the `7z.so` from 7-zip v23.01, you don't need any special configuration.
-
 You can build the shared libraries of 7-zip v23.01 in a backward-compatible mode by defining the macro `Z7_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN`.
 If this is your case, you'll need to enable the `BIT7Z_USE_LEGACY_IUNKNOWN` to make bit7z work (in this case, bit7z will be compatible also with previous versions of 7-zip/p7zip).
+</details>
 
 ### 🗺️ String Encoding
 
