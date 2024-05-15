@@ -50,8 +50,10 @@ auto BitArchiveReader::archiveProperties() const -> map< BitProperty, BitPropVar
 }
 
 auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
-    std::vector< BitArchiveItemInfo > result;
     const auto count = itemsCount();
+
+    std::vector< BitArchiveItemInfo > result;
+    result.reserve( count );
     for ( uint32_t i = 0; i < count; ++i ) {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
