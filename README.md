@@ -302,19 +302,21 @@ Please note that, in general, it is best to use the same version of 7-zip of the
 
 By default, bit7z is compatible with the `7z.so` from 7-zip v23.01 and later.
 
-If instead you plan to use the `7z.so` from p7zip or from 7-zip v22.01 and earlier, you have two options for making bit7z compatible with it:
+If you plan to use the `7z.so` from p7zip or 7-zip v22.01 and earlier instead, you have two ways to make bit7z compatible:
 
 + Configure bit7z with the CMake option `-DBIT7Z_USE_LEGACY_IUNKNOWN=ON`; _or_
-+ Configure bit7z for an older version of 7-zip (e.g., `-DBIT7Z_7ZIP_VERSION="22.01"`).
++ Configure bit7z for 7-zip v22.01 (i.e., `-DBIT7Z_7ZIP_VERSION="22.01"`).
 
 <details>
   <summary>Expand for more details</summary>
+
 _On Linux and macOS_, 7-zip v23.01 introduced breaking changes to the IUnknown interface.
 As a result, if you build bit7z for such a version of 7-zip (the default), it will not support using the shared libraries from previous versions of 7-zip (or from p7zip).
 Conversely, bit7z made for earlier versions of 7-zip or for p7zip is incompatible with the shared libraries from 7-zip v23.01 and later.
 
 You can build the shared libraries of 7-zip v23.01 in a backward-compatible mode by defining the macro `Z7_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN`.
 If this is your case, you'll need to enable the `BIT7Z_USE_LEGACY_IUNKNOWN` to make bit7z work (in this case, bit7z will be compatible also with previous versions of 7-zip/p7zip).
+
 </details>
 
 ### 🗺️ String Encoding
