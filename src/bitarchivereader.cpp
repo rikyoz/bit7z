@@ -64,7 +64,7 @@ auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
                 item.setProperty( property, propertyValue );
             }
         }
-        result.push_back( item );
+        result.push_back( std::move( item ) );
     }
     return result;
 }
