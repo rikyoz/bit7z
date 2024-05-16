@@ -24,7 +24,7 @@ using namespace bit7z;
 
 struct DateConversionTest {
     const char* name;
-    std::time_t dateTime;
+    std::int64_t dateTime; // Using std::int64_t instead of std::time_t to use 64-bit time on x86
     FILETIME fileTime;
 };
 
@@ -37,7 +37,6 @@ TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
                               DateConversionTest{ "1 January 1970, 00:00",   0,          { 3577643008, 27111902 } } );
 
     DYNAMIC_SECTION( "Date: " << testDate.name ) {
-
 #ifndef _WIN32
         SECTION( "From std::time_t to FILETIME" ) {
             auto output = time_to_FILETIME( testDate.dateTime );
@@ -46,20 +45,17 @@ TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
         }
 #endif
 
-        SECTION( "From FILETIME...") {
-            std::time_t output{};
 #ifndef _WIN32
-            SECTION( "...to std::filesystem::file_time_type" ) {
-                auto result = FILETIME_to_file_time_type( testDate.fileTime );
-                output = std::time_t{ duration_cast< seconds >( result.time_since_epoch() ).count() };
-            }
+        SECTION( "From FILETIME to std::filesystem::file_time_type" ) {
+            auto result = FILETIME_to_file_time_type( testDate.fileTime );
+            auto output = duration_cast< seconds >( result.time_since_epoch() ).count();
+            REQUIRE( output == testDate.dateTime );
+        }
 #endif
 
-            SECTION( "...to bit7z::time_type" ) {
-                auto result = FILETIME_to_time_type( testDate.fileTime );
-                output = bit7z::time_type::clock::to_time_t( result );
-            }
-
+        SECTION( "From FILETIME to bit7z::time_type" ) {
+            auto result = FILETIME_to_time_type( testDate.fileTime );
+            auto output = bit7z::time_type::clock::to_time_t( result );
             REQUIRE( output == testDate.dateTime );
         }
     }

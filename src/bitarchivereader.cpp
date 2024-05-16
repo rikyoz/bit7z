@@ -64,8 +64,11 @@ auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPr
 }
 
 auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
+    const auto count = itemsCount();
+
     std::vector< BitArchiveItemInfo > result;
-    for ( uint32_t i = 0; i < itemsCount(); ++i ) {
+    result.reserve( count );
+    for ( uint32_t i = 0; i < count; ++i ) {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
             // We cast property twice (here and in archiveProperty), to make the code is easier to read.
@@ -75,7 +78,7 @@ auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
                 item.setProperty( property, propertyValue );
             }
         }
-        result.push_back( item );
+        result.push_back( std::move( item ) );
     }
     return result;
 }
