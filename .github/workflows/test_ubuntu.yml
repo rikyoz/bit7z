@@ -81,6 +81,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Fix missing gcc-13 compiler
+      shell: bash
+      if: ${{ contains(matrix.c_compiler, 'gcc-13') }}
+      run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && sudo apt update -y && sudo apt install gcc-13 g++-13
 
     - name: Fix missing libc++ and libc++abi packages for clang-13 compiler
       shell: bash
