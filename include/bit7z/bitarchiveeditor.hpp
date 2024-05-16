@@ -20,6 +20,11 @@ using std::vector;
 
 using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
 
+enum struct DeletePolicy : std::uint8_t {
+    ItemOnly,
+    RecurseDirs
+};
+
 /**
  * @brief The BitArchiveEditor class allows creating new file archives or updating old ones.
  *        Update operations supported are the addition of new items,
@@ -132,18 +137,40 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         void updateItem( const tstring& itemPath, istream& inStream );
 
         /**
-         * @brief Marks the item at the given index as deleted.
+         * @brief Marks as deleted the item at the given index.
          *
-         * @param index the index of the item to be deleted.
+         * @note By default, if the item is a folder, only its metadata is deleted, not the files within it.
+         *       If instead the policy is set to DeletePolicy::RecurseDirs,
+         *       then the items within the folder will also be deleted.
+         *
+         * @param index  the index of the item to be deleted.
+         * @param policy the policy to be used when deleting items.
+         *
+         * @throws BitException if the index is invalid.
          */
-        void deleteItem( uint32_t index );
+        void deleteItem( uint32_t index, DeletePolicy policy = DeletePolicy::ItemOnly );
 
         /**
-         * @brief Marks the item at the given path (in the archive) as deleted.
+         * @brief Marks as deleted the archive's item(s) with the specified path.
+         *
+         * @note By default, if the marked item is a folder, only its metadata will be deleted, not the files within it.
+         *       To delete the folder contents as well, set the `policy` to `DeletePolicy::RecurseDirs`.
+         *
+         * @note The specified path must not begin with a path separator.
+         *
+         * @note A path with a trailing separator will _only_ be considered if
+         *       the policy is DeletePolicy::RecurseDirs, and will only match folders;
+         *       with DeletePolicy::ItemOnly, no item will match a path with a trailing separator.
+         *
+         * @note Generally, archives may contain multiple items with the same paths.
+         *       If this is the case, all matching items will be marked as deleted according to the specified policy.
          *
          * @param itemPath the path (in the archive) of the item to be deleted.
+         * @param policy   the policy to be used when deleting items.
+         *
+         * @throws BitException if the specified path is empty or invalid, or if no matching item could be found.
          */
-        void deleteItem( const tstring& itemPath );
+        void deleteItem( const tstring& itemPath, DeletePolicy policy = DeletePolicy::ItemOnly );
 
         /**
          * @brief Applies the requested changes (i.e., rename/update/delete operations) to the input archive.
@@ -164,6 +191,8 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         auto hasNewData( uint32_t index ) const noexcept -> bool override;
 
         auto hasNewProperties( uint32_t index ) const noexcept -> bool override;
+
+        void markItemAsDeleted( uint32_t index );
 };
 
 }  // namespace bit7z

@@ -30,7 +30,7 @@ endif()
 if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES OR BIT7Z_BUILD_TESTS )
     CPMAddPackage( NAME ghc_filesystem
                    GITHUB_REPOSITORY rikyoz/filesystem
-                   GIT_TAG c0dcd0b090da7dffc74b124a6f164f54dbbb5ccb
+                   GIT_TAG 983650f374699e3979f9cdefe13ddff60bd4ac68
                    DOWNLOAD_ONLY YES )
     if( ghc_filesystem_ADDED )
         message( STATUS "ghc::filesystem source code available at ${ghc_filesystem_SOURCE_DIR}" )

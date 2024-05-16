@@ -303,10 +303,6 @@ auto fsutil::get_file_attributes_ex( const fs::path& filePath,
 
 constexpr auto kLongPathPrefix = BIT7Z_NATIVE_STRING( R"(\\?\)" );
 
-inline auto starts_with( const native_string& str, const native_string& prefix ) -> bool {
-    return str.size() >= prefix.size() && str.compare( 0, prefix.size(), prefix ) == 0;
-}
-
 auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
     constexpr auto kMaxDosFilenameSize = 12;
 

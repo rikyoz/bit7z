@@ -166,13 +166,10 @@ class BitOutputArchive {
          * @brief Adds all the files inside the given directory path that match the given wildcard filter.
          *
          * @param inDir     the directory where to search for files to be added to the output archive.
-         * @param filter    (optional) the wildcard filter to be used for searching the files.
-         * @param recursive (optional) recursively search the files in the given directory
-         *                  and all of its subdirectories.
+         * @param filter    the wildcard filter to be used for searching the files.
+         * @param recursive recursively search the files in the given directory and all of its subdirectories.
          */
-        void addFiles( const tstring& inDir,
-                       const tstring& filter = BIT7Z_STRING( "*" ),
-                       bool recursive = true );
+        void addFiles( const tstring& inDir, const tstring& filter, bool recursive );
 
         /**
          * @brief Adds all the files inside the given directory path that match the given wildcard filter.

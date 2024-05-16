@@ -54,6 +54,14 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD auto path() const -> tstring override;
 
         /**
+         * @note Same as path(), but returning a native string (i.e., std::wstring on Windows, std::string elsewhere).
+         *
+         * @return the path of the item in the archive, if available or inferable from the name, or an empty string
+         *         otherwise.
+         */
+        BIT7Z_NODISCARD auto nativePath() const -> native_string;
+
+        /**
          * @return the uncompressed size of the item.
          */
         BIT7Z_NODISCARD auto size() const -> uint64_t override;

@@ -10,7 +10,9 @@
 #ifndef BIT7Z_HPP
 #define BIT7Z_HPP
 
+#include "bitarchiveeditor.hpp"
 #include "bitarchivereader.hpp"
+#include "bitarchivewriter.hpp"
 #include "bitexception.hpp"
 #include "bitfilecompressor.hpp"
 #include "bitfileextractor.hpp"

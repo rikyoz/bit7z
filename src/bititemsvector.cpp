@@ -38,9 +38,10 @@ void BitItemsVector::indexDirectory( const fs::path& inDir,
 
 void BitItemsVector::indexPaths( const std::vector< tstring >& inPaths, IndexingOptions options ) {
     const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    for ( const auto& filePath : inPaths ) {
+    for ( const auto& inputPath : inPaths ) {
+        const auto filePath = tstring_to_path( inputPath );
         const FilesystemItem item{ filePath,
-                                   options.retainFolderStructure ? tstring_to_path( filePath ) : fs::path{},
+                                   options.retainFolderStructure ? filePath : fs::path{},
                                    symlinkPolicy };
         indexItem( item, options );
     }
