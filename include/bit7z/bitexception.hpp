@@ -43,7 +43,7 @@ class BitException final : public std::system_error {
          *
          * @param message   the message associated with the exception object.
          * @param files     the vector of files that failed, with the corresponding error codes.
-         * @param code      the HRESULT code associated with the exception object.
+         * @param code      the error code associated with the exception object.
          */
         explicit BitException( const char* message, std::error_code code, FailedFiles&& files = {} );
 
@@ -51,7 +51,7 @@ class BitException final : public std::system_error {
          * @brief Constructs a BitException object with the given message, and the specific file that failed.
          *
          * @param message   the message associated with the exception object.
-         * @param code      the HRESULT code associated with the exception object.
+         * @param code      the error code associated with the exception object.
          * @param file      the file that failed during the operation.
          */
         BitException( const char* message, std::error_code code, tstring&& file );
@@ -60,7 +60,7 @@ class BitException final : public std::system_error {
          * @brief Constructs a BitException object with the given message, and the specific file that failed.
          *
          * @param message   the message associated with the exception object.
-         * @param code      the HRESULT code associated with the exception object.
+         * @param code      the error code associated with the exception object.
          * @param file      the file that failed during the operation.
          */
         BitException( const char* message, std::error_code code, const tstring& file );
