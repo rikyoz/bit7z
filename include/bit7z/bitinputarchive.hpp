@@ -297,6 +297,8 @@ class BitInputArchive {
 
         auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
 
+        void testArchive( const std::vector< uint32_t >& indices ) const;
+
     public:
         /**
          * @brief An iterator for the elements contained in an archive.

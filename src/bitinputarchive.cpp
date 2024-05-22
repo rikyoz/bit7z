@@ -335,9 +335,7 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
 }
 
 void BitInputArchive::test() const {
-    std::map< tstring, buffer_t > dummyMap; // output map (not used since we are testing).
-    auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
-    extract_arc( mInArchive, {}, extractCallback, ExtractMode::Test );
+    testArchive( {} );
 }
 
 void BitInputArchive::test( const std::vector< uint32_t >& indices ) const {
@@ -348,9 +346,7 @@ void BitInputArchive::test( const std::vector< uint32_t >& indices ) const {
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    std::map< tstring, buffer_t > dummyMap; // output map (not used since we are testing).
-    auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
-    extract_arc( mInArchive, indices, extractCallback, ExtractMode::Test );
+    testArchive( indices );
 }
 
 void BitInputArchive::testItem( uint32_t index ) const {
@@ -360,9 +356,13 @@ void BitInputArchive::testItem( uint32_t index ) const {
                             make_error_code( BitError::InvalidIndex ) );
     }
 
+    testArchive( { index } );
+}
+
+void BitInputArchive::testArchive( const std::vector< uint32_t >& indices ) const {
     std::map< tstring, buffer_t > dummyMap; // output map (not used since we are testing).
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
-    extract_arc( mInArchive, { index }, extractCallback, ExtractMode::Test );
+    extract_arc( mInArchive, indices, extractCallback, ExtractMode::Test );
 }
 
 auto BitInputArchive::close() const noexcept -> HRESULT {
