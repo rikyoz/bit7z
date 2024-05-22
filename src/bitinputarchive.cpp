@@ -340,6 +340,19 @@ void BitInputArchive::test() const {
     extract_arc( mInArchive, {}, extractCallback, ExtractMode::Test );
 }
 
+void BitInputArchive::test( const std::vector< uint32_t >& indices ) const {
+    // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
+    const auto invalidIndex = findInvalidIndex( indices, itemsCount() );
+    if ( invalidIndex != indices.cend() ) {
+        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
+    std::map< tstring, buffer_t > dummyMap; // output map (not used since we are testing).
+    auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
+    extract_arc( mInArchive, indices, extractCallback, ExtractMode::Test );
+}
+
 void BitInputArchive::testItem( uint32_t index ) const {
     const uint32_t numberItems = itemsCount();
     if ( index >= numberItems ) {

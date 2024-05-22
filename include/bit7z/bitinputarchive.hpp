@@ -254,16 +254,27 @@ class BitInputArchive {
         /**
          * @brief Tests the archive without extracting its content.
          *
-         * If the archive is not valid, a BitException is thrown.
+         * @throws BitException if the archive is not valid.
          */
         void test() const;
 
         /**
-         * @brief Tests the item at the given index inside the archive without extracting it.
+         * @brief Tests the archive items at the given indices without extracting them.
          *
-         * If the archive is not valid, or there's no item at the given index, a BitException is thrown.
+         * @param indices  the indices of the items to be tested.
          *
-         * @param index  the index of the file to be tested.
+         * @throws BitException if any given index is not valid, or if any item at the given indices is not valid,
+         *                      or the whole archive is not valid.
+         */
+        void test( const std::vector< uint32_t >& indices ) const;
+
+        /**
+         * @brief Tests the archive item at the given index without extracting it.
+         *
+         * @param index  the index of the item to be tested.
+         *
+         * @throws BitException if the index is not valid, or the item at the given index is not valid,
+         *                      or the whole archive is not valid.
          */
         void testItem( uint32_t index ) const;
 
