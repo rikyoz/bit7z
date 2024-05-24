@@ -34,6 +34,8 @@ struct IOutArchive;
 
 namespace bit7z {
 
+class ExtractCallback;
+
 /**
  * @brief The BitInputArchive class, given a handler object, allows reading/extracting the content of archives.
  */
@@ -279,9 +281,15 @@ class BitInputArchive {
         void testItem( uint32_t index ) const;
 
     protected:
+        BIT7Z_NODISCARD
         auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
 
-        BIT7Z_NODISCARD auto close() const noexcept -> HRESULT;
+        virtual void extractArc( const std::vector< uint32_t >& indices,
+                                 ExtractCallback* extractCallback,
+                                 int32_t mode ) const;
+
+        BIT7Z_NODISCARD
+        auto close() const noexcept -> HRESULT;
 
         friend class BitAbstractArchiveOpener;
 
