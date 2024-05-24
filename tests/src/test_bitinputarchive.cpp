@@ -1284,3 +1284,44 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
         REQUIRE_THAT( visitedFiles, UnorderedEquals( expectedPaths ) );
     }
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Finding files in an archive", "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        REQUIRE( info.find( BIT7Z_STRING( "" ) ) == info.cend() );
+        REQUIRE_FALSE( info.contains( BIT7Z_STRING( "" ) ) );
+        REQUIRE( info.find( BIT7Z_STRING( "/" ) ) == info.cend() );
+        REQUIRE_FALSE( info.contains( BIT7Z_STRING( "/" ) ) );
+        REQUIRE( info.find( BIT7Z_STRING( "\\" ) ) == info.cend() );
+        REQUIRE_FALSE( info.contains( BIT7Z_STRING( "\\" ) ) );
+        REQUIRE( info.find( BIT7Z_STRING( "non_existing_item" ) ) == info.cend() );
+        REQUIRE_FALSE( info.contains( BIT7Z_STRING( "non_existing_item" ) ) );
+
+        REQUIRE( info.find( BIT7Z_STRING( "folder/clouds.jpg" ) ) != info.cend() );
+        REQUIRE( info.contains( BIT7Z_STRING( "folder/clouds.jpg" ) ) );
+#ifdef _WIN32
+        REQUIRE( info.find( BIT7Z_STRING( "folder\\clouds.jpg" ) ) != info.cend() );
+        REQUIRE( info.contains( BIT7Z_STRING( "folder\\clouds.jpg" ) ) );
+#else
+        REQUIRE( info.find( BIT7Z_STRING( "folder\\clouds.jpg" ) ) == info.cend() );
+        REQUIRE_FALSE( info.contains( BIT7Z_STRING( "folder\\clouds.jpg" ) ) );
+#endif
+    }
+}

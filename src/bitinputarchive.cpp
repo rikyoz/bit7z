@@ -396,9 +396,23 @@ auto BitInputArchive::cend() const noexcept -> BitInputArchive::ConstIterator {
 }
 
 auto BitInputArchive::find( const tstring& path ) const noexcept -> BitInputArchive::ConstIterator {
-    return std::find_if( begin(), end(), [ &path ]( auto& oldItem ) {
+    /* Windows supports both '/' and '\' characters as path separators,
+     * but 7-Zip reports item paths with the \ path separator.
+     * To support both path separators in the user-supplied path,
+     * we use the fs::path's element-wise path equality operator.
+     *
+     * Other operating systems usually only support the '/' path separator,
+     * and 7-Zip uses this in the item paths, so we only need to compare the path strings. */
+#ifdef _WIN32
+    const auto pathToFind = tstring_to_path( path );
+    return std::find_if( begin(), end(), [ &pathToFind ]( const BitArchiveItemOffset& oldItem ) -> bool {
+        return oldItem.nativePath() == pathToFind;
+    } );
+#else
+    return std::find_if( begin(), end(), [ &path ]( const BitArchiveItemOffset& oldItem ) -> bool {
         return oldItem.path() == path;
     } );
+#endif
 }
 
 auto BitInputArchive::contains( const tstring& path ) const noexcept -> bool {
