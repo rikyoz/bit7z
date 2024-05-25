@@ -217,7 +217,7 @@ auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandle
 
 void BitInputArchive::extractTo( const tstring& outDir ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
-    extractArc( {}, callback, NAskMode::kExtract );
+    extractArchive( {}, callback, NAskMode::kExtract );
 }
 
 inline auto findInvalidIndex( const std::vector< uint32_t >& indices,
@@ -236,7 +236,7 @@ void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint3
     }
 
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
-    extractArc( indices, callback, NAskMode::kExtract );
+    extractArchive( indices, callback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
@@ -254,7 +254,7 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
     const std::vector< uint32_t > indices( 1, index );
     std::map< tstring, buffer_t > buffersMap;
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, buffersMap );
-    extractArc( indices, extractCallback, NAskMode::kExtract );
+    extractArchive( indices, extractCallback, NAskMode::kExtract );
     outBuffer = std::move( buffersMap.begin()->second );
 }
 
@@ -272,7 +272,7 @@ void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const
 
     const std::vector< uint32_t > indices( 1, index );
     auto extractCallback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, outStream );
-    extractArc( indices, extractCallback, NAskMode::kExtract );
+    extractArchive( indices, extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t index ) const {
@@ -300,7 +300,7 @@ void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t inde
 
     const std::vector< uint32_t > indices( 1, index );
     auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
-    extractArc( indices, extractCallback, NAskMode::kExtract );
+    extractArchive( indices, extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
@@ -313,7 +313,7 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
     }
 
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, outMap );
-    extractArc( filesIndices, extractCallback, NAskMode::kExtract );
+    extractArchive( filesIndices, extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::test() const {
@@ -344,7 +344,7 @@ void BitInputArchive::testItem( uint32_t index ) const {
 void BitInputArchive::testArchive( const std::vector< uint32_t >& indices ) const {
     std::map< tstring, buffer_t > dummyMap; // output map (not used since we are testing).
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
-    extractArc( indices, extractCallback, NAskMode::kTest );
+    extractArchive( indices, extractCallback, NAskMode::kTest );
 }
 
 auto BitInputArchive::close() const noexcept -> HRESULT {
@@ -410,9 +410,9 @@ auto BitInputArchive::itemAt( uint32_t index ) const -> BitArchiveItemOffset {
     return { index, *this };
 }
 
-void BitInputArchive::extractArc( const std::vector< uint32_t >& indices,
-                                  ExtractCallback* extractCallback,
-                                  int32_t mode ) const {
+void BitInputArchive::extractArchive( const std::vector< uint32_t >& indices,
+                                      ExtractCallback* extractCallback,
+                                      int32_t mode ) const {
     const uint32_t* itemIndices = indices.empty() ? nullptr : indices.data();
     const uint32_t numItems = indices.empty() ?
                               std::numeric_limits< uint32_t >::max() : static_cast< uint32_t >( indices.size() );

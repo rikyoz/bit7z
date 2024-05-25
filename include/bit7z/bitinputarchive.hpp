@@ -284,9 +284,9 @@ class BitInputArchive {
         BIT7Z_NODISCARD
         auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
 
-        virtual void extractArc( const std::vector< uint32_t >& indices,
-                                 ExtractCallback* extractCallback,
-                                 int32_t mode ) const;
+        virtual void extractArchive( const std::vector< uint32_t >& indices,
+                                     ExtractCallback* extractCallback,
+                                     int32_t mode ) const;
 
         BIT7Z_NODISCARD
         auto close() const noexcept -> HRESULT;
