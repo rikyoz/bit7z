@@ -362,11 +362,10 @@ auto BitInputArchive::begin() const noexcept -> BitInputArchive::ConstIterator {
     return ConstIterator{ 0, *this };
 }
 
-auto BitInputArchive::end() const noexcept -> BitInputArchive::ConstIterator {
-    // Note: we do not use itemsCount() since it can throw an exception and end() is marked as noexcept!
-    uint32_t itemsCount = 0;
-    mInArchive->GetNumberOfItems( &itemsCount );
-    return ConstIterator{ itemsCount, *this };
+auto BitInputArchive::end() const noexcept -> BitInputArchive::ConstIterator try {
+    return ConstIterator{ itemsCount(), *this }; //-V509
+} catch ( const BitException& ) {
+    return begin();
 }
 
 auto BitInputArchive::cbegin() const noexcept -> BitInputArchive::ConstIterator {
