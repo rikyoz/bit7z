@@ -280,34 +280,6 @@ class BitInputArchive {
          */
         void testItem( uint32_t index ) const;
 
-    protected:
-        BIT7Z_NODISCARD
-        auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
-
-        virtual void extractArchive( const std::vector< uint32_t >& indices,
-                                     ExtractCallback* extractCallback,
-                                     int32_t mode ) const;
-
-        BIT7Z_NODISCARD
-        auto close() const noexcept -> HRESULT;
-
-        friend class BitAbstractArchiveOpener;
-
-        friend class BitAbstractArchiveCreator;
-
-        friend class BitOutputArchive;
-
-    private:
-        IInArchive* mInArchive;
-        const BitInFormat* mDetectedFormat;
-        const BitAbstractArchiveHandler& mArchiveHandler;
-        tstring mArchivePath;
-
-        auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
-
-        void testArchive( const std::vector< uint32_t >& indices ) const;
-
-    public:
         /**
          * @brief An iterator for the elements contained in an archive.
          */
@@ -427,6 +399,34 @@ class BitInputArchive {
          * @return the item at the given index within the archive.
          */
         BIT7Z_NODISCARD auto itemAt( uint32_t index ) const -> BitArchiveItemOffset;
+
+    protected:
+        BIT7Z_NODISCARD
+        auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
+
+        virtual void extractArchive( const std::vector< uint32_t >& indices,
+                                     ExtractCallback* extractCallback,
+                                     int32_t mode ) const;
+
+        BIT7Z_NODISCARD
+        auto close() const noexcept -> HRESULT;
+
+    private:
+        IInArchive* mInArchive;
+        const BitInFormat* mDetectedFormat;
+        const BitAbstractArchiveHandler& mArchiveHandler;
+        tstring mArchivePath;
+
+        BIT7Z_NODISCARD
+        auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
+
+        void testArchive( const std::vector< uint32_t >& indices ) const;
+
+        friend class BitAbstractArchiveOpener;
+
+        friend class BitAbstractArchiveCreator;
+
+        friend class BitOutputArchive;
 };
 
 }  // namespace bit7z
