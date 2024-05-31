@@ -147,7 +147,7 @@ auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVa
     BitPropVariant archiveProperty;
     const HRESULT res = mInArchive->GetArchiveProperty( static_cast< PROPID >( property ), &archiveProperty );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve archive property", make_hresult_code( res ) );
+        throw BitException( "Could not retrieve archive's " + to_string( property ), make_hresult_code( res ) );
     }
     return archiveProperty;
 }
@@ -156,7 +156,8 @@ auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const
     BitPropVariant itemProperty;
     const HRESULT res = mInArchive->GetProperty( index, static_cast< PROPID >( property ), &itemProperty );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve property for item at the index " + std::to_string( index ),
+        throw BitException( "Could not retrieve " + to_string( property ) +
+                            " of the item at the index " + std::to_string( index ),
                             make_hresult_code( res ) );
     }
     if ( property == BitProperty::Path && itemProperty.isEmpty() && itemsCount() == 1 ) {

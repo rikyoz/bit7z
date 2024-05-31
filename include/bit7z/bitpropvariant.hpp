@@ -128,6 +128,8 @@ enum struct BitProperty : PROPID {
     CopyLink                ///<
 };
 
+auto to_string( BitProperty property ) -> std::string;
+
 /**
  * @brief The BitPropVariantType enum represents the possible types that a BitPropVariant can store.
  */
