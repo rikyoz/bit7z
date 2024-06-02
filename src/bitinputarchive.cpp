@@ -252,10 +252,9 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
-    const std::vector< uint32_t > indices( 1, index );
     std::map< tstring, buffer_t > buffersMap;
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, buffersMap );
-    extractArchive( indices, extractCallback, NAskMode::kExtract );
+    extractArchive( { index }, extractCallback, NAskMode::kExtract );
     outBuffer = std::move( buffersMap.begin()->second );
 }
 
@@ -271,9 +270,8 @@ void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
-    const std::vector< uint32_t > indices( 1, index );
     auto extractCallback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, outStream );
-    extractArchive( indices, extractCallback, NAskMode::kExtract );
+    extractArchive( { index }, extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t index ) const {
@@ -299,9 +297,8 @@ void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t inde
                             make_error_code( BitError::InvalidOutputBufferSize ) );
     }
 
-    const std::vector< uint32_t > indices( 1, index );
     auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
-    extractArchive( indices, extractCallback, NAskMode::kExtract );
+    extractArchive( { index }, extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
