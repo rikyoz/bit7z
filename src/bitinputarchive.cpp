@@ -33,6 +33,8 @@
 #include "internal/formatdetect.hpp"
 #endif
 
+#include <algorithm>
+
 using namespace NWindows;
 using namespace NArchive;
 
