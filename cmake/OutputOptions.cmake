@@ -2,12 +2,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-if( CMAKE_CONFIGURATION_TYPES ) # enable only debug/release configurations for generated VS project file
-    set( CMAKE_CONFIGURATION_TYPES Debug Release )
-    set( CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING
-         "Reset the configurations to what we need" FORCE )
-endif()
-
 if( NOT CMAKE_BUILD_TYPE ) # by default, use release build
     set( CMAKE_BUILD_TYPE "Release" )
 endif()
