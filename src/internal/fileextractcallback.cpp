@@ -15,8 +15,8 @@
 #include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
-#include "extractcallback.hpp"
 #include "bittypes.hpp"
+#include "extractcallback.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
@@ -118,7 +118,6 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
         }
 
         std::error_code error;
-        fs::create_directories( mFilePathOnDisk.parent_path(), error );
 
         if ( fs::exists( mFilePathOnDisk, error ) ) {
             const OverwriteMode overwriteMode = mHandler.overwriteMode();
@@ -135,13 +134,17 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
                 case OverwriteMode::Overwrite:
                 default: {
                     if ( !fs::remove( mFilePathOnDisk, error ) ) {
-                        throw BitException( kCannotDeleteOutput,
-                                            make_hresult_code( E_ABORT ),
-                                            path_to_tstring( mFilePathOnDisk ) );
+                        throw BitException( kCannotDeleteOutput, error, path_to_tstring( mFilePathOnDisk ) );
                     }
                     break;
                 }
             }
+        } else {
+            const auto parentPath = mFilePathOnDisk.parent_path();
+            if ( !fs::exists( parentPath, error ) ) {
+                fs::create_directories( parentPath, error );
+            }
+            // TODO: Handle errors
         }
 
         auto outStreamLoc = bit7z::make_com< CFileOutStream >( mFilePathOnDisk, true );
@@ -149,7 +152,10 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
         *outStream = outStreamLoc.Detach();
     } else if ( mRetainDirectories ) { // Directory, and we must retain it
         std::error_code error;
-        fs::create_directories( mFilePathOnDisk, error );
+        if ( !fs::exists( mFilePathOnDisk, error ) ) {
+            fs::create_directories( mFilePathOnDisk, error );
+        }
+        // TODO: Handle errors
     } else {
         // No action needed
     }
