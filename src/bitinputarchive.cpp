@@ -28,6 +28,7 @@
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/operationresult.hpp"
+#include "internal/sequentialextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
@@ -143,6 +144,13 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
     mInArchive = openArchiveStream( fs::path{}, stdStream );
 }
 
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, uint32_t /*index*/ )
+    : mDetectedFormat{ &handler.format() },
+      mArchiveHandler{ handler } {
+    CMyComPtr< IInArchive > arc = mArchiveHandler.library().initInArchive( mArchiveHandler.format() );
+    mInArchive = arc.Detach();
+}
+
 auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant archiveProperty;
     const HRESULT res = mInArchive->GetArchiveProperty( static_cast< PROPID >( property ), &archiveProperty );
@@ -172,6 +180,11 @@ auto BitInputArchive::itemProperty( uint32_t index, BitProperty property ) const
         }
     }
     return itemProperty;
+}
+
+auto BitInputArchive::itemHasProperty( uint32_t index, BitProperty property ) const -> bool {
+    BitPropVariant itemProperty;
+    return mInArchive->GetProperty( index, static_cast< PROPID >( property ), &itemProperty ) == S_OK;
 }
 
 auto BitInputArchive::itemsCount() const -> uint32_t {
@@ -407,16 +420,37 @@ auto BitInputArchive::itemAt( uint32_t index ) const -> BitArchiveItemOffset {
     return { index, *this };
 }
 
+void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) const {
+    // Trying to open the archive as a sequential stream.
+    CMyComPtr< IArchiveOpenSeq > inSeqArchive{};
+
+    // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
+    HRESULT res = mInArchive->QueryInterface( IID_IArchiveOpenSeq, reinterpret_cast< void** >( &inSeqArchive ) );
+    if ( res != S_OK ) {
+        throw BitException( "Could not open the archive sequentially", make_hresult_code( res ) );
+    }
+
+    res = inSeqArchive->OpenSeq( inStream );
+    if ( res != S_OK ) {
+        throw BitException( "Could not open the archive sequentially", make_hresult_code( res ) );
+    }
+}
+
+void BitInputArchive::extractSequentially( BufferQueue& queue, uint32_t index ) const {
+    auto extractCallback = bit7z::make_com< SequentialExtractCallback, ExtractCallback >( *this, queue );
+    extractArchive( { index }, extractCallback, NAskMode::kExtract );
+}
+
 void BitInputArchive::extractArchive( const std::vector< uint32_t >& indices,
-                                      ExtractCallback* extractCallback,
+                                      ExtractCallback* callback,
                                       int32_t mode ) const {
     const uint32_t* itemIndices = indices.empty() ? nullptr : indices.data();
     const uint32_t numItems = indices.empty() ?
                               std::numeric_limits< uint32_t >::max() : static_cast< uint32_t >( indices.size() );
 
-    const HRESULT res = mInArchive->Extract( itemIndices, numItems, mode, extractCallback );
+    const HRESULT res = mInArchive->Extract( itemIndices, numItems, mode, callback );
     if ( res != S_OK ) {
-        const auto& errorException = extractCallback->errorException();
+        const auto& errorException = callback->errorException();
         if ( errorException ) {
             std::rethrow_exception( errorException );
         }

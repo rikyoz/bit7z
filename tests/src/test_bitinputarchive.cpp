@@ -36,8 +36,6 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
-using ExpectedItems = std::vector< ExpectedItem >;
-
 inline auto archive_item( const BitArchiveReader& archive,
                           const ExpectedItem& expectedItem ) -> BitArchiveReader::ConstIterator {
     if ( archive.retainDirectories() ) {
@@ -48,31 +46,6 @@ inline auto archive_item( const BitArchiveReader& archive,
         return item.name() == expectedItem.fileInfo.name;
     } );
 }
-
-void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location ) {
-    INFO( "From " << location.file_name() << ":" << location.line() )
-    INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() )
-
-    // Note: there's no need to check the file with fs::exists
-    //       since the file's type check already includes the check for the file existence.
-    const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
-    REQUIRE( fs::exists( fileStatus ) );
-    REQUIRE( fileStatus.type() == expectedItem.fileInfo.type );
-    if ( fs::is_regular_file( fileStatus ) ) {
-        REQUIRE( crc32( load_file( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
-    }
-#ifndef _WIN32
-    if ( fs::is_symlink( fileStatus ) ) {
-        const auto symlink = fs::read_symlink( expectedItem.inArchivePath );
-        REQUIRE( crc32( symlink.u8string() ) == expectedItem.fileInfo.crc32 );
-    }
-#endif
-    if ( !fs::is_directory( fileStatus ) || fs::is_empty( expectedItem.inArchivePath ) ) {
-        REQUIRE_NOTHROW( fs::remove( expectedItem.inArchivePath ) );
-    }
-}
-
-#define REQUIRE_FILESYSTEM_ITEM( expectedItem ) require_filesystem_item( expectedItem, BIT7Z_CURRENT_LOCATION )
 
 void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     TempTestDirectory testDir{ "test_bitinputarchive" };
@@ -1006,7 +979,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
 #ifdef _WIN32
 auto get_file_time( const fs::path& filePath, FILETIME& creation, FILETIME& access, FILETIME& modified ) -> bool {
     HANDLE hFile = ::CreateFileW( filePath.c_str(),
-                                  GENERIC_READ | FILE_READ_ATTRIBUTES,
+                                  GENERIC_READ | FILE_READ_ATTRIBUTES, // NOLINT(*-signed-bitwise)
                                   FILE_SHARE_READ,
                                   nullptr,
                                   OPEN_EXISTING,

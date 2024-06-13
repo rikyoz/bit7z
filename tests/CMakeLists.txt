@@ -28,6 +28,7 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bitinputarchive.cpp
      src/test_bitmemcompressor.cpp
      src/test_bitmemextractor.cpp
+     src/test_bitnestedarchivereader.cpp
      src/test_bitoutputarchive.cpp
      src/test_bitpropvariant.cpp
      src/test_bitstreamcompressor.cpp
@@ -53,7 +54,7 @@ add_executable( ${TESTS_TARGET_PUBLIC} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES
 if( BIT7Z_TESTS_FILESYSTEM )
     CPMAddPackage( NAME bit7z_test_data
                    GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
-                   VERSION 1.3
+                   VERSION 1.4
                    DOWNLOAD_ONLY YES )
     if( bit7z_test_data_ADDED )
         set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )
@@ -113,6 +114,11 @@ target_include_directories( ${TESTS_TARGET} PRIVATE
 target_include_directories( ${TESTS_TARGET_PUBLIC} PRIVATE
                             "${PROJECT_SOURCE_DIR}/include/bit7z"
                             "${PROJECT_SOURCE_DIR}/src" )
+
+if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
+    target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} pthread )
+    target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE ${LIB_TARGET} pthread )
+endif()
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )

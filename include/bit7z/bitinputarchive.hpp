@@ -31,9 +31,11 @@
 struct IInStream;
 struct IInArchive;
 struct IOutArchive;
+struct ISequentialInStream;
 
 namespace bit7z {
 
+class BufferQueue;
 class ExtractCallback;
 
 /**
@@ -111,6 +113,8 @@ class BitInputArchive {
          * the property.
          */
         BIT7Z_NODISCARD auto itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant;
+
+        BIT7Z_NODISCARD auto itemHasProperty( uint32_t index, BitProperty property ) const -> bool;
 
         /**
          * @return the number of items contained in the archive.
@@ -404,9 +408,11 @@ class BitInputArchive {
         BIT7Z_NODISCARD
         auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
 
-        virtual void extractArchive( const std::vector< uint32_t >& indices,
-                                     ExtractCallback* extractCallback,
-                                     int32_t mode ) const;
+        void openArchiveSeqStream( ISequentialInStream* inStream ) const;
+
+        void extractSequentially( BufferQueue& queue, uint32_t index ) const;
+
+        void extractArchive( const std::vector< uint32_t >& indices, ExtractCallback* callback, int32_t mode ) const;
 
         BIT7Z_NODISCARD
         auto close() const noexcept -> HRESULT;
@@ -417,6 +423,8 @@ class BitInputArchive {
         const BitAbstractArchiveHandler& mArchiveHandler;
         tstring mArchivePath;
 
+        explicit BitInputArchive( const BitAbstractArchiveHandler& handler, uint32_t index = 0 );
+
         BIT7Z_NODISCARD
         auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
 
@@ -426,7 +434,11 @@ class BitInputArchive {
 
         friend class BitAbstractArchiveCreator;
 
+        friend class BitNestedArchiveReader;
+
         friend class BitOutputArchive;
+
+        friend class CSynchronizedInStream;
 };
 
 }  // namespace bit7z

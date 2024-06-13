@@ -110,6 +110,12 @@ void require_archive_content( const BitArchiveReader& info,
 #define REQUIRE_ARCHIVE_CONTENT( info, input ) \
     require_archive_content( info, input, BIT7Z_CURRENT_LOCATION )
 
+void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location );
+
+#define REQUIRE_FILESYSTEM_ITEM( expectedItem ) require_filesystem_item( expectedItem, BIT7Z_CURRENT_LOCATION )
+
+using ExpectedItems = std::vector< ExpectedItem >;
+
 } // namespace test
 } // namespace bit7z
 

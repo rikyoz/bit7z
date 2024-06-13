@@ -44,6 +44,7 @@ set( PUBLIC_HEADERS
      include/bit7z/bititemsvector.hpp
      include/bit7z/bitmemcompressor.hpp
      include/bit7z/bitmemextractor.hpp
+     include/bit7z/bitnestedarchivereader.hpp
      include/bit7z/bitoutputarchive.hpp
      include/bit7z/bitpropvariant.hpp
      include/bit7z/bitsharedlibrary.hpp
@@ -57,6 +58,7 @@ set( HEADERS
      src/internal/archiveproperties.hpp
      src/internal/bufferextractcallback.hpp
      src/internal/bufferitem.hpp
+     src/internal/bufferqueue.hpp
      src/internal/bufferutil.hpp
      src/internal/callback.hpp
      src/internal/cbufferinstream.hpp
@@ -70,6 +72,8 @@ set( HEADERS
      src/internal/cstdinstream.hpp
      src/internal/cstdoutstream.hpp
      src/internal/csymlinkinstream.hpp
+     src/internal/csynchronizedinstream.hpp
+     src/internal/csynchronizedoutstream.hpp
      src/internal/cvolumeinstream.hpp
      src/internal/cvolumeoutstream.hpp
      src/internal/dateutil.hpp
@@ -93,6 +97,7 @@ set( HEADERS
      src/internal/operationresult.hpp
      src/internal/processeditem.hpp
      src/internal/renameditem.hpp
+     src/internal/sequentialextractcallback.hpp
      src/internal/stdinputitem.hpp
      src/internal/streamextractcallback.hpp
      src/internal/streamutil.hpp
@@ -119,12 +124,14 @@ set( SOURCES
      src/bitformat.cpp
      src/bitinputarchive.cpp
      src/bititemsvector.cpp
+     src/bitnestedarchivereader.cpp
      src/bitoutputarchive.cpp
      src/bitpropvariant.cpp
      src/bitsharedlibrary.cpp
      src/bittypes.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferitem.cpp
+     src/internal/bufferqueue.cpp
      src/internal/bufferutil.cpp
      src/internal/callback.cpp
      src/internal/cbufferinstream.cpp
@@ -137,6 +144,8 @@ set( SOURCES
      src/internal/cstdinstream.cpp
      src/internal/cstdoutstream.cpp
      src/internal/csymlinkinstream.cpp
+     src/internal/csynchronizedinstream.cpp
+     src/internal/csynchronizedoutstream.cpp
      src/internal/cvolumeinstream.cpp
      src/internal/cvolumeoutstream.cpp
      src/internal/dateutil.cpp
@@ -157,6 +166,7 @@ set( SOURCES
      src/internal/operationresult.cpp
      src/internal/processeditem.cpp
      src/internal/renameditem.cpp
+     src/internal/sequentialextractcallback.cpp
      src/internal/stdinputitem.cpp
      src/internal/streamextractcallback.cpp
      src/internal/stringutil.cpp
