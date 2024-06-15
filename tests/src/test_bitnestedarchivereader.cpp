@@ -38,9 +38,11 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Reading nested archives", "[bitnest
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "gz", BitFormat::GZip },
                                        TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz } );
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -60,9 +62,11 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Testing nested archives", "[bitnest
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "gz", BitFormat::GZip },
                                        TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz } );
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -82,9 +86,11 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting nested archives", "[bitn
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "gz", BitFormat::GZip },
                                        TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz } );
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -101,14 +107,52 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting nested archives", "[bitn
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Reading items of nested archives", "[bitnestedarchivereader]",
+                    tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "gz", BitFormat::GZip },
+                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "nested.tar." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader outerArchive( test::sevenzip_lib(), inputArchive, testArchive.format );
+        BitNestedArchiveReader innerArchive( test::sevenzip_lib(), outerArchive, BitFormat::Tar );
+
+        // TODO: Test all kind of extraction targets (buffers, streams, etc.)
+        const auto items = innerArchive.items();
+        REQUIRE( items.size() == multiple_files_content().fileCount );
+        REQUIRE( innerArchive.openCount() == 1 );
+        for ( const auto& item : items ) {
+            if ( item.name() == italy.name ) {
+                REQUIRE( item.size() == italy.size );
+            } else if ( item.name() == loremIpsum.name ) {
+                REQUIRE( item.size() == loremIpsum.size );
+            } else {
+                FAIL( "Unexpected item" );
+            }
+        }
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Multiple operations on nested archives", "[bitnestedarchivereader]",
                     tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "gz", BitFormat::GZip },
                                        TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz } );
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -121,21 +165,6 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Multiple operations on nested archi
         REQUIRE_NOTHROW( innerArchive.test() );
         REQUIRE( innerArchive.openCount() == 1 );
 
-        // Note: the for-each loop will call the begin() and end() functions;
-        // the latter, needs to calculate the number of items in the archive,
-        // triggering the extraction of the outer archive to open the inner one.
-        // On the subsequent request for an item property (e.g., item.name()),
-        // the outer archive must be extracted again, as the counting of the items in the archive
-        // consumed the result of the first extraction.
-        /*for ( const auto& item : innerArchive ) {
-            if ( item.name() == italy.name ) {
-                REQUIRE( item.size() == italy.size );
-            } else if ( item.name() == loremIpsum.name ) {
-                REQUIRE( item.size() == loremIpsum.size );
-            } else {
-                FAIL( "Unexpected item" );
-            }
-        }*/
         REQUIRE( innerArchive.itemsCount() == 2 );
         REQUIRE( innerArchive.openCount() == 2 );
 
