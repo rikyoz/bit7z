@@ -143,7 +143,21 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
     }
 
     std::vector< BitArchiveItemInfo > result;
-    for ( std::uint32_t index = 0; index < std::numeric_limits< std::uint32_t >::max(); ++index ) {
+
+    /* The TAR format always reports std::numeric_limits< std::uint32_t >::max()
+     * as itemsCount() when the archive is opened sequentially.
+     * Other formats that support sequential opening only support single file compression.
+     * Therefore:
+     * - For TAR archives, we don't know the actual number of items in the archive,
+     *   so we can't reserve space in the vector (as we do in BitArchiveReader::items()),
+     *   and we stop when we encounter the first item not reporting the BitProperty::IsDir property.
+     * - For other archives, we stop when we reach itemsCount() (most likely one) items added to the vector. */
+    const auto itemsCount = mArchive.itemsCount();
+    if ( itemsCount < std::numeric_limits< std::uint32_t >::max() ) {
+        result.reserve( itemsCount );
+    }
+
+    for ( std::uint32_t index = 0; index < itemsCount; ++index ) {
         if ( !mArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
             mLastReadItem = index;
             return result;
