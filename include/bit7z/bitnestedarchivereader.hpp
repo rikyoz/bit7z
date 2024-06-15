@@ -38,8 +38,8 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         BitNestedArchiveReader( const Bit7zLibrary& lib,
                                 BitInputArchive& inArchive,
                                 const BitInFormat& format,
-                                const tstring& password = {},
-                                std::uint32_t index = 0 );
+                                std::uint32_t index = 0,
+                                const tstring& password = {} );
 
         BIT7Z_NODISCARD
         auto maxMemoryUsage() const noexcept -> std::uint64_t;

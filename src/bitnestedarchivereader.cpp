@@ -75,8 +75,8 @@ auto get_free_ram() -> std::uint64_t {
 BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
                                                 BitInputArchive& inArchive,
                                                 const BitInFormat& format,
-                                                const tstring& password,
-                                                std::uint32_t index )
+                                                std::uint32_t index,
+                                                const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ),
       mArchive{ *this },
       mParentArchive{ inArchive },
