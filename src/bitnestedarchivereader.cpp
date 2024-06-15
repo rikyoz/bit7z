@@ -78,8 +78,9 @@ BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
                                                 const tstring& password,
                                                 std::uint32_t index )
     : BitAbstractArchiveOpener( lib, format, password ),
-      mArchive{ *this, index },
+      mArchive{ *this },
       mParentArchive{ inArchive },
+      mIndexInParent{ index },
       mMaxMemoryUsage{ std::max( get_free_ram() / 4, kMinMaxMemoryUsage ) },
       mCachedItemsCount{ 0 },
       mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
@@ -189,7 +190,9 @@ void BitNestedArchiveReader::test() const {
 }
 
 void BitNestedArchiveReader::openSequentially() const {
-    auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >( mMaxMemoryUsage, mParentArchive, 0U );
+    auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >( mMaxMemoryUsage,
+                                                                                 mParentArchive,
+                                                                                 mIndexInParent );
     mArchive.openArchiveSeqStream( stream );
     mLastReadItem = 0;
     ++mOpenCount;

@@ -144,7 +144,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
     mInArchive = openArchiveStream( fs::path{}, stdStream );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, uint32_t /*index*/ )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler )
     : mDetectedFormat{ &handler.format() },
       mArchiveHandler{ handler } {
     CMyComPtr< IInArchive > arc = mArchiveHandler.library().initInArchive( mArchiveHandler.format() );

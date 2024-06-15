@@ -19,6 +19,7 @@ namespace bit7z {
 class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         BitInputArchive mArchive;
         const BitInputArchive& mParentArchive;
+        std::uint32_t mIndexInParent;
         std::uint64_t mMaxMemoryUsage;
 
         mutable std::uint32_t mCachedItemsCount;
