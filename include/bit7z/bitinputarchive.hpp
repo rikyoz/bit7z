@@ -423,7 +423,7 @@ class BitInputArchive {
         const BitAbstractArchiveHandler& mArchiveHandler;
         tstring mArchivePath;
 
-        explicit BitInputArchive( const BitAbstractArchiveHandler& handler );
+        explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitArchiveItemOffset& nestedItem );
 
         BIT7Z_NODISCARD
         auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;

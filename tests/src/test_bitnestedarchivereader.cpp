@@ -172,3 +172,66 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Multiple operations on nested archi
         REQUIRE( innerArchive.openCount() == 3 );
     }
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting multiple nested archives inside an archive",
+                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "multiple_nested.7z";
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+
+    BitArchiveReader outerArchive( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
+
+    for ( const auto& item : outerArchive ) {
+        BitNestedArchiveReader innerArchive( test::sevenzip_lib(), outerArchive, item.index(), BitFormat::Tar );
+
+        REQUIRE_NOTHROW( innerArchive.test() );
+        REQUIRE( innerArchive.openCount() == 1 );
+
+        if ( item.name() == BIT7Z_STRING( "multiple_files.tar" ) ) {
+            require_extracts_to_filesystem( innerArchive, multiple_files_content().items );
+        } else if ( item.name() == BIT7Z_STRING( "multiple_items.tar" ) ) {
+            require_extracts_to_filesystem( innerArchive, multiple_items_content().items );
+        } else {
+            FAIL( "Unexpected nested archive" );
+        }
+
+        REQUIRE( innerArchive.openCount() == 2 );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting compressed archives inside an uncompressed tarball",
+                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "reversed_tarball.tar";
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+
+    BitArchiveReader outerArchive( test::sevenzip_lib(), inputArchive, BitFormat::Tar );
+
+    TempDirectory testOutDir{ "test_bitinputarchive" };
+    INFO( "Test directory: " << testOutDir )
+    for ( const auto& item : outerArchive ) {
+        const auto& format = [&item]() -> const BitInFormat& {
+            const auto& ext = item.extension();
+            if ( ext == "gz" ) {
+                return BitFormat::GZip;
+            }
+            if ( ext == "bz2" ) {
+                return BitFormat::BZip2;
+            }
+            return BitFormat::Xz;
+        }();
+        BitNestedArchiveReader innerArchive( test::sevenzip_lib(), outerArchive, item.index(), format );
+
+        REQUIRE_NOTHROW( innerArchive.test() );
+        REQUIRE( innerArchive.openCount() == 1 );
+
+        require_extracts_to_filesystem( innerArchive, single_file_content().items );
+        REQUIRE( innerArchive.openCount() == 2 );
+    }
+}

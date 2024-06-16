@@ -144,9 +144,10 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std:
     mInArchive = openArchiveStream( fs::path{}, stdStream );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const BitArchiveItemOffset& nestedItem )
     : mDetectedFormat{ &handler.format() },
-      mArchiveHandler{ handler } {
+      mArchiveHandler{ handler },
+      mArchivePath{ nestedItem.path() } {
     CMyComPtr< IInArchive > arc = mArchiveHandler.library().initInArchive( mArchiveHandler.format() );
     mInArchive = arc.Detach();
 }

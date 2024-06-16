@@ -84,7 +84,7 @@ BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
                                                 const BitInFormat& format,
                                                 const tstring& password )
     : BitAbstractArchiveOpener{ lib, format, password },
-      mArchive{ *this },
+      mArchive{ *this, parentArchive.itemAt( index ) },
       mParentArchive{ parentArchive },
       mIndexInParent{ index },
       mMaxMemoryUsage{ std::max( get_free_ram() / 4, kMinMaxMemoryUsage ) },
