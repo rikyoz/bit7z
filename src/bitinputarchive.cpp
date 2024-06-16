@@ -235,16 +235,9 @@ void BitInputArchive::extractTo( const tstring& outDir ) const {
     extractArchive( {}, callback, NAskMode::kExtract );
 }
 
-inline auto findInvalidIndex( const std::vector< uint32_t >& indices,
-                              uint32_t itemsCount ) noexcept -> std::vector< uint32_t >::const_iterator {
-    return std::find_if( indices.cbegin(), indices.cend(), [&itemsCount]( uint32_t index ) noexcept -> bool {
-        return index >= itemsCount;
-    });
-}
-
 void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const {
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
-    const auto invalidIndex = findInvalidIndex( indices, itemsCount() );
+    const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
                             make_error_code( BitError::InvalidIndex ) );
@@ -255,8 +248,7 @@ void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint3
 }
 
 void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
-    const uint32_t numberItems = itemsCount();
-    if ( index >= numberItems ) {
+    if ( isInvalidIndex( index ) ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
@@ -273,8 +265,7 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
 }
 
 void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const {
-    const uint32_t numberItems = itemsCount();
-    if ( index >= numberItems ) {
+    if ( isInvalidIndex( index ) ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
@@ -294,8 +285,7 @@ void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t inde
                             make_error_code( BitError::NullOutputBuffer ) );
     }
 
-    const uint32_t numberItems = itemsCount();
-    if ( index >= numberItems ) {
+    if ( isInvalidIndex( index ) ) {
         throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::InvalidIndex ) );
     }
@@ -334,7 +324,7 @@ void BitInputArchive::test() const {
 
 void BitInputArchive::test( const std::vector< uint32_t >& indices ) const {
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
-    const auto invalidIndex = findInvalidIndex( indices, itemsCount() );
+    const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
                             make_error_code( BitError::InvalidIndex ) );
@@ -344,8 +334,7 @@ void BitInputArchive::test( const std::vector< uint32_t >& indices ) const {
 }
 
 void BitInputArchive::testItem( uint32_t index ) const {
-    const uint32_t numberItems = itemsCount();
-    if ( index >= numberItems ) {
+    if ( isInvalidIndex( index ) ) {
         throw BitException( "Cannot test item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
@@ -413,12 +402,22 @@ auto BitInputArchive::contains( const tstring& path ) const noexcept -> bool {
 }
 
 auto BitInputArchive::itemAt( uint32_t index ) const -> BitArchiveItemOffset {
-    const uint32_t numberItems = itemsCount();
-    if ( index >= numberItems ) {
+    if ( isInvalidIndex( index ) ) {
         throw BitException( "Cannot get the item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
     return { *this, index };
+}
+
+auto BitInputArchive::findInvalidIndex( const std::vector< uint32_t >& indices ) const -> std::vector< uint32_t >::const_iterator {
+    const auto count = itemsCount();
+    return std::find_if( indices.cbegin(), indices.cend(), [ &count ]( uint32_t index ) noexcept -> bool {
+        return index >= count;
+    } );
+}
+
+auto BitInputArchive::isInvalidIndex( uint32_t index ) const -> bool {
+    return index >= itemsCount();
 }
 
 void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) const {

@@ -415,6 +415,12 @@ class BitInputArchive {
         void extractArchive( const std::vector< uint32_t >& indices, ExtractCallback* callback, int32_t mode ) const;
 
         BIT7Z_NODISCARD
+        auto isInvalidIndex( uint32_t index ) const -> bool;
+
+        BIT7Z_NODISCARD
+        auto findInvalidIndex( const std::vector< uint32_t >& indices ) const -> std::vector< uint32_t >::const_iterator;
+
+        BIT7Z_NODISCARD
         auto close() const noexcept -> HRESULT;
 
     private:
