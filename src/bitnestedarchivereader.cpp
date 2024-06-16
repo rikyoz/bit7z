@@ -84,7 +84,7 @@ BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
                                                 const BitInFormat& format,
                                                 const tstring& password )
     : BitAbstractArchiveOpener{ lib, format, password },
-      mArchive{ *this, parentArchive.itemAt( index ) },
+      mNestedArchive{ *this, parentArchive.itemAt( index ) },
       mParentArchive{ parentArchive },
       mIndexInParent{ index },
       mMaxMemoryUsage{ std::max( get_free_ram() / 4, kMinMaxMemoryUsage ) },
@@ -97,11 +97,11 @@ auto BitNestedArchiveReader::maxMemoryUsage() const noexcept -> std::uint64_t {
 }
 
 auto BitNestedArchiveReader::detectedFormat() const noexcept -> const BitInFormat& {
-    return mArchive.detectedFormat();
+    return mNestedArchive.detectedFormat();
 }
 
 auto BitNestedArchiveReader::archiveProperty( BitProperty property ) const -> BitPropVariant {
-    return mArchive.archiveProperty( property );
+    return mNestedArchive.archiveProperty( property );
 }
 
 auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant {
@@ -109,7 +109,7 @@ auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty prop
         openSequentially();
     }
 
-    const auto result = mArchive.itemProperty( index, property );
+    const auto result = mNestedArchive.itemProperty( index, property );
     mLastReadItem = index;
     return result;
 }
@@ -123,7 +123,7 @@ auto BitNestedArchiveReader::calculateItemsCount() const -> std::uint32_t {
         /* All archive formats provide BitProperty::IsDir for _valid_ items,
          * so if the item at the index doesn't have this property,
          * it means the archive doesn't have an item at the given index. */
-        if ( !mArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
+        if ( !mNestedArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
             mLastReadItem = index;
             return index;
         }
@@ -136,7 +136,7 @@ auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
         return mCachedItemsCount;
     }
 
-    mCachedItemsCount = mArchive.itemsCount();
+    mCachedItemsCount = mNestedArchive.itemsCount();
     if ( mCachedItemsCount == std::numeric_limits< std::uint32_t >::max() ) {
         mCachedItemsCount = calculateItemsCount();
     }
@@ -158,13 +158,13 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
      *   so we can't reserve space in the vector (as we do in BitArchiveReader::items()),
      *   and we stop when we encounter the first item not reporting the BitProperty::IsDir property.
      * - For other archives, we stop when we reach itemsCount() (most likely one) items added to the vector. */
-    const auto itemsCount = mArchive.itemsCount();
+    const auto itemsCount = mNestedArchive.itemsCount();
     if ( itemsCount < std::numeric_limits< std::uint32_t >::max() ) {
         result.reserve( itemsCount );
     }
 
     for ( std::uint32_t index = 0; index < itemsCount; ++index ) {
-        if ( !mArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
+        if ( !mNestedArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
             mLastReadItem = index;
             return result;
         }
@@ -173,7 +173,7 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
         for ( std::uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
             // We cast property twice (here and in itemProperty), to make the code is easier to read.
             const auto property = static_cast< BitProperty >( j );
-            const auto propertyValue = mArchive.itemProperty( index, property );
+            const auto propertyValue = mNestedArchive.itemProperty( index, property );
 
             if ( !propertyValue.isEmpty() ) {
                 item.setProperty( property, propertyValue );
@@ -189,7 +189,7 @@ void BitNestedArchiveReader::extractTo( const tstring& outDir ) const {
     if ( needReopen() ) {
         openSequentially();
     }
-    mArchive.extractTo( outDir );
+    mNestedArchive.extractTo( outDir );
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
 }
 
@@ -197,7 +197,7 @@ void BitNestedArchiveReader::extractTo( std::map< tstring, buffer_t >& outMap ) 
     if ( needReopen() ) {
         openSequentially();
     }
-    mArchive.extractTo( outMap );
+    mNestedArchive.extractTo( outMap );
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
 }
 
@@ -205,7 +205,7 @@ void BitNestedArchiveReader::test() const {
     if ( needReopen() ) {
         openSequentially();
     }
-    mArchive.test();
+    mNestedArchive.test();
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
 }
 
@@ -213,7 +213,7 @@ void BitNestedArchiveReader::openSequentially() const {
     auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >( mMaxMemoryUsage,
                                                                                  mParentArchive,
                                                                                  mIndexInParent );
-    mArchive.openArchiveSeqStream( stream );
+    mNestedArchive.openArchiveSeqStream( stream );
     mLastReadItem = 0;
     ++mOpenCount;
 }
