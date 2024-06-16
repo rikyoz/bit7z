@@ -235,3 +235,26 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting compressed archives insi
         REQUIRE( innerArchive.openCount() == 2 );
     }
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Usually, max memory limit should be above 4MB",
+                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "gz", BitFormat::GZip },
+                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "nested.tar." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader outerArchive( test::sevenzip_lib(), inputArchive, testArchive.format );
+        BitNestedArchiveReader innerArchive( test::sevenzip_lib(), outerArchive, BitFormat::Tar );
+        REQUIRE( innerArchive.maxMemoryUsage() > ( 4ULL * 1024 * 1024 ) );
+    }
+}
