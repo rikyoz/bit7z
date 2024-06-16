@@ -427,7 +427,7 @@ void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) cons
 
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
     HRESULT res = mInArchive->QueryInterface( IID_IArchiveOpenSeq, reinterpret_cast< void** >( &inSeqArchive ) );
-    if ( res != S_OK ) {
+    if ( res != S_OK ) { // TODO: Improve error message when format doesn't support sequentially opening of archives.
         throw BitException( "Could not open the archive sequentially", make_hresult_code( res ) );
     }
 
@@ -472,13 +472,11 @@ auto BitInputArchive::ConstIterator::operator++( int ) noexcept -> BitInputArchi
     return incremented;
 }
 
-auto
-BitInputArchive::ConstIterator::operator==( const BitInputArchive::ConstIterator& other ) const noexcept -> bool {
+auto BitInputArchive::ConstIterator::operator==( const BitInputArchive::ConstIterator& other ) const noexcept -> bool {
     return mItemOffset == other.mItemOffset;
 }
 
-auto
-BitInputArchive::ConstIterator::operator!=( const BitInputArchive::ConstIterator& other ) const noexcept -> bool {
+auto BitInputArchive::ConstIterator::operator!=( const BitInputArchive::ConstIterator& other ) const noexcept -> bool {
     return !( *this == other );
 }
 
