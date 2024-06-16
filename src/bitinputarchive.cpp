@@ -417,7 +417,7 @@ auto BitInputArchive::itemAt( uint32_t index ) const -> BitArchiveItemOffset {
         throw BitException( "Cannot get the item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
     }
-    return { index, *this };
+    return { *this, index };
 }
 
 void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) const {
@@ -490,6 +490,6 @@ auto BitInputArchive::ConstIterator::operator->() const noexcept -> BitInputArch
 }
 
 BitInputArchive::ConstIterator::ConstIterator( uint32_t itemIndex, const BitInputArchive& itemArchive ) noexcept
-    : mItemOffset( itemIndex, itemArchive ) {}
+    : mItemOffset( itemArchive, itemIndex ) {}
 
 } // namespace bit7z

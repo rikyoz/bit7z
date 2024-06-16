@@ -47,7 +47,7 @@ class BitArchiveItemOffset final : public BitArchiveItem {
          * to be CopyConstructible so that stl algorithms can be used with ConstIterator. */
         const BitInputArchive* mArc;
 
-        BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept;
+        BitArchiveItemOffset( const BitInputArchive& inputArchive, uint32_t itemIndex ) noexcept;
 
         friend class BitInputArchive;
 };
