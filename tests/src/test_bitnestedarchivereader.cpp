@@ -218,10 +218,10 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting compressed archives insi
     for ( const auto& item : outerArchive ) {
         const auto& format = [&item]() -> const BitInFormat& {
             const auto& ext = item.extension();
-            if ( ext == "gz" ) {
+            if ( ext == BIT7Z_STRING( "gz" ) ) {
                 return BitFormat::GZip;
             }
-            if ( ext == "bz2" ) {
+            if ( ext == BIT7Z_STRING( "bz2" ) ) {
                 return BitFormat::BZip2;
             }
             return BitFormat::Xz;
