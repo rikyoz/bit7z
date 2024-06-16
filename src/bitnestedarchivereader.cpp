@@ -73,13 +73,19 @@ auto get_free_ram() -> std::uint64_t {
 }
 
 BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
-                                                BitInputArchive& inArchive,
+                                                const BitInputArchive& parentArchive,
                                                 const BitInFormat& format,
-                                                std::uint32_t index,
                                                 const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ),
+    : BitNestedArchiveReader{ lib, parentArchive, 0, format, password } {}
+
+BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
+                                                const BitInputArchive& parentArchive,
+                                                std::uint32_t index,
+                                                const BitInFormat& format,
+                                                const tstring& password )
+    : BitAbstractArchiveOpener{ lib, format, password },
       mArchive{ *this },
-      mParentArchive{ inArchive },
+      mParentArchive{ parentArchive },
       mIndexInParent{ index },
       mMaxMemoryUsage{ std::max( get_free_ram() / 4, kMinMaxMemoryUsage ) },
       mCachedItemsCount{ 0 },

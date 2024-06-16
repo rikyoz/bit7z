@@ -36,9 +36,14 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
 
     public:
         BitNestedArchiveReader( const Bit7zLibrary& lib,
-                                BitInputArchive& inArchive,
+                                const BitInputArchive& parentArchive,
+                                std::uint32_t index,
                                 const BitInFormat& format,
-                                std::uint32_t index = 0,
+                                const tstring& password = {} );
+
+        BitNestedArchiveReader( const Bit7zLibrary& lib,
+                                const BitInputArchive& parentArchive,
+                                const BitInFormat& format,
                                 const tstring& password = {} );
 
         BIT7Z_NODISCARD
