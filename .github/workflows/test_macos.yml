@@ -60,6 +60,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Install XCode
+      if: ${{ contains(matrix.c_compiler, 'gcc-13') }}
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.3'
+
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
       with:
