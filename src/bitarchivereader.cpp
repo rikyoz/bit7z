@@ -50,6 +50,19 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const BitInputArchive& inArchive,
+                                    const BitInFormat& format,
+                                    const tstring& password )
+    : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive } {}
+
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const BitInputArchive& inArchive,
+                                    std::uint32_t subfileIndex,
+                                    const BitInFormat& format,
+                                    const tstring& password )
+    : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive, subfileIndex } {}
+
 auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPropVariant > {
     std::map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {

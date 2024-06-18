@@ -91,6 +91,17 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
+        BitArchiveReader( const Bit7zLibrary& lib,
+                          const BitInputArchive& inArchive,
+                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+                          const tstring& password = {} );
+
+        BitArchiveReader( const Bit7zLibrary& lib,
+                          const BitInputArchive& inArchive,
+                          std::uint32_t subfileIndex,
+                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+                          const tstring& password = {} );
+
         BitArchiveReader( const BitArchiveReader& ) = delete;
 
         BitArchiveReader( BitArchiveReader&& ) = delete;

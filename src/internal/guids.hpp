@@ -38,6 +38,7 @@ extern const GUID IID_ICryptoGetTextPassword2;
 // IArchive.h
 extern const GUID IID_ISetProperties;
 extern const GUID IID_IInArchive;
+extern const GUID IID_IInArchiveGetStream;
 extern const GUID IID_IOutArchive;
 extern const GUID IID_IArchiveExtractCallback;
 extern const GUID IID_IArchiveOpenSeq;

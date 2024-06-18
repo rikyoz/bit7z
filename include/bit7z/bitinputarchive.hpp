@@ -404,11 +404,22 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto itemAt( uint32_t index ) const -> BitArchiveItemOffset;
 
+        BIT7Z_NODISCARD auto mainSubfileIndex() const -> std::uint32_t;
+
     protected:
+        explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive );
+
+        explicit BitInputArchive( const BitAbstractArchiveHandler& handler,
+                                  const BitInputArchive& parentArchive,
+                                  std::uint32_t index );
+
         BIT7Z_NODISCARD
         auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
 
         void openArchiveSeqStream( ISequentialInStream* inStream ) const;
+
+        BIT7Z_NODISCARD
+        auto getSubfileStream( std::uint32_t index ) const -> CMyComPtr< IInStream >;
 
         void extractSequentially( BufferQueue& queue, uint32_t index ) const;
 

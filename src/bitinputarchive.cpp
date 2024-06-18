@@ -152,6 +152,19 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
     mInArchive = arc.Detach();
 }
 
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive )
+    : BitInputArchive{ handler, parentArchive, parentArchive.mainSubfileIndex() } {}
+
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
+                                  const BitInputArchive& parentArchive,
+                                  std::uint32_t index )
+    : mDetectedFormat{ &handler.format() },
+      mArchiveHandler{ handler },
+      mArchivePath{ parentArchive.itemAt( index ).path() } {
+    CMyComPtr< IInStream > subStream = parentArchive.getSubfileStream( index );
+    mInArchive = openArchiveStream( fs::path{}, subStream );
+}
+
 auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {
     BitPropVariant archiveProperty;
     const HRESULT res = mInArchive->GetArchiveProperty( static_cast< PROPID >( property ), &archiveProperty );
@@ -409,6 +422,20 @@ auto BitInputArchive::itemAt( uint32_t index ) const -> BitArchiveItemOffset {
     return { *this, index };
 }
 
+auto BitInputArchive::mainSubfileIndex() const -> std::uint32_t {
+    BitPropVariant prop = archiveProperty( BitProperty::MainSubfile );
+    if ( !prop.isUInt32() ) {
+        throw BitException{ "Could not retrieve the index of the main subfile", make_hresult_code( E_FAIL ) };
+    }
+
+    std::uint32_t mainSubfileIndex = prop.getUInt32();
+    if ( mainSubfileIndex >= itemsCount() ) {
+        throw BitException{ "Could not retrieve the index of the main subfile",
+                            make_error_code( BitError::InvalidIndex ) };
+    }
+    return mainSubfileIndex;
+}
+
 auto BitInputArchive::findInvalidIndex( const std::vector< uint32_t >& indices ) const -> std::vector< uint32_t >::const_iterator {
     const auto count = itemsCount();
     return std::find_if( indices.cbegin(), indices.cend(), [ &count ]( uint32_t index ) noexcept -> bool {
@@ -457,6 +484,29 @@ void BitInputArchive::extractArchive( const std::vector< uint32_t >& indices,
         throw BitException( mode == NAskMode::kTest ? "Could not test the archive" : "Could not extract the archive",
                             make_hresult_code( res ) );
     }
+}
+
+auto BitInputArchive::getSubfileStream( std::uint32_t index ) const -> CMyComPtr< IInStream > {
+    CMyComPtr< IInArchiveGetStream > getStream;
+
+    // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
+    HRESULT result = mInArchive->QueryInterface( IID_IInArchiveGetStream, reinterpret_cast< void** >( &getStream ) );
+    if ( result != S_OK || !getStream ) {
+        throw BitException{ "The archive format doesn't support subfile streams", make_hresult_code( result ) };
+    }
+
+    CMyComPtr< ISequentialInStream > subSequentialInStream;
+    result = getStream->GetStream( index, &subSequentialInStream );
+    if ( result != S_OK || !subSequentialInStream ) {
+        throw BitException{ "Could not get the subfile sequential stream", make_hresult_code( result ) };
+    }
+
+    CMyComPtr< IInStream > subInStream;
+    result = subSequentialInStream.QueryInterface( IID_IInStream, &subInStream );
+    if ( result != S_OK || !subInStream ) {
+        throw BitException{ "Could not get the subfile stream", make_hresult_code( result ) };
+    }
+    return subInStream;
 }
 
 auto BitInputArchive::ConstIterator::operator++() noexcept -> BitInputArchive::ConstIterator& {

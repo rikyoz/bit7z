@@ -213,8 +213,6 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting compressed archives insi
 
     BitArchiveReader outerArchive( test::sevenzip_lib(), inputArchive, BitFormat::Tar );
 
-    TempDirectory testOutDir{ "test_bitinputarchive" };
-    INFO( "Test directory: " << testOutDir )
     for ( const auto& item : outerArchive ) {
         const auto& format = [&item]() -> const BitInFormat& {
             const auto& ext = item.extension();
@@ -257,4 +255,59 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Usually, max memory limit should be
         BitNestedArchiveReader innerArchive( test::sevenzip_lib(), outerArchive, BitFormat::Tar );
         REQUIRE( innerArchive.maxMemoryUsage() > ( 4ULL * 1024 * 1024 ) );
     }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting a deeply-nested archive",
+                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "deeply_nested.tar";
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+
+    BitArchiveReader outerArchive( test::sevenzip_lib(), inputArchive, BitFormat::Tar );
+
+    for ( const auto& item : outerArchive ) {
+        const auto& format = [&item]() -> const BitInFormat& {
+            const auto& ext = item.extension();
+            if ( ext == BIT7Z_STRING( "gz" ) ) {
+                return BitFormat::GZip;
+            }
+            if ( ext == BIT7Z_STRING( "bz2" ) ) {
+                return BitFormat::BZip2;
+            }
+            return BitFormat::Xz;
+        }();
+        BitArchiveReader tarballArchive( test::sevenzip_lib(), outerArchive, item.index(), format );
+        BitNestedArchiveReader innerArchive( test::sevenzip_lib(), tarballArchive, BitFormat::Tar );
+
+        REQUIRE_NOTHROW( innerArchive.test() );
+        REQUIRE( innerArchive.openCount() == 1 );
+
+        require_extracts_to_filesystem( innerArchive, multiple_files_content().items );
+        REQUIRE( innerArchive.openCount() == 2 );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting a multi-layered deeply-nested archive",
+                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "deeply_nested.vdi";
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+
+    BitArchiveReader layer0( test::sevenzip_lib(), inputArchive, BitFormat::VDI );
+    BitArchiveReader layer1( test::sevenzip_lib(), layer0, BitFormat::Mbr );
+    BitArchiveReader layer2( test::sevenzip_lib(), layer1, 0, BitFormat::Ext );
+    BitArchiveReader layer3( test::sevenzip_lib(), layer2, 1, BitFormat::Xz );
+    BitNestedArchiveReader layer4( test::sevenzip_lib(), layer3, BitFormat::Tar );
+
+    REQUIRE_NOTHROW( layer4.test() );
+    REQUIRE( layer4.openCount() == 1 );
+
+    require_extracts_to_filesystem( layer4, multiple_files_content().items );
+    REQUIRE( layer4.openCount() == 2 );
 }
