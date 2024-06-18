@@ -404,6 +404,11 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto itemAt( uint32_t index ) const -> BitArchiveItemOffset;
 
+        /**
+         * @return the index of the main subfile of the archive, if any.
+         *
+         * @throws BitException if the archive format doesn't have a main subfile.
+         */
         BIT7Z_NODISCARD auto mainSubfileIndex() const -> std::uint32_t;
 
     protected:

@@ -91,11 +91,34 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
+        /**
+         * @brief Constructs a BitArchiveReader object, opening the main subfile of the given archive.
+         *
+         * @note The constructor will throw an exception if the format of the input archive doesn't have a main subfile.
+         *
+         * @param lib       the 7z library used.
+         * @param inArchive the input archive containing a main subfile.
+         * @param format    the format of the main subfile.
+         * @param password  (optional) the password needed for opening the main subfile.
+         *
+         * @throws BitException if the format of the input archive doesn't have a main subfile.
+         */
         BitArchiveReader( const Bit7zLibrary& lib,
                           const BitInputArchive& inArchive,
                           const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
                           const tstring& password = {} );
 
+        /**
+         * @brief Constructs a BitArchiveReader object, opening the subfile at the specified index of the given archive.
+         *
+         * @param lib           the 7z library used.
+         * @param inArchive     the input archive containing the desired subfile.
+         * @param subfileIndex  the index of the subfile within the input archive.
+         * @param format        the format of the subfile.
+         * @param password      (optional) the password needed for opening the subfile.
+         *
+         * @throws BitException if the format of the input archive doesn't support subfile streams,
+         */
         BitArchiveReader( const Bit7zLibrary& lib,
                           const BitInputArchive& inArchive,
                           std::uint32_t subfileIndex,

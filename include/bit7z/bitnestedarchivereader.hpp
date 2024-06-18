@@ -35,17 +35,47 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         auto calculateItemsCount() const -> std::uint32_t;
 
     public:
+        /**
+         * @brief Constructs a BitNestedArchiveReader object.
+         *
+         * @note The constructor doesn't open the archive, it will be opened only when needed.
+         *
+         * @param lib           the 7z library used.
+         * @param parentArchive the parent archive containing the nested archive.
+         * @param index         the index of the nested archive within the parent archive.
+         * @param format        the format of the nested archive.
+         * @param password      (optional) the password needed for opening the nested archive.
+         *
+         * @throws BitException if the format is BitFormat::Auto
+         *                      (automatic format detection of nested archives is not supported).
+         */
         BitNestedArchiveReader( const Bit7zLibrary& lib,
                                 const BitInputArchive& parentArchive,
                                 std::uint32_t index,
                                 const BitInFormat& format,
                                 const tstring& password = {} );
 
+        /**
+         * @brief Constructs a BitNestedArchiveReader object of the first item in the parent archive.
+         *
+         * @note The constructor doesn't open the archive, it will be opened only when needed.
+         *
+         * @param lib           the 7z library used.
+         * @param parentArchive the parent archive containing the nested archive.
+         * @param format        the format of the nested archive.
+         * @param password      (optional) the password needed for opening the nested archive.
+         *
+         * @throws BitException if the format is BitFormat::Auto
+         *                      (automatic format detection of nested archives is not supported).
+         */
         BitNestedArchiveReader( const Bit7zLibrary& lib,
                                 const BitInputArchive& parentArchive,
                                 const BitInFormat& format,
                                 const tstring& password = {} );
 
+        /**
+         * @return the max memory usage limit applied while extracting the parent archive.
+         */
         BIT7Z_NODISCARD
         auto maxMemoryUsage() const noexcept -> std::uint64_t;
 
@@ -111,9 +141,17 @@ class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
          */
         void test() const;
 
+        /**
+         * @return the number of times the parent archive was extracted, and the nested archive was opened.
+         */
         BIT7Z_NODISCARD
         auto openCount() const -> std::size_t;
 
+        /**
+         * @brief Sets the max memory usage limit to be used while extracting the parent archive.
+         *
+         * @param value the max memory limit to be used (in bytes).
+         */
         void setMaxMemoryUsage( std::uint64_t value ) noexcept;
 };
 
