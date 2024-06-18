@@ -158,7 +158,10 @@ auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
     if ( mInputArchive == nullptr ) {
         newArc = mArchiveCreator.library().initOutArchive( mArchiveCreator.compressionFormat() );
     } else {
-        (void)mInputArchive->initUpdatableArchive( &newArc ); // TODO: Handle errors
+        const auto res = mInputArchive->initUpdatableArchive( &newArc );
+        if ( res != S_OK ) {
+            throw BitException{ "Could not make the input archive object updatable", make_hresult_code( res ) };
+        }
     }
     setArchiveProperties( newArc );
     return newArc;
