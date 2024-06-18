@@ -490,21 +490,21 @@ auto BitInputArchive::getSubfileStream( std::uint32_t index ) const -> CMyComPtr
     CMyComPtr< IInArchiveGetStream > getStream;
 
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
-    HRESULT result = mInArchive->QueryInterface( IID_IInArchiveGetStream, reinterpret_cast< void** >( &getStream ) );
-    if ( result != S_OK || !getStream ) {
-        throw BitException{ "The archive format doesn't support subfile streams", make_hresult_code( result ) };
+    HRESULT res = mInArchive->QueryInterface( IID_IInArchiveGetStream, reinterpret_cast< void** >( &getStream ) );
+    if ( res != S_OK ) {
+        throw BitException{ "The archive format doesn't support subfile streams", make_hresult_code( res ) };
     }
 
     CMyComPtr< ISequentialInStream > subSequentialInStream;
-    result = getStream->GetStream( index, &subSequentialInStream );
-    if ( result != S_OK || !subSequentialInStream ) {
-        throw BitException{ "Could not get the subfile sequential stream", make_hresult_code( result ) };
+    res = getStream->GetStream( index, &subSequentialInStream );
+    if ( res != S_OK ) {
+        throw BitException{ "Could not get the subfile sequential stream", make_hresult_code( res ) };
     }
 
     CMyComPtr< IInStream > subInStream;
-    result = subSequentialInStream.QueryInterface( IID_IInStream, &subInStream );
-    if ( result != S_OK || !subInStream ) {
-        throw BitException{ "Could not get the subfile stream", make_hresult_code( result ) };
+    res = subSequentialInStream.QueryInterface( IID_IInStream, &subInStream );
+    if ( res != S_OK ) {
+        throw BitException{ "Could not get the subfile stream", make_hresult_code( res ) };
     }
     return subInStream;
 }
