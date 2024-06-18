@@ -32,6 +32,31 @@ void require_extracts_to_filesystem( const BitNestedArchiveReader& info, const E
     }
 }
 
+#ifdef BIT7Z_AUTO_FORMAT
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Automatic format detection is not supported", "[bitnestedarchivereader]",
+                    tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "gz", BitFormat::GZip },
+                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "nested.tar." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader outerArchive( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        REQUIRE_THROWS( BitNestedArchiveReader{ test::sevenzip_lib(), outerArchive, BitFormat::Auto } );
+    }
+}
+#endif
+
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Reading nested archives", "[bitnestedarchivereader]",
                     tstring, buffer_t, stream_t ) {

@@ -72,6 +72,19 @@ auto get_free_ram() -> std::uint64_t {
 #endif
 }
 
+#ifdef BIT7Z_AUTO_FORMAT
+inline auto validateFormat( const BitInFormat& format ) -> const BitInFormat& {
+    if ( format == BitFormat::Auto ) {
+        throw BitException{ "Automatic format detection not supported in nested archives",
+                            BitError::UnsupportedOperation };
+    }
+    return format;
+}
+#define VALIDATE_FORMAT(x) validateFormat(x)
+#else
+#define VALIDATE_FORMAT(x) x
+#endif
+
 BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
                                                 const BitInputArchive& parentArchive,
                                                 const BitInFormat& format,
@@ -83,7 +96,7 @@ BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
                                                 std::uint32_t index,
                                                 const BitInFormat& format,
                                                 const tstring& password )
-    : BitAbstractArchiveOpener{ lib, format, password },
+    : BitAbstractArchiveOpener{ lib, VALIDATE_FORMAT( format ), password },
       mNestedArchive{ *this, parentArchive.itemAt( index ) },
       mParentArchive{ parentArchive },
       mIndexInParent{ index },
