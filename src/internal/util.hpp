@@ -112,9 +112,9 @@ template< typename To, typename From >
 using is_narrower_signed = bool_constant< are_both_signed< To, From >::value && sizeof( To ) < sizeof( From ) >;
 
 template< typename To, typename From >
-inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
-                                                                   ( is_narrower_signed< To, From >::value ||
-                                                                     !have_same_signedness< From, To >::value ), To > {
+auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+                                                            ( is_narrower_signed< To, From >::value ||
+                                                              !have_same_signedness< From, To >::value ), To > {
     constexpr auto kMaxValue = std::numeric_limits< To >::max();
     if ( cmp_greater( value, kMaxValue ) ) {
         return kMaxValue;
@@ -129,16 +129,16 @@ inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_inte
 }
 
 template< typename To, typename From >
-inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_unsigned< From, To >::value &&
-                                                                   sizeof( To ) < sizeof( From ), To > {
+auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_unsigned< From, To >::value &&
+                                                            sizeof( To ) < sizeof( From ), To > {
     constexpr auto kMaxValue = std::numeric_limits< To >::max();
     return value > kMaxValue ? kMaxValue : static_cast< To >( value );
 }
 
 template< typename To, typename From >
-inline auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
-                                                                   have_same_signedness< To, From >::value &&
-                                                                   sizeof( To ) >= sizeof( From ), To > {
+auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+                                                            have_same_signedness< To, From >::value &&
+                                                            sizeof( To ) >= sizeof( From ), To > {
     return static_cast< To >( value );
 }
 
@@ -146,7 +146,7 @@ template< typename T, typename I = T >
 using is_com_type = bool_constant< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value >;
 
 template< typename T, typename I = T, class... Args >
-inline auto make_com( Args&& ... args ) -> CMyComPtr< std::enable_if_t< is_com_type< T, I >::value, I > > {
+auto make_com( Args&& ... args ) -> CMyComPtr< std::enable_if_t< is_com_type< T, I >::value, I > > {
     return CMyComPtr< I >( new T( std::forward< Args >( args )... ) ); //-V2511
 }
 

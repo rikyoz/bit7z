@@ -20,7 +20,7 @@
 
 namespace bit7z {
 
-BitArchiveItemOffset::BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept
+BitArchiveItemOffset::BitArchiveItemOffset( const BitInputArchive& inputArchive, uint32_t itemIndex ) noexcept
     : BitArchiveItem( itemIndex ), mArc( &inputArchive ) {}
 
 auto BitArchiveItemOffset::operator++() noexcept -> BitArchiveItemOffset& {

@@ -47,6 +47,8 @@ class BitArchiveItemInfo final : public BitArchiveItem {
         void setProperty( BitProperty property, const BitPropVariant& value );
 
         friend class BitArchiveReader;
+
+        friend class BitNestedArchiveReader;
 };
 
 }  // namespace bit7z

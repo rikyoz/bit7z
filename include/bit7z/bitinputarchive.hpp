@@ -31,8 +31,12 @@
 struct IInStream;
 struct IInArchive;
 struct IOutArchive;
+struct ISequentialInStream;
 
 namespace bit7z {
+
+class BufferQueue;
+class ExtractCallback;
 
 /**
  * @brief The BitInputArchive class, given a handler object, allows reading/extracting the content of archives.
@@ -110,6 +114,8 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant;
 
+        BIT7Z_NODISCARD auto itemHasProperty( uint32_t index, BitProperty property ) const -> bool;
+
         /**
          * @return the number of items contained in the archive.
          */
@@ -140,7 +146,7 @@ class BitInputArchive {
         BIT7Z_NODISCARD auto handler() const noexcept -> const BitAbstractArchiveHandler&;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const {
+        void extract( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const {
             extractTo( outDir, indices );
         }
 
@@ -160,7 +166,7 @@ class BitInputArchive {
         void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {
+        void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {
             extractTo( outBuffer, index );
         }
 
@@ -211,7 +217,7 @@ class BitInputArchive {
         }
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const {
+        void extract( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const {
             extractTo( buffer, size, index );
         }
 
@@ -226,7 +232,7 @@ class BitInputArchive {
         void extractTo( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( std::ostream& outStream, uint32_t index = 0 ) const {
+        void extract( std::ostream& outStream, uint32_t index = 0 ) const {
             extractTo( outStream, index );
         }
 
@@ -239,7 +245,7 @@ class BitInputArchive {
         void extractTo( std::ostream& outStream, uint32_t index = 0 ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        inline void extract( std::map< tstring, buffer_t >& outMap ) const {
+        void extract( std::map< tstring, buffer_t >& outMap ) const {
             extractTo( outMap );
         }
 
@@ -278,28 +284,6 @@ class BitInputArchive {
          */
         void testItem( uint32_t index ) const;
 
-    protected:
-        auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
-
-        BIT7Z_NODISCARD auto close() const noexcept -> HRESULT;
-
-        friend class BitAbstractArchiveOpener;
-
-        friend class BitAbstractArchiveCreator;
-
-        friend class BitOutputArchive;
-
-    private:
-        IInArchive* mInArchive;
-        const BitInFormat* mDetectedFormat;
-        const BitAbstractArchiveHandler& mArchiveHandler;
-        tstring mArchivePath;
-
-        auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
-
-        void testArchive( const std::vector< uint32_t >& indices ) const;
-
-    public:
         /**
          * @brief An iterator for the elements contained in an archive.
          */
@@ -419,6 +403,64 @@ class BitInputArchive {
          * @return the item at the given index within the archive.
          */
         BIT7Z_NODISCARD auto itemAt( uint32_t index ) const -> BitArchiveItemOffset;
+
+        /**
+         * @return the index of the main subfile of the archive, if any.
+         *
+         * @throws BitException if the archive format doesn't have a main subfile.
+         */
+        BIT7Z_NODISCARD auto mainSubfileIndex() const -> std::uint32_t;
+
+    protected:
+        explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive );
+
+        explicit BitInputArchive( const BitAbstractArchiveHandler& handler,
+                                  const BitInputArchive& parentArchive,
+                                  std::uint32_t index );
+
+        BIT7Z_NODISCARD
+        auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
+
+        void openArchiveSeqStream( ISequentialInStream* inStream ) const;
+
+        BIT7Z_NODISCARD
+        auto getSubfileStream( std::uint32_t index ) const -> CMyComPtr< IInStream >;
+
+        void extractSequentially( BufferQueue& queue, uint32_t index ) const;
+
+        void extractArchive( const std::vector< uint32_t >& indices, ExtractCallback* callback, int32_t mode ) const;
+
+        BIT7Z_NODISCARD
+        auto isInvalidIndex( uint32_t index ) const -> bool;
+
+        BIT7Z_NODISCARD
+        auto findInvalidIndex( const std::vector< uint32_t >& indices ) const -> std::vector< uint32_t >::const_iterator;
+
+        BIT7Z_NODISCARD
+        auto close() const noexcept -> HRESULT;
+
+    private:
+        IInArchive* mInArchive;
+        const BitInFormat* mDetectedFormat;
+        const BitAbstractArchiveHandler& mArchiveHandler;
+        tstring mArchivePath;
+
+        explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitArchiveItemOffset& nestedItem );
+
+        BIT7Z_NODISCARD
+        auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
+
+        void testArchive( const std::vector< uint32_t >& indices ) const;
+
+        friend class BitAbstractArchiveOpener;
+
+        friend class BitAbstractArchiveCreator;
+
+        friend class BitNestedArchiveReader;
+
+        friend class BitOutputArchive;
+
+        friend class CSynchronizedInStream;
 };
 
 }  // namespace bit7z

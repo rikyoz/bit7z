@@ -11,6 +11,8 @@
  */
 
 #include "archive.hpp"
+#include "crc.hpp"
+#include "filesystem.hpp"
 
 #include <catch2/catch.hpp>
 
@@ -96,6 +98,27 @@ void require_archive_content( const BitArchiveReader& info,
         }
     }
     REQUIRE( items.size() == found_items );
+}
+
+void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location ) {
+    INFO( "From " << location.file_name() << ":" << location.line() )
+    INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() )
+
+    const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
+    REQUIRE( fs::exists( fileStatus ) );
+    REQUIRE( fileStatus.type() == expectedItem.fileInfo.type );
+    if ( fs::is_regular_file( fileStatus ) ) {
+        REQUIRE( crc32( filesystem::load_file( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
+    }
+#ifndef _WIN32
+    if ( fs::is_symlink( fileStatus ) ) {
+        const auto symlink = fs::read_symlink( expectedItem.inArchivePath );
+        REQUIRE( crc32( symlink.u8string() ) == expectedItem.fileInfo.crc32 );
+    }
+#endif
+    if ( !fs::is_directory( fileStatus ) || fs::is_empty( expectedItem.inArchivePath ) ) {
+        REQUIRE_NOTHROW( fs::remove( expectedItem.inArchivePath ) );
+    }
 }
 
 } // namespace test

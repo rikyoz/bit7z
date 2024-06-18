@@ -22,13 +22,12 @@
 namespace bit7z {
 
 CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ), mBuffer{} {
-    openFile( filePath );
-
     /* By default, file stream performance is relatively poor due to the default buffer size used
      * (e.g., GCC uses a small 1024-bytes buffer).
      * This is a known problem (see https://stackoverflow.com/questions/26095160/why-are-stdfstreams-so-slow).
      * We make the underlying file stream use a bigger buffer (1 MiB) for optimizing the reading of big files.  */
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );
+    openFile( filePath );
 }
 
 void CFileInStream::openFile( const fs::path& filePath ) {

@@ -560,6 +560,113 @@ auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept
     }
 }
 
+#define ENUM_TO_STRING( enum_value ) \
+    case enum_value: \
+        return #enum_value
+
+auto to_string( BitProperty property ) -> std::string {
+    switch ( property ) {
+        ENUM_TO_STRING( BitProperty::NoProperty );
+        ENUM_TO_STRING( BitProperty::MainSubfile );
+        ENUM_TO_STRING( BitProperty::HandlerItemIndex );
+        ENUM_TO_STRING( BitProperty::Path );
+        ENUM_TO_STRING( BitProperty::Name );
+        ENUM_TO_STRING( BitProperty::Extension );
+        ENUM_TO_STRING( BitProperty::IsDir );
+        ENUM_TO_STRING( BitProperty::Size );
+        ENUM_TO_STRING( BitProperty::PackSize );
+        ENUM_TO_STRING( BitProperty::Attrib );
+        ENUM_TO_STRING( BitProperty::CTime );
+        ENUM_TO_STRING( BitProperty::ATime );
+        ENUM_TO_STRING( BitProperty::MTime );
+        ENUM_TO_STRING( BitProperty::Solid );
+        ENUM_TO_STRING( BitProperty::Commented );
+        ENUM_TO_STRING( BitProperty::Encrypted );
+        ENUM_TO_STRING( BitProperty::SplitBefore );
+        ENUM_TO_STRING( BitProperty::SplitAfter );
+        ENUM_TO_STRING( BitProperty::DictionarySize );
+        ENUM_TO_STRING( BitProperty::CRC );
+        ENUM_TO_STRING( BitProperty::Type );
+        ENUM_TO_STRING( BitProperty::IsAnti );
+        ENUM_TO_STRING( BitProperty::Method );
+        ENUM_TO_STRING( BitProperty::HostOS );
+        ENUM_TO_STRING( BitProperty::FileSystem );
+        ENUM_TO_STRING( BitProperty::User );
+        ENUM_TO_STRING( BitProperty::Group );
+        ENUM_TO_STRING( BitProperty::Block );
+        ENUM_TO_STRING( BitProperty::Comment );
+        ENUM_TO_STRING( BitProperty::Position );
+        ENUM_TO_STRING( BitProperty::Prefix );
+        ENUM_TO_STRING( BitProperty::NumSubDirs );
+        ENUM_TO_STRING( BitProperty::NumSubFiles );
+        ENUM_TO_STRING( BitProperty::UnpackVer );
+        ENUM_TO_STRING( BitProperty::Volume );
+        ENUM_TO_STRING( BitProperty::IsVolume );
+        ENUM_TO_STRING( BitProperty::Offset );
+        ENUM_TO_STRING( BitProperty::Links );
+        ENUM_TO_STRING( BitProperty::NumBlocks );
+        ENUM_TO_STRING( BitProperty::NumVolumes );
+        ENUM_TO_STRING( BitProperty::TimeType );
+        ENUM_TO_STRING( BitProperty::Bit64 );
+        ENUM_TO_STRING( BitProperty::BigEndian );
+        ENUM_TO_STRING( BitProperty::Cpu );
+        ENUM_TO_STRING( BitProperty::PhySize );
+        ENUM_TO_STRING( BitProperty::HeadersSize );
+        ENUM_TO_STRING( BitProperty::Checksum );
+        ENUM_TO_STRING( BitProperty::Characts );
+        ENUM_TO_STRING( BitProperty::Va );
+        ENUM_TO_STRING( BitProperty::Id );
+        ENUM_TO_STRING( BitProperty::ShortName );
+        ENUM_TO_STRING( BitProperty::CreatorApp );
+        ENUM_TO_STRING( BitProperty::SectorSize );
+        ENUM_TO_STRING( BitProperty::PosixAttrib );
+        ENUM_TO_STRING( BitProperty::SymLink );
+        ENUM_TO_STRING( BitProperty::Error );
+        ENUM_TO_STRING( BitProperty::TotalSize );
+        ENUM_TO_STRING( BitProperty::FreeSpace );
+        ENUM_TO_STRING( BitProperty::ClusterSize );
+        ENUM_TO_STRING( BitProperty::VolumeName );
+        ENUM_TO_STRING( BitProperty::LocalName );
+        ENUM_TO_STRING( BitProperty::Provider );
+        ENUM_TO_STRING( BitProperty::NtSecure );
+        ENUM_TO_STRING( BitProperty::IsAltStream );
+        ENUM_TO_STRING( BitProperty::IsAux );
+        ENUM_TO_STRING( BitProperty::IsDeleted );
+        ENUM_TO_STRING( BitProperty::IsTree );
+        ENUM_TO_STRING( BitProperty::Sha1 );
+        ENUM_TO_STRING( BitProperty::Sha256 );
+        ENUM_TO_STRING( BitProperty::ErrorType );
+        ENUM_TO_STRING( BitProperty::NumErrors );
+        ENUM_TO_STRING( BitProperty::ErrorFlags );
+        ENUM_TO_STRING( BitProperty::WarningFlags );
+        ENUM_TO_STRING( BitProperty::Warning );
+        ENUM_TO_STRING( BitProperty::NumStreams );
+        ENUM_TO_STRING( BitProperty::NumAltStreams );
+        ENUM_TO_STRING( BitProperty::AltStreamsSize );
+        ENUM_TO_STRING( BitProperty::VirtualSize );
+        ENUM_TO_STRING( BitProperty::UnpackSize );
+        ENUM_TO_STRING( BitProperty::TotalPhySize );
+        ENUM_TO_STRING( BitProperty::VolumeIndex );
+        ENUM_TO_STRING( BitProperty::SubType );
+        ENUM_TO_STRING( BitProperty::ShortComment );
+        ENUM_TO_STRING( BitProperty::CodePage );
+        ENUM_TO_STRING( BitProperty::IsNotArcType );
+        ENUM_TO_STRING( BitProperty::PhySizeCantBeDetected );
+        ENUM_TO_STRING( BitProperty::ZerosTailIsAllowed );
+        ENUM_TO_STRING( BitProperty::TailSize );
+        ENUM_TO_STRING( BitProperty::EmbeddedStubSize );
+        ENUM_TO_STRING( BitProperty::NtReparse );
+        ENUM_TO_STRING( BitProperty::HardLink );
+        ENUM_TO_STRING( BitProperty::INode );
+        ENUM_TO_STRING( BitProperty::StreamId );
+        ENUM_TO_STRING( BitProperty::ReadOnly );
+        ENUM_TO_STRING( BitProperty::OutName );
+        ENUM_TO_STRING( BitProperty::CopyLink );
+        default:
+            return "Invalid BitProperty";
+    }
+}
+
 } // namespace bit7z
 
 // NOLINTEND(*-pro-type-union-access)

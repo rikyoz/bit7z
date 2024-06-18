@@ -50,6 +50,19 @@ BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const BitInputArchive& inArchive,
+                                    const BitInFormat& format,
+                                    const tstring& password )
+    : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive } {}
+
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const BitInputArchive& inArchive,
+                                    std::uint32_t subfileIndex,
+                                    const BitInFormat& format,
+                                    const tstring& password )
+    : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive, subfileIndex } {}
+
 auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPropVariant > {
     std::map< BitProperty, BitPropVariant > result;
     for ( uint32_t i = kpidNoProperty; i <= kpidCopyLink; ++i ) {
@@ -71,7 +84,7 @@ auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
     for ( uint32_t i = 0; i < count; ++i ) {
         BitArchiveItemInfo item( i );
         for ( uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
-            // We cast property twice (here and in archiveProperty), to make the code is easier to read.
+            // We cast property twice (here and in itemProperty), to make the code is easier to read.
             const auto property = static_cast< BitProperty >( j );
             const auto propertyValue = itemProperty( i, property );
             if ( !propertyValue.isEmpty() ) {
