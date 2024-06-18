@@ -1304,6 +1304,19 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extract to raw data callback",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                       TestInputFormat{ "gz", BitFormat::GZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "lzh", BitFormat::Lzh },
+                                       TestInputFormat{ "lzma", BitFormat::Lzma },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "bz2", BitFormat::BZip2 },
@@ -1317,6 +1330,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extract to raw data callback",
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "xz", BitFormat::Xz },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = fs::path{ clouds.name }.concat( "." + testArchive.extension );
