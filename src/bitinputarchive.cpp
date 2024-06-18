@@ -28,6 +28,7 @@
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/operationresult.hpp"
+#include "internal/rawdataextractcallback.hpp"
 #include "internal/sequentialextractcallback.hpp"
 #include "internal/streamextractcallback.hpp"
 #include "internal/stringutil.hpp"
@@ -329,6 +330,23 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
 
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, outMap );
     extractArchive( filesIndices, extractCallback, NAskMode::kExtract );
+}
+
+void BitInputArchive::extractTo( RawDataCallback callback ) const {
+    auto extractCallback = bit7z::make_com< RawDataExtractCallback, ExtractCallback >( *this, std::move( callback ) );
+    extractArchive( {}, extractCallback, NAskMode::kExtract );
+}
+
+void BitInputArchive::extractTo( RawDataCallback callback, const std::vector< uint32_t >& indices ) const {
+    // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
+    const auto invalidIndex = findInvalidIndex( indices );
+    if ( invalidIndex != indices.cend() ) {
+        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
+    auto extractCallback = bit7z::make_com< RawDataExtractCallback, ExtractCallback >( *this, std::move( callback ) );
+    extractArchive( indices, extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::test() const {

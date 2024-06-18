@@ -50,6 +50,11 @@ using FileCallback = std::function< void( tstring ) >;
 using PasswordCallback = std::function< tstring() >;
 
 /**
+ * @brief A function providing the raw extracted data and its size to the user.
+ */
+using RawDataCallback = std::function< bool(const byte_t*, std::size_t) >;
+
+/**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
  */
 enum struct OverwriteMode {

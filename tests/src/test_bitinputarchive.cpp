@@ -1298,3 +1298,43 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Finding files in an archive", "[bitinputar
 #endif
     }
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extract to raw data callback",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                       TestInputFormat{ "gz", BitFormat::GZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "lzh", BitFormat::Lzh },
+                                       TestInputFormat{ "lzma", BitFormat::Lzma },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = fs::path{ clouds.name }.concat( "." + testArchive.extension );
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+        BitArchiveReader info( lib, inputArchive, testArchive.format );
+
+        std::size_t totalSize = 0;
+        std::uint32_t crcValue = 0;
+
+        info.extractTo([&totalSize, &crcValue]( const byte_t* data, std::size_t length ) {
+            totalSize += length;
+            crcValue = crc32( data, length, crcValue );
+            return true;
+        });
+        REQUIRE( totalSize == clouds.size );
+        REQUIRE( crcValue == clouds.crc32 );
+    }
+}

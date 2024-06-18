@@ -258,6 +258,20 @@ class BitInputArchive {
         void extractTo( std::map< tstring, buffer_t >& outMap ) const;
 
         /**
+         * @brief Extracts the content of the archive to the given raw data callback.
+         *
+         * @param callback  a function providing the extracted raw data to the user.
+         */
+        void extractTo( RawDataCallback callback ) const;
+
+        /**
+         * @brief Extracts the raw content of the archive to the given callback.
+         *
+         * @param callback  a function providing the extracted raw data to the user.
+         */
+        void extractTo( RawDataCallback callback, const std::vector< uint32_t >& indices ) const;
+
+        /**
          * @brief Tests the archive without extracting its content.
          *
          * @throws BitException if the archive is not valid.

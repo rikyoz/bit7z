@@ -99,10 +99,9 @@ template< std::size_t Bits >
 using crc_table = std::array< const uint_t< Bits >, 256 >;
 
 template< std::size_t Bits,
-          uint_t< Bits > initial,
           uint_t< Bits > mask,
           typename = typename std::enable_if< is_power_of_two( Bits ) >::type >
-inline auto crc( const crc_table< Bits >& table, const void* buffer, std::size_t length ) noexcept -> uint_t< Bits > {
+auto crc( const crc_table< Bits >& table, uint_t< Bits > initial, const void* buffer, std::size_t length ) noexcept -> uint_t< Bits > {
     static constexpr auto last_byte_mask = 0xFFu;
 
     if ( buffer == nullptr ) {
@@ -113,20 +112,20 @@ inline auto crc( const crc_table< Bits >& table, const void* buffer, std::size_t
     const auto* byte_buffer = static_cast< const uint8_t* >( buffer );
     for ( std::size_t i = 0; i < length; ++i ) {
         // NOLINTNEXTLINE(*-pro-bounds-pointer-arithmetic, *-pro-bounds-constant-array-index)
-        crc = table[ byte_buffer[ i ] ^ ( crc & last_byte_mask ) ] ^ (crc >> 8);
+        crc = table[ byte_buffer[ i ] ^ ( crc & last_byte_mask ) ] ^ (crc >> 8U);
     }
     return crc ^ mask;
 }
 
 // NOLINTNEXTLINE(*-easily-swappable-parameters)
-auto crc32( const void* buffer, std::size_t length ) noexcept -> uint32_t {
+auto crc32( const void* buffer, std::size_t length, std::uint32_t initial ) noexcept -> uint32_t {
     static constexpr auto crc32_mask = 0xFFFFFFFFu;
-    return crc< 32, 0, crc32_mask >( crc32_table, buffer, length );
+    return crc< 32, crc32_mask >( crc32_table, initial, buffer, length );
 }
 
 // NOLINTNEXTLINE(*-easily-swappable-parameters)
 auto crc16( const void* buffer, std::size_t length ) noexcept -> uint16_t {
-    return crc< 16, 0, 0 >( crc16_table, buffer, length );
+    return crc< 16, 0 >( crc16_table, 0, buffer, length );
 }
 
 } // namespace test

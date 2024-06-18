@@ -69,6 +69,7 @@ set( HEADERS
      src/internal/cmultivolumeinstream.hpp
      src/internal/cmultivolumeoutstream.hpp
      src/internal/com.hpp
+     src/internal/crawoutstream.hpp
      src/internal/cstdinstream.hpp
      src/internal/cstdoutstream.hpp
      src/internal/csymlinkinstream.hpp
@@ -96,6 +97,7 @@ set( HEADERS
      src/internal/operationcategory.hpp
      src/internal/operationresult.hpp
      src/internal/processeditem.hpp
+     src/internal/rawdataextractcallback.hpp
      src/internal/renameditem.hpp
      src/internal/sequentialextractcallback.hpp
      src/internal/stdinputitem.hpp
@@ -141,6 +143,7 @@ set( SOURCES
      src/internal/cfixedbufferoutstream.cpp
      src/internal/cmultivolumeinstream.cpp
      src/internal/cmultivolumeoutstream.cpp
+     src/internal/crawoutstream.cpp
      src/internal/cstdinstream.cpp
      src/internal/cstdoutstream.cpp
      src/internal/csymlinkinstream.cpp
@@ -165,6 +168,7 @@ set( SOURCES
      src/internal/operationcategory.cpp
      src/internal/operationresult.cpp
      src/internal/processeditem.cpp
+     src/internal/rawdataextractcallback.cpp
      src/internal/renameditem.cpp
      src/internal/sequentialextractcallback.cpp
      src/internal/stdinputitem.cpp
