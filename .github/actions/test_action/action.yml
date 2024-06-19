@@ -102,8 +102,8 @@ runs:
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
       run: |
-        ${{ github.workspace }}/bin/x64/bit7z-tests-public -s
-        ${{ github.workspace }}/bin/x64/bit7z-tests -s
+        ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests-public -s
+        ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests -s
 
     - name: Test bit7z (Windows)
       if: runner.os == 'Windows'
@@ -113,5 +113,5 @@ runs:
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
       run: |
-        ${{ github.workspace }}\bin\x64\bit7z-tests-public.exe -s
-        ${{ github.workspace }}\bin\x64\bit7z-tests.exe -s
+        ${{ github.workspace }}\bin\${{ inputs.arch }}\bit7z-tests-public.exe -s
+        ${{ github.workspace }}\bin\${{ inputs.arch }}\bit7z-tests.exe -s
