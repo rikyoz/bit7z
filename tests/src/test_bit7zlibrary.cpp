@@ -46,6 +46,7 @@ TEST_CASE( "Bit7zLibrary: Normal construction", "[bit7zlibrary]" ) {
     const auto libPath = sevenzip_lib_path();
     INFO( "Library path: " << fs::path{ libPath }.string() )
 
+    REQUIRE( fs::exists( libPath ) );
     REQUIRE_NOTHROW( Bit7zLibrary{ libPath } );
 }
 
