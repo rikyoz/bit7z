@@ -1032,7 +1032,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
     REQUIRE( expectedModifiedTime.dwHighDateTime != 0 );
 #else
     namespace chrono = std::chrono;
-    const auto expectedModifiedTime = chrono::time_point_cast< chrono::seconds >( item.lastWriteTime() );
+    const auto expectedModifiedTime = chrono::duration_cast< chrono::seconds >( item.lastWriteTime().time_since_epoch() );
 #endif
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
@@ -1051,9 +1051,9 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
     REQUIRE( CompareFileTime( &accessTime, &expectedAccessTime ) == 0 );
     REQUIRE( CompareFileTime( &modifiedTime, &expectedModifiedTime ) == 0 );
 #else
-    const auto modifiedTime = chrono::time_point_cast< chrono::seconds >( fs::last_write_time( expectedFile ) );
+    const auto modifiedTime = chrono::duration_cast< chrono::seconds >( fs::last_write_time( expectedFile ).time_since_epoch() );
     // Note: Using count() since Catch2 cannot print std::chrono::duration objects.
-    REQUIRE( modifiedTime.time_since_epoch().count() == expectedModifiedTime.time_since_epoch().count() );
+    REQUIRE( modifiedTime.count() == expectedModifiedTime.count() );
 #endif
 
     REQUIRE( fs::remove( expectedFile ) );
