@@ -1052,7 +1052,8 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
     REQUIRE( CompareFileTime( &modifiedTime, &expectedModifiedTime ) == 0 );
 #else
     const auto modifiedTime = chrono::time_point_cast< chrono::seconds >( fs::last_write_time( expectedFile ) );
-    REQUIRE( modifiedTime.time_since_epoch() == expectedModifiedTime.time_since_epoch() );
+    // Note: Using count() since Catch2 cannot print std::chrono::duration objects.
+    REQUIRE( modifiedTime.time_since_epoch().count() == expectedModifiedTime.time_since_epoch().count() );
 #endif
 
     REQUIRE( fs::remove( expectedFile ) );
