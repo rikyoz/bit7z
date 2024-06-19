@@ -81,6 +81,12 @@ runs:
         cat ${{ github.workspace }}/../7-zip/CPP/7zip/warn_clang_mac.mak
         cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
         make -j -f ../../cmpl_mac_${{ inputs.arch }}.mak
+        
+    - name: Copy 7z.so to bin directory (macOS)
+      shell: bash
+      if: runner.os == 'macOS'
+      working-directory: ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
+      run: |
         mkdir -p ${{ github.workspace }}/bin/${{ inputs.arch }}/
         cp b/m_${{ inputs.arch }}/7z.so ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
 
@@ -96,8 +102,8 @@ runs:
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
       run: |
-        ${{ github.workspace }}/bin/x64/bit7z-tests-public
-        ${{ github.workspace }}/bin/x64/bit7z-tests
+        ${{ github.workspace }}/bin/x64/bit7z-tests-public -s
+        ${{ github.workspace }}/bin/x64/bit7z-tests -s
 
     - name: Test bit7z (Windows)
       if: runner.os == 'Windows'
@@ -107,5 +113,5 @@ runs:
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
       run: |
-        ${{ github.workspace }}/bin/x64/bit7z-tests-public.exe
-        ${{ github.workspace }}/bin/x64/bit7z-tests.exe
+        ${{ github.workspace }}\bin\x64\bit7z-tests-public.exe -s
+        ${{ github.workspace }}\bin\x64\bit7z-tests.exe -s
