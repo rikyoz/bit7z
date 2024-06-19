@@ -107,11 +107,11 @@ runs:
 
     - name: Test bit7z (Windows)
       if: runner.os == 'Windows'
-      shell: ${{ inputs.shell }}
+      shell: cmd
       working-directory: ${{ github.workspace }}
       # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
       run: |
-        ${{ github.workspace }}\bin\${{ inputs.arch }}\bit7z-tests-public.exe
-        ${{ github.workspace }}\bin\${{ inputs.arch }}\bit7z-tests.exe
+        ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public.exe
+        ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests.exe
