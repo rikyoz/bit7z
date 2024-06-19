@@ -1053,6 +1053,8 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
 #else
     const auto modifiedTime = chrono::duration_cast< chrono::seconds >( fs::last_write_time( expectedFile ).time_since_epoch() );
     // Note: Using count() since Catch2 cannot print std::chrono::duration objects.
+    INFO( "System clock's now: " << static_cast< std::uint64_t >( std::chrono::system_clock::now().time_since_epoch().count() ) )
+    INFO( "File clock's now: " << static_cast< std::uint64_t >(fs::file_time_type::clock::now().time_since_epoch().count() ) )
     REQUIRE( modifiedTime.count() == expectedModifiedTime.count() );
 #endif
 
