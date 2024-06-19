@@ -10,11 +10,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitexception.hpp"
 #include "internal/csynchronizedinstream.hpp"
 #include "internal/extractcallback.hpp"
 
-#include "bitexception.hpp"
-#include <iostream>
+#include <algorithm> // For std::copy_n
 
 namespace bit7z {
 

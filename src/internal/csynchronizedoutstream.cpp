@@ -11,7 +11,6 @@
  */
 
 #include "internal/csynchronizedoutstream.hpp"
-#include "internal/extractcallback.hpp"
 #include "util.hpp"
 
 namespace bit7z {
