@@ -19,7 +19,7 @@
 
 #ifdef _WIN32
 #include <array>
-#include <Windows.h>
+#include <windows.h>
 #elif defined( __APPLE__ )
 #include <array>
 #include <libproc.h> // for proc_pidpath and PROC_PIDPATHINFO_MAXSIZE
