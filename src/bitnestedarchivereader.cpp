@@ -20,7 +20,7 @@
 #include <7zip/Archive/IArchive.h>
 
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #elif defined( __APPLE__ )
 #include <sys/types.h>
 #include <sys/sysctl.h>
