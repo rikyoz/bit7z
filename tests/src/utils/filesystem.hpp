@@ -20,6 +20,14 @@
 #include <array>
 #include <libproc.h> // for proc_pidpath and PROC_PIDPATHINFO_MAXSIZE
 #include <unistd.h> // for getpid
+#elif defined( __FreeBSD__ ) || defined( __DragonFly__ )
+constexpr auto self_exe_path = "/proc/curproc/file";
+#elif defined( __NetBSD__ )
+constexpr auto self_exe_path = "/proc/curproc/exe";
+#elif defined( __sun )
+constexpr auto self_exe_path = "/proc/self/path/a.out";
+#else
+constexpr auto self_exe_path = "/proc/self/exe";
 #endif
 
 #include <internal/fs.hpp>
@@ -39,8 +47,8 @@ inline auto exe_path() -> fs::path {
     return ( result_size > 0 ) ? std::string( result.data(), result_size ) : "";
 #else
     std::error_code error;
-    const fs::path result = fs::read_symlink( "/proc/self/exe", error );
-    return error ? "" : result;
+    const fs::path result = fs::read_symlink( self_exe_path, error );
+    return error ? "unknown" : result;
 #endif
 }
 
