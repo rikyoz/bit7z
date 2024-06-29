@@ -19,6 +19,10 @@
 #include "utils/shared_lib.hpp"
 #include "utils/sourcelocation.hpp"
 
+#ifndef _WIN32
+#include "utils/datetime.hpp"
+#endif
+
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
@@ -1032,7 +1036,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
     REQUIRE( expectedModifiedTime.dwHighDateTime != 0 );
 #else
     namespace chrono = std::chrono;
-    const auto expectedModifiedTime = chrono::duration_cast< chrono::seconds >( item.lastWriteTime().time_since_epoch() );
+    const auto expectedModifiedTime = as_unix_timestamp( item.lastWriteTime() );
 #endif
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
@@ -1051,11 +1055,10 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
     REQUIRE( CompareFileTime( &accessTime, &expectedAccessTime ) == 0 );
     REQUIRE( CompareFileTime( &modifiedTime, &expectedModifiedTime ) == 0 );
 #else
-    const auto modifiedTime = chrono::duration_cast< chrono::seconds >( fs::last_write_time( expectedFile ).time_since_epoch() );
-    // Note: Using count() since Catch2 cannot print std::chrono::duration objects.
-    INFO( "System clock's now: " << static_cast< std::uint64_t >( std::chrono::system_clock::now().time_since_epoch().count() ) )
-    INFO( "File clock's now: " << static_cast< std::uint64_t >(fs::file_time_type::clock::now().time_since_epoch().count() ) )
-    REQUIRE( modifiedTime.count() == expectedModifiedTime.count() );
+    auto modifiedTime = as_unix_timestamp( fs::last_write_time( expectedFile ) );
+    INFO( "System clock's now: " << as_unix_timestamp( chrono::system_clock::now() ) )
+    INFO( "File clock's now:   " << as_unix_timestamp( fs::file_time_type::clock::now() ) )
+    REQUIRE( modifiedTime == expectedModifiedTime );
 #endif
 
     REQUIRE( fs::remove( expectedFile ) );
