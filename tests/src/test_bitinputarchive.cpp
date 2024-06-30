@@ -1349,11 +1349,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extract to raw data callback",
         std::size_t totalSize = 0;
         std::uint32_t crcValue = 0;
 
-        info.extractTo([&totalSize, &crcValue]( const byte_t* data, std::size_t length ) {
+        info.extractTo( [ &totalSize, &crcValue ]( const byte_t* data, std::size_t length ) {
             totalSize += length;
             crcValue = crc32( data, length, crcValue );
             return true;
-        });
+        } );
         REQUIRE( totalSize == clouds.size );
         REQUIRE( crcValue == clouds.crc32 );
     }
