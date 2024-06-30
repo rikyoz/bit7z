@@ -16,6 +16,10 @@
 
 namespace bit7z {
 
+/**
+ * @brief The BitNestedArchiveReader class allows reading and extracting nested archives
+ *        (e.g., the tarball inside a .tar.gz archive).
+ */
 class BitNestedArchiveReader final : public BitAbstractArchiveOpener {
         BitInputArchive mNestedArchive;
         const BitInputArchive& mParentArchive;
