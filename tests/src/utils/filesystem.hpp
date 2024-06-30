@@ -36,6 +36,15 @@ namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
 
+inline auto to_utf8string( const fs::path& path ) -> std::string {
+#ifdef __cpp_lib_char8_t
+    const auto u8str = path.u8string();
+    return std::string{ u8str.cbegin(), u8str.cend() };
+#else
+    return path.u8string();
+#endif
+}
+
 inline auto exe_path() -> fs::path {
 #ifdef _WIN32
     std::array< wchar_t, MAX_PATH > path{ 0 };
@@ -188,14 +197,14 @@ class TempDirectory {
         BIT7Z_NODISCARD
         auto path() const -> const fs::path&;
 
-        operator tstring() const; // NOLINT(*-explicit-constructor)
+        operator tstring() const; // NOLINT(*-explicit-constructor, *-explicit-conversions)
 
     private:
         fs::path mDirectory;
 };
 
 inline auto operator<<( std::ostream& stream, const TempDirectory& dir ) -> std::ostream& {
-    return stream << dir.path().u8string();
+    return stream << to_utf8string( dir.path() );
 }
 
 struct TempTestDirectory : TempDirectory, TestDirectory {

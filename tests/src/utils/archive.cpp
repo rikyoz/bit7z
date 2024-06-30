@@ -102,7 +102,7 @@ void require_archive_content( const BitArchiveReader& info,
 
 void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location ) {
     INFO( "From " << location.file_name() << ":" << location.line() )
-    INFO( "Failed while checking expected item: " << expectedItem.inArchivePath.u8string() )
+    INFO( "Failed while checking expected item: " << filesystem::to_utf8string( expectedItem.inArchivePath ) )
 
     const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
     REQUIRE( fs::exists( fileStatus ) );

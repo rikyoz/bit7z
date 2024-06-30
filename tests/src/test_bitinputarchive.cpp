@@ -43,7 +43,7 @@ using namespace bit7z::test::filesystem;
 inline auto archive_item( const BitArchiveReader& archive,
                           const ExpectedItem& expectedItem ) -> BitArchiveReader::ConstIterator {
     if ( archive.retainDirectories() ) {
-        return archive.find( path_to_tstring( expectedItem.inArchivePath ) );
+        return archive.find( to_tstring( expectedItem.inArchivePath ) );
     }
 
     return std::find_if( archive.cbegin(), archive.cend(), [ &expectedItem ]( const BitArchiveItem& item ) -> bool {
@@ -123,8 +123,8 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
     REQUIRE( bufferMap.size() == info.filesCount() );
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
-        const auto& extractedItem = bufferMap.find( path_to_tstring( expectedItem.inArchivePath ) );
+        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
+        const auto& extractedItem = bufferMap.find( to_tstring( expectedItem.inArchivePath ) );
         if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
             REQUIRE( extractedItem != bufferMap.end() );
             REQUIRE( crc32( extractedItem->second ) == expectedItem.fileInfo.crc32 );
@@ -137,7 +137,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
 void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
+        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
         if ( archiveItem->isDir() ) {
@@ -167,7 +167,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
     buffer_t invalidBuffer( invalidBufferSize, static_cast< byte_t >( '\0' ) );
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
+        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
 
@@ -230,7 +230,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
 
 void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" << expectedItem.inArchivePath.u8string() << "'" )
+        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
 
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
@@ -851,7 +851,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode fi
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
-    const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
+    const BitArchiveReader info( test::sevenzip_lib(), to_tstring( arcFileName ), BitFormat::BZip2 );
     REQUIRE_ARCHIVE_TESTS( info );
     const ExpectedItems expectedItems{ ExpectedItem{ clouds, BIT7Z_NATIVE_STRING( "クラウド.jpg" ), false } };
     REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems );
@@ -1220,7 +1220,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
         expectedPaths.reserve( expectedItems.size() );
         for ( const auto& expectedItem : expectedItems ) {
             if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
-                expectedPaths.push_back( path_to_tstring( expectedItem.inArchivePath ) );
+                expectedPaths.push_back( to_tstring( expectedItem.inArchivePath ) );
             }
         }
 

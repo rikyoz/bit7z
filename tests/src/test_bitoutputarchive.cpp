@@ -36,7 +36,7 @@ TEST_CASE( "BitOutputArchive: Compressing a commented file should preserve the c
     const auto commentedFile = fs::path{ test_archives_dir } / "metadata" / "file_comment" / "commented.jpg";
 
     BitArchiveWriter writer( test::sevenzip_lib(), BitFormat::SevenZip );
-    REQUIRE_NOTHROW( writer.addFile( path_to_tstring( commentedFile ) ) );
+    REQUIRE_NOTHROW( writer.addFile( to_tstring( commentedFile ) ) );
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
     INFO( "Output directory: " << testOutDir )

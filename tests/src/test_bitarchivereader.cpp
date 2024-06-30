@@ -22,8 +22,6 @@
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
-#include <internal/fs.hpp>
-#include <internal/stringutil.hpp>
 #include <internal/windows.hpp>
 
 // For checking posix file attributes.
@@ -538,7 +536,7 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
-    const BitArchiveReader info( test::sevenzip_lib(), path_to_tstring( arcFileName ), BitFormat::BZip2 );
+    const BitArchiveReader info( test::sevenzip_lib(), to_tstring( arcFileName ), BitFormat::BZip2 );
     REQUIRE_ITEM_TYPE( info, "クラウド.jpg", fs::file_type::regular );
 }
 #endif

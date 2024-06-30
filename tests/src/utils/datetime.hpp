@@ -12,8 +12,13 @@
 
 #ifndef _WIN32
 
+#include <bit7z/bitfs.hpp>
+
 #include <chrono>
 #include <cstddef>
+
+namespace bit7z {
+namespace test {
 
 #if defined( BIT7Z_USE_STANDARD_FILESYSTEM ) && defined( __GLIBCXX__ )
 constexpr std::chrono::seconds libstdcpp_file_clock_epoch{ 6437664000 };
@@ -29,20 +34,25 @@ auto as_unix_timestamp( const std::chrono::time_point< Clock, Duration > timePoi
 }
 
 #if defined( BIT7Z_USE_STANDARD_FILESYSTEM ) && defined( __GLIBCXX__ )
+
 template<>
 inline auto as_unix_timestamp( const fs::file_time_type timePoint ) -> std::uint64_t {
     const auto sinceEpoch = timePoint.time_since_epoch();
     const auto asSeconds = std::chrono::duration_cast< std::chrono::seconds >( sinceEpoch );
-    const auto sinceUnixEpoch =  libstdcpp_file_clock_epoch + asSeconds;
+    const auto sinceUnixEpoch = libstdcpp_file_clock_epoch + asSeconds;
 
-    auto nano = std::chrono::duration_cast< std::chrono::nanoseconds >(sinceEpoch - asSeconds);
+    auto nano = std::chrono::duration_cast< std::chrono::nanoseconds >( sinceEpoch - asSeconds );
     if ( nano < fs::file_time_type::duration::zero() ) {
         return static_cast< std::uint64_t >( ( sinceUnixEpoch - std::chrono::seconds{ 1 } ).count() );
     }
 
     return static_cast< std::uint64_t >( sinceUnixEpoch.count() );
 }
+
 #endif
 #endif
+
+} // namespace test
+} // namespace bit7z
 
 #endif //DATETIME_HPP

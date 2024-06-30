@@ -12,8 +12,6 @@
 
 #include <catch2/catch.hpp>
 
-#include <internal/stringutil.hpp>
-
 #include "filesystem.hpp"
 
 #include <random>
@@ -365,7 +363,7 @@ auto TempDirectory::path() const -> const fs::path& {
 }
 
 TempDirectory::operator tstring() const {
-    return path_to_tstring( mDirectory );
+    return to_tstring( mDirectory );
 }
 
 TempTestDirectory::TempTestDirectory( const std::string& dirName )

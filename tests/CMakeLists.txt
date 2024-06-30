@@ -51,6 +51,11 @@ add_executable( ${TESTS_TARGET} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES} ${INT
 set( TESTS_TARGET_PUBLIC bit7z-tests-public )
 add_executable( ${TESTS_TARGET_PUBLIC} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES} )
 
+if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+    set( TESTS_TARGET_PUBLIC_CPP20 bit7z-tests-public-cpp20 )
+    add_executable( ${TESTS_TARGET_PUBLIC_CPP20} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES} )
+endif()
+
 if( BIT7Z_TESTS_FILESYSTEM )
     CPMAddPackage( NAME bit7z_test_data
                    GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
@@ -68,6 +73,14 @@ if( BIT7Z_TESTS_FILESYSTEM )
                                 BIT7Z_TESTS_PUBLIC_API_ONLY
                                 BIT7Z_TESTS_FILESYSTEM
                                 BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_compile_definitions( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE
+                                    BIT7Z_TESTS_PUBLIC_API_ONLY
+                                    BIT7Z_TESTS_FILESYSTEM
+                                    BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+    endif()
+
     if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
         file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
     endif()
@@ -83,6 +96,12 @@ if( BIT7Z_TESTS_FILESYSTEM )
     set_property( TARGET ${TESTS_TARGET_PUBLIC} PROPERTY CXX_STANDARD 11 )
     set_property( TARGET ${TESTS_TARGET_PUBLIC} PROPERTY CXX_STANDARD_REQUIRED ON )
     target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE ghc_filesystem )
+
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        set_property( TARGET ${TESTS_TARGET_PUBLIC_CPP20} PROPERTY CXX_STANDARD 20 )
+        set_property( TARGET ${TESTS_TARGET_PUBLIC_CPP20} PROPERTY CXX_STANDARD_REQUIRED ON )
+        target_link_libraries( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE ghc_filesystem )
+    endif()
 else()
     # Bit7z employs the ghc::filesystem library on compilers that don't support C++17's filesystem.
     # To avoid linking errors due to mismatched filesystem libraries, it's important to use the same C++ standard
@@ -91,6 +110,12 @@ else()
     # to ensure we test the maximum compatibility with C++ projects.
     set( CMAKE_CXX_STANDARD 11 )
     set( CMAKE_CXX_STANDARD_REQUIRED ON )
+
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        set_property( TARGET ${TESTS_TARGET_PUBLIC_CPP20} PROPERTY CXX_STANDARD 20 )
+        set_property( TARGET ${TESTS_TARGET_PUBLIC_CPP20} PROPERTY CXX_STANDARD_REQUIRED ON )
+        target_link_libraries( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE ghc_filesystem )
+    endif()
 endif()
 
 message( STATUS "Language standard used for the tests: C++${CMAKE_CXX_STANDARD}" )
@@ -100,6 +125,9 @@ message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
 if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
     target_compile_definitions( ${TESTS_TARGET} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
     target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_compile_definitions( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+    endif()
 endif()
 
 # Avoiding linking unnecessary libraries.
@@ -108,12 +136,20 @@ set( CMAKE_CXX_STANDARD_LIBRARIES "" )
 
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} 7-zip )
 target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE ${LIB_TARGET} 7-zip )
+if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+    target_link_libraries( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE ${LIB_TARGET} 7-zip )
+endif()
 target_include_directories( ${TESTS_TARGET} PRIVATE
                             "${PROJECT_SOURCE_DIR}/include/bit7z"
                             "${PROJECT_SOURCE_DIR}/src" )
 target_include_directories( ${TESTS_TARGET_PUBLIC} PRIVATE
                             "${PROJECT_SOURCE_DIR}/include/bit7z"
                             "${PROJECT_SOURCE_DIR}/src" )
+if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+    target_include_directories( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE
+                                "${PROJECT_SOURCE_DIR}/include/bit7z"
+                                "${PROJECT_SOURCE_DIR}/src" )
+endif()
 
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
     target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} pthread )
@@ -124,10 +160,16 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 3.6 )
         target_compile_options( ${TESTS_TARGET} PRIVATE -Wno-inconsistent-missing-override )
         target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE -Wno-inconsistent-missing-override )
+        if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+            target_compile_options( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE -Wno-inconsistent-missing-override )
+        endif()
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 3.8 )
         target_compile_options( ${TESTS_TARGET} PRIVATE -Wdouble-promotion )
         target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE -Wdouble-promotion )
+        if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+            target_compile_options( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE -Wdouble-promotion )
+        endif()
     endif()
 endif()
 
@@ -138,12 +180,21 @@ endif()
 if( MSVC )
     target_compile_options( ${TESTS_TARGET} PRIVATE /utf-8 )
     target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE /utf-8 )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_compile_options( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE /utf-8 )
+    endif()
 
     target_compile_definitions( ${TESTS_TARGET} PRIVATE _CRT_DECLARE_NONSTDC_NAMES=1 )
     target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE _CRT_DECLARE_NONSTDC_NAMES=1 )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_compile_definitions( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE _CRT_DECLARE_NONSTDC_NAMES=1 )
+    endif()
 else()
     target_compile_options( ${TESTS_TARGET} PRIVATE -Wno-deprecated -Wno-deprecated-declarations )
     target_compile_options( ${TESTS_TARGET_PUBLIC} PRIVATE -Wno-deprecated -Wno-deprecated-declarations )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_compile_options( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE -Wno-deprecated -Wno-deprecated-declarations )
+    endif()
 endif()
 
 if( WIN32 )
@@ -153,6 +204,9 @@ if( WIN32 )
         ENABLE_LANGUAGE( RC )
         target_compile_definitions( ${TESTS_TARGET} PRIVATE WINDRES NTDDI_VERSION=NTDDI_VISTA )
         target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE WINDRES NTDDI_VERSION=NTDDI_VISTA )
+        if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+            target_compile_definitions( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE WINDRES NTDDI_VERSION=NTDDI_VISTA )
+        endif()
         set( RES_EXTENSION "rc" )
     else()
         set( RES_EXTENSION "manifest" )
@@ -161,17 +215,29 @@ if( WIN32 )
     message( STATUS "Using legacy string encoding for tests: ON" )
     target_sources( ${TESTS_TARGET} PRIVATE res/encodingLegacy.${RES_EXTENSION} )
     target_sources( ${TESTS_TARGET_PUBLIC} PRIVATE res/encodingLegacy.${RES_EXTENSION} )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_sources( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE res/encodingLegacy.${RES_EXTENSION} )
+    endif()
 
     target_compile_definitions( ${TESTS_TARGET} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX )
     target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_compile_definitions( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX )
+    endif()
 
     target_link_libraries( ${TESTS_TARGET} PRIVATE ${LIB_TARGET} shell32 ole32 )
     target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE ${LIB_TARGET} shell32 ole32 )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_link_libraries( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE ${LIB_TARGET} shell32 ole32 )
+    endif()
 endif()
 
 if ( APPLE AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64" )
     target_link_options( ${TESTS_TARGET} PRIVATE -Wl,-ld_classic )
     target_link_options( ${TESTS_TARGET_PUBLIC} PRIVATE -Wl,-ld_classic )
+    if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+        target_link_options( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE -Wl,-ld_classic )
+    endif()
 endif()
 
 # Catch2
@@ -185,6 +251,12 @@ include( CTest )
 include( Catch )
 target_link_libraries( ${TESTS_TARGET} PRIVATE Catch2::Catch2 )
 target_link_libraries( ${TESTS_TARGET_PUBLIC} PRIVATE Catch2::Catch2 )
+if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+    target_link_libraries( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE Catch2::Catch2 )
+endif()
 target_compile_definitions( ${TESTS_TARGET} PRIVATE CATCH_CONFIG_CONSOLE_WIDTH=512 )
 target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE CATCH_CONFIG_CONSOLE_WIDTH=512 )
+if( "cxx_std_20" IN_LIST CMAKE_CXX_COMPILE_FEATURES )
+    target_compile_definitions( ${TESTS_TARGET_PUBLIC_CPP20} PRIVATE CATCH_CONFIG_CONSOLE_WIDTH=512 )
+endif()
 catch_discover_tests( ${TESTS_TARGET} )

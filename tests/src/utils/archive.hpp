@@ -18,7 +18,6 @@
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitdefines.hpp>
 #include <bit7z/bitformat.hpp>
-#include <internal/stringutil.hpp>
 
 #include <cstddef>
 #include <string>
@@ -81,7 +80,7 @@ using stream_t = fs::ifstream;
 
 // Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
 inline void getInputArchive( const fs::path& path, tstring& archive ) {
-    archive = path_to_tstring( path );
+    archive = to_tstring( path );
 }
 
 inline void getInputArchive( const fs::path& path, buffer_t& archive ) {

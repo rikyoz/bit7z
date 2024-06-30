@@ -52,7 +52,7 @@ TEST_CASE( "BitArchiveEditor: Deleting an item using an invalid index should thr
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
 
         {
             BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
@@ -93,7 +93,7 @@ TEST_CASE( "BitArchiveEditor: Deleting the only item in a single-item archive sh
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
 
         {
             BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
@@ -130,13 +130,11 @@ TEST_CASE( "BitArchiveEditor: Deleting a single file in an archive with multiple
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        BitArchiveReader originalReader( test::sevenzip_lib(),
-                                         path_to_tstring( originalArcPath ),
-                                         testArchive.format() );
+        BitArchiveReader originalReader( test::sevenzip_lib(), to_tstring( originalArcPath ), testArchive.format() );
         const auto deletedItem = originalReader.find( loremIpsum.name );
         REQUIRE( deletedItem != originalReader.cend() );
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
         {
             BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( deletedItem->index() ) );
@@ -175,13 +173,11 @@ TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a single folder in an a
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        BitArchiveReader originalReader( test::sevenzip_lib(),
-                                         path_to_tstring( originalArcPath ),
-                                         testArchive.format() );
+        BitArchiveReader originalReader( test::sevenzip_lib(), to_tstring( originalArcPath ), testArchive.format() );
         const auto deletedItem = originalReader.find( folder.name );
         REQUIRE( deletedItem != originalReader.cend() );
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
         {
             BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( deletedItem->index() ) );
@@ -216,13 +212,11 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        BitArchiveReader originalReader( test::sevenzip_lib(),
-                                         path_to_tstring( originalArcPath ),
-                                         testArchive.format() );
+        BitArchiveReader originalReader( test::sevenzip_lib(), to_tstring( originalArcPath ), testArchive.format() );
         const auto deletedItem = originalReader.find( folder.name );
         REQUIRE( deletedItem != originalReader.cend() );
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
         {
             BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( deletedItem->index(), DeletePolicy::RecurseDirs ) );
@@ -233,7 +227,7 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
             BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.itemsCount() == 6 );
             REQUIRE( reader.find( deletedItem->path() ) == reader.cend() );
-            REQUIRE( reader.find( path_to_tstring( fs::path{ "folder" } / clouds.name ) ) == reader.cend() );
+            REQUIRE( reader.find( to_tstring( fs::path{ "folder" } / clouds.name ) ) == reader.cend() );
         }
 
         REQUIRE_NOTHROW( fs::remove( editedArcFileName ) );
@@ -258,7 +252,7 @@ TEST_CASE( "BitArchiveEditor: Deleting a single file in an archive with multiple
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
         {
             BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( italy.name ) );
@@ -296,7 +290,7 @@ TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a single folder in an a
         const fs::path editedArcFileName = "edited." + testArchive.extension();
 
         std::uint32_t originalItemsCount = 0;
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
@@ -311,7 +305,7 @@ TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a single folder in an a
             BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.itemsCount() == ( originalItemsCount - 1 ) );
             REQUIRE( reader.find( folder.name ) == reader.cend() );
-            REQUIRE( reader.find( path_to_tstring( fs::path{ "folder" } / clouds.name ) ) != reader.cend() );
+            REQUIRE( reader.find( to_tstring( fs::path{ "folder" } / clouds.name ) ) != reader.cend() );
         }
 
         REQUIRE_NOTHROW( fs::remove( editedArcFileName ) );
@@ -335,13 +329,13 @@ TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a path with a trailing 
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
         const fs::path editedArcFileName = "edited." + testArchive.extension();
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
         {
             BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
-            REQUIRE_THROWS( editor.deleteItem( path_to_tstring( fs::path{ folder.name } / "" ) ) );
+            REQUIRE_THROWS( editor.deleteItem( to_tstring( fs::path{ folder.name } / "" ) ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
@@ -371,7 +365,7 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
         const fs::path editedArcFileName = "edited." + testArchive.extension();
 
-        const tstring editedArcPath = path_to_tstring( editedArcFileName );
+        const tstring editedArcPath = to_tstring( editedArcFileName );
 
         auto deletedPath = GENERATE( as< fs::path >(),
                                      folder.name,
@@ -381,7 +375,7 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
 
             {
                 BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
-                REQUIRE_NOTHROW( editor.deleteItem( path_to_tstring( deletedPath ), DeletePolicy::RecurseDirs ) );
+                REQUIRE_NOTHROW( editor.deleteItem( to_tstring( deletedPath ), DeletePolicy::RecurseDirs ) );
                 REQUIRE_NOTHROW( editor.applyChanges() );
             }
 
@@ -389,7 +383,7 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
                 BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
                 REQUIRE( reader.itemsCount() == 6 );
                 REQUIRE( reader.find( folder.name ) == reader.cend() );
-                REQUIRE( reader.find( path_to_tstring( fs::path{ "folder" } / clouds.name ) ) == reader.cend() );
+                REQUIRE( reader.find( to_tstring( fs::path{ "folder" } / clouds.name ) ) == reader.cend() );
             }
 
             REQUIRE_NOTHROW( fs::remove( editedArcFileName ) );
