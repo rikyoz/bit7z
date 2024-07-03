@@ -51,7 +51,7 @@ runs:
       id: cache-dependencies
       with:
         path: ${{ github.workspace }}/third_party
-        key: ${{ runner.os }}-third-party
+        key: ${{ runner.os }}-7z${{ inputs.sevenzip_version }}-third-party
 
     - name: Configure CMake
       shell: ${{ inputs.shell }}
