@@ -55,7 +55,8 @@ if( BIT7Z_TESTS_FILESYSTEM )
     CPMAddPackage( NAME bit7z_test_data
                    GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
                    VERSION 1.8
-                   DOWNLOAD_ONLY YES )
+                   DOWNLOAD_ONLY YES
+                   GIT_PROGRESS ON )
     if( bit7z_test_data_ADDED )
         set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )
         message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
@@ -135,7 +136,8 @@ endif()
 CPMAddPackage( NAME Catch2
                GIT_TAG 359e3ea5c87f6226686c70e48e576db21e07ed94
                OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
-               GITHUB_REPOSITORY "rikyoz/Catch2" )
+               GITHUB_REPOSITORY "rikyoz/Catch2"
+               GIT_PROGRESS ON )
 list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/contrib" )
 
 include( CTest )
