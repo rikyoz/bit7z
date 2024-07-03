@@ -60,7 +60,7 @@ runs:
         -S ${{ github.workspace }}
 
     - name: Cache 7z.so
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: cache-7z-so
       if: ${{ runner.os == 'Linux' && inputs.sevenzip_version != 16.02 }}
       with:
