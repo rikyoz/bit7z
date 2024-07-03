@@ -1,10 +1,10 @@
-name: Test on Ubuntu
+name: Test on Ubuntu 22.04
 on:
   pull_request:
   push:
     paths:
     - '.github/actions/**'
-    - '.github/workflows/test_ubuntu.yml'
+    - '.github/workflows/test_ubuntu22.yml'
     - 'cmake/**'
     - 'include/**'
     - 'src/**'
@@ -23,7 +23,7 @@ jobs:
 
       matrix:
         build_type: [Debug, Release]
-        c_compiler: [gcc-9, gcc-10, gcc-11, gcc-12, gcc-13, clang-13, clang-14, clang-15]
+        c_compiler: [gcc-9, gcc-10, gcc-11, gcc-12, clang-13, clang-14, clang-15]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
@@ -38,8 +38,6 @@ jobs:
             cpp_compiler: g++-11
           - c_compiler: gcc-12
             cpp_compiler: g++-12
-          - c_compiler: gcc-13
-            cpp_compiler: g++-13
           - c_compiler: clang-13
             cpp_compiler: clang++-13
           - c_compiler: clang-14
@@ -55,15 +53,11 @@ jobs:
             bit7z_link_libcpp: ON
           - c_compiler: gcc-12
             bit7z_link_libcpp: ON
-          - c_compiler: gcc-13
-            bit7z_link_libcpp: ON
           - c_compiler: gcc-9
             bit7z_7zip_version: 16.02
           - c_compiler: gcc-10
             bit7z_7zip_version: 16.02
           - c_compiler: gcc-11
-            bit7z_7zip_version: 16.02
-          - c_compiler: gcc-12
             bit7z_7zip_version: 16.02
           - c_compiler: clang-13
             bit7z_7zip_version: 16.02
@@ -81,11 +75,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
-    - name: Fix missing gcc-13 compiler
-      shell: bash
-      if: ${{ contains(matrix.c_compiler, 'gcc-13') }}
-      run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && sudo apt update -y && sudo apt install gcc-13 g++-13
 
     - name: Fix missing libc++ and libc++abi packages for clang-13 compiler
       shell: bash
