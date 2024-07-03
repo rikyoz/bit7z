@@ -46,6 +46,13 @@ runs:
       # using leading to random crashes: https://reviews.llvm.org/D148280
       run: sudo sysctl vm.mmap_rnd_bits=28
 
+    - name: Cache Dependencies
+      uses: actions/cache@v4
+      id: cache-dependencies
+      with:
+        path: ${{ github.workspace }}/third_party
+        key: ${{ runner.os }}-third-party
+
     - name: Configure CMake
       shell: ${{ inputs.shell }}
       run: >
@@ -56,6 +63,7 @@ runs:
         -DBIT7Z_BUILD_TESTS=ON
         -DBIT7Z_ENABLE_SANITIZERS=${{ inputs.enable_sanitizers }}
         -DBIT7Z_7ZIP_VERSION="${{ inputs.sevenzip_version }}"
+        -DCPM_SOURCE_CACHE="${{ github.workspace }}/third_party"
         ${{ inputs.build_flags }}
         -S ${{ github.workspace }}
 
