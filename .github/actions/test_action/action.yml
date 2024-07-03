@@ -88,7 +88,7 @@ runs:
 
     - name: Build 7z.so for tests (macOS)
       shell: bash
-      if: runner.os == 'macOS'
+      if: ${{ steps.cache-7z-so.outputs.cache-hit != 'true' && runner.os == 'macOS' }}
       run: |
         git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
         git -C ${{ github.workspace }}/../7-zip fetch --tags
