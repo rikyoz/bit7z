@@ -67,12 +67,17 @@ jobs:
     - name: Fix missing libc++ and libc++abi packages for clang-16 compiler
       shell: bash
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-16') }}
-      run: sudo apt-get purge libc++-18-dev libc++abi-18-dev -y && sudo apt-get install libc++-16-dev libc++abi-16-dev -y
+      run: sudo apt-get install libc++-16-dev libc++abi-16-dev -y
+      
+    - name: Fix missing libc++ and libc++abi packages for clang-17 compiler
+      shell: bash
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-17') }}
+      run: sudo apt-get install libc++-17-dev libc++abi-17-dev -y
       
     - name: Fix missing libc++ and libc++abi packages for clang-18 compiler
       shell: bash
-      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-17') }}
-      run: sudo apt-get purge libc++-18-dev libc++abi-18-dev -y && sudo apt-get install libc++-17-dev libc++abi-17-dev -y
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-18') }}
+      run: sudo apt-get install libc++-18-dev libc++abi-18-dev -y
 
     - name: Cache p7zip's 7z.so
       uses: actions/cache@v4
