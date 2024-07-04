@@ -70,7 +70,7 @@ runs:
     - name: Cache 7z.so
       uses: actions/cache@v4
       id: cache-7z-so
-      if: ${{ inputs.sevenzip_version != 16.02 }}
+      if: ${{ runner.os != 'Windows' && inputs.sevenzip_version != 16.02 }}
       with:
         path: ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
         key: ${{ runner.os }}-${{ inputs.arch }}-${{ inputs.sevenzip_version }}-7z.so
