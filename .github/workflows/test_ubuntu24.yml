@@ -74,6 +74,14 @@ jobs:
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-17') }}
       run: sudo apt-get purge libc++-18-dev libc++abi-18-dev -y && sudo apt-get install libc++-17-dev libc++abi-17-dev -y
 
+    - name: Fix missing p7zip shared library
+      shell: bash
+      if: ${{ matrix.bit7z_build_for_p7zip == 'ON' }}
+      run: >
+        git clone --depth 1 https://github.com/rikyoz/p7zip ${{ github.workspace }}/../p7zip
+        make -C ${{ github.workspace }}/../p7zip 7z
+        sudo cp ${{ github.workspace }}/../p7zip/bin/7z.so /usr/lib/p7zip/7z.so
+
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
       with:
