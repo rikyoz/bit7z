@@ -73,7 +73,7 @@ runs:
       if: ${{ runner.os != 'Windows' && inputs.sevenzip_version != 16.02 }}
       with:
         path: ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
-        key: ${{ runner.os }}-${{ inputs.arch }}-${{ inputs.sevenzip_version }}-7z.so
+        key: ${{ runner.os }}-7z${{ inputs.sevenzip_version }}-${{ inputs.arch }}-7z.so
 
     - name: Build 7z.so for tests (Ubuntu)
       shell: bash
