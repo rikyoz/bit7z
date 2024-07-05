@@ -92,7 +92,7 @@ jobs:
       if: ${{ steps.cache-p7zip-so.outputs.cache-hit != 'true' && matrix.bit7z_build_for_p7zip == 'ON' }}
       run: |
         git clone --depth 1 https://github.com/rikyoz/p7zip ${{ github.workspace }}/../p7zip
-        curl https://raw.githubusercontent.com/Millak/guix/master/gnu/packages/patches/p7zip-fix-build-with-gcc-11.patch | git -C ${{ github.workspace }}/../p7zip apply -v --index
+        curl https://gist.githubusercontent.com/rikyoz/472257e7883054fdfcf7a7fac5715372/raw/11057145a6082615f4452f7f50da6e7b3d557f82/p7zip_gcc10.patch | git -C ${{ github.workspace }}/../p7zip apply -v --no-index
         make -C ${{ github.workspace }}/../p7zip 7z
         sudo cp ${{ github.workspace }}/../p7zip/bin/7z.so /usr/lib/p7zip/7z.so
 
