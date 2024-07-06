@@ -79,6 +79,12 @@ jobs:
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-18') }}
       run: sudo apt-get install libc++-18-dev libc++abi-18-dev -y
 
+    - name: Create missing p7zip directory
+      shell: bash
+      if: ${{ matrix.bit7z_build_for_p7zip == 'ON' }}
+      run: |
+        sudo mkdir -p /usr/lib/p7zip
+
     - name: Cache p7zip's 7z.so
       uses: actions/cache@v4
       id: cache-p7zip-so
