@@ -84,23 +84,23 @@ jobs:
       id: cache-p7zip-so
       if: ${{ matrix.bit7z_build_for_p7zip == 'ON' }}
       with:
-        path: ${{ github.workspace }}/../p7zip/bin/7z.so
+        path: ${{ github.workspace }}/build/p7zip/bin/7z.so
         key: ${{ runner.os }}-p7zip-x64-7z.so
 
     - name: Fix missing p7zip shared library
       shell: bash
       if: ${{ steps.cache-p7zip-so.outputs.cache-hit != 'true' && matrix.bit7z_build_for_p7zip == 'ON' }}
       run: |
-        git clone --depth 1 https://github.com/rikyoz/p7zip ${{ github.workspace }}/../p7zip
-        curl https://gist.githubusercontent.com/rikyoz/472257e7883054fdfcf7a7fac5715372/raw/11057145a6082615f4452f7f50da6e7b3d557f82/p7zip_gcc10.patch | git -C ${{ github.workspace }}/../p7zip apply -v --no-index
-        make -C ${{ github.workspace }}/../p7zip 7z
+        git clone --depth 1 https://github.com/rikyoz/p7zip ${{ github.workspace }}/build/p7zip
+        curl https://gist.githubusercontent.com/rikyoz/472257e7883054fdfcf7a7fac5715372/raw/11057145a6082615f4452f7f50da6e7b3d557f82/p7zip_gcc10.patch | git -C ${{ github.workspace }}/build/p7zip apply -v --no-index
+        make -C ${{ github.workspace }}/build/p7zip 7z
         
     - name: Install p7zip's 7z.so
       shell: bash
       if: ${{ matrix.bit7z_build_for_p7zip == 'ON' }}
       run: |
         sudo mkdir -p /usr/lib/p7zip
-        sudo cp ${{ github.workspace }}/../p7zip/bin/7z.so /usr/lib/p7zip/7z.so
+        sudo cp ${{ github.workspace }}/build/p7zip/bin/7z.so /usr/lib/p7zip/7z.so
 
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
