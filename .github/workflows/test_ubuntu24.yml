@@ -85,7 +85,7 @@ jobs:
       if: ${{ matrix.bit7z_build_for_p7zip == 'ON' }}
       with:
         path: /usr/lib/p7zip/7z.so
-        key: ${{ runner.os }}-${{ inputs.arch }}-p7zip-7z.so
+        key: ${{ runner.os }}-p7zip-x64-7z.so
 
     - name: Fix missing p7zip shared library
       shell: bash
