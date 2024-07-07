@@ -224,6 +224,10 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
 TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structure)", "[bititemsvector]" ) {
     static const TestDirectory testDir{ test_filesystem_dir };
 
+    /* NOTE: BitItemsVector uses the retainFolderStructure option only to decide if it must include
+     * the root folder in the in-archive paths; the actual folder structure is still kept here,
+     * and will be discarded by the extract callback (e.g., see FileExtractCallback). */
+    // TODO: Rationalize the handling of retainFolderStructure.
     IndexingOptions options{};
     options.retainFolderStructure = true;
 
@@ -1289,9 +1293,47 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
                 "test_filesystem/folder/subfolder2/frequency.xlsx"
             }
         },
+        TestInputPath{
+            "folder/..",
+            {
+                "italy.svg",
+                "Lorem Ipsum.pdf",
+                "noext",
+                BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
+                "dot.folder",
+                "dot.folder/hello.json",
+                "empty",
+                "folder",
+                "folder/clouds.jpg",
+                "folder/subfolder",
+                "folder/subfolder2",
+                "folder/subfolder2/homework.doc",
+                "folder/subfolder2/The quick brown fox.pdf",
+                "folder/subfolder2/frequency.xlsx"
+            }
+        },
+        TestInputPath{
+            "folder/../dot.folder",
+            {
+                "dot.folder",
+                "dot.folder/hello.json"
+            }
+        },
         TestInputPath{ "../test_filesystem/empty", { "empty" } },
         TestInputPath{
             "../test_filesystem/folder",
+            {
+                "folder",
+                "folder/clouds.jpg",
+                "folder/subfolder",
+                "folder/subfolder2",
+                "folder/subfolder2/homework.doc",
+                "folder/subfolder2/The quick brown fox.pdf",
+                "folder/subfolder2/frequency.xlsx"
+            }
+        },
+        TestInputPath{
+            "folder/subfolder2/../",
             {
                 "folder",
                 "folder/clouds.jpg",
@@ -1350,9 +1392,47 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
                 "test_filesystem/folder/subfolder2/frequency.xlsx"
             }
         },
+        TestInputPath{
+            "folder/..",
+            {
+                "italy.svg",
+                "Lorem Ipsum.pdf",
+                "noext",
+                BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ),
+                "dot.folder",
+                "dot.folder/hello.json",
+                "empty",
+                "folder",
+                "folder/clouds.jpg",
+                "folder/subfolder",
+                "folder/subfolder2",
+                "folder/subfolder2/homework.doc",
+                "folder/subfolder2/The quick brown fox.pdf",
+                "folder/subfolder2/frequency.xlsx"
+            }
+        },
+        TestInputPath{
+            "folder/../dot.folder",
+            {
+                "dot.folder",
+                "dot.folder/hello.json"
+            }
+        },
         TestInputPath{ "../test_filesystem/empty", { "empty" } },
         TestInputPath{
             "../test_filesystem/folder",
+            {
+                "folder",
+                "folder/clouds.jpg",
+                "folder/subfolder",
+                "folder/subfolder2",
+                "folder/subfolder2/homework.doc",
+                "folder/subfolder2/The quick brown fox.pdf",
+                "folder/subfolder2/frequency.xlsx"
+            }
+        },
+        TestInputPath{
+            "folder/subfolder2/../",
             {
                 "folder",
                 "folder/clouds.jpg",
@@ -1409,6 +1489,46 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
                 "custom_folder/folder/subfolder2/frequency.xlsx"
             }
         },
+        TestInputPath{
+            "folder/..",
+            {
+                "custom_folder",
+                "custom_folder/dot.folder",
+                "custom_folder/dot.folder/hello.json",
+                "custom_folder/italy.svg",
+                "custom_folder/Lorem Ipsum.pdf",
+                "custom_folder/noext",
+                BIT7Z_NATIVE_STRING( "custom_folder/σαράντα δύο.txt" ),
+                "custom_folder/empty",
+                "custom_folder/folder",
+                "custom_folder/folder/clouds.jpg",
+                "custom_folder/folder/subfolder",
+                "custom_folder/folder/subfolder2",
+                "custom_folder/folder/subfolder2/homework.doc",
+                "custom_folder/folder/subfolder2/The quick brown fox.pdf",
+                "custom_folder/folder/subfolder2/frequency.xlsx"
+            }
+        },
+        TestInputPath{
+            "folder/../",
+            {
+                "custom_folder",
+                "custom_folder/dot.folder",
+                "custom_folder/dot.folder/hello.json",
+                "custom_folder/italy.svg",
+                "custom_folder/Lorem Ipsum.pdf",
+                "custom_folder/noext",
+                BIT7Z_NATIVE_STRING( "custom_folder/σαράντα δύο.txt" ),
+                "custom_folder/empty",
+                "custom_folder/folder",
+                "custom_folder/folder/clouds.jpg",
+                "custom_folder/folder/subfolder",
+                "custom_folder/folder/subfolder2",
+                "custom_folder/folder/subfolder2/homework.doc",
+                "custom_folder/folder/subfolder2/The quick brown fox.pdf",
+                "custom_folder/folder/subfolder2/frequency.xlsx"
+            }
+        },
         TestInputPath{ "empty", { "custom_folder" } },
         TestInputPath{ "./empty", { "custom_folder" } },
         TestInputPath{
@@ -1425,6 +1545,30 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
         },
         TestInputPath{
             "./folder",
+            {
+                "custom_folder",
+                "custom_folder/clouds.jpg",
+                "custom_folder/subfolder",
+                "custom_folder/subfolder2",
+                "custom_folder/subfolder2/homework.doc",
+                "custom_folder/subfolder2/The quick brown fox.pdf",
+                "custom_folder/subfolder2/frequency.xlsx"
+            }
+        },
+        TestInputPath{
+            "./folder/subfolder2/..",
+            {
+                "custom_folder",
+                "custom_folder/clouds.jpg",
+                "custom_folder/subfolder",
+                "custom_folder/subfolder2",
+                "custom_folder/subfolder2/homework.doc",
+                "custom_folder/subfolder2/The quick brown fox.pdf",
+                "custom_folder/subfolder2/frequency.xlsx"
+            }
+        },
+        TestInputPath{
+            "./folder/subfolder2/../",
             {
                 "custom_folder",
                 "custom_folder/clouds.jpg",
@@ -1823,9 +1967,11 @@ TEST_CASE( "BitItemsVector: Indexing a directory as a file should fail", "[bitit
     BitItemsVector itemsVector;
     REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "." ) ) );
     REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "dot.folder" ) ) );
+    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "dot.folder/../" ) ) );
     REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "empty" ) ) );
     REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder" ) ) );
     REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder/subfolder" ) ) );
+    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder/subfolder/../.." ) ) );
     REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder/subfolder2" ) ) );
 }
 
@@ -1849,10 +1995,14 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     const auto testInput =
         GENERATE(
             TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "empty/../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "folder/subfolder2/../../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
             TestFile{ "italy.svg", "italy.svg" },
             TestFile{ "noext", "noext" },
             TestFile{ BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ), BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ) },
             TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
+            TestFile{ "dot.folder/../folder/clouds.jpg", "clouds.jpg" },
+            TestFile{ "folder/subfolder2/../clouds.jpg", "clouds.jpg" },
             TestFile{ "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
             TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
             TestFile{ "folder/subfolder2/frequency.xlsx", "folder/subfolder2/frequency.xlsx" },
@@ -1862,9 +2012,13 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     const auto testInput =
         GENERATE(
             TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "empty/../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "folder/subfolder2/../../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
             TestFile{ "italy.svg", "italy.svg" },
             TestFile{ "noext", "noext" },
             TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
+            TestFile{ "dot.folder/../folder/clouds.jpg", "clouds.jpg" },
+            TestFile{ "folder/subfolder2/../clouds.jpg", "clouds.jpg" },
             TestFile{ "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
             TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
             TestFile{ "folder/subfolder2/frequency.xlsx", "folder/subfolder2/frequency.xlsx" },
