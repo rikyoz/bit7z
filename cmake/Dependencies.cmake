@@ -21,12 +21,14 @@ if( BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
         CPMAddPackage( NAME 7-zip
                        GITHUB_REPOSITORY "rikyoz/p7zip"
                        VERSION ${BIT7Z_7ZIP_VERSION}
+                       GIT_PROGRESS ON
                        DOWNLOAD_ONLY YES )
     else()
         # 7-zip source code
         CPMAddPackage( NAME 7-zip
                        GITHUB_REPOSITORY "rikyoz/7-Zip"
                        VERSION ${BIT7Z_7ZIP_VERSION}
+                       GIT_PROGRESS ON
                        DOWNLOAD_ONLY YES )
     endif()
     if( 7-zip_ADDED )
@@ -41,6 +43,7 @@ if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES OR BIT7Z_BUI
     CPMAddPackage( NAME ghc_filesystem
                    GITHUB_REPOSITORY rikyoz/filesystem
                    GIT_TAG 983650f374699e3979f9cdefe13ddff60bd4ac68
+                   GIT_PROGRESS ON
                    DOWNLOAD_ONLY YES )
     if( ghc_filesystem_ADDED )
         message( STATUS "ghc::filesystem source code available at ${ghc_filesystem_SOURCE_DIR}" )

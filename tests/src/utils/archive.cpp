@@ -117,6 +117,15 @@ void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLoca
     }
 #endif
     if ( !fs::is_directory( fileStatus ) || fs::is_empty( expectedItem.inArchivePath ) ) {
+#ifdef _WIN32
+        // Some versions of Windows/MSVC fail to remove read-only files, so we make them writable before removing them.
+        fs::perms permissions = fileStatus.permissions();
+        if ( ( permissions & fs::perms::owner_write ) == fs::perms::none ) {
+            std::error_code error;
+            fs::permissions( expectedItem.inArchivePath, permissions | fs::perms::owner_write, error );
+            INFO( "Could not set new permissions for the read-only file: " << error.message() )
+        }
+#endif
         REQUIRE_NOTHROW( fs::remove( expectedItem.inArchivePath ) );
     }
 }

@@ -1872,11 +1872,11 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
         );
 #endif
 
-    DYNAMIC_SECTION( "Indexing file " << testInput.inputFile.u8string() ) {
+    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput.inputFile ) ) {
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE_NOTHROW( itemsVector.indexFile( testInput.inputFile.string< bit7z::tchar >() ) );
 #else
-        REQUIRE_NOTHROW( itemsVector.indexFile( testInput.inputFile.u8string() ) );
+        REQUIRE_NOTHROW( itemsVector.indexFile( to_utf8string( testInput.inputFile ) ) );
 #endif
 
         REQUIRE( itemsVector.size() == 1 );
@@ -1884,7 +1884,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile );
 #else
-        REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile.u8string() );
+        REQUIRE( itemsVector[ 0 ].path() == to_utf8string( testInput.inputFile ) );
 #endif
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput.inputFile ) );
     }
@@ -1912,12 +1912,12 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
                                          "folder/subfolder2/frequency.xlsx",
                                          "dot.folder/hello.json" );
 
-    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() ) {
+    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) ) {
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE_NOTHROW( itemsVector.indexFile( testInput.string< bit7z::tchar >(),
                                                 BIT7Z_STRING( "custom_name.ext" ) ) );
 #else
-        REQUIRE_NOTHROW( itemsVector.indexFile( testInput.u8string(), BIT7Z_STRING( "custom_name.ext" ) ) );
+        REQUIRE_NOTHROW( itemsVector.indexFile( to_utf8string( testInput ), BIT7Z_STRING( "custom_name.ext" ) ) );
 #endif
 
         REQUIRE( itemsVector.size() == 1 );
@@ -1925,7 +1925,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE( itemsVector[ 0 ].path() == testInput );
 #else
-        REQUIRE( itemsVector[ 0 ].path() == testInput.u8string() );
+        REQUIRE( itemsVector[ 0 ].path() == to_utf8string( testInput ) );
 #endif
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
@@ -1947,7 +1947,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
                                          BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
                                          BIT7Z_STRING( "dot.folder/hello.json" ) );
 
-    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() << " as a stream" ) {
+    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) << " as a stream" ) {
         REQUIRE_OPEN_IFSTREAM( input_stream, testInput );
         REQUIRE_NOTHROW( itemsVector.indexStream( input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
@@ -1973,7 +1973,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
                                          BIT7Z_STRING( "folder/subfolder2/frequency.xlsx" ),
                                          BIT7Z_STRING( "dot.folder/hello.json" ) );
 
-    DYNAMIC_SECTION( "Indexing file " << testInput.u8string() << " as a buffer" ) {
+    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) << " as a buffer" ) {
         REQUIRE_LOAD_FILE( input_buffer, testInput );
         REQUIRE_NOTHROW( itemsVector.indexBuffer( input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );

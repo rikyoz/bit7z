@@ -1,0 +1,113 @@
+name: Test on Ubuntu 24.04
+on:
+  pull_request:
+  push:
+    paths:
+    - '.github/actions/**'
+    - '.github/workflows/test_ubuntu24.yml'
+    - 'cmake/**'
+    - 'include/**'
+    - 'src/**'
+    - 'tests/**'
+    - 'CMakeLists.txt'
+
+jobs:
+  build_linux:
+    runs-on: ubuntu-24.04
+    if: |
+      !contains(github.event.head_commit.message, '[test-windows]')
+      && !contains(github.event.head_commit.message, '[test-macos]')
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [Debug, Release]
+        c_compiler: [gcc-13, gcc-14, clang-16, clang-17, clang-18]
+        bit7z_auto_format: [OFF, ON]
+        bit7z_regex_matching: [OFF, ON]
+        bit7z_link_libcpp: [OFF, ON]
+        bit7z_7zip_version: [16.02, 22.01, 23.01]
+        bit7z_build_for_p7zip: [OFF, ON]
+        include:
+          - c_compiler: gcc-13
+            cpp_compiler: g++-13
+          - c_compiler: gcc-14
+            cpp_compiler: g++-14
+          - c_compiler: clang-16
+            cpp_compiler: clang++-16
+          - c_compiler: clang-17
+            cpp_compiler: clang++-17
+          - c_compiler: clang-18
+            cpp_compiler: clang++-18
+        exclude:
+          - c_compiler: gcc-13
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-14
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-13
+            bit7z_7zip_version: 16.02
+          - c_compiler: clang-16
+            bit7z_7zip_version: 16.02
+          - c_compiler: clang-17
+            bit7z_7zip_version: 16.02
+          - bit7z_7zip_version: 16.02
+            bit7z_build_for_p7zip: OFF
+          - bit7z_7zip_version: 23.01
+            bit7z_build_for_p7zip: ON
+          - bit7z_7zip_version: 22.01
+            bit7z_build_for_p7zip: ON
+
+    name: |
+      Ubuntu, ${{ matrix.c_compiler }}, ${{ matrix.build_type }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Fix missing libc++ and libc++abi packages for clang-16 compiler
+      shell: bash
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-16') }}
+      run: sudo apt-get install libc++-16-dev libc++abi-16-dev -y
+      
+    - name: Fix missing libc++ and libc++abi packages for clang-17 compiler
+      shell: bash
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-17') }}
+      run: sudo apt-get install libc++-17-dev libc++abi-17-dev -y
+      
+    - name: Fix missing libc++ and libc++abi packages for clang-18 compiler
+      shell: bash
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-18') }}
+      run: sudo apt-get install libc++-18-dev libc++abi-18-dev -y
+
+    - name: Cache p7zip's 7z.so
+      uses: actions/cache@v4
+      id: cache-p7zip-so
+      if: ${{ matrix.bit7z_build_for_p7zip == 'ON' }}
+      with:
+        path: ${{ github.workspace }}/build/p7zip/bin/7z.so
+        key: ${{ runner.os }}-p7zip-x64-7z.so
+
+    - name: Fix missing p7zip shared library
+      shell: bash
+      if: ${{ steps.cache-p7zip-so.outputs.cache-hit != 'true' && matrix.bit7z_build_for_p7zip == 'ON' }}
+      run: |
+        git clone --depth 1 https://github.com/rikyoz/p7zip ${{ github.workspace }}/build/p7zip
+        curl https://gist.githubusercontent.com/rikyoz/472257e7883054fdfcf7a7fac5715372/raw/11057145a6082615f4452f7f50da6e7b3d557f82/p7zip_gcc10.patch | git -C ${{ github.workspace }}/build/p7zip apply -v --no-index
+        make -C ${{ github.workspace }}/build/p7zip 7z
+        
+    - name: Install p7zip's 7z.so
+      shell: bash
+      if: ${{ matrix.bit7z_build_for_p7zip == 'ON' }}
+      run: |
+        sudo mkdir -p /usr/lib/p7zip
+        sudo cp ${{ github.workspace }}/build/p7zip/bin/7z.so /usr/lib/p7zip/7z.so
+
+    - name: Building and testing bit7z
+      uses: ./.github/actions/test_action
+      with:
+        c_compiler: ${{ matrix.c_compiler }}
+        cpp_compiler: ${{ matrix.cpp_compiler }}
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
+        build_type: ${{ matrix.build_type }}
+        build_flags: |
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

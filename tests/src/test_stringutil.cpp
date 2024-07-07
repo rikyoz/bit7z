@@ -30,7 +30,8 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[stringutil][narrow]" 
     }
 
     // TODO: Fix UTF-8 conversions on latest versions of libstdc++
-#if !defined( _LIBCPP_VERSION ) && ( !defined( _GLIBCXX_RELEASE ) || _GLIBCXX_RELEASE < 14 )
+#if !defined( _LIBCPP_VERSION ) && \
+    ( !defined( _GLIBCXX_RELEASE ) || _GLIBCXX_RELEASE < 13 || ( _GLIBCXX_RELEASE == 13 && __GNUC_MINOR__ < 2 ) )
     SECTION( "Converting wide strings with unencodable UTF-8 chars" ) {
         std::wstring testInput = L"\xDC80";
         std::string testOutput = narrow( testInput.c_str(), testInput.size() );
