@@ -45,6 +45,8 @@ jobs:
             bit7z_link_libcpp: ON
           - c_compiler: gcc-14
             bit7z_link_libcpp: ON
+          - c_compiler: clang-18 # re-enable once improved string conversions in bit7z
+            bit7z_link_libcpp: ON
           - c_compiler: gcc-13
             bit7z_7zip_version: 16.02
           - c_compiler: clang-16
