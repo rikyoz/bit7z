@@ -44,7 +44,7 @@ void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< Generi
 
     fs::path basePath = mDirItem.filesystemPath();
     std::error_code error;
-    for ( auto iterator = fs::recursive_directory_iterator{ basePath, error };
+    for ( auto iterator = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
           iterator != fs::recursive_directory_iterator{};
           ++iterator ) {
         const auto& currentEntry = *iterator;
