@@ -260,12 +260,16 @@ class BitInputArchive {
         /**
          * @brief Extracts the content of the archive to the given raw data callback.
          *
+         * @note You can set a FileCallback to check the file being extracted.
+         *
          * @param callback  a function providing the extracted raw data to the user.
          */
         void extractTo( RawDataCallback callback ) const;
 
         /**
          * @brief Extracts the raw content of the archive to the given callback.
+         *
+         * @note You can set a FileCallback to check the file being extracted.
          *
          * @param callback  a function providing the extracted raw data to the user.
          */
