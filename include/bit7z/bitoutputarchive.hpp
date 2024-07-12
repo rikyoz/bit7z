@@ -260,31 +260,31 @@ class BitOutputArchive {
 
         auto indexInArchive( uint32_t index ) const noexcept -> uint32_t;
 
-        inline auto inputArchive() const -> BitInputArchive* {
+        auto inputArchive() const -> BitInputArchive* {
             return mInputArchive.get();
         }
 
-        inline void setInputArchive( std::unique_ptr< BitInputArchive >&& inputArchive ) {
+        void setInputArchive( std::unique_ptr< BitInputArchive >&& inputArchive ) {
             mInputArchive = std::move( inputArchive );
         }
 
-        inline auto inputArchiveItemsCount() const -> uint32_t {
+        auto inputArchiveItemsCount() const -> uint32_t {
             return mInputArchiveItemsCount;
         }
 
-        inline void setDeletedIndex( uint32_t index ) {
+        void setDeletedIndex( uint32_t index ) {
             mDeletedItems.insert( index );
         }
 
-        inline auto isDeletedIndex( uint32_t index ) const -> bool {
+        auto isDeletedIndex( uint32_t index ) const -> bool {
             return mDeletedItems.find( index ) != mDeletedItems.cend();
         }
 
-        inline auto hasDeletedIndexes() const -> bool {
+        auto hasDeletedIndexes() const -> bool {
             return !mDeletedItems.empty();
         }
 
-        inline auto hasNewItems() const -> bool {
+        auto hasNewItems() const -> bool {
             return mNewItemsVector.size() > 0;
         }
 
