@@ -173,7 +173,7 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
      * - For other archives, we stop when we reach itemsCount() (most likely one) items added to the vector. */
     const auto itemsCount = mNestedArchive.itemsCount();
     if ( itemsCount < std::numeric_limits< std::uint32_t >::max() ) {
-        result.reserve( itemsCount );
+        result.reserve( static_cast< std::size_t >( itemsCount ) );
     }
 
     for ( std::uint32_t index = 0; index < itemsCount; ++index ) {
