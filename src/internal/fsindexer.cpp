@@ -59,9 +59,6 @@ void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< Generi
         const auto& currentEntry = *iterator;
         const auto& itemPath = currentEntry.path();
 
-        const auto prefix = fs::relative( itemPath, basePath, error ).remove_filename();
-        const auto searchPath = includeRootPath ? mDirItem.inArchivePath() / prefix : prefix;
-
         const auto itemIsDir = currentEntry.is_directory( error );
         const auto itemName = path_to_tstring( itemPath.filename() );
 
@@ -72,6 +69,8 @@ void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< Generi
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
         const bool itemMatches = ( !mOnlyFiles || !itemIsDir ) && fsutil::wildcard_match( mFilter, itemName );
         if ( itemMatches == shouldIncludeMatchedItems ) {
+            const auto prefix = fs::relative( itemPath, basePath, error ).remove_filename();
+            const auto searchPath = includeRootPath ? mDirItem.inArchivePath() / prefix : prefix;
             result.emplace_back( std::make_unique< FilesystemItem >( currentEntry, searchPath, mSymlinkPolicy ) );
         }
 
