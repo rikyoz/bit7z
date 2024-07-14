@@ -76,6 +76,25 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         /**
+         * @brief Extracts the given archive to the chosen directory,
+         * renaming the extracted items using the provided RenameCallback.
+         *
+         * @note The callback provides in input the index, and the path (within the archive)
+         * of the item to be extracted, and must return the new path that the extracted item
+         * must have on the filesystem.
+         * If the path of the item must not change, simply return the input path in the callback.
+         * If the item must not be extracted, return an empty string in the callback.
+         *
+         * @param inArchive    the input archive to be extracted.
+         * @param outDir       the output directory where extracted files will be put.
+         * @param callback     the callback to be used for renaming the extracted items.
+         */
+        void extract( Input inArchive, const tstring& outDir, RenameCallback callback ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outDir, std::move( callback ) );
+        }
+
+        /**
          * @brief Extracts a file from the given archive to the output buffer.
          *
          * @param inArchive   the input archive to extract from.
