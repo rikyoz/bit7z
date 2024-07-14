@@ -192,7 +192,7 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
                 item.setProperty( property, propertyValue );
             }
         }
-        result.push_back( std::move( item ) );
+        result.emplace_back( std::move( item ) );
     }
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
     return result;
