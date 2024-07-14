@@ -110,7 +110,7 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
             return STG_E_INVALIDFUNCTION;
     }
 
-    RINOK( seek_to_offset( seekPosition, offset ) )
+    RINOK( seek_to_offset( seekPosition, offset ) ) //-V3504
     mCurrentPosition = seekPosition;
 
     if ( newPosition != nullptr ) {

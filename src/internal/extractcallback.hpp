@@ -77,7 +77,7 @@ class ExtractCallback : public Callback,
         auto errorException() const -> const std::exception_ptr&;
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835 //-V3504
 
     protected:
         explicit ExtractCallback( const BitInputArchive& inputArchive );

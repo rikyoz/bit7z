@@ -51,7 +51,7 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         // NOLINTNEXTLINE(modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
 };
 
 } // namespace bit7z

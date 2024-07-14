@@ -59,7 +59,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
             return STG_E_INVALIDFUNCTION;
     }
 
-    RINOK( seek_to_offset( seekIndex, offset ) )
+    RINOK( seek_to_offset( seekIndex, offset ) ) //-V3504
 
     // Making sure seekIndex is a valid index within the buffer (i.e., it is less than mBufferSize).
     if ( seekIndex >= mBufferSize ) {

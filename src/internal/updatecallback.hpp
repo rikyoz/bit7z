@@ -69,7 +69,7 @@ class UpdateCallback final : public Callback,
         BIT7Z_STDMETHOD( CryptoGetTextPassword2, Int32* passwordIsDefined, BSTR* password );
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP3( IArchiveUpdateCallback2, ICompressProgressInfo, ICryptoGetTextPassword2 ) //-V2507 //-V2511 //-V835 //-V3504
 
     private:
         const BitOutputArchive& mOutputArchive;

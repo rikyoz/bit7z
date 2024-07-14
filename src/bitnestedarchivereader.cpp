@@ -36,7 +36,7 @@
 namespace bit7z {
 
 // Minimum value for the maximum memory usage allowed for the BufferQueue.
-constexpr std::uint64_t kMinMaxMemoryUsage = 4ULL * 1024 * 1024; // 4 MiB
+constexpr std::uint64_t kMinMaxMemoryUsage = 4ULL * 1024 * 1024; // 4 MiB //-V112
 
 auto get_free_ram() -> std::uint64_t {
 #if defined( _WIN64 )

@@ -44,7 +44,7 @@ class CSynchronizedInStream final : public ISequentialInStream, public CMyUnknow
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP1( ISequentialInStream ); //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP1( ISequentialInStream ); //-V2507 //-V2511 //-V835 //-V3504
 
     private:
         void extractParentArchive();

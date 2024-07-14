@@ -23,7 +23,7 @@ CVolumeOutStream::CVolumeOutStream( const fs::path& volumeName )
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     UInt64 pos{};
-    RINOK( CStdOutStream::Seek( offset, seekOrigin, &pos ) )
+    RINOK( CStdOutStream::Seek( offset, seekOrigin, &pos ) ) //-V3504
     mCurrentOffset = pos;
     if ( newPosition != nullptr ) {
         *newPosition = pos;
@@ -38,7 +38,7 @@ STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* pro
     }
 
     UInt32 writtenSize{};
-    RINOK( CStdOutStream::Write( data, size, &writtenSize ) )
+    RINOK( CStdOutStream::Write( data, size, &writtenSize ) ) //-V3504
 
     if ( writtenSize == 0 && size != 0 ) {
         return E_FAIL;
@@ -57,7 +57,7 @@ auto CVolumeOutStream::currentOffset() const -> uint64_t {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
-    RINOK( CFileOutStream::SetSize( newSize ) )
+    RINOK( CFileOutStream::SetSize( newSize ) ) //-V3504
     mCurrentSize = newSize;
     return S_OK;
 }

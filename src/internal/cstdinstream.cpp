@@ -49,7 +49,7 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
     mInputStream.clear();
 
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
-    RINOK( to_seekdir( seekOrigin, way ) )
+    RINOK( to_seekdir( seekOrigin, way ) ) //-V3504
 
     mInputStream.seekg( static_cast< std::istream::off_type >( offset ), way );
 

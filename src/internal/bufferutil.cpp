@@ -41,7 +41,7 @@ auto bit7z::seek( const buffer_t& buffer,
             return STG_E_INVALIDFUNCTION;
     }
 
-    RINOK( seek_to_offset( currentIndex, offset ) )
+    RINOK( seek_to_offset( currentIndex, offset ) ) //-V3504
 
     if ( currentIndex > buffer.size() ) {
         return E_INVALIDARG;

@@ -72,7 +72,7 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
 
     if ( mCurrentVolumeOffset != volume->currentOffset() ) {
         /* The offset we must write to is different from the last offset we wrote to. */
-        RINOK( volume->Seek( static_cast< int64_t >( mCurrentVolumeOffset ), STREAM_SEEK_SET, nullptr ) )
+        RINOK( volume->Seek( static_cast< int64_t >( mCurrentVolumeOffset ), STREAM_SEEK_SET, nullptr ) ) //-V3504
     }
 
     /* Determining how much we can write to the volume stream */
@@ -81,7 +81,7 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
 
     /* Writing to the volume stream */
     UInt32 writtenSize{};
-    RINOK( volume->Write( data, writeSize, &writtenSize ) )
+    RINOK( volume->Write( data, writeSize, &writtenSize ) ) //-V3504
 
     /* Updating the offsets */
     mCurrentVolumeOffset += writtenSize;
@@ -124,7 +124,7 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
             return STG_E_INVALIDFUNCTION;
     }
 
-    RINOK( seek_to_offset( seekPosition, offset ) )
+    RINOK( seek_to_offset( seekPosition, offset ) ) //-V3504
     mAbsoluteOffset = seekPosition;
     mCurrentVolumeOffset = mAbsoluteOffset;
     if ( newPosition != nullptr ) {
@@ -138,7 +138,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
     for ( auto& volume : mVolumes ) {
         if ( newSize < volume->currentSize() ) {
-            RINOK( volume->SetSize( newSize ) )
+            RINOK( volume->SetSize( newSize ) ) //-V3504
             break;
         }
         newSize -= volume->currentSize();

@@ -85,7 +85,7 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propId, PROPVARIA
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) noexcept {
-    RINOK( finalize() )
+    RINOK( finalize() ) //-V3504
 
     if ( mHandler.fileCallback() ) {
         const BitPropVariant filePath = mOutputArchive.outputItemProperty( index, BitProperty::Path );

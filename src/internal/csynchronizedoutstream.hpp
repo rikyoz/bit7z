@@ -38,7 +38,7 @@ class CSynchronizedOutStream final : public ISequentialOutStream, public CMyUnkn
         BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP1( ISequentialOutStream ); //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP1( ISequentialOutStream ); //-V2507 //-V2511 //-V835 //-V3504 //-V3504
 
     private:
         BufferQueue& mBufferQueue;

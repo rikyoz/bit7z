@@ -28,7 +28,7 @@ STDMETHODIMP CRawOutStream::Write( const void* data, UInt32 size, UInt32* proces
         return S_OK;
     }
 
-    bool callbackResult = mOutputCallback( static_cast< const byte_t* >( data ), size );
+    bool callbackResult = mOutputCallback( static_cast< const byte_t* >( data ), size ); //-V2571
 
     if ( processedSize != nullptr ) {
         *processedSize = size;
