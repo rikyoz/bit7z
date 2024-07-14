@@ -261,6 +261,13 @@ void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint3
     extractArchive( indices, callback, NAskMode::kExtract );
 }
 
+void BitInputArchive::extractTo( const tstring& outDir, RenameCallback renameCallback ) const {
+    auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this,
+                                                                             outDir,
+                                                                             std::move( renameCallback ) );
+    extractArchive( {}, callback, NAskMode::kExtract );
+}
+
 void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
     if ( isInvalidIndex( index ) ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),

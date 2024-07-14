@@ -25,7 +25,9 @@ class BitInputArchive;
 
 class FileExtractCallback final : public ExtractCallback {
     public:
-        FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath );
+        FileExtractCallback( const BitInputArchive& inputArchive,
+                             const tstring& directoryPath,
+                             RenameCallback callback = {} );
 
         FileExtractCallback( const FileExtractCallback& ) = delete;
 
@@ -42,6 +44,7 @@ class FileExtractCallback final : public ExtractCallback {
         fs::path mDirectoryPath;  // Output directory
         fs::path mFilePathOnDisk; // Full path to the file on disk
         bool mRetainDirectories;
+        RenameCallback mRenameCallback;
 
         ProcessedItem mCurrentItem;
 

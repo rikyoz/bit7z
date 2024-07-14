@@ -29,11 +29,14 @@ using namespace NWindows;
 
 namespace bit7z {
 
-FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath )
+FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
+                                          const tstring& directoryPath,
+                                          RenameCallback callback )
     : ExtractCallback( inputArchive ),
       mInFilePath( tstring_to_path( inputArchive.archivePath() ) ),
       mDirectoryPath( tstring_to_path( directoryPath ) ),
-      mRetainDirectories( inputArchive.handler().retainDirectories() ) {}
+      mRetainDirectories( inputArchive.handler().retainDirectories() ),
+      mRenameCallback{ std::move( callback ) } {}
 
 void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time.
@@ -90,6 +93,24 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
+
+    if ( mRenameCallback ) {
+        // Here we don't use the path_to_tstring function to avoid allocating a string object
+        // when using BIT7Z_USE_NATIVE_STRING.
+#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
+        const auto& filePathString = filePath.native();
+#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+        const auto filePathString = filePath.u8string();
+#else
+        const auto& nativePath = filePath.native();
+        const auto filePathString = narrow( nativePath.c_str(), nativePath.size() );
+#endif
+        filePath = tstring_to_path( mRenameCallback( index, filePathString ) );
+    }
+
+    if ( filePath.empty() ) {
+        return S_OK;
+    }
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
     mFilePathOnDisk = mDirectoryPath / filesystem::fsutil::sanitize_path( filePath );
 #else
@@ -106,7 +127,7 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
         if ( mHandler.fileCallback() ) {
             // Here we don't use the path_to_tstring function to avoid allocating a string object
             // when using BIT7Z_USE_NATIVE_STRING.
-#if defined( BIT7Z_USE_NATIVE_STRING )
+#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
             const auto& filePathString = filePath.native();
 #elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
             const auto filePathString = filePath.u8string();

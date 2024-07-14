@@ -13,6 +13,7 @@
 #include <catch2/catch.hpp>
 
 #include "utils/archive.hpp"
+#include "utils/crc.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
@@ -664,3 +665,68 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
 }
 
 #endif
+
+TEMPLATE_TEST_CASE( "BitArchiveReader: Renaming the files being extracted using a RenameCallback",
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        TempTestDirectory testOutDir{ "test_bitarchivereader" };
+        info.extractTo( testOutDir, []( std::uint32_t, const tstring& originalName ) -> tstring {
+            if ( originalName == italy.name ) {
+                return BIT7Z_STRING( "flag.svg" ); // Rename.
+            }
+            if ( originalName == loremIpsum.name ) {
+                return BIT7Z_STRING( "document.pdf" ); // Rename.
+            }
+            if ( originalName == noext.name ) {
+                return originalName; // Keep the original name.
+            }
+            return {}; // Skipping extraction of all other files.
+        } );
+        REQUIRE_FALSE( fs::exists( italy.name ) );
+        REQUIRE_FALSE( fs::exists( loremIpsum.name ) );
+        REQUIRE_FALSE( fs::exists( dotFolder.name ) );
+        REQUIRE_FALSE( fs::exists( emptyFolder.name ) );
+        REQUIRE_FALSE( fs::exists( folder.name ) );
+
+        auto iterator = fs::directory_iterator{ testOutDir.path() };
+        int fileCount = std::count_if(
+            fs::begin( iterator ),
+            fs::end( iterator ),
+            []( const fs::directory_entry& entry ) { return entry.is_regular_file(); }
+        );
+        REQUIRE( fileCount == 3 );
+        REQUIRE( fs::exists( "flag.svg" ) );
+        REQUIRE( fs::exists( "document.pdf" ) );
+        REQUIRE( fs::exists( "noext" ) );
+
+        auto buffer = load_file( "flag.svg" );
+        REQUIRE( crc32(  buffer ) == italy.crc32 );
+
+        buffer = load_file( "document.pdf" );
+        REQUIRE( crc32( buffer ) == loremIpsum.crc32 );
+
+        buffer = load_file( "noext" );
+        REQUIRE( crc32( buffer ) == noext.crc32 );
+
+        REQUIRE( fs::remove( "flag.svg" ) );
+        REQUIRE( fs::remove( "document.pdf" ) );
+        REQUIRE( fs::remove( "noext" ) );
+    }
+}

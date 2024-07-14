@@ -165,6 +165,21 @@ class BitInputArchive {
          */
         void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const;
 
+        /**
+         * @brief Extracts the archive to the chosen directory,
+         * specifying the names of the extracted items via a RenameCallback.
+         *
+         * @note The callback provides in input the index, and the path (within the archive)
+         * of the item to be extracted, and must return the new path that the extracted item
+         * must have on the filesystem.
+         * If the path of the item must not change, simply return the input path in the callback.
+         * If the item must not be extracted, return an empty string in the callback.
+         *
+         * @param outDir            the output directory where the extracted files will be put.
+         * @param renameCallback    the callback that returns the names for the extracted files.
+         */
+        void extractTo( const tstring& outDir, RenameCallback renameCallback ) const;
+
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {
             extractTo( outBuffer, index );

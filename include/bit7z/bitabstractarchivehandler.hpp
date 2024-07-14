@@ -52,7 +52,12 @@ using PasswordCallback = std::function< tstring() >;
 /**
  * @brief A function providing the raw extracted data and its size to the user.
  */
-using RawDataCallback = std::function< bool(const byte_t*, std::size_t) >;
+using RawDataCallback = std::function< bool( const byte_t*, std::size_t ) >;
+
+/**
+ * @brief A function returning a new name for the item currently being extracted.
+ */
+using RenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
 
 /**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
