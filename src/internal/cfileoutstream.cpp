@@ -32,7 +32,11 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
         }
         throw BitException( "Failed to create the output file", error, path_to_tstring( mFilePath ) );
     }
+
+#ifdef __GLIBCXX__
     mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );
+#endif
+
     mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
 #if defined( __MINGW32__ ) || defined( __MINGW64__ )
@@ -42,6 +46,10 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
         throw BitException( "Failed to open the output file", last_error_code(), path_to_tstring( mFilePath ) );
 #endif
     }
+
+#ifndef __GLIBCXX__
+    mFileStream.rdbuf()->pubsetbuf( mBuffer.data(), kBufferSize );
+#endif
 }
 
 auto CFileOutStream::fail() const -> bool {
