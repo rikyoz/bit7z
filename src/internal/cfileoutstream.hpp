@@ -31,9 +31,6 @@ class CFileOutStream : public CStdOutStream {
     private:
         fs::path mFilePath;
         fs::ofstream mFileStream;
-
-        static constexpr auto kBufferSize = 1024 * 1024; // 1 MiB
-        std::array< char, kBufferSize > mBuffer;
 };
 
 }  // namespace bit7z
