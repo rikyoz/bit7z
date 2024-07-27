@@ -33,6 +33,9 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
         throw BitException( "Failed to create the output file", error, path_to_tstring( mFilePath ) );
     }
 
+    /* Disabling std::ofstream's buffering, as unbuffered IO gives better performance
+     * with the data block sizes written by 7-Zip.
+     * Note: we need to do this before and after opening the file (https://stackoverflow.com/a/59161297/3497024). */
     mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
     mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
     if ( mFileStream.fail() ) {
