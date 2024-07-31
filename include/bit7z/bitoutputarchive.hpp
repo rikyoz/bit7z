@@ -186,9 +186,9 @@ class BitOutputArchive {
                        bool recursive = true );
 
         /**
-         * @brief Adds all the items inside the given directory path.
+         * @brief Adds the given directory path and all its content.
          *
-         * @param inDir the directory where to search for items to be added to the output archive.
+         * @param inDir the path of the directory to be added to the archive.
          */
         void addDirectory( const tstring& inDir );
 
