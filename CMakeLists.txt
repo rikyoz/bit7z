@@ -81,6 +81,7 @@ set( HEADERS
      src/internal/extractcallback.hpp
      src/internal/failuresourcecategory.hpp
      src/internal/fileextractcallback.hpp
+     src/internal/filehandle.cpp
      src/internal/fixedbufferextractcallback.hpp
      src/internal/formatdetect.hpp
      src/internal/fsindexer.hpp
@@ -155,6 +156,7 @@ set( SOURCES
      src/internal/extractcallback.cpp
      src/internal/failuresourcecategory.cpp
      src/internal/fileextractcallback.cpp
+     src/internal/filehandle.cpp
      src/internal/fixedbufferextractcallback.cpp
      src/internal/formatdetect.cpp
      src/internal/fsindexer.cpp

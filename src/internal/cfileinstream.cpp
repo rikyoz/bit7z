@@ -12,34 +12,26 @@
 
 #include "internal/cfileinstream.hpp"
 
-#include "bitexception.hpp"
-#include "internal/cstdinstream.hpp"
-#include "internal/fs.hpp"
-#include "internal/stringutil.hpp"
-
-#include <ios>
-
 namespace bit7z {
 
-CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ) {
-    /* Disabling std::ifstream's buffering, as unbuffered IO gives better performance
-     * with the data block sizes read by 7-Zip.
-     * Note: we need to do this before and after opening the file (https://stackoverflow.com/a/59161297/3497024). */
-    mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
-    openFile( filePath );
-    mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
+CFileInStream::CFileInStream( const fs::path& filePath ) : mFile{ filePath } {}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CFileInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+    if ( processedSize != nullptr ) {
+        *processedSize = 0;
+    }
+
+    if ( size == 0 ) {
+        return S_OK;
+    }
+
+    return mFile.read( data, size, processedSize );
 }
 
-void CFileInStream::openFile( const fs::path& filePath ) {
-    mFileStream.open( filePath, std::ios::in | std::ios::binary ); // flawfinder: ignore
-    if ( mFileStream.fail() ) {
-#if defined( __MINGW32__ ) || defined( __MINGW64__ )
-        std::error_code error{ errno, std::generic_category() };
-        throw BitException( "Failed to open the archive file", error, path_to_tstring( filePath ) );
-#else
-        throw BitException( "Failed to open the archive file", last_error_code(), path_to_tstring( filePath ) );
-#endif
-    }
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CFileInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    return mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, newPosition );
 }
 
 } // namespace bit7z

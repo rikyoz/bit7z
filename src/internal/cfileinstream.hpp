@@ -10,21 +10,41 @@
 #ifndef CFILEINSTREAM_HPP
 #define CFILEINSTREAM_HPP
 
-#include "internal/cstdinstream.hpp"
+#include "bitexception.hpp"
+#include "internal/com.hpp"
+#include "internal/filehandle.hpp"
 #include "internal/fs.hpp"
+#include "internal/guids.hpp"
+#include "internal/macros.hpp"
 
-#include <array>
+#include <7zip/IStream.h>
 
 namespace bit7z {
 
-class CFileInStream : public CStdInStream {
+class CFileInStream : public IInStream, public CMyUnknownImp {
     public:
         explicit CFileInStream( const fs::path& filePath );
 
-        void openFile( const fs::path& filePath );
+        CFileInStream( const CFileInStream& ) = delete;
+
+        CFileInStream( CFileInStream&& ) = delete;
+
+        auto operator=( const CFileInStream& ) -> CFileInStream& = delete;
+
+        auto operator=( CFileInStream&& ) -> CFileInStream& = delete;
+
+        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CFileInStream() ) = default;
+
+        // IInStream
+        BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
+
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+
+        // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
 
     private:
-        fs::ifstream mFileStream;
+        InputFile mFile;
 };
 
 }  // namespace bit7z
