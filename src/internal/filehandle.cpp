@@ -29,6 +29,11 @@ constexpr auto read = &_read;
 #endif
 #else
 #include <unistd.h>
+
+#if defined( __APPLE__ ) || defined( BSD ) || \
+    defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
+constexpr auto lseek64 = &lseek;
+#endif
 #endif
 
 namespace bit7z {
