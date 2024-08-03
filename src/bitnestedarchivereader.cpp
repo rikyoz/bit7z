@@ -21,7 +21,8 @@
 
 #ifdef _WIN32
 #include <windows.h>
-#elif defined( __APPLE__ )
+#elif defined( __APPLE__ ) || defined( BSD ) || \
+      defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
 #include <sys/types.h>
 #include <sys/sysctl.h>
 #else
@@ -49,7 +50,8 @@ auto get_free_ram() -> std::uint64_t {
     memStatus.dwLength = sizeof(MEMORYSTATUS);
     ::GlobalMemoryStatus(&memStatus);
     return memStatus.dwAvailPhys;
-#elif defined( __APPLE__ )
+#elif defined( __APPLE__ ) || defined( BSD ) || \
+      defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
     static int mib[] = { CTL_HW, HW_USERMEM };
     std::uint64_t value = 0;
     std::size_t length = sizeof( value );
