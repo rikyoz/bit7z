@@ -29,6 +29,7 @@ constexpr auto read = &_read;
 #endif
 #else
 #include <unistd.h>
+#include <sys/stat.h> // For S_IRUSR and S_IWUSR
 
 #if defined( __APPLE__ ) || defined( BSD ) || \
     defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
