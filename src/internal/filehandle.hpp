@@ -17,8 +17,8 @@
 #include <Common/MyTypes.h> // For 7-Zip integer types
 
 #include <cstdint>
-#include <cstdio>
 #include <fcntl.h>
+#include <sys/stat.h> // For S_IRUSR and S_IWUSR
 
 namespace bit7z {
 
