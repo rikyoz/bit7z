@@ -18,7 +18,7 @@
 
 #include <cstdint>
 #include <fcntl.h>
-#include <sys/stat.h> // For S_IRUSR and S_IWUSR
+#include <sys/stat.h> // For S_IRUSR and S_IWUSR (POSIX) or _S_IREAD and _S_IWRITE (Windows)
 
 namespace bit7z {
 

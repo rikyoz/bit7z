@@ -17,14 +17,13 @@
 
 #ifdef _WIN32
 #include <io.h>
+#include <share.h> // For _SH_DENYNO
 
 #if !defined( __MINGW32__ ) && !defined( __MINGW64__ )
 constexpr auto close = &_close;
 constexpr auto lseek64 = &_lseeki64;
 constexpr auto write = &_write;
 constexpr auto read = &_read;
-#else
-#include <share.h> // For _SH_DENYNO
 #endif
 #else
 #include <unistd.h>
