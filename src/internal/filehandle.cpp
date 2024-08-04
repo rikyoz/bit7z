@@ -15,7 +15,6 @@
 #include "bitexception.hpp"
 #include "internal/stringutil.hpp"
 
-#include <fcntl.h>
 #ifdef _WIN32
 #include <io.h>
 
@@ -47,7 +46,27 @@ inline auto errno_as_hresult() -> HRESULT {
 #endif
 }
 
-FileHandle::FileHandle( const handle_t handle ) : mHandle{ handle } {}
+inline auto open_file( const fs::path& filePath, OpenFlags openFlags, PermissionFlag permissionFlag ) -> handle_t {
+#ifdef _WIN32
+    handle_t handle = -1;
+    const errno_t result = _wsopen_s( &handle,
+                                      filePath.c_str(),
+                                      to_underlying( openFlags ),
+                                      _SH_DENYNO,
+                                      to_underlying( permissionFlag ) );
+    if ( result != 0 ) {
+#else
+    // NOLINTNEXTLINE(*-vararg)
+    handle_t handle = open( filePath.c_str(), to_underlying( openFlags ), to_underlying( permissionFlag ) );
+    if ( handle < 0 ) {
+#endif
+        throw BitException( "Could not open the file", make_hresult_code( errno_as_hresult() ) );
+    }
+    return handle;
+}
+
+FileHandle::FileHandle( const fs::path& filePath, OpenFlags openFlags, PermissionFlag permissionFlag )
+    : mHandle{open_file( filePath, openFlags, permissionFlag ) } {}
 
 FileHandle::~FileHandle() {
     close( mHandle );
@@ -64,38 +83,10 @@ auto FileHandle::seek( SeekOrigin origin, const Int64 distance, UInt64* newPosit
     return S_OK;
 }
 
-inline auto openOutputFile( const fs::path& filePath, const bool createAlways ) -> handle_t {
-    std::error_code error;
-    if ( !createAlways && fs::exists( filePath, error ) ) {
-        if ( !error ) {
-            // The call to fs::exists succeeded, but the filePath exists, and this is an error.
-            error = std::make_error_code( std::errc::file_exists );
-        }
-        throw BitException( "Failed to create the output file", error, path_to_tstring( filePath ) );
-    }
-
-#ifdef _WIN32
-    handle_t handle = -1;
-    const errno_t result = _wsopen_s( &handle,
-                                      filePath.c_str(),
-                                      _O_WRONLY | _O_CREAT | _O_TRUNC | _O_BINARY,
-                                      _SH_DENYNO,
-                                      _S_IREAD | _S_IWRITE );
-    if ( result != 0 ) {
-        const auto errorValue = HRESULT_FROM_WIN32( _doserrno );
-        throw BitException( "Could not open the input file", make_hresult_code( errorValue ) );
-    }
-#else
-    handle_t handle = open( filePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR | S_IWUSR ); // NOLINT(*-vararg)
-    if ( handle < 0 ) {
-        throw BitException( "Could not open the output file", last_error_code() );
-    }
-#endif
-    return handle;
-}
-
 OutputFile::OutputFile( const fs::path& filePath, const bool createAlways )
-    : FileHandle{ openOutputFile( filePath, createAlways ) } {}
+    : FileHandle{ filePath,
+                  AccessFlag::WriteOnly | ( createAlways ? FileFlag::CreateAlways : FileFlag::CreateNew ),
+                  PermissionFlag::ReadWrite } {}
 
 auto OutputFile::write( const void* data, const UInt32 size, UInt32* processedSize ) const noexcept -> HRESULT {
     const auto result = ::write( mHandle, data, size );
@@ -111,28 +102,11 @@ auto OutputFile::write( const void* data, const UInt32 size, UInt32* processedSi
     return S_OK;
 }
 
-inline auto openInputFile( const fs::path& filePath ) -> handle_t {
-#ifdef _WIN32
-    handle_t handle = -1;
-    const errno_t result = _wsopen_s( &handle,
-                                      filePath.c_str(),
-                                      _O_RDONLY | _O_BINARY,
-                                      _SH_DENYNO,
-                                      _S_IREAD );
-    if ( result != 0 ) {
-        const auto error = HRESULT_FROM_WIN32( _doserrno );
-        throw BitException( "Could not open the input file", make_hresult_code( error ) );
-    }
-#else
-    handle_t handle = open( filePath.c_str(), O_RDONLY ); // NOLINT(*-vararg)
-    if ( handle < 0 ) {
-        throw BitException( "Could not open the input file", last_error_code() );
-    }
-#endif
-    return handle;
-}
+// Guaranteeing that the input file open flags are calculated at compile time.
+constexpr auto openInputFlags = AccessFlag::ReadOnly | FileFlag::Existing;
 
-InputFile::InputFile( const fs::path& filePath ) : FileHandle{ openInputFile( filePath ) } {}
+InputFile::InputFile( const fs::path& filePath )
+    : FileHandle{ filePath, openInputFlags, PermissionFlag::Read } {}
 
 auto InputFile::read( void* data, const UInt32 size, UInt32* processedSize ) const noexcept -> HRESULT {
     const auto result = ::read( mHandle, data, size );

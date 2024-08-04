@@ -10,6 +10,7 @@
 #ifndef FILEHANDLE_HPP
 #define FILEHANDLE_HPP
 
+#include "bittypes.hpp" // For to_underlying
 #include "bitwindows.hpp" // For HRESULT
 #include "internal/fs.hpp"
 
@@ -17,22 +18,96 @@
 
 #include <cstdint>
 #include <cstdio>
+#include <fcntl.h>
 
 namespace bit7z {
 
 using handle_t = int;
 
-enum class SeekOrigin : std::uint8_t {
+enum struct SeekOrigin : std::int8_t {
+    /** Set the file pointer at the given offset from the beginning of the file. */
     Begin = SEEK_SET,
+
+    /** Set the file pointer at the given offset from the current file pointer position. */
     CurrentPosition = SEEK_CUR,
+
+    /** Set the file pointer at the given offset from the end of the file. */
     End = SEEK_END
+};
+
+#ifdef _WIN32
+#define O_FLAG(flag) _O_##flag
+
+#ifndef S_IRUSR
+constexpr std::uint16_t S_IRUSR = _S_IREAD;
+#endif
+#ifndef S_IWUSR
+constexpr std::uint16_t S_IWUSR = _S_IWRITE;
+#endif
+#else
+#define O_FLAG(flag) O_##flag
+
+constexpr std::uint16_t O_BINARY = 0;
+#endif
+
+enum struct AccessFlag : std::uint8_t {
+    /** Open a file only for reading. */
+    ReadOnly = O_FLAG( RDONLY ),
+
+    /** Open a file only for writing. */
+    WriteOnly = O_FLAG( WRONLY ),
+
+    /** Open a file for both reading and writing. */
+    ReadWrite = O_FLAG( RDWR )
+};
+
+enum struct FileFlag : std::uint16_t {
+    /** Open a file only if it already exists, fail otherwise. */
+    Existing = O_FLAG( BINARY ),
+
+    /** Open a file only if it already exists, truncating it to zero bytes. */
+    TruncateExisting = O_FLAG( TRUNC ) | O_FLAG( BINARY ),
+
+    /** Open a file only if it already exists, setting the file pointer to the end of the file. */
+    AppendExisting = O_FLAG( APPEND ) | O_FLAG( BINARY ),
+
+    /** Create a new file if it doesn't exist, fail otherwise. */
+    CreateNew = O_FLAG( CREAT ) | O_FLAG( EXCL ) | O_FLAG( BINARY ),
+
+    /** Open a file, creating it if it doesn't exist. */
+    OpenAlways = O_FLAG( CREAT ) | O_FLAG( BINARY ),
+
+    /** Open a file, creating it if it doesn't exist, truncating it if it already exists. */
+    CreateAlways = O_FLAG( CREAT ) | O_FLAG( TRUNC ) | O_FLAG( BINARY ),
+
+    /** Open a file, creating it if it doesn't exist, setting the file pointer to the end of the file. */
+    AppendAlways = O_FLAG( CREAT ) | O_FLAG( APPEND ) | O_FLAG( BINARY ),
+};
+
+/** Strong typedef for the POSIX open flags. */
+enum struct OpenFlags : std::uint16_t {};
+
+/** Open flags can be created only by concatenating access and file flags. */
+constexpr auto operator|( AccessFlag accessFlag, FileFlag fileFlag ) -> OpenFlags {
+    return static_cast< OpenFlags >( to_underlying( accessFlag ) | to_underlying( fileFlag ) );
+}
+
+enum struct PermissionFlag : std::uint16_t {
+    /** The user will be able to read the file. */
+    Read = S_IRUSR,
+
+    /** The user will be able to write to the file. */
+    Write = S_IWUSR,
+
+    /** The user will be able to read and write the file. */
+    ReadWrite = S_IRUSR | S_IWUSR
 };
 
 class FileHandle {
     protected:
         handle_t mHandle{ -1 };
 
-        explicit FileHandle( handle_t handle );
+        explicit FileHandle( const fs::path& filePath, OpenFlags openFlags, PermissionFlag permissionFlag );
 
     public:
         explicit FileHandle( const FileHandle& ) = delete;
