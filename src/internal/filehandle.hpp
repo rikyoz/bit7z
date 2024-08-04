@@ -105,7 +105,7 @@ enum struct PermissionFlag : std::uint16_t {
 
 class FileHandle {
     protected:
-        handle_t mHandle{ -1 };
+        handle_t mHandle; // NOLINT(*-non-private-member-variables-in-classes)
 
         explicit FileHandle( const fs::path& filePath, OpenFlags openFlags, PermissionFlag permissionFlag );
 
