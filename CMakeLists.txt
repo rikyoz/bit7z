@@ -81,7 +81,7 @@ set( HEADERS
      src/internal/extractcallback.hpp
      src/internal/failuresourcecategory.hpp
      src/internal/fileextractcallback.hpp
-     src/internal/filehandle.cpp
+     src/internal/filehandle.hpp
      src/internal/fixedbufferextractcallback.hpp
      src/internal/formatdetect.hpp
      src/internal/fsindexer.hpp
