@@ -56,12 +56,15 @@ inline auto open_file( const fs::path& filePath, OpenFlags openFlags, Permission
                                       _SH_DENYNO,
                                       to_underlying( permissionFlag ) );
     if ( result != 0 ) {
+        std::error_code error = make_hresult_code( HRESULT_FROM_WIN32( _doserrno ) );
 #else
     // NOLINTNEXTLINE(*-vararg)
     handle_t handle = open( filePath.c_str(), to_underlying( openFlags ), to_underlying( permissionFlag ) );
     if ( handle < 0 ) {
+        // Here we can directly use the POSIX error instead of converting it to HRESULT.
+        std::error_code error = last_error_code();
 #endif
-        throw BitException( "Could not open the file", make_hresult_code( errno_as_hresult() ) );
+        throw BitException( "Could not open the file", error );
     }
     return handle;
 }
