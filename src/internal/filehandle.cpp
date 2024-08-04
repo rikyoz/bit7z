@@ -38,6 +38,8 @@ constexpr auto lseek64 = &lseek;
 
 namespace bit7z {
 
+namespace {
+
 inline auto errno_as_hresult() -> HRESULT {
 #ifdef _WIN32
     return HRESULT_FROM_WIN32( _doserrno );
@@ -65,8 +67,10 @@ inline auto open_file( const fs::path& filePath, OpenFlags openFlags, Permission
     return handle;
 }
 
+} // namespace
+
 FileHandle::FileHandle( const fs::path& filePath, OpenFlags openFlags, PermissionFlag permissionFlag )
-    : mHandle{open_file( filePath, openFlags, permissionFlag ) } {}
+    : mHandle{ open_file( filePath, openFlags, permissionFlag ) } {}
 
 FileHandle::~FileHandle() {
     close( mHandle );
