@@ -48,7 +48,7 @@ struct StringTraits;
 template<>
 struct StringTraits< char > {
     template< class T >
-    static inline auto convertToString( T value ) -> std::string {
+    static auto convertToString( T value ) -> std::string {
         return std::to_string( value );
     }
 };
@@ -56,7 +56,7 @@ struct StringTraits< char > {
 template<>
 struct StringTraits< wchar_t > {
     template< class T >
-    static inline auto convertToString( T value ) -> std::wstring {
+    static auto convertToString( T value ) -> std::wstring {
         return std::to_wstring( value );
     }
 };
