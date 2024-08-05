@@ -18,19 +18,12 @@
 #ifdef _WIN32
 #include <io.h>
 #include <share.h> // For _SH_DENYNO
-
-#if !defined( __MINGW32__ ) && !defined( __MINGW64__ )
-constexpr auto close = &_close;
-constexpr auto lseek64 = &_lseeki64;
-constexpr auto write = &_write;
-constexpr auto read = &_read;
-#endif
 #else
 #include <unistd.h>
 
 #if defined( __APPLE__ ) || defined( BSD ) || \
     defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
-constexpr auto lseek64 = &lseek;
+#define NO_LSEEK64
 #endif
 #endif
 
@@ -74,11 +67,21 @@ FileHandle::FileHandle( const fs::path& filePath, OpenFlags openFlags, Permissio
     : mHandle{ open_file( filePath, openFlags, permissionFlag ) } {}
 
 FileHandle::~FileHandle() {
+#ifdef _WIN32
+    _close( mHandle );
+#else
     close( mHandle );
+#endif
 }
 
 auto FileHandle::seek( SeekOrigin origin, const Int64 distance, UInt64* newPosition ) const noexcept -> HRESULT {
+#ifdef _WIN32
+    const auto result = _lseeki64( mHandle, distance, static_cast< int >( origin ) );
+#elif defined( NO_LSEEK64 )
+    const auto result = lseek( mHandle, distance, static_cast< int >( origin ) );
+#else
     const auto result = lseek64( mHandle, distance, static_cast< int >( origin ) );
+#endif
     if ( result < 0 ) {
         return errno_as_hresult();
     }
@@ -94,7 +97,11 @@ OutputFile::OutputFile( const fs::path& filePath, const bool createAlways )
                   PermissionFlag::ReadWrite } {}
 
 auto OutputFile::write( const void* data, const UInt32 size, UInt32* processedSize ) const noexcept -> HRESULT {
+#ifdef _WIN32
+    const auto result = _write( mHandle, data, size );
+#else
     const auto result = ::write( mHandle, data, size );
+#endif
     if ( result < 0 ) {
         if ( processedSize != nullptr ) {
             *processedSize = 0;
@@ -114,7 +121,11 @@ InputFile::InputFile( const fs::path& filePath )
     : FileHandle{ filePath, openInputFlags, PermissionFlag::Read } {}
 
 auto InputFile::read( void* data, const UInt32 size, UInt32* processedSize ) const noexcept -> HRESULT {
+#ifdef _WIN32
+    const auto result = _read( mHandle, data, size );
+#else
     const auto result = ::read( mHandle, data, size );
+#endif
     if ( result < 0 ) {
         if ( processedSize != nullptr ) {
             *processedSize = 0;
