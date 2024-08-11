@@ -104,6 +104,21 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          */
         void compressDirectory( const tstring& inDir, const tstring& outFile ) const;
 
+        /**
+         * @brief Compresses the contents of a directory.
+         *
+         * @note Unlike compressFiles, this method includes also the metadata of the sub-folders.
+         *
+         * @param inDir        the path (relative or absolute) to the input directory.
+         * @param outFile      the path (relative or absolute) to the output archive file.
+         * @param recursive    (optional) if true, it searches the contents inside the sub-folders of inDir.
+         * @param filter       (optional) the filter to use when searching the contents inside inDir.
+         */
+        void compressDirectoryContents( const tstring& inDir,
+                                        const tstring& outFile,
+                                        bool recursive = true,
+                                        const tstring& filter = BIT7Z_STRING( "*" ) ) const;
+
         /* Compression from the file system to standard streams. */
 
         /**
