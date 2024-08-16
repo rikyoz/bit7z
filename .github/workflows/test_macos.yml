@@ -83,11 +83,11 @@ jobs:
       with:
         xcode-version: '14.3.1'
 
-    - name: Install GCC 14
-      if: ${{ contains(matrix.c_compiler, 'gcc-14') }}
+    - name: Install GCC 11
+      if: ${{ contains(matrix.c_compiler, 'gcc-11') }}
       shell: bash
       run:
-        brew install gcc@14
+        brew install gcc@11
 
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
