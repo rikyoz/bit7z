@@ -70,6 +70,18 @@ void BitFileCompressor::compressDirectory( const tstring& inDir, const tstring& 
     outputArchive.compressTo( outFile );
 }
 
+void BitFileCompressor::compressDirectoryContents( const tstring& inDir,
+                                                   const tstring& outFile,
+                                                   bool recursive,
+                                                   const tstring& filter ) const {
+    if ( !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+        throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
+    }
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addDirectoryContents( inDir, filter, recursive );
+    outputArchive.compressTo( outFile );
+}
+
 /* from filesystem to stream */
 
 void BitFileCompressor::compress( const std::vector< tstring >& inPaths, std::ostream& outStream ) const {

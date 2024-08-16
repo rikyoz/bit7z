@@ -186,11 +186,42 @@ class BitOutputArchive {
                        bool recursive = true );
 
         /**
-         * @brief Adds all the items inside the given directory path.
+         * @brief Adds the given directory path and all its content.
          *
-         * @param inDir the directory where to search for items to be added to the output archive.
+         * @param inDir the path of the directory to be added to the archive.
          */
         void addDirectory( const tstring& inDir );
+
+        /**
+         * @brief Adds the contents of the given directory path.
+         *
+         * This function iterates through the specified directory and adds its contents
+         * based on the provided wildcard filter. Optionally, the operation can be
+         * recursive, meaning it will include subdirectories and their contents.
+         *
+         * @param inDir     the directory where to search for files to be added to the output archive.
+         * @param filter    the wildcard filter to be used for searching the files.
+         * @param recursive recursively search the files in the given directory and all of its subdirectories.
+         */
+        void addDirectoryContents( const tstring& inDir, const tstring& filter, bool recursive );
+
+        /**
+         * @brief Adds the contents of the given directory path.
+         *
+         * This function iterates through the specified directory and adds its contents
+         * based on the provided wildcard filter and policy. Optionally, the operation can be
+         * recursive, meaning it will include subdirectories and their contents.
+         *
+         * @param inDir     the directory where to search for files to be added to the output archive.
+         * @param filter    (optional) the wildcard filter to be used for searching the files.
+         * @param recursive (optional) recursively search the files in the given directory
+         *                  and all of its subdirectories.
+         * @param policy    (optional) the filtering policy to be applied to the matched items.
+         */
+        void addDirectoryContents( const tstring& inDir,
+                                   const tstring& filter = BIT7Z_STRING( "*" ),
+                                   FilterPolicy policy = FilterPolicy::Include,
+                                   bool recursive = true );
 
         /**
          * @brief Compresses all the items added to this object to the specified archive file path.

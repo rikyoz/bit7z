@@ -13,6 +13,8 @@
 #include "bitexception.hpp"
 #include "internal/fsindexer.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/genericinputitem.hpp"
+#include "internal/stringutil.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
@@ -32,45 +34,51 @@ FilesystemIndexer::FilesystemIndexer( FilesystemItem directory,
     }
 }
 
+namespace {
+inline auto countItemsInPath( const fs::path& path ) -> std::size_t {
+    std::error_code error;
+    auto begin = fs::recursive_directory_iterator{ path, fs::directory_options::skip_permission_denied, error };
+    return error ? 0 : static_cast< std::size_t >( std::distance( begin, fs::recursive_directory_iterator{} ) );
+}
+} // namespace
+
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
-// NOLINTNEXTLINE(misc-no-recursion)
-void FilesystemIndexer::listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
-                                            bool recursive,
-                                            const fs::path& prefix ) {
-    fs::path path = mDirItem.filesystemPath();
-    if ( !prefix.empty() ) {
-        path = path / prefix;
-    }
+void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result,
+                                            bool recursive ) {
     const bool includeRootPath = mFilter.empty() ||
                                  !mDirItem.filesystemPath().has_parent_path() ||
                                  mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
     const bool shouldIncludeMatchedItems = mPolicy == FilterPolicy::Include;
-    std::error_code error;
-    for ( const auto& currentEntry : fs::directory_iterator( path, error ) ) {
-        auto searchPath = includeRootPath ? mDirItem.inArchivePath() : fs::path{};
-        if ( !prefix.empty() ) {
-            searchPath = searchPath.empty() ? prefix : searchPath / prefix;
-        }
 
-        const FilesystemItem currentItem{ currentEntry, searchPath, mSymlinkPolicy };
+    const fs::path basePath = mDirItem.filesystemPath();
+    std::error_code error;
+    result.reserve( result.size() + countItemsInPath( basePath ) );
+    for ( auto iterator = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
+          iterator != fs::recursive_directory_iterator{};
+          ++iterator ) {
+        const auto& currentEntry = *iterator;
+        const auto& itemPath = currentEntry.path();
+
+        const auto itemIsDir = currentEntry.is_directory( error );
+        const auto itemName = path_to_tstring( itemPath.filename() );
+
         /* An item matches if:
          *  - Its name matches the wildcard pattern, and
          *  - Either is a file, or we are interested also to include folders in the index.
          *
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
-        const bool itemMatches = ( !mOnlyFiles || !currentItem.isDir() ) &&
-                                 fsutil::wildcard_match( mFilter, currentItem.name() );
+        const bool itemMatches = ( !mOnlyFiles || !itemIsDir ) && fsutil::wildcard_match( mFilter, itemName );
         if ( itemMatches == shouldIncludeMatchedItems ) {
-            result.emplace_back( std::make_unique< FilesystemItem >( currentItem ) );
+            const auto prefix = fs::relative( itemPath, basePath, error ).remove_filename();
+            const auto searchPath = includeRootPath ? mDirItem.inArchivePath() / prefix : prefix;
+            result.emplace_back( std::make_unique< FilesystemItem >( currentEntry, searchPath, mSymlinkPolicy ) );
         }
 
-        if ( currentItem.isDir() && ( recursive || ( itemMatches == shouldIncludeMatchedItems ) ) ) {
-            //currentItem is a directory, and we must list it only if:
-            // > indexing is done recursively
-            // > indexing is not recursive, but the directory name matched the filter.
-            const fs::path nextDir = prefix.empty() ?
-                                     currentItem.filesystemName() : prefix / currentItem.filesystemName();
-            listDirectoryItems( result, true, nextDir );
+        /* We don't need to recurse inside the current item if:
+         *  - it is not a directory; or
+         *  - we are not indexing recursively, and the directory's name doesn't match the wildcard filter. */
+        if ( !itemIsDir || ( !recursive && ( itemMatches != shouldIncludeMatchedItems ) ) ) {
+            iterator.disable_recursion_pending();
         }
     }
 }

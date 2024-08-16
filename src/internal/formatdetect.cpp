@@ -343,7 +343,9 @@ struct OffsetSignature {
 #elif defined(__GNUC__) || defined(__clang__)
 //Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
 //      for checking the compiler version or using the _has_builtin macro.
+#ifndef bswap64
 #define bswap64 __builtin_bswap64
+#endif
 #else
 static inline uint64_t bswap64( uint64_t x ) {
     return  ((x << 56) & 0xff00000000000000ULL) |

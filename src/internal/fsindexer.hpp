@@ -31,9 +31,7 @@ class FilesystemIndexer final {
                                     SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
                                     bool onlyFiles = false );
 
-        void listDirectoryItems( vector< unique_ptr< GenericInputItem > >& result,
-                                 bool recursive,
-                                 const fs::path& prefix = fs::path{} );
+        void listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result, bool recursive );
 
     private:
         FilesystemItem mDirItem;

@@ -179,7 +179,8 @@ static const mode_t global_umask = []() noexcept -> mode_t {
 #endif
 
 #ifndef _WIN32
-#ifdef __APPLE__
+#if defined( __APPLE__ ) || defined( BSD ) || \
+    defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
 using stat_t = struct stat;
 const auto os_lstat = &lstat;
 const auto os_stat = &stat;

@@ -132,6 +132,23 @@ void BitOutputArchive::addDirectory( const tstring& inDir ) {
     mNewItemsVector.indexDirectory( tstring_to_path( inDir ), BIT7Z_STRING( "" ), FilterPolicy::Include, options );
 }
 
+void BitOutputArchive::addDirectoryContents( const tstring& inDir, const tstring& filter, bool recursive ) {
+    addDirectoryContents( inDir, filter, FilterPolicy::Include, recursive );
+}
+
+void BitOutputArchive::addDirectoryContents( const tstring& inDir,
+                                             const tstring& filter,
+                                             FilterPolicy policy,
+                                             bool recursive ) {
+    IndexingOptions options{};
+    options.recursive = recursive;
+    options.onlyFiles = !recursive;
+    options.retainFolderStructure = mArchiveCreator.retainDirectories();
+    options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
+    std::error_code error;
+    mNewItemsVector.indexDirectory( fs::absolute( tstring_to_path( inDir ), error ), filter, policy, options );
+}
+
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
     CMyComPtr< IOutArchive > newArc;
     if ( mInputArchive == nullptr ) {
