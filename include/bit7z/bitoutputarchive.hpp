@@ -193,7 +193,11 @@ class BitOutputArchive {
         void addDirectory( const tstring& inDir );
 
         /**
-         * @brief Adds the contents of the given directory path that match the given wildcard filter.
+         * @brief Adds the contents of the given directory path.
+         *
+         * This function iterates through the specified directory and adds its contents
+         * based on the provided wildcard filter. Optionally, the operation can be
+         * recursive, meaning it will include subdirectories and their contents.
          *
          * @param inDir     the directory where to search for files to be added to the output archive.
          * @param filter    the wildcard filter to be used for searching the files.
@@ -202,7 +206,11 @@ class BitOutputArchive {
         void addDirectoryContents( const tstring& inDir, const tstring& filter, bool recursive );
 
         /**
-         * @brief Adds the contents of the given directory path that match the given wildcard filter.
+         * @brief Adds the contents of the given directory path.
+         *
+         * This function iterates through the specified directory and adds its contents
+         * based on the provided wildcard filter and policy. Optionally, the operation can be
+         * recursive, meaning it will include subdirectories and their contents.
          *
          * @param inDir     the directory where to search for files to be added to the output archive.
          * @param filter    (optional) the wildcard filter to be used for searching the files.
