@@ -5,7 +5,7 @@
 cmake_minimum_required( VERSION 3.14 )
 
 project( bit7z
-         VERSION 4.0.7
+         VERSION 4.0.8
          DESCRIPTION "A C++ static library offering a clean and simple interface to the 7-zip/p7zip shared libraries"
          HOMEPAGE_URL "https://github.com/rikyoz/bit7z/" )
 set( CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON" )
