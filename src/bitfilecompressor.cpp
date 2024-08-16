@@ -73,7 +73,7 @@ void BitFileCompressor::compressDirectory( const tstring& inDir, const tstring& 
 void BitFileCompressor::compressDirectoryContents( const tstring& inDir,
                                                    const tstring& outFile,
                                                    bool recursive,
-                                                   const tstring& filter) const {
+                                                   const tstring& filter ) const {
     if ( !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
