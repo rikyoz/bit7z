@@ -34,11 +34,13 @@ FilesystemIndexer::FilesystemIndexer( FilesystemItem directory,
     }
 }
 
+namespace {
 inline auto countItemsInPath( const fs::path& path ) -> std::size_t {
     std::error_code error;
     auto begin = fs::recursive_directory_iterator{ path, fs::directory_options::skip_permission_denied, error };
     return error ? 0 : static_cast< std::size_t >( std::distance( begin, fs::recursive_directory_iterator{} ) );
 }
+} // namespace
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
 void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result,
@@ -48,7 +50,7 @@ void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< Generi
                                  mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
     const bool shouldIncludeMatchedItems = mPolicy == FilterPolicy::Include;
 
-    fs::path basePath = mDirItem.filesystemPath();
+    const fs::path basePath = mDirItem.filesystemPath();
     std::error_code error;
     result.reserve( result.size() + countItemsInPath( basePath ) );
     for ( auto iterator = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
