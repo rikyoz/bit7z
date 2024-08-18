@@ -18,12 +18,12 @@
 namespace bit7z {
 
 CVolumeOutStream::CVolumeOutStream( const fs::path& volumeName )
-    : CFileOutStream( volumeName ), mCurrentOffset{ 0 }, mCurrentSize{ 0 } {}
+    : CFileOutStream( volumeName ), mCurrentOffset{ 0 }, mCurrentSize{ 0 }, mVolumePath{ volumeName } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     UInt64 pos{};
-    RINOK( CStdOutStream::Seek( offset, seekOrigin, &pos ) ) //-V3504
+    RINOK( CFileOutStream::Seek( offset, seekOrigin, &pos ) ) //-V3504
     mCurrentOffset = pos;
     if ( newPosition != nullptr ) {
         *newPosition = pos;
@@ -38,7 +38,7 @@ STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* pro
     }
 
     UInt32 writtenSize{};
-    RINOK( CStdOutStream::Write( data, size, &writtenSize ) ) //-V3504
+    RINOK( CFileOutStream::Write( data, size, &writtenSize ) ) //-V3504
 
     if ( writtenSize == 0 && size != 0 ) {
         return E_FAIL;
@@ -68,6 +68,10 @@ auto CVolumeOutStream::currentSize() const -> uint64_t {
 
 void CVolumeOutStream::setCurrentSize( uint64_t currentSize ) {
     mCurrentSize = currentSize;
+}
+
+auto CVolumeOutStream::volumePath() const -> const fs::path& {
+    return mVolumePath;
 }
 
 } // namespace bit7z

@@ -14,8 +14,6 @@
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
 
-#include <type_traits>
-
 namespace bit7z {
 
 /**
@@ -30,21 +28,13 @@ enum struct FormatFeatures : unsigned {
     MultipleMethods = 1u << 5   ///< The format can use different compression methods.
 };
 
-template< typename Enum >
-using underlying_type_t = typename std::underlying_type< Enum >::type;
-
-template< typename Enum >
-inline constexpr auto to_underlying( Enum enum_value ) noexcept -> underlying_type_t< Enum > {
-    return static_cast< underlying_type_t< Enum > >( enum_value );
-}
-
-inline constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {
+constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {
     return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
 }
 
 using FormatFeaturesType = underlying_type_t< FormatFeatures >;
 
-inline constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeaturesType {
+constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeaturesType {
     return to_underlying( lhs ) & to_underlying( rhs );
 }
 

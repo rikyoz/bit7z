@@ -12,56 +12,45 @@
 
 #include "internal/cfileoutstream.hpp"
 
-#include "bitexception.hpp"
-#include "internal/cstdoutstream.hpp"
-#include "internal/stringutil.hpp"
-
-#include <ios>
-#include <system_error>
-#include <utility>
-
 namespace bit7z {
 
-CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
-    : CStdOutStream( mFileStream ), mFilePath{ std::move( filePath ) } {
-    std::error_code error;
-    if ( !createAlways && fs::exists( mFilePath, error ) ) {
-        if ( !error ) {
-            // The call to fs::exists succeeded, but the filePath exists, and this is an error.
-            error = std::make_error_code( std::errc::file_exists );
-        }
-        throw BitException( "Failed to create the output file", error, path_to_tstring( mFilePath ) );
+CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways )
+    : mFile( filePath, createAlways ? FileFlag::CreateAlways : FileFlag::CreateNew ), mFilePath{ filePath } {}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CFileOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+    if ( processedSize != nullptr ) {
+        *processedSize = 0;
     }
 
-    /* Disabling std::ofstream's buffering, as unbuffered IO gives better performance
-     * with the data block sizes written by 7-Zip.
-     * Note: we need to do this before and after opening the file (https://stackoverflow.com/a/59161297/3497024). */
-    mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
-    mFileStream.open( mFilePath, std::ios::binary | std::ios::trunc ); // flawfinder: ignore
-    if ( mFileStream.fail() ) {
-#if defined( __MINGW32__ ) || defined( __MINGW64__ )
-        error = std::error_code{ errno, std::generic_category() };
-        throw BitException( "Failed to open the output file", error, path_to_tstring( mFilePath ) );
-#else
-        throw BitException( "Failed to open the output file", last_error_code(), path_to_tstring( mFilePath ) );
-#endif
+    if ( size == 0 ) {
+        return S_OK;
     }
-    mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
+
+    std::uint32_t totalBytesWritten = 0;
+    const auto result = mFile.write( data, size, totalBytesWritten );
+    if ( processedSize != nullptr ) {
+        *processedSize = totalBytesWritten;
+    }
+    return result;
 }
 
-auto CFileOutStream::fail() const -> bool {
-    return mFileStream.fail();
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CFileOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    std::uint64_t finalPosition = 0;
+    const auto result = mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, finalPosition );
+    if ( newPosition != nullptr ) {
+        *newPosition = finalPosition;
+    }
+    return result;
 }
+
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) noexcept {
     std::error_code error;
     fs::resize_file( mFilePath, newSize, error );
     return error ? E_FAIL : S_OK;
-}
-
-auto CFileOutStream::path() const -> const fs::path& {
-    return mFilePath;
 }
 
 } // namespace bit7z

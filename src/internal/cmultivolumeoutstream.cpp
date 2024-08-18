@@ -144,7 +144,7 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
         newSize -= volume->currentSize();
     }
     while ( !mVolumes.empty() ) {
-        const fs::path volumePath = mVolumes.back()->path();
+        const fs::path volumePath = mVolumes.back()->volumePath();
         mVolumes.pop_back();
         std::error_code error;
         fs::remove( volumePath, error );

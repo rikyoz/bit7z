@@ -25,17 +25,24 @@
 
 namespace bit7z {
 
-inline auto load_library( const tstring& libraryPath ) -> LibraryHandle {
+namespace {
+BIT7Z_ALWAYS_INLINE
+auto load_library( const tstring& libraryPath ) -> LibraryHandle {
 #ifdef _WIN32
     LibraryHandle handle = LoadLibraryW( WIDEN( libraryPath ).c_str() );
 #else
     LibraryHandle handle = dlopen( libraryPath.c_str(), RTLD_LAZY );
 #endif
     if ( handle == nullptr ) {
-        throw BitException( "Failed to load the library", ERROR_CODE( std::errc::bad_file_descriptor ) );
+        // Note: MSVC 2015 doesn't correctly get the last error
+        // when inlining the error variable in the BitException constructor call,
+        // so we need to store the error in a separate variable. ¯\_(ツ)_/¯
+        const auto error = ERROR_CODE( std::errc::bad_file_descriptor );
+        throw BitException( "Failed to load the library", error );
     }
     return handle;
 }
+} // namespace
 
 BitSharedLibrary::BitSharedLibrary( const tstring& libraryPath ) : mLibrary{ load_library( libraryPath ) } {}
 

@@ -5,6 +5,8 @@
 # compiler-specific options
 
 if( MSVC )
+    target_compile_definitions( ${LIB_TARGET} PRIVATE _CRT_DECLARE_NONSTDC_NAMES=0 )
+
     # setting a pdb file name for debug builds (otherwise it is not generated!)
     set_target_properties( ${LIB_TARGET} PROPERTIES COMPILE_PDB_NAME_DEBUG ${LIB_TARGET}${CMAKE_DEBUG_POSTFIX} )
 

@@ -118,4 +118,12 @@
 #   endif
 #endif
 
+#if defined( __GNUC__ )
+#   define BIT7Z_ALWAYS_INLINE [[gnu::always_inline]] inline
+#elif defined( _WIN32 )
+#   define BIT7Z_ALWAYS_INLINE __forceinline
+#else
+#   define BIT7Z_ALWAYS_INLINE inline
+#endif
+
 #endif //BITDEFINES_HPP

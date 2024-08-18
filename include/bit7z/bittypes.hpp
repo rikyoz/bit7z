@@ -48,7 +48,7 @@ struct StringTraits;
 template<>
 struct StringTraits< char > {
     template< class T >
-    static inline auto convertToString( T value ) -> std::string {
+    static auto convertToString( T value ) -> std::string {
         return std::to_string( value );
     }
 };
@@ -56,7 +56,7 @@ struct StringTraits< char > {
 template<>
 struct StringTraits< wchar_t > {
     template< class T >
-    static inline auto convertToString( T value ) -> std::wstring {
+    static auto convertToString( T value ) -> std::wstring {
         return std::to_wstring( value );
     }
 };
@@ -127,6 +127,14 @@ auto to_tstring( const native_string& str ) -> tstring;
 #else
 auto to_tstring( const native_string& str ) -> const tstring&;
 #endif
+
+template< typename Enum >
+using underlying_type_t = typename std::underlying_type< Enum >::type;
+
+template< typename Enum >
+constexpr auto to_underlying( Enum enum_value ) noexcept -> underlying_type_t< Enum > {
+    return static_cast< underlying_type_t< Enum > >( enum_value );
+}
 
 }  // namespace bit7z
 

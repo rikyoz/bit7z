@@ -26,6 +26,8 @@ class CVolumeOutStream final : public CFileOutStream {
 
         BIT7Z_NODISCARD auto currentSize() const -> uint64_t;
 
+        BIT7Z_NODISCARD auto volumePath() const -> const fs::path&;
+
         void setCurrentSize( uint64_t currentSize );
 
         // IOutStream
@@ -39,6 +41,8 @@ class CVolumeOutStream final : public CFileOutStream {
         uint64_t mCurrentOffset;
 
         uint64_t mCurrentSize;
+
+        fs::path mVolumePath;
 };
 
 }  // namespace bit7z
