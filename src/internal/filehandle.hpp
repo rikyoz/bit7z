@@ -11,19 +11,28 @@
 #define FILEHANDLE_HPP
 
 #include "bittypes.hpp" // For to_underlying
-#include "bitwindows.hpp" // For HRESULT
 #include "internal/fs.hpp"
-
-#include <Common/MyTypes.h> // For 7-Zip integer types
+#include "internal/windows.hpp" // For HRESULT, GetLastError, and Windows-specific flags
 
 #include <cstdint>
-#include <fcntl.h>
-#include <sys/stat.h> // For S_IRUSR and S_IWUSR (POSIX) or _S_IREAD and _S_IWRITE (Windows)
+
+#ifdef _WIN32
+#include <cstdio> // For SEEK_ flags
+#else
+#include <fcntl.h> // For SEEK_ and O_ flags
+#endif
 
 namespace bit7z {
 
+#ifdef _WIN32
+using handle_t = HANDLE;
+#else
 using handle_t = int;
+#endif
 
+/**
+ * @brief Enumeration defining the origin of a seek operation.
+ */
 enum struct SeekOrigin : std::int8_t {
     /** Set the file pointer at the given offset from the beginning of the file. */
     Begin = SEEK_SET,
@@ -36,78 +45,77 @@ enum struct SeekOrigin : std::int8_t {
 };
 
 #ifdef _WIN32
-#define O_FLAG(flag) _O_##flag
-
-#ifndef S_IRUSR
-constexpr std::uint16_t S_IRUSR = _S_IREAD;
-#endif
-#ifndef S_IWUSR
-constexpr std::uint16_t S_IWUSR = _S_IWRITE;
-#endif
+/**
+ * @brief Enumeration defining the kind of access to be requested when opening a file handle.
+ *
+ *   - ReadOnly → Open a file only for reading.
+ *   - WriteOnly → Open a file only for writing.
+ *   - ReadWrite → Open a file for both reading and writing.
+ */
+enum struct AccessFlag : std::uint32_t {
+    ReadOnly = GENERIC_READ,
+    WriteOnly = GENERIC_WRITE,
+    ReadWrite = GENERIC_READ | GENERIC_WRITE
+};
 #else
-#define O_FLAG(flag) O_##flag
-
-constexpr std::uint16_t O_BINARY = 0;
+enum struct AccessFlag : std::uint8_t {
+    ReadOnly = O_RDONLY,
+    WriteOnly = O_WRONLY,
+    ReadWrite = O_RDWR
+};
 #endif
 
-enum struct AccessFlag : std::uint8_t {
-    /** Open a file only for reading. */
-    ReadOnly = O_FLAG( RDONLY ),
-
-    /** Open a file only for writing. */
-    WriteOnly = O_FLAG( WRONLY ),
-
-    /** Open a file for both reading and writing. */
-    ReadWrite = O_FLAG( RDWR )
+/**
+ * @brief Enumeration representing file opening modes.
+ *
+ *   - Existing → Open a file only if it already exists, fail otherwise.
+ *   - TruncateExisting → Open a file only if it already exists, truncating it to zero bytes.
+ *   - CreateNew → Create a new file if it doesn't exist, fail otherwise.
+ *   - OpenAlways → Open a file, creating it if it doesn't exist.
+ *   - CreateAlways → Open a file, creating it if it doesn't exist, truncating it otherwise.
+ */
+#ifdef _WIN32
+enum struct FileFlag : std::uint8_t {
+    Existing = OPEN_EXISTING,
+    TruncateExisting = TRUNCATE_EXISTING,
+    CreateNew = CREATE_NEW,
+    OpenAlways = OPEN_ALWAYS,
+    CreateAlways = CREATE_ALWAYS
 };
-
+#else
 enum struct FileFlag : std::uint16_t {
-    /** Open a file only if it already exists, fail otherwise. */
-    Existing = O_FLAG( BINARY ),
-
-    /** Open a file only if it already exists, truncating it to zero bytes. */
-    TruncateExisting = O_FLAG( TRUNC ) | O_FLAG( BINARY ),
-
-    /** Open a file only if it already exists, setting the file pointer to the end of the file. */
-    AppendExisting = O_FLAG( APPEND ) | O_FLAG( BINARY ),
-
-    /** Create a new file if it doesn't exist, fail otherwise. */
-    CreateNew = O_FLAG( CREAT ) | O_FLAG( EXCL ) | O_FLAG( BINARY ),
-
-    /** Open a file, creating it if it doesn't exist. */
-    OpenAlways = O_FLAG( CREAT ) | O_FLAG( BINARY ),
-
-    /** Open a file, creating it if it doesn't exist, truncating it if it already exists. */
-    CreateAlways = O_FLAG( CREAT ) | O_FLAG( TRUNC ) | O_FLAG( BINARY ),
-
-    /** Open a file, creating it if it doesn't exist, setting the file pointer to the end of the file. */
-    AppendAlways = O_FLAG( CREAT ) | O_FLAG( APPEND ) | O_FLAG( BINARY ),
+    Existing = 0,
+    TruncateExisting = O_TRUNC,
+    CreateNew = O_CREAT | O_EXCL,
+    OpenAlways = O_CREAT,
+    CreateAlways = O_CREAT | O_TRUNC
 };
+#endif
 
-/** Strong typedef for the POSIX open flags. */
-enum struct OpenFlags : std::uint16_t {};
+struct OpenFlags {
+#ifdef _WIN32
+    AccessFlag accessFlag;
+    FileFlag fileFlag;
+#else
+    private:
+        std::uint16_t mValue;
 
-/** Open flags can be created only by concatenating access and file flags. */
-constexpr auto operator|( AccessFlag accessFlag, FileFlag fileFlag ) -> OpenFlags {
-    return static_cast< OpenFlags >( to_underlying( accessFlag ) | to_underlying( fileFlag ) );
-}
+    public:
+        constexpr OpenFlags( AccessFlag accessFlag, FileFlag fileFlag ) noexcept
+            : mValue{ static_cast< std::uint16_t >( to_underlying( accessFlag ) | to_underlying( fileFlag ) ) } {}
 
-enum struct PermissionFlag : std::uint16_t {
-    /** The user will be able to read the file. */
-    Read = S_IRUSR,
-
-    /** The user will be able to write to the file. */
-    Write = S_IWUSR,
-
-    /** The user will be able to read and write the file. */
-    ReadWrite = S_IRUSR | S_IWUSR
+        BIT7Z_NODISCARD
+        constexpr auto value() const noexcept -> std::uint16_t {
+            return mValue;
+        }
+#endif
 };
 
 class FileHandle {
     protected:
         handle_t mHandle; // NOLINT(*-non-private-member-variables-in-classes)
 
-        explicit FileHandle( const fs::path& filePath, OpenFlags openFlags, PermissionFlag permissionFlag );
+        explicit FileHandle( const fs::path& filePath, OpenFlags openFlags );
 
     public:
         explicit FileHandle( const FileHandle& ) = delete;
@@ -120,19 +128,20 @@ class FileHandle {
 
         ~FileHandle();
 
-        auto seek( SeekOrigin origin, Int64 distance, UInt64* newPosition ) const noexcept -> HRESULT;
+        BIT7Z_NODISCARD
+        auto seek( SeekOrigin origin, std::int64_t distance, std::uint64_t& newPosition ) const noexcept -> HRESULT;
 };
 
 struct OutputFile final : public FileHandle {
-    explicit OutputFile( const fs::path& filePath, bool createAlways );
+    explicit OutputFile( const fs::path& filePath, FileFlag fileFlag );
 
-    auto write( const void* data, UInt32 size, UInt32* processedSize ) const noexcept -> HRESULT;
+    auto write( const void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 };
 
 struct InputFile final : public FileHandle {
     explicit InputFile( const fs::path& filePath );
 
-    auto read( void* data, UInt32 size, UInt32* processedSize ) const noexcept -> HRESULT;
+    auto read( void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 };
 
 } // namespace bit7z

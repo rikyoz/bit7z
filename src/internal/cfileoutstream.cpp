@@ -15,7 +15,7 @@
 namespace bit7z {
 
 CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways )
-    : mFile( filePath, createAlways ), mFilePath{ filePath } {}
+    : mFile( filePath, createAlways ? FileFlag::CreateAlways : FileFlag::CreateNew ), mFilePath{ filePath } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
@@ -27,12 +27,22 @@ STDMETHODIMP CFileOutStream::Write( const void* data, UInt32 size, UInt32* proce
         return S_OK;
     }
 
-    return mFile.write( data, size, processedSize );
+    std::uint32_t totalBytesWritten = 0;
+    const auto result = mFile.write( data, size, totalBytesWritten );
+    if ( processedSize != nullptr ) {
+        *processedSize = totalBytesWritten;
+    }
+    return result;
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    return mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, newPosition );
+    std::uint64_t finalPosition = 0;
+    const auto result = mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, finalPosition );
+    if ( newPosition != nullptr ) {
+        *newPosition = finalPosition;
+    }
+    return result;
 }
 
 

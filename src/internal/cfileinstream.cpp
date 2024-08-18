@@ -26,12 +26,22 @@ STDMETHODIMP CFileInStream::Read( void* data, UInt32 size, UInt32* processedSize
         return S_OK;
     }
 
-    return mFile.read( data, size, processedSize );
+    std::uint32_t totalBytesRead = 0;
+    const auto result = mFile.read( data, size, totalBytesRead );
+    if ( processedSize != nullptr ) {
+        *processedSize = totalBytesRead;
+    }
+    return result;
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    return mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, newPosition );
+    std::uint64_t finalPosition = 0;
+    const auto result = mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, finalPosition );
+    if ( newPosition != nullptr ) {
+        *newPosition = finalPosition;
+    }
+    return result;
 }
 
 } // namespace bit7z
