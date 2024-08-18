@@ -25,7 +25,9 @@
 
 namespace bit7z {
 
-inline auto load_library( const tstring& libraryPath ) -> LibraryHandle {
+namespace {
+BIT7Z_ALWAYS_INLINE
+auto load_library( const tstring& libraryPath ) -> LibraryHandle {
 #ifdef _WIN32
     LibraryHandle handle = LoadLibraryW( WIDEN( libraryPath ).c_str() );
 #else
@@ -40,6 +42,7 @@ inline auto load_library( const tstring& libraryPath ) -> LibraryHandle {
     }
     return handle;
 }
+} // namespace
 
 BitSharedLibrary::BitSharedLibrary( const tstring& libraryPath ) : mLibrary{ load_library( libraryPath ) } {}
 
