@@ -47,34 +47,34 @@ auto RenamedItem::hasNewData() const noexcept -> bool {
 }
 
 auto RenamedItem::isDir() const -> bool {
-    return mInputArchive.itemProperty( mIndex, BitProperty::IsDir ).getBool();
+    return mInputArchive.get().itemProperty( mIndex, BitProperty::IsDir ).getBool();
 }
 
 auto RenamedItem::isSymLink() const -> bool {
-    return mInputArchive.itemAt( mIndex ).isSymLink();
+    return mInputArchive.get().itemAt( mIndex ).isSymLink();
 }
 
 auto RenamedItem::size() const -> uint64_t {
-    return mInputArchive.itemProperty( mIndex, BitProperty::Size ).getUInt64();
+    return mInputArchive.get().itemProperty( mIndex, BitProperty::Size ).getUInt64();
 }
 
 auto RenamedItem::creationTime() const -> FILETIME {
-    const BitPropVariant creationTime = mInputArchive.itemProperty( mIndex, BitProperty::CTime );
+    const BitPropVariant creationTime = mInputArchive.get().itemProperty( mIndex, BitProperty::CTime );
     return creationTime.isFileTime() ? creationTime.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::lastAccessTime() const -> FILETIME {
-    const BitPropVariant accessTime = mInputArchive.itemProperty( mIndex, BitProperty::ATime );
+    const BitPropVariant accessTime = mInputArchive.get().itemProperty( mIndex, BitProperty::ATime );
     return accessTime.isFileTime() ? accessTime.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::lastWriteTime() const -> FILETIME {
-    const BitPropVariant writeTime = mInputArchive.itemProperty( mIndex, BitProperty::MTime );
+    const BitPropVariant writeTime = mInputArchive.get().itemProperty( mIndex, BitProperty::MTime );
     return writeTime.isFileTime() ? writeTime.getFileTime() : current_file_time();
 }
 
 auto RenamedItem::attributes() const -> uint32_t {
-    return mInputArchive.itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
+    return mInputArchive.get().itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
 }
 
 auto RenamedItem::filesystemPath() const -> const fs::path& {

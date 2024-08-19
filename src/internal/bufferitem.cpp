@@ -50,7 +50,7 @@ auto BufferItem::isDir() const noexcept -> bool {
 }
 
 auto BufferItem::size() const noexcept -> uint64_t {
-    return sizeof( byte_t ) * static_cast< uint64_t >( mBuffer.size() );
+    return sizeof( byte_t ) * static_cast< uint64_t >( mBuffer.get().size() );
 }
 
 auto BufferItem::creationTime() const noexcept -> FILETIME { //-V524

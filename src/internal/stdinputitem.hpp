@@ -48,7 +48,7 @@ class StdInputItem final : public GenericInputItem {
         BIT7Z_NODISCARD auto filesystemName() const -> fs::path override;
 
     private:
-        std::istream& mStream;
+        std::reference_wrapper< std::istream > mStream;
         fs::path mStreamPath;
 };
 
