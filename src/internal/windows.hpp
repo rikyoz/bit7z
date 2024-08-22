@@ -188,7 +188,7 @@ constexpr auto HRESULT_WIN32_ERROR_NEGATIVE_SEEK = __HRESULT_FROM_WIN32( ERROR_N
 
 // Note: this needs to be defined on all platforms, as it is a custom file attributes extension defined by p7zip/7-zip.
 #ifndef FILE_ATTRIBUTE_UNIX_EXTENSION
-constexpr auto FILE_ATTRIBUTE_UNIX_EXTENSION = 0x8000; // As defined by p7zip
+constexpr auto FILE_ATTRIBUTE_UNIX_EXTENSION = 0x8000u; // As defined by p7zip
 #endif
 
 #endif //WINDOWS_HPP
