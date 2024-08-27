@@ -42,7 +42,7 @@ using RatioCallback = std::function< void( uint64_t, uint64_t ) >;
  * @brief A function whose argument is the path, in the archive, of the file currently being processed
  *        by the ongoing operation.
  */
-using FileCallback = std::function< void( tstring ) >;
+using FileCallback = std::function< void( const tstring& ) >;
 
 /**
  * @brief A function returning the password to be used to handle an archive.
