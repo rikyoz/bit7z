@@ -55,7 +55,9 @@ using namespace NArchive;
 
 namespace bit7z {
 
-auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive* {
+auto BitInputArchive::openArchiveStream( const fs::path& name,
+                                         IInStream* inStream,
+                                         ArchiveStartOffset startOffset ) -> IInArchive* {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detectedBySignature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -77,7 +79,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name, IInStream* inStre
 #ifndef BIT7Z_AUTO_FORMAT
     const
 #endif
-    HRESULT res = inArchive->Open( inStream, nullptr, openCallback );
+    HRESULT res = inArchive->Open( inStream, &startOffset, openCallback );
 
 #ifdef BIT7Z_AUTO_FORMAT
     if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detectedBySignature ) {
@@ -115,10 +117,14 @@ inline auto detect_format( const BitInFormat& format, const fs::path& arcPath ) 
 #endif
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& inFile )
-    : BitInputArchive( handler, tstring_to_path( inFile ) ) {}
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
+                                  const tstring& inFile,
+                                  ArchiveStartOffset startOffset )
+    : BitInputArchive( handler, tstring_to_path( inFile ), startOffset ) {}
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arcPath )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
+                                  const fs::path& arcPath,
+                                  ArchiveStartOffset startOffset )
     : mDetectedFormat{ detect_format( handler.format(), arcPath ) },
       mArchiveHandler{ handler },
       mArchivePath{ path_to_tstring( arcPath ) } {
@@ -128,21 +134,25 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
     } else {
         fileStream = bit7z::make_com< CFileInStream, IInStream >( arcPath );
     }
-    mInArchive = openArchiveStream( arcPath, fileStream );
+    mInArchive = openArchiveStream( arcPath, fileStream, startOffset );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const buffer_t& inBuffer )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
+                                  const buffer_t& inBuffer,
+                                  ArchiveStartOffset startOffset )
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto bufStream = bit7z::make_com< CBufferInStream, IInStream >( inBuffer );
-    mInArchive = openArchiveStream( fs::path{}, bufStream );
+    mInArchive = openArchiveStream( fs::path{}, bufStream, startOffset );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& inStream )
+BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
+                                  std::istream& inStream,
+                                  ArchiveStartOffset startOffset )
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
     auto stdStream = bit7z::make_com< CStdInStream, IInStream >( inStream );
-    mInArchive = openArchiveStream( fs::path{}, stdStream );
+    mInArchive = openArchiveStream( fs::path{}, stdStream, startOffset );
 }
 
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const BitArchiveItemOffset& nestedItem )
@@ -163,7 +173,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
       mArchiveHandler{ handler },
       mArchivePath{ parentArchive.itemAt( index ).path() } {
     CMyComPtr< IInStream > subStream = parentArchive.getSubfileStream( index );
-    mInArchive = openArchiveStream( fs::path{}, subStream );
+    mInArchive = openArchiveStream( fs::path{}, subStream, ArchiveStartOffset::FileStart );
 }
 
 auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {

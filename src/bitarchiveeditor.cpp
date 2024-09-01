@@ -42,7 +42,7 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
                                     const tstring& inFile,
                                     const BitInOutFormat& format,
                                     const tstring& password )
-    : BitArchiveWriter( lib, inFile, format, password ) {
+    : BitArchiveWriter( lib, inFile, ArchiveStartOffset::FileStart, format, password ) {
     if ( inputArchive() != nullptr ) {
         return; // Input file was correctly read by base class BitOutputArchive constructor
     }
@@ -214,7 +214,7 @@ void BitArchiveEditor::applyChanges() {
     auto archivePath = inputArchive()->archivePath();
     compressTo( archivePath );
     mEditedItems.clear();
-    setInputArchive( std::make_unique< BitInputArchive >( *this, archivePath ) );
+    setInputArchive( std::make_unique< BitInputArchive >( *this, archivePath, ArchiveStartOffset::FileStart ) );
 }
 
 auto BitArchiveEditor::findItem( const tstring& itemPath ) -> uint32_t {

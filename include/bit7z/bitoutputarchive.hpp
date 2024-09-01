@@ -83,7 +83,9 @@ class BitOutputArchive {
          *                be used for creating the new archive and reading the (optional) input archive.
          * @param inFile  (optional) the path to an input archive file.
          */
-        explicit BitOutputArchive( const BitAbstractArchiveCreator& creator, const tstring& inFile );
+        explicit BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                                   const tstring& inFile,
+                                   ArchiveStartOffset startOffset = ArchiveStartOffset::None );
 
         /**
          * @brief Constructs a BitOutputArchive object, opening an input file archive from the given buffer.
@@ -96,7 +98,9 @@ class BitOutputArchive {
          *                  be used for creating the new archive and reading the (optional) input archive.
          * @param inBuffer  the buffer containing an input archive file.
          */
-        BitOutputArchive( const BitAbstractArchiveCreator& creator, const buffer_t& inBuffer );
+        BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                          const buffer_t& inBuffer,
+                          ArchiveStartOffset startOffset = ArchiveStartOffset::None );
 
         /**
          * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
@@ -105,7 +109,9 @@ class BitOutputArchive {
          *                  be used for creating the new archive and reading the (optional) input archive.
          * @param inStream  the standard input stream of the input archive file.
          */
-        BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& inStream );
+        BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                          std::istream& inStream,
+                          ArchiveStartOffset startOffset = ArchiveStartOffset::None );
 
         BitOutputArchive( const BitOutputArchive& ) = delete;
 
@@ -349,7 +355,9 @@ class BitOutputArchive {
 
         auto initOutFileStream( const fs::path& outArchive, bool updatingArchive ) const -> CMyComPtr< IOutStream >;
 
-        BitOutputArchive( const BitAbstractArchiveCreator& creator, const fs::path& inArc );
+        BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                          const fs::path& inArc,
+                          ArchiveStartOffset archiveStart );
 
         void compressToFile( const fs::path& outFile, UpdateCallback* updateCallback );
 

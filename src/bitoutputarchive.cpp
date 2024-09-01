@@ -47,10 +47,14 @@ namespace bit7z {
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {}
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const tstring& inFile )
-    : BitOutputArchive( creator, tstring_to_path( inFile ) ) {}
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                                    const tstring& inFile,
+                                    ArchiveStartOffset startOffset )
+    : BitOutputArchive( creator, tstring_to_path( inFile ), startOffset ) {}
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const fs::path& inArc )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                                    const fs::path& inArc,
+                                    ArchiveStartOffset archiveStart )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
         return;
@@ -77,22 +81,26 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, co
                             make_error_code( BitError::FormatFeatureNotSupported ) );
     }
 
-    mInputArchive = std::make_unique< BitInputArchive >( creator, inArc );
+    mInputArchive = std::make_unique< BitInputArchive >( creator, inArc, archiveStart );
     mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, const buffer_t& inBuffer )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                                    const buffer_t& inBuffer,
+                                    ArchiveStartOffset startOffset )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( !inBuffer.empty() ) {
-        mInputArchive = std::make_unique< BitInputArchive >( creator, inBuffer );
+        mInputArchive = std::make_unique< BitInputArchive >( creator, inBuffer, startOffset );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
     }
 }
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator, std::istream& inStream )
+BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
+                                    std::istream& inStream,
+                                    ArchiveStartOffset startOffset )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( inStream.good() ) {
-        mInputArchive = std::make_unique< BitInputArchive >( creator, inStream );
+        mInputArchive = std::make_unique< BitInputArchive >( creator, inStream, startOffset );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
     }
 }
