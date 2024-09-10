@@ -1358,3 +1358,149 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extract to raw data callback",
         REQUIRE( crcValue == clouds.crc32 );
     }
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Reading the archive from the start of the input file",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                       TestInputFormat{ "gz", BitFormat::GZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "lzh", BitFormat::Lzh },
+                                       TestInputFormat{ "lzma", BitFormat::Lzma },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
+                                       TestInputFormat{ "gz", BitFormat::GZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "lzh", BitFormat::Lzh },
+                                       TestInputFormat{ "lzma", BitFormat::Lzma },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "xz", BitFormat::Xz },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = fs::path{ clouds.name }.concat( "." + testArchive.extension );
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+        REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, testArchive.format ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Scanning a file for the archive start",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "multiple_nested2.tar";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+#ifdef BIT7Z_AUTO_FORMAT
+    SECTION( "Detecting the format from the file extension (extension is correct)" ) {
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
+        REQUIRE_NOTHROW( reader.detectedFormat() == BitFormat::Tar );
+    }
+#endif
+
+    SECTION( "Opening the archive with the Zip format succeeds, "
+             "as 7-Zip will scan the input Tar archive and find the nested Zip archive" ) {
+        REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip ) );
+    }
+
+    SECTION( "Opening the archive with the 7z format succeeds, "
+             "as 7-Zip will scan the input Tar archive and find the nested 7z archive" ) {
+        REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::SevenZip ) );
+    }
+
+    SECTION( "The BZip2 format doesn't support scanning the input file for the archive start,"
+             "so the opening must fail even though the Tar archive contains a BZip2 file") {
+        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::BZip2 ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Checking only the file start for the archive start",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "multiple_nested2.tar";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+#ifdef BIT7Z_AUTO_FORMAT
+    SECTION( "Detecting the format from the file extension (extension is correct)" ) {
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
+        REQUIRE_NOTHROW( reader.detectedFormat() == BitFormat::Tar );
+    }
+#endif
+
+    SECTION( "Opening the Tar file as a Zip archive fails, as 7-Zip will check the format only at the file start" ) {
+        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::Zip ) );
+    }
+
+    SECTION( "Opening the Tar file as a 7z archive fails, as 7-Zip will check the format only at the file start" ) {
+        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::SevenZip ) );
+    }
+
+    SECTION( "Opening the Tar file as a BZip2 archive fails, as 7-Zip will check the format only at the file start" ) {
+        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::BZip2 ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extension",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
+
+    const fs::path arcFileName = "nested_wrong_extension.zip"; // 7z file with zip extension
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    SECTION( "Checking archive start at input file start" ){
+#ifdef BIT7Z_AUTO_FORMAT
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
+        REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
+        REQUIRE_NOTHROW( reader.test() );
+#else
+        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::Zip ) );
+#endif
+    }
+
+    SECTION( "Checking archive start by scanning through the input file" ){
+#ifdef BIT7Z_AUTO_FORMAT
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
+        if ( reader.archivePath().empty() ) {
+            REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
+            REQUIRE_NOTHROW( reader.test() );
+        } else {
+            REQUIRE( reader.detectedFormat() == BitFormat::Zip );
+            REQUIRE_THROWS( reader.test() );
+        }
+#else
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip );
+        REQUIRE_THROWS( reader.test() );
+#endif
+    }
+}
