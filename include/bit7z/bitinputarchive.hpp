@@ -38,30 +38,10 @@ namespace bit7z {
 class BufferQueue;
 class ExtractCallback;
 
-class ArchiveStartOffset final {
-        using OffsetType = std::uint64_t;
-
-        OffsetType mOffset;
-
-    public:
-        enum OffsetConstant : OffsetType {
-            FileStart = 0, ///< Check only the file start for the archive's start.
-            None = std::numeric_limits< OffsetType >::max() ///< Don't specify an archive start offset.
-                                                            ///< For some formats, like Zip archives,
-                                                            ///< this means that the whole input file
-                                                            ///< will be searched for the archive's start.
-        };
-
-        constexpr explicit ArchiveStartOffset( OffsetType offset )
-            : mOffset{ offset } {}
-
-        //NOLINTNEXTLINE(*-explicit-conversions)
-        constexpr ArchiveStartOffset( OffsetConstant offset )
-            : mOffset{ to_underlying( offset ) } {};
-
-        constexpr auto operator&() const -> const OffsetType* {
-            return static_cast< OffsetConstant >( mOffset ) == ArchiveStartOffset::None ? nullptr : &mOffset;
-        }
+enum struct ArchiveStartOffset : std::uint8_t {
+    None, ///< Don't specify an archive start offset. For some formats, like Zip archives,
+          ///< this means that the whole input file will be searched for the archive's start.
+    FileStart ///< Check only the file start for the archive's start.
 };
 
 /**

@@ -79,7 +79,13 @@ auto BitInputArchive::openArchiveStream( const fs::path& name,
 #ifndef BIT7Z_AUTO_FORMAT
     const
 #endif
-    HRESULT res = inArchive->Open( inStream, &startOffset, openCallback );
+    HRESULT res = [&]() -> HRESULT {
+        if ( startOffset == ArchiveStartOffset::FileStart ) {
+            const UInt64 maxCheckStartPosition = 0;
+            return inArchive->Open( inStream, &maxCheckStartPosition, openCallback );
+        }
+        return inArchive->Open( inStream, nullptr, openCallback );
+    }();
 
 #ifdef BIT7Z_AUTO_FORMAT
     if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detectedBySignature ) {
