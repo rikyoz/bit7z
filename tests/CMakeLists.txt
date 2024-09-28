@@ -54,7 +54,7 @@ target_include_directories( ${TESTS_BASE_TARGET} INTERFACE
 if( BIT7Z_TESTS_FILESYSTEM )
     CPMAddPackage( NAME bit7z_test_data
                    GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
-                   VERSION 1.10
+                   VERSION 1.11
                    DOWNLOAD_ONLY YES
                    GIT_PROGRESS ON )
     if( bit7z_test_data_ADDED )

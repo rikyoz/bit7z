@@ -1504,3 +1504,37 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extens
 #endif
     }
 }
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested zip archive",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "nested_zip.zip";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+
+    SECTION( "Checking archive start at input file start" ){
+#ifdef BIT7Z_AUTO_FORMAT
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
+        REQUIRE( reader.detectedFormat() == BitFormat::Zip );
+#else
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::Zip );
+#endif
+        REQUIRE_NOTHROW( reader.test() );
+        REQUIRE( reader.contains( italy.name ) );
+    }
+
+    SECTION( "Checking archive start by scanning through the input file" ){
+#ifdef BIT7Z_AUTO_FORMAT
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
+        REQUIRE( reader.detectedFormat() == BitFormat::Zip );
+#else
+        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip );
+#endif
+        REQUIRE_NOTHROW( reader.test() );
+        REQUIRE( reader.contains( italy.name ) );
+    }
+}
