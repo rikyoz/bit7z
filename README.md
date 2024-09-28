@@ -223,6 +223,10 @@ The newest bit7z v4 introduced some significant breaking changes to the library'
 + The old `BitCompressor` class is now called `BitFileCompressor`.
   + Now `BitCompressor` is just the name of a template class for all the compression classes.
 + The `ProgressCallback` now must return a `bool` value indicating whether the current operation can continue (`true`) or not (`false`).
++ `BitException` class now inherits from `std::system_error` rather than `std::runtime_error`.
+
+  + The method `BitException::getErrorCode()` was renamed to `BitException::hresultCode()`.
+
 + The project structure changed:
   + Public API headers moved from `include/` to the `include/bit7z/` folder, so `#include` directives now need to prepend `bit7z/` to the included header name (e.g., `#include <bit7z/bitfileextractor.hpp>`).
     + Even though it is a bit verbose, it is a typical structure for C and C++ libraries, and it makes explicit which third-party library a header file belongs to.
