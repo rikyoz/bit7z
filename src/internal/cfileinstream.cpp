@@ -20,9 +20,14 @@ CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileSt
     /* Disabling std::ifstream's buffering, as unbuffered IO gives better performance
      * with the block sizes read/written by 7-Zip.
      * Note: we need to do this before and after opening the file (https://stackoverflow.com/a/59161297/3497024). */
+
     mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
     openFile( filePath );
+
+// Unbuffered streams are weirdly slow for Visual Studio 2015
+#if defined(_MSVC_VER) && _MSVC_VER != 1900
     mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
+#endif
 }
 
 void CFileInStream::openFile( const fs::path& filePath ) {
