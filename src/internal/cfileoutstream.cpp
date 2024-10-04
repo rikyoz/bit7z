@@ -42,9 +42,8 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
         throw BitException( "Failed to open the output file", last_error_code(), path_to_tstring( mFilePath ) );
 #endif
     }
-
 // Unbuffered streams are slow for Visual Studio 2015
-#if defined(_MSVC_VER) && _MSVC_VER != 1900
+#if defined(_MSC_VER) && _MSC_VER != 1900
     mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
 #endif
 }

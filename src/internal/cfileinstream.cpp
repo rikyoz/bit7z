@@ -22,9 +22,8 @@ CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileSt
      * Note: we need to do this before and after opening the file (https://stackoverflow.com/a/59161297/3497024). */
     mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
     openFile( filePath );
-
 // Unbuffered streams are slow for Visual Studio 2015
-#if defined(_MSVC_VER) && _MSVC_VER != 1900
+#if defined(_MSC_VER) && _MSC_VER != 1900
     mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
 #endif
 }
