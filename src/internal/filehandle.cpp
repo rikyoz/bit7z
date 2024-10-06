@@ -13,6 +13,7 @@
 #include "filehandle.hpp"
 
 #include "bitexception.hpp"
+#include "internal/stringutil.hpp"
 
 #ifndef _WIN32
 #include <sys/stat.h> // For S_IRUSR and S_IWUSR
@@ -39,15 +40,13 @@ auto open_file( const fs::path& filePath, OpenFlags openFlags ) -> handle_t {
                                            FILE_ATTRIBUTE_NORMAL,
                                            nullptr );
     if ( handle == INVALID_HANDLE_VALUE ) { // NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
-        const std::error_code error = make_hresult_code( HRESULT_FROM_WIN32( _doserrno ) );
 #else
     // NOLINTNEXTLINE(*-vararg)
     const handle_t handle = open( filePath.c_str(), openFlags.value(), S_IRUSR | S_IWUSR );
     if ( handle < 0 ) {
-        // Here we can directly use the POSIX error instead of converting it to HRESULT.
-        const std::error_code error = last_error_code();
 #endif
-        throw BitException( "Could not open the file", error );
+        const std::error_code error = last_error_code();
+        throw BitException( "Could not open the file", error, path_to_tstring( filePath ) );
     }
     return handle;
 }
