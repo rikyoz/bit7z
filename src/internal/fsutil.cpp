@@ -307,7 +307,9 @@ auto fsutil::get_file_attributes_ex( const fs::path& filePath,
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 
+namespace {
 constexpr auto kLongPathPrefix = BIT7Z_NATIVE_STRING( R"(\\?\)" );
+} // namespace
 
 auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
     constexpr auto kMaxDosFilenameSize = 12;
@@ -316,7 +318,7 @@ auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
         return false;
     }
     const auto& pathStr = path.native();
-    if ( pathStr.size() < ( MAX_PATH - kMaxDosFilenameSize ) ) {
+    if ( pathStr.size() < static_cast<std::size_t>( MAX_PATH - kMaxDosFilenameSize ) ) {
         return false;
     }
     return !starts_with( pathStr, kLongPathPrefix );
@@ -324,6 +326,12 @@ auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
 
 auto fsutil::format_long_path( const fs::path& path ) -> fs::path {
     fs::path longPath = kLongPathPrefix;
+    // Note: we call this function after checking if we should format the given path as a long path.
+    // This means that if the path starts with the \\ prefix,
+    // it is a UNC path and not a long path prefixed with \\?\.
+    if ( starts_with( path.native(), BIT7Z_NATIVE_STRING( R"(\\)" ) ) ) {
+        longPath += L"UNC\\";
+    }
     longPath += path;
     return longPath;
 }

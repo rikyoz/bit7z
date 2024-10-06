@@ -234,6 +234,40 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
 
 #endif
 
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
+    const std::wstring kLongPathPrefix = BIT7Z_NATIVE_STRING( R"(\\?\)" );
+
+    constexpr auto short_path = L"short_path\\file.txt";
+    REQUIRE_FALSE( should_format_long_path( short_path ) );
+
+    constexpr auto very_long_path = LR"(C:\very\long\dummy\path\)"
+                                    LR"(ABCDEFGHIJKLMNOPQRSTUVWXYZ\abcdefghijklmnopqrstuvwxyz\0123456789\)"
+                                    LR"(Lorem ipsum dolor sit amet\consectetur adipiscing elit\)"
+                                    LR"(Mauris ac leo dui\Morbi non elit lacus\)"
+                                    LR"(Ut ullamcorper sapien eget commodo eleifend\Curabitur varius magna sit\)"
+                                    LR"(Hello_World.txt)";
+    REQUIRE( should_format_long_path( very_long_path ) );
+    REQUIRE( format_long_path( very_long_path ) == ( kLongPathPrefix + very_long_path ) );
+
+
+    const auto prefixed_very_long_path = std::wstring{ LR"(\\?\)" } + very_long_path;
+    REQUIRE_FALSE( should_format_long_path( prefixed_very_long_path ) );
+
+    constexpr auto very_long_unc_path = LR"(\\very\long\dummy\UNC\path\)"
+                                        LR"(ABCDEFGHIJKLMNOPQRSTUVWXYZ\abcdefghijklmnopqrstuvwxyz\0123456789\)"
+                                        LR"(Lorem ipsum dolor sit amet\consectetur adipiscing elit\)"
+                                        LR"(Mauris ac leo dui\Morbi non elit lacus\)"
+                                        LR"(Ut ullamcorper sapien eget commodo eleifend\Curabitur varius magna sit\)"
+                                        LR"(Hello_World.txt)";
+    REQUIRE( should_format_long_path( very_long_unc_path ) );
+    REQUIRE( format_long_path( very_long_unc_path ) == ( kLongPathPrefix + L"UNC\\" + very_long_unc_path ) );
+
+    const auto prefixed_very_long_unc_path = std::wstring{ LR"(\\?\UNC\)" } + very_long_unc_path;
+    REQUIRE_FALSE( should_format_long_path( prefixed_very_long_unc_path ) );
+}
+#endif
+
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
     REQUIRE( sanitize_path( L"hello world.txt" ) == L"hello world.txt" );
