@@ -42,6 +42,15 @@ class BitArchiveItemOffset final : public BitArchiveItem {
          */
         BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
+        /**
+         * @brief Checks whether the item has the specified property or not.
+         *
+         * @param property the property to be checked.
+         *
+         * @return true if the item has the property, false otherwise.
+         */
+        BIT7Z_NODISCARD auto hasProperty( BitProperty property ) const -> bool;
+
     private:
         /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::ConstIterator,
          * to be CopyConstructible so that stl algorithms can be used with ConstIterator. */

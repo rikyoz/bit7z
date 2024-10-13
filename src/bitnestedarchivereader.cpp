@@ -178,23 +178,13 @@ auto BitNestedArchiveReader::items() const -> std::vector< BitArchiveItemInfo > 
         result.reserve( static_cast< std::size_t >( itemsCount ) );
     }
 
-    for ( std::uint32_t index = 0; index < itemsCount; ++index ) {
-        if ( !mNestedArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
-            mLastReadItem = index;
+    for ( const auto& item : mNestedArchive ) {
+        if ( !item.hasProperty( BitProperty::IsDir ) ) {
+            mLastReadItem = item.index();
             return result;
         }
 
-        BitArchiveItemInfo item( index );
-        for ( std::uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
-            // We cast property twice (here and in itemProperty), to make the code is easier to read.
-            const auto property = static_cast< BitProperty >( j );
-            const auto propertyValue = mNestedArchive.itemProperty( index, property );
-
-            if ( !propertyValue.isEmpty() ) {
-                item.setProperty( property, propertyValue );
-            }
-        }
-        result.emplace_back( std::move( item ) );
+        result.emplace_back( item );
     }
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
     return result;

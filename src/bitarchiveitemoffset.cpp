@@ -46,4 +46,8 @@ auto BitArchiveItemOffset::itemProperty( BitProperty property ) const -> BitProp
     return mArc != nullptr ? mArc->itemProperty( mItemIndex, property ) : BitPropVariant();
 }
 
+auto BitArchiveItemOffset::hasProperty( BitProperty property ) const -> bool {
+    return mArc != nullptr ? mArc->itemHasProperty( mItemIndex, property ) : false;
+}
+
 } // namespace bit7z
