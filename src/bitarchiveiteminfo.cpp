@@ -13,14 +13,27 @@
 #include "bitarchiveiteminfo.hpp"
 
 #include "bitarchiveitem.hpp"
+#include "bitarchiveitemoffset.hpp"
 #include "bitpropvariant.hpp"
+
+#include <7zip/PropID.h>
 
 #include <cstdint>
 #include <map>
 
 namespace bit7z {
 
-BitArchiveItemInfo::BitArchiveItemInfo( uint32_t itemIndex ) : BitArchiveItem( itemIndex ) {}
+BitArchiveItemInfo::BitArchiveItemInfo( const BitArchiveItemOffset& item )
+    : BitArchiveItem( item.index() ) {
+    for ( std::uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
+        // We cast property twice (here and in itemProperty), to make the code is easier to read.
+        const auto property = static_cast< BitProperty >( j );
+        const auto propertyValue = item.itemProperty( property );
+        if ( !propertyValue.isEmpty() ) {
+            setProperty( property, propertyValue );
+        }
+    }
+}
 
 auto BitArchiveItemInfo::itemProperty( BitProperty property ) const -> BitPropVariant {
     const auto propIt = mItemProperties.find( property );

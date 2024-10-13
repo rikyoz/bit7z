@@ -98,22 +98,12 @@ auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPr
 }
 
 auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
-    // Note: the cast is unnecessary, but it suppresses a warning from PVS-Studio
     const auto count = itemsCount();
 
     std::vector< BitArchiveItemInfo > result;
     result.reserve( static_cast< std::size_t >( count ) );
-    for ( std::uint32_t i = 0; i < count; ++i ) {
-        BitArchiveItemInfo item( i );
-        for ( std::uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
-            // We cast property twice (here and in itemProperty), to make the code is easier to read.
-            const auto property = static_cast< BitProperty >( j );
-            const auto propertyValue = itemProperty( i, property );
-            if ( !propertyValue.isEmpty() ) {
-                item.setProperty( property, propertyValue );
-            }
-        }
-        result.emplace_back( std::move( item ) );
+    for ( const auto& item : *this ) {
+        result.emplace_back( item );
     }
     return result;
 }

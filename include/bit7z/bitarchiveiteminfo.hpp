@@ -19,11 +19,15 @@
 
 namespace bit7z {
 
+class BitArchiveItemOffset;
+
 /**
  * @brief The BitArchiveItemInfo class represents an archived item and that stores all its properties for later use.
  */
 class BitArchiveItemInfo final : public BitArchiveItem {
     public:
+        explicit BitArchiveItemInfo( const BitArchiveItemOffset& item );
+
         /**
          * @brief Gets the specified item property.
          *
@@ -40,9 +44,6 @@ class BitArchiveItemInfo final : public BitArchiveItem {
 
     private:
         std::map< BitProperty, BitPropVariant > mItemProperties;
-
-        /* BitArchiveItem objects can be created and updated only by BitArchiveReader */
-        explicit BitArchiveItemInfo( uint32_t itemIndex );
 
         void setProperty( BitProperty property, const BitPropVariant& value );
 
