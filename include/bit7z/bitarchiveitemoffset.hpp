@@ -15,6 +15,7 @@
 #include "bitpropvariant.hpp"
 
 #include <cstdint>
+#include <functional>
 
 namespace bit7z {
 
@@ -52,11 +53,11 @@ class BitArchiveItemOffset final : public BitArchiveItem {
         BIT7Z_NODISCARD auto hasProperty( BitProperty property ) const -> bool;
 
     private:
-        /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::ConstIterator,
+        /* Note: we use a std::reference_wrapper to make this class, and hence BitInputArchive::ConstIterator,
          * to be CopyConstructible so that stl algorithms can be used with ConstIterator. */
-        const BitInputArchive* mArc;
+        std::reference_wrapper< const BitInputArchive > mArc;
 
-        BitArchiveItemOffset( const BitInputArchive& inputArchive, uint32_t itemIndex ) noexcept;
+        BitArchiveItemOffset( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) noexcept;
 
         friend class BitInputArchive;
 };
