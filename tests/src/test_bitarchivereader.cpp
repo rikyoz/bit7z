@@ -739,3 +739,53 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Renaming the files being extracted using 
         REQUIRE( fs::remove( "noext" ) );
     }
 }
+
+TEMPLATE_TEST_CASE( "BitArchiveReader: Getting the items that match a given wildcard pattern",
+                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        auto result = info.itemsMatching( BIT7Z_STRING( "italy.svg" ) );
+        REQUIRE( result.size() == 1 );
+        REQUIRE( result[0].path() == BIT7Z_STRING( "italy.svg" ) );
+
+        result = info.itemsMatching( BIT7Z_STRING( "clouds.jpg" ) );
+        REQUIRE( result.empty() );
+
+        result = info.itemsMatching( BIT7Z_STRING( "*clouds.jpg" ) );
+        REQUIRE( result.size() == 1 );
+#ifdef _WIN32
+        REQUIRE( result[0].path() == BIT7Z_STRING( "folder\\clouds.jpg" ) );
+#else
+        REQUIRE(result[0].path() == BIT7Z_STRING("folder/clouds.jpg"));
+#endif
+
+        result = info.itemsMatching( BIT7Z_STRING( "*.pdf" ));
+        REQUIRE( result.size() == 2 );
+        // TODO: Check the items returned in the last result vector.
+    }
+}

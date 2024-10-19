@@ -20,6 +20,7 @@
 #include "bitinputarchive.hpp"
 #include "bitformat.hpp"
 #include "bittypes.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/operationresult.hpp"
 
 #include <algorithm>
@@ -103,6 +104,20 @@ auto BitArchiveReader::items() const -> std::vector< BitArchiveItemInfo > {
     std::vector< BitArchiveItemInfo > result;
     result.reserve( static_cast< std::size_t >( count ) );
     for ( const auto& item : *this ) {
+        result.emplace_back( item );
+    }
+    return result;
+}
+
+auto BitArchiveReader::itemsMatching( const tstring& pattern ) const -> std::vector< BitArchiveItemInfo > {
+    const auto count = itemsCount();
+
+    std::vector< BitArchiveItemInfo > result;
+    result.reserve( static_cast< std::size_t >( count ) );
+    for ( const auto& item : *this ) {
+        if ( !filesystem::fsutil::wildcard_match( pattern, item.path()) ) {
+            continue;
+        }
         result.emplace_back( item );
     }
     return result;

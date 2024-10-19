@@ -214,6 +214,15 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         BIT7Z_NODISCARD auto items() const -> std::vector< BitArchiveItemInfo >;
 
         /**
+         * Gets the items whose paths match the given wildcard pattern.
+         *
+         * @param pattern a wildcard pattern.
+         *
+         * @return the items whose paths match the given wildcard pattern.
+         */
+        BIT7Z_NODISCARD auto itemsMatching( const tstring& pattern ) const -> std::vector< BitArchiveItemInfo >;
+
+        /**
          * @return the number of folders contained in the archive.
          */
         BIT7Z_NODISCARD auto foldersCount() const -> uint32_t;
