@@ -259,14 +259,16 @@ You can also clone/download this repository and build the library yourself (plea
 + **Operating System:** Windows, Linux, macOS, Android[^1].
 + **Architecture:** x86, x86_64, arm, arm64.
 + **Language Standard:** C++11 (for using the library), C++14 (for building the library).
-+ **Compiler:** MSVC 2015 or later[^2], MinGW v6.4 or later, GCC v4.9 or later, Clang 3.6 or later.
-+ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix[^3].
++ **Compiler:** MSVC 2015 or later[^2], MinGW v6.4 or later[^3], GCC v4.9 or later, Clang 3.6 or later.
++ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix[^4].
 
 [^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
 
 [^2]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.x.
 
-[^3]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
+[^3]: When using MinGW, you should link your program also with `libuuid` (e.g. `-lbit7z -loleaut32 -luuid`).
+
+[^4]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
 ## ⚙️ Building and Using bit7z
 
