@@ -238,13 +238,13 @@ auto fsutil::set_file_time( const fs::path& filePath,
     }
 
     bool res = false;
-    HANDLE hFile = ::CreateFile( filePath.c_str(),
-                                 GENERIC_READ | FILE_WRITE_ATTRIBUTES,
-                                 FILE_SHARE_READ,
-                                 nullptr,
-                                 OPEN_EXISTING,
-                                 0,
-                                 nullptr );
+    HANDLE hFile = ::CreateFileW( filePath.c_str(),
+                                  GENERIC_READ | FILE_WRITE_ATTRIBUTES,
+                                  FILE_SHARE_READ,
+                                  nullptr,
+                                  OPEN_EXISTING,
+                                  0,
+                                  nullptr );
     if ( hFile != INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
         res = ::SetFileTime( hFile, &creation, &access, &modified ) != FALSE;
         CloseHandle( hFile );
@@ -273,7 +273,7 @@ auto fsutil::get_file_attributes_ex( const fs::path& filePath,
 
 #ifdef _WIN32
     (void)symlinkPolicy;
-    return ::GetFileAttributesEx( filePath.c_str(), GetFileExInfoStandard, &fileMetadata ) != FALSE;
+    return ::GetFileAttributesExW( filePath.c_str(), GetFileExInfoStandard, &fileMetadata ) != FALSE;
 #else
     stat_t statInfo{};
     const auto statRes = symlinkPolicy == SymlinkPolicy::Follow ?
