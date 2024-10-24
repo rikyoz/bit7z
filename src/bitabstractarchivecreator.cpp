@@ -54,7 +54,7 @@ auto is_valid_compression_method( const BitInOutFormat& format, BitCompressionMe
 }
 
 auto is_valid_dictionary_size( BitCompressionMethod method, uint32_t dictionarySize ) noexcept -> bool {
-    constexpr auto kMaxLzmaDictionarySize = 1536 * ( 1ull << 20ull ); // less than 1536 MiB
+    constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1ull << 20ull ); // less than 3840 MiB
     constexpr auto kMaxPpmdDictionarySize = ( 1ull << 30ull );        // less than 1 GiB, i.e., 2^30 bytes
     constexpr auto kMaxBzip2DictionarySize = 900 * ( 1ull << 10ull ); // less than 900 KiB
 
