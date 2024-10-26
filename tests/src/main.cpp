@@ -53,10 +53,18 @@ auto main( int argc, char* argv[] ) -> int try {
     std::clog << '\n';
 
     std::clog << "[Flags]\n";
+    std::clog << flags::debug_or_release << '\n';
     std::clog << "BIT7Z_AUTO_FORMAT: " << flags::auto_format << '\n';
     std::clog << "BIT7Z_REGEX_MATCHING: " << flags::regex_matching << '\n';
     std::clog << "BIT7Z_USE_NATIVE_STRING: " << flags::native_string << '\n';
-    std::clog << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << "\n\n";
+    std::clog << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << "\n";
+#ifdef _WIN32
+    std::clog << "BIT7Z_AUTO_PREFIX_LONG_PATHS: " << flags::auto_prefix_long_paths << "\n";
+    std::clog << "BIT7Z_PATH_SANITIZATION: " << flags::path_sanitization << "\n";
+    std::clog << "BIT7Z_USE_SYSTEM_CODEPAGE: " << flags::use_system_codepage << "\n\n";
+#else
+    std::clog << "BIT7Z_USE_LEGACY_IUNKNOWN: " << flags::use_legacy_iunknown << "\n\n";
+#endif
     std::clog.flush();
 
     return Catch::Session().run( argc, argv );
