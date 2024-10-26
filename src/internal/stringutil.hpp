@@ -33,17 +33,17 @@ inline auto path_to_tstring( const fs::path& path ) -> tstring {
     /* In an ideal world, we should only use fs::path's string< tchar >() function for converting a path to a tstring.
      * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
      * which is the default encoding of bit7z. */
-#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
-    return path.wstring();
-#elif defined( _WIN32 ) && defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+#if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
+    return path.native();
+#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE ) && !defined( BIT7Z_CPP20_U8STRING )
+    return path.u8string();
+#else // On Windows, if we are using either the system codepage or building bit7z using the C++20 standard.
     /* If we encounter a path with Unicode characters, MSVC will throw an exception
      * while converting from a fs::path to std::string if any character is invalid in the system codepage.
      * Hence, here we use bit7z's own string conversion function, which substitutes invalid Unicode characters
      * with '?' characters. */
     const auto& native_path = path.native();
     return narrow( native_path.c_str(), native_path.size() );
-#else
-    return path.u8string();
 #endif
 }
 
@@ -54,6 +54,11 @@ inline auto path_to_tstring( const fs::path& path ) -> tstring {
 #endif
 
 inline auto tstring_to_path( const tstring& str ) -> fs::path {
+#ifdef _MSC_VER
+    // fs::u8path() has been deprecated in C++20, so we disable the warning to keep using it.
+#pragma warning(push)
+#pragma warning(disable: 4996)
+#endif
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
     auto result = PATH_FROM_TSTRING( str );
     if ( filesystem::fsutil::should_format_long_path( result ) ) {
@@ -63,6 +68,9 @@ inline auto tstring_to_path( const tstring& str ) -> fs::path {
 #else
     // By default, MSVC treats strings as encoded using the system codepage, but bit7z uses UTF-8.
     return PATH_FROM_TSTRING( str );
+#endif
+#ifdef _MSC_VER
+#pragma warning(pop)
 #endif
 }
 

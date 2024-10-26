@@ -18,12 +18,30 @@
 #include <string>
 #include <system_error>
 
+#include "bitdefines.hpp"
+#if defined( _WIN32 ) && BIT7Z_CPP20_U8STRING && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+#include "internal/stringutil.hpp"
+#endif
+
 namespace bit7z {
 
+namespace {
 auto read_symlink_as_string( const fs::path& symlinkPath ) noexcept -> std::string {
     std::error_code error;
-    return fs::read_symlink( symlinkPath, error ).u8string();
+    const auto symlinkValue = fs::read_symlink( symlinkPath, error );
+#if !defined( BIT7Z_CPP20_U8STRING )
+    return symlinkValue.u8string();
+#elif !defined( _WIN32 )
+    return symlinkValue.string();
+#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+    const auto& nativePath = symlinkValue.native();
+    return narrow( nativePath.c_str(), nativePath.size() );
+#else
+    const auto utf8_path = symlinkValue.u8string();
+    return { utf8_path.cbegin(), utf8_path.cend() };
+#endif
 }
+} // namespace
 
 CSymlinkInStream::CSymlinkInStream( const fs::path& symlinkPath )
     : mStream{ read_symlink_as_string( symlinkPath ) },

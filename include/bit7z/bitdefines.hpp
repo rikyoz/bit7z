@@ -19,7 +19,11 @@
 //#define BIT7Z_USE_STD_BYTE
 //#define BIT7Z_USE_NATIVE_STRING
 
-#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || ( defined( __cplusplus ) && __cplusplus >= 201703L )
+#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 202302L ) || ( defined( __cplusplus ) && __cplusplus >= 202302L )
+#   define BIT7Z_CPP_STANDARD 23
+#elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 202002L ) || ( defined( __cplusplus ) && __cplusplus >= 202002L )
+#   define BIT7Z_CPP_STANDARD 20
+#elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || ( defined( __cplusplus ) && __cplusplus >= 201703L )
 #   define BIT7Z_CPP_STANDARD 17
 #elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201402L ) || ( defined( __cplusplus ) && __cplusplus >= 201402L )
 #   define BIT7Z_CPP_STANDARD 14
@@ -35,6 +39,10 @@
 #           define BIT7Z_USE_STANDARD_FILESYSTEM
 #       endif
 #   endif
+#endif
+
+#if !defined( BIT7Z_CPP20_U8STRING ) && ( BIT7Z_CPP_STANDARD >= 20 && defined( __cpp_lib_char8_t ) )
+#   define BIT7Z_CPP20_U8STRING
 #endif
 
 /* Macro defines for [[nodiscard]] and [[maybe_unused]] attributes. */

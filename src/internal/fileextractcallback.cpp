@@ -91,15 +91,11 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
     auto filePath = getCurrentItemPath();
 
     if ( mRenameCallback ) {
-        // Here we don't use the path_to_tstring function to avoid allocating a string object
-        // when using BIT7Z_USE_NATIVE_STRING.
-#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
+#if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
+        // Here we don't use the path_to_tstring function to avoid allocating a new string object.
         const auto& filePathString = filePath.native();
-#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-        const auto filePathString = filePath.u8string();
 #else
-        const auto& nativePath = filePath.native();
-        const auto filePathString = narrow( nativePath.c_str(), nativePath.size() );
+        const auto filePathString = path_to_tstring( filePath );
 #endif
         filePath = tstring_to_path( mRenameCallback( index, filePathString ) );
     }
@@ -121,15 +117,11 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
 
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
-            // Here we don't use the path_to_tstring function to avoid allocating a string object
-            // when using BIT7Z_USE_NATIVE_STRING.
-#if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
+#if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
+            // Here we don't use the path_to_tstring function to avoid allocating a new string object.
             const auto& filePathString = filePath.native();
-#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-            const auto filePathString = filePath.u8string();
 #else
-            const auto& nativePath = filePath.native();
-            const auto filePathString = narrow( nativePath.c_str(), nativePath.size() );
+            const auto filePathString = path_to_tstring( filePath );
 #endif
             mHandler.fileCallback()( filePathString );
         }
