@@ -1553,23 +1553,22 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a zip archive using a different en
     const BitArchiveReader reader{ lib, inputArchive, BitFormat::Zip };
     REQUIRE( reader.itemsCount() == 1 );
 
-    constexpr auto expectedItemName = BIT7Z_STRING( "ユニコード.pdf" );
+    constexpr auto expectedItemName = BIT7Z_NATIVE_STRING( "ユニコード.pdf" );
 
     // The archive uses the Shift-JS encoding (Codepage 932) for the file names.
     // If we do not set the codepage to be used, 7-Zip will report a wrongly-encoded string for the name.
-    REQUIRE_FALSE( reader.itemAt( 0 ).name() == expectedItemName );
+    REQUIRE_FALSE( reader.itemAt( 0 ).nativePath() == expectedItemName );
 
     // Setting the correct codepage will make 7-Zip correctly encode the string.
     reader.useFormatProperty( L"cp", 932u );
-    REQUIRE( reader.itemAt( 0 ).name() == expectedItemName );
+    REQUIRE( reader.itemAt( 0 ).nativePath() == expectedItemName );
 
     TempTestDirectory testOutDir{ "test_bitinputarchive" };
     INFO( "Output directory: " << testOutDir )
 
     REQUIRE_NOTHROW( reader.extractTo( testOutDir ) );
 
-    const auto extractedFilePath = tstring_to_path( expectedItemName );
-    REQUIRE( fs::exists( extractedFilePath ) );
-    REQUIRE( fs::remove( extractedFilePath ) );
+    REQUIRE( fs::exists( expectedItemName ) );
+    REQUIRE( fs::remove( expectedItemName ) );
 }
 #endif
