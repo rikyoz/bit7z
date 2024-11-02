@@ -28,7 +28,6 @@
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
 #include <internal/fs.hpp>
-#include <internal/stringutil.hpp>
 
 #include <algorithm>
 #include <cstddef>
