@@ -167,6 +167,27 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto handler() const noexcept -> const BitAbstractArchiveHandler&;
 
+        /**
+         * @brief Use the given format property to read the archive.
+         *
+         * @param name      the name of the property.
+         * @param property  the property value.
+         */
+        void useFormatProperty( const wchar_t* name, const BitPropVariant& property ) const;
+
+        /**
+         * @brief Use the given format property to read the archive.
+         *
+         * @tparam T    the type of the property.
+         * @param name  the name of the property.
+         * @param value the property value.
+         */
+        template< typename T,
+                  typename = typename std::enable_if< is_explicitly_convertible< T, BitPropVariant >::value >::type >
+        void useFormatProperty( const wchar_t* name, T&& value ) const { // NOLINT(*-avoid-c-arrays)
+            useFormatProperty( name, BitPropVariant{ std::forward< T >( value ) } );
+        }
+
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         void extract( const tstring& outDir, const std::vector< uint32_t >& indices = {} ) const {
             extractTo( outDir, indices );
@@ -309,6 +330,7 @@ class BitInputArchive {
          * @note You can set a FileCallback to check the file being extracted.
          *
          * @param callback  a function providing the extracted raw data to the user.
+         * @param indices
          */
         void extractTo( RawDataCallback callback, const std::vector< uint32_t >& indices ) const;
 

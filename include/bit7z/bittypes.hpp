@@ -136,6 +136,10 @@ constexpr auto to_underlying( Enum enum_value ) noexcept -> underlying_type_t< E
     return static_cast< underlying_type_t< Enum > >( enum_value );
 }
 
+template< typename From, typename To >
+using is_explicitly_convertible = std::integral_constant< bool, std::is_constructible< To, From >::value &&
+                                                                !std::is_convertible< From, To >::value >;
+
 }  // namespace bit7z
 
 #endif // BITTYPES_HPP
