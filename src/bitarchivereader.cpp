@@ -20,15 +20,36 @@ using namespace bit7z;
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     const tstring& inArchive,
+                                    ArchiveStartOffset archiveStart,
+                                    const BitInFormat& format,
+                                    const tstring& password )
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
+
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const tstring& inArchive,
                                     const BitInFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const std::vector< byte_t >& inArchive,
+                                    const buffer_t& inArchive,
+                                    ArchiveStartOffset archiveStart,
+                                    const BitInFormat& format,
+                                    const tstring& password )
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
+
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    const buffer_t& inArchive,
                                     const BitInFormat& format,
                                     const tstring& password )
     : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
+
+BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
+                                    std::istream& inArchive,
+                                    ArchiveStartOffset archiveStart,
+                                    const BitInFormat& format,
+                                    const tstring& password )
+    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
 
 BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
                                     std::istream& inArchive,

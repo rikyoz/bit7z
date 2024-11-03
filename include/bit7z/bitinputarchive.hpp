@@ -25,6 +25,12 @@ namespace bit7z {
 
 using std::vector;
 
+enum struct ArchiveStartOffset : std::uint8_t {
+    None, ///< Don't specify an archive start offset. For some formats, like Zip archives,
+          ///< this means that the whole input file will be searched for the archive's start.
+    FileStart ///< Check only the file start for the archive's start.
+};
+
 /**
  * @brief The BitInputArchive class, given a handler object, allows reading/extracting the content of archives.
  */
@@ -33,38 +39,54 @@ class BitInputArchive {
         /**
          * @brief Constructs a BitInputArchive object, opening the input file archive.
          *
-         * @param handler  the reference to the BitAbstractArchiveHandler object containing all the settings to
-         *                 be used for reading the input archive
-         * @param inFile   the path to the input archive file
+         * @param handler     the reference to the BitAbstractArchiveHandler object containing all the settings to
+         *                    be used for reading the input archive
+         * @param inFile      the path to the input archive file
+         * @param startOffset (optional) specifies whether to search for the archive's start throughout the
+ *                            entire file or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler, const tstring& inFile );
+        BitInputArchive( const BitAbstractArchiveHandler& handler,
+                         const tstring& inFile,
+                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the input file archive.
          *
-         * @param handler  the reference to the BitAbstractArchiveHandler object containing all the settings to
-         *                 be used for reading the input archive
-         * @param arcPath  the path to the input archive file
+         * @param handler     the reference to the BitAbstractArchiveHandler object containing all the settings to
+         *                    be used for reading the input archive
+         * @param arcPath     the path to the input archive file
+         * @param startOffset (optional) whether to search for the archive's start throughout the entire file
+         *                    or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler, const fs::path& arcPath );
+        BitInputArchive( const BitAbstractArchiveHandler& handler,
+                         const fs::path& arcPath,
+                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive given in the input buffer.
          *
-         * @param handler  the reference to the BitAbstractArchiveHandler object containing all the settings to
-         *                 be used for reading the input archive
-         * @param inBuffer the buffer containing the input archive
+         * @param handler     the reference to the BitAbstractArchiveHandler object containing all the settings to
+         *                    be used for reading the input archive
+         * @param inBuffer    the buffer containing the input archive
+         * @param startOffset (optional) whether to search for the archive's start throughout the entire file
+         *                    or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler, const std::vector< byte_t >& inBuffer );
+        BitInputArchive( const BitAbstractArchiveHandler& handler,
+                         const buffer_t& inBuffer,
+                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive by reading the given input stream.
          *
-         * @param handler  the reference to the BitAbstractArchiveHandler object containing all the settings to
-         *                 be used for reading the input archive
-         * @param inStream the standard input stream of the input archive
+         * @param handler     the reference to the BitAbstractArchiveHandler object containing all the settings to
+         *                    be used for reading the input archive
+         * @param inStream    the standard input stream of the input archive
+         * @param startOffset (optional) whether to search for the archive's start throughout the entire file
+         *                    or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler, std::istream& inStream );
+        BitInputArchive( const BitAbstractArchiveHandler& handler,
+                         std::istream& inStream,
+                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
 
         BitInputArchive( const BitInputArchive& ) = delete;
 
@@ -275,7 +297,8 @@ class BitInputArchive {
         const BitAbstractArchiveHandler& mArchiveHandler;
         tstring mArchivePath;
 
-        auto openArchiveStream( const fs::path& name, IInStream* inStream ) -> IInArchive*;
+        BIT7Z_NODISCARD
+        auto openArchiveStream( const fs::path& name, IInStream* inStream, ArchiveStartOffset startOffset ) -> IInArchive*;
 
     public:
         /**
@@ -397,6 +420,7 @@ class BitInputArchive {
          * @return the item at the given index within the archive.
          */
         BIT7Z_NODISCARD auto itemAt( uint32_t index ) const -> BitArchiveItemOffset;
+
 };
 
 }  // namespace bit7z
