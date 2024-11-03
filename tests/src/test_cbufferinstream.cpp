@@ -17,6 +17,7 @@
 
 #include <internal/cbufferinstream.hpp>
 
+#include <cstring>
 #include <limits>
 
 using bit7z::byte_t;
