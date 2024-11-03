@@ -237,6 +237,24 @@ auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandle
     return mArchiveHandler;
 }
 
+void BitInputArchive::useFormatProperty( const wchar_t* name, const BitPropVariant& property ) const {
+    CMyComPtr< ISetProperties > setProperties;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    HRESULT res = mInArchive->QueryInterface( ::IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) );
+    if ( res != S_OK ) {
+        throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
+    }
+
+    const auto propertyNames = { name };
+    const auto propertyValues = { property };
+    res = setProperties->SetProperties( propertyNames.begin(),
+                                        propertyValues.begin(),
+                                        static_cast< std:: uint32_t >( propertyNames.size() ) );
+    if ( res != S_OK ) {
+        throw BitException( "Cannot use the archive format property", make_hresult_code( res ) );
+    }
+}
+
 void BitInputArchive::extractTo( const tstring& outDir ) const {
     auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
     extract_arc( mInArchive, {}, callback );
