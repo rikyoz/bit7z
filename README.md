@@ -1,24 +1,27 @@
 <h1 align="center">bit7z</h1>
 
-<h3 align="center">A C++ static library offering a clean and simple interface to the 7-zip shared libraries</h3>
-
-<!-- navbar -->
-<p align="center">
-  <a href="#-supported-features" title="List of Features Supported by the Library">Supported Features</a> •
-  <a href="#-getting-started-library-usage" title="Basic Source Code Examples">Getting Started</a> •
-  <a href="#-download" title="Download Pre-compiled Packages">Download</a> •
-  <a href="#-requirements" title="Usage Requirements">Requirements</a> •
-  <a href="#%EF%B8%8F-building-and-using-bit7z" title="Building the Library">Building & Using</a> •
-  <a href="#%EF%B8%8F-donate" title="Support the Project">Donate</a> •
-  <a href="#-license" title="Project License">License</a>
-</p>
-<!-- navbar -->
+<p align="center"><em>A C++ static library offering a clean and simple interface to the 7-zip shared libraries.</em></p>
 
 <div align="center">
   <a href="https://github.com/rikyoz/bit7z/releases" title="Latest Stable GitHub Release"><img src="https://img.shields.io/github/release/rikyoz/bit7z/all.svg?style=flat&logo=github&logoColor=white&colorB=blue&label=" alt="GitHub release"></a>&thinsp;<img src="https://img.shields.io/badge/-C++14-3F63B3.svg?style=flat&logo=C%2B%2B&logoColor=white" alt="C++14" title="C++ Standards Used: C++14">&thinsp;<img src="https://img.shields.io/badge/-Windows-6E46A2.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0ODc1IDQ4NzUiPjxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoMjMxMXYyMzEwSDB6bTI1NjQgMGgyMzExdjIzMTBIMjU2NHpNMCAyNTY0aDIzMTF2MjMxMUgwem0yNTY0IDBoMjMxMXYyMzExSDI1NjQiLz48L3N2Zz4=&logoColor=white" alt="Windows" title="Supported Platform: Windows">&thinsp;<img src="https://img.shields.io/badge/-Linux-ad3a90.svg?style=flat&logo=linux&logoColor=white" alt="Linux" title="Supported Platform: Linux">&thinsp;<img src="https://img.shields.io/badge/-macOS-d43d6c.svg?style=flat&logo=apple&logoColor=white" alt="macOS" title="Supported Platform: macOS">&thinsp;<img src="https://img.shields.io/badge/-BSD-red.svg?style=flat&logo=freebsd&logoColor=white" alt="BSD" title="Supported Platform: BSD">&thinsp;<img src="https://img.shields.io/badge/-x86%20&middot;%20x64%20&middot;%20arm%20&middot;%20arm64-orange.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbDpzcGFjZT0icHJlc2VydmUiIHZpZXdCb3g9IjAgMCA5NDIgOTQyIj48cGF0aCBmaWxsPSIjZmZmIiBkPSJNNTc5LjEgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk1LjlWODk0aC0uMXpNNTc5LjEgNDh2NzcuNUg2NzVWNDhhNDggNDggMCAwIDAtOTUuOSAwek00MjMgNDh2NzcuNWg5NlY0OGE0OCA0OCAwIDAgMC05NiAwek00MjMgODk0YTQ4IDQ4IDAgMCAwIDk2IDB2LTc3LjVoLTk2Vjg5NHpNMjY3IDQ4djc3LjVoOTUuOVY0OGE0OCA0OCAwIDAgMC05NS45IDB6TTI2NyA4OTRhNDggNDggMCAwIDAgOTYgMHYtNzcuNWgtOTZWODk0ek0wIDYyN2E0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05NS45SDQ4QTQ4IDQ4IDAgMCAwIDAgNjI3ek04OTQgNTc5LjFoLTc3LjVWNjc1SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTAgNDcxYTQ4IDQ4IDAgMCAwIDQ4IDQ4aDc3LjV2LTk2SDQ4YTQ4IDQ4IDAgMCAwLTQ4IDQ4ek04OTQgNDIzaC03Ny41djk2SDg5NGE0OCA0OCAwIDAgMCAwLTk2ek0wIDMxNWE0OCA0OCAwIDAgMCA0OCA0OGg3Ny41di05Nkg0OGE0OCA0OCAwIDAgMC00OCA0OHpNODk0IDI2N2gtNzcuNXY5NS45SDg5NGE0OCA0OCAwIDAgMCAwLTk1Ljl6TTE3MS42IDcyMC40YTUwIDUwIDAgMCAwIDUwIDUwaDQ5OC44YTUwIDUwIDAgMCAwIDUwLTUwVjIyMS42YTUwIDUwIDAgMCAwLTUwLTUwSDIyMS42YTUwIDUwIDAgMCAwLTUwIDUwdjQ5OC44eiIvPjwvc3ZnPg==" alt="x86, x64, arm, arm64" title="Supported CPU Architectures: x86, x64, arm, arm64">&thinsp;<a href="#%EF%B8%8F-donate" title="Donate"><img src="https://img.shields.io/badge/-donate-yellow.svg?style=flat&logo=paypal&logoColor=white" alt="donate"></a>&thinsp;<a href="https://github.com/rikyoz/bit7z/wiki" title="Project Documentation"><img src="https://img.shields.io/badge/-docs-green.svg?style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGRhdGEtbmFtZT0iTGF5ZXIgMSIgdmlld0JveD0iMCAwIDEwNS4zIDEyMi45Ij48cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiNmZmYiIGQ9Ik0xNy41IDBIMTAydjk0LjJjLS4xIDIuNy0zLjUgMi43LTcuMiAyLjZIMTYuM2E5LjIgOS4yIDAgMCAwIDAgMTguNEg5OHYtOS44aDcuMlYxMThhNC4yIDQuMiAwIDAgMS00LjEgNC4xSDE2LjZDNy41IDEyNS41IDAgMTE4IDAgMTA4LjhWMTcuNUExNy42IDE3LjYgMCAwIDEgMTcuNSAwWm0tMS4zIDEwOGg3NS4yYTEuNCAxLjQgMCAwIDEgMS40IDEuM3YuOGExLjQgMS40IDAgMCAxLTEuNCAxLjRIMTYuMmExLjQgMS40IDAgMCAxLTEuMy0xLjR2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFptMC03LjJoNzUuMmExLjQgMS40IDAgMCAxIDEuNCAxLjR2LjhhMS40IDEuNCAwIDAgMS0xLjQgMS40SDE2LjJBMS40IDEuNCAwIDAgMSAxNSAxMDN2LS44YTEuNCAxLjQgMCAwIDEgMS4zLTEuNFoiLz48L3N2Zz4=" alt="docs"></a>&thinsp;<a href="https://ci.appveyor.com/project/rikyoz/bit7z" title="AppVeyor CI Build Status"><img src="https://img.shields.io/appveyor/ci/rikyoz/bit7z.svg?style=flat&logo=appveyor&logoColor=white&label=" alt="Build status"></a>
   <br>
   <img src="https://img.shields.io/badge/MSVC%202015+-flag.svg?color=555555&style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0ibTIxIDQtNC0yYTEgMSAwIDAgMC0xIDBsLTggOC00LTNhMSAxIDAgMCAwLTEgMEwyIDhhMSAxIDAgMCAwIDAgMWwzIDMtMyAzYTEgMSAwIDAgMCAwIDFsMSAxYTEgMSAwIDAgMCAxIDBsNC0zIDggOGExIDEgMCAwIDAgMSAwbDQtMmExIDEgMCAwIDAgMS0xVjVhMSAxIDAgMCAwLTEtMXptLTQgMTItNi00IDYtNXoiLz48L3N2Zz4=&logoColor=white" alt="MSVC 2015+" title="Supported Windows Compiler: MSVC 2015 or later">&thinsp;<img src="https://img.shields.io/badge/MinGW%206.4+%20-flag.svg?color=555555&style=flat&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMzIgMTMyIj48cGF0aCBmaWxsPSIjY2NjIiBkPSJtMCA1MiAyMy0yNCAyNCAyNC0yNCAyM3ptMCA1OCAyMy0yNCAyNCAyNC0yNCAyM3oiLz48cGF0aCBmaWxsPSIjN2Q3ZDdkIiBkPSJtMjkgODEgMjMtMjQgMjQgMjQtMjQgMjN6bS0xLTU4TDUyIDBsMjMgMjMtMjMgMjR6Ii8+PHBhdGggZmlsbD0iI2NjYyIgZD0ibTU3IDUyIDI0LTIzIDIzIDIzLTIzIDI0eiIvPjxwYXRoIGZpbGw9IiM3ZDdkN2QiIGQ9Im04NiAyMyAyNC0yMyAyMyAyMy0yMyAyNHoiLz48cGF0aCBmaWxsPSIjY2NjIiBkPSJtNTcgMTA5IDI0LTIzIDIzIDIzLTIzIDIzeiIvPjxwYXRoIGZpbGw9IiM3ZDdkN2QiIGQ9Im04NiA4MSAyMy0yNCAyMyAyNC0yMyAyM3oiLz48L3N2Zz4=&logoColor=white">&thinsp;<img src="https://img.shields.io/badge/GCC%204.9+-flag.svg?color=555555&style=flat&logo=gnu&logoColor=white" alt="GCC 4.9+" title="Supported Unix Compiler: GCC 4.9 or later">&thinsp;<img src="https://img.shields.io/badge/Clang%203.6+-flag.svg?color=555555&style=flat&logo=llvm&logoColor=white" alt="Clang 3.6+" title="Supported Unix Compiler: Clang 3.5 or later">&thinsp;<a href="https://www.codefactor.io/repository/github/rikyoz/bit7z" alt="Codefactor Grade"><img alt="CodeFactor Grade" src="https://img.shields.io/codefactor/grade/github/rikyoz/bit7z?label=Code%20Quality&logo=codefactor&logoColor=white"></a>&thinsp;<a href="https://github.com/rikyoz/bit7z/blob/master/LICENSE" title="Project License: MPLv2"><img src="https://img.shields.io/badge/-MPL--2.0-lightgrey.svg?style=flat&logo=mozilla" alt="License"></a>
 </div>
+<!-- navbar -->
+
+<p align="center">
+  <a href="#-supported-features" title="List of Features Supported by the Library">Supported Features</a> •
+  <a href="#-getting-started-library-usage" title="Basic Source Code Examples">Getting Started</a> •
+  <a href="#-download" title="Download Pre-compiled Packages">Download</a> •
+  <a href="#-requirements" title="Usage Requirements">Requirements</a> •
+  <a href="#%EF%B8%8F-installation" title="Installation">Installation</a> •
+  <a href="#%EF%B8%8F-configuration" title="Configuration">Configuration</a> •
+  <a href="#%EF%B8%8F-donate" title="Support the Project">Donate</a> •
+  <a href="#-license" title="Project License">License</a>
+</p>
+
+<!-- navbar -->
+
 
 ## ⚡️ Introduction
 
@@ -45,12 +48,12 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Operation callbacks** for obtaining real-time information about ongoing operations.
 + **Canceling** or **pausing** the current operation.
 
-### Notes
-
-The presence or not of some of the above features depends on the particular shared library used along with bit7z.<br/>
-For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please check this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
-
-In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regular expressions_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+> [!NOTE]
+>
+> The presence or not of some of the above features depends on the particular shared library used along with bit7z.<br/>
+> For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and 7zxa.dll can only extract 7z files. For more information about the 7-zip DLLs, please check this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
+>
+> In the end, some other features (e.g., _automatic format detection_ and _selective extraction using regular expressions_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## 🔥 Getting Started (Library Usage)
 
@@ -256,7 +259,7 @@ You can also clone/download this repository and build the library yourself (plea
 + **Architecture:** x86, x86_64, arm, arm64.
 + **Language Standard:** C++11 (for using the library), C++14 (for building the library).
 + **Compiler:** MSVC 2015 or later[^2], MinGW v6.4 or later[^3], GCC v4.9 or later, Clang 3.6 or later.
-+ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip `.so` library on Unix[^4].
++ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip[^4] `.so` library on Unix[^5].
 
 [^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
 
@@ -264,11 +267,56 @@ You can also clone/download this repository and build the library yourself (plea
 
 [^3]: When using MinGW, you should link your program also with `libuuid` (e.g. `-lbit7z -loleaut32 -luuid`).
 
-[^4]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
+[^4]: bit7z doesn't support RAR archives when using the p7zip `.so` libraries.
 
-## ⚙️ Building and Using bit7z
+[^5]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
-For building the library:
+## 🔗 Installation
+
+Bit7z can be used as a dependency in several alternative ways:
+
+### Using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake)
+
+```cmake
+CPMAddPackage("gh:rikyoz/bit7z@<version>") # Replace <version> with the version of bit7z you want to use.
+# To enable/disable build options, use set(BIT7Z_<OPTION NAME> ON CACHE BOOL "enable option" FORCE) here.
+target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
+```
+
+### Using [vcpkg](https://vcpkg.io/en/)
+
+First, you need to install the library:
+
+```cmd
+vcpkg install bit7z
+```
+
+Then, you add bit7z as a dependency in your project's CMakeLists.txt:
+
+```cmake
+find_package(unofficial-bit7z CONFIG REQUIRED)
+target_link_libraries(${YOUR_TARGET} PRIVATE unofficial::bit7z::bit7z64)
+```
+
+### Using CMake
+
+You can also directly integrate the library into your CMake project:
+
++ Either download bit7z's sources to a sub-directory of your project (e.g., `third_party`), or add this repository as a git submodule of yours.
++ Then, use the command `add_subdirectory()` in your `CMakeLists.txt` to include bit7z.
++ Finally, link the `bit7z` library using the `target_link_libraries()` command.
+
+For example:
+
+```cmake
+add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/bit7z)
+# To enable/disable build options, use set(BIT7Z_<OPTION NAME> ON CACHE BOOL "enable option" FORCE) here.
+target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
+```
+
+### Building from sources and manually linking
+
+For manually building the library:
 
 ```bash
 cd <bit7z folder>
@@ -277,20 +325,19 @@ cmake ../ -DCMAKE_BUILD_TYPE=Release
 cmake --build . -j --config Release
 ```
 
+A `.lib`/`.a` library file will be produced in the `<bit7z folder>/lib/<arch>/` folder.
+
 A more detailed guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
-You can also directly integrate the library into your project via CMake:
-
-+ Download bit7z and copy it into a sub-directory of your project (e.g., `third_party`), or add it as a git submodule of your repository.
-+ Then, use the command `add_subdirectory()` in your `CMakeLists.txt` to include bit7z.
-+ Finally, link the `bit7z` library using the `target_link_libraries()` command.
-
-For example:
+Once built, you can copy the library file and bit7z's `include` folder in the desired subfolders of your project, and then manually link the library to your application, e.g., in your CMake project:
 
 ```cmake
-add_subdirectory( ${CMAKE_SOURCE_DIR}/third_party/bit7z )
-target_link_libraries( ${YOUR_TARGET} PRIVATE bit7z )
+target_include_directories(${YOUR_TARGET} PRIVATE "<path-to-bit7z-include-folder>")
+target_link_directories(${YOUR_TARGET} PRIVATE "<path-to-bit7z-lib-folder>")
+target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
 ```
+
+## ⚙️ Configuration
 
 The library is highly customizable: for a detailed list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library#%EF%B8%8F-build-options).
 
@@ -302,7 +349,10 @@ Optionally, you can specify a different version of 7-zip via the CMake option `B
 
 Alternatively, you can specify a custom path containing the 7-zip source code via the option `BIT7Z_CUSTOM_7ZIP_PATH`.
 
-Please note that, in general, it is best to use the same version of 7-zip of the shared libraries that you will use at runtime.
+> [!NOTE]
+>
+> In general, it is best to use the same version of 7-zip of the shared libraries that you will use at runtime.
+>
 
 #### Using 7-zip v23.01 on Linux and macOS
 
@@ -315,7 +365,6 @@ If you plan to use the `7z.so` from p7zip or 7-zip v22.01 and earlier instead, y
 
 <details>
   <summary>Expand for more details</summary>
-
 _On Linux and macOS_, 7-zip v23.01 introduced breaking changes to the IUnknown interface.
 As a result, if you build bit7z for such a version of 7-zip (the default), it will not support using the shared libraries from previous versions of 7-zip (or from p7zip).
 Conversely, bit7z made for earlier versions of 7-zip or for p7zip is incompatible with the shared libraries from 7-zip v23.01 and later.
@@ -359,7 +408,7 @@ However, if you need to handle non-ASCII/Unicode characters, as it is likely, yo
     ```cpp
     #include <fcntl.h> //for _O_U16TEXT
     #include <io.h>  //for _setmode
-
+    
     _setmode(_fileno(stdout), _O_U16TEXT); // setting the stdout encoding to UTF16
     _setmode(_fileno(stdin), _O_U16TEXT); // setting the stdin encoding to UTF16
     ```
