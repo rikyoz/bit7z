@@ -282,8 +282,8 @@ Bit7z can be used as a dependency in several alternative ways:
 ### Using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake)
 
 ```cmake
-CPMAddPackage("gh:rikyoz/bit7z@<version>") # Replace <version> with the one you want to use.
-# Set bit7z's build options you want here, e.g.:
+CPMAddPackage("gh:rikyoz/bit7z@<version>") # Replace <version> with the desired one.
+# Here you can set bit7z's build options you want, e.g.:
 # set(BIT7Z_AUTO_FORMAT ON CACHE BOOL "enable auto format support" FORCE)
 target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
 ```
@@ -315,7 +315,7 @@ For example:
 
 ```cmake
 add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/bit7z)
-# Set bit7z's build options you want here, e.g.:
+# Here you can set bit7z's build options you want, e.g.:
 # set(BIT7Z_USE_NATIVE_STRING ON CACHE BOOL "enable using native OS strings" FORCE)
 target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
 ```
