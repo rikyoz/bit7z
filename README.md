@@ -277,13 +277,13 @@ You can also clone/download this repository and build the library yourself (plea
 
 ## 🔗 Installation
 
-Bit7z can be used as a dependency in several alternative ways:
+The library can be used as a dependency in a number of different ways:
 
 ### Using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake)
 
 ```cmake
 CPMAddPackage("gh:rikyoz/bit7z@<version>") # Replace <version> with the desired one.
-# Here you can set bit7z's build options you want, e.g.:
+# Here you can enable/disable bit7z's build options, e.g.:
 # set(BIT7Z_AUTO_FORMAT ON CACHE BOOL "enable auto format support" FORCE)
 target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
 ```
@@ -315,7 +315,7 @@ For example:
 
 ```cmake
 add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/bit7z)
-# Here you can set bit7z's build options you want, e.g.:
+# Here you can enable/disable bit7z's build options, e.g.:
 # set(BIT7Z_USE_NATIVE_STRING ON CACHE BOOL "enable using native OS strings" FORCE)
 target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
 ```
@@ -335,12 +335,15 @@ A `.lib`/`.a` library file will be produced in the `<bit7z folder>/lib/<arch>/` 
 
 A more detailed guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
 
-Once built, you can copy the library file and bit7z's `include` folder in the desired subfolders of your project, and then manually link the library to your application, e.g., in your CMake project:
+Once built, you can copy the library file and bit7z's `include` folder in the desired subfolders of your project, and then manually link the library and its runtime dependencies to your application, e.g., in your CMake project:
 
 ```cmake
 target_include_directories(${YOUR_TARGET} PRIVATE "<path-to-bit7z-include-folder>")
-link_directories(${YOUR_TARGET} PRIVATE "<path-to-bit7z-lib-folder>")
-target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
+find_library(BIT7Z_LIB bit7z HINTS "<path-to-bit7z-lib-folder>")
+target_link_libraries(${YOUR_TARGET} PRIVATE ${BIT7Z_LIB}
+                      $<$<PLATFORM_ID:WIN32>:oleaut32>
+                      $<$<PLATFORM_ID:MINGW>:uuid>
+                      $<$<PLATFORM_ID:UNIX>:dl>)
 ```
 
 ## ⚙️ Configuration
