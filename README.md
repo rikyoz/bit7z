@@ -1,6 +1,6 @@
 <h1 align="center">bit7z</h1>
 
-<p align="center"><strong><em>A C++ static library offering a clean and simple interface to the 7-zip shared libraries.</em></strong></p>
+<p align="center"><strong><em>A C++ static library offering a clean and simple interface to the 7-Zip shared libraries.</em></strong></p>
 
 <!-- navbar -->
 
@@ -26,7 +26,7 @@
 
 ## ⚡️ Introduction
 
-**bit7z** is a _cross-platform_ C++ static library that allows the _compression/extraction of archive files_ through a _clean_ and _simple_ wrapper interface to the dynamic libraries from the [7-zip](https://www.7-zip.org/ "7-zip Project Homepage") project.<br/>
+**bit7z** is a _cross-platform_ C++ static library that allows the _compression/extraction of archive files_ through a _clean_ and _simple_ wrapper interface to the dynamic libraries from the [7-Zip](https://www.7-zip.org/ "7-Zip Project Homepage") project.<br/>
 It supports compression and extraction to and from the filesystem or the memory, reading archives metadata, updating existing ones, creating multi-volume archives, operation progress callbacks, and many other functionalities.
 
 ## 🎯 Supported Features
@@ -51,13 +51,15 @@ It supports compression and extraction to and from the filesystem or the memory,
 
 > [!NOTE]
 >
-> The presence or not of some of the above features depends on the particular shared library used along with bit7z. For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and 7zxa.dll can only extract 7z files.
+> The presence or not of some of the above features depends on the specific 7-Zip shared library used. 
 >
-> For more information about the 7-zip DLLs, please check this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
+> For example, 7z.dll should support all these features, 7za.dll should work only with the 7z file format, and 7zxa.dll can only extract 7z files.
+>
+> For more information about the 7-Zip DLLs, please check this [wiki page](https://github.com/rikyoz/bit7z/wiki/7z-DLLs).
 
 > [!NOTE]
 >
-> Some other features (e.g., _automatic format detection_ and _selective extraction using regular expressions_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
+> Some features (e.g., _automatic format detection_ and _selective extraction using regular expressions_) are disabled by default, and macro definitions must be used during compilation to have them available ([wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library)).
 
 ## 🔥 Getting Started (Library Usage)
 
@@ -263,17 +265,24 @@ You can also clone/download this repository and build the library yourself (plea
 + **Architecture:** x86, x86_64, arm, arm64.
 + **Language Standard:** C++11 (for using the library), C++14 (for building the library).
 + **Compiler:** MSVC 2015 or later[^2], MinGW v6.4 or later[^3], GCC v4.9 or later, Clang 3.6 or later.
-+ **Shared Library:** a 7-zip `.dll` library on Windows, a 7-zip/p7zip[^4] `.so` library on Unix[^5].
++ **Shared Library:** a 7-Zip `.dll` library on Windows, a 7-Zip/p7zip `.so` library on Unix.
+
+> [!NOTE]
+>
+> The library does not support RAR archives when using the p7zip `.so` libraries.
+>
+> To extract RAR archives, you need to use 7-Zip's `.so` libraries.
+
+> [!NOTE]
+>
+> bit7z doesn't ship with the 7-Zip shared libraries. 
+>
+> You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
 [^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
-
 [^2]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.x.
 
 [^3]: When using MinGW, you should link your program also with `libuuid` (e.g. `-lbit7z -loleaut32 -luuid`).
-
-[^4]: bit7z doesn't support RAR archives when using the p7zip `.so` libraries.
-
-[^5]: bit7z doesn't ship with the 7-zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
 ## 🔗 Installation
 
@@ -350,36 +359,36 @@ target_link_libraries(${YOUR_TARGET} PRIVATE ${BIT7Z_LIB}
 
 The library is highly customizable: for a detailed list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library#%EF%B8%8F-build-options).
 
-### 📌 7-zip Version
+### 📌 7-Zip Version
 
-While configuring bit7z via CMake, it automatically downloads the latest version of 7-zip supported by the library.
+While configuring bit7z via CMake, it automatically downloads the latest version of 7-Zip supported by the library.
 
-Optionally, you can specify a different version of 7-zip via the CMake option `BIT7Z_7ZIP_VERSION` (e.g., `-DBIT7Z_7ZIP_VERSION="22.01"`).
+Optionally, you can specify a different version of 7-Zip via the CMake option `BIT7Z_7ZIP_VERSION` (e.g., `-DBIT7Z_7ZIP_VERSION="22.01"`).
 
-Alternatively, you can specify a custom path containing the 7-zip source code via the option `BIT7Z_CUSTOM_7ZIP_PATH`.
+Alternatively, you can specify a custom path containing the 7-Zip source code via the option `BIT7Z_CUSTOM_7ZIP_PATH`.
 
 > [!NOTE]
 >
-> In general, it is best to use the same version of 7-zip of the shared libraries that you will use at runtime.
+> In general, it is best to use the same version of 7-Zip of the shared libraries that you will use at runtime.
 >
 
-#### Using 7-zip v23.01 on Linux and macOS
+#### Using 7-Zip v23.01 on Linux and macOS
 
-By default, bit7z is compatible with the `7z.so` from 7-zip v23.01 and later.
+By default, bit7z is compatible with the `7z.so` from 7-Zip v23.01 and later.
 
-If you plan to use the `7z.so` from p7zip or 7-zip v22.01 and earlier instead, you have two ways to make bit7z compatible:
+If you plan to use the `7z.so` from p7zip or 7-Zip v22.01 and earlier instead, you have two ways to make bit7z compatible:
 
 + Configure bit7z with the CMake option `-DBIT7Z_USE_LEGACY_IUNKNOWN=ON`; _or_
-+ Configure bit7z for 7-zip v22.01 (i.e., `-DBIT7Z_7ZIP_VERSION="22.01"`).
++ Configure bit7z for 7-Zip v22.01 (i.e., `-DBIT7Z_7ZIP_VERSION="22.01"`).
 
 <details>
   <summary>Expand for more details</summary>
-_On Linux and macOS_, 7-zip v23.01 introduced breaking changes to the IUnknown interface.
-As a result, if you build bit7z for such a version of 7-zip (the default), it will not support using the shared libraries from previous versions of 7-zip (or from p7zip).
-Conversely, bit7z made for earlier versions of 7-zip or for p7zip is incompatible with the shared libraries from 7-zip v23.01 and later.
+_On Linux and macOS_, 7-Zip v23.01 introduced breaking changes to the IUnknown interface.
+As a result, if you build bit7z for such a version of 7-Zip (the default), it will not support using the shared libraries from previous versions of 7-Zip (or from p7zip).
+Conversely, bit7z made for earlier versions of 7-Zip or for p7zip is incompatible with the shared libraries from 7-Zip v23.01 and later.
 
-You can build the shared libraries of 7-zip v23.01 in a backward-compatible mode by defining the macro `Z7_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN`.
-If this is your case, you'll need to enable the `BIT7Z_USE_LEGACY_IUNKNOWN` to make bit7z work (in this case, bit7z will be compatible also with previous versions of 7-zip/p7zip).
+You can build the shared libraries of 7-Zip v23.01 in a backward-compatible mode by defining the macro `Z7_USE_VIRTUAL_DESTRUCTOR_IN_IUNKNOWN`.
+If this is your case, you'll need to enable the `BIT7Z_USE_LEGACY_IUNKNOWN` to make bit7z work (in this case, bit7z will be compatible also with previous versions of 7-Zip/p7zip).
 
 </details>
 
@@ -409,7 +418,7 @@ However, if you need to handle non-ASCII/Unicode characters, as it is likely, yo
   + User-input strings (e.g., the password of an archive) can be handled as explained [here](https://nullprogram.com/blog/2020/05/04/); in short: read the input as an UTF-16 wide string (e.g., via `ReadConsoleW`), and convert it to UTF-8 (bit7z provides a utility function for this, `bit7z::to_tstring`).
   + You can correctly print the UTF-8 output strings from bit7z (e.g., the path/name metadata of a file in an archive) to the console by calling [`SetConsoleOutputCP(CP_UTF8)`](https://learn.microsoft.com/en-us/windows/console/setconsoleoutputcp) before.
 + Configuring bit7z to use UTF-16 encoded wide strings (i.e., `std::wstring`) by enabling the `BIT7Z_USE_NATIVE_STRING` option via CMake.
-  + If your program is Windows-only, or you already use wide strings on Windows, this might be the best choice since it will avoid any internal string conversions (7-zip always uses wide strings).
+  + If your program is Windows-only, or you already use wide strings on Windows, this might be the best choice since it will avoid any internal string conversions (7-Zip always uses wide strings).
   + This option makes developing cross-platform applications slightly inconvenient since you'll still have to use `std::string` on POSIX systems.
   + The library provides a type alias `bit7z::tstring` and a macro function `BIT7Z_STRING` for defining wide string variables and literals on Windows and narrow ones on other platforms.
   + You must programmatically set the standard input and output encoding to UTF-16 to correctly read and print Unicode characters:
