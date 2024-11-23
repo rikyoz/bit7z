@@ -269,15 +269,13 @@ You can also clone/download this repository and build the library yourself (plea
 
 > [!NOTE]
 >
-> The library does not support RAR archives when using the p7zip `.so` libraries.
+> The library does not support RAR archives when using the p7zip `.so` libraries: to extract RAR archives on Unix systems, you need to use 7-Zip's `.so` libraries.
 >
-> To extract RAR archives, you need to use 7-Zip's `.so` libraries.
 
 > [!NOTE]
 >
-> bit7z doesn't ship with the 7-Zip shared libraries. 
+> The library doesn't ship with the 7-Zip shared libraries. You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 >
-> You can build them from the source code available at [7-zip.org](http://www.7-zip.org/).
 
 [^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
 [^2]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.x.
