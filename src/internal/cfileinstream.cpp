@@ -33,10 +33,10 @@ void CFileInStream::openFile( const fs::path& filePath ) {
     if ( mFileStream.fail() ) {
 #if defined( __MINGW32__ ) || defined( __MINGW64__ )
         std::error_code error{ errno, std::generic_category() };
-        throw BitException( "Failed to open the archive file", error, path_to_tstring( filePath ) );
 #else
-        throw BitException( "Failed to open the archive file", last_error_code(), path_to_tstring( filePath ) );
+        const auto error = last_error_code();
 #endif
+        throw BitException( "Failed to open the archive file", error, path_to_tstring( filePath ) );
     }
 }
 

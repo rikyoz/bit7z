@@ -37,10 +37,10 @@ CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     if ( mFileStream.fail() ) {
 #if defined( __MINGW32__ ) || defined( __MINGW64__ )
         error = std::error_code{ errno, std::generic_category() };
-        throw BitException( "Failed to open the output file", error, path_to_tstring( mFilePath ) );
 #else
-        throw BitException( "Failed to open the output file", last_error_code(), path_to_tstring( mFilePath ) );
+        error = last_error_code();
 #endif
+        throw BitException( "Failed to open the output file", error, path_to_tstring( mFilePath ) );
     }
 // Unbuffered streams are slow for Visual Studio 2015
 #if !defined(_MSC_VER) || _MSC_VER != 1900
