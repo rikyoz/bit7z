@@ -227,11 +227,11 @@ The newest bit7z v4 introduced some significant breaking changes to the library'
   + Now `BitExtractor` is just the name of a template class for all the extraction classes.
 + The old `BitCompressor` class is now called `BitFileCompressor`.
   + Now `BitCompressor` is just the name of a template class for all the compression classes.
++ The old `BitArchiveInfo` class is now called `BitArchiveReader`, and it allows to extract single archives.
 + The `ProgressCallback` now must return a `bool` value indicating whether the current operation can continue (`true`) or not (`false`).
 + The `BitException` class now inherits from `std::system_error` rather than `std::runtime_error`.
 
   + The method `BitException::getErrorCode()` was renamed `BitException::hresultCode()`.
-
 + The project structure changed:
   + Public API headers moved from `include/` to the `include/bit7z/` folder, so `#include` directives now need to prepend `bit7z/` to the included header name (e.g., `#include <bit7z/bitfileextractor.hpp>`).
     + Even though it is a bit verbose, it is a typical structure for C and C++ libraries, and it makes explicit which third-party library a header file belongs to.
@@ -261,30 +261,39 @@ You can also clone/download this repository and build the library yourself (plea
 
 ## 🧰 Requirements
 
-+ **Operating System:** Windows, Linux, macOS, Android[^1].
++ **Operating System:** Windows, Linux, macOS, Android.
 + **Architecture:** x86, x86_64, arm, arm64.
 + **Language Standard:** C++11 (for using the library), C++14 (for building the library).
-+ **Compiler:** MSVC 2015 or later[^2], MinGW v6.4 or later[^3], GCC v4.9 or later, Clang 3.6 or later.
++ **Compiler:** MSVC 2015 or later[^1], MinGW v6.4 or later, GCC v4.9 or later, Clang 3.6 or later.
 + **Shared Library:** a 7-Zip `.dll` library on Windows, a 7-Zip/p7zip `.so` library on Unix.
 
 > [!NOTE]
 >
-> The library does not support RAR archives when using the p7zip `.so` libraries. To extract RAR archives on Unix systems, you must use 7-Zip's `.so` libraries.
->
+> + **RAR Archive Support:** The library supports RAR archives *only* when using 7-Zip's `7z.dll`/`7z.so`. It doesn't support p7zip's unrar plugin. For RAR extraction on Unix-based systems, you need to build the 7-Zip `7z.so` library.
+> + **7-Zip Libraries:** Bit7z does **not** ship with the 7-Zip shared libraries. You can download the precompiled binaries or build them from the source at [7-zip.org](https://www.7-zip.org/).
 
-> [!NOTE]
->
-> Bit7z doesn't ship with the 7-Zip shared libraries: you can use the precompiled binaries or build them from the source code at [7-zip.org](https://www.7-zip.org/).
->
-
-[^1]: On Windows, you should link your program _also_ with _oleaut32_ (e.g., `-lbit7z -loleaut32`).<br/> On Linux and macOS, you should link your program _also_ with _dl_ (e.g., `-lbit7z -ldl`).<br/> If you are using the library via CMake, these dependencies will be linked automatically to your project.
-[^2]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.x.
-
-[^3]: When using MinGW, you should link your program also with `libuuid` (e.g. `-lbit7z -loleaut32 -luuid`).
+[^1]: MSVC 2010 was supported until v2.x, MSVC 2012/2013 until v3.x.
 
 ## 🔗 Installation
 
-The library can be used as a dependency in a number of different ways:
+The library can be installed as a dependency of your project in a number of different ways:
+
+### Using CMake's `add_subdirectory`
+
+You can directly integrate the library into your CMake project:
+
++ Either download bit7z's sources to a sub-directory of your project (e.g., `third_party`), or add this repository as a git submodule of yours.
++ Then, use the command `add_subdirectory()` in your `CMakeLists.txt` to include bit7z.
++ Finally, link the `bit7z` library using the `target_link_libraries()` command.
+
+For example:
+
+```cmake
+add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/bit7z) # Path to bit7z's repository
+# Here you can enable/disable bit7z's build options, e.g.:
+# set(BIT7Z_USE_NATIVE_STRING ON CACHE BOOL "enable using native OS strings" FORCE)
+target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
+```
 
 ### Using [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake)
 
@@ -310,52 +319,13 @@ find_package(unofficial-bit7z CONFIG REQUIRED)
 target_link_libraries(${YOUR_TARGET} PRIVATE unofficial::bit7z::bit7z64)
 ```
 
-### Using CMake
+### Building from source and manually linking
 
-You can also directly integrate the library into your CMake project:
-
-+ Either download bit7z's sources to a sub-directory of your project (e.g., `third_party`), or add this repository as a git submodule of yours.
-+ Then, use the command `add_subdirectory()` in your `CMakeLists.txt` to include bit7z.
-+ Finally, link the `bit7z` library using the `target_link_libraries()` command.
-
-For example:
-
-```cmake
-add_subdirectory(${CMAKE_SOURCE_DIR}/third_party/bit7z)
-# Here you can enable/disable bit7z's build options, e.g.:
-# set(BIT7Z_USE_NATIVE_STRING ON CACHE BOOL "enable using native OS strings" FORCE)
-target_link_libraries(${YOUR_TARGET} PRIVATE bit7z)
-```
-
-### Building from sources and manually linking
-
-For manually building the library:
-
-```bash
-cd <bit7z folder>
-mkdir build && cd build
-cmake ../ -DCMAKE_BUILD_TYPE=Release
-cmake --build . -j --config Release
-```
-
-A `.lib`/`.a` library file will be produced in the `<bit7z folder>/lib/<arch>/` folder.
-
-A more detailed guide on how to build this library is available [here](https://github.com/rikyoz/bit7z/wiki/Building-the-library).
-
-Once built, you can copy the library file and bit7z's `include` folder in the desired subfolders of your project, and then manually link the library and its runtime dependencies to your application, e.g., in your CMake project:
-
-```cmake
-target_include_directories(${YOUR_TARGET} PRIVATE "<path-to-bit7z-include-folder>")
-find_library(BIT7Z_LIB bit7z HINTS "<path-to-bit7z-lib-folder>")
-target_link_libraries(${YOUR_TARGET} PRIVATE ${BIT7Z_LIB}
-                      $<$<PLATFORM_ID:WIN32>:oleaut32>
-                      $<$<PLATFORM_ID:MINGW>:uuid>
-                      $<$<PLATFORM_ID:UNIX>:dl>)
-```
+The wiki provides instructions on how to [build](https://github.com/rikyoz/bit7z/wiki/Building-the-library) the library from the source code and how to [manually link](https://github.com/rikyoz/bit7z/wiki/Installing-the-library#manually-linking) it into your project.
 
 ## ⚙️ Configuration
 
-The library is highly customizable: for a detailed list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Building-the-library#%EF%B8%8F-build-options).
+The library is highly customizable: for a detailed list of the available build options, please refer to the [wiki](https://github.com/rikyoz/bit7z/wiki/Build-options).
 
 ### 📌 7-Zip Version
 
