@@ -312,7 +312,7 @@ First, you need to install the library:
 vcpkg install bit7z
 ```
 
-Then, you add bit7z as a dependency in your project's CMakeLists.txt:
+Then, you add bit7z as a dependency in your project's `CMakeLists.txt`:
 
 ```cmake
 find_package(unofficial-bit7z CONFIG REQUIRED)
@@ -321,7 +321,7 @@ target_link_libraries(${YOUR_TARGET} PRIVATE unofficial::bit7z::bit7z64)
 
 ### Building from source and manually linking
 
-The wiki provides instructions on how to [build](https://github.com/rikyoz/bit7z/wiki/Building-the-library) the library from the source code and how to [manually link](https://github.com/rikyoz/bit7z/wiki/Installing-the-library#manually-linking) it into your project.
+The wiki provides instructions on how to [build](https://github.com/rikyoz/bit7z/wiki/Building-the-library) the library from the source code and [manually link](https://github.com/rikyoz/bit7z/wiki/Installing-the-library#manually-linking) it into your project.
 
 ## ⚙️ Configuration
 
