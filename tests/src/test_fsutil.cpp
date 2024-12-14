@@ -237,7 +237,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
 
 #endif
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS ) && !defined( BIT7Z_DISABLE_USE_STD_FILESYSTEM )
 TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
     const std::wstring kLongPathPrefix = BIT7Z_NATIVE_STRING( R"(\\?\)" );
 
