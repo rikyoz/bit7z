@@ -1,7 +1,10 @@
 var classbit7z_1_1_bit_archive_reader =
 [
+    [ "BitArchiveReader", "classbit7z_1_1_bit_archive_reader.html#a48872f36474abc2dfe0f63db8a54059e", null ],
     [ "BitArchiveReader", "classbit7z_1_1_bit_archive_reader.html#aac441997466daf0321112047fe2cfff0", null ],
+    [ "BitArchiveReader", "classbit7z_1_1_bit_archive_reader.html#a6d34a79654cf0dfbd4bd36aff74d0840", null ],
     [ "BitArchiveReader", "classbit7z_1_1_bit_archive_reader.html#ada99b3c5f84368a690eb2693784edaaa", null ],
+    [ "BitArchiveReader", "classbit7z_1_1_bit_archive_reader.html#a12b246dc82acc0e1380a3bed2480b6bb", null ],
     [ "BitArchiveReader", "classbit7z_1_1_bit_archive_reader.html#ae619a1442007156115c3a6b0376bacfd", null ],
     [ "~BitArchiveReader", "classbit7z_1_1_bit_archive_reader.html#a9b469477aa0b59268921468918538651", null ],
     [ "archivePath", "classbit7z_1_1_bit_archive_reader.html#a1c065dca3f69bed79f44dcbdffe2b8cd", null ],
@@ -17,7 +20,8 @@ var classbit7z_1_1_bit_archive_reader =
     [ "extractionFormat", "classbit7z_1_1_bit_archive_reader.html#ab9578e3301f22ff1aba4a8d33ae4c010", null ],
     [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#acfe222e671d8882187eee13c52832ba4", null ],
     [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#ab6e2fe37e1bdc32ebce917cabea4890e", null ],
-    [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#a2750f12bb3adbc55cab67713f24fe3f6", null ],
+    [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#a86b5a17365514119ebb6ab32367b2a85", null ],
+    [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#a756f347563397576e041a7199f52ac5d", null ],
     [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#aea99b92e54da5a15d05fac7f11f0a0f4", null ],
     [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#a39bb28f9a22603cb342aa72bf9e704f3", null ],
     [ "extractTo", "classbit7z_1_1_bit_archive_reader.html#ab9f03d9a2673c9793f6fe5fc3e5a4333", null ],
@@ -61,5 +65,7 @@ var classbit7z_1_1_bit_archive_reader =
     [ "test", "classbit7z_1_1_bit_archive_reader.html#a1a0bbdfe89178fbbb06902ca31c0cf03", null ],
     [ "testItem", "classbit7z_1_1_bit_archive_reader.html#a625be2a5712d96552f6a0e8a86320802", null ],
     [ "totalCallback", "classbit7z_1_1_bit_archive_reader.html#a514aa3b4e51923e929d29ed9d550f069", null ],
+    [ "useFormatProperty", "classbit7z_1_1_bit_archive_reader.html#a0bd9313b0db112949452b4f1e14ab16b", null ],
+    [ "useFormatProperty", "classbit7z_1_1_bit_archive_reader.html#aba7f3863704ee54e7743d4c7e945d08c", null ],
     [ "volumesCount", "classbit7z_1_1_bit_archive_reader.html#a6423cbcfc4527c7b7bbf0af9bb142d86", null ]
 ];

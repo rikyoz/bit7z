@@ -12,6 +12,7 @@ var classbit7z_1_1_bit_archive_item =
     [ "lastAccessTime", "classbit7z_1_1_bit_archive_item.html#a68117fda82c4c60e8f303bcd5e886bfa", null ],
     [ "lastWriteTime", "classbit7z_1_1_bit_archive_item.html#ac5e335ee6de5c9ccc38152cb682814b3", null ],
     [ "name", "classbit7z_1_1_bit_archive_item.html#a7678c0bd356deef3154d59dc120508d0", null ],
+    [ "nativePath", "classbit7z_1_1_bit_archive_item.html#a3826dba5326e55ec7d847db616882775", null ],
     [ "packSize", "classbit7z_1_1_bit_archive_item.html#ac79c048b8c3ed8c6583cbd4a0ee7c6c7", null ],
     [ "path", "classbit7z_1_1_bit_archive_item.html#ac6bd6e098c27c5fd62f28ae436b649ac", null ],
     [ "size", "classbit7z_1_1_bit_archive_item.html#ace49b8e8bcc63d7fdfe4bba7600c6be2", null ]

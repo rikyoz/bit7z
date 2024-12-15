@@ -26,25 +26,29 @@ var NAVTREE =
 [
   [ "bit7z", "index.html", [
     [ "⚡️ Introduction", "index.html#autotoc_md1", null ],
-    [ "🎯 Supported Features", "index.html#autotoc_md2", [
-      [ "Notes", "index.html#autotoc_md3", null ]
+    [ "🎯 Supported Features", "index.html#autotoc_md2", null ],
+    [ "🔥 Getting Started (Library Usage)", "index.html#autotoc_md3", [
+      [ "📂 Extracting Files from an Archive", "index.html#autotoc_md4", null ],
+      [ "💼 Compressing Files into an Archive", "index.html#autotoc_md5", null ],
+      [ "📑 Reading Archive Metadata", "index.html#autotoc_md6", null ],
+      [ "🚀 Upgrading from bit7z v3 to v4", "index.html#autotoc_md7", null ]
     ] ],
-    [ "🔥 Getting Started (Library Usage)", "index.html#autotoc_md4", [
-      [ "📂 Extracting Files from an Archive", "index.html#autotoc_md5", null ],
-      [ "💼 Compressing Files into an Archive", "index.html#autotoc_md6", null ],
-      [ "📑 Reading Archive Metadata", "index.html#autotoc_md7", null ],
-      [ "🚀 Upgrading from bit7z v3 to v4", "index.html#autotoc_md8", null ]
+    [ "💾 Download", "index.html#autotoc_md8", null ],
+    [ "🧰 Requirements", "index.html#autotoc_md9", null ],
+    [ "🔗 Installation", "index.html#autotoc_md10", [
+      [ "Using CMake's add_subdirectory", "index.html#autotoc_md11", null ],
+      [ "Using CPM.cmake", "index.html#autotoc_md12", null ],
+      [ "Using vcpkg", "index.html#autotoc_md13", null ],
+      [ "Building from source and manually linking", "index.html#autotoc_md14", null ]
     ] ],
-    [ "💾 Download", "index.html#autotoc_md9", null ],
-    [ "🧰 Requirements", "index.html#autotoc_md10", null ],
-    [ "⚙️ Building and Using bit7z", "index.html#autotoc_md11", [
-      [ "📑 7-zip Version", "index.html#autotoc_md12", [
-        [ "Using 7-zip v23.01 on Linux and macOS", "index.html#autotoc_md13", null ]
+    [ "🛠️ Configuration", "index.html#autotoc_md15", [
+      [ "📌 7-Zip Version", "index.html#autotoc_md16", [
+        [ "Using 7-Zip v23.01 on Linux and macOS", "index.html#autotoc_md17", null ]
       ] ],
-      [ "🌐 String Encoding", "index.html#autotoc_md14", null ]
+      [ "🗺️ String Encoding", "index.html#autotoc_md18", null ]
     ] ],
-    [ "☕️ Donate", "index.html#autotoc_md15", null ],
-    [ "📜 License", "index.html#autotoc_md16", null ],
+    [ "☕️ Donate", "index.html#autotoc_md19", null ],
+    [ "📜 License", "index.html#autotoc_md20", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -74,10 +78,11 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "classbit7z_1_1_bit_archive_editor.html#a3956707a15a52fbba33aced82b6806a9",
-"classbit7z_1_1_bit_archive_reader.html#a450f09c4e9fc8a5b9609103ef55667cb",
-"classbit7z_1_1_bit_compressor.html#a514aa3b4e51923e929d29ed9d550f069",
-"classbit7z_1_1_bit_file_compressor.html#ae5823ef37c0b5abbf459f8072a3f8e50",
-"index.html#autotoc_md5"
+"classbit7z_1_1_bit_archive_reader.html#a35939de5caa790077ebfb08b564b32aa",
+"classbit7z_1_1_bit_compressor.html#a05789042749c557135e710ceb43932c3",
+"classbit7z_1_1_bit_file_compressor.html#aa39f14731f3541e80fe14c9b955ba1b1",
+"functions_func_d.html",
+"structbit7z_1_1_bit_prop_variant.html#ab9d23e444f421229d739409a21e42500"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

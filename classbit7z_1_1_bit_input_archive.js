@@ -1,10 +1,10 @@
 var classbit7z_1_1_bit_input_archive =
 [
     [ "ConstIterator", "classbit7z_1_1_bit_input_archive_1_1_const_iterator.html", "classbit7z_1_1_bit_input_archive_1_1_const_iterator" ],
-    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#a67d705d9a7769faef638ec889d5a78be", null ],
-    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#a5c12d77748c5d018a6576d7b6b072c83", null ],
-    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#a081e8befb49a5a0d1adbf954dc222d82", null ],
-    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#aedd521d1d8ba1d03d5483af8e0e38519", null ],
+    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#a7a755b18ed946eed5c241971ac5d6bb5", null ],
+    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#a0d3fd2b6fdb121a2b7721b2cb0fcbc05", null ],
+    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#a4f16e51a332b17df1f546ecd38ba8caa", null ],
+    [ "BitInputArchive", "classbit7z_1_1_bit_input_archive.html#ada5b3c7fcac8f50755bf7d2e8d2186be", null ],
     [ "archivePath", "classbit7z_1_1_bit_input_archive.html#a1c065dca3f69bed79f44dcbdffe2b8cd", null ],
     [ "archiveProperty", "classbit7z_1_1_bit_input_archive.html#adb49c3df5164e1722d141e6b3e407d29", null ],
     [ "begin", "classbit7z_1_1_bit_input_archive.html#a753cf76e2fcf94d016d05b682dfc3e10", null ],
@@ -15,7 +15,8 @@ var classbit7z_1_1_bit_input_archive =
     [ "end", "classbit7z_1_1_bit_input_archive.html#a18e0db2473c21235888532cf93c722f5", null ],
     [ "extractTo", "classbit7z_1_1_bit_input_archive.html#acfe222e671d8882187eee13c52832ba4", null ],
     [ "extractTo", "classbit7z_1_1_bit_input_archive.html#ab6e2fe37e1bdc32ebce917cabea4890e", null ],
-    [ "extractTo", "classbit7z_1_1_bit_input_archive.html#a2750f12bb3adbc55cab67713f24fe3f6", null ],
+    [ "extractTo", "classbit7z_1_1_bit_input_archive.html#a86b5a17365514119ebb6ab32367b2a85", null ],
+    [ "extractTo", "classbit7z_1_1_bit_input_archive.html#a756f347563397576e041a7199f52ac5d", null ],
     [ "extractTo", "classbit7z_1_1_bit_input_archive.html#aea99b92e54da5a15d05fac7f11f0a0f4", null ],
     [ "extractTo", "classbit7z_1_1_bit_input_archive.html#a39bb28f9a22603cb342aa72bf9e704f3", null ],
     [ "extractTo", "classbit7z_1_1_bit_input_archive.html#ab9f03d9a2673c9793f6fe5fc3e5a4333", null ],
@@ -28,5 +29,7 @@ var classbit7z_1_1_bit_input_archive =
     [ "itemProperty", "classbit7z_1_1_bit_input_archive.html#a1f92af039bd41d45d5bcf67d5eec1131", null ],
     [ "itemsCount", "classbit7z_1_1_bit_input_archive.html#adfc3c0789d641c098379e2066ee8b336", null ],
     [ "test", "classbit7z_1_1_bit_input_archive.html#a1a0bbdfe89178fbbb06902ca31c0cf03", null ],
-    [ "testItem", "classbit7z_1_1_bit_input_archive.html#a625be2a5712d96552f6a0e8a86320802", null ]
+    [ "testItem", "classbit7z_1_1_bit_input_archive.html#a625be2a5712d96552f6a0e8a86320802", null ],
+    [ "useFormatProperty", "classbit7z_1_1_bit_input_archive.html#a0bd9313b0db112949452b4f1e14ab16b", null ],
+    [ "useFormatProperty", "classbit7z_1_1_bit_input_archive.html#aba7f3863704ee54e7743d4c7e945d08c", null ]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['🚀_20upgrading_20from_20bit7z_20v3_20to_20v4_0',['🚀 Upgrading from bit7z v3 to v4',['../index.html#autotoc_md8',1,'']]]
+  ['🗺️_20string_20encoding_0',['🗺️ String Encoding',['../index.html#autotoc_md18',1,'']]]
 ];

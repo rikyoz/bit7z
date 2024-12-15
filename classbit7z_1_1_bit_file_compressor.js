@@ -7,6 +7,7 @@ var classbit7z_1_1_bit_file_compressor =
     [ "compress", "classbit7z_1_1_bit_file_compressor.html#a167bef692502f9cda2509922bc299c16", null ],
     [ "compress", "classbit7z_1_1_bit_file_compressor.html#a57bd59003d77ab6257067b803316f74b", null ],
     [ "compressDirectory", "classbit7z_1_1_bit_file_compressor.html#a31f197fa12de40dd496d51f9c7c62547", null ],
+    [ "compressDirectoryContents", "classbit7z_1_1_bit_file_compressor.html#ad1fd5040be091f87b65f5ba0ae81972d", null ],
     [ "compressFile", "classbit7z_1_1_bit_file_compressor.html#a5e84655151f968521e884c9997197757", null ],
     [ "compressFile", "classbit7z_1_1_bit_file_compressor.html#aa874b00fcba5e74ff964e730d0fe9293", null ],
     [ "compressFile", "classbit7z_1_1_bit_file_compressor.html#aedd1f98d2948fedd41d184cc889c4a43", null ],
