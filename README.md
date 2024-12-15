@@ -10,7 +10,7 @@
   <a href="#-download" title="Download Pre-compiled Packages">Download</a> •
   <a href="#-requirements" title="Usage Requirements">Requirements</a> •
   <a href="#-installation" title="Installation">Installation</a> •
-  <a href="#-configuration" title="Configuration">Configuration</a> •
+  <a href="#%EF%B8%8F-configuration" title="Configuration">Configuration</a> •
   <a href="#-donate" title="Support the Project">Donate</a> •
   <a href="#-license" title="Project License">License</a>
 </p>
