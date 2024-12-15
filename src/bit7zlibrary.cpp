@@ -35,14 +35,16 @@ using namespace bit7z;
 
 Bit7zLibrary::Bit7zLibrary( const tstring& libraryPath ) : mLibrary( Bit7zLoadLibrary( libraryPath ) ) {
     if ( mLibrary == nullptr ) {
-        throw BitException( "Failed to load the 7-zip library", ERROR_CODE( std::errc::bad_file_descriptor ) );
+        const auto error = ERROR_CODE( std::errc::bad_file_descriptor );
+        throw BitException( "Failed to load the 7-zip library", error );
     }
 
     mCreateObjectFunc = GetProcAddress( mLibrary, "CreateObject" );
 
     if ( mCreateObjectFunc == nullptr ) {
         FreeLibrary( mLibrary );
-        throw BitException( "Failed to get CreateObject function", ERROR_CODE( std::errc::invalid_seek ) );
+        const auto error = ERROR_CODE( std::errc::invalid_seek );
+        throw BitException( "Failed to get CreateObject function", error );
     }
 }
 
@@ -56,7 +58,8 @@ void Bit7zLibrary::setLargePageMode() {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     auto pSetLargePageMode = reinterpret_cast< SetLargePageMode >( GetProcAddress( mLibrary, "SetLargePageMode" ) );
     if ( pSetLargePageMode == nullptr ) {
-        throw BitException( "Failed to get SetLargePageMode function", ERROR_CODE( std::errc::invalid_seek ) );
+        const auto error = ERROR_CODE( std::errc::invalid_seek );
+        throw BitException( "Failed to get SetLargePageMode function", error );
     }
     const HRESULT res = pSetLargePageMode();
     if ( res != S_OK ) {

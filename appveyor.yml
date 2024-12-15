@@ -128,8 +128,8 @@ for:
     - cd ..
     - mkdir -p pkg/bit7z/
     - mkdir -p pkg/bit7z/include/
-    - cp -r lib pkg/bit7z
-    - cp -r include pkg/bit7z/include/
+    - cp -r lib pkg/bit7z/
+    - cp -r include pkg/bit7z/
     - cp README.md pkg/bit7z/
     - cp LICENSE pkg/bit7z/
     - echo $bit7z_version $compiler_tag > "pkg/bit7z/BUILD.txt"
@@ -198,7 +198,7 @@ deploy:
   tag: $(APPVEYOR_REPO_TAG_NAME)
   description: 'Binaries of Bit7z %bit7z_version%'
   auth_token:
-    secure: 5b0wRmYrS2S5MEu+5rslOkBY//wJ+ShwhxNeOhxaAaMjTYRbSDqe4cme0CukKSgp
+    secure: aaQkoEIZv7oaBSZT2f/bST7NfLOdqKXitnhWmUqaW1T493Pr2/atcZWHIlExsLAx
   artifact: /.*\.7z/
   draft: true
   prerelease: false

@@ -62,7 +62,8 @@ FilesystemItem::FilesystemItem( fs::directory_entry entry, const fs::path& searc
 void FilesystemItem::initAttributes( const fs::path& itemPath ) {
     if ( !fsutil::get_file_attributes_ex( itemPath.c_str(), mSymlinkPolicy, mFileAttributeData ) ) {
         //should not happen, but anyway...
-        throw BitException( "Could not retrieve file attributes", last_error_code(), path_to_tstring( itemPath ) );
+        const auto error = last_error_code();
+        throw BitException( "Could not retrieve file attributes", error, path_to_tstring( itemPath ) );
     }
 }
 

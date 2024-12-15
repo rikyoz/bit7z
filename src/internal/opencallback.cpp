@@ -60,8 +60,9 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         if ( name != nullptr ) {
             streamPath = streamPath.parent_path();
             streamPath.append( name );
-            const auto streamStatus = fs::status( streamPath );
-            if ( !fs::exists( streamStatus ) || fs::is_directory( streamStatus ) ) {  // avoid exceptions using status
+            std::error_code error;
+            const auto streamStatus = fs::status( streamPath, error );
+            if ( error || !fs::exists( streamStatus ) || fs::is_directory( streamStatus ) ) {
                 return S_FALSE;
             }
         }

@@ -196,33 +196,33 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
     // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
     //       directory, hence we must declare the vector inside the test case and not outside!
     const std::array< TestItem, 28 > testItems{ {
-        { ".",                                                 "" },
-        { "./",                                                "" },
-        { "..",                                                "" },
-        { "../",                                               "" },
-        { "italy.svg",                                         "italy.svg" },
-        { "folder",                                            "folder" },
-        { "folder/",                                           "folder/" },
-        { "folder/clouds.jpg",                                 "folder/clouds.jpg" },
-        { "folder/subfolder2",                                 "folder/subfolder2" },
-        { "folder/subfolder2/",                                "folder/subfolder2/" },
+        { ".",                                                "" },
+        { "./",                                               "" },
+        { "..",                                               "" },
+        { "../",                                              "" },
+        { "italy.svg",                                        "italy.svg" },
+        { "folder",                                           "folder" },
+        { "folder/",                                          "folder/" },
+        { "folder/clouds.jpg",                                "folder/clouds.jpg" },
+        { "folder/subfolder2",                                "folder/subfolder2" },
+        { "folder/subfolder2/",                               "folder/subfolder2/" },
         { "folder/subfolder2/homework.doc",                   "folder/subfolder2/homework.doc" },
-        { "./italy.svg",                                       "italy.svg" },
-        { "./folder",                                          "folder" },
-        { "./folder/",                                         "folder" },
-        { "./folder/clouds.jpg",                               "clouds.jpg" },
-        { "./folder/subfolder2",                               "subfolder2" },
+        { "./italy.svg",                                      "italy.svg" },
+        { "./folder",                                         "folder" },
+        { "./folder/",                                        "folder" },
+        { "./folder/clouds.jpg",                              "clouds.jpg" },
+        { "./folder/subfolder2",                              "subfolder2" },
         { "./folder/subfolder2/homework.doc",                 "homework.doc" },
-        { "./../test_filesystem/",                             "test_filesystem" },
-        { "./../test_filesystem/folder/",                      "folder" },
-        { fs::absolute( "." ),                                 "test_filesystem" },
-        { fs::absolute( "../" ),                               "data" },
-        { fs::absolute( "./italy.svg" ),                       "italy.svg" },
-        { fs::absolute( "./folder" ),                          "folder" },
-        { fs::absolute( "./folder/" ),                         "folder" },
-        { fs::absolute( "./folder/clouds.jpg" ),               "clouds.jpg" },
-        { fs::absolute( "./folder/subfolder2" ),               "subfolder2" },
-        { fs::absolute( "./folder/subfolder2/" ),              "subfolder2" },
+        { "./../test_filesystem/",                            "test_filesystem" },
+        { "./../test_filesystem/folder/",                     "folder" },
+        { fs::absolute( "." ),                                "test_filesystem" },
+        { fs::absolute( "../" ),                              "data" },
+        { fs::absolute( "./italy.svg" ),                      "italy.svg" },
+        { fs::absolute( "./folder" ),                         "folder" },
+        { fs::absolute( "./folder/" ),                        "folder" },
+        { fs::absolute( "./folder/clouds.jpg" ),              "clouds.jpg" },
+        { fs::absolute( "./folder/subfolder2" ),              "subfolder2" },
+        { fs::absolute( "./folder/subfolder2/" ),             "subfolder2" },
         { fs::absolute( "./folder/subfolder2/homework.doc" ), "homework.doc" }
     } };
 
@@ -235,6 +235,40 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
     REQUIRE( set_current_dir( oldCurrentDir ) );
 }
 
+#endif
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS ) && !defined( BIT7Z_DISABLE_USE_STD_FILESYSTEM )
+TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
+    const std::wstring kLongPathPrefix = BIT7Z_NATIVE_STRING( R"(\\?\)" );
+
+    constexpr auto short_path = L"short_path\\file.txt";
+    REQUIRE_FALSE( should_format_long_path( short_path ) );
+
+    constexpr auto very_long_path = LR"(C:\very\long\dummy\path\)"
+                                    LR"(ABCDEFGHIJKLMNOPQRSTUVWXYZ\abcdefghijklmnopqrstuvwxyz\0123456789\)"
+                                    LR"(Lorem ipsum dolor sit amet\consectetur adipiscing elit\)"
+                                    LR"(Mauris ac leo dui\Morbi non elit lacus\)"
+                                    LR"(Ut ullamcorper sapien eget commodo eleifend\Curabitur varius magna sit\)"
+                                    LR"(Hello_World.txt)";
+    REQUIRE( should_format_long_path( very_long_path ) );
+    REQUIRE( format_long_path( very_long_path ) == ( kLongPathPrefix + very_long_path ) );
+
+
+    const auto prefixed_very_long_path = std::wstring{ LR"(\\?\)" } + very_long_path;
+    REQUIRE_FALSE( should_format_long_path( prefixed_very_long_path ) );
+
+    constexpr auto very_long_unc_path = LR"(\\very\long\dummy\UNC\path\)"
+                                        LR"(ABCDEFGHIJKLMNOPQRSTUVWXYZ\abcdefghijklmnopqrstuvwxyz\0123456789\)"
+                                        LR"(Lorem ipsum dolor sit amet\consectetur adipiscing elit\)"
+                                        LR"(Mauris ac leo dui\Morbi non elit lacus\)"
+                                        LR"(Ut ullamcorper sapien eget commodo eleifend\Curabitur varius magna sit\)"
+                                        LR"(Hello_World.txt)";
+    REQUIRE( should_format_long_path( very_long_unc_path ) );
+    REQUIRE( format_long_path( very_long_unc_path ) == ( kLongPathPrefix + L"UNC\\" + very_long_unc_path ) );
+
+    const auto prefixed_very_long_unc_path = std::wstring{ LR"(\\?\UNC\)" } + very_long_unc_path;
+    REQUIRE_FALSE( should_format_long_path( prefixed_very_long_unc_path ) );
+}
 #endif
 
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
