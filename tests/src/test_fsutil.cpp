@@ -283,6 +283,13 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
     REQUIRE( sanitize_path( L"COM42" ) == L"COM42" );
     REQUIRE( sanitize_path( L"LPT42" ) == L"LPT42" );
 
+    REQUIRE( sanitize_path( L"COM¹" ) == L"_COM¹" );
+    REQUIRE( sanitize_path( L"COM²" ) == L"_COM²" );
+    REQUIRE( sanitize_path( L"COM³" ) == L"_COM³" );
+    REQUIRE( sanitize_path( L"LPT¹" ) == L"_LPT¹" );
+    REQUIRE( sanitize_path( L"LPT²" ) == L"_LPT²" );
+    REQUIRE( sanitize_path( L"LPT³" ) == L"_LPT³" );
+
     REQUIRE( sanitize_path( L"CON" ) == L"_CON" );
     REQUIRE( sanitize_path( L"PRN" ) == L"_PRN" );
     REQUIRE( sanitize_path( L"AUX" ) == L"_AUX" );
