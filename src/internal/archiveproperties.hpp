@@ -27,13 +27,13 @@ class ArchiveProperties final {
         std::vector< BitPropVariant > mValues{};
 
         template< typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
-        inline void setProperty( const wchar_t* name, T value ) {
+        void setProperty( const wchar_t* name, T value ) {
             mNames.emplace_back( name );
             mValues.emplace_back( value );
         }
 
         template< typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
-        inline void setProperty( const wchar_t* name, const T& value ) {
+        void setProperty( const wchar_t* name, const T& value ) {
             mNames.emplace_back( name );
             mValues.emplace_back( value );
         }
@@ -49,22 +49,22 @@ class ArchiveProperties final {
 
     public:
         BIT7Z_NODISCARD
-        inline auto empty() const -> bool {
+        auto empty() const -> bool {
             return mNames.empty();
         }
 
         BIT7Z_NODISCARD
-        inline auto names() const -> const wchar_t* const* {
+        auto names() const -> const wchar_t* const* {
             return mNames.data();
         }
 
         BIT7Z_NODISCARD
-        inline auto values() const -> const PROPVARIANT* {
+        auto values() const -> const PROPVARIANT* {
             return mValues.data();
         }
 
         BIT7Z_NODISCARD
-        inline auto size() const -> size_t {
+        auto size() const -> size_t {
             return mNames.size();
         }
 };
