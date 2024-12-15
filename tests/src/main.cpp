@@ -47,6 +47,7 @@ auto main( int argc, char* argv[] ) -> int try {
 #ifdef BIT7Z_TESTS_FILESYSTEM
     std::clog << "Test data path: " << filesystem::test_data_dir << '\n';
 #endif
+    std::clog << "Temp path: " << bit7z::fs::temp_directory_path().string() << '\n';
 #ifdef _WIN32
     std::clog << "Code page: " << GetACP() << '\n';
 #endif
