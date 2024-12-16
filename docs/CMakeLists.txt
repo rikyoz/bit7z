@@ -39,10 +39,10 @@ if( DOXYGEN_FOUND )
     )
     FetchContent_MakeAvailable( doxygen-extra doxygen-awesome doxygen-cppreference )
 
-    file(READ ${CMAKE_SOURCE_DIR}/README.md HOME_MD)
-    string(REGEX REPLACE "<h1 align=\"center\">([^<]+)<\\/h1>" "# \\1" HOME_MD "${HOME_MD}")
-    string(REGEX REPLACE "\n<!-- navbar -->(.+)<!-- navbar -->\n" "" HOME_MD "${HOME_MD}")
-    file(WRITE  ${CMAKE_CURRENT_BINARY_DIR}/Home.md "${HOME_MD}")
+    file( READ ${CMAKE_SOURCE_DIR}/README.md HOME_MD )
+    string( REGEX REPLACE "<h1 align=\"center\">([^<]+)<\\/h1>" "# \\1" HOME_MD "${HOME_MD}" )
+    string( REGEX REPLACE "\n<!-- navbar -->(.+)<!-- navbar -->\n" "" HOME_MD "${HOME_MD}" )
+    file( WRITE  ${CMAKE_CURRENT_BINARY_DIR}/Home.md "${HOME_MD}" )
 
     # set input and output files
     set( DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in )
