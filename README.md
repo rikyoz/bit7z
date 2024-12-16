@@ -1,6 +1,6 @@
 <h1 align="center">bit7z</h1>
 
-<p align="center"><strong><em>A C++ static library offering a clean and simple interface to the 7-Zip shared libraries.</em></strong></p>
+<h3 align="center">A C++ static library offering a clean and simple interface to the 7-Zip shared libraries.</h3>
 
 **A C++ static library offering a clean and simple interface to the 7-zip shared libraries.**
 
