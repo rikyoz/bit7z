@@ -38,6 +38,9 @@ namespace bit7z {
 class BufferQueue;
 class ExtractCallback;
 
+/**
+ * @brief Offset from where the archive starts within the input file.
+ */
 enum struct ArchiveStartOffset : std::uint8_t {
     None, ///< Don't specify an archive start offset. For some formats, like Zip archives,
           ///< this means that the whole input file will be searched for the archive's start.
