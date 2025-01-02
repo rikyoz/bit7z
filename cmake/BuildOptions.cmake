@@ -75,7 +75,7 @@ else()
     if ( BIT7Z_BUILD_FOR_P7ZIP )
         set( BIT7Z_7ZIP_VERSION 16.02 ) # Latest version of p7zip
     else()
-        set( BIT7Z_7ZIP_VERSION "23.01" CACHE STRING "The version of 7-zip to be used by bit7z" )
+        set( BIT7Z_7ZIP_VERSION "24.09" CACHE STRING "The version of 7-zip to be used by bit7z" )
     endif()
     message( STATUS "7-zip version: ${BIT7Z_7ZIP_VERSION}" )
 endif()
