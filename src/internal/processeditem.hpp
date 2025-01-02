@@ -10,7 +10,6 @@
 #ifndef PROCESSEDITEM_HPP
 #define PROCESSEDITEM_HPP
 
-#include "bitinputarchive.hpp"
 #include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/fs.hpp"
@@ -34,18 +33,14 @@ class ProcessedItem final {
 
         BIT7Z_NODISCARD auto areAttributesDefined() const -> bool;
 
-        BIT7Z_NODISCARD auto hasModifiedTime() const -> bool;
-
         BIT7Z_NODISCARD auto modifiedTime() const -> FILETIME;
 
 #ifdef _WIN32
-        BIT7Z_NODISCARD auto hasCreationTime() const -> bool;
-
         BIT7Z_NODISCARD auto creationTime() const -> FILETIME;
 
-        BIT7Z_NODISCARD auto hasAccessTime() const -> bool;
-
         BIT7Z_NODISCARD auto accessTime() const -> FILETIME;
+#else
+        BIT7Z_NODISCARD auto hasModifiedTime() const -> bool;
 #endif
 
     private:

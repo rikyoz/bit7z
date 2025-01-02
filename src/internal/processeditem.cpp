@@ -15,7 +15,9 @@
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 #include "bitpropvariant.hpp"
+#include "internal/extractcallback.hpp"
 #include "internal/windows.hpp"
+#include "internal/stringutil.hpp"
 
 #include <cstdint>
 
@@ -38,46 +40,39 @@ auto ProcessedItem::attributes() const -> uint32_t {
     return mAttributes;
 }
 
-auto ProcessedItem::hasModifiedTime() const -> bool {
-    return mModifiedTime.isFileTime();
-}
-
 auto ProcessedItem::modifiedTime() const -> FILETIME {
-    return mModifiedTime.getFileTime();
+    return mModifiedTime.isFileTime() ? mModifiedTime.getFileTime() : FILETIME{};
 }
 
 #ifdef _WIN32
-auto ProcessedItem::hasCreationTime() const -> bool {
-    return mCreationTime.isFileTime();
-}
-
 auto ProcessedItem::creationTime() const -> FILETIME {
-    return mCreationTime.getFileTime();
-}
-
-auto ProcessedItem::hasAccessTime() const -> bool {
-    return mAccessTime.isFileTime();
+    return mCreationTime.isFileTime() ? mCreationTime.getFileTime() : FILETIME{};
 }
 
 auto ProcessedItem::accessTime() const -> FILETIME {
-    return mAccessTime.getFileTime();
+    return mAccessTime.isFileTime() ? mAccessTime.getFileTime() : FILETIME{};
+}
+#else
+auto ProcessedItem::hasModifiedTime() const -> bool {
+    return mModifiedTime.isFileTime();
 }
 #endif
 
 void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
     const BitPropVariant prop = inputArchive.itemProperty( itemIndex, BitProperty::Path );
 
-    switch ( prop.type() ) {
-        case BitPropVariantType::Empty:
-            mFilePath = fs::path{};
-            break;
+    if ( !prop.isString() && !prop.isEmpty() ) {
+        throw BitException( "Could not load file path information of item", make_hresult_code( E_FAIL ) );
+    }
 
-        case BitPropVariantType::String:
-            mFilePath = fs::path{ prop.getNativeString() };
-            break;
-
-        default:
-            throw BitException( "Could not load file path information of item", make_hresult_code( E_FAIL ) );
+    mFilePath = prop.getNativeString();
+    if ( mFilePath.empty() ) {
+        const auto archivePath = tstring_to_path( inputArchive.archivePath() );
+        mFilePath = !archivePath.empty() ? archivePath.stem() : fs::path{ kEmptyFileAlias };
+    } else if ( !inputArchive.handler().retainDirectories() ) {
+        mFilePath = mFilePath.filename();
+    } else {
+        // No action needed
     }
 }
 

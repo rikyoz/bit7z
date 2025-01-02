@@ -12,7 +12,6 @@
 
 #include "internal/fileextractcallback.hpp"
 
-#include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 #include "bittypes.hpp"
@@ -33,7 +32,6 @@ FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
                                           const tstring& directoryPath,
                                           RenameCallback callback )
     : ExtractCallback( inputArchive ),
-      mInFilePath( tstring_to_path( inputArchive.archivePath() ) ),
       mDirectoryPath( tstring_to_path( directoryPath ) ),
       mRetainDirectories( inputArchive.handler().retainDirectories() ),
       mRenameCallback{ std::move( callback ) } {}
@@ -55,9 +53,9 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
     }
 
 #ifdef _WIN32
-    const auto creationTime = mCurrentItem.hasCreationTime() ? mCurrentItem.creationTime() : FILETIME{};
-    const auto accessTime = mCurrentItem.hasAccessTime() ? mCurrentItem.accessTime() : FILETIME{};
-    const auto modifiedTime = mCurrentItem.hasModifiedTime() ? mCurrentItem.modifiedTime() : FILETIME{};
+    const auto creationTime = mCurrentItem.creationTime();
+    const auto accessTime = mCurrentItem.accessTime();
+    const auto modifiedTime = mCurrentItem.modifiedTime();
     filesystem::fsutil::set_file_time( mFilePathOnDisk, creationTime, accessTime, modifiedTime );
 #else
     if ( mCurrentItem.hasModifiedTime() ) {
@@ -71,24 +69,13 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
     return result;
 }
 
-auto FileExtractCallback::getCurrentItemPath() const -> fs::path {
-    fs::path filePath = mCurrentItem.path();
-    if ( filePath.empty() ) {
-        filePath = !mInFilePath.empty() ? mInFilePath.stem() : fs::path{ kEmptyFileAlias };
-    } else if ( !mRetainDirectories ) {
-        filePath = filePath.filename();
-    } else {
-        // No action needed
-    }
-    return filePath;
-}
 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
 auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
-    auto filePath = getCurrentItemPath();
+    auto filePath = mCurrentItem.path();
 
     if ( mRenameCallback ) {
 #if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )

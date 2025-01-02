@@ -10,6 +10,7 @@
 #ifndef FILEEXTRACTCALLBACK_HPP
 #define FILEEXTRACTCALLBACK_HPP
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "internal/cfileoutstream.hpp"
@@ -40,7 +41,6 @@ class FileExtractCallback final : public ExtractCallback {
         ~FileExtractCallback() override = default;
 
     private:
-        fs::path mInFilePath;     // Input file path
         fs::path mDirectoryPath;  // Output directory
         fs::path mFilePathOnDisk; // Full path to the file on disk
         bool mRetainDirectories;
@@ -53,9 +53,6 @@ class FileExtractCallback final : public ExtractCallback {
         auto finishOperation( OperationResult operationResult ) -> HRESULT override;
 
         void releaseStream() override;
-
-        BIT7Z_NODISCARD
-        auto getCurrentItemPath() const -> fs::path;
 
         auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
