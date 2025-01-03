@@ -30,6 +30,7 @@ jobs:
         build_type: [Debug, Release]
         c_compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang]
         arch: [x64, arm64]
+        sevenzip_version: [23.01, 24.09]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
@@ -99,7 +100,7 @@ jobs:
         arch: ${{ matrix.arch }}
         c_compiler: ${{ matrix.c_compiler }}
         cpp_compiler: ${{ matrix.cpp_compiler }}
-        sevenzip_version: 23.01
+        sevenzip_version: ${{ matrix.sevenzip_version }}
         enable_sanitizers: ${{ matrix.enable_sanitizers }}
         build_type: ${{ matrix.build_type }}
         build_flags: |
