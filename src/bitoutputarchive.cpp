@@ -370,11 +370,7 @@ auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStr
 
     const HRESULT res = newItem.getStream( inStream );
     if ( FAILED( res ) ) {
-        std::error_code error;
-        if ( fs::exists( newItem.filesystemPath(), error ) ) {
-            error = std::make_error_code( std::errc::file_exists );
-        }
-        mFailedFiles.emplace_back( newItem.path(), error );
+        mFailedFiles.emplace_back( newItem.path(), make_hresult_code( res ) );
     }
     return res;
 }

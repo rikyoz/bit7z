@@ -142,28 +142,22 @@ auto FilesystemItem::attributes() const noexcept -> uint32_t {
     return mFileAttributeData.dwFileAttributes;
 }
 
-auto FilesystemItem::getStream( ISequentialInStream** inStream ) const -> HRESULT {
+auto FilesystemItem::getStream( ISequentialInStream** inStream ) const -> HRESULT try {
     if ( isDir() ) {
         return S_OK;
     }
 
     if ( mSymlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
-        try {
-            auto inStreamLoc = bit7z::make_com< CSymlinkInStream >( filesystemPath() );
-            *inStream = inStreamLoc.Detach();
-            return S_OK;
-        } catch ( const BitException& ex ) {
-            return ex.nativeCode();
-        }
+        auto inStreamLoc = bit7z::make_com< CSymlinkInStream >( mFileEntry.path() );
+        *inStream = inStreamLoc.Detach();
+        return S_OK;
     }
 
-    try {
-        auto inStreamLoc = bit7z::make_com< CFileInStream >( filesystemPath() );
-        *inStream = inStreamLoc.Detach();
-    } catch ( const BitException& ex ) {
-        return ex.nativeCode();
-    }
+    auto inStreamLoc = bit7z::make_com< CFileInStream >( mFileEntry.path() );
+    *inStream = inStreamLoc.Detach();
     return S_OK;
+} catch ( const BitException& ex ) {
+    return ex.hresultCode();
 }
 
 auto FilesystemItem::filesystemPath() const -> const fs::path& {
