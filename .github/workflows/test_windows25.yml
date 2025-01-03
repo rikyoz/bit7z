@@ -4,7 +4,7 @@ on:
   push:
     paths:
     - '.github/actions/**'
-    - '.github/workflows/test_windows22.yml'
+    - '.github/workflows/test_windows25.yml'
     - 'cmake/**'
     - 'include/**'
     - 'src/**'
