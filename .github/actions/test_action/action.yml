@@ -43,7 +43,7 @@ runs:
     
     - name: Add paths to PATH
       shell: bash
-      if: inputs.shell != ''
+      if: inputs.path != ''
       run: |
         echo "${{ inputs.path }}" >> "$GITHUB_PATH"
 
