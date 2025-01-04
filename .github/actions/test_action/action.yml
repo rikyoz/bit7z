@@ -24,6 +24,9 @@ inputs:
     description: 'The shell to be used for executing the steps'
     required: false
     default: bash
+  path:
+    description: 'The paths to append to the PATH environment variable'
+    required: false
   enable_sanitizers:
     description: 'Enable sanitizer for testing bit7z'
     required: false
@@ -37,6 +40,12 @@ runs:
       shell: bash
       run: |
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+    
+    - name: Add paths to PATH
+      shell: bash
+      if: inputs.shell != ''
+      run: |
+        echo "${{ inputs.path }}" >> "$GITHUB_PATH"
 
     - name: Fix kernel mmap rnd bits
       shell: bash
@@ -101,7 +110,7 @@ runs:
 
     - name: Build bit7z
       shell: ${{ inputs.shell }}
-      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config ${{ inputs.build_type }} --parallel
+      run: cmake --build '${{ steps.strings.outputs.build-output-dir }}'--config ${{ inputs.build_type }} --parallel
 
     - name: Test bit7z (Ubuntu and macOS)
       if: runner.os != 'Windows'
