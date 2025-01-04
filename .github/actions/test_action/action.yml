@@ -110,7 +110,7 @@ runs:
 
     - name: Build bit7z
       shell: ${{ inputs.shell }}
-      run: cmake --build '${{ steps.strings.outputs.build-output-dir }}'--config ${{ inputs.build_type }} --parallel
+      run: cmake --build '${{ steps.strings.outputs.build-output-dir }}' --config ${{ inputs.build_type }} --parallel
 
     - name: Test bit7z (Ubuntu and macOS)
       if: runner.os != 'Windows'
