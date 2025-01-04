@@ -65,7 +65,7 @@ runs:
         -DBIT7Z_7ZIP_VERSION="${{ inputs.sevenzip_version }}"
         -DCPM_SOURCE_CACHE="${{ github.workspace }}/third_party"
         ${{ inputs.build_flags }}
-        -S ${{ github.workspace }}
+        -S '${{ github.workspace }}'
 
     - name: Cache 7z.so
       uses: actions/cache@v4
