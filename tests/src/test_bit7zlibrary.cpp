@@ -18,6 +18,9 @@
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bittypes.hpp>
 
+#ifdef _WIN32
+#include <cstring> // For std::strncmp
+#endif
 #include <system_error>
 
 namespace bit7z {
