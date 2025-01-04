@@ -56,7 +56,7 @@ runs:
     - name: Configure CMake
       shell: ${{ inputs.shell }}
       run: >
-        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        cmake -B '${{ steps.strings.outputs.build-output-dir }}'
         -DCMAKE_CXX_COMPILER=${{ inputs.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ inputs.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
