@@ -11,12 +11,11 @@
 #define FSINDEXER_HPP
 
 #include "bitabstractarchivehandler.hpp"
+#include "bititemsvector.hpp"
 #include "bittypes.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/fsutil.hpp"
-#include "internal/genericinputitem.hpp"
 
-#include <memory>
 #include <vector>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
@@ -30,7 +29,7 @@ class FilesystemIndexer final {
                                     SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
                                     bool onlyFiles = false );
 
-        void listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result, bool recursive );
+        void listDirectoryItems( BitItemsVector& result, bool recursive );
 
     private:
         FilesystemItem mDirItem;

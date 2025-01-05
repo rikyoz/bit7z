@@ -17,7 +17,6 @@
 #include "bittypes.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/fsutil.hpp"
-#include "internal/genericinputitem.hpp"
 #include "internal/stringutil.hpp"
 
 #include <memory>
@@ -52,8 +51,7 @@ inline auto countItemsInPath( const fs::path& path ) -> std::size_t {
 } // namespace
 
 // NOTE: It indexes all the items whose metadata are needed in the archive to be created!
-void FilesystemIndexer::listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result,
-                                            bool recursive ) {
+void FilesystemIndexer::listDirectoryItems( BitItemsVector& result, bool recursive ) {
     const bool includeRootPath = mFilter.empty() ||
                                  !mDirItem.filesystemPath().has_parent_path() ||
                                  mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
