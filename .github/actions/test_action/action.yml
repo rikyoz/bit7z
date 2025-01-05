@@ -120,9 +120,7 @@ runs:
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
       run: |
-        ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests
-        ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests-public
-        [ -f ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests-public-cpp20 ] && ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests-public-cpp20
+        ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests && ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests-public && [ -f ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests-public-cpp20 ] && ${{ github.workspace }}/bin/${{ inputs.arch }}/bit7z-tests-public-cpp20
 
     - name: Test bit7z (Windows)
       if: runner.os == 'Windows'
@@ -132,6 +130,4 @@ runs:
       env:
         ASAN_OPTIONS: alloc_dealloc_mismatch=0
       run: |
-        ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests.exe
-        ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public.exe
-        if exist ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public-cpp20.exe ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public-cpp20.exe
+        ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests.exe && ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public.exe && (if exist ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public-cpp20.exe ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public-cpp20.exe)
