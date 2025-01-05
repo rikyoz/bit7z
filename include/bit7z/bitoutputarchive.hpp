@@ -278,7 +278,7 @@ class BitOutputArchive {
         /**
          * @brief Default destructor.
          */
-        virtual ~BitOutputArchive() = default;
+        virtual ~BitOutputArchive();
 
     protected:
         virtual auto itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant;
@@ -322,7 +322,7 @@ class BitOutputArchive {
         }
 
         auto hasNewItems() const -> bool {
-            return mNewItemsVector.size() > 0;
+            return !mNewItems.empty();
         }
 
         friend class UpdateCallback;
@@ -333,7 +333,7 @@ class BitOutputArchive {
         std::unique_ptr< BitInputArchive > mInputArchive;
         uint32_t mInputArchiveItemsCount;
 
-        BitItemsVector mNewItemsVector;
+        BitItemsVector mNewItems;
         DeletedItems mDeletedItems;
 
         mutable FailedFiles mFailedFiles;

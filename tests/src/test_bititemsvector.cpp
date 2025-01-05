@@ -33,25 +33,24 @@ using bit7z::tstring;
 using bit7z::BitItemsVector;
 using bit7z::IndexingOptions;
 using namespace bit7z;
-using namespace bit7z::filesystem;
 using namespace bit7z::test::filesystem;
 
 TEST_CASE( "BitItemsVector: Default properties", "[bititemsvector]" ) {
     const BitItemsVector itemsVector{};
 
-    REQUIRE( itemsVector.size() == 0 );
+    REQUIRE( itemsVector.empty() );
     REQUIRE( itemsVector.cbegin() == itemsVector.cend() );
     REQUIRE( itemsVector.begin() == itemsVector.end() );
 }
 
 TEST_CASE( "BitItemsVector: Indexing an invalid directory (non-existing)", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
-    REQUIRE_THROWS( itemsVector.indexDirectory( "not_existing_path" ) );
+    REQUIRE_THROWS( indexDirectory( itemsVector, "not_existing_path" ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing an invalid directory (empty string)", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
-    REQUIRE_THROWS( itemsVector.indexDirectory( "" ) );
+    REQUIRE_THROWS( indexDirectory( itemsVector, "" ) );
 }
 
 auto in_archive_paths( const BitItemsVector& vector ) -> std::vector< fs::path > {
@@ -140,7 +139,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory", "[bititemsvector]" ) {
     );
 
     DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path ) );
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
         REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -213,7 +212,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (only files)", "[bititems
     );
 
     DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -301,7 +300,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (retaining folder structu
     );
 
     DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -378,7 +377,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ) ) );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
             REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -443,7 +442,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -506,7 +505,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ) ) );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.*" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
             REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -570,7 +569,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -579,7 +578,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
     }
 
     SECTION( "Wildcard filter *.folder" ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( ".", BIT7Z_STRING( "*.folder" ) ) );
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, ".", BIT7Z_STRING( "*.folder" ) ) );
 
         const std::vector< fs::path > expectedItems{ "dot.folder" };
 
@@ -592,9 +591,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         IndexingOptions options{};
         options.onlyFiles = true;
 
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( ".", BIT7Z_STRING( "*.folder" ),
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, ".", BIT7Z_STRING( "*.folder" ),
                                                       FilterPolicy::Include, options ) );
-        REQUIRE( itemsVector.size() == 0 );
+        REQUIRE( itemsVector.empty() );
     }
 
     SECTION( "Only PDF files" ) {
@@ -609,7 +608,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.pdf" ) ) );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.pdf" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
             REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -628,7 +627,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.svg" ) ) );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.svg" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
             REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -647,7 +646,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.jpg" ) ) );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.jpg" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
             REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -666,7 +665,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.doc" ) ) );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.doc" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
             REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -685,7 +684,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.xlsx" ) ) );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.xlsx" ) ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
             REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -703,8 +702,8 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
                                               "./folder/subfolder2" );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput, BIT7Z_STRING( "*.png" ) ) );
-            REQUIRE( itemsVector.size() == 0 );
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput, BIT7Z_STRING( "*.png" ) ) );
+            REQUIRE( itemsVector.empty() );
         }
     }
 
@@ -766,7 +765,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.pdf" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.pdf" ),
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -786,7 +785,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -806,7 +805,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (filtered)", "[bititemsve
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "" ),
                                                           FilterPolicy::Exclude ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -895,7 +894,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -949,7 +948,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1010,7 +1009,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1039,7 +1038,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.*" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.*" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1049,7 +1048,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
 
     SECTION( "Wildcard filter *.folder" ) {
         // Even if we are indexing non-recursively, the "dot.folder" matches the filter; hence, it must be indexed.
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( ".", BIT7Z_STRING( "*.folder" ),
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, ".", BIT7Z_STRING( "*.folder" ),
                                                       FilterPolicy::Include, options ) );
 
         const std::vector< fs::path > expectedItems{ "dot.folder" };
@@ -1061,9 +1060,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
     SECTION( "Wildcard filter *.folder (only files)" ) {
         options.onlyFiles = true;
 
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( ".", BIT7Z_STRING( "*.folder" ),
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, ".", BIT7Z_STRING( "*.folder" ),
                                                       FilterPolicy::Include, options ) );
-        REQUIRE( itemsVector.size() == 0 );
+        REQUIRE( itemsVector.empty() );
     }
 
     SECTION( "Only PDF files" ) {
@@ -1078,7 +1077,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.pdf" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.pdf" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1098,7 +1097,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.svg" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.svg" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1118,7 +1117,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.jpg" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.jpg" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1138,7 +1137,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.doc" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.doc" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1158,7 +1157,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
         );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "*.xlsx" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "*.xlsx" ),
                                                           FilterPolicy::Include, options ) );
 
             const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1177,9 +1176,9 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively, filtere
                                               "./folder/subfolder2" );
 
         DYNAMIC_SECTION ( "Indexing directory " << testInput ) {
-            REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput, BIT7Z_STRING( "*.png" ),
+            REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput, BIT7Z_STRING( "*.png" ),
                                                           FilterPolicy::Include, options ) );
-            REQUIRE( itemsVector.size() == 0 );
+            REQUIRE( itemsVector.empty() );
         }
     }
 }
@@ -1259,7 +1258,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (non-recursively)", "[bit
     );
 
     DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1356,7 +1355,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path)", "[bitit
     );
 
     DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path ) );
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
         REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -1455,7 +1454,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (relative path, non-recur
     );
 
     DYNAMIC_SECTION ( "Indexing directory " << testInput.path ) {
-        REQUIRE_NOTHROW( itemsVector.indexDirectory( testInput.path, BIT7Z_STRING( "" ),
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, testInput.path, BIT7Z_STRING( "" ),
                                                       FilterPolicy::Include, options ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
@@ -1620,7 +1619,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (custom path mapping)", "
         const std::map< bit7z::tstring, bit7z::tstring > pathMap{
             { testInput.path.string< bit7z::tchar >(), BIT7Z_STRING( "custom_folder" ) }
         };
-        REQUIRE_NOTHROW( itemsVector.indexPathsMap( pathMap ) );
+        REQUIRE_NOTHROW( indexPathsMap( itemsVector, pathMap ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
         REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -1719,7 +1718,7 @@ TEST_CASE( "BitItemsVector: Indexing a valid directory (empty custom path mappin
         const std::map< bit7z::tstring, bit7z::tstring > pathMap{
             { testInput.path.string< bit7z::tchar >(), BIT7Z_STRING( "" ) }
         };
-        REQUIRE_NOTHROW( itemsVector.indexPathsMap( pathMap ) );
+        REQUIRE_NOTHROW( indexPathsMap( itemsVector, pathMap ) );
 
         const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
         REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -1785,7 +1784,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths", "[bititemsvector]" ) {
         }
     );
 
-    REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths ) );
+    REQUIRE_NOTHROW( indexPaths( itemsVector, testInput.inputPaths ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -1848,7 +1847,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (retaining folder structu
         }
     );
 
-    REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths, options ) );
+    REQUIRE_NOTHROW( indexPaths( itemsVector, testInput.inputPaths, options ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -1909,7 +1908,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (only files)", "[bititems
         }
     );
 
-    REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths, options ) );
+    REQUIRE_NOTHROW( indexPaths( itemsVector, testInput.inputPaths, options ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -1957,7 +1956,7 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bit
         }
     );
 
-    REQUIRE_NOTHROW( itemsVector.indexPaths( testInput.inputPaths, options ) );
+    REQUIRE_NOTHROW( indexPaths( itemsVector, testInput.inputPaths, options ) );
 
     const vector< fs::path > indexedPaths = in_archive_paths( itemsVector );
     REQUIRE_THAT( indexedPaths, Catch::Matchers::UnorderedEquals( testInput.expectedItems ) );
@@ -1965,19 +1964,19 @@ TEST_CASE( "BitItemsVector: Indexing a vector of paths (non-recursively)", "[bit
 
 TEST_CASE( "BitItemsVector: Indexing a directory as a file should fail", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "." ) ) );
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "dot.folder" ) ) );
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "dot.folder/../" ) ) );
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "empty" ) ) );
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder" ) ) );
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder/subfolder" ) ) );
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder/subfolder/../.." ) ) );
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "folder/subfolder2" ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "." ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "dot.folder" ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "dot.folder/../" ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "empty" ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "folder" ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "folder/subfolder" ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "folder/subfolder/../.." ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "folder/subfolder2" ) ) );
 }
 
 TEST_CASE( "BitItemsVector: Indexing a non-existing file should fail", "[bititemsvector]" ) {
     BitItemsVector itemsVector;
-    REQUIRE_THROWS( itemsVector.indexFile( BIT7Z_STRING( "non-existing.ext" ) ) );
+    REQUIRE_THROWS( indexFile( itemsVector, BIT7Z_STRING( "non-existing.ext" ) ) );
 }
 
 struct TestFile {
@@ -2028,19 +2027,19 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 
     DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput.inputFile ) ) {
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-        REQUIRE_NOTHROW( itemsVector.indexFile( testInput.inputFile.string< bit7z::tchar >() ) );
+        REQUIRE_NOTHROW( indexFile( itemsVector, testInput.inputFile.string< bit7z::tchar >() ) );
 #else
-        REQUIRE_NOTHROW( itemsVector.indexFile( to_utf8string( testInput.inputFile ) ) );
+        REQUIRE_NOTHROW( indexFile( itemsVector, to_utf8string( testInput.inputFile ) ) );
 #endif
 
         REQUIRE( itemsVector.size() == 1 );
-        REQUIRE( itemsVector[ 0 ].inArchivePath() == testInput.expectedItem );
+        REQUIRE( itemsVector[ 0 ]->inArchivePath() == testInput.expectedItem );
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-        REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile );
+        REQUIRE( itemsVector[ 0 ]->path() == testInput.inputFile );
 #else
-        REQUIRE( itemsVector[ 0 ].path() == to_utf8string( testInput.inputFile ) );
+        REQUIRE( itemsVector[ 0 ]->path() == to_utf8string( testInput.inputFile ) );
 #endif
-        REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput.inputFile ) );
+        REQUIRE( itemsVector[ 0 ]->size() == fs::file_size( testInput.inputFile ) );
     }
 }
 
@@ -2068,20 +2067,20 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
 
     DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) ) {
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-        REQUIRE_NOTHROW( itemsVector.indexFile( testInput.string< bit7z::tchar >(),
+        REQUIRE_NOTHROW( indexFile( itemsVector, testInput.string< bit7z::tchar >(),
                                                 BIT7Z_STRING( "custom_name.ext" ) ) );
 #else
-        REQUIRE_NOTHROW( itemsVector.indexFile( to_utf8string( testInput ), BIT7Z_STRING( "custom_name.ext" ) ) );
+        REQUIRE_NOTHROW( indexFile( itemsVector, to_utf8string( testInput ), BIT7Z_STRING( "custom_name.ext" ) ) );
 #endif
 
         REQUIRE( itemsVector.size() == 1 );
-        REQUIRE( itemsVector[ 0 ].inArchivePath() == "custom_name.ext" );
+        REQUIRE( itemsVector[ 0 ]->inArchivePath() == "custom_name.ext" );
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-        REQUIRE( itemsVector[ 0 ].path() == testInput );
+        REQUIRE( itemsVector[ 0 ]->path() == testInput );
 #else
-        REQUIRE( itemsVector[ 0 ].path() == to_utf8string( testInput ) );
+        REQUIRE( itemsVector[ 0 ]->path() == to_utf8string( testInput ) );
 #endif
-        REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
+        REQUIRE( itemsVector[ 0 ]->size() == fs::file_size( testInput ) );
     }
 }
 
@@ -2103,11 +2102,11 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
 
     DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) << " as a stream" ) {
         REQUIRE_OPEN_IFSTREAM( input_stream, testInput );
-        REQUIRE_NOTHROW( itemsVector.indexStream( input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
+        REQUIRE_NOTHROW( indexStream( itemsVector, input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
-        REQUIRE( itemsVector[ 0 ].inArchivePath() == "custom_name.ext" );
-        REQUIRE( itemsVector[ 0 ].path() == BIT7Z_STRING( "custom_name.ext" ) );
-        REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
+        REQUIRE( itemsVector[ 0 ]->inArchivePath() == "custom_name.ext" );
+        REQUIRE( itemsVector[ 0 ]->path() == BIT7Z_STRING( "custom_name.ext" ) );
+        REQUIRE( itemsVector[ 0 ]->size() == fs::file_size( testInput ) );
     }
 }
 
@@ -2129,10 +2128,10 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
 
     DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) << " as a buffer" ) {
         REQUIRE_LOAD_FILE( input_buffer, testInput );
-        REQUIRE_NOTHROW( itemsVector.indexBuffer( input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
+        REQUIRE_NOTHROW( indexBuffer( itemsVector, input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
-        REQUIRE( itemsVector[ 0 ].inArchivePath() == "custom_name.ext" );
-        REQUIRE( itemsVector[ 0 ].path() == BIT7Z_STRING( "custom_name.ext" ) );
-        REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
+        REQUIRE( itemsVector[ 0 ]->inArchivePath() == "custom_name.ext" );
+        REQUIRE( itemsVector[ 0 ]->path() == BIT7Z_STRING( "custom_name.ext" ) );
+        REQUIRE( itemsVector[ 0 ]->size() == fs::file_size( testInput ) );
     }
 }

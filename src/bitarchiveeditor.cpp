@@ -94,6 +94,7 @@ void BitArchiveEditor::updateItem( uint32_t index, std::istream& inStream ) {
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const tstring& inFile ) {
+    using filesystem::FilesystemItem;
     mEditedItems[ findItem( itemPath ) ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), //-V108
                                                                                tstring_to_path( itemPath ) );
 }
