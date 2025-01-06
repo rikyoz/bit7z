@@ -74,7 +74,7 @@ enum struct OverwriteMode {
  * @brief Enumeration representing the policy according to which the archive handler should treat
  *        the items that match the pattern given by the user.
  */
-enum struct FilterPolicy {
+enum struct FilterPolicy : std::uint8_t {
     Include, ///< Extract/compress the items that match the pattern.
     Exclude  ///< Do not extract/compress the items that match the pattern.
 };

@@ -13,7 +13,6 @@
 #include "internal/fsindexer.hpp"
 
 #include "bitabstractarchivehandler.hpp"
-#include "bitexception.hpp"
 #include "bittypes.hpp"
 #include "internal/fsitem.hpp"
 #include "internal/fsutil.hpp"
@@ -22,25 +21,9 @@
 #include <memory>
 #include <vector>
 #include <system_error>
-#include <utility>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
-
-FilesystemIndexer::FilesystemIndexer( FilesystemItem directory,
-                                      tstring filter,
-                                      FilterPolicy policy,
-                                      SymlinkPolicy symlinkPolicy,
-                                      bool onlyFiles )
-    : mDirItem{ std::move( directory ) },
-      mFilter{ std::move( filter ) },
-      mPolicy{ policy },
-      mSymlinkPolicy{ symlinkPolicy },
-      mOnlyFiles{ onlyFiles } {
-    if ( !mDirItem.isDir() ) {
-        throw BitException( "Invalid path", std::make_error_code( std::errc::not_a_directory ), mDirItem.name() );
-    }
-}
 
 namespace {
 inline auto countItemsInPath( const fs::path& path ) -> std::size_t {
@@ -50,14 +33,16 @@ inline auto countItemsInPath( const fs::path& path ) -> std::size_t {
 }
 } // namespace
 
-// NOTE: It indexes all the items whose metadata are needed in the archive to be created!
-void FilesystemIndexer::listDirectoryItems( BitItemsVector& result, bool recursive ) {
-    const bool includeRootPath = mFilter.empty() ||
-                                 !mDirItem.filesystemPath().has_parent_path() ||
-                                 mDirItem.inArchivePath().filename() != mDirItem.filesystemName();
-    const bool shouldIncludeMatchedItems = mPolicy == FilterPolicy::Include;
+void listDirectoryItems( const FilesystemItem& directory,
+                         const tstring& filter,
+                         IndexingOptions options,
+                         BitItemsVector& result ) {
+    const bool includeRootPath = filter.empty() ||
+                                 !directory.filesystemPath().has_parent_path() ||
+                                 directory.inArchivePath().filename() != directory.filesystemName();
+    const bool shouldIncludeMatchedItems = options.filterPolicy == FilterPolicy::Include;
 
-    const fs::path basePath = mDirItem.filesystemPath();
+    const fs::path& basePath = directory.filesystemPath();
     std::error_code error;
     result.reserve( result.size() + countItemsInPath( basePath ) );
     for ( auto iterator = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
@@ -74,17 +59,17 @@ void FilesystemIndexer::listDirectoryItems( BitItemsVector& result, bool recursi
          *  - Either is a file, or we are interested also to include folders in the index.
          *
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
-        const bool itemMatches = ( !mOnlyFiles || !itemIsDir ) && fsutil::wildcard_match( mFilter, itemName );
+        const bool itemMatches = ( !options.onlyFiles || !itemIsDir ) && fsutil::wildcard_match( filter, itemName );
         if ( itemMatches == shouldIncludeMatchedItems ) {
             const auto prefix = fs::relative( itemPath, basePath, error ).remove_filename();
-            const auto searchPath = includeRootPath ? mDirItem.inArchivePath() / prefix : prefix;
-            result.emplace_back( std::make_unique< FilesystemItem >( currentEntry, searchPath, mSymlinkPolicy ) );
+            const auto searchPath = includeRootPath ? directory.inArchivePath() / prefix : prefix;
+            result.emplace_back( std::make_unique< FilesystemItem >( currentEntry, searchPath, options.symlinkPolicy ) );
         }
 
         /* We don't need to recurse inside the current item if:
          *  - it is not a directory; or
          *  - we are not indexing recursively, and the directory's name doesn't match the wildcard filter. */
-        if ( !itemIsDir || ( !recursive && ( itemMatches != shouldIncludeMatchedItems ) ) ) {
+        if ( !itemIsDir || ( !options.recursive && ( itemMatches != shouldIncludeMatchedItems ) ) ) {
             iterator.disable_recursion_pending();
         }
     }

@@ -26,11 +26,17 @@ struct GenericInputItem;
 using GenericInputItemPtr = std::unique_ptr< GenericInputItem >;
 
 /** @cond **/
+enum struct SymlinkPolicy : std::uint8_t {
+    Follow,
+    DoNotFollow
+};
+
 struct IndexingOptions {
+    FilterPolicy filterPolicy = FilterPolicy::Include;
     bool recursive = true;
     bool retainFolderStructure = false;
     bool onlyFiles = false;
-    bool followSymlinks = true;
+    SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow;
 };
 /** @endcond **/
 
@@ -49,7 +55,6 @@ using BitItemsVector = std::vector< GenericInputItemPtr >;
 void indexDirectory( BitItemsVector& outVector,
                      const fs::path& inDir,
                      const tstring& filter = {},
-                     FilterPolicy policy = FilterPolicy::Include,
                      IndexingOptions options = {} );
 /**
  * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
@@ -87,7 +92,7 @@ void indexPathsMap( BitItemsVector& outVector,
 void indexFile( BitItemsVector& outVector,
                 const tstring& inFile,
                 const tstring& name = {},
-                bool followSymlinks = true );
+                SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
 
 /**
  * @brief Indexes the given buffer, using the given name as a path when compressed in archives.

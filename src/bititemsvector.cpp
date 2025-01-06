@@ -12,7 +12,6 @@
 
 #include "bititemsvector.hpp"
 
-#include "bitabstractarchivehandler.hpp"
 #include "bitexception.hpp"
 #include "bittypes.hpp"
 #include "internal/bufferitem.hpp"
@@ -31,22 +30,17 @@
 namespace bit7z {
 
 using filesystem::FilesystemItem;
-using filesystem::FilesystemIndexer;
-using filesystem::SymlinkPolicy;
 
 void indexDirectory( BitItemsVector& outVector,
                      const fs::path& inDir,
                      const tstring& filter,
-                     FilterPolicy policy,
                      IndexingOptions options ) {
-    const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     // Note: if inDir is an invalid path, FilesystemItem constructor throws a BitException.
-    const FilesystemItem dirItem{ inDir, options.retainFolderStructure ? inDir : fs::path{}, symlinkPolicy };
+    const FilesystemItem dirItem{ inDir, options.retainFolderStructure ? inDir : fs::path{}, options.symlinkPolicy };
     if ( filter.empty() && !dirItem.inArchivePath().empty() ) {
         outVector.emplace_back( std::make_unique< FilesystemItem >( dirItem ) );
     }
-    FilesystemIndexer indexer{ dirItem, filter, policy, symlinkPolicy, options.onlyFiles };
-    indexer.listDirectoryItems( outVector, options.recursive );
+    listDirectoryItems( dirItem, filter, options, outVector );
 }
 
 namespace {
@@ -57,9 +51,7 @@ void indexItem( BitItemsVector& outVector, const FilesystemItem& item, IndexingO
         if ( !item.inArchivePath().empty() ) {
             outVector.emplace_back( std::make_unique< FilesystemItem >( item ) );
         }
-        const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-        FilesystemIndexer indexer{ item, {}, FilterPolicy::Include, symlinkPolicy, options.onlyFiles };
-        indexer.listDirectoryItems( outVector, true );
+        listDirectoryItems( item, {}, options, outVector );
     } else {
         // No action needed
     }
@@ -67,33 +59,30 @@ void indexItem( BitItemsVector& outVector, const FilesystemItem& item, IndexingO
 } // namespace
 
 void indexPaths( BitItemsVector& outVector, const std::vector< tstring >& inPaths, IndexingOptions options ) {
-    const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     for ( const auto& inputPath : inPaths ) {
         const auto filePath = tstring_to_path( inputPath );
         const FilesystemItem item{ filePath,
                                    options.retainFolderStructure ? filePath : fs::path{},
-                                   symlinkPolicy };
+                                   options.symlinkPolicy };
         indexItem( outVector, item, options );
     }
 }
 
 void indexPathsMap( BitItemsVector& outVector, const std::map< tstring, tstring >& inPaths, IndexingOptions options ) {
-    const auto symlinkPolicy = options.followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     for ( const auto& filePair : inPaths ) {
         const FilesystemItem item{ tstring_to_path( filePair.first ),
                                    tstring_to_path( filePair.second ),
-                                   symlinkPolicy };
+                                   options.symlinkPolicy };
         indexItem( outVector, item, options );
     }
 }
 
-void indexFile( BitItemsVector& outVector, const tstring& inFile, const tstring& name, bool followSymlinks ) {
+void indexFile( BitItemsVector& outVector, const tstring& inFile, const tstring& name, SymlinkPolicy symlinkPolicy ) {
     const fs::path filePath = tstring_to_path( inFile );
     if ( fs::is_directory( filePath ) ) {
         throw BitException( "Input path points to a directory, not a file",
                             std::make_error_code( std::errc::invalid_argument ), inFile );
     }
-    const auto symlinkPolicy = followSymlinks ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     outVector.emplace_back( std::make_unique< FilesystemItem >( filePath, tstring_to_path( name ), symlinkPolicy ) );
 }
 

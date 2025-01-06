@@ -10,34 +10,19 @@
 #ifndef FSINDEXER_HPP
 #define FSINDEXER_HPP
 
-#include "bitabstractarchivehandler.hpp"
 #include "bititemsvector.hpp"
 #include "bittypes.hpp"
 #include "internal/fsitem.hpp"
-#include "internal/fsutil.hpp"
 
 #include <vector>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-class FilesystemIndexer final {
-    public:
-        explicit FilesystemIndexer( FilesystemItem directory,
-                                    tstring filter = {},
-                                    FilterPolicy policy = FilterPolicy::Include,
-                                    SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
-                                    bool onlyFiles = false );
-
-        void listDirectoryItems( BitItemsVector& result, bool recursive );
-
-    private:
-        FilesystemItem mDirItem;
-        tstring mFilter;
-        FilterPolicy mPolicy;
-        SymlinkPolicy mSymlinkPolicy;
-        bool mOnlyFiles;
-};
+void listDirectoryItems( const FilesystemItem& directory,
+                         const tstring& filter,
+                         IndexingOptions options,
+                         BitItemsVector& result );
 
 }  // namespace filesystem
 }  // namespace bit7z

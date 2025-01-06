@@ -11,17 +11,13 @@
 #define FSUTIL_HPP
 
 #include "bitdefines.hpp"
+#include "bititemsvector.hpp" // For SymlinkPolicy
 #include "bittypes.hpp"
 #include "internal/fs.hpp"
 #include "internal/windows.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
-
-enum struct SymlinkPolicy {
-    Follow,
-    DoNotFollow
-};
 
 namespace fsutil {
 
