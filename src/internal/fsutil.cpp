@@ -364,7 +364,7 @@ inline auto is_windows_reserved_name( const std::wstring& component ) -> bool {
     // LPT0, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, and LPT9.
     constexpr auto reserved_component_size = 4;
     return component.size() == reserved_component_size &&
-           ( component.find(L"COM") == 0 || component.find(L"LPT") == 0 ) &&
+           ( component.rfind( L"COM", 0 ) == 0 || component.rfind( L"LPT", 0 ) == 0 ) &&
            std::iswdigit( component.back() ) != 0;
 }
 
