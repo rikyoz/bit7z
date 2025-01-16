@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-22.04
+    runs-on: ${{ matrix.os }}
     if: |
       !contains(github.event.head_commit.message, '[test-windows]')
       && !contains(github.event.head_commit.message, '[test-macos]')
@@ -26,12 +26,14 @@ jobs:
       fail-fast: false
 
       matrix:
+        os: [ubuntu-22.04, ubuntu-22.04-arm]
+        arch: [x64, arm64]
         build_type: [Debug, Release]
         c_compiler: [gcc-9, gcc-10, gcc-11, gcc-12, clang-13, clang-14, clang-15]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
-        bit7z_7zip_version: [16.02, 22.01, 23.01]
+        bit7z_7zip_version: [16.02, 22.01]
         bit7z_build_for_p7zip: [OFF, ON]
         include:
           - c_compiler: gcc-9
@@ -49,6 +51,10 @@ jobs:
           - c_compiler: clang-15
             cpp_compiler: clang++-15
         exclude:
+          - os: ubuntu-22.04
+            arch: arm64
+          - os: ubuntu-22.04-arm
+            arch: x64
           - c_compiler: gcc-9
             bit7z_link_libcpp: ON
           - c_compiler: gcc-10
@@ -69,8 +75,6 @@ jobs:
             bit7z_7zip_version: 16.02
           - bit7z_7zip_version: 16.02
             bit7z_build_for_p7zip: OFF
-          - bit7z_7zip_version: 23.01
-            bit7z_build_for_p7zip: ON
           - bit7z_7zip_version: 22.01
             bit7z_build_for_p7zip: ON
 

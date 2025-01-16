@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   build_linux:
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
     if: |
       !contains(github.event.head_commit.message, '[test-windows]')
       && !contains(github.event.head_commit.message, '[test-macos]')
@@ -26,12 +26,14 @@ jobs:
       fail-fast: false
 
       matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        arch: [x64, arm64]
         build_type: [Debug, Release]
         c_compiler: [gcc-13, gcc-14, clang-16, clang-17, clang-18]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
-        bit7z_7zip_version: [16.02, 22.01, 23.01, 24.09]
+        bit7z_7zip_version: [16.02, 23.01, 24.09]
         bit7z_build_for_p7zip: [OFF, ON]
         include:
           - c_compiler: gcc-13
@@ -45,6 +47,10 @@ jobs:
           - c_compiler: clang-18
             cpp_compiler: clang++-18
         exclude:
+          - os: ubuntu-24.04
+            arch: arm64
+          - os: ubuntu-24.04-arm
+            arch: x64
           - c_compiler: gcc-13
             bit7z_link_libcpp: ON
           - c_compiler: gcc-14
@@ -67,7 +73,7 @@ jobs:
             bit7z_build_for_p7zip: ON
 
     name: |
-      Ubuntu, ${{ matrix.c_compiler }}, ${{ matrix.build_type }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
+      Ubuntu (${{ matrix.arch }}), ${{ matrix.c_compiler }}, ${{ matrix.build_type }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -113,6 +119,7 @@ jobs:
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
       with:
+        arch: ${{ matrix.arch }}
         c_compiler: ${{ matrix.c_compiler }}
         cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
