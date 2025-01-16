@@ -97,6 +97,7 @@ jobs:
     - name: Building and testing bit7z
       uses: ./.github/actions/test_action
       with:
+        arch: ${{ matrix.arch }}
         c_compiler: ${{ matrix.c_compiler }}
         cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
