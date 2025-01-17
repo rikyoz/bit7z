@@ -157,7 +157,7 @@ BitPropVariant::BitPropVariant( uint64_t value ) noexcept: PROPVARIANT() {
 BitPropVariant::BitPropVariant( int8_t value ) noexcept: PROPVARIANT() {
     vt = VT_I1;
     wReserved1 = 0;
-    cVal = static_cast< char >( value );
+    cVal = static_cast< decltype(cVal) >( value );
 }
 
 BitPropVariant::BitPropVariant( int16_t value ) noexcept: PROPVARIANT() {
