@@ -117,7 +117,11 @@ struct PROPVARIANT {
     WORD wReserved2;
     WORD wReserved3;
     union {
+#if defined( __arm__ ) || defined( __aarch64__ )
+        signed char cVal;
+#else
         char cVal;
+#endif
         unsigned char bVal;
         short iVal;
         unsigned short uiVal;
