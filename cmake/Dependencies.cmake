@@ -49,7 +49,7 @@ endif()
 if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES OR BIT7Z_BUILD_TESTS )
     CPMAddPackage( NAME ghc_filesystem
                    GITHUB_REPOSITORY rikyoz/filesystem
-                   GIT_TAG 983650f374699e3979f9cdefe13ddff60bd4ac68
+                   GIT_TAG b99c2aebd5ddd6fb2f190731ba80b949fc3842b5
                    GIT_PROGRESS ON
                    DOWNLOAD_ONLY YES )
     if( ghc_filesystem_ADDED )
