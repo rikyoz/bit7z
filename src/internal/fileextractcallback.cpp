@@ -87,11 +87,11 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
         filePath = tstring_to_path( mRenameCallback( index, filePathString ) );
     }
 
-    if ( filePath.empty() ) {
+    if ( filePath.empty() || ( isItemFolder( index ) && filePath == L"/" ) ) {
         return S_OK;
     }
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-    mFilePathOnDisk = mDirectoryPath / filesystem::fsutil::sanitize_path( filePath );
+    mFilePathOnDisk = filesystem::fsutil::sanitized_extraction_path( mDirectoryPath, filePath );
 #else
     mFilePathOnDisk = mDirectoryPath / filePath;
 #endif
