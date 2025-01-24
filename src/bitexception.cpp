@@ -30,7 +30,8 @@ auto make_hresult_code( HRESULT res ) noexcept -> std::error_code {
 }
 
 auto last_error_code() noexcept -> std::error_code {
-    return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
+    const auto error = static_cast< int >( GetLastError() );
+    return std::error_code{ error, std::system_category() };
 }
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
