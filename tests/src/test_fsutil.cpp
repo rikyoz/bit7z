@@ -273,6 +273,8 @@ TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
 
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
+    REQUIRE( sanitize_path( L"" ) == L"" );
+
     REQUIRE( sanitize_path( L"hello world.txt" ) == L"hello world.txt" );
     REQUIRE( sanitize_path( L"hello?world<" ) == L"hello_world_" );
     REQUIRE( sanitize_path( L":hello world|" ) == L"_hello world_" );
@@ -295,11 +297,65 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
     REQUIRE( sanitize_path( L"AUXI" ) == L"AUXI" );
     REQUIRE( sanitize_path( L"NULL" ) == L"NULL" );
 
-    REQUIRE( sanitize_path( L"C:/abc/NUL/def" ) == L"C:\\abc\\_NUL\\def" );
-    REQUIRE( sanitize_path( L"C:\\abc\\NUL\\def" ) == L"C:\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"/" ) == L"_" );
+    REQUIRE( sanitize_path( L"//" ) == L"_" );
+    REQUIRE( sanitize_path( L"//////////////" ) == L"_" );
+    REQUIRE( sanitize_path( L"/\\" ) == L"_" );
+    REQUIRE( sanitize_path( L"////////\\\\\\\\" ) == L"_" );
+    REQUIRE( sanitize_path( L"\\" ) == L"_" );
+    REQUIRE( sanitize_path( L"\\\\" ) == L"_" );
+    REQUIRE( sanitize_path( L"\\\\\\\\\\\\" ) == L"_" );
+    REQUIRE( sanitize_path( L"\\/" ) == L"_" );
+    REQUIRE( sanitize_path( L"\\\\\\\\////////" ) == L"_" );
+    REQUIRE( sanitize_path( L"/abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"//abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"//////////abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"/\\abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"////////\\\\\\\\abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"\\abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"\\\\abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"\\\\\\\\\\\\\\\\\\abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"\\/abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"\\\\\\\\////////abc" ) == L"abc" );
+    REQUIRE( sanitize_path( L"/abc/" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"/abc//" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"/abc/\\" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"/abc\\" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"/abc\\\\" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"/abc\\/" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"\\abc/" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"\\abc\\" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"\\\\abc\\" ) == L"abc\\" );
+    REQUIRE( sanitize_path( L"/abc/NUL/def" ) == L"abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"\\abc\\NUL\\def" ) == L"abc\\_NUL\\def" );
 
-    REQUIRE( sanitize_path( L"C:/Test/COM0/hello?world<.txt" ) == L"C:\\Test\\_COM0\\hello_world_.txt" );
-    REQUIRE( sanitize_path( L"C:\\Test\\COM0\\hello?world<.txt" ) == L"C:\\Test\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"C:" ) == L"C_" );
+    REQUIRE( sanitize_path( L"C:/" ) == L"C_\\" );
+    REQUIRE( sanitize_path( L"C://" ) == L"C_\\" );
+    REQUIRE( sanitize_path( L"C:/\\" ) == L"C_\\" );
+    REQUIRE( sanitize_path( L"C:\\" ) == L"C_\\" );
+    REQUIRE( sanitize_path( L"C:\\\\" ) == L"C_\\" );
+    REQUIRE( sanitize_path( L"C:\\/" ) == L"C_\\" );
+    REQUIRE( sanitize_path( L"C:/abc" ) == L"C_\\abc" );
+    REQUIRE( sanitize_path( L"C://abc" ) == L"C_\\abc" );
+    REQUIRE( sanitize_path( L"C:/\\abc" ) == L"C_\\abc" );
+    REQUIRE( sanitize_path( L"C:\\abc" ) == L"C_\\abc" );
+    REQUIRE( sanitize_path( L"C:\\\\abc" ) == L"C_\\abc" );
+    REQUIRE( sanitize_path( L"C:\\/abc" ) == L"C_\\abc" );
+    REQUIRE( sanitize_path( L"C:/abc/" ) == L"C_\\abc\\" );
+    REQUIRE( sanitize_path( L"C:/abc\\" ) == L"C_\\abc\\" );
+    REQUIRE( sanitize_path( L"C:\\abc/" ) == L"C_\\abc\\" );
+    REQUIRE( sanitize_path( L"C:\\abc\\" ) == L"C_\\abc\\" );
+    REQUIRE( sanitize_path( L"C:/abc/NUL/def" ) == L"C_\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"C:/abc//NUL/def" ) == L"C_\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"C:/abc/\\NUL/def" ) == L"C_\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"C:\\abc\\NUL\\def" ) == L"C_\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"C:\\abc\\\\NUL\\def" ) == L"C_\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"C:\\abc\\/NUL\\def" ) == L"C_\\abc\\_NUL\\def" );
+    REQUIRE( sanitize_path( L"C:\\abc\\NUL\\def" ) == L"C_\\abc\\_NUL\\def" );
+
+    REQUIRE( sanitize_path( L"C:/Test/COM0/hello?world<.txt" ) == L"C_\\Test\\_COM0\\hello_world_.txt" );
+    REQUIRE( sanitize_path( L"C:\\Test\\COM0\\hello?world<.txt" ) == L"C_\\Test\\_COM0\\hello_world_.txt" );
     REQUIRE( sanitize_path( L"Test/COM0/hello?world<.txt" ) == L"Test\\_COM0\\hello_world_.txt" );
     REQUIRE( sanitize_path( L"Test\\COM0\\hello?world<.txt" ) == L"Test\\_COM0\\hello_world_.txt" );
     REQUIRE( sanitize_path( L"../COM0/hello?world<.txt" ) == L"..\\_COM0\\hello_world_.txt" );
@@ -309,8 +365,8 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
     REQUIRE( sanitize_path( L"COM0/hello?world<.txt" ) == L"_COM0\\hello_world_.txt" );
     REQUIRE( sanitize_path( L"COM0\\hello?world<.txt" ) == L"_COM0\\hello_world_.txt" );
 
-    REQUIRE( sanitize_path( L"C:/Test/:hello world|/LPT5" ) == L"C:\\Test\\_hello world_\\_LPT5" );
-    REQUIRE( sanitize_path( L"C:\\Test\\:hello world|\\LPT5" ) == L"C:\\Test\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"C:/Test/:hello world|/LPT5" ) == L"C_\\Test\\_hello world_\\_LPT5" );
+    REQUIRE( sanitize_path( L"C:\\Test\\:hello world|\\LPT5" ) == L"C_\\Test\\_hello world_\\_LPT5" );
     REQUIRE( sanitize_path( L"Test/:hello world|/LPT5" ) == L"Test\\_hello world_\\_LPT5" );
     REQUIRE( sanitize_path( L"Test\\:hello world|\\LPT5" ) == L"Test\\_hello world_\\_LPT5" );
     REQUIRE( sanitize_path( L"../:hello world|/LPT5" ) == L"..\\_hello world_\\_LPT5" );
@@ -319,5 +375,248 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
     REQUIRE( sanitize_path( L".\\:hello world|\\LPT5" ) == L".\\_hello world_\\_LPT5" );
     REQUIRE( sanitize_path( L":hello world|/LPT5" ) == L"_hello world_\\_LPT5" );
     REQUIRE( sanitize_path( L":hello world|\\LPT5" ) == L"_hello world_\\_LPT5" );
+}
+
+TEST_CASE( "fsutil: Sanitizing and concatenate Windows paths", "[fsutil][sanitized_extraction_path]" ) {
+    REQUIRE( sanitized_extraction_path( L"", L"abc" ) == L"abc" );
+    REQUIRE( sanitized_extraction_path( L"", L"/" ) == L"_" );
+    REQUIRE( sanitized_extraction_path( L"", L"/abc" ) == L"abc" );
+    REQUIRE( sanitized_extraction_path( L"", L"\\\\abc" ) == L"abc" );
+    REQUIRE( sanitized_extraction_path( L"", L"C:/abc" ) == L"C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"", L"\\" ) == L"_" );
+    REQUIRE( sanitized_extraction_path( L"", L"\\abc" ) == L"abc" );
+    REQUIRE( sanitized_extraction_path( L"", L"C:\\abc" ) == L"C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"/", L"abc" ) == L"\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/", L"/" ) == L"\\_" );
+    REQUIRE( sanitized_extraction_path( L"/", L"/abc" ) == L"\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/", L"C:/abc" ) == L"\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/", L"\\" ) == L"\\_" );
+    REQUIRE( sanitized_extraction_path( L"/", L"\\abc" ) == L"\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/", L"C:\\abc" ) == L"\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"/def", L"abc" ) == L"\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/def", L"/" ) == L"\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"/def", L"/abc" ) == L"\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/def", L"C:/abc" ) == L"\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/def", L"\\" ) == L"\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"/def", L"\\abc" ) == L"\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"/def", L"C:\\abc" ) == L"\\def\\C_\\abc" );
+
+    // GHC library is a bit buggy in these edge cases.
+#ifndef GHC_FILESYSTEM_VERSION
+    REQUIRE( sanitized_extraction_path( L"//", L"abc" ) == L"//abc" );
+    REQUIRE( sanitized_extraction_path( L"//", L"/" ) == L"//_" );
+    REQUIRE( sanitized_extraction_path( L"//", L"/abc" ) == L"//abc" );
+    REQUIRE( sanitized_extraction_path( L"//", L"C:/abc" ) == L"//C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"//", L"\\" ) == L"//_" );
+    REQUIRE( sanitized_extraction_path( L"//", L"\\abc" ) == L"//abc" );
+    REQUIRE( sanitized_extraction_path( L"//", L"C:\\abc" ) == L"//C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"//server", L"abc" ) == L"//server\\abc" );
+    REQUIRE( sanitized_extraction_path( L"//server", L"/" ) == L"//server\\_" );
+    REQUIRE( sanitized_extraction_path( L"//server", L"/abc" ) == L"//server\\abc" );
+    REQUIRE( sanitized_extraction_path( L"//server", L"C:/abc" ) == L"//server\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"//server", L"\\" ) == L"//server\\_" );
+    REQUIRE( sanitized_extraction_path( L"//server", L"\\abc" ) == L"//server\\abc" );
+    REQUIRE( sanitized_extraction_path( L"//server", L"C:\\abc" ) == L"//server\\C_\\abc" );
+#endif
+
+    REQUIRE( sanitized_extraction_path( L"\\", L"abc" ) == L"\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\", L"/" ) == L"\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\", L"/abc" ) == L"\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\", L"C:/abc" ) == L"\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\", L"\\" ) == L"\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\", L"\\abc" ) == L"\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\", L"C:\\abc" ) == L"\\C_\\abc" );
+
+
+    REQUIRE( sanitized_extraction_path( L"\\def", L"abc" ) == L"\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\def", L"/" ) == L"\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\def", L"/abc" ) == L"\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\def", L"C:/abc" ) == L"\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\def", L"\\" ) == L"\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\def", L"\\abc" ) == L"\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\def", L"C:\\abc" ) == L"\\def\\C_\\abc" );
+
+    // GHC library is a bit buggy in these edge cases.
+#ifndef GHC_FILESYSTEM_VERSION
+    REQUIRE( sanitized_extraction_path( L"\\\\", L"abc" ) == L"\\\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\", L"/" ) == L"\\\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\\\", L"/abc" ) == L"\\\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\", L"C:/abc" ) == L"\\\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\", L"\\" ) == L"\\\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\\\", L"\\abc" ) == L"\\\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\", L"C:\\abc" ) == L"\\\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"\\\\server", L"abc" ) == L"\\\\server\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\server", L"/" ) == L"\\\\server\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\\\server", L"/abc" ) == L"\\\\server\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\server", L"C:/abc" ) == L"\\\\server\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\server", L"\\" ) == L"\\\\server\\_" );
+    REQUIRE( sanitized_extraction_path( L"\\\\server", L"\\abc" ) == L"\\\\server\\abc" );
+    REQUIRE( sanitized_extraction_path( L"\\\\server", L"C:\\abc" ) == L"\\\\server\\C_\\abc" );
+#endif
+
+    REQUIRE( sanitized_extraction_path( L"out", L"abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out", L"/" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out", L"/abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out", L"C:/abc" ) == L"out\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out", L"\\" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out", L"\\abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out", L"C:\\abc" ) == L"out\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"out/", L"abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/", L"/" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out/", L"/abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/", L"C:/abc" ) == L"out\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/", L"\\" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out/", L"\\abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/", L"C:\\abc" ) == L"out\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"out/\\", L"abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/\\", L"/" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out/\\", L"/abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/\\", L"C:/abc" ) == L"out\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/\\", L"\\" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out/\\", L"\\abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out/\\", L"C:\\abc" ) == L"out\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"out\\", L"abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\", L"/" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out\\", L"/abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\", L"C:/abc" ) == L"out\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\", L"\\" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out\\", L"\\abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\", L"C:\\abc" ) == L"out\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"out\\/", L"abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\/", L"/" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out\\/", L"/abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\/", L"C:/abc" ) == L"out\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\/", L"\\" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out\\/", L"\\abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\/", L"C:\\abc" ) == L"out\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"out\\\\", L"abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\\\", L"/" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out\\\\", L"/abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\\\", L"C:/abc" ) == L"out\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\\\", L"\\" ) == L"out\\_" );
+    REQUIRE( sanitized_extraction_path( L"out\\\\", L"\\abc" ) == L"out\\abc" );
+    REQUIRE( sanitized_extraction_path( L"out\\\\", L"C:\\abc" ) == L"out\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:", L"abc" ) == L"C:abc" );
+    REQUIRE( sanitized_extraction_path( L"C:", L"/" ) == L"C:_" );
+    REQUIRE( sanitized_extraction_path( L"C:", L"/abc" ) == L"C:abc" );
+    REQUIRE( sanitized_extraction_path( L"C:", L"C:/abc" ) == L"C:C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:", L"\\" ) == L"C:_" );
+    REQUIRE( sanitized_extraction_path( L"C:", L"\\abc" ) == L"C:abc" );
+    REQUIRE( sanitized_extraction_path( L"C:", L"C:\\abc" ) == L"C:C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:/", L"abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/", L"/" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/", L"/abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/", L"C:/abc" ) == L"C:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/", L"\\" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/", L"\\abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/", L"C:\\abc" ) == L"C:\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C://", L"abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C://", L"/" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C://", L"/abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C://", L"C:/abc" ) == L"C:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C://", L"\\" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C://", L"\\abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C://", L"C:\\abc" ) == L"C:\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:/\\", L"abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/\\", L"/" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/\\", L"/abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/\\", L"C:/abc" ) == L"C:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/\\", L"\\" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/\\", L"\\abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/\\", L"C:\\abc" ) == L"C:\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:\\", L"abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\", L"/" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\", L"/abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\", L"C:/abc" ) == L"C:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\", L"\\" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\", L"\\abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\", L"C:\\abc" ) == L"C:\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:\\\\", L"abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\\\", L"/" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\\\", L"/abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\\\", L"C:/abc" ) == L"C:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\\\", L"\\" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\\\", L"\\abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\\\", L"C:\\abc" ) == L"C:\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:\\/", L"abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\/", L"/" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\/", L"/abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\/", L"C:/abc" ) == L"C:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\/", L"\\" ) == L"C:\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\/", L"\\abc" ) == L"C:\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\/", L"C:\\abc" ) == L"C:\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:/def", L"abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def", L"/" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/def", L"/abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def", L"C:/abc" ) == L"C:\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def", L"\\" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/def", L"\\abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def", L"C:\\abc" ) == L"C:\\def\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:\\def", L"abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def", L"/" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def", L"/abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def", L"C:/abc" ) == L"C:\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def", L"\\" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def", L"\\abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def", L"C:\\abc" ) == L"C:\\def\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:/def/", L"abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def/", L"/" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/def/", L"/abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def/", L"C:/abc" ) == L"C:\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def/", L"\\" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/def/", L"\\abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def/", L"C:\\abc" ) == L"C:\\def\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:/def\\", L"abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def\\", L"/" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/def\\", L"/abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def\\", L"C:/abc" ) == L"C:\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def\\", L"\\" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:/def\\", L"\\abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:/def\\", L"C:\\abc" ) == L"C:\\def\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:\\def/", L"abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def/", L"/" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def/", L"/abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def/", L"C:/abc" ) == L"C:\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def/", L"\\" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def/", L"\\abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def/", L"C:\\abc" ) == L"C:\\def\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"C:\\def\\", L"abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def\\", L"/" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def\\", L"/abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def\\", L"C:/abc" ) == L"C:\\def\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def\\", L"\\" ) == L"C:\\def\\_" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def\\", L"\\abc" ) == L"C:\\def\\abc" );
+    REQUIRE( sanitized_extraction_path( L"C:\\def\\", L"C:\\abc" ) == L"C:\\def\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"D:", L"C:/abc" ) == L"D:C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"D:", L"C:\\abc" ) == L"D:C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"D:/", L"C:/abc" ) == L"D:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"D:/", L"C:\\abc" ) == L"D:\\C_\\abc" );
+
+    REQUIRE( sanitized_extraction_path( L"D:\\", L"C:/abc" ) == L"D:\\C_\\abc" );
+    REQUIRE( sanitized_extraction_path( L"D:\\", L"C:\\abc" ) == L"D:\\C_\\abc" );
 }
 #endif

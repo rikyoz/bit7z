@@ -80,6 +80,8 @@ void increase_opened_files_limit();
  * @return the sanitized path, where illegal characters are replaced with the '_' character.
  */
 auto sanitize_path( const fs::path& path ) -> fs::path;
+
+auto sanitized_extraction_path( const fs::path& outDir, const fs::path& itemPath ) -> fs::path;
 #endif
 
 }  // namespace fsutil
