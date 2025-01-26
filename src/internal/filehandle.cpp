@@ -14,6 +14,7 @@
 
 #include "bitexception.hpp"
 #include "internal/stringutil.hpp"
+#include "internal/util.hpp"
 
 #ifndef _WIN32
 #include <sys/stat.h> // For S_IRUSR and S_IWUSR
@@ -127,7 +128,7 @@ auto OutputFile::write( const void* data, std::uint32_t size, std::uint32_t& pro
         }
         processedSize += bytesWritten;
         size -= bytesWritten;
-        data = static_cast< const bit7z::byte_t* >( data ) + bytesWritten;  // NOLINT(*-pro-bounds-pointer-arithmetic)
+        data = std::next( static_cast< const bit7z::byte_t* >( data ), clamp_cast< std::ptrdiff_t >( bytesWritten ) );
     } while ( size > 0 );
     return S_OK;
 }
@@ -166,7 +167,7 @@ auto InputFile::read( void* data, std::uint32_t size, std::uint32_t& processedSi
         }
         processedSize += bytesRead;
         size -= bytesRead;
-        data = static_cast< bit7z::byte_t* >( data ) + bytesRead;  // NOLINT(*-pro-bounds-pointer-arithmetic)
+        data = std::next( static_cast< bit7z::byte_t* >( data ), clamp_cast< std::ptrdiff_t >( bytesRead ) );
     } while ( size > 0 );
     return S_OK;
 }
