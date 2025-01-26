@@ -51,10 +51,11 @@ auto StdInputItem::isDir() const noexcept -> bool {
 }
 
 auto StdInputItem::size() const -> uint64_t {
-    const auto originalPos = mStream.get().tellg();
-    mStream.get().seekg( 0, std::ios::end ); // seeking to the end of the stream
-    const auto result = static_cast< uint64_t >( mStream.get().tellg() - originalPos ); // size of the stream
-    mStream.get().seekg( originalPos ); // seeking back to the original position in the stream
+    auto& stream = mStream.get();
+    const auto originalPos = stream.tellg();
+    stream.seekg( 0, std::ios::end ); // seeking to the end of the stream
+    const auto result = static_cast< uint64_t >( stream.tellg() - originalPos ); // size of the stream
+    stream.seekg( originalPos ); // seeking back to the original position in the stream
     return result;
 }
 
