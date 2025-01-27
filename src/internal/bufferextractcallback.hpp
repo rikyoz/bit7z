@@ -10,11 +10,11 @@
 #ifndef BUFFEREXTRACTCALLBACK_HPP
 #define BUFFEREXTRACTCALLBACK_HPP
 
+#include "bitabstractarchivehandler.hpp"
 #include "bittypes.hpp"
 #include "internal/extractcallback.hpp"
 
 #include <cstdint>
-#include <map>
 
 namespace bit7z {
 
@@ -22,8 +22,7 @@ class BitInputArchive;
 
 class BufferExtractCallback final : public ExtractCallback {
     public:
-        BufferExtractCallback( const BitInputArchive& inputArchive,
-                               std::map< tstring, buffer_t >& buffersMap );
+        BufferExtractCallback( const BitInputArchive& inputArchive, BufferCallback callback );
 
         BufferExtractCallback( const BufferExtractCallback& ) = delete;
 
@@ -36,7 +35,7 @@ class BufferExtractCallback final : public ExtractCallback {
         ~BufferExtractCallback() override = default;
 
     private:
-        std::map< tstring, buffer_t >& mBuffersMap;
+        BufferCallback mBufferCallback;
         CMyComPtr< ISequentialOutStream > mOutMemStream;
 
         void releaseStream() override;

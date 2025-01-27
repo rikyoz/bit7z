@@ -60,6 +60,11 @@ using RawDataCallback = std::function< bool( const byte_t*, std::size_t ) >;
 using RenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
 
 /**
+ * @brief A function returning a reference to the buffer where to extract the item at the given index/path.
+ */
+using BufferCallback = std::function< buffer_t&( std::uint32_t, const tstring& ) >;
+
+/**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
  */
 enum struct OverwriteMode {

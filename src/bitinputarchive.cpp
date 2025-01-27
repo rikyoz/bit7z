@@ -313,10 +313,15 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
-    std::map< tstring, buffer_t > buffersMap;
-    auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, buffersMap );
-    extractArchive( { index }, extractCallback, NAskMode::kExtract );
-    outBuffer = std::move( buffersMap.begin()->second );
+    const auto bufferCallback = [&outBuffer]( std::uint32_t, const tstring& ) -> buffer_t& {
+        return outBuffer;
+    };
+    try {
+        extractTo( std::move( bufferCallback ), { index } );
+    } catch ( const BitException& ) {
+        outBuffer.clear();
+        throw;
+    }
 }
 
 void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const {
@@ -369,8 +374,19 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
         }
     }
 
-    auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, outMap );
-    extractArchive( filesIndices, extractCallback, NAskMode::kExtract );
+    const auto bufferCallback = [&outMap]( std::uint32_t, const tstring& path ) -> buffer_t& {
+        // Note: the [] operator creates the buffer if it does not already exist.
+        return outMap[ path ];
+    };
+    extractTo( std::move( bufferCallback ), filesIndices );
+}
+
+void BitInputArchive::extractTo( BufferCallback callback, const std::vector< uint32_t >& indices ) const {
+    const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
+        *this,
+        std::move( callback )
+    );
+    extractArchive( indices, extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( RawDataCallback callback ) const {
@@ -415,8 +431,12 @@ void BitInputArchive::testItem( uint32_t index ) const {
 }
 
 void BitInputArchive::testArchive( const std::vector< uint32_t >& indices ) const {
-    std::map< tstring, buffer_t > dummyMap; // output map (not used since we are testing).
-    auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, dummyMap );
+    byte_t dummyBuffer{};
+    const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >(
+        *this,
+        &dummyBuffer,
+        1u
+    );
     extractArchive( indices, extractCallback, NAskMode::kTest );
 }
 

@@ -319,6 +319,14 @@ class BitInputArchive {
         void extractTo( std::map< tstring, buffer_t >& outMap ) const;
 
         /**
+         * @brief Extracts the content of the archive to the buffers provided by the given BufferCallback.
+         *
+         * @param callback the function providing the buffers.
+         * @param indices  (optional) the indices of the files in the archive that must be extracted.
+         */
+        void extractTo( BufferCallback callback, const std::vector< uint32_t >& indices = {} ) const;
+
+        /**
          * @brief Extracts the content of the archive to the given raw data callback.
          *
          * @note You can set a FileCallback to check the file being extracted.

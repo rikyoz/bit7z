@@ -23,20 +23,18 @@
 #include "internal/util.hpp"
 
 #include <cstdint>
-#include <map>
 
 namespace bit7z {
 
-BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
-                                              std::map< tstring, buffer_t >& buffersMap )
+BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive, BufferCallback callback )
     : ExtractCallback( inputArchive ),
-      mBuffersMap( buffersMap ) {}
+      mBufferCallback{ std::move( callback ) } {}
 
 void BufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
+auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT try {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }
@@ -61,8 +59,7 @@ auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
         mHandler.fileCallback()( fullPath );
     }
 
-    // Note: using [] operator it creates the buffer if it does not already exist.
-    auto& outBuffer = mBuffersMap[ fullPath ];
+    auto& outBuffer = mBufferCallback( index, fullPath );
     if ( !outBuffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {
             case OverwriteMode::None: {
@@ -83,6 +80,8 @@ auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream**
     mOutMemStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;
+} catch( const BitException& ex ) {
+    return ex.hresultCode();
 }
 
 } // namespace bit7z
