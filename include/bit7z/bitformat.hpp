@@ -173,6 +173,7 @@ extern const BitInFormat Nsis;      ///< NSIS Archive Format
 extern const BitInFormat Lzma;      ///< LZMA Archive Format
 extern const BitInFormat Lzma86;    ///< LZMA86 Archive Format
 extern const BitInFormat Ppmd;      ///< PPMD Archive Format
+extern const BitInFormat Zstd;      ///< ZSTD Archive Format
 extern const BitInFormat Vhdx;      ///< VHDX Archive Format
 extern const BitInFormat COFF;      ///< COFF Archive Format
 extern const BitInFormat Ext;       ///< EXT Archive Format

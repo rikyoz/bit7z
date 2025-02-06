@@ -45,6 +45,7 @@ namespace BitFormat {
                              BitCompressionMethod::Lzma2,
                              FormatFeatures::CompressionLevel );
     const BitInFormat Ppmd( 0x0D );
+    const BitInFormat Zstd( 0x0E );
     const BitInFormat Vhdx( 0xC4 );
     const BitInFormat COFF( 0xC6 );
     const BitInFormat Ext( 0xC7 );
