@@ -184,6 +184,8 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
         case str_hash( BIT7Z_STRING( "z" ) ):
         case str_hash( BIT7Z_STRING( "taz" ) ):
             return &BitFormat::Z;
+        case str_hash( BIT7Z_STRING( "zst" ) ):
+            return &BitFormat::Zstd;
         default:
             return nullptr;
     }
@@ -239,6 +241,7 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
     constexpr auto kXarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
     constexpr auto kZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
     constexpr auto kZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
+    constexpr auto kZstdSignature = 0x28B52FFD00000000ULL;
 
     switch ( signature ) {
         case kRarSignature:
@@ -326,6 +329,8 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
         case kZSignature1: // 1F 9D
         case kZSignature2: // 1F A0
             return &BitFormat::Z;
+        case kZstdSignature:
+            return &BitFormat::Zstd;
         default:
             return nullptr;
     }
