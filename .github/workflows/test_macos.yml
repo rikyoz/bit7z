@@ -27,7 +27,6 @@ jobs:
 
       matrix:
         os: [macos-13, macos-14]
-        build_type: [Debug, Release]
         c_compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang]
         arch: [x64, arm64]
         sevenzip_version: [23.01, 24.09]
@@ -65,7 +64,7 @@ jobs:
             arch: arm64
 
     name: |
-      macOS (${{ matrix.arch }}), ${{ matrix.c_compiler }}, ${{ matrix.build_type }}${{ matrix.bit7z_auto_format == 'ON' && ', AUTO_FORMAT' || '' }}${{ matrix.bit7z_regex_matching == 'ON' && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_link_libcpp == 'ON' && ', LINK_LIBCPP' || '' }}
+      macOS (${{ matrix.arch }}), ${{ matrix.c_compiler }}${{ matrix.bit7z_auto_format == 'ON' && ', AUTO_FORMAT' || '' }}${{ matrix.bit7z_regex_matching == 'ON' && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_link_libcpp == 'ON' && ', LINK_LIBCPP' || '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -94,7 +93,7 @@ jobs:
       run:
         brew install gcc@11
 
-    - name: Building and testing bit7z
+    - name: Building and testing bit7z (Debug)
       uses: ./.github/actions/test_action
       with:
         arch: ${{ matrix.arch }}
@@ -102,6 +101,18 @@ jobs:
         cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: ${{ matrix.sevenzip_version }}
         enable_sanitizers: ${{ matrix.enable_sanitizers }}
-        build_type: ${{ matrix.build_type }}
-        build_flags: |
+        build_type: Debug
+        build_flags: |-
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
+
+    - name: Building and testing bit7z (Release)
+      uses: ./.github/actions/test_action
+      with:
+        arch: ${{ matrix.arch }}
+        c_compiler: ${{ matrix.c_compiler }}
+        cpp_compiler: ${{ matrix.cpp_compiler }}
+        sevenzip_version: ${{ matrix.sevenzip_version }}
+        enable_sanitizers: ${{ matrix.enable_sanitizers }}
+        build_type: Release
+        build_flags: |-
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

@@ -28,7 +28,6 @@ jobs:
       matrix:
         os: [ubuntu-24.04, ubuntu-24.04-arm]
         arch: [x64, arm64]
-        build_type: [Debug, Release]
         c_compiler: [gcc-13, gcc-14, clang-16, clang-17, clang-18]
         bit7z_auto_format: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
@@ -73,7 +72,7 @@ jobs:
             bit7z_build_for_p7zip: ON
 
     name: |
-      Ubuntu (${{ matrix.arch }}), ${{ matrix.c_compiler }}, ${{ matrix.build_type }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
+      Ubuntu (${{ matrix.arch }}), ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -116,13 +115,24 @@ jobs:
         sudo mkdir -p /usr/lib/p7zip
         sudo cp ${{ github.workspace }}/build/p7zip/bin/7z.so /usr/lib/p7zip/7z.so
 
-    - name: Building and testing bit7z
+    - name: Building and testing bit7z (Debug)
       uses: ./.github/actions/test_action
       with:
         arch: ${{ matrix.arch }}
         c_compiler: ${{ matrix.c_compiler }}
         cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
-        build_type: ${{ matrix.build_type }}
-        build_flags: |
+        build_type: Debug
+        build_flags: |-
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
+            
+    - name: Building and testing bit7z (Release)
+      uses: ./.github/actions/test_action
+      with:
+        arch: ${{ matrix.arch }}
+        c_compiler: ${{ matrix.c_compiler }}
+        cpp_compiler: ${{ matrix.cpp_compiler }}
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
+        build_type: Release
+        build_flags: |-
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
