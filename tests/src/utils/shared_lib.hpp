@@ -27,7 +27,11 @@ inline auto sevenzip_lib_path() -> const tstring& {
 #elif defined( _WIN32 )
     static const tstring lib_path = BIT7Z_STRING( R"(C:\Program Files (x86)\7-Zip\7z.dll)" );
 #elif defined( __linux__ )
-    static const tstring lib_path = "/usr/lib/p7zip/7z.so"; //default installation path of p7zip's shared library
+#if defined( BIT7Z_BUILD_FOR_P7ZIP ) || defined( BIT7Z_USE_LEGACY_IUNKNOWN )
+    static const tstring lib_path = "/usr/lib/p7zip/7z.so"; // Default installation path of p7zip's shared library
+#else
+    static const tstring lib_path = "/usr/lib/7zip/7z.so"; // Default installation path of 7-Zip's shared library
+#endif
 #else
     static const tstring lib_path = "./7z.so";
 #endif
