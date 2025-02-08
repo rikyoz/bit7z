@@ -62,12 +62,12 @@ auto main( int argc, char* argv[] ) -> int try {
 #endif
     std::clog << "BIT7Z_REGEX_MATCHING: " << flags::regex_matching << '\n';
 #ifndef _WIN32
-    std::clog << "BIT7Z_USE_LEGACY_IUNKNOWN: " << flags::use_legacy_iunknown << "\n\n";
+    std::clog << "BIT7Z_USE_LEGACY_IUNKNOWN: " << flags::use_legacy_iunknown << '\n';
 #endif
     std::clog << "BIT7Z_USE_NATIVE_STRING: " << flags::native_string << '\n';
-    std::clog << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << "\n";
+    std::clog << "BIT7Z_USE_STANDARD_FILESYSTEM: " << flags::standard_filesystem << '\n';
 #ifdef _WIN32
-    std::clog << "BIT7Z_USE_SYSTEM_CODEPAGE: " << flags::use_system_codepage << "\n\n";
+    std::clog << "BIT7Z_USE_SYSTEM_CODEPAGE: " << flags::use_system_codepage << '\n';
 #endif
     std::clog.flush();
 
