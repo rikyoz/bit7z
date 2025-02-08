@@ -38,6 +38,7 @@
 #include <cctype> // for std::isdigit
 #endif
 
+namespace {
 /**
  * @brief Constexpr recursive implementation of the djb2 hashing function.
  *
@@ -49,8 +50,10 @@ auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(mis
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, *-magic-numbers)
     return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381; //-V2563
 }
+} // namespace
 
 namespace bit7z {
+namespace {
 /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
  *       format, but the ifs are faster and have less memory footprint. */
 auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* {
@@ -281,10 +284,10 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
             return &BitFormat::Cpio;
         case kDebSignature:
             return &BitFormat::Deb;
-            /* DMG signature detection is not so easy to detect.
-            case 0x7801730D62626000:
-                return &BitFormat::Dmg;
-            */
+        /* DMG signature detection is not so easy to detect.
+        case 0x7801730D62626000:
+            return &BitFormat::Dmg;
+        */
         case kElfSignature:
             return &BitFormat::Elf;
         case kPeSignature:
@@ -340,12 +343,13 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
             return nullptr;
     }
 }
+} // namespace
 
 struct OffsetSignature {
-    uint64_t signature;
-    std::streamoff offset;
-    uint32_t size;
-    const BitInFormat& format;
+    std::uint64_t signature{};
+    std::streamoff offset{};
+    std::uint32_t size{};
+    std::reference_wrapper< const BitInFormat > format;
 };
 
 #if defined(_WIN32)
@@ -369,11 +373,13 @@ static inline uint64_t bswap64( uint64_t x ) {
 }
 #endif
 
+namespace {
 auto read_signature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
     uint64_t signature = 0;
-    stream->Read( &signature, size, nullptr );
+    (void) stream->Read( &signature, size, nullptr );
     return bswap64( signature );
 }
+} // namespace
 
 // Note: the left shifting of the signature mask might overflow, but it is intentional, so we suppress the sanitizer.
 auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
@@ -386,7 +392,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     for ( auto i = 0U; i < kSignatureSize - 1; ++i ) {
         const BitInFormat* format = find_format_by_signature( fileSignature );
         if ( format != nullptr ) {
-            stream->Seek( 0, 0, nullptr );
+            (void) stream->Seek( 0, 0, nullptr );
             return *format;
         }
         signatureMask <<= kByteShift;    // left shifting the mask of one byte, so that
@@ -410,10 +416,10 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     };
 
     for ( const auto& sig : commonSignaturesWithOffset ) {
-        stream->Seek( sig.offset, 0, nullptr );
+        (void) stream->Seek( sig.offset, 0, nullptr );
         fileSignature = read_signature( stream, sig.size );
         if ( fileSignature == sig.signature ) {
-            stream->Seek( 0, 0, nullptr );
+            (void) stream->Seek( 0, 0, nullptr );
             return sig.format;
         }
     }
@@ -425,7 +431,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     constexpr auto kIsoSignatureOffset = 0x8001;
 
     // Checking for ISO signature
-    stream->Seek( kIsoSignatureOffset, 0, nullptr );
+    (void) stream->Seek( kIsoSignatureOffset, 0, nullptr );
     fileSignature = read_signature( stream, kIsoSignatureSize );
 
     const bool isIso = fileSignature == kIsoSignature;
@@ -437,22 +443,22 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
         constexpr auto kUdfSignatureSize = 4U;
 
         for ( auto descriptorIndex = 1; descriptorIndex < kMaxVolumeDescriptors; ++descriptorIndex ) {
-            stream->Seek( kIsoSignatureOffset + descriptorIndex * kIsoVolumeDescriptorSize, 0, nullptr );
+            (void) stream->Seek( kIsoSignatureOffset + descriptorIndex * kIsoVolumeDescriptorSize, 0, nullptr );
             fileSignature = read_signature( stream, kUdfSignatureSize );
 
             if ( fileSignature == kUdfSignature ) { // The file is ISO+UDF or just UDF
-                stream->Seek( 0, 0, nullptr );
+                (void) stream->Seek( 0, 0, nullptr );
                 return BitFormat::Udf;
             }
         }
 
         if ( isIso ) { // The file is pure ISO (no UDF).
-            stream->Seek( 0, 0, nullptr );
+            (void) stream->Seek( 0, 0, nullptr );
             return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
         }
     }
 
-    stream->Seek( 0, 0, nullptr );
+    (void) stream->Seek( 0, 0, nullptr );
     throw BitException( "Failed to detect the format of the file",
                         make_error_code( BitError::NoMatchingSignature ) );
 }
@@ -461,13 +467,15 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
 #   define is_digit(ch) std::iswdigit(ch) != 0
 const auto to_lower = std::towlower;
 #else
-inline auto is_digit( char character ) -> bool {
+namespace {
+auto is_digit( char character ) -> bool {
     return std::isdigit( character ) != 0;
 }
 
-inline auto to_lower( unsigned char character ) -> char {
+auto to_lower( unsigned char character ) -> char {
     return static_cast< char >( std::tolower( character ) );
 }
+} // namespace
 #endif
 
 auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat& {
