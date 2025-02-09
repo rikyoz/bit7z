@@ -93,24 +93,12 @@ jobs:
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-15') }}
       run: sudo apt-get purge libc++-14-dev libc++abi-14-dev -y && sudo apt-get install libc++-15-dev libc++abi-15-dev -y
 
-    - name: Building and testing bit7z (Debug)
-      uses: ./.github/actions/test_action
+    - name: Building and testing bit7z
+      uses: ./.github/actions/ci_action
       with:
         arch: ${{ matrix.arch }}
         c_compiler: ${{ matrix.c_compiler }}
         cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
-        build_type: Debug
-        build_flags: |-
-            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
-
-    - name: Building and testing bit7z (Release)
-      uses: ./.github/actions/test_action
-      with:
-        arch: ${{ matrix.arch }}
-        c_compiler: ${{ matrix.c_compiler }}
-        cpp_compiler: ${{ matrix.cpp_compiler }}
-        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
-        build_type: Release
         build_flags: |-
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

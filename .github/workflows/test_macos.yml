@@ -106,7 +106,7 @@ jobs:
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
 
     - name: Building and testing bit7z (Release)
-      uses: ./.github/actions/test_action
+      uses: ./.github/actions/ci_action
       with:
         arch: ${{ matrix.arch }}
         c_compiler: ${{ matrix.c_compiler }}

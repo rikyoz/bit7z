@@ -40,23 +40,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Building and testing bit7z (Debug)
-      uses: ./.github/actions/test_action
+    - name: Building and testing bit7z
+      uses: ./.github/actions/ci_action
       with:
         c_compiler: cl
         cpp_compiler: cl
-        build_type: Debug
-        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
-        shell: pwsh
-        build_flags: |-
-            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=ON -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }} -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }} -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }}
-
-    - name: Building and testing bit7z (Release)
-      uses: ./.github/actions/test_action
-      with:
-        c_compiler: cl
-        cpp_compiler: cl
-        build_type: Release
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
         shell: pwsh
         build_flags: |-
