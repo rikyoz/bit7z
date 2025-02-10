@@ -5,35 +5,16 @@ inputs:
     description: 'Architecture'
     required: false
     default: x64
-  c_compiler:
-    description: 'C Compiler'
-    required: true
-  cpp_compiler:
-    description: 'C++ Compiler'
-    required: true
   build_dir:
     description: 'Build directory'
     required: true
   build_type:
     description: 'Build Type'
     required: true
-  build_flags:
-    description: 'Build flags'
-    required: true
-  sevenzip_version:
-    description: 'Version of 7-Zip to use for the tests'
-    required: true
   shell:
     description: 'The shell to be used for executing the steps'
     required: false
     default: bash
-  path:
-    description: 'The paths to append to the PATH environment variable'
-    required: false
-  enable_sanitizers:
-    description: 'Enable sanitizer for testing bit7z'
-    required: false
-    default: ON
 
 runs:
   using: "composite"

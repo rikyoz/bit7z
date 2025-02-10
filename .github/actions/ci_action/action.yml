@@ -114,12 +114,7 @@ runs:
       uses: ./.github/actions/build_test_action
       with:
         arch: ${{ inputs.arch }}
-        c_compiler: ${{ inputs.c_compiler }}
-        cpp_compiler: ${{ inputs.cpp_compiler }}
-        sevenzip_version: ${{ inputs.sevenzip_version }}
-        enable_sanitizers: ${{ inputs.enable_sanitizers }}
         build_dir: ${{ steps.strings.outputs.build-output-dir }}
-        build_flags: ${{ inputs.build_flags }}
         build_type: Debug
         shell: ${{ inputs.shell }}
 
@@ -127,11 +122,6 @@ runs:
       uses: ./.github/actions/build_test_action
       with:
         arch: ${{ inputs.arch }}
-        c_compiler: ${{ inputs.c_compiler }}
-        cpp_compiler: ${{ inputs.cpp_compiler }}
-        sevenzip_version: ${{ inputs.sevenzip_version }}
-        enable_sanitizers: OFF
         build_dir: ${{ steps.strings.outputs.build-output-dir }}
-        build_flags: ${{ inputs.build_flags }}
         build_type: Release
         shell: ${{ inputs.shell }}
