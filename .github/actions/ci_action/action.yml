@@ -84,9 +84,25 @@ runs:
         cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
         make -j -f ../../cmpl_mac_${{ inputs.arch }}.mak
         cp b/m_${{ inputs.arch }}/7z.so ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
+        
+    - name: Restore Ninja cache
+      id: ninja-cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ github.workspace }}/ninja
+        key: ${{ runner.os }}-${{ inputs.arch }}-ninja
 
     - name: Install ninja-build tool
       uses: seanmiddleditch/gha-setup-ninja@master
+      if: ${{ steps.ninja-cache.outputs.cache-hit != 'true' }}
+      with:
+        destination: ${{ github.workspace }}/ninja
+
+    - name: Add Ninja path to PATH
+      shell: bash
+      if: ${{ steps.ninja-cache.outputs.cache-hit == 'true' }}
+      run: |
+        echo "${{ github.workspace }}/ninja" >> "$GITHUB_PATH"
 
     - name: Configure CMake
       shell: ${{ inputs.shell }}
