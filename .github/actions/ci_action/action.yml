@@ -32,9 +32,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: ccache
-      uses: hendrikmuhs/ccache-action@v1.2
-
     - name: Set reusable strings
       id: strings
       shell: bash
@@ -42,7 +39,12 @@ runs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
         echo "flags-sha=$( echo -n '${{ inputs.sevenzip_version }} ${{ inputs.build_flags }}' | sha256sum | head -c 7 )" >> "$GITHUB_OUTPUT"
         echo "commit-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-    
+
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ runner.os }}-${{ inputs.arch }}-${{ inputs.cpp_compiler }}-${{ steps.strings.outputs.flags-sha }}
+
     - name: Add paths to PATH
       shell: bash
       if: inputs.path != ''
@@ -87,7 +89,7 @@ runs:
         cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
         make -j -f ../../cmpl_mac_${{ inputs.arch }}.mak
         cp b/m_${{ inputs.arch }}/7z.so ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
-        
+
     - name: Restore Ninja cache
       id: ninja-cache
       uses: actions/cache@v4
