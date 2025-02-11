@@ -32,6 +32,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+
     - name: Set reusable strings
       id: strings
       shell: bash
@@ -111,6 +114,8 @@ runs:
         -G 'Ninja Multi-Config'
         -DCMAKE_CXX_COMPILER=${{ inputs.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ inputs.c_compiler }}
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache
         -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
         -DBIT7Z_BUILD_TESTS=ON
         -DBIT7Z_ENABLE_SANITIZERS=${{ inputs.enable_sanitizers }}
