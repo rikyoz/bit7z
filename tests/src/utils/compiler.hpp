@@ -92,6 +92,10 @@ constexpr auto c_runtime = "Unknown";
 constexpr auto target_arch = "x64";
 #elif defined( _WIN32 ) || defined( __i386__ )
 constexpr auto target_arch = "x86";
+#elif defined( __aarch64__ )
+constexpr auto target_arch = "arm64"
+#elif defined( __arm__ )
+constexpr auto target_arch = "arm"
 #else
 constexpr auto target_arch = "Unsupported Architecture";
 #endif
