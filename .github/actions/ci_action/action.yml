@@ -40,6 +40,12 @@ runs:
         echo "flags-sha=$( echo -n '${{ inputs.sevenzip_version }} ${{ inputs.build_flags }}' | sha256sum | head -c 7 )" >> "$GITHUB_OUTPUT"
         echo "commit-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ runner.os }}-${{ inputs.arch }}-${{ inputs.cpp_compiler }}
+        append-timestamp: false
+
     - name: Add paths to PATH
       shell: bash
       if: inputs.path != ''
