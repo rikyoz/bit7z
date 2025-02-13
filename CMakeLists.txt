@@ -214,12 +214,39 @@ include( cmake/CompilerOptions.cmake )
 # dependencies
 include( cmake/Dependencies.cmake )
 
+if( CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+    target_precompile_headers( ${LIB_TARGET}
+                               PRIVATE
+                               ${HEADERS}
+                               ${PUBLIC_HEADERS}
+                               <algorithm>
+                               <array>
+                               <climits>
+                               <cstddef>
+                               <cstdint>
+                               <functional>
+                               <ios>
+                               <istream>
+                               <map>
+                               <memory>
+                               <ostream>
+                               <set>
+                               <system_error>
+                               <vector>
+                               <unordered_map>
+                               <utility> )
+endif()
+
 # 7-zip source code
 target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
 
 # filesystem library (needed if std::filesystem is not available)
 if( ghc_filesystem_ADDED )
     target_link_libraries( ${LIB_TARGET} PRIVATE ghc_filesystem )
+elseif( CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+    target_precompile_headers( ${LIB_TARGET}
+                               PRIVATE
+                               <filesystem>)
 endif()
 
 # public includes
