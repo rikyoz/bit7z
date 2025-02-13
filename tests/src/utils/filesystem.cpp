@@ -279,7 +279,7 @@ auto get_property_as_string( IPropertyStore *propertyStore, REFPROPERTYKEY key )
     PROPVARIANT property;
     HRESULT result = propertyStore->GetValue( key, &property );
     if ( FAILED( result ) ) {
-        return L"";
+        return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.
     }
     std::wstring propertyString{ property.bstrVal }; // NOLINT(*-pro-type-union-access)
     PropVariantClear( &property );
@@ -311,7 +311,7 @@ auto get_file_comment( const fs::path& filePath ) -> std::wstring {
     CCoInitialize init;
     CMyComPtr< IPropertyStore > propertyStore{};
     SHGetPropertyStoreFromParsingName( filePath.c_str(), nullptr, GPS_READWRITE, IID_PPV_ARGS( &propertyStore ) );
-    return propertyStore != nullptr ? get_property_as_string( propertyStore, PKEY_Comment ) : L"";
+    return propertyStore != nullptr ? get_property_as_string( propertyStore, PKEY_Comment ) : std::wstring{};
 }
 #endif
 

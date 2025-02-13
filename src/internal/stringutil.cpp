@@ -90,7 +90,7 @@ auto widen( const std::string& narrowString ) -> std::wstring {
                                                     nullptr,
                                                     0 );
     if ( wideStringSize == 0 ) {
-        return L"";
+        return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.
     }
 
     std::wstring result( static_cast< std::wstring::size_type >( wideStringSize ), 0 );
