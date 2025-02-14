@@ -214,7 +214,7 @@ include( cmake/CompilerOptions.cmake )
 # dependencies
 include( cmake/Dependencies.cmake )
 
-if( CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+if( BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
     target_precompile_headers( ${LIB_TARGET}
                                PRIVATE
                                ${HEADERS}
@@ -243,7 +243,7 @@ target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
 # filesystem library (needed if std::filesystem is not available)
 if( ghc_filesystem_ADDED )
     target_link_libraries( ${LIB_TARGET} PRIVATE ghc_filesystem )
-elseif( CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+elseif( BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
     target_precompile_headers( ${LIB_TARGET}
                                PRIVATE
                                <filesystem>)
