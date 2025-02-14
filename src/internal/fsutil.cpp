@@ -377,7 +377,7 @@ auto is_windows_reserved_name( const std::wstring& component ) -> bool {
 auto sanitize_path_component( std::wstring component ) -> std::wstring {
     const auto firstNonSlash = component.find_first_not_of( L"/\\" );
     if ( firstNonSlash == std::wstring::npos ) {
-        return L"";
+        return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.;
     }
     if ( firstNonSlash != 0 ) {
         component.erase( 0, firstNonSlash );

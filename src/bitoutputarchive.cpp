@@ -160,7 +160,7 @@ void BitOutputArchive::addDirectory( const tstring& inDir ) {
     IndexingOptions options{};
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    indexDirectory( mNewItems, tstring_to_path( inDir ), BIT7Z_STRING( "" ), options );
+    indexDirectory( mNewItems, tstring_to_path( inDir ), {}, options );
 }
 
 void BitOutputArchive::addDirectoryContents( const tstring& inDir, const tstring& filter, bool recursive ) {
