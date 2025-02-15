@@ -18,7 +18,7 @@
 
 namespace bit7z {
 
-constexpr inline auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
+constexpr auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
     return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< int64_t >::max )() - offset ) ) ) ||
            ( ( offset < 0 ) && ( position < ( ( std::numeric_limits< int64_t >::min )() - offset ) ) );
 }
@@ -95,26 +95,23 @@ constexpr auto cmp_greater_equal( T first, U second ) noexcept -> bool {
 template< bool B >
 using bool_constant = std::integral_constant< bool, B >; // like C++17's std::bool_constant
 
-// TODO: Use a variable template like have_same_signedness_v; supported from GCC 5+, MSVC 2015 Update 2
-template< typename T, typename U >
-using have_same_signedness = bool_constant< std::is_signed< T >::value == std::is_signed< U >::value >;
-
-template< typename T, typename U >
-using are_both_signed = bool_constant< std::is_signed< T >::value && std::is_signed< U >::value >;
-
-template< typename T, typename U >
-using are_both_unsigned = bool_constant< std::is_unsigned< T >::value && std::is_unsigned< U >::value >;
-
+// TODO: Use a variable template like are_both_integral_v; supported from GCC 5+, MSVC 2015 Update 2
 template< typename T, typename U >
 using are_both_integral = bool_constant< std::is_integral< T >::value && std::is_integral< U >::value >;
 
 template< typename To, typename From >
-using is_narrower_signed = bool_constant< are_both_signed< To, From >::value && sizeof( To ) < sizeof( From ) >;
+using needs_lower_clamp = bool_constant< std::is_signed< From >::value &&
+                                         ( std::is_unsigned< To >::value || sizeof( To ) < sizeof( From ) ) >;
+
+template< typename To, typename From >
+using needs_upper_clamp = bool_constant< sizeof( To ) < sizeof( From ) ||
+                                         ( sizeof( To ) == sizeof( From ) &&
+                                           std::is_unsigned< From >::value && std::is_signed< To >::value ) >;
 
 template< typename To, typename From >
 auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
-                                                            ( is_narrower_signed< To, From >::value ||
-                                                              !have_same_signedness< From, To >::value ), To > {
+                                                            needs_lower_clamp< To, From >::value &&
+                                                            needs_upper_clamp< To, From >::value, To > {
     constexpr auto kMaxValue = std::numeric_limits< To >::max();
     if ( cmp_greater( value, kMaxValue ) ) {
         return kMaxValue;
@@ -129,16 +126,33 @@ auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< T
 }
 
 template< typename To, typename From >
-auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_unsigned< From, To >::value &&
-                                                            sizeof( To ) < sizeof( From ), To > {
+auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+                                                            !needs_lower_clamp< To, From >::value &&
+                                                            needs_upper_clamp< To, From >::value, To > {
     constexpr auto kMaxValue = std::numeric_limits< To >::max();
-    return value > kMaxValue ? kMaxValue : static_cast< To >( value );
+    if ( cmp_greater( value, kMaxValue ) ) {
+        return kMaxValue;
+    }
+
+    return static_cast< To >( value );
 }
 
 template< typename To, typename From >
 auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
-                                                            have_same_signedness< To, From >::value &&
-                                                            sizeof( To ) >= sizeof( From ), To > {
+                                                            needs_lower_clamp< To, From >::value &&
+                                                            !needs_upper_clamp< To, From >::value, To > {
+    constexpr auto kMinValue = std::numeric_limits< To >::min();
+    if ( cmp_less( value, kMinValue ) ) {
+        return kMinValue;
+    }
+
+    return static_cast< To >( value );
+}
+
+template< typename To, typename From >
+auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+                                                            !needs_lower_clamp< To, From >::value &&
+                                                            !needs_upper_clamp< To, From >::value, To > {
     return static_cast< To >( value );
 }
 
