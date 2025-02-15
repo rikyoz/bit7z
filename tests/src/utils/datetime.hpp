@@ -50,9 +50,10 @@ inline auto as_unix_timestamp( const fs::file_time_type timePoint ) -> std::uint
 }
 
 #endif
-#endif
 
 } // namespace test
 } // namespace bit7z
+
+#endif
 
 #endif //DATETIME_HPP
