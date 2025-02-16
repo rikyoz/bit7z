@@ -36,12 +36,12 @@ jobs:
         bit7z_7zip_version: [22.01, 23.01]
 
     name: |
-      Windows ${{ matrix.arch }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_use_native_string == 'ON' && ', USE_NATIVE_STRING' || '' }}${{ matrix.bit7z_auto_prefix_long_paths == 'ON' && ', AUTO_PREFIX_LONG_PATHS' || '' }}${{ matrix.bit7z_use_system_codepage == 'ON' && ', USE_SYSTEM_CODEPAGE' || '' }}${{ matrix.bit7z_path_sanitization == 'ON' && ', PATH_SANITIZATION' || '' }}
+      Windows (${{ matrix.arch }}), 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_use_native_string == 'ON' && ', USE_NATIVE_STRING' || '' }}${{ matrix.bit7z_auto_prefix_long_paths == 'ON' && ', AUTO_PREFIX_LONG_PATHS' || '' }}${{ matrix.bit7z_use_system_codepage == 'ON' && ', USE_SYSTEM_CODEPAGE' || '' }}${{ matrix.bit7z_path_sanitization == 'ON' && ', PATH_SANITIZATION' || '' }}
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Cache x86's 7z.dll
+    - name: Cache x86 7z.dll
       uses: actions/cache@v4
       id: cache-x86-7z-dll
       if: ${{ matrix.arch == 'x86' }}
@@ -49,7 +49,7 @@ jobs:
         path: C:/Program Files (x86)/7-Zip/7z.dll
         key: ${{ runner.os }}-${{ inputs.arch }}-7z.dll
 
-    - name: Install x86's 7-Zip to get the 7z.dll
+    - name: Install x86 7-Zip to get the 7z.dll
       if: ${{ steps.cache-x86-7z-dll.outputs.cache-hit != 'true' && matrix.arch == 'x86' }}
       run: |
         winget install 7zip.7zip --architecture x86
