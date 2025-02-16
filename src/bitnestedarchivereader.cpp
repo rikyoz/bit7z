@@ -40,16 +40,11 @@ namespace bit7z {
 constexpr std::uint64_t kMinMaxMemoryUsage = 4ULL * 1024 * 1024; // 4 MiB //-V112
 
 auto get_free_ram() -> std::uint64_t {
-#if defined( _WIN64 )
+#if defined( _WIN64 ) || defined( _WIN32 )
     MEMORYSTATUSEX memStatus{};
     memStatus.dwLength = sizeof( memStatus );
     GlobalMemoryStatusEx( &memStatus );
     return memStatus.ullAvailPhys;
-#elif defined( _WIN32 )
-    MEMORYSTATUS memStatus;
-    memStatus.dwLength = sizeof(MEMORYSTATUS);
-    ::GlobalMemoryStatus(&memStatus);
-    return memStatus.dwAvailPhys;
 #elif defined( __APPLE__ ) || defined( BSD ) || \
       defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
     static int mib[] = { CTL_HW, HW_USERMEM };
