@@ -40,7 +40,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
+    - name: Cache x86's 7z.dll
+      uses: actions/cache@v4
+      id: cache-x86-7z-dll
+      if: ${{ matrix.arch == 'x86' }}
+      with:
+        path: C:/Program Files (x86)/7-Zip/7z.dll
+        key: ${{ runner.os }}-${{ inputs.arch }}-7z.dll
+
+    - name: Install x86's 7-Zip to get the 7z.dll
+      if: ${{ steps.cache-x86-7z-dll.outputs.cache-hit != 'true' && matrix.arch == 'x86' }}
+      run: |
+        winget install 7zip.7zip --architecture x86
+
     - uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: ${{ matrix.arch }}
