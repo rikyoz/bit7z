@@ -345,10 +345,10 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
 }
 } // namespace
 
-struct OffsetSignature {
-    std::uint64_t signature{};
-    std::streamoff offset{};
-    std::uint32_t size{};
+struct OffsetSignature { // NOLINT(*-member-init)
+    std::uint64_t signature;
+    std::streamoff offset;
+    std::uint32_t size;
     std::reference_wrapper< const BitInFormat > format;
 };
 
