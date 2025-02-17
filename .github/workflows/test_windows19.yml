@@ -51,8 +51,10 @@ jobs:
 
     - name: Install x86 7-Zip to get the 7z.dll
       if: ${{ steps.cache-x86-7z-dll.outputs.cache-hit != 'true' && matrix.arch == 'x86' }}
+      shell: bash
       run: |
-        winget install 7zip.7zip --architecture x86
+        curl -L https://7-zip.org/a/7z2409.exe --output 7z2409.exe
+        ./7z2409.exe
 
     - uses: ilammy/msvc-dev-cmd@v1
       with:
