@@ -92,6 +92,12 @@ constexpr auto cmp_greater_equal( T first, U second ) noexcept -> bool {
     return !cmp_less( first, second );
 }
 
+#if defined( __cpp_constexpr ) && __cpp_constexpr >= 201304L
+#   define CONSTEXPR constexpr
+#else
+#   define CONSTEXPR
+#endif
+
 template< bool B >
 using bool_constant = std::integral_constant< bool, B >; // like C++17's std::bool_constant
 
@@ -104,7 +110,7 @@ using needs_lower_clamp = bool_constant< std::is_signed< From >::value &&
                                          ( std::is_unsigned< To >::value || sizeof( To ) < sizeof( From ) ) >;
 
 template< typename To, typename From >
-constexpr auto lower_clamp( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+CONSTEXPR auto lower_clamp( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
                                                                        needs_lower_clamp< To, From >::value, From > {
     constexpr auto kMinValue = std::numeric_limits< To >::min();
     return cmp_less( value, kMinValue ) ? static_cast< From >( kMinValue ) : value;
@@ -122,7 +128,7 @@ using needs_upper_clamp = bool_constant< sizeof( To ) < sizeof( From ) ||
                                            std::is_unsigned< From >::value && std::is_signed< To >::value ) >;
 
 template< typename To, typename From >
-constexpr auto upper_clamp( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+CONSTEXPR auto upper_clamp( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
                                                                        needs_upper_clamp< To, From >::value, From > {
     constexpr auto kMaxValue = std::numeric_limits< To >::max();
     return cmp_greater( value, kMaxValue ) ? static_cast< From >( kMaxValue ) : value;
@@ -135,21 +141,21 @@ constexpr auto upper_clamp( From value ) noexcept -> std::enable_if_t< are_both_
 }
 
 template< typename To, typename From >
-constexpr auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+CONSTEXPR auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
                                                                       needs_lower_clamp< To, From >::value &&
                                                                       needs_upper_clamp< To, From >::value, To > {
     return static_cast< To >( upper_clamp< To, From >( lower_clamp< To, From >( value ) ) );
 }
 
 template< typename To, typename From >
-constexpr auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+CONSTEXPR auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
                                                                       !needs_lower_clamp< To, From >::value &&
                                                                       needs_upper_clamp< To, From >::value, To > {
     return static_cast< To >( upper_clamp< To, From >( value ) );
 }
 
 template< typename To, typename From >
-constexpr auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
+CONSTEXPR auto clamp_cast( From value ) noexcept -> std::enable_if_t< are_both_integral< To, From >::value &&
                                                                       needs_lower_clamp< To, From >::value &&
                                                                       !needs_upper_clamp< To, From >::value, To > {
     return static_cast< To >( lower_clamp< To, From >( value ) );
