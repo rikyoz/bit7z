@@ -54,7 +54,7 @@ BitSharedLibrary::~BitSharedLibrary() {
 #endif
 }
 
-auto BitSharedLibrary::getSymbol( const char* symbolName ) -> LibrarySymbol {
+auto BitSharedLibrary::getSymbol( const char* symbolName ) const -> LibrarySymbol {
 #ifdef _WIN32
     LibrarySymbol symbol = GetProcAddress( mLibrary, symbolName );
 #else

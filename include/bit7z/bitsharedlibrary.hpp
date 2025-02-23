@@ -70,12 +70,12 @@ class BitSharedLibrary {
         ~BitSharedLibrary();
 
         BIT7Z_NODISCARD
-        auto getSymbol( const char* symbolName ) -> LibrarySymbol;
+        auto getSymbol( const char* symbolName ) const -> LibrarySymbol;
 
         template< typename Function,
                   typename = typename std::enable_if< is_function_pointer< Function >::value >::type >
         BIT7Z_NODISCARD
-        auto getFunction( const char* symbolName ) -> Function {
+        auto getFunction( const char* symbolName ) const -> Function {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
             return reinterpret_cast< Function >( getSymbol( symbolName ) );
         }
