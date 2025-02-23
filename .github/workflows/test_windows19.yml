@@ -54,7 +54,7 @@ jobs:
       shell: bash
       run: |
         curl -L https://7-zip.org/a/7z2409.exe --output 7z2409.exe
-        ./7z2409.exe /S
+        7z x 7z2409.exe 7z.dll -o"C:\Program Files (x86)\7-Zip"
 
     - uses: ilammy/msvc-dev-cmd@v1
       with:
