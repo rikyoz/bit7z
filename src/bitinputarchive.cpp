@@ -115,7 +115,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name,
 }
 
 inline auto detect_format( const BitInFormat& format, const fs::path& arcPath ) -> const BitInFormat* {
-#ifdef BIT7Z_AUTO_FORMAT
+#if defined( BIT7Z_AUTO_FORMAT ) && defined( BIT7Z_DETECT_FROM_EXTENSION )
     return ( ( format == BitFormat::Auto ) ? &detect_format_from_extension( arcPath ) : &format );
 #else
     (void)arcPath; // unused when auto format detection is enabled!

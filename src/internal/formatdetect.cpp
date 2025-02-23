@@ -38,6 +38,7 @@
 #include <cctype> // for std::isdigit
 #endif
 
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
 namespace {
 /**
  * @brief Constexpr recursive implementation of the djb2 hashing function.
@@ -51,9 +52,11 @@ auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(mis
     return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381; //-V2563
 }
 } // namespace
+#endif
 
 namespace bit7z {
 namespace {
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
 /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
  *       format, but the ifs are faster and have less memory footprint. */
 auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* {
@@ -198,6 +201,7 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
             return nullptr;
     }
 }
+#endif
 
 /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
@@ -463,6 +467,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
                         make_error_code( BitError::NoMatchingSignature ) );
 }
 
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 #   define is_digit(ch) std::iswdigit(ch) != 0
 const auto to_lower = std::towlower;
@@ -503,6 +508,7 @@ auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat
     // The extension did not match any known format extension, delegating the decision to the client.
     return BitFormat::Auto;
 }
+#endif
 }  // namespace bit7z
 
 #endif
