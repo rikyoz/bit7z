@@ -47,7 +47,7 @@ jobs:
       if: ${{ matrix.arch == 'x86' }}
       with:
         path: C:/Program Files (x86)/7-Zip/7z.dll
-        key: ${{ runner.os }}-${{ inputs.arch }}-7z.dll
+        key: ${{ runner.os }}-${{ matrix.arch }}-7z.dll
 
     - name: Install x86 7-Zip to get the 7z.dll
       if: ${{ steps.cache-x86-7z-dll.outputs.cache-hit != 'true' && matrix.arch == 'x86' }}
