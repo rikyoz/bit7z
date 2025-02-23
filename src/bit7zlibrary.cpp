@@ -30,9 +30,13 @@ Bit7zLibrary::Bit7zLibrary( const tstring& libraryPath )
     : mLibrary{ libraryPath }, mCreateObjectFunc{ mLibrary.getSymbol( "CreateObject" ) } {}
 
 void Bit7zLibrary::setLargePageMode() {
+    useLargePages();
+}
+
+void Bit7zLibrary::useLargePages() const {
     using SetLargePageMode = HRESULT ( WINAPI* )();
 
-    auto pSetLargePageMode = mLibrary.getFunction< SetLargePageMode >( "SetLargePageMode" );
+    const auto pSetLargePageMode = mLibrary.getFunction< SetLargePageMode >( "SetLargePageMode" );
     const HRESULT res = pSetLargePageMode();
     if ( res != S_OK ) {
         throw BitException( "Failed to set the large page mode", make_hresult_code( res ) );

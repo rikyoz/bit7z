@@ -58,8 +58,8 @@ TEST_CASE( "Bit7zLibrary: Normal construction", "[bit7zlibrary]" ) {
 TEST_CASE( "Bit7zLibrary: Set 7-zip to use the large page mode", "[bit7zlibrary]" ) {
     const auto libPath = sevenzip_lib_path();
 
-    Bit7zLibrary lib{ libPath };
-    REQUIRE_NOTHROW( lib.setLargePageMode() );
+    const Bit7zLibrary lib{ libPath };
+    REQUIRE_NOTHROW( lib.useLargePages() );
 }
 
 } // namespace test
