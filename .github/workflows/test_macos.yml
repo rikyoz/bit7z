@@ -31,6 +31,7 @@ jobs:
         arch: [x64, arm64]
         sevenzip_version: [23.01, 24.09]
         bit7z_auto_format: [OFF, ON]
+        bit7z_detect_from_extension: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
         include:
@@ -62,9 +63,11 @@ jobs:
             arch: x64
           - os: macos-13
             arch: arm64
+          - bit7z_auto_format: OFF
+            bit7z_detect_from_extension: ON
 
     name: |
-      macOS (${{ matrix.arch }}), ${{ matrix.c_compiler }}${{ matrix.bit7z_auto_format == 'ON' && ', AUTO_FORMAT' || '' }}${{ matrix.bit7z_regex_matching == 'ON' && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_link_libcpp == 'ON' && ', LINK_LIBCPP' || '' }}
+      macOS (${{ matrix.arch }}), ${{ matrix.c_compiler }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -102,4 +105,4 @@ jobs:
         sevenzip_version: ${{ matrix.sevenzip_version }}
         enable_sanitizers: ${{ matrix.enable_sanitizers }}
         build_flags: |-
-            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

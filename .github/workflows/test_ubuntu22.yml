@@ -30,6 +30,7 @@ jobs:
         arch: [x64, arm64]
         c_compiler: [gcc-9, gcc-10, gcc-11, gcc-12, clang-13, clang-14, clang-15]
         bit7z_auto_format: [OFF, ON]
+        bit7z_detect_from_extension: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
         bit7z_7zip_version: [16.02, 22.01]
@@ -76,9 +77,11 @@ jobs:
             bit7z_build_for_p7zip: OFF
           - bit7z_7zip_version: 22.01
             bit7z_build_for_p7zip: ON
+          - bit7z_auto_format: OFF
+            bit7z_detect_from_extension: ON
 
     name: |
-      Ubuntu (${{ matrix.arch }}), ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
+      Ubuntu (${{ matrix.arch }}), ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -101,4 +104,4 @@ jobs:
         cpp_compiler: ${{ matrix.cpp_compiler }}
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
         build_flags: |-
-            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

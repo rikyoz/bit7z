@@ -27,15 +27,19 @@ jobs:
 
       matrix:
         bit7z_auto_format: [OFF, ON]
+        bit7z_detect_from_extension: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
         bit7z_use_native_string: [OFF, ON]
         bit7z_auto_prefix_long_paths: [OFF, ON]
         bit7z_use_system_codepage: [OFF, ON]
         bit7z_path_sanitization: [OFF, ON]
         bit7z_7zip_version: [23.01, 24.09]
+        exclude:
+          - bit7z_auto_format: OFF
+            bit7z_detect_from_extension: ON
 
     name: |
-      Windows, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_use_native_string == 'ON' && ', USE_NATIVE_STRING' || '' }}${{ matrix.bit7z_auto_prefix_long_paths == 'ON' && ', AUTO_PREFIX_LONG_PATHS' || '' }}${{ matrix.bit7z_use_system_codepage == 'ON' && ', USE_SYSTEM_CODEPAGE' || '' }}${{ matrix.bit7z_path_sanitization == 'ON' && ', PATH_SANITIZATION' || '' }}
+      Windows, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_use_native_string == 'ON' && ', USE_NATIVE_STRING' || '' }}${{ matrix.bit7z_auto_prefix_long_paths == 'ON' && ', AUTO_PREFIX_LONG_PATHS' || '' }}${{ matrix.bit7z_use_system_codepage == 'ON' && ', USE_SYSTEM_CODEPAGE' || '' }}${{ matrix.bit7z_path_sanitization == 'ON' && ', PATH_SANITIZATION' || '' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -49,4 +53,4 @@ jobs:
         shell: bash
         path: C:\msys64\usr\bin
         build_flags: |-
-            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=ON -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }} -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }} -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }} -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=ON -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }} -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }} -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }} -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
