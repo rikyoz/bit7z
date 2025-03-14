@@ -105,7 +105,7 @@ auto starts_with( const std::basic_string< CharT >& str, const CharT* prefix ) -
  *
  * @return true if the character is a valid path separator on the target platform, false otherwise.
  */
-inline auto isPathSeparator( char character ) -> bool {
+constexpr auto isPathSeparator( char character ) -> bool {
 #ifdef _WIN32
     return character == '/' || character == '\\';
 #else
@@ -114,7 +114,7 @@ inline auto isPathSeparator( char character ) -> bool {
 }
 
 #ifdef _WIN32
-inline auto isPathSeparator( wchar_t character ) -> bool {
+constexpr auto isPathSeparator( wchar_t character ) -> bool {
     return character == L'/' || character == L'\\';
 }
 #endif
