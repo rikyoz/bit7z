@@ -85,7 +85,13 @@ inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
 #endif
 }
 
-inline auto starts_with( const native_string& str, const native_string& prefix ) -> bool {
+template< typename CharT >
+auto starts_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& prefix ) -> bool {
+    return str.rfind( prefix, 0 ) == 0;
+}
+
+template< typename CharT >
+auto starts_with( const std::basic_string< CharT >& str, const CharT* prefix ) -> bool {
     return str.rfind( prefix, 0 ) == 0;
 }
 
