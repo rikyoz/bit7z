@@ -1578,7 +1578,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a zip archive using a different en
 #endif
 
 namespace {
-constexpr auto to_string( FolderPathPolicy policy ) -> const char* {
+auto to_string( FolderPathPolicy policy ) -> const char* {
     switch ( policy ) {
         case FolderPathPolicy::KeepName:
             return "FolderPathPolicy::KeepName";
