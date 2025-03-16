@@ -302,6 +302,93 @@ void BitInputArchive::extractTo( const tstring& outDir, RenameCallback renameCal
     extractArchive( {}, callback, NAskMode::kExtract );
 }
 
+namespace {
+auto containsDotOrDotDot( const tstring& path ) -> bool {
+    const size_t length = path.length();
+    size_t pos = 0;
+
+    // Search for the first occurrence of '.'
+    while ( ( pos = path.find( BIT7Z_STRING( '.' ), pos ) ) != std::string::npos ) {
+        // Check if we found a single "." or double dots ".." by looking at surrounding characters.
+
+        // Case 1: Single dot "."
+        if ( ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) && // Preceding char is a separator or start of string.
+             ( pos + 1 == length || isPathSeparator( path[ pos + 1 ] ) ) ) { // Following char is a separator or end of string.
+            return true;
+        }
+
+        // Case 2: Double dots ".."
+        if ( ( pos + 1 < length && path[ pos + 1 ] == BIT7Z_STRING( '.' ) && // Two consecutive dots.
+             ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) ) && // Preceding char is a separator or start of string.
+             ( pos + 2 == length || isPathSeparator( path[ pos + 2 ] ) ) ) { // Following char is a separator or end of string.
+            return true;
+        }
+
+        ++pos;
+    }
+
+    return false;
+}
+
+constexpr auto nativeDot = BIT7Z_NATIVE_STRING( "." );
+
+BIT7Z_ALWAYS_INLINE
+auto shouldFilterItem( const native_string& path, const BitArchiveItemOffset& item, FolderPathPolicy policy ) -> bool {
+    constexpr auto nativeDotDot = BIT7Z_NATIVE_STRING( ".." );
+    return ( starts_with( path, nativeDotDot ) ||
+           ( path == nativeDot && ( policy == FolderPathPolicy::Strip || !item.isDir() ) ) );
+}
+} // namespace
+
+void BitInputArchive::extractFolderTo( const tstring& outDir,
+                                       const tstring& folderPath,
+                                       FolderPathPolicy policy ) const {
+    if ( folderPath.empty() || containsDotOrDotDot( folderPath ) ) {
+        throw BitException( "Invalid folder path to be extracted from the archive",
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    if ( isPathSeparator( folderPath.front() ) ) {
+        throw BitException( "The folder path must be relative",
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+
+    std::uint32_t matchingCount = 0;
+    const auto folderFsPath = tstring_to_path( folderPath );
+    const auto folderName = isPathSeparator( folderPath.back() ) ?
+        folderFsPath.parent_path().filename() : folderFsPath.filename();
+    const auto renameCallback = [ & ]( std::uint32_t index, const tstring& path ) -> tstring {
+        // Note: we use the native item's path rather than the second parameter of the callback
+        // to avoid unnecessary string conversions when creating the filesystem path object.
+        const auto item = itemAt( index );
+        const fs::path relativePath = fs::path{ item.nativePath() }.lexically_relative( folderFsPath );
+        if ( shouldFilterItem( relativePath.native(), item, policy ) ) {
+            return {}; // Skipping the item.
+        }
+
+        ++matchingCount;
+        if ( policy == FolderPathPolicy::KeepPath ) {
+            return path;
+        }
+        if ( policy == FolderPathPolicy::Strip ) {
+            return path_to_tstring( relativePath );
+        }
+        if ( relativePath.native() == nativeDot ) {
+            path_to_tstring( folderName );
+        }
+        return path_to_tstring( folderName / relativePath );
+    };
+    const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this,
+                                                                                   outDir,
+                                                                                   std::move( renameCallback ) );
+
+    extractArchive( {}, callback, NAskMode::kExtract );
+    if ( matchingCount == 0 ) {
+        throw BitException( "No item inside the given folder path within the archive",
+                            std::make_error_code( std::errc::invalid_argument ) );
+    }
+}
+
 void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
     if ( isInvalidIndex( index ) ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( index ),

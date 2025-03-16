@@ -47,6 +47,12 @@ enum struct ArchiveStartOffset : std::uint8_t {
     FileStart ///< Check only the file start for the archive's start.
 };
 
+enum class FolderPathPolicy : std::uint8_t {
+    Strip,    ///< Remove the folder path from the extracted path.
+    KeepName, ///< Preserve the folder name in the extracted path.
+    KeepPath, ///< Preserve the full folder path in the extracted path.
+};
+
 /**
  * @brief The BitInputArchive class, given a handler object, allows reading/extracting the content of archives.
  */
@@ -225,6 +231,10 @@ class BitInputArchive {
          * @param renameCallback    the callback that returns the names for the extracted files.
          */
         void extractTo( const tstring& outDir, RenameCallback renameCallback ) const;
+
+        void extractFolderTo( const tstring& outDir,
+                              const tstring& folderPath,
+                              FolderPathPolicy policy = FolderPathPolicy::Strip ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         void extract( buffer_t& outBuffer, uint32_t index = 0 ) const {
