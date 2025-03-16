@@ -1576,3 +1576,365 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a zip archive using a different en
     REQUIRE( fs::remove( expectedItemName ) );
 }
 #endif
+
+namespace {
+constexpr auto to_string( FolderPathPolicy policy ) -> const char* {
+    switch ( policy ) {
+        case FolderPathPolicy::KeepName:
+            return "FolderPathPolicy::KeepName";
+        case FolderPathPolicy::KeepPath:
+            return "FolderPathPolicy::KeepPath";
+        case FolderPathPolicy::Strip:
+        default:
+            return "FolderPathPolicy::Strip";
+    }
+}
+} // namespace
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bitinputarchive]",
+                    tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+#ifdef _WIN32
+    const auto folderPath = GENERATE( BIT7Z_STRING( "folder\\subfolder2" ),
+                                      BIT7Z_STRING( "folder\\subfolder2\\" ),
+                                      BIT7Z_STRING( "folder/subfolder2" ),
+                                      BIT7Z_STRING( "folder/subfolder2/" ),
+                                      BIT7Z_STRING( "folder/subfolder2\\" ),
+                                      BIT7Z_STRING( "folder\\subfolder2/" ) );
+#else
+    const auto folderPath = GENERATE( "folder/subfolder2", "folder/subfolder2/" );
+#endif
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
+
+    const auto expectedRoot = [&policy, &folderPath]() -> fs::path {
+        switch ( policy ) {
+            case FolderPathPolicy::KeepName:
+                return fs::path{ "subfolder2" };
+            case FolderPathPolicy::KeepPath:
+                return fs::path{ folderPath };
+            case FolderPathPolicy::Strip:
+            default:
+                return fs::path{};
+        }
+    }();
+
+    const ExpectedItems expectedItems{
+        ExpectedItem{ quickBrown, expectedRoot / quickBrown.name, false },
+        ExpectedItem{ homework, expectedRoot / homework.name, false },
+        ExpectedItem{ frequency, expectedRoot / frequency.name, false }
+    };
+
+    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+                     "Archive format: " << testArchive.extension << ", "
+                     "Policy: " << to_string( policy ) ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir )
+
+        REQUIRE_NOTHROW( info.extractFolderTo( testOutDir, folderPath, policy ) );
+        for( const auto& expected : expectedItems ) {
+            REQUIRE_FILESYSTEM_ITEM( expected );
+        }
+        if ( policy != FolderPathPolicy::Strip ) {
+            REQUIRE( fs::is_empty( testOutDir.path() / expectedRoot ) );
+            REQUIRE( fs::remove( testOutDir.path() / expectedRoot ) );
+            if ( policy == FolderPathPolicy::KeepPath ) {
+                REQUIRE( fs::remove( testOutDir.path() / folder.name ) );
+            }
+        }
+        REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an empty folder from an archive", "[bitinputarchive]",
+                    tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+#ifdef _WIN32
+    const auto folderPath = GENERATE( as< tstring >(),
+                                      BIT7Z_STRING( "empty" ),
+                                      BIT7Z_STRING( "empty/" ),
+                                      BIT7Z_STRING( "empty\\" ),
+                                      BIT7Z_STRING( "folder\\subfolder" ),
+                                      BIT7Z_STRING( "folder\\subfolder\\" ),
+                                      BIT7Z_STRING( "folder/subfolder" ),
+                                      BIT7Z_STRING( "folder/subfolder/" ),
+                                      BIT7Z_STRING( "folder/subfolder\\" ),
+                                      BIT7Z_STRING( "folder\\subfolder/" ) );
+#else
+    const auto folderPath = GENERATE( as< tstring >(), "empty", "empty/", "folder/subfolder", "folder/subfolder/" );
+#endif
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
+
+    const auto expectedRoot = [&policy, &folderPath]() -> fs::path {
+        switch ( policy ) {
+            case FolderPathPolicy::KeepName:
+                return fs::path{ ( folderPath.rfind( BIT7Z_STRING( "empty" ), 0 ) == 0 ) ? "empty" : "subfolder" };
+            case FolderPathPolicy::KeepPath:
+                return fs::path{ folderPath };
+            case FolderPathPolicy::Strip:
+            default:
+                return fs::path{};
+        }
+    }();
+
+    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+                     "Archive format: " << testArchive.extension << ", "
+                     "Policy: " << to_string( policy ) ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir )
+
+        if ( policy == FolderPathPolicy::Strip ) {
+            REQUIRE_THROWS( info.extractFolderTo( testOutDir, folderPath, policy ) );
+        } else {
+            REQUIRE_NOTHROW( info.extractFolderTo( testOutDir, folderPath, policy ) );
+            REQUIRE( fs::exists( testOutDir.path() / expectedRoot ) );
+            REQUIRE( fs::is_empty( testOutDir.path() / expectedRoot ) );
+            REQUIRE( fs::remove( testOutDir.path() / expectedRoot ) );
+            if ( policy == FolderPathPolicy::KeepPath ) {
+                const auto parentPath = expectedRoot.has_filename() ?
+                    expectedRoot.parent_path() : expectedRoot.parent_path().parent_path();
+                if ( !parentPath.empty() ) {
+                    REQUIRE( fs::is_empty( testOutDir.path() / parentPath ) );
+                    REQUIRE( fs::remove( testOutDir.path() / parentPath ) );
+                }
+            }
+
+        }
+        REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (duplicate items)", "[bitinputarchive]",
+                    tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "duplicate" };
+
+#ifdef _WIN32
+    const auto folderPath = GENERATE( BIT7Z_STRING( "duplicate" ),
+                                      BIT7Z_STRING( "duplicate\\" ),
+                                      BIT7Z_STRING( "duplicate/" ) );
+#else
+    const auto folderPath = GENERATE( "duplicate", "duplicate/" );
+#endif
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
+
+    const auto expectedRoot = [&policy, &folderPath]() -> fs::path {
+        switch ( policy ) {
+            case FolderPathPolicy::KeepName:
+            case FolderPathPolicy::KeepPath:
+                return fs::path{ folderPath };
+            case FolderPathPolicy::Strip:
+            default:
+                return fs::path{};
+        }
+    }();
+
+    const ExpectedItem expectedItem{ italy, expectedRoot / italy.name, false };
+
+    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+                     "Archive format: " << testArchive.extension << ", "
+                     "Policy: " << to_string( policy ) ) {
+        const fs::path arcFileName = "duplicate." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir )
+
+        REQUIRE_NOTHROW( info.extractFolderTo( testOutDir, folderPath, policy ) );
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
+        if ( policy != FolderPathPolicy::Strip ) {
+            REQUIRE( fs::is_empty( testOutDir.path() / expectedRoot ) );
+            REQUIRE( fs::remove( testOutDir.path() / expectedRoot ) );
+        }
+        REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (duplicate items, fake extension)",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "duplicate" };
+
+#ifdef _WIN32
+    const auto folderPath = GENERATE( BIT7Z_STRING( "clouds.jpg" ),
+                                      BIT7Z_STRING( "clouds.jpg\\" ),
+                                      BIT7Z_STRING( "clouds.jpg/" ) );
+#else
+    const auto folderPath = GENERATE( "clouds.jpg", "clouds.jpg/" );
+#endif
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
+
+    const auto expectedRoot = [&policy, &folderPath]() -> fs::path {
+        switch ( policy ) {
+            case FolderPathPolicy::KeepName:
+            case FolderPathPolicy::KeepPath:
+                return fs::path{ folderPath };
+            case FolderPathPolicy::Strip:
+            default:
+                return fs::path{};
+        }
+    }();
+
+    const ExpectedItem expectedItem{ frequency, expectedRoot / frequency.name, false };
+
+    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+                     "Archive format: " << testArchive.extension << ", "
+                     "Policy: " << to_string( policy ) ) {
+        const fs::path arcFileName = "duplicate." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir )
+
+        REQUIRE_NOTHROW( info.extractFolderTo( testOutDir, folderPath, policy ) );
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
+        if ( policy != FolderPathPolicy::Strip ) {
+            REQUIRE( fs::is_empty( testOutDir.path() / expectedRoot ) );
+            REQUIRE( fs::remove( testOutDir.path() / expectedRoot ) );
+        }
+        REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
+
+TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an archive should throw an exception",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+#ifdef _WIN32
+    const auto folderPath = GENERATE( BIT7Z_STRING( "" ),
+                                      BIT7Z_STRING( "/" ),
+                                      BIT7Z_STRING( "\\" ),
+                                      BIT7Z_STRING( "." ),
+                                      BIT7Z_STRING( "./" ),
+                                      BIT7Z_STRING( ".\\" ),
+                                      BIT7Z_STRING( "/./" ),
+                                      BIT7Z_STRING( ".\\" ),
+                                      BIT7Z_STRING( "\\.\\" ),
+                                      BIT7Z_STRING( ".." ),
+                                      BIT7Z_STRING( "../" ),
+                                      BIT7Z_STRING( "..\\" ),
+                                      BIT7Z_STRING( "/../" ),
+                                      BIT7Z_STRING( "\\..\\" ),
+                                      BIT7Z_STRING( "/folder" ),
+                                      BIT7Z_STRING( "/folder/" ),
+                                      BIT7Z_STRING( "\\folder/" ),
+                                      BIT7Z_STRING( "\\folder\\" ),
+                                      BIT7Z_STRING( "../folder" ),
+                                      BIT7Z_STRING( "..\\folder" ),
+                                      BIT7Z_STRING( "../folder/subfolder2" ),
+                                      BIT7Z_STRING( "..\\folder\\subfolder2" ),
+                                      BIT7Z_STRING( "../folder/./subfolder2" ),
+                                      BIT7Z_STRING( "..\\folder\\..\\subfolder2" ),
+                                      BIT7Z_STRING( "./folder/subfolder2" ),
+                                      BIT7Z_STRING( ".\\folder\\subfolder2" ),
+                                      BIT7Z_STRING( "./folder/../subfolder2" ),
+                                      BIT7Z_STRING( ".\\folder\\..\\subfolder2" ),
+                                      BIT7Z_STRING( "folder/../subfolder2" ),
+                                      BIT7Z_STRING( "folder\\..\\subfolder2" ),
+                                      BIT7Z_STRING( "non-existing" ),
+                                      BIT7Z_STRING( "non/existing" ),
+                                      BIT7Z_STRING( "non\\existing" ),
+                                      BIT7Z_STRING( "folder/sub" ) ,
+                                      BIT7Z_STRING( "folder\\sub" ) );
+#else
+    const auto folderPath = GENERATE( "",
+                                      "/",
+                                      ".",
+                                      "./",
+                                      "/./",
+                                      "/folder",
+                                      "/folder/",
+                                      "../folder",
+                                      "../folder/subfolder2",
+                                      "./folder/subfolder2",
+                                      "./folder/../subfolder2",
+                                      "folder/../subfolder2",
+                                      "non-existing",
+                                      "non/existing",
+                                      "folder/sub" );
+#endif
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
+
+    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+                     "Archive format: " << testArchive.extension << ", "
+                     "Policy: " << to_string( policy ) ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir )
+
+        REQUIRE_THROWS( info.extractFolderTo( testOutDir, folderPath ) );
+        REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
