@@ -29,7 +29,7 @@ jobs:
         os: [macos-13, macos-14]
         c_compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang]
         arch: [x64, arm64]
-        sevenzip_version: [23.01, 24.09]
+        bit7z_7zip_version: [23.01, 24.09]
         bit7z_auto_format: [OFF, ON]
         bit7z_detect_from_extension: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
@@ -102,7 +102,7 @@ jobs:
         arch: ${{ matrix.arch }}
         c_compiler: ${{ matrix.c_compiler }}
         cpp_compiler: ${{ matrix.cpp_compiler }}
-        sevenzip_version: ${{ matrix.sevenzip_version }}
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
         enable_sanitizers: ${{ matrix.enable_sanitizers }}
         build_flags: |-
             -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
