@@ -1607,6 +1607,14 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bi
     const auto folderPath = GENERATE( "folder/subfolder2", "folder/subfolder2/" );
 #endif
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "iso", BitFormat::Iso },
@@ -1615,6 +1623,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bi
                                        TestInputFormat{ "tar", BitFormat::Tar },
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
 
@@ -1683,6 +1692,14 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an empty folder from an archive
     const auto folderPath = GENERATE( as< tstring >(), "empty", "empty/", "folder/subfolder", "folder/subfolder/" );
 #endif
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "iso", BitFormat::Iso },
@@ -1691,6 +1708,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an empty folder from an archive
                                        TestInputFormat{ "tar", BitFormat::Tar },
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
 
@@ -1752,12 +1770,20 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
     const auto folderPath = GENERATE( "duplicate", "duplicate/" );
 #endif
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "rar", BitFormat::Rar5 },
                                        TestInputFormat{ "tar", BitFormat::Tar },
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
 
@@ -1809,12 +1835,20 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
     const auto folderPath = GENERATE( "clouds.jpg", "clouds.jpg/" );
 #endif
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "rar", BitFormat::Rar5 },
                                        TestInputFormat{ "tar", BitFormat::Tar },
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
 
@@ -1911,6 +1945,14 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an a
                                       "folder/sub" );
 #endif
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
     const auto testArchive = GENERATE( as< TestInputFormat >(),
                                        TestInputFormat{ "7z", BitFormat::SevenZip },
                                        TestInputFormat{ "iso", BitFormat::Iso },
@@ -1919,6 +1961,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an a
                                        TestInputFormat{ "tar", BitFormat::Tar },
                                        TestInputFormat{ "wim", BitFormat::Wim },
                                        TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
 
