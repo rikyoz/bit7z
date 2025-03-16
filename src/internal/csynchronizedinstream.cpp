@@ -53,7 +53,7 @@ STDMETHODIMP CSynchronizedInStream::Read( void* data, UInt32 size, UInt32* proce
         }
     }
 
-    auto copyableSize = std::min( static_cast< UInt32 >( mReadBuffer.end() - mCurrentReadPosition ), size );
+    const auto copyableSize = std::min( static_cast< UInt32 >( mReadBuffer.end() - mCurrentReadPosition ), size );
 
     std::copy_n( mCurrentReadPosition, copyableSize, static_cast< byte_t* >( data ) ); //-V2571
     std::advance( mCurrentReadPosition, copyableSize );

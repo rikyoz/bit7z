@@ -146,7 +146,7 @@ auto BitArchiveItem::isSymLink() const -> bool {
 
     const auto itemAttributes = attributes();
     if ( ( itemAttributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        auto posixAttributes = itemAttributes >> 16U;
+        const auto posixAttributes = itemAttributes >> 16U;
         return S_ISLNK( posixAttributes );
     }
     return ( itemAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;

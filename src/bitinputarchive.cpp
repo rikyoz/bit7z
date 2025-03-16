@@ -73,7 +73,7 @@ auto BitInputArchive::openArchiveStream( const fs::path& name,
     // the IInArchive object is deleted automatically.
 
     // Creating open callback for the file
-    auto openCallback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
+    const auto openCallback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
 
     // Trying to open the file with the detected format
 #ifndef BIT7Z_AUTO_FORMAT
@@ -148,7 +148,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
                                   ArchiveStartOffset startOffset )
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
-    auto bufStream = bit7z::make_com< CBufferInStream, IInStream >( inBuffer );
+    const auto bufStream = bit7z::make_com< CBufferInStream, IInStream >( inBuffer );
     mInArchive = openArchiveStream( fs::path{}, bufStream, startOffset );
 }
 
@@ -157,7 +157,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
                                   ArchiveStartOffset startOffset )
     : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
       mArchiveHandler{ handler } {
-    auto stdStream = bit7z::make_com< CStdInStream, IInStream >( inStream );
+    const auto stdStream = bit7z::make_com< CStdInStream, IInStream >( inStream );
     mInArchive = openArchiveStream( fs::path{}, stdStream, startOffset );
 }
 
@@ -178,7 +178,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
     : mDetectedFormat{ &handler.format() },
       mArchiveHandler{ handler },
       mArchivePath{ parentArchive.itemAt( index ).path() } {
-    CMyComPtr< IInStream > subStream = parentArchive.getSubfileStream( index );
+    const CMyComPtr< IInStream > subStream = parentArchive.getSubfileStream( index );
     mInArchive = openArchiveStream( fs::path{}, subStream, ArchiveStartOffset::FileStart );
 }
 
@@ -279,7 +279,7 @@ void BitInputArchive::useFormatProperty( const wchar_t* name, const BitPropVaria
 }
 
 void BitInputArchive::extractTo( const tstring& outDir ) const {
-    auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
+    const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
     extractArchive( {}, callback, NAskMode::kExtract );
 }
 
@@ -291,7 +291,7 @@ void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint3
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
+    const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
     extractArchive( indices, callback, NAskMode::kExtract );
 }
 
@@ -422,7 +422,7 @@ void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
-    auto extractCallback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, outStream );
+    const auto extractCallback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, outStream );
     extractArchive( { index }, extractCallback, NAskMode::kExtract );
 }
 
@@ -442,13 +442,13 @@ void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t inde
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
-    auto itemSize = itemProperty( index, BitProperty::Size ).getUInt64();
+    const auto itemSize = itemProperty( index, BitProperty::Size ).getUInt64();
     if ( size != itemSize ) {
         throw BitException( "Cannot extract archive to pre-allocated buffer",
                             make_error_code( BitError::InvalidOutputBufferSize ) );
     }
 
-    auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
+    const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
     extractArchive( { index }, extractCallback, NAskMode::kExtract );
 }
 
@@ -589,12 +589,12 @@ auto BitInputArchive::itemAt( uint32_t index ) const -> BitArchiveItemOffset {
 }
 
 auto BitInputArchive::mainSubfileIndex() const -> std::uint32_t {
-    BitPropVariant prop = archiveProperty( BitProperty::MainSubfile );
+    const BitPropVariant prop = archiveProperty( BitProperty::MainSubfile );
     if ( !prop.isUInt32() ) {
         throw BitException{ "Could not retrieve the index of the main subfile", make_hresult_code( E_FAIL ) };
     }
 
-    std::uint32_t mainSubfileIndex = prop.getUInt32();
+    const std::uint32_t mainSubfileIndex = prop.getUInt32();
     if ( mainSubfileIndex >= itemsCount() ) {
         throw BitException{ "Could not retrieve the index of the main subfile",
                             make_error_code( BitError::InvalidIndex ) };
@@ -630,7 +630,7 @@ void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) cons
 }
 
 void BitInputArchive::extractSequentially( BufferQueue& queue, uint32_t index ) const {
-    auto extractCallback = bit7z::make_com< SequentialExtractCallback, ExtractCallback >( *this, queue );
+    const auto extractCallback = bit7z::make_com< SequentialExtractCallback, ExtractCallback >( *this, queue );
     extractArchive( { index }, extractCallback, NAskMode::kExtract );
 }
 

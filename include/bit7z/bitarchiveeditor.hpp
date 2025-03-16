@@ -189,9 +189,9 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
     private:
         EditedItems mEditedItems;
 
-        auto findItem( const tstring& itemPath ) -> uint32_t;
+        auto findItem( const tstring& itemPath ) const -> uint32_t;
 
-        void checkIndex( uint32_t index );
+        void checkIndex( uint32_t index ) const;
 
         auto itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant override;
 

@@ -62,9 +62,9 @@ constexpr auto interface_id< IOutArchive >() -> const GUID& {
 
 template< typename T >
 BIT7Z_NODISCARD
-inline auto create_archive_object( LibrarySymbol creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
+auto create_archive_object( LibrarySymbol creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
+    const auto createObject = reinterpret_cast< CreateObjectFunc >( creatorFunction );
     const auto formatID = format_guid( format );
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     return createObject( &formatID, &interface_id< T >(), reinterpret_cast< void** >( object ) );

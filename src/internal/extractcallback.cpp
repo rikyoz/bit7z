@@ -79,7 +79,7 @@ try {
     *outStream = nullptr;
     releaseStream();
 
-    auto isEncrypted = itemProperty( index, BitProperty::Encrypted );
+    const auto isEncrypted = itemProperty( index, BitProperty::Encrypted );
     if ( isEncrypted.isBool() ) {
         mIsLastItemEncrypted = isEncrypted.getBool();
     }
@@ -119,10 +119,10 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexcept {
     using namespace NArchive::NExtract;
 
-    auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
+    const auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
     if ( result != OperationResult::Success ) {
         const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
-        auto error = make_error_code( result );
+        const auto error = make_error_code( result );
         mErrorException = std::make_exception_ptr( BitException( msg, error ) );
     }
 
@@ -139,7 +139,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
 
         if ( pass.empty() ) {
             const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
-            auto error = make_error_code( OperationResult::EmptyPassword );
+            const auto error = make_error_code( OperationResult::EmptyPassword );
             mErrorException = std::make_exception_ptr( BitException( msg, error ) );
             return E_FAIL;
         }

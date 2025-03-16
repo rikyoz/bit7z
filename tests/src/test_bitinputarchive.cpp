@@ -52,7 +52,7 @@ inline auto archive_item( const BitArchiveReader& archive,
 }
 
 void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
-    TempTestDirectory testDir{ "test_bitinputarchive" };
+    const TempTestDirectory testDir{ "test_bitinputarchive" };
     INFO( "Test directory: " << testDir )
 
     REQUIRE_NOTHROW( info.extractTo( testDir ) );
@@ -114,7 +114,7 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     REQUIRE_THROWS( info.extractTo( testDir, { info.itemsCount() } ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 
-    REQUIRE_THROWS( info.extractTo( testDir, { std::numeric_limits< uint32_t >::max() } ) );
+    REQUIRE_THROWS( info.extractTo( testDir, { std::numeric_limits< std::uint32_t >::max() } ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 }
 
@@ -982,17 +982,17 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
 
 #ifdef _WIN32
 auto get_file_time( const fs::path& filePath, FILETIME& creation, FILETIME& access, FILETIME& modified ) -> bool {
-    HANDLE hFile = ::CreateFileW( filePath.c_str(),
-                                  GENERIC_READ | FILE_READ_ATTRIBUTES, // NOLINT(*-signed-bitwise)
-                                  FILE_SHARE_READ,
-                                  nullptr,
-                                  OPEN_EXISTING,
-                                  0,
-                                  nullptr );
+    const HANDLE hFile = ::CreateFileW( filePath.c_str(),
+                                        GENERIC_READ | FILE_READ_ATTRIBUTES, // NOLINT(*-signed-bitwise)
+                                        FILE_SHARE_READ,
+                                        nullptr,
+                                        OPEN_EXISTING,
+                                        0,
+                                        nullptr );
     if ( hFile == INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
         return false;
     }
-    auto result = GetFileTime( hFile, &creation, &access, &modified );
+    const auto result = GetFileTime( hFile, &creation, &access, &modified );
     CloseHandle( hFile );
     return result != FALSE;
 }
@@ -1180,19 +1180,19 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
         getInputArchive( arcFileName, inputArchive );
         BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
 
-        uint64_t totalSize = 0;
-        info.setTotalCallback( [ &totalSize ]( uint64_t total ) {
+        std::uint64_t totalSize = 0;
+        info.setTotalCallback( [ &totalSize ]( std::uint64_t total ) {
             totalSize = total;
         } );
 
-        std::vector< uint64_t > progressValues;
-        info.setProgressCallback( [ &progressValues ]( uint64_t progress ) -> bool {
+        std::vector< std::uint64_t > progressValues;
+        info.setProgressCallback( [ &progressValues ]( std::uint64_t progress ) -> bool {
             progressValues.push_back( progress );
             return true;
         } );
 
         double finalRatio = 0.0;
-        info.setRatioCallback( [ &finalRatio ]( uint64_t processedInput, uint64_t processedOutput ) {
+        info.setRatioCallback( [ &finalRatio ]( std::uint64_t processedInput, std::uint64_t processedOutput ) {
             if ( processedOutput == 0 ) {
                 return;
             }
@@ -1237,8 +1237,8 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
         if ( testArchive.format != BitFormat::Tar ) {
             // Checking that the values reported by the progress callback are increasing,
             // and less than or equal to the total size.
-            uint64_t lastProgress = 0;
-            for ( uint64_t progress : progressValues ) {
+            std::uint64_t lastProgress = 0;
+            for ( std::uint64_t progress : progressValues ) {
                 REQUIRE( progress >= lastProgress );
                 REQUIRE( progress <= totalSize );
                 lastProgress = progress;

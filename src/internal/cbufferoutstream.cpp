@@ -66,7 +66,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         return E_FAIL;
     }
 
-    auto oldPos = ( mCurrentPosition - mBuffer.begin() );
+    const auto oldPos = ( mCurrentPosition - mBuffer.begin() );
     const size_t newPos = static_cast< size_t >( oldPos ) + static_cast< size_t >( size );
     if ( newPos > mBuffer.size() ) {
         try {

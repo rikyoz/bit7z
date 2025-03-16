@@ -243,7 +243,7 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
     compressOut( newArc, outStream, updateCallback );
 
     if ( updatingArchive ) { //we updated the input archive
-        auto closeResult = mInputArchive->close();
+        const auto closeResult = mInputArchive->close();
         if ( closeResult != S_OK ) {
             throw BitException( "Failed to close the archive", make_hresult_code( closeResult ),
                                 mInputArchive->archivePath() );
@@ -287,7 +287,7 @@ void BitOutputArchive::compressTo( const tstring& outFile ) {
         // called by the initOutFileStream function.
     }
 
-    auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
+    const auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
     compressToFile( outPath, updateCallback );
 }
 
@@ -304,16 +304,16 @@ void BitOutputArchive::compressTo( buffer_t& outBuffer ) {
         }
     }
 
-    const CMyComPtr< IOutArchive > newArc = initOutArchive();
-    auto outMemStream = bit7z::make_com< CBufferOutStream, IOutStream >( outBuffer );
-    auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
+    const auto newArc = initOutArchive();
+    const auto outMemStream = bit7z::make_com< CBufferOutStream, IOutStream >( outBuffer );
+    const auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( newArc, outMemStream, updateCallback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& outStream ) {
-    const CMyComPtr< IOutArchive > newArc = initOutArchive();
-    auto outStdStream = bit7z::make_com< CStdOutStream, IOutStream >( outStream );
-    auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
+    const auto newArc = initOutArchive();
+    const auto outStdStream = bit7z::make_com< CStdOutStream, IOutStream >( outStream );
+    const auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( newArc, outStdStream, updateCallback );
 }
 

@@ -136,7 +136,7 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
-    for ( auto& volume : mVolumes ) {
+    for ( const auto& volume : mVolumes ) {
         if ( newSize < volume->currentSize() ) {
             RINOK( volume->SetSize( newSize ) ) //-V3504
             break;

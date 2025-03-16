@@ -26,9 +26,9 @@ namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
 namespace {
-inline auto countItemsInPath( const fs::path& path ) -> std::size_t {
+auto countItemsInPath( const fs::path& path ) -> std::size_t {
     std::error_code error;
-    auto begin = fs::recursive_directory_iterator{ path, fs::directory_options::skip_permission_denied, error };
+    const auto begin = fs::recursive_directory_iterator{ path, fs::directory_options::skip_permission_denied, error };
     return error ? 0 : static_cast< std::size_t >( std::distance( begin, fs::recursive_directory_iterator{} ) );
 }
 } // namespace

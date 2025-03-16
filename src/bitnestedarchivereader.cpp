@@ -210,9 +210,9 @@ void BitNestedArchiveReader::test() const {
 }
 
 void BitNestedArchiveReader::openSequentially() const {
-    auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >( mMaxMemoryUsage,
-                                                                                 mParentArchive,
-                                                                                 mIndexInParent );
+    const auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >( mMaxMemoryUsage,
+                                                                                       mParentArchive,
+                                                                                       mIndexInParent );
     mNestedArchive.openArchiveSeqStream( stream );
     mLastReadItem = 0;
     ++mOpenCount;

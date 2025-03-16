@@ -41,7 +41,7 @@ inline auto as_unix_timestamp( const fs::file_time_type timePoint ) -> std::uint
     const auto asSeconds = std::chrono::duration_cast< std::chrono::seconds >( sinceEpoch );
     const auto sinceUnixEpoch = libstdcpp_file_clock_epoch + asSeconds;
 
-    auto nano = std::chrono::duration_cast< std::chrono::nanoseconds >( sinceEpoch - asSeconds );
+    const auto nano = std::chrono::duration_cast< std::chrono::nanoseconds >( sinceEpoch - asSeconds );
     if ( nano < fs::file_time_type::duration::zero() ) {
         return static_cast< std::uint64_t >( ( sinceUnixEpoch - std::chrono::seconds{ 1 } ).count() );
     }
