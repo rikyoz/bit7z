@@ -98,7 +98,8 @@ try {
     return E_ABORT;
 }
 
-auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> OperationResult {
+namespace {
+auto mapOperationResult( Int32 operationResult, bool isLastItemEncrypted ) -> OperationResult {
     if ( isLastItemEncrypted ) {
         if ( operationResult == NOperationResult::kCRCError ) {
             return OperationResult::CRCErrorEncrypted;
@@ -111,6 +112,7 @@ auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> 
 
     return static_cast< OperationResult >( operationResult );
 }
+} // namespace
 
 constexpr auto kTestFailed = "Failed to test the archive";
 constexpr auto kExtractFailed = "Failed to extract the archive";
@@ -119,7 +121,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexcept {
     using namespace NArchive::NExtract;
 
-    const auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
+    const auto result = mapOperationResult( operationResult, mIsLastItemEncrypted );
     if ( result != OperationResult::Success ) {
         const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
         const auto error = make_error_code( result );

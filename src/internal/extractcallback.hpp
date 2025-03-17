@@ -66,7 +66,7 @@ class ExtractCallback : public Callback,
         BIT7Z_STDMETHOD( PrepareOperation, Int32 askExtractMode );
 
         // ICryptoGetTextPassword
-        BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* aPassword );
+        BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* password );
 
         // IArchiveExtractCallback
         BIT7Z_STDMETHOD( GetStream, UInt32 index, ISequentialOutStream** outStream, Int32 askExtractMode );
