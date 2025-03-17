@@ -218,6 +218,14 @@ class BitInputArchive {
         void extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const;
 
         /**
+         * @brief Extracts the archive to the chosen directory.
+         *
+         * @param outDir   the output directory where the extracted files will be put.
+         * @param index    the index of the item to be extracted.
+         */
+        void extractTo( const tstring& outDir, std::uint32_t index ) const;
+
+        /**
          * @brief Extracts the archive to the chosen directory,
          * specifying the names of the extracted items via a RenameCallback.
          *
@@ -527,6 +535,8 @@ class BitInputArchive {
         void extractSequentially( BufferQueue& queue, uint32_t index ) const;
 
         void extractArchive( const std::vector< uint32_t >& indices, ExtractCallback* callback, int32_t mode ) const;
+
+        void extractArchiveItem( std::uint32_t index, ExtractCallback* callback, int32_t mode ) const;
 
         BIT7Z_NODISCARD
         auto isInvalidIndex( uint32_t index ) const -> bool;
