@@ -280,7 +280,7 @@ void BitInputArchive::useFormatProperty( const wchar_t* name, const BitPropVaria
 
 void BitInputArchive::extractTo( const tstring& outDir ) const {
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
-    extractArchive( {}, callback, NAskMode::kExtract );
+    extractArchive( callback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const {
@@ -292,7 +292,7 @@ void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint3
     }
 
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
-    extractArchive( indices, callback, NAskMode::kExtract );
+    extractArchive( callback, NAskMode::kExtract, IndicesView{ indices } );
 }
 
 void BitInputArchive::extractTo( const tstring& outDir, std::uint32_t index ) const {
@@ -302,14 +302,16 @@ void BitInputArchive::extractTo( const tstring& outDir, std::uint32_t index ) co
     }
 
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
-    extractArchiveItem( index, callback, NAskMode::kExtract );
+    extractArchive( callback, NAskMode::kExtract, IndicesView{ index } );
 }
 
 void BitInputArchive::extractTo( const tstring& outDir, RenameCallback renameCallback ) const {
-    auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this,
-                                                                             outDir,
-                                                                             std::move( renameCallback ) );
-    extractArchive( {}, callback, NAskMode::kExtract );
+    const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >(
+        *this,
+        outDir,
+        std::move( renameCallback )
+    );
+    extractArchive( callback, NAskMode::kExtract );
 }
 
 namespace {
@@ -392,7 +394,7 @@ void BitInputArchive::extractFolderTo( const tstring& outDir,
                                                                                    outDir,
                                                                                    std::move( renameCallback ) );
 
-    extractArchive( {}, callback, NAskMode::kExtract );
+    extractArchive( callback, NAskMode::kExtract );
     if ( matchingCount == 0 ) {
         throw BitException( "No item inside the given folder path within the archive",
                             std::make_error_code( std::errc::invalid_argument ) );
@@ -418,7 +420,7 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, uint32_t index ) const {
         std::move( bufferCallback )
     );
     try {
-        extractArchiveItem( index, extractCallback, NAskMode::kExtract );
+        extractArchive( extractCallback, NAskMode::kExtract, IndicesView{ index } );
     } catch ( const BitException& ) {
         outBuffer.clear();
         throw;
@@ -437,7 +439,7 @@ void BitInputArchive::extractTo( std::ostream& outStream, uint32_t index ) const
     }
 
     const auto extractCallback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, outStream );
-    extractArchiveItem( index, extractCallback, NAskMode::kExtract );
+    extractArchive( extractCallback, NAskMode::kExtract, IndicesView{ index } );
 }
 
 void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t index ) const {
@@ -463,7 +465,7 @@ void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, uint32_t inde
     }
 
     const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
-    extractArchiveItem( index, extractCallback, NAskMode::kExtract );
+    extractArchive( extractCallback, NAskMode::kExtract, IndicesView{ index } );
 }
 
 void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
@@ -487,12 +489,15 @@ void BitInputArchive::extractTo( BufferCallback callback, const std::vector< uin
         *this,
         std::move( callback )
     );
-    extractArchive( indices, extractCallback, NAskMode::kExtract );
+    extractArchive( extractCallback, NAskMode::kExtract, IndicesView{ indices } );
 }
 
 void BitInputArchive::extractTo( RawDataCallback callback ) const {
-    auto extractCallback = bit7z::make_com< RawDataExtractCallback, ExtractCallback >( *this, std::move( callback ) );
-    extractArchive( {}, extractCallback, NAskMode::kExtract );
+    const auto extractCallback = bit7z::make_com< RawDataExtractCallback, ExtractCallback >(
+        *this,
+        std::move( callback )
+    );
+    extractArchive( extractCallback, NAskMode::kExtract );
 }
 
 void BitInputArchive::extractTo( RawDataCallback callback, const std::vector< uint32_t >& indices ) const {
@@ -503,12 +508,21 @@ void BitInputArchive::extractTo( RawDataCallback callback, const std::vector< ui
                             make_error_code( BitError::InvalidIndex ) );
     }
 
-    auto extractCallback = bit7z::make_com< RawDataExtractCallback, ExtractCallback >( *this, std::move( callback ) );
-    extractArchive( indices, extractCallback, NAskMode::kExtract );
+    const auto extractCallback = bit7z::make_com< RawDataExtractCallback, ExtractCallback >(
+        *this,
+        std::move( callback )
+    );
+    extractArchive( extractCallback, NAskMode::kExtract, IndicesView{ indices } );
 }
 
 void BitInputArchive::test() const {
-    testArchive( {} );
+    byte_t dummyBuffer{};
+    const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >(
+        *this,
+        &dummyBuffer,
+        1u
+    );
+    extractArchive( extractCallback, NAskMode::kTest );
 }
 
 void BitInputArchive::test( const std::vector< uint32_t >& indices ) const {
@@ -534,7 +548,7 @@ void BitInputArchive::testItem( uint32_t index ) const {
         &dummyBuffer,
         1u
     );
-    extractArchiveItem( index, extractCallback, NAskMode::kTest );
+    extractArchive( extractCallback, NAskMode::kTest, IndicesView{ index } );
 }
 
 void BitInputArchive::testArchive( const std::vector< uint32_t >& indices ) const {
@@ -544,7 +558,7 @@ void BitInputArchive::testArchive( const std::vector< uint32_t >& indices ) cons
         &dummyBuffer,
         1u
     );
-    extractArchive( indices, extractCallback, NAskMode::kTest );
+    extractArchive( extractCallback, NAskMode::kTest, IndicesView{ indices } );
 }
 
 auto BitInputArchive::close() const noexcept -> HRESULT {
@@ -651,39 +665,21 @@ void BitInputArchive::openArchiveSeqStream( ISequentialInStream* inStream ) cons
 
 void BitInputArchive::extractSequentially( BufferQueue& queue, uint32_t index ) const {
     const auto extractCallback = bit7z::make_com< SequentialExtractCallback, ExtractCallback >( *this, queue );
-    extractArchiveItem( index, extractCallback, NAskMode::kExtract );
+    extractArchive( extractCallback, NAskMode::kExtract, IndicesView{ index } );
 }
 
-void BitInputArchive::extractArchive( const std::vector< uint32_t >& indices,
-                                      ExtractCallback* callback,
-                                      int32_t mode ) const {
-    const uint32_t* itemIndices = indices.empty() ? nullptr : indices.data();
-    const uint32_t numItems = indices.empty() ?
-                              std::numeric_limits< uint32_t >::max() : static_cast< uint32_t >( indices.size() );
-
-    const HRESULT res = mInArchive->Extract( itemIndices, numItems, mode, callback );
-    if ( res != S_OK ) {
-        const auto& errorException = callback->errorException();
-        if ( errorException ) {
-            std::rethrow_exception( errorException );
-        }
-        throw BitException( mode == NAskMode::kTest ? "Could not test the archive" : "Could not extract the archive",
-                            make_hresult_code( res ) );
-    }
-}
-
-void BitInputArchive::extractArchiveItem( std::uint32_t index, ExtractCallback* callback, int32_t mode ) const {
-    const HRESULT res = mInArchive->Extract( &index, 1, mode, callback );
+void BitInputArchive::extractArchive( ExtractCallback* callback, int32_t mode, IndicesView indices ) const {
+    const HRESULT res = mInArchive->Extract( indices.data(), indices.size(), mode, callback );
     if ( res == S_OK ) {
         return;
     }
 
     const auto& errorException = callback->errorException();
-    if ( errorException ) {
-        std::rethrow_exception( errorException );
+    if ( !errorException ) {
+        throw BitException( mode == NAskMode::kTest ? "Could not test the archive" : "Could not extract the archive",
+                            make_hresult_code( res ) );
     }
-    throw BitException( mode == NAskMode::kTest ? "Could not test the archive" : "Could not extract the archive",
-                        make_hresult_code( res ) );
+    std::rethrow_exception( errorException );
 }
 
 auto BitInputArchive::getSubfileStream( std::uint32_t index ) const -> CMyComPtr< IInStream > {

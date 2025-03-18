@@ -53,6 +53,33 @@ enum class FolderPathPolicy : std::uint8_t {
     KeepPath, ///< Preserve the full folder path in the extracted path.
 };
 
+class IndicesView final {
+        const std::uint32_t* mIndices;
+        std::uint32_t mSize;
+
+        constexpr IndicesView( const std::uint32_t* indices, std::size_t size )
+            : mIndices{ indices }, mSize{ static_cast< std::uint32_t >( size ) } {}
+
+    public:
+        constexpr IndicesView() : mIndices{ nullptr }, mSize{ (std::numeric_limits< std::uint32_t >::max)() } {}
+
+        explicit constexpr IndicesView( const std::uint32_t& index ) : mIndices{ &index }, mSize{ 1 } {}
+
+        // Note: this constructor can't be constexpr until C++20 due to std::vector's methods.
+        explicit IndicesView( const std::vector< std::uint32_t >& indices )
+            : IndicesView{ indices.empty() ? IndicesView{} : IndicesView{ indices.data(), indices.size() } } {}
+
+        BIT7Z_NODISCARD
+        constexpr auto data() const -> const std::uint32_t* {
+            return mIndices;
+        }
+
+        BIT7Z_NODISCARD
+        constexpr auto size() const -> std::uint32_t {
+            return mSize;
+        }
+};
+
 /**
  * @brief The BitInputArchive class, given a handler object, allows reading/extracting the content of archives.
  */
@@ -534,9 +561,7 @@ class BitInputArchive {
 
         void extractSequentially( BufferQueue& queue, uint32_t index ) const;
 
-        void extractArchive( const std::vector< uint32_t >& indices, ExtractCallback* callback, int32_t mode ) const;
-
-        void extractArchiveItem( std::uint32_t index, ExtractCallback* callback, int32_t mode ) const;
+        void extractArchive( ExtractCallback* callback, int32_t mode, IndicesView indices = {} ) const;
 
         BIT7Z_NODISCARD
         auto isInvalidIndex( uint32_t index ) const -> bool;
