@@ -48,7 +48,7 @@ using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* int
 // Making the code not build when choosing a wrong interface type (only IInArchive and IOutArchive are supported!).
 // Note: use template variables once we drop support to GCC 4.9.
 template< typename T >
-constexpr auto interface_id() -> const GUID&;
+constexpr auto interface_id() -> const GUID& = delete;
 
 template<>
 constexpr auto interface_id< IInArchive >() -> const GUID& {
@@ -60,6 +60,7 @@ constexpr auto interface_id< IOutArchive >() -> const GUID& {
     return bit7z::IID_IOutArchive;
 }
 
+namespace {
 template< typename T >
 BIT7Z_NODISCARD
 auto create_archive_object( LibrarySymbol creatorFunction, const BitInFormat& format, T** object ) -> HRESULT {
@@ -69,6 +70,7 @@ auto create_archive_object( LibrarySymbol creatorFunction, const BitInFormat& fo
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     return createObject( &formatID, &interface_id< T >(), reinterpret_cast< void** >( object ) );
 }
+} // namespace
 
 BIT7Z_NODISCARD
 auto Bit7zLibrary::initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive > {
