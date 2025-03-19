@@ -95,11 +95,6 @@ jobs:
       shell: bash
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-15') }}
       run: sudo apt-get purge libc++-14-dev libc++abi-14-dev -y && sudo apt-get install libc++-15-dev libc++abi-15-dev -y
-      
-    # Workaround for https://github.com/actions/runner-images/issues/8659
-    - uses: mjp41/workaround8649@c8550b715ccdc17f89c8d5c28d7a48eeff9c94a8
-      with:
-        os: ${{ matrix.os }}
 
     - name: Building and testing bit7z
       uses: ./.github/actions/ci_action
