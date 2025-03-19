@@ -38,7 +38,7 @@ auto load_library( const tstring& libraryPath ) -> LibraryHandle {
         // when inlining the error variable in the BitException constructor call,
         // so we need to store the error in a separate variable. ¯\_(ツ)_/¯
         const auto error = ERROR_CODE( std::errc::bad_file_descriptor );
-        throw BitException( "Failed to load the library", error );
+        throw BitException( "Failed to load the library", error, libraryPath );
     }
     return handle;
 }
