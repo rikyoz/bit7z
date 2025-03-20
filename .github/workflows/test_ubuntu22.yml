@@ -86,6 +86,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Update toolchains
+      shell: bash
+      run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && sudo apt update -y && sudo apt upgrade -y
+
     - name: Fix missing libc++ and libc++abi packages for clang-13 compiler
       shell: bash
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-13') }}
