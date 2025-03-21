@@ -86,9 +86,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    # Custom version of https://github.com/mjp41/workaround8649/blob/main/action.yml for ubuntu-22.04-arm
     - name: Update toolchains
       shell: bash
-      run: sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && sudo apt update -y && sudo apt upgrade -y
+      if: ${{ matrix.os == 'ubuntu-22.04-arm' && (matrix.c_compiler == 'clang-13' || (matrix.c_compiler == 'clang-14' && matrix.bit7z_link_libcpp == 'OFF')) }}
+      run: sudo rm -f /etc/apt/sources.list.d/ubuntu-toolchain-r-ubuntu-test-jammy.list && sudo apt-get update && sudo apt-get install -y --allow-downgrades libc6=2.35-* libc6-dev=2.35-* libstdc++6=12.3.0-* libgcc-s1=12.3.0-*
 
     - name: Fix missing libc++ and libc++abi packages for clang-13 compiler
       shell: bash
