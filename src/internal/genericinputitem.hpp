@@ -19,7 +19,7 @@ struct ISequentialInStream;
 
 namespace bit7z {
 
-struct GenericInputItem : public BitGenericItem {
+struct GenericInputItem : BitGenericItem {
         BIT7Z_NODISCARD
         virtual auto inArchivePath() const -> fs::path = 0;
 

@@ -50,7 +50,7 @@ class UpdateCallback final : public Callback,
         BIT7Z_STDMETHOD( SetRatioInfo, const UInt64* inSize, const UInt64* outSize );
 
         // IArchiveUpdateCallback2
-        BIT7Z_STDMETHOD( GetProperty, UInt32 index, PROPID propID, PROPVARIANT* value );
+        BIT7Z_STDMETHOD( GetProperty, UInt32 index, PROPID propId, PROPVARIANT* value );
 
         BIT7Z_STDMETHOD( GetStream, UInt32 index, ISequentialInStream** inStream );
 

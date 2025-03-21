@@ -46,7 +46,7 @@ auto make_error_code( OperationResult error ) noexcept -> std::error_code;
 
 namespace std {
 template <>
-struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::OperationResult > : public true_type {};
+struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::OperationResult > : true_type {};
 } // namespace std
 
 #endif // OPERATIONRESULT_HPP

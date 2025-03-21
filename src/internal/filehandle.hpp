@@ -132,13 +132,13 @@ class FileHandle {
         auto seek( SeekOrigin origin, std::int64_t distance, std::uint64_t& newPosition ) const noexcept -> HRESULT;
 };
 
-struct OutputFile final : public FileHandle {
+struct OutputFile final : FileHandle {
     explicit OutputFile( const fs::path& filePath, FileFlag fileFlag );
 
     auto write( const void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 };
 
-struct InputFile final : public FileHandle {
+struct InputFile final : FileHandle {
     explicit InputFile( const fs::path& filePath );
 
     auto read( void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;

@@ -151,7 +151,7 @@ enum STREAM_SEEK {
 #endif
 
 // String-related Win32 API functions (implemented in windows.cpp)
-auto SysAllocStringByteLen( LPCSTR psz, UINT len ) -> BSTR;
+auto SysAllocStringByteLen( LPCSTR, UINT ) -> BSTR;
 
 auto SysAllocStringLen( const OLECHAR*, UINT ) -> BSTR;
 

@@ -447,7 +447,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
         constexpr auto kUdfSignatureSize = 4U;
 
         for ( auto descriptorIndex = 1; descriptorIndex < kMaxVolumeDescriptors; ++descriptorIndex ) {
-            (void) stream->Seek( kIsoSignatureOffset + descriptorIndex * kIsoVolumeDescriptorSize, 0, nullptr );
+            (void) stream->Seek( kIsoSignatureOffset + ( descriptorIndex * kIsoVolumeDescriptorSize ), 0, nullptr );
             fileSignature = read_signature( stream, kUdfSignatureSize );
 
             if ( fileSignature == kUdfSignature ) { // The file is ISO+UDF or just UDF

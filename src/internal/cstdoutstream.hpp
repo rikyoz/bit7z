@@ -20,7 +20,7 @@
 
 namespace bit7z {
 
-class CStdOutStream : public IOutStream, public CMyUnknownImp {
+class CStdOutStream final : public IOutStream, public CMyUnknownImp {
     public:
         explicit CStdOutStream( std::ostream& outputStream );
 

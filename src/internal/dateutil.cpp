@@ -75,7 +75,7 @@ auto current_file_time() -> FILETIME {
     SystemTimeToFileTime( &systemTime, &fileTime ); // Converting it to the FILETIME struct format.
     return fileTime;
 #else
-    auto currentTime = std::chrono::system_clock::now();
+    const auto currentTime = std::chrono::system_clock::now();
     const std::time_t timeValue = std::chrono::system_clock::to_time_t( currentTime );
     return time_to_FILETIME( timeValue );
 #endif

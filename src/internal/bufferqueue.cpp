@@ -40,7 +40,7 @@ void BufferQueue::push( buffer_t&& item ) {
 }
 
 void BufferQueue::notifyFinished() {
-    std::lock_guard< std::mutex > lock( mMutex );
+    const std::lock_guard< std::mutex > lock( mMutex );
     mFinished = true;
     mEmptyCondition.notify_one();
 }
@@ -50,7 +50,7 @@ void BufferQueue::reset() {
 }
 
 auto BufferQueue::empty() const -> bool {
-    std::lock_guard< std::mutex > lock( mMutex );
+    const std::lock_guard< std::mutex > lock( mMutex );
     return mQueue.empty();
 }
 

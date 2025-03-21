@@ -55,7 +55,7 @@ class OpenCallback final : public IArchiveOpenCallback,
         BIT7Z_STDMETHOD( SetCompleted, const UInt64* files, const UInt64* bytes );
 
         // IArchiveOpenVolumeCallback
-        BIT7Z_STDMETHOD( GetProperty, PROPID propID, PROPVARIANT* value );
+        BIT7Z_STDMETHOD( GetProperty, PROPID property, PROPVARIANT* value );
 
         BIT7Z_STDMETHOD( GetStream, const wchar_t* name, IInStream** inStream );
 

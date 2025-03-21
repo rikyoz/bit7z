@@ -21,7 +21,7 @@
 
 namespace bit7z {
 
-class CRawOutStream : public ISequentialOutStream, public CMyUnknownImp {
+class CRawOutStream final : public ISequentialOutStream, public CMyUnknownImp {
     public:
         explicit CRawOutStream( RawDataCallback callback );
 

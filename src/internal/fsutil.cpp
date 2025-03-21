@@ -262,8 +262,8 @@ auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModifi
         return false;
     }
 
+    const auto fileTime = FILETIME_to_file_time_type( ftModified );
     std::error_code error;
-    auto fileTime = FILETIME_to_file_time_type( ftModified );
     fs::last_write_time( filePath, fileTime, error );
     return !error;
 }
@@ -294,7 +294,7 @@ auto fsutil::get_file_attributes_ex( const fs::path& filePath,
         fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
     }
     constexpr auto kMask = 0xFFFFu;
-    std::uint32_t unixAttributes = ( ( statInfo.st_mode & kMask ) << 16u );
+    const std::uint32_t unixAttributes = ( ( statInfo.st_mode & kMask ) << 16u );
     fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + unixAttributes;
 
     // File times
