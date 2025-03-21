@@ -72,7 +72,7 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
     for ( const auto& expectedItem : expectedItems ) {
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
-        REQUIRE_NOTHROW( info.extractTo( testDir, { archiveItem->index() } ) );
+        REQUIRE_NOTHROW( info.extractTo( testDir, archiveItem->index() ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
     REQUIRE( fs::is_empty( testDir.path() ) );
@@ -111,10 +111,10 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
         REQUIRE( fs::is_empty( testDir.path() ) );
     }
 
-    REQUIRE_THROWS( info.extractTo( testDir, { info.itemsCount() } ) );
+    REQUIRE_THROWS( info.extractTo( testDir, info.itemsCount() ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 
-    REQUIRE_THROWS( info.extractTo( testDir, { std::numeric_limits< std::uint32_t >::max() } ) );
+    REQUIRE_THROWS( info.extractTo( testDir, std::numeric_limits< std::uint32_t >::max() ) );
     REQUIRE( fs::is_empty( testDir.path() ) );
 }
 
