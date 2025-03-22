@@ -79,9 +79,10 @@ class BitOutputArchive {
          * used as a base for the creation of the new archive. Otherwise, the class will behave
          * as if it is creating a completely new archive.
          *
-         * @param creator the reference to the BitAbstractArchiveCreator object containing all the settings to
-         *                be used for creating the new archive and reading the (optional) input archive.
-         * @param inFile  (optional) the path to an input archive file.
+         * @param creator       the reference to the BitAbstractArchiveCreator object containing all the settings to
+         *                      be used for creating the new archive and reading the (optional) input archive.
+         * @param inFile        (optional) the path to an input archive file.
+         * @param startOffset   (optional) where to search the start of the input archive within the input file.
          */
         explicit BitOutputArchive( const BitAbstractArchiveCreator& creator,
                                    const tstring& inFile,
@@ -97,6 +98,7 @@ class BitOutputArchive {
          * @param creator   the reference to the BitAbstractArchiveCreator object containing all the settings to
          *                  be used for creating the new archive and reading the (optional) input archive.
          * @param inBuffer  the buffer containing an input archive file.
+         * @param startOffset   (optional) where to search the start of the input archive within the input file.
          */
         BitOutputArchive( const BitAbstractArchiveCreator& creator,
                           const buffer_t& inBuffer,
@@ -108,6 +110,7 @@ class BitOutputArchive {
          * @param creator   the reference to the BitAbstractArchiveCreator object containing all the settings to
          *                  be used for creating the new archive and reading the (optional) input archive.
          * @param inStream  the standard input stream of the input archive file.
+         * @param startOffset   (optional) where to search the start of the input archive within the input file.
          */
         BitOutputArchive( const BitAbstractArchiveCreator& creator,
                           std::istream& inStream,

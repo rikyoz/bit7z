@@ -45,10 +45,10 @@ using BitItemsVector = std::vector< GenericInputItemPtr >;
 /**
  * @brief Indexes the given directory, adding to the vector all the files that match the wildcard filter.
  *
+ * @param outVector the output vector.
  * @param inDir     the directory to be indexed.
  * @param filter    (optional) the wildcard filter to be used for indexing;
  *                  empty string means "index all files".
- * @param policy    (optional) the filtering policy to be applied to the matched items.
  * @param options   (optional) the settings to be used while indexing the given directory
  *                  and all of its subdirectories.
  */
@@ -59,6 +59,7 @@ void indexDirectory( BitItemsVector& outVector,
 /**
  * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
  *
+ * @param outVector the output vector.
  * @param inPaths   the vector of filesystem paths.
  * @param options   (optional) the settings to be used while indexing the given directory
  *                  and all of its subdirectories.
@@ -71,6 +72,7 @@ void indexPaths( BitItemsVector& outVector, const std::vector< tstring >& inPath
  * @note Map keys represent the filesystem paths to be indexed; the corresponding mapped values are
  * the user-defined (possibly different) paths wanted inside archives.
  *
+ * @param outVector the output vector.
  * @param inPaths   map of filesystem paths with the corresponding user-defined path desired inside the
  *                  output archive.
  * @param options   (optional) the settings to be used while indexing the given directory
@@ -85,9 +87,10 @@ void indexPathsMap( BitItemsVector& outVector,
  *
  * @note If a directory path is given, a BitException is thrown.
  *
+ * @param outVector       the output vector.
  * @param inFile          the path to the filesystem file to be indexed in the vector.
  * @param name            (optional) user-defined path to be used inside archives.
- * @param followSymlinks  (optional) whether to follow symbolic links or not.
+ * @param symlinkPolicy   (optional) whether to follow symbolic links or not.
  */
 void indexFile( BitItemsVector& outVector,
                 const tstring& inFile,
@@ -97,6 +100,7 @@ void indexFile( BitItemsVector& outVector,
 /**
  * @brief Indexes the given buffer, using the given name as a path when compressed in archives.
  *
+ * @param outVector the output vector.
  * @param inBuffer  the buffer containing the file to be indexed in the vector.
  * @param name      user-defined path to be used inside archives.
  */
@@ -105,6 +109,7 @@ void indexBuffer( BitItemsVector& outVector, const buffer_t& inBuffer, const tst
 /**
  * @brief Indexes the given standard input stream, using the given name as a path when compressed in archives.
  *
+ * @param outVector the output vector.
  * @param inStream  the standard input stream of the file to be indexed in the vector.
  * @param name      user-defined path to be used inside archives.
  */
