@@ -56,23 +56,47 @@ void require_extracts_to_filesystem( const BitArchiveReader& info, const Expecte
     INFO( "Test directory: " << testDir )
 
     REQUIRE_NOTHROW( info.extractTo( testDir ) );
-    if ( expectedItems.empty() ) {
-        REQUIRE( fs::is_empty( testDir.path() ) );
-    } else {
-        for ( const auto& expectedItem : expectedItems ) {
-            REQUIRE_FILESYSTEM_ITEM( expectedItem );
-        }
+    for ( const auto& expectedItem : expectedItems ) {
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
+    REQUIRE( fs::is_empty( testDir.path() ) );
+}
+
+void require_extracts_to_filesystem_empty_indices( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
+    const TempTestDirectory testDir{ "test_bitinputarchive" };
+    INFO( "Test directory: " << testDir )
+
+    REQUIRE_NOTHROW( info.extractTo( testDir, std::vector< std::uint32_t >{} ) );
+    for ( const auto& expectedItem : expectedItems ) {
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
+    }
+    REQUIRE( fs::is_empty( testDir.path() ) );
 }
 
 void require_extracts_items_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
-    TempTestDirectory testDir{ "test_bitinputarchive" };
+    const TempTestDirectory testDir{ "test_bitinputarchive" };
     INFO( "Test directory: " << testDir )
 
     for ( const auto& expectedItem : expectedItems ) {
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
         REQUIRE_NOTHROW( info.extractTo( testDir, archiveItem->index() ) );
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
+    }
+    REQUIRE( fs::is_empty( testDir.path() ) );
+
+    for ( const auto& expectedItem : expectedItems ) {
+        const auto archiveItem = archive_item( info, expectedItem );
+        REQUIRE( archiveItem != info.cend() );
+        REQUIRE_NOTHROW( info.extractTo( testDir, { archiveItem->index() } ) );
+        REQUIRE_FILESYSTEM_ITEM( expectedItem );
+    }
+    REQUIRE( fs::is_empty( testDir.path() ) );
+
+    for ( const auto& expectedItem : expectedItems ) {
+        const auto archiveItem = archive_item( info, expectedItem );
+        REQUIRE( archiveItem != info.cend() );
+        REQUIRE_NOTHROW( info.extractTo( testDir, IndicesVector{ archiveItem->index() } ) );
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
     REQUIRE( fs::is_empty( testDir.path() ) );
@@ -107,7 +131,8 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
         // The vector of indices contains a valid index, and an invalid one, so the extraction should fail.
-        REQUIRE_THROWS( info.extractTo( testDir, { archiveItem->index(), info.itemsCount() } ) );
+        const IndicesVector indices = { archiveItem->index(), info.itemsCount() };
+        REQUIRE_THROWS( info.extractTo( testDir, indices ) );
         REQUIRE( fs::is_empty( testDir.path() ) );
     }
 
@@ -272,6 +297,10 @@ void require_archive_extracts( const BitArchiveReader& info,
 
     SECTION( "Extracting to a temporary filesystem folder" ) {
         require_extracts_to_filesystem( info, expectedItems );
+    }
+
+    SECTION( "Extracting to a temporary filesystem folder with empty indices vector" ) {
+        require_extracts_to_filesystem_empty_indices( info, expectedItems );
     }
 
     SECTION( "Extracting specific items to a temporary filesystem folder" ) {
@@ -1207,9 +1236,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
         const auto& expectedItems = multiple_items_content().items;
 
         SECTION( "When extracting to the filesystem" ) {
-            TempTestDirectory testOutDir{ "test_bitinputarchive" };
-            INFO( "Output directory: " << testOutDir )
             require_extracts_to_filesystem( info, expectedItems );
+        }
+
+        SECTION( "When extracting to the filesystem with an empty indices vector" ) {
+            require_extracts_to_filesystem_empty_indices( info, expectedItems );
         }
 
         SECTION( "When extracting to a buffer map" ) {
