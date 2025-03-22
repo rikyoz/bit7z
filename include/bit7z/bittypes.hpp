@@ -107,7 +107,7 @@ using tregex = std::basic_regex< tchar >;
 #endif
 
 template< typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type >
-inline auto to_tstring( T arg ) -> std::basic_string< tchar > {
+auto to_tstring( T arg ) -> std::basic_string< tchar > {
     return StringTraits< tchar >::convertToString( arg );
 }
 

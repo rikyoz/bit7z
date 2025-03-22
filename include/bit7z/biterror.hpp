@@ -73,10 +73,10 @@ auto make_error_condition( BitFailureSource failureSource ) noexcept -> std::err
 
 namespace std {
 template<>
-struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public std::true_type {};
+struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : std::true_type {};
 
 template <>
-struct BIT7Z_MAYBE_UNUSED is_error_condition_enum< bit7z::BitFailureSource > : public std::true_type {};
+struct BIT7Z_MAYBE_UNUSED is_error_condition_enum< bit7z::BitFailureSource > : std::true_type {};
 } // namespace std
 
 #endif //BITERROR_HPP
