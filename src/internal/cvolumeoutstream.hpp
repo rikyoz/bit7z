@@ -22,13 +22,13 @@ class CVolumeOutStream final : public CFileOutStream {
     public:
         explicit CVolumeOutStream( const fs::path& volumeName );
 
-        BIT7Z_NODISCARD auto currentOffset() const -> uint64_t;
+        BIT7Z_NODISCARD auto currentOffset() const -> std::uint64_t;
 
-        BIT7Z_NODISCARD auto currentSize() const -> uint64_t;
+        BIT7Z_NODISCARD auto currentSize() const -> std::uint64_t;
 
         BIT7Z_NODISCARD auto volumePath() const -> const fs::path&;
 
-        void setCurrentSize( uint64_t currentSize );
+        void setCurrentSize( std::uint64_t currentSize );
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
@@ -38,9 +38,9 @@ class CVolumeOutStream final : public CFileOutStream {
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 
     private:
-        uint64_t mCurrentOffset;
+        std::uint64_t mCurrentOffset;
 
-        uint64_t mCurrentSize;
+        std::uint64_t mCurrentSize;
 
         fs::path mVolumePath;
 };

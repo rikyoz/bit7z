@@ -86,7 +86,7 @@ auto FilesystemItem::isDir() const noexcept -> bool {
     return !error && res;
 }
 
-auto FilesystemItem::size() const noexcept -> uint64_t {
+auto FilesystemItem::size() const noexcept -> std::uint64_t {
     std::error_code error;
     if ( mSymlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
         return fs::read_symlink( mFileEntry, error ).u8string().size();
@@ -138,7 +138,7 @@ auto FilesystemItem::inArchivePath() const -> fs::path {
     return mInArchivePath;
 }
 
-auto FilesystemItem::attributes() const noexcept -> uint32_t {
+auto FilesystemItem::attributes() const noexcept -> std::uint32_t {
     return mFileAttributeData.dwFileAttributes;
 }
 

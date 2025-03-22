@@ -36,7 +36,7 @@ TEST_CASE( "winapi: Allocating BSTR string from nullptr C strings", "[winapi][st
 
     SECTION( "Using a specific length" ) {
         BSTR resultString = nullptr;
-        const size_t testLength = GENERATE( 0, 1, 42, 127, 128 );
+        const std::size_t testLength = GENERATE( 0, 1, 42, 127, 128 );
 
         DYNAMIC_SECTION( "SysAllocStringLen with length " << testLength ) {
             resultString = SysAllocStringLen( nullptr, testLength );

@@ -63,7 +63,7 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
 
 BitArchiveEditor::~BitArchiveEditor() = default;
 
-void BitArchiveEditor::renameItem( uint32_t index, const tstring& newPath ) {
+void BitArchiveEditor::renameItem( std::uint32_t index, const tstring& newPath ) {
     checkIndex( index );
     mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath ); //-V108
 }
@@ -73,7 +73,7 @@ void BitArchiveEditor::renameItem( const tstring& oldPath, const tstring& newPat
     mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath ); //-V108
 }
 
-void BitArchiveEditor::updateItem( uint32_t index, const tstring& inFile ) {
+void BitArchiveEditor::updateItem( std::uint32_t index, const tstring& inFile ) {
     using filesystem::FilesystemItem;
 
     checkIndex( index );
@@ -81,13 +81,13 @@ void BitArchiveEditor::updateItem( uint32_t index, const tstring& inFile ) {
     mEditedItems[ index ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemName.getNativeString() ); //-V108
 }
 
-void BitArchiveEditor::updateItem( uint32_t index, const buffer_t& inBuffer ) {
+void BitArchiveEditor::updateItem( std::uint32_t index, const buffer_t& inBuffer ) {
     checkIndex( index );
     const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< BufferItem >( inBuffer, itemName.getNativeString() ); //-V108
 }
 
-void BitArchiveEditor::updateItem( uint32_t index, std::istream& inStream ) {
+void BitArchiveEditor::updateItem( std::uint32_t index, std::istream& inStream ) {
     checkIndex( index );
     const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
     mEditedItems[ index ] = std::make_unique< StdInputItem >( inStream, itemName.getNativeString() ); //-V108
@@ -107,7 +107,7 @@ void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStre
     mEditedItems[ findItem( itemPath ) ] = std::make_unique< StdInputItem >( inStream, itemPath ); //-V108
 }
 
-void BitArchiveEditor::deleteItem( uint32_t index, DeletePolicy policy ) {
+void BitArchiveEditor::deleteItem( std::uint32_t index, DeletePolicy policy ) {
     if ( index >= inputArchiveItemsCount() ) {
         throw BitException( "Cannot delete item at index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
@@ -194,7 +194,7 @@ void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy 
     }
 }
 
-void BitArchiveEditor::markItemAsDeleted( uint32_t index ) {
+void BitArchiveEditor::markItemAsDeleted( std::uint32_t index ) {
     mEditedItems.erase( index );
     setDeletedIndex( index );
 }
@@ -218,7 +218,7 @@ void BitArchiveEditor::applyChanges() {
     setInputArchive( std::make_unique< BitInputArchive >( *this, archivePath, ArchiveStartOffset::FileStart ) );
 }
 
-auto BitArchiveEditor::findItem( const tstring& itemPath ) const -> uint32_t {
+auto BitArchiveEditor::findItem( const tstring& itemPath ) const -> std::uint32_t {
     const auto archiveItem = inputArchive()->find( itemPath );
     if ( archiveItem == inputArchive()->cend() ) {
         throw BitException( "Could not find the file in the archive",
@@ -231,7 +231,7 @@ auto BitArchiveEditor::findItem( const tstring& itemPath ) const -> uint32_t {
     return archiveItem->index();
 }
 
-void BitArchiveEditor::checkIndex( uint32_t index ) const {
+void BitArchiveEditor::checkIndex( std::uint32_t index ) const {
     if ( index >= inputArchiveItemsCount() ) {
         throw BitException( "Cannot edit item at the index " + std::to_string( index ),
                             make_error_code( BitError::InvalidIndex ) );
@@ -243,7 +243,7 @@ void BitArchiveEditor::checkIndex( uint32_t index ) const {
 }
 
 auto BitArchiveEditor::itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant {
-    const auto mappedIndex = static_cast< uint32_t >( index );
+    const auto mappedIndex = static_cast< std::uint32_t >( index );
     if ( mappedIndex < inputArchiveItemsCount() ) {
         const auto res = mEditedItems.find( mappedIndex );
         if ( res != mEditedItems.end() ) {
@@ -255,7 +255,7 @@ auto BitArchiveEditor::itemProperty( InputIndex index, BitProperty property ) co
 }
 
 auto BitArchiveEditor::itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT {
-    const auto mappedIndex = static_cast< uint32_t >( index );
+    const auto mappedIndex = static_cast< std::uint32_t >( index );
     if ( mappedIndex < inputArchiveItemsCount() ) { //old item in the archive
         const auto res = mEditedItems.find( mappedIndex );
         if ( res != mEditedItems.end() ) { //user wants to update the old item in the archive
@@ -266,8 +266,8 @@ auto BitArchiveEditor::itemStream( InputIndex index, ISequentialInStream** inStr
     return BitOutputArchive::itemStream( index, inStream );
 }
 
-auto BitArchiveEditor::hasNewData( uint32_t index ) const noexcept -> bool {
-    const auto mappedIndex = static_cast< uint32_t >( itemInputIndex( index ) );
+auto BitArchiveEditor::hasNewData( std::uint32_t index ) const noexcept -> bool {
+    const auto mappedIndex = static_cast< std::uint32_t >( itemInputIndex( index ) );
     if ( mappedIndex >= inputArchiveItemsCount() ) {
         return true; //new item
     }
@@ -279,8 +279,8 @@ auto BitArchiveEditor::hasNewData( uint32_t index ) const noexcept -> bool {
     return false;
 }
 
-auto BitArchiveEditor::hasNewProperties( uint32_t index ) const noexcept -> bool {
-    const auto mappedIndex = static_cast< uint32_t >( itemInputIndex( index ) );
+auto BitArchiveEditor::hasNewProperties( std::uint32_t index ) const noexcept -> bool {
+    const auto mappedIndex = static_cast< std::uint32_t >( itemInputIndex( index ) );
     const bool isEditedItem = mEditedItems.find( mappedIndex ) != mEditedItems.end();
     return mappedIndex >= inputArchiveItemsCount() || isEditedItem;
 }

@@ -155,7 +155,7 @@ auto restore_symlink( const std::string& name ) -> bool {
     }
 
     // Shrinking the path string to its actual size.
-    linkPath.resize( static_cast< size_t >( ifs.gcount() ) );
+    linkPath.resize( static_cast< std::size_t >( ifs.gcount() ) );
 
     // No need to keep the file open.
     ifs.close();

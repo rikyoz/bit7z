@@ -38,7 +38,7 @@ class FilesystemItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto isSymLink() const -> bool override;
 
-        BIT7Z_NODISCARD auto size() const noexcept -> uint64_t override;
+        BIT7Z_NODISCARD auto size() const noexcept -> std::uint64_t override;
 
         BIT7Z_NODISCARD auto creationTime() const noexcept -> FILETIME override;
 
@@ -52,7 +52,7 @@ class FilesystemItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto inArchivePath() const -> fs::path override;
 
-        BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
+        BIT7Z_NODISCARD auto attributes() const noexcept -> std::uint32_t override;
 
         BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 

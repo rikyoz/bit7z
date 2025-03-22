@@ -152,11 +152,11 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     return StringToBstr( pass.c_str(), password );
 }
 
-auto ExtractCallback::isItemFolder( uint32_t index ) const -> bool {
+auto ExtractCallback::isItemFolder( std::uint32_t index ) const -> bool {
     return mInputArchive.isItemFolder( index );
 }
 
-auto ExtractCallback::itemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant {
+auto ExtractCallback::itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant {
     return mInputArchive.itemProperty( index, property );
 }
 

@@ -26,7 +26,7 @@
 
 namespace bit7z {
 
-CMultiVolumeOutStream::CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName )
+CMultiVolumeOutStream::CMultiVolumeOutStream( std::uint64_t volSize, fs::path archiveName )
     : mMaxVolumeSize( volSize ),
       mVolumePrefix( std::move( archiveName ) ),
       mCurrentVolumeIndex( 0 ),
@@ -40,12 +40,12 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
         *processedSize = 0;
     }
 
-    mCurrentVolumeIndex += static_cast< size_t >( mCurrentVolumeOffset / mMaxVolumeSize );
+    mCurrentVolumeIndex += static_cast< std::size_t >( mCurrentVolumeOffset / mMaxVolumeSize );
     mCurrentVolumeOffset = mCurrentVolumeOffset % mMaxVolumeSize;
 
     while ( mCurrentVolumeIndex >= mVolumes.size() ) {
         /* The current volume stream still doesn't exist, so we need to create it. */
-        tstring name = to_tstring( static_cast< uint64_t >( mCurrentVolumeIndex ) + 1 );
+        tstring name = to_tstring( static_cast< std::uint64_t >( mCurrentVolumeIndex ) + 1 );
         if ( name.length() < 3 ) {
             name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
         }
@@ -72,11 +72,11 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
 
     if ( mCurrentVolumeOffset != volume->currentOffset() ) {
         /* The offset we must write to is different from the last offset we wrote to. */
-        RINOK( volume->Seek( static_cast< int64_t >( mCurrentVolumeOffset ), STREAM_SEEK_SET, nullptr ) ) //-V3504
+        RINOK( volume->Seek( static_cast< std::int64_t >( mCurrentVolumeOffset ), STREAM_SEEK_SET, nullptr ) ) //-V3504
     }
 
     /* Determining how much we can write to the volume stream */
-    const auto writeSize = static_cast< uint32_t >( ( std::min )( static_cast< uint64_t >( size ),
+    const auto writeSize = static_cast< std::uint32_t >( ( std::min )( static_cast< std::uint64_t >( size ),
                                                                   mMaxVolumeSize - volume->currentOffset() ) );
 
     /* Writing to the volume stream */
@@ -110,7 +110,7 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t seekPosition{};
+    std::uint64_t seekPosition{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             break;

@@ -47,9 +47,9 @@ namespace {
  *
  * @return The hash integer.
  */
-auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(misc-no-recursion)
+auto constexpr str_hash( bit7z::tchar const* input ) -> std::uint64_t { // NOLINT(misc-no-recursion)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, *-magic-numbers)
-    return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381; //-V2563
+    return *input != 0 ? static_cast< std::uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381; //-V2563
 }
 } // namespace
 #endif
@@ -203,10 +203,10 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
 }
 #endif
 
-/* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
+/* NOTE 1: For signatures with less than 8 bytes (size of std::uint64_t), remaining bytes are set to 0
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
  *         format. However, the switch case is faster and has less memory footprint. */
-auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInFormat* {
+auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitInFormat* {
     constexpr auto kRarSignature = 0x526172211A070000ULL; // Rar! 0x1A 0x07 0x00
     constexpr auto kRar5Signature = 0x526172211A070100ULL; // Rar! 0x1A 0x07 0x01 0x00
     constexpr auto kSevenzipSignature = 0x377ABCAF271C0000ULL; // 7z 0xBC 0xAF 0x27 0x1C
@@ -365,7 +365,7 @@ struct OffsetSignature { // NOLINT(*-member-init)
 #define bswap64 __builtin_bswap64
 #endif
 #else
-static inline uint64_t bswap64( uint64_t x ) {
+static inline std::uint64_t bswap64( std::uint64_t x ) {
     return  ((x << 56) & 0xff00000000000000ULL) |
             ((x << 40) & 0x00ff000000000000ULL) |
             ((x << 24) & 0x0000ff0000000000ULL) |
@@ -378,8 +378,8 @@ static inline uint64_t bswap64( uint64_t x ) {
 #endif
 
 namespace {
-auto read_signature( IInStream* stream, uint32_t size ) noexcept -> uint64_t {
-    uint64_t signature = 0;
+auto read_signature( IInStream* stream, std::uint32_t size ) noexcept -> std::uint64_t {
+    std::uint64_t signature = 0;
     (void) stream->Read( &signature, size, nullptr );
     return bswap64( signature );
 }
@@ -391,8 +391,8 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     constexpr auto kBaseSignatureMask = 0xFFFFFFFFFFFFFFFFULL;
     constexpr auto kByteShift = 8ULL;
 
-    uint64_t fileSignature = read_signature( stream, kSignatureSize );
-    uint64_t signatureMask = kBaseSignatureMask;
+    std::uint64_t fileSignature = read_signature( stream, kSignatureSize );
+    std::uint64_t signatureMask = kBaseSignatureMask;
     for ( auto i = 0U; i < kSignatureSize - 1; ++i ) {
         const BitInFormat* format = find_format_by_signature( fileSignature );
         if ( format != nullptr ) {

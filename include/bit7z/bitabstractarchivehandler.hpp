@@ -24,19 +24,19 @@ class BitInFormat;
 /**
  * @brief A function whose argument is the total size of the ongoing operation.
  */
-using TotalCallback = std::function< void( uint64_t ) >;
+using TotalCallback = std::function< void( std::uint64_t ) >;
 
 /**
  * @brief A function whose argument is the currently processed size of the ongoing operation and returns
  *        true or false whether the operation must continue or not.
  */
-using ProgressCallback = std::function< bool( uint64_t ) >;
+using ProgressCallback = std::function< bool( std::uint64_t ) >;
 
 /**
  * @brief A function whose arguments are the current processed input size, and the current output size of the
  *        ongoing operation.
  */
-using RatioCallback = std::function< void( uint64_t, uint64_t ) >;
+using RatioCallback = std::function< void( std::uint64_t, std::uint64_t ) >;
 
 /**
  * @brief A function whose argument is the path, in the archive, of the file currently being processed

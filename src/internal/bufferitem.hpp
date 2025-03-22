@@ -32,7 +32,7 @@ class BufferItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto isDir() const noexcept -> bool override;
 
-        BIT7Z_NODISCARD auto size() const noexcept -> uint64_t override;
+        BIT7Z_NODISCARD auto size() const noexcept -> std::uint64_t override;
 
         BIT7Z_NODISCARD auto creationTime() const noexcept -> FILETIME override;
 
@@ -40,7 +40,7 @@ class BufferItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto lastWriteTime() const noexcept -> FILETIME override;
 
-        BIT7Z_NODISCARD auto attributes() const noexcept -> uint32_t override;
+        BIT7Z_NODISCARD auto attributes() const noexcept -> std::uint32_t override;
 
         BIT7Z_NODISCARD auto filesystemPath() const -> const fs::path& override;
 

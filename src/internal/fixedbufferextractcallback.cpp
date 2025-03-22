@@ -26,14 +26,14 @@ namespace bit7z {
 
 FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive& inputArchive,
                                                         byte_t* buffer,
-                                                        size_t size )
+                                                        std::size_t size )
     : ExtractCallback( inputArchive ), mBuffer( buffer ), mSize( size ) {}
 
 void FixedBufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-auto FixedBufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
+auto FixedBufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }

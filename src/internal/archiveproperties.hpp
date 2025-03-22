@@ -64,7 +64,7 @@ class ArchiveProperties final {
         }
 
         BIT7Z_NODISCARD
-        auto size() const -> size_t {
+        auto size() const -> std::size_t {
             return mNames.size();
         }
 };

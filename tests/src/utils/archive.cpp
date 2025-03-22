@@ -80,7 +80,7 @@ void require_archive_content( const BitArchiveReader& info,
 
     const bool archiveStoresPaths = format_has_path_metadata( format );
     const bool fromFilesystem = !info.archivePath().empty();
-    size_t found_items = 0;
+    std::size_t found_items = 0;
     for ( const auto& expectedItem : expectedArchiveContent.items ) {
         for ( const auto& item : items ) {
             if ( archiveStoresPaths || fromFilesystem ) {

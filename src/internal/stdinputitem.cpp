@@ -50,11 +50,11 @@ auto StdInputItem::isDir() const noexcept -> bool {
     return false;
 }
 
-auto StdInputItem::size() const -> uint64_t {
+auto StdInputItem::size() const -> std::uint64_t {
     auto& stream = mStream.get();
     const auto originalPos = stream.tellg();
     stream.seekg( 0, std::ios::end ); // seeking to the end of the stream
-    const auto result = static_cast< uint64_t >( stream.tellg() - originalPos ); // size of the stream
+    const auto result = static_cast< std::uint64_t >( stream.tellg() - originalPos ); // size of the stream
     stream.seekg( originalPos ); // seeking back to the original position in the stream
     return result;
 }
@@ -71,8 +71,8 @@ auto StdInputItem::lastWriteTime() const noexcept -> FILETIME {
     return current_file_time();
 }
 
-auto StdInputItem::attributes() const noexcept -> uint32_t {
-    return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
+auto StdInputItem::attributes() const noexcept -> std::uint32_t {
+    return static_cast< std::uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
 
 auto StdInputItem::filesystemPath() const -> const fs::path& {

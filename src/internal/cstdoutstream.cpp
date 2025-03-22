@@ -40,7 +40,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
     mOutputStream.write( static_cast< const char* >( data ), clamp_cast< std::streamsize >( size ) ); //-V2571
 
     if ( processedSize != nullptr ) {
-        *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - oldPos );
+        *processedSize = static_cast< std::uint32_t >( mOutputStream.tellp() - oldPos );
     }
 
     return mOutputStream.bad() ? HRESULT_FROM_WIN32( ERROR_WRITE_FAULT ) : S_OK;
@@ -58,7 +58,7 @@ STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
     }
 
     if ( newPosition != nullptr ) {
-        *newPosition = static_cast< uint64_t >( mOutputStream.tellp() );
+        *newPosition = static_cast< std::uint64_t >( mOutputStream.tellp() );
     }
 
     return S_OK;
@@ -77,7 +77,7 @@ STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) noexcept {
         return E_FAIL;
     }
 
-    const auto currentPos = static_cast< uint64_t >( mOutputStream.tellp() );
+    const auto currentPos = static_cast< std::uint64_t >( mOutputStream.tellp() );
     if ( newSize < currentPos ) {
         return E_FAIL;
     }

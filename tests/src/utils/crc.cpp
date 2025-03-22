@@ -41,7 +41,7 @@ static constexpr std::array< const uint32_t, 256 > crc32_table = {
     0xB3667A2Eu, 0xC4614AB8u, 0x5D681B02u, 0x2A6F2B94u, 0xB40BBE37u, 0xC30C8EA1u, 0x5A05DF1Bu, 0x2D02EF8Du
 };
 
-static constexpr std::array< const uint16_t, 256 > crc16_table = { // CRC-16/LHA standard
+static constexpr std::array< const std::uint16_t, 256 > crc16_table = { // CRC-16/LHA standard
     0x0000u, 0xC0C1u, 0xC181u, 0x0140u, 0xC301u, 0x03C0u, 0x0280u, 0xC241u,
     0xC601u, 0x06C0u, 0x0780u, 0xC741u, 0x0500u, 0xC5C1u, 0xC481u, 0x0440u,
     0xCC01u, 0x0CC0u, 0x0D80u, 0xCD41u, 0x0F00u, 0xCFC1u, 0xCE81u, 0x0E40u,
@@ -88,10 +88,10 @@ using conditional_t = typename std::conditional< Condition, IfTrue, IfFalse >::t
 
 template< std::size_t Bits >
 using uint_t = conditional_t< Bits <= 8, uint8_t,
-                              conditional_t< Bits <= 16, uint16_t,
+                              conditional_t< Bits <= 16, std::uint16_t,
                                              conditional_t< Bits <= 32, uint32_t, uint64_t > > >;
 
-constexpr auto is_power_of_two( size_t value ) -> bool {
+constexpr auto is_power_of_two( std::size_t value ) -> bool {
     return value != 0 && ( ( value & ( value - 1 ) ) == 0u );
 }
 
@@ -124,7 +124,7 @@ auto crc32( const void* buffer, std::size_t length, std::uint32_t initial ) noex
 }
 
 // NOLINTNEXTLINE(*-easily-swappable-parameters)
-auto crc16( const void* buffer, std::size_t length ) noexcept -> uint16_t {
+auto crc16( const void* buffer, std::size_t length ) noexcept -> std::uint16_t {
     return crc< 16, 0 >( crc16_table, 0, buffer, length );
 }
 

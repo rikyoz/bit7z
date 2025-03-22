@@ -54,7 +54,7 @@ class FileExtractCallback final : public ExtractCallback {
 
         void releaseStream() override;
 
-        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
+        auto getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
 }  // namespace bit7z

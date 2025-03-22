@@ -29,7 +29,7 @@ class ProcessedItem final {
 
         BIT7Z_NODISCARD auto path() const -> fs::path;
 
-        BIT7Z_NODISCARD auto attributes() const -> uint32_t;
+        BIT7Z_NODISCARD auto attributes() const -> std::uint32_t;
 
         BIT7Z_NODISCARD auto areAttributesDefined() const -> bool;
 
@@ -52,14 +52,14 @@ class ProcessedItem final {
         BitPropVariant mAccessTime;
 #endif
 
-        uint32_t mAttributes;
+        std::uint32_t mAttributes;
         bool mAreAttributesDefined;
 
-        void loadFilePath( const BitInputArchive& inputArchive, uint32_t itemIndex );
+        void loadFilePath( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
 
-        void loadAttributes( const BitInputArchive& inputArchive, uint32_t itemIndex );
+        void loadAttributes( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
 
-        void loadTimeMetadata( const BitInputArchive& inputArchive, uint32_t itemIndex );
+        void loadTimeMetadata( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
 };
 
 }  // namespace bit7z

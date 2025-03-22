@@ -21,12 +21,12 @@
 #include <cstring>
 #include <limits>
 
-auto wcsnlen_s( const wchar_t* str, size_t maxSize ) -> size_t {
+auto wcsnlen_s( const wchar_t* str, std::size_t maxSize ) -> std::size_t {
     if ( str == nullptr || maxSize == 0 ) {
         return 0;
     }
 
-    size_t result = 0;
+    std::size_t result = 0;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
     for ( ; result < maxSize && str[ result ] != L'\0'; ++result ) {
         // continue;
@@ -43,7 +43,7 @@ auto SysAllocString( const OLECHAR* str ) -> BSTR {
     return SysAllocStringLen( str, len );
 }
 
-using bstr_prefix_t = uint32_t;
+using bstr_prefix_t = std::uint32_t;
 
 /* Internal implementation of SysAllocStringByteLen for Unix systems.
  *
@@ -52,7 +52,7 @@ using bstr_prefix_t = uint32_t;
  *     allocated by 7-zip (which uses malloc). Never mix new/delete and malloc/free.
  *   - We use calloc instead of malloc, so that we do not have to manually add the termination character at the end.
  * */
-auto AllocStringBuffer( LPCSTR str, uint32_t byteLength ) -> BSTR {
+auto AllocStringBuffer( LPCSTR str, std::uint32_t byteLength ) -> BSTR {
     // Maximum value that can be stored in the BSTR byteLength prefix.
     constexpr auto kMaxPrefixValue = std::numeric_limits< bstr_prefix_t >::max();
 

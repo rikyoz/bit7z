@@ -27,7 +27,7 @@ class BitArchiveItem : public BitGenericItem {
         /**
          * @return the index of the item in the archive.
          */
-        BIT7Z_NODISCARD auto index() const noexcept -> uint32_t;
+        BIT7Z_NODISCARD auto index() const noexcept -> std::uint32_t;
 
         /**
          * @return true if and only if the item is a directory (i.e., it has the property BitProperty::IsDir).
@@ -77,7 +77,7 @@ class BitArchiveItem : public BitGenericItem {
         /**
          * @return the uncompressed size of the item.
          */
-        BIT7Z_NODISCARD auto size() const -> uint64_t override;
+        BIT7Z_NODISCARD auto size() const -> std::uint64_t override;
 
         /**
          * @return the item creation time.
@@ -97,17 +97,17 @@ class BitArchiveItem : public BitGenericItem {
         /**
          * @return the item attributes.
          */
-        BIT7Z_NODISCARD auto attributes() const -> uint32_t override;
+        BIT7Z_NODISCARD auto attributes() const -> std::uint32_t override;
 
         /**
          * @return the compressed size of the item.
          */
-        BIT7Z_NODISCARD auto packSize() const -> uint64_t;
+        BIT7Z_NODISCARD auto packSize() const -> std::uint64_t;
 
         /**
          * @return the CRC value of the item.
          */
-        BIT7Z_NODISCARD auto crc() const -> uint32_t;
+        BIT7Z_NODISCARD auto crc() const -> std::uint32_t;
 
         /**
          * @return true if and only if the item is encrypted.
@@ -115,9 +115,9 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD auto isEncrypted() const -> bool;
 
     protected:
-        uint32_t mItemIndex; // Note: it is not const since the subclass BitArchiveItemOffset can increment it.
+        std::uint32_t mItemIndex; // Note: it is not const since the subclass BitArchiveItemOffset can increment it.
 
-        explicit BitArchiveItem( uint32_t itemIndex ) noexcept;
+        explicit BitArchiveItem( std::uint32_t itemIndex ) noexcept;
 };
 
 }  // namespace bit7z

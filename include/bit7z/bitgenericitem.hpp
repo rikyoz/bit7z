@@ -39,7 +39,7 @@ class BitGenericItem {
          * @return the uncompressed size of the item.
          */
         BIT7Z_NODISCARD
-        virtual auto size() const -> uint64_t = 0;
+        virtual auto size() const -> std::uint64_t = 0;
 
         /**
          * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
@@ -57,7 +57,7 @@ class BitGenericItem {
          * @return the item attributes.
          */
         BIT7Z_NODISCARD
-        virtual auto attributes() const -> uint32_t = 0;
+        virtual auto attributes() const -> std::uint32_t = 0;
 
         /**
          * @brief Gets the specified item property.

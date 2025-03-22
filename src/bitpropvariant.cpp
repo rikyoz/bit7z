@@ -127,49 +127,49 @@ BitPropVariant::BitPropVariant( const std::wstring& value ) : PROPVARIANT() {
     }
 }
 
-BitPropVariant::BitPropVariant( uint8_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::uint8_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI1;
     wReserved1 = 0;
     bVal = value;
 }
 
-BitPropVariant::BitPropVariant( uint16_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::uint16_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI2;
     wReserved1 = 0;
     uiVal = value;
 }
 
-BitPropVariant::BitPropVariant( uint32_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::uint32_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI4;
     wReserved1 = 0;
     ulVal = value;
 }
 
-BitPropVariant::BitPropVariant( uint64_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::uint64_t value ) noexcept: PROPVARIANT() {
     vt = VT_UI8;
     wReserved1 = 0;
     uhVal.QuadPart = value;
 }
 
-BitPropVariant::BitPropVariant( int8_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::int8_t value ) noexcept: PROPVARIANT() {
     vt = VT_I1;
     wReserved1 = 0;
     cVal = static_cast< decltype(cVal) >( value );
 }
 
-BitPropVariant::BitPropVariant( int16_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::int16_t value ) noexcept: PROPVARIANT() {
     vt = VT_I2;
     wReserved1 = 0;
     iVal = value;
 }
 
-BitPropVariant::BitPropVariant( int32_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::int32_t value ) noexcept: PROPVARIANT() {
     vt = VT_I4;
     wReserved1 = 0;
     lVal = value;
 }
 
-BitPropVariant::BitPropVariant( int64_t value ) noexcept: PROPVARIANT() {
+BitPropVariant::BitPropVariant( std::int64_t value ) noexcept: PROPVARIANT() {
     vt = VT_I8;
     wReserved1 = 0;
     hVal.QuadPart = value;
@@ -277,7 +277,7 @@ auto BitPropVariant::getRawString() const -> sevenzip_string {
     return bstrVal == nullptr ? sevenzip_string{} : sevenzip_string{ bstrVal, ::SysStringLen( bstrVal ) };
 }
 
-auto BitPropVariant::getUInt8() const -> uint8_t {
+auto BitPropVariant::getUInt8() const -> std::uint8_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -287,7 +287,7 @@ auto BitPropVariant::getUInt8() const -> uint8_t {
     }
 }
 
-auto BitPropVariant::getUInt16() const -> uint16_t {
+auto BitPropVariant::getUInt16() const -> std::uint16_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -299,7 +299,7 @@ auto BitPropVariant::getUInt16() const -> uint16_t {
     }
 }
 
-auto BitPropVariant::getUInt32() const -> uint32_t {
+auto BitPropVariant::getUInt32() const -> std::uint32_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -315,7 +315,7 @@ auto BitPropVariant::getUInt32() const -> uint32_t {
     }
 }
 
-auto BitPropVariant::getUInt64() const -> uint64_t {
+auto BitPropVariant::getUInt64() const -> std::uint64_t {
     switch ( vt ) {
         case VT_UI1:
             return bVal;
@@ -333,17 +333,17 @@ auto BitPropVariant::getUInt64() const -> uint64_t {
     }
 }
 
-auto BitPropVariant::getInt8() const -> int8_t {
+auto BitPropVariant::getInt8() const -> std::int8_t {
     switch ( vt ) {
         case VT_I1:
-            return static_cast< int8_t >( cVal );
+            return static_cast< std::int8_t >( cVal );
         default: // not an 8-bits integer.
             throw BitException( "BitPropVariant is not an 8-bit integer",
                                 make_error_code( BitError::RequestedWrongVariantType ) );
     }
 }
 
-auto BitPropVariant::getInt16() const -> int16_t {
+auto BitPropVariant::getInt16() const -> std::int16_t {
     switch ( vt ) {
         case VT_I1:
             return cVal;
@@ -355,7 +355,7 @@ auto BitPropVariant::getInt16() const -> int16_t {
     }
 }
 
-auto BitPropVariant::getInt32() const -> int32_t {
+auto BitPropVariant::getInt32() const -> std::int32_t {
     switch ( vt ) {
         case VT_I1:
             return cVal;
@@ -371,7 +371,7 @@ auto BitPropVariant::getInt32() const -> int32_t {
     }
 }
 
-auto BitPropVariant::getInt64() const -> int64_t {
+auto BitPropVariant::getInt64() const -> std::int64_t {
     switch ( vt ) {
         case VT_I1:
             return cVal;

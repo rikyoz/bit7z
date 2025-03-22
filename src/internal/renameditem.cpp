@@ -23,7 +23,7 @@
 
 namespace bit7z {
 
-RenamedItem::RenamedItem( const BitInputArchive& inputArchive, uint32_t index, const tstring& newPath )
+RenamedItem::RenamedItem( const BitInputArchive& inputArchive, std::uint32_t index, const tstring& newPath )
     : mInputArchive{ inputArchive }, mIndex{ index }, mNewPath{ tstring_to_path( newPath ) } {}
 
 auto RenamedItem::name() const -> tstring {
@@ -54,7 +54,7 @@ auto RenamedItem::isSymLink() const -> bool {
     return mInputArchive.get().itemAt( mIndex ).isSymLink();
 }
 
-auto RenamedItem::size() const -> uint64_t {
+auto RenamedItem::size() const -> std::uint64_t {
     return mInputArchive.get().itemProperty( mIndex, BitProperty::Size ).getUInt64();
 }
 
@@ -73,7 +73,7 @@ auto RenamedItem::lastWriteTime() const -> FILETIME {
     return writeTime.isFileTime() ? writeTime.getFileTime() : current_file_time();
 }
 
-auto RenamedItem::attributes() const -> uint32_t {
+auto RenamedItem::attributes() const -> std::uint32_t {
     return mInputArchive.get().itemProperty( mIndex, BitProperty::Attrib ).getUInt32();
 }
 

@@ -22,9 +22,9 @@
 
 namespace bit7z {
 
-class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
-        uint64_t mCurrentPosition;
-        uint64_t mTotalSize;
+class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
+        std::uint64_t mCurrentPosition;
+        std::uint64_t mTotalSize;
 
         std::vector< CMyComPtr< CVolumeInStream > > mVolumes;
 

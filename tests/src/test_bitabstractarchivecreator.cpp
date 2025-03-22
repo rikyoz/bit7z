@@ -276,34 +276,34 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setDictionarySize(...) / di
         auto testMethod = GENERATE( BitCompressionMethod::Lzma, BitCompressionMethod::Lzma2 );
         compressor.setCompressionMethod( testMethod );
 
-        uint32_t dictionarySize = 1024 * 1024 * 1024;
+        std::uint32_t dictionarySize = 1024 * 1024 * 1024;
         compressor.setDictionarySize( dictionarySize );
         REQUIRE( compressor.dictionarySize() == dictionarySize );
 
         compressor.setDictionarySize( kMaxLzmaDictionarySize );
         REQUIRE( compressor.dictionarySize() == kMaxLzmaDictionarySize );
 
-        dictionarySize = std::numeric_limits< uint32_t >::max();
-        REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< uint32_t >::max() ) );
+        dictionarySize = std::numeric_limits< std::uint32_t >::max();
+        REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< std::uint32_t >::max() ) );
         REQUIRE( compressor.dictionarySize() == kMaxLzmaDictionarySize );
     }
 
     SECTION( "Zip format + Ppmd compression methods" ) {
-        constexpr uint32_t kMaxPpmdDictionarySize = ( 1ULL << 30 ); // less than 1 GiB, i.e., 2^30 bytes
+        constexpr std::uint32_t kMaxPpmdDictionarySize = ( 1ULL << 30 ); // less than 1 GiB, i.e., 2^30 bytes
 
         TestType compressor( test::sevenzip_lib(), BitFormat::Zip );
         REQUIRE( compressor.dictionarySize() == 0 );
         compressor.setCompressionMethod( BitCompressionMethod::Ppmd );
 
-        uint32_t dictionarySize = 1024 * 1024 * 1024;
+        std::uint32_t dictionarySize = 1024 * 1024 * 1024;
         compressor.setDictionarySize( dictionarySize );
         REQUIRE( compressor.dictionarySize() == dictionarySize );
 
         compressor.setDictionarySize( kMaxPpmdDictionarySize );
         REQUIRE( compressor.dictionarySize() == kMaxPpmdDictionarySize );
 
-        dictionarySize = std::numeric_limits< uint32_t >::max();
-        REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< uint32_t >::max() ) );
+        dictionarySize = std::numeric_limits< std::uint32_t >::max();
+        REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< std::uint32_t >::max() ) );
         REQUIRE( compressor.dictionarySize() == kMaxPpmdDictionarySize );
 
         auto testMethod = GENERATE( BitCompressionMethod::Copy,
@@ -320,15 +320,15 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setDictionarySize(...) / di
         TestType compressor( test::sevenzip_lib(), BitFormat::BZip2 );
         REQUIRE( compressor.dictionarySize() == 0 );
 
-        uint32_t dictionarySize = 1024;
+        std::uint32_t dictionarySize = 1024;
         compressor.setDictionarySize( dictionarySize );
         REQUIRE( compressor.dictionarySize() == dictionarySize );
 
         compressor.setDictionarySize( kMaxBzip2DictionarySize );
         REQUIRE( compressor.dictionarySize() == kMaxBzip2DictionarySize );
 
-        dictionarySize = std::numeric_limits< uint32_t >::max();
-        REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< uint32_t >::max() ) );
+        dictionarySize = std::numeric_limits< std::uint32_t >::max();
+        REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< std::uint32_t >::max() ) );
         REQUIRE( compressor.dictionarySize() == kMaxBzip2DictionarySize );
     }
 }

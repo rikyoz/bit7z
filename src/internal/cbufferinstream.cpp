@@ -59,7 +59,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     std::advance( mCurrentPosition, remaining );
 
     if ( processedSize != nullptr ) {
-        /* Note: even though on 64-bit systems "remaining" will be a 64-bit unsigned integer (size_t),
+        /* Note: even though on 64-bit systems "remaining" will be a 64-bit unsigned integer (std::size_t),
          * its value cannot be greater than "size", which is a 32-bit unsigned int; hence, this cast is safe. */
         *processedSize = static_cast< UInt32 >( remaining );
     }
@@ -68,7 +68,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t newIndex{};
+    std::uint64_t newIndex{};
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {

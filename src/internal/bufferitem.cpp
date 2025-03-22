@@ -49,8 +49,8 @@ auto BufferItem::isDir() const noexcept -> bool {
     return false;
 }
 
-auto BufferItem::size() const noexcept -> uint64_t {
-    return sizeof( byte_t ) * static_cast< uint64_t >( mBuffer.get().size() );
+auto BufferItem::size() const noexcept -> std::uint64_t {
+    return sizeof( byte_t ) * static_cast< std::uint64_t >( mBuffer.get().size() );
 }
 
 auto BufferItem::creationTime() const noexcept -> FILETIME { //-V524
@@ -65,8 +65,8 @@ auto BufferItem::lastWriteTime() const noexcept -> FILETIME {
     return current_file_time();
 }
 
-auto BufferItem::attributes() const noexcept -> uint32_t {
-    return static_cast< uint32_t >( FILE_ATTRIBUTE_NORMAL );
+auto BufferItem::attributes() const noexcept -> std::uint32_t {
+    return static_cast< std::uint32_t >( FILE_ATTRIBUTE_NORMAL );
 }
 
 auto BufferItem::filesystemPath() const -> const fs::path& {

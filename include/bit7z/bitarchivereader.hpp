@@ -225,22 +225,22 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @return the number of folders contained in the archive.
          */
-        BIT7Z_NODISCARD auto foldersCount() const -> uint32_t;
+        BIT7Z_NODISCARD auto foldersCount() const -> std::uint32_t;
 
         /**
          * @return the number of files contained in the archive.
          */
-        BIT7Z_NODISCARD auto filesCount() const -> uint32_t;
+        BIT7Z_NODISCARD auto filesCount() const -> std::uint32_t;
 
         /**
          * @return the total uncompressed size of the archive content.
          */
-        BIT7Z_NODISCARD auto size() const -> uint64_t;
+        BIT7Z_NODISCARD auto size() const -> std::uint64_t;
 
         /**
          * @return the total compressed size of the archive content.
          */
-        BIT7Z_NODISCARD auto packSize() const -> uint64_t;
+        BIT7Z_NODISCARD auto packSize() const -> std::uint64_t;
 
         /**
          * @return true if and only if the archive has at least one encrypted item.
@@ -255,7 +255,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @return the number of volumes composing the archive.
          */
-        BIT7Z_NODISCARD auto volumesCount() const -> uint32_t;
+        BIT7Z_NODISCARD auto volumesCount() const -> std::uint32_t;
 
         /**
          * @return true if and only if the archive is composed by multiple volumes.

@@ -38,7 +38,7 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
     mInputStream.read( static_cast< char* >( data ), clamp_cast< std::streamsize >( size ) ); // flawfinder: ignore //-V2571
 
     if ( processedSize != nullptr ) {
-        *processedSize = static_cast< uint32_t >( mInputStream.gcount() );
+        *processedSize = static_cast< std::uint32_t >( mInputStream.gcount() );
     }
 
     return mInputStream.bad() ? HRESULT_FROM_WIN32( ERROR_READ_FAULT ) : S_OK;
@@ -58,7 +58,7 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
     }
 
     if ( newPosition != nullptr ) {
-        *newPosition = static_cast< uint64_t >( mInputStream.tellg() );
+        *newPosition = static_cast< std::uint64_t >( mInputStream.tellg() );
     }
 
     return S_OK;

@@ -53,7 +53,7 @@ auto is_valid_compression_method( const BitInOutFormat& format, BitCompressionMe
     }
 }
 
-auto is_valid_dictionary_size( BitCompressionMethod method, uint32_t dictionarySize ) noexcept -> bool {
+auto is_valid_dictionary_size( BitCompressionMethod method, std::uint32_t dictionarySize ) noexcept -> bool {
     constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1ull << 20ull ); // less than 3840 MiB
     constexpr auto kMaxPpmdDictionarySize = ( 1ull << 30ull );        // less than 1 GiB, i.e., 2^30 bytes
     constexpr auto kMaxBzip2DictionarySize = 900 * ( 1ull << 10ull ); // less than 900 KiB
@@ -71,7 +71,7 @@ auto is_valid_dictionary_size( BitCompressionMethod method, uint32_t dictionaryS
     }
 }
 
-auto is_valid_word_size( const BitInOutFormat& fmt, BitCompressionMethod method, uint32_t wordSize ) noexcept -> bool {
+auto is_valid_word_size( const BitInOutFormat& fmt, BitCompressionMethod method, std::uint32_t wordSize ) noexcept -> bool {
     constexpr auto kMinLzmaWordSize = 5u;
     constexpr auto kMaxLzmaWordSize = 273u;
     constexpr auto kMinPpmdWordSize = 2u;
@@ -162,11 +162,11 @@ auto BitAbstractArchiveCreator::compressionMethod() const noexcept -> BitCompres
     return mCompressionMethod;
 }
 
-auto BitAbstractArchiveCreator::dictionarySize() const noexcept -> uint32_t {
+auto BitAbstractArchiveCreator::dictionarySize() const noexcept -> std::uint32_t {
     return mDictionarySize;
 }
 
-auto BitAbstractArchiveCreator::wordSize() const noexcept -> uint32_t {
+auto BitAbstractArchiveCreator::wordSize() const noexcept -> std::uint32_t {
     return mWordSize;
 }
 
@@ -178,11 +178,11 @@ auto BitAbstractArchiveCreator::updateMode() const noexcept -> UpdateMode {
     return mUpdateMode;
 }
 
-auto BitAbstractArchiveCreator::volumeSize() const noexcept -> uint64_t {
+auto BitAbstractArchiveCreator::volumeSize() const noexcept -> std::uint64_t {
     return mVolumeSize;
 }
 
-auto BitAbstractArchiveCreator::threadsCount() const noexcept -> uint32_t {
+auto BitAbstractArchiveCreator::threadsCount() const noexcept -> std::uint32_t {
     return mThreadsCount;
 }
 
@@ -238,7 +238,7 @@ void BitAbstractArchiveCreator::setCompressionMethod( BitCompressionMethod metho
     }
 }
 
-void BitAbstractArchiveCreator::setDictionarySize( uint32_t dictionarySize ) {
+void BitAbstractArchiveCreator::setDictionarySize( std::uint32_t dictionarySize ) {
     if ( mCompressionMethod == BitCompressionMethod::Copy ||
          mCompressionMethod == BitCompressionMethod::Deflate ||
          mCompressionMethod == BitCompressionMethod::Deflate64 ) {
@@ -251,7 +251,7 @@ void BitAbstractArchiveCreator::setDictionarySize( uint32_t dictionarySize ) {
     mDictionarySize = dictionarySize;
 }
 
-void BitAbstractArchiveCreator::setWordSize( uint32_t wordSize ) {
+void BitAbstractArchiveCreator::setWordSize( std::uint32_t wordSize ) {
     if ( mCompressionMethod == BitCompressionMethod::Copy || mCompressionMethod == BitCompressionMethod::BZip2 ) {
         return;
     }
@@ -274,11 +274,11 @@ void BitAbstractArchiveCreator::setUpdateMode( bool canUpdate ) {
     setUpdateMode( canUpdate ? UpdateMode::Append : UpdateMode::None );
 }
 
-void BitAbstractArchiveCreator::setVolumeSize( uint64_t volumeSize ) noexcept {
+void BitAbstractArchiveCreator::setVolumeSize( std::uint64_t volumeSize ) noexcept {
     mVolumeSize = volumeSize;
 }
 
-void BitAbstractArchiveCreator::setThreadsCount( uint32_t threadsCount ) noexcept {
+void BitAbstractArchiveCreator::setThreadsCount( std::uint32_t threadsCount ) noexcept {
     mThreadsCount = threadsCount;
 }
 
@@ -308,7 +308,7 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
         properties.setProperty( L"he", true );
     }
     if ( mFormat.hasFeature( FormatFeatures::CompressionLevel ) ) {
-        properties.setProperty( L"x", static_cast< uint32_t >( mCompressionLevel ) );
+        properties.setProperty( L"x", static_cast< std::uint32_t >( mCompressionLevel ) );
 
         if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) && mCompressionMethod != mFormat.defaultMethod() ) {
             const auto* propertyName = ( mFormat == BitFormat::SevenZip ) ? L"0" : L"m";

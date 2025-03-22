@@ -43,7 +43,7 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 namespace bit7z {
 
 #if !defined( _WIN32 ) || !defined( BIT7Z_USE_NATIVE_STRING )
-auto narrow( const wchar_t* wideString, size_t size ) -> std::string {
+auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string {
     if ( wideString == nullptr || size == 0 ) {
         return "";
     }

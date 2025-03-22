@@ -133,7 +133,7 @@ auto to_string( BitProperty property ) -> std::string;
 /**
  * @brief The BitPropVariantType enum represents the possible types that a BitPropVariant can store.
  */
-enum struct BitPropVariantType : uint32_t {
+enum struct BitPropVariantType : std::uint32_t {
     Empty,      ///< Empty BitPropVariant type
     Bool,       ///< Boolean BitPropVariant type
     String,     ///< String BitPropVariant type
@@ -195,58 +195,58 @@ struct BitPropVariant final : public PROPVARIANT {
         /**
          * @brief Constructs an 8-bit unsigned integer BitPropVariant
          *
-         * @param value the uint8_t value of the BitPropVariant
+         * @param value the std::uint8_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint8_t value ) noexcept;
+        explicit BitPropVariant( std::uint8_t value ) noexcept;
 
         /**
          * @brief Constructs a 16-bit unsigned integer BitPropVariant
          *
-         * @param value the uint16_t value of the BitPropVariant
+         * @param value the std::uint16_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint16_t value ) noexcept;
+        explicit BitPropVariant( std::uint16_t value ) noexcept;
 
         /**
          * @brief Constructs a 32-bit unsigned integer BitPropVariant
          *
-         * @param value the uint32_t value of the BitPropVariant
+         * @param value the std::uint32_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint32_t value ) noexcept;
+        explicit BitPropVariant( std::uint32_t value ) noexcept;
 
         /**
          * @brief Constructs a 64-bit unsigned integer BitPropVariant
          *
-         * @param value the uint64_t value of the BitPropVariant
+         * @param value the std::uint64_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint64_t value ) noexcept;
+        explicit BitPropVariant( std::uint64_t value ) noexcept;
 
         /**
          * @brief Constructs an 8-bit integer BitPropVariant
          *
-         * @param value the int8_t value of the BitPropVariant
+         * @param value the std::int8_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int8_t value ) noexcept;
+        explicit BitPropVariant( std::int8_t value ) noexcept;
 
         /**
          * @brief Constructs a 16-bit integer BitPropVariant
          *
-         * @param value the int16_t value of the BitPropVariant
+         * @param value the std::int16_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int16_t value ) noexcept;
+        explicit BitPropVariant( std::int16_t value ) noexcept;
 
         /**
          * @brief Constructs a 32-bit integer BitPropVariant
          *
-         * @param value the int32_t value of the BitPropVariant
+         * @param value the std::int32_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int32_t value ) noexcept;
+        explicit BitPropVariant( std::int32_t value ) noexcept;
 
         /**
          * @brief Constructs a 64-bit integer BitPropVariant
          *
-         * @param value the int64_t value of the BitPropVariant
+         * @param value the std::int64_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int64_t value ) noexcept;
+        explicit BitPropVariant( std::int64_t value ) noexcept;
 
         /**
          * @brief Constructs a FILETIME BitPropVariant
@@ -323,49 +323,49 @@ struct BitPropVariant final : public PROPVARIANT {
          * @return the 8-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt8() const -> uint8_t;
+        BIT7Z_NODISCARD auto getUInt8() const -> std::uint8_t;
 
         /**
          * @return the 16-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8 or 16-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt16() const -> uint16_t;
+        BIT7Z_NODISCARD auto getUInt16() const -> std::uint16_t;
 
         /**
          * @return the 32-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8, 16 or 32-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt32() const -> uint32_t;
+        BIT7Z_NODISCARD auto getUInt32() const -> std::uint32_t;
 
         /**
          * @return the 64-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt64() const -> uint64_t;
+        BIT7Z_NODISCARD auto getUInt64() const -> std::uint64_t;
 
         /**
          * @return the 8-bit integer value of this variant
          * (it throws an exception if the variant is not an 8-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt8() const -> int8_t;
+        BIT7Z_NODISCARD auto getInt8() const -> std::int8_t;
 
         /**
          * @return the 16-bit integer value of this variant
          * (it throws an exception if the variant is not an 8 or 16-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt16() const -> int16_t;
+        BIT7Z_NODISCARD auto getInt16() const -> std::int16_t;
 
         /**
          * @return the 32-bit integer value of this variant
          * (it throws an exception if the variant is not an 8, 16 or 32-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt32() const -> int32_t;
+        BIT7Z_NODISCARD auto getInt32() const -> std::int32_t;
 
         /**
          * @return the 64-bit integer value of this variant
          * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt64() const -> int64_t;
+        BIT7Z_NODISCARD auto getInt64() const -> std::int64_t;
 
         /**
          * @return the FILETIME value of this variant

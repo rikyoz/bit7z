@@ -19,16 +19,16 @@ namespace bit7z {
 
 class CVolumeInStream final : public CFileInStream {
     public:
-        explicit CVolumeInStream( const fs::path& volumePath, uint64_t globalOffset );
+        explicit CVolumeInStream( const fs::path& volumePath, std::uint64_t globalOffset );
 
-        BIT7Z_NODISCARD auto globalOffset() const -> uint64_t;
+        BIT7Z_NODISCARD auto globalOffset() const -> std::uint64_t;
 
-        BIT7Z_NODISCARD auto size() const -> uint64_t;
+        BIT7Z_NODISCARD auto size() const -> std::uint64_t;
 
     private:
-        uint64_t mSize;
+        std::uint64_t mSize;
 
-        uint64_t mGlobalOffset;
+        std::uint64_t mGlobalOffset;
 };
 
 }  // namespace bit7z

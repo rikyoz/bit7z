@@ -51,7 +51,7 @@ STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* pro
     return S_OK;
 }
 
-auto CVolumeOutStream::currentOffset() const -> uint64_t {
+auto CVolumeOutStream::currentOffset() const -> std::uint64_t {
     return mCurrentOffset;
 }
 
@@ -62,11 +62,11 @@ STDMETHODIMP CVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
     return S_OK;
 }
 
-auto CVolumeOutStream::currentSize() const -> uint64_t {
+auto CVolumeOutStream::currentSize() const -> std::uint64_t {
     return mCurrentSize;
 }
 
-void CVolumeOutStream::setCurrentSize( uint64_t currentSize ) {
+void CVolumeOutStream::setCurrentSize( std::uint64_t currentSize ) {
     mCurrentSize = currentSize;
 }
 

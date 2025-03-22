@@ -24,7 +24,7 @@ namespace bit7z {
 #else
 #   define WIDEN( tstr ) bit7z::widen(tstr)
 
-auto narrow( const wchar_t* wideString, size_t size ) -> std::string;
+auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string;
 
 auto widen( const std::string& narrowString ) -> std::wstring;
 #endif

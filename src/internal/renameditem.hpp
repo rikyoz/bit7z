@@ -23,7 +23,7 @@ class BitInputArchive;
 
 class RenamedItem final : public GenericInputItem {
     public:
-        explicit RenamedItem( const BitInputArchive& inputArchive, uint32_t index, const tstring& newPath );
+        explicit RenamedItem( const BitInputArchive& inputArchive, std::uint32_t index, const tstring& newPath );
 
         BIT7Z_NODISCARD auto name() const -> tstring override;
 
@@ -31,7 +31,7 @@ class RenamedItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto isSymLink() const -> bool override;
 
-        BIT7Z_NODISCARD auto size() const -> uint64_t override;
+        BIT7Z_NODISCARD auto size() const -> std::uint64_t override;
 
         BIT7Z_NODISCARD auto creationTime() const -> FILETIME override;
 
@@ -39,7 +39,7 @@ class RenamedItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto lastWriteTime() const -> FILETIME override;
 
-        BIT7Z_NODISCARD auto attributes() const -> uint32_t override;
+        BIT7Z_NODISCARD auto attributes() const -> std::uint32_t override;
 
         BIT7Z_NODISCARD auto path() const -> tstring override;
 
@@ -55,7 +55,7 @@ class RenamedItem final : public GenericInputItem {
 
     private:
         std::reference_wrapper< const BitInputArchive > mInputArchive;
-        uint32_t mIndex;
+        std::uint32_t mIndex;
         fs::path mNewPath;
 };
 

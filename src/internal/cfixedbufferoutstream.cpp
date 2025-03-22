@@ -42,7 +42,7 @@ STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t seekIndex{};
+    std::uint64_t seekIndex{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
             break;
@@ -66,7 +66,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
         return E_INVALIDARG;
     }
 
-    mCurrentPosition = clamp_cast< size_t >( seekIndex );
+    mCurrentPosition = clamp_cast< std::size_t >( seekIndex );
 
     if ( newPosition != nullptr ) {
         *newPosition = seekIndex;
@@ -85,14 +85,11 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         return E_FAIL;
     }
 
-    auto writeSize = static_cast< size_t >( size );
     // The Seek method ensures mCurrentPosition < mBufferSize.
-    const size_t remainingSize = mBufferSize - mCurrentPosition;
-    if ( writeSize > remainingSize ) {
-        /* Writing only to the remaining part of the output buffer!
-         * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe. */
-        writeSize = remainingSize;
-    }
+    const std::size_t remainingSize = mBufferSize - mCurrentPosition;
+
+    // Writing only to the remaining part of the output buffer!
+    const auto writeSize = ( std::min )( static_cast< std::size_t >( size ), remainingSize );
 
     const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
     try {

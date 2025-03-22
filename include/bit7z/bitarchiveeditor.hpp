@@ -27,7 +27,7 @@
 
 namespace bit7z {
 
-using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
+using EditedItems = std::unordered_map< std::uint32_t, BitItemsVector::value_type >;
 
 enum struct DeletePolicy : std::uint8_t {
     ItemOnly,
@@ -81,7 +81,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index    the index of the item to be renamed.
          * @param newPath the new path (in the archive) desired for the item.
          */
-        void renameItem( uint32_t index, const tstring& newPath );
+        void renameItem( std::uint32_t index, const tstring& newPath );
 
         /**
          * @brief Requests to change the path of the item from oldPath to the newPath.
@@ -98,7 +98,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param inFile    the path to the file containing the new data for the item.
          */
-        void updateItem( uint32_t index, const tstring& inFile );
+        void updateItem( std::uint32_t index, const tstring& inFile );
 
         /**
          * @brief Requests to update the content of the item at the specified index
@@ -107,7 +107,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param inBuffer  the buffer containing the new data for the item.
          */
-        void updateItem( uint32_t index, const buffer_t& inBuffer );
+        void updateItem( std::uint32_t index, const buffer_t& inBuffer );
 
         /**
          * @brief Requests to update the content of the item at the specified index
@@ -116,7 +116,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param inStream  the stream of new data for the item.
          */
-        void updateItem( uint32_t index, std::istream& inStream );
+        void updateItem( std::uint32_t index, std::istream& inStream );
 
         /**
          * @brief Requests to update the content of the item at the specified path
@@ -157,7 +157,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          *
          * @throws BitException if the index is invalid.
          */
-        void deleteItem( uint32_t index, DeletePolicy policy = DeletePolicy::ItemOnly );
+        void deleteItem( std::uint32_t index, DeletePolicy policy = DeletePolicy::ItemOnly );
 
         /**
          * @brief Marks as deleted the archive's item(s) with the specified path.
@@ -189,19 +189,19 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
     private:
         EditedItems mEditedItems;
 
-        auto findItem( const tstring& itemPath ) const -> uint32_t;
+        auto findItem( const tstring& itemPath ) const -> std::uint32_t;
 
-        void checkIndex( uint32_t index ) const;
+        void checkIndex( std::uint32_t index ) const;
 
         auto itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant override;
 
         auto itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT override;
 
-        auto hasNewData( uint32_t index ) const noexcept -> bool override;
+        auto hasNewData( std::uint32_t index ) const noexcept -> bool override;
 
-        auto hasNewProperties( uint32_t index ) const noexcept -> bool override;
+        auto hasNewProperties( std::uint32_t index ) const noexcept -> bool override;
 
-        void markItemAsDeleted( uint32_t index );
+        void markItemAsDeleted( std::uint32_t index );
 };
 
 }  // namespace bit7z

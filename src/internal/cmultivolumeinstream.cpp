@@ -24,8 +24,8 @@
 namespace bit7z {
 
 CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mCurrentPosition{ 0 }, mTotalSize{ 0 } {
-    constexpr size_t kVolumeDigits = 3u;
-    size_t volumeIndex = 1u;
+    constexpr std::size_t kVolumeDigits = 3u;
+    std::size_t volumeIndex = 1u;
     fs::path volumePath = firstVolume;
     while ( fs::exists( volumePath ) ) {
         addVolume( volumePath );
@@ -48,9 +48,9 @@ CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mCur
 }
 
 auto CMultiVolumeInStream::currentVolume() -> const CMyComPtr< CVolumeInStream >& {
-    size_t left = 0;
-    size_t right = mVolumes.size();
-    size_t midpoint = right / 2;
+    std::size_t left = 0;
+    std::size_t right = mVolumes.size();
+    std::size_t midpoint = right / 2;
     while ( true ) {
         auto& volume = mVolumes[ midpoint ];
         if ( mCurrentPosition < volume->globalOffset() ) {
@@ -81,7 +81,7 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
         return result;
     }
 
-    const uint64_t remaining = volume->size() - localOffset;
+    const std::uint64_t remaining = volume->size() - localOffset;
     if ( size > remaining ) {
         size = static_cast< UInt32 >( remaining );
     }
@@ -96,7 +96,7 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t seekPosition{};
+    std::uint64_t seekPosition{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             break;
@@ -120,7 +120,7 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
 }
 
 void CMultiVolumeInStream::addVolume( const fs::path& volumePath ) {
-    uint64_t globalOffset = 0;
+    std::uint64_t globalOffset = 0;
     if ( !mVolumes.empty() ) {
         const auto& lastStream = mVolumes.back();
         globalOffset = lastStream->globalOffset() + lastStream->size();

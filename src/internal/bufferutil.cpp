@@ -21,20 +21,20 @@
 
 auto bit7z::seek( const buffer_t& buffer,
                   const buffer_t::const_iterator& currentPosition,
-                  int64_t offset,
-                  uint32_t seekOrigin,
-                  uint64_t& newPosition ) -> HRESULT {
-    uint64_t currentIndex{};
+                  std::int64_t offset,
+                  std::uint32_t seekOrigin,
+                  std::uint64_t& newPosition ) -> HRESULT {
+    std::uint64_t currentIndex{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
             break;
         }
         case STREAM_SEEK_CUR: {
-            currentIndex = static_cast< uint64_t >( currentPosition - buffer.cbegin() );
+            currentIndex = static_cast< std::uint64_t >( currentPosition - buffer.cbegin() );
             break;
         }
         case STREAM_SEEK_END: {
-            currentIndex = static_cast< uint64_t >( buffer.cend() - buffer.cbegin() );
+            currentIndex = static_cast< std::uint64_t >( buffer.cend() - buffer.cbegin() );
             break;
         }
         default:

@@ -308,10 +308,10 @@ TEST_CASE( "BitPropVariant: String variant", "[BitPropVariant][string]" ) {
     REQUIRE( propVariant.bstrVal == nullptr );
 }
 
-template< typename T, size_t S >
+template< typename T, std::size_t S >
 using is_unsigned_with_size = std::integral_constant< bool, std::is_unsigned< T >::value && S == sizeof( T ) >;
 
-template< typename T, size_t S >
+template< typename T, std::size_t S >
 using is_signed_with_size = std::integral_constant< bool, std::is_signed< T >::value && S == sizeof( T ) >;
 
 template< typename T, typename std::enable_if< is_unsigned_with_size< T, 1 >::value >::type* = nullptr >
@@ -422,18 +422,18 @@ auto get_value( const BitPropVariant& variant ) -> T {
 }
 
 // BitPropVariant's toString uses std::to_string so here we use another way to convert integers to string
-auto uint_to_tstring( uint64_t value ) -> tstring {
+auto uint_to_tstring( std::uint64_t value ) -> tstring {
 #if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
     std::wstringstream stream;
 #else
     std::stringstream stream;
 #endif
-    stream << std::dec << uint64_t{ value };
+    stream << std::dec << std::uint64_t{ value };
     return stream.str();
 }
 
 TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant][unsigned]",
-                    uint8_t, uint16_t, uint32_t, uint64_t ) {
+                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
     BitPropVariant propVariant;
 
     TestType value = GENERATE( as< TestType >(), 0, 42, std::numeric_limits< TestType >::max() );
@@ -451,7 +451,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     }
 
     SECTION( "Double assignment" ) {
-        propVariant = static_cast< uint64_t >( 84ull ); // NOLINT(*-magic-numbers)
+        propVariant = static_cast< std::uint64_t >( 84ull ); // NOLINT(*-magic-numbers)
         REQUIRE( propVariant.getUInt64() == 84ull );
         propVariant = value;
     }
@@ -510,18 +510,18 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Unsigned integer variant", "[BitPropVariant
     REQUIRE( propVariant.isEmpty() );
 }
 
-auto int_to_tstring( int64_t value ) -> tstring {
+auto int_to_tstring( std::int64_t value ) -> tstring {
 #if defined( _WIN32 ) && defined( BIT7Z_USE_NATIVE_STRING )
     std::wstringstream stream;
 #else
     std::stringstream stream;
 #endif
-    stream << std::dec << int64_t{ value };
+    stream << std::dec << std::int64_t{ value };
     return stream.str();
 }
 
 TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]",
-                    int8_t, int16_t, int32_t, int64_t ) {
+                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
     BitPropVariant propVariant;
 
     TestType value = GENERATE( std::numeric_limits< TestType >::min(),
@@ -543,7 +543,7 @@ TEMPLATE_TEST_CASE( "BitPropVariant: Integer variant", "[BitPropVariant][signed]
     }
 
     SECTION( "Double assignment" ) {
-        propVariant = static_cast< uint64_t >( 84ull ); // NOLINT(*-magic-numbers)
+        propVariant = static_cast< std::uint64_t >( 84ull ); // NOLINT(*-magic-numbers)
         REQUIRE( propVariant.getUInt64() == 84ull );
         propVariant = value;
     }
@@ -622,7 +622,7 @@ TEST_CASE( "BitPropVariant: FILETIME variant", "[BitPropVariant][FILETIME]" ) {
     }
 
     SECTION( "Double assignment" ) {
-        propVariant = static_cast< uint64_t >( 84ull ); // NOLINT(*-magic-numbers)
+        propVariant = static_cast< std::uint64_t >( 84ull ); // NOLINT(*-magic-numbers)
         REQUIRE( propVariant.getUInt64() == 84ull );
         propVariant = value;
     }

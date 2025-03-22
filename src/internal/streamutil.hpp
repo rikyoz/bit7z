@@ -17,7 +17,7 @@
 
 namespace bit7z {
 
-inline auto to_seekdir( uint32_t seekOrigin, std::ios_base::seekdir& way ) -> HRESULT {
+inline auto to_seekdir( std::uint32_t seekOrigin, std::ios_base::seekdir& way ) -> HRESULT {
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             way = std::ios_base::beg;

@@ -29,8 +29,8 @@ using LPCOLESTR = const OLECHAR*;
 using LPCSTR = const char*;
 using UINT = unsigned int;
 using LONG = int;
-using UInt16 = uint16_t;
-using UInt32 = uint32_t;
+using UInt16 = std::uint16_t;
+using UInt32 = std::uint32_t;
 
 // Win32 file attributes flags
 // Note: on Windows, they are signed integers, while here we declare them as unsigned
@@ -100,7 +100,7 @@ constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
 
 // Win32 structs
 struct WIN32_FILE_ATTRIBUTE_DATA {
-    uint32_t dwFileAttributes;
+    std::uint32_t dwFileAttributes;
     FILETIME ftCreationTime;
     FILETIME ftLastAccessTime;
     FILETIME ftLastWriteTime;

@@ -22,7 +22,7 @@ namespace bit7z {
 // 100ns intervals
 using FileTimeTickRate = std::ratio< 1, 10'000'000 >; // NOLINT(*-magic-numbers)
 // FileTimeDuration has the same layout as FILETIME;
-using FileTimeDuration = std::chrono::duration< int64_t, FileTimeTickRate >;
+using FileTimeDuration = std::chrono::duration< std::int64_t, FileTimeTickRate >;
 // Seconds between 01/01/1601 (NT epoch) and 01/01/1970 (Unix epoch):
 constexpr std::chrono::seconds nt_to_unix_epoch{ -11644473600 };
 

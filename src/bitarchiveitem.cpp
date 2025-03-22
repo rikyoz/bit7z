@@ -26,10 +26,10 @@
 
 namespace bit7z {
 
-BitArchiveItem::BitArchiveItem( uint32_t itemIndex ) noexcept
+BitArchiveItem::BitArchiveItem( std::uint32_t itemIndex ) noexcept
     : mItemIndex( itemIndex ) {}
 
-auto BitArchiveItem::index() const noexcept -> uint32_t {
+auto BitArchiveItem::index() const noexcept -> std::uint32_t {
     return mItemIndex;
 }
 
@@ -87,12 +87,12 @@ auto BitArchiveItem::rawPath() const -> std::wstring {
     return path.getRawString();
 }
 
-auto BitArchiveItem::size() const -> uint64_t {
+auto BitArchiveItem::size() const -> std::uint64_t {
     const BitPropVariant size = itemProperty( BitProperty::Size );
     return size.isEmpty() ? 0 : size.getUInt64();
 }
 
-auto BitArchiveItem::packSize() const -> uint64_t {
+auto BitArchiveItem::packSize() const -> std::uint64_t {
     const BitPropVariant packSize = itemProperty( BitProperty::PackSize );
     return packSize.isEmpty() ? 0 : packSize.getUInt64();
 }
@@ -117,12 +117,12 @@ auto BitArchiveItem::lastWriteTime() const -> time_type {
     return writeTime.isFileTime() ? writeTime.getTimePoint() : time_type::clock::now();
 }
 
-auto BitArchiveItem::attributes() const -> uint32_t {
+auto BitArchiveItem::attributes() const -> std::uint32_t {
     const BitPropVariant attrib = itemProperty( BitProperty::Attrib );
     return attrib.isUInt32() ? attrib.getUInt32() : 0;
 }
 
-auto BitArchiveItem::crc() const -> uint32_t {
+auto BitArchiveItem::crc() const -> std::uint32_t {
     const BitPropVariant crc = itemProperty( BitProperty::CRC );
     return crc.isUInt32() ? crc.getUInt32() : 0;
 }

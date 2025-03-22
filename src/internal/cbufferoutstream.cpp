@@ -38,7 +38,7 @@ STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t newIndex{};
+    std::uint64_t newIndex{};
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {
@@ -67,7 +67,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
     }
 
     const auto oldPos = ( mCurrentPosition - mBuffer.begin() );
-    const size_t newPos = static_cast< size_t >( oldPos ) + static_cast< size_t >( size );
+    const std::size_t newPos = static_cast< std::size_t >( oldPos ) + static_cast< std::size_t >( size );
     if ( newPos > mBuffer.size() ) {
         try {
             mBuffer.resize( newPos );

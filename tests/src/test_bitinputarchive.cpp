@@ -163,7 +163,7 @@ void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedIt
 
 void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     // Note: this value must be different from any file size we can encounter inside the tested archives.
-    constexpr size_t invalidBufferSize = 42;
+    constexpr std::size_t invalidBufferSize = 42;
     buffer_t invalidBuffer( invalidBufferSize, static_cast< byte_t >( '\0' ) );
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {

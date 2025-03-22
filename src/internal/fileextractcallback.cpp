@@ -72,7 +72,7 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
-auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
+auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = mCurrentItem.path();

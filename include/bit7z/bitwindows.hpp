@@ -104,11 +104,11 @@ struct FILETIME {
 };
 
 struct LARGE_INTEGER {
-    int64_t QuadPart;
+    std::int64_t QuadPart;
 };
 
 struct ULARGE_INTEGER {
-    uint64_t QuadPart;
+    std::uint64_t QuadPart;
 };
 
 struct PROPVARIANT {

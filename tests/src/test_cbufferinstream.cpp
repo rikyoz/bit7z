@@ -26,7 +26,7 @@ using bit7z::CBufferInStream;
 //-V::2008 (Suppressing warnings for cyclomatic complexity in PVS-Studio)
 
 TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbufferinstream][seeking]" ) {
-    const size_t bufferSize = GENERATE( 0, 1, 5, 42, 1024 * 1024 );
+    const std::size_t bufferSize = GENERATE( 0, 1, 5, 42, 1024 * 1024 );
 
     DYNAMIC_SECTION( "Streaming a buffer of size " << bufferSize ) { //-V128
         const buffer_t buffer( bufferSize );
@@ -259,7 +259,7 @@ TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][readin
         buffer_t result;
 
         SECTION( "Reading the whole buffer stream" ) {
-            const size_t readSize = buffer.size();
+            const std::size_t readSize = buffer.size();
             result.resize( readSize, static_cast< byte_t >( 0 ) );
             REQUIRE( inStream.Read( &result[ 0 ], readSize, &processedSize ) == S_OK );
             REQUIRE( processedSize == readSize );
@@ -267,7 +267,7 @@ TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][readin
         }
 
         SECTION( "Reading first half of the buffer stream" ) {
-            const size_t readSize = buffer.size() / 2;
+            const std::size_t readSize = buffer.size() / 2;
             result.resize( readSize, static_cast< byte_t >( 0 ) );
             REQUIRE( inStream.Read( &result[ 0 ], readSize, &processedSize ) == S_OK );
             REQUIRE( processedSize == readSize );
@@ -275,7 +275,7 @@ TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][readin
         }
 
         SECTION( "Reading last half of the buffer stream" ) {
-            const size_t readSize = buffer.size() / 2;
+            const std::size_t readSize = buffer.size() / 2;
 
             UInt64 newPosition{ 0 };
             REQUIRE( inStream.Seek( readSize, STREAM_SEEK_SET, &newPosition ) == S_OK );
@@ -293,7 +293,7 @@ TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][readin
             REQUIRE( inStream.Seek( readOffset, STREAM_SEEK_SET, &newPosition ) == S_OK );
             REQUIRE( newPosition == readOffset );
 
-            const size_t readSize = buffer.size() / 2;
+            const std::size_t readSize = buffer.size() / 2;
             result.resize( readSize, static_cast< byte_t >( 0 ) );
             REQUIRE( inStream.Read( &result[ 0 ], readSize, &processedSize ) == S_OK );
             REQUIRE( processedSize == readSize );

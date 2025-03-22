@@ -86,12 +86,12 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         /**
          * @return the dictionary size used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD auto dictionarySize() const noexcept -> uint32_t;
+        BIT7Z_NODISCARD auto dictionarySize() const noexcept -> std::uint32_t;
 
         /**
          * @return the word size used for creating/updating an archive.
          */
-        BIT7Z_NODISCARD auto wordSize() const noexcept -> uint32_t;
+        BIT7Z_NODISCARD auto wordSize() const noexcept -> std::uint32_t;
 
         /**
          * @return whether the archive creator uses solid compression or not.
@@ -107,13 +107,13 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @return the volume size (in bytes) used when creating multi-volume archives
          *         (a zero value means that all files are going in a single archive).
          */
-        BIT7Z_NODISCARD auto volumeSize() const noexcept -> uint64_t;
+        BIT7Z_NODISCARD auto volumeSize() const noexcept -> std::uint64_t;
 
         /**
          * @return the number of threads used when creating/updating an archive
          *         (a zero value means that it will use the 7-zip default value).
          */
-        BIT7Z_NODISCARD auto threadsCount() const noexcept -> uint32_t;
+        BIT7Z_NODISCARD auto threadsCount() const noexcept -> std::uint32_t;
 
         /**
          * @return whether the archive creator stores symbolic links as links in the output archive.
@@ -183,14 +183,14 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          *
          * @param dictionarySize the dictionary size desired.
          */
-        void setDictionarySize( uint32_t dictionarySize );
+        void setDictionarySize( std::uint32_t dictionarySize );
 
         /**
          * @brief Sets the word size to be used when creating/updating an archive.
          *
          * @param wordSize the word size desired.
          */
-        void setWordSize( uint32_t wordSize );
+        void setWordSize( std::uint32_t wordSize );
 
         /**
          * @brief Sets whether to use solid compression or not.
@@ -232,14 +232,14 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          *
          * @param volumeSize    The dimension of a volume.
          */
-        void setVolumeSize( uint64_t volumeSize ) noexcept;
+        void setVolumeSize( std::uint64_t volumeSize ) noexcept;
 
         /**
          * @brief Sets the number of threads to be used when creating/updating an archive.
          *
          * @param threadsCount the number of threads desired.
          */
-        void setThreadsCount( uint32_t threadsCount ) noexcept;
+        void setThreadsCount( std::uint32_t threadsCount ) noexcept;
 
         /**
          * @brief Sets whether the creator will store symbolic links as links in the output archive.
@@ -295,12 +295,12 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         UpdateMode mUpdateMode;
         BitCompressionLevel mCompressionLevel;
         BitCompressionMethod mCompressionMethod;
-        uint32_t mDictionarySize;
-        uint32_t mWordSize;
+        std::uint32_t mDictionarySize;
+        std::uint32_t mWordSize;
         bool mCryptHeaders;
         bool mSolidMode;
-        uint64_t mVolumeSize;
-        uint32_t mThreadsCount;
+        std::uint64_t mVolumeSize;
+        std::uint32_t mThreadsCount;
         bool mStoreSymbolicLinks;
         std::map< std::wstring, BitPropVariant > mExtraProperties;
 };

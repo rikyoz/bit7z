@@ -18,25 +18,25 @@
 
 namespace bit7z {
 
-constexpr auto check_overflow( int64_t position, int64_t offset ) noexcept -> bool {
-    return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< int64_t >::max )() - offset ) ) ) ||
-           ( ( offset < 0 ) && ( position < ( ( std::numeric_limits< int64_t >::min )() - offset ) ) );
+constexpr auto check_overflow( std::int64_t position, std::int64_t offset ) noexcept -> bool {
+    return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< std::int64_t >::max )() - offset ) ) ) ||
+           ( ( offset < 0 ) && ( position < ( ( std::numeric_limits< std::int64_t >::min )() - offset ) ) );
 }
 
-inline auto seek_to_offset( uint64_t& position, int64_t offset ) noexcept -> HRESULT {
+inline auto seek_to_offset( std::uint64_t& position, std::int64_t offset ) noexcept -> HRESULT {
     // Checking if adding the offset would result in the unsigned wrap around of the current position.
     if ( offset < 0 ) {
-        if ( offset == std::numeric_limits< int64_t >::min() ) {
+        if ( offset == std::numeric_limits< std::int64_t >::min() ) {
             return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
         }
-        const auto positiveOffset = static_cast< uint64_t >( -offset );
+        const auto positiveOffset = static_cast< std::uint64_t >( -offset );
         if ( position < positiveOffset ) {
             return HRESULT_WIN32_ERROR_NEGATIVE_SEEK;
         }
         position -= positiveOffset;
     } else if ( offset > 0 ) {
-        const auto positiveOffset = static_cast< uint64_t >( offset );
-        const uint64_t seekPosition = position + positiveOffset;
+        const auto positiveOffset = static_cast< std::uint64_t >( offset );
+        const std::uint64_t seekPosition = position + positiveOffset;
         if ( seekPosition < position ) {
             return E_INVALIDARG;
         }

@@ -36,10 +36,10 @@ class CMyComPtr;
 
 namespace bit7z {
 
-using DeletedItems = std::set< uint32_t >;
+using DeletedItems = std::set< std::uint32_t >;
 
 /* We introduce a strong index type to differentiate between indices in the output
- * archive (uint32_t, as used by the UpdateCallback), and the corresponding indexes
+ * archive (std::uint32_t, as used by the UpdateCallback), and the corresponding indexes
  * in the input archive (InputIndex). In this way, we avoid implicit conversions
  * between the two kinds of indices.
  *
@@ -261,7 +261,7 @@ class BitOutputArchive {
         /**
          * @return the total number of items added to the output archive object.
          */
-        auto itemsCount() const -> uint32_t;
+        auto itemsCount() const -> std::uint32_t;
 
         /**
          * @return a constant reference to the BitAbstractArchiveHandler object containing the
@@ -285,17 +285,17 @@ class BitOutputArchive {
 
         virtual auto itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT;
 
-        virtual auto hasNewData( uint32_t index ) const noexcept -> bool;
+        virtual auto hasNewData( std::uint32_t index ) const noexcept -> bool;
 
-        virtual auto hasNewProperties( uint32_t index ) const noexcept -> bool;
+        virtual auto hasNewProperties( std::uint32_t index ) const noexcept -> bool;
 
-        auto itemInputIndex( uint32_t newIndex ) const noexcept -> InputIndex;
+        auto itemInputIndex( std::uint32_t newIndex ) const noexcept -> InputIndex;
 
-        auto outputItemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant;
+        auto outputItemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant;
 
-        auto outputItemStream( uint32_t index, ISequentialInStream** inStream ) const -> HRESULT;
+        auto outputItemStream( std::uint32_t index, ISequentialInStream** inStream ) const -> HRESULT;
 
-        auto indexInArchive( uint32_t index ) const noexcept -> uint32_t;
+        auto indexInArchive( std::uint32_t index ) const noexcept -> std::uint32_t;
 
         auto inputArchive() const -> BitInputArchive* {
             return mInputArchive.get();
@@ -305,15 +305,15 @@ class BitOutputArchive {
             mInputArchive = std::move( inputArchive );
         }
 
-        auto inputArchiveItemsCount() const -> uint32_t {
+        auto inputArchiveItemsCount() const -> std::uint32_t {
             return mInputArchiveItemsCount;
         }
 
-        void setDeletedIndex( uint32_t index ) {
+        void setDeletedIndex( std::uint32_t index ) {
             mDeletedItems.insert( index );
         }
 
-        auto isDeletedIndex( uint32_t index ) const -> bool {
+        auto isDeletedIndex( std::uint32_t index ) const -> bool {
             return mDeletedItems.find( index ) != mDeletedItems.cend();
         }
 
@@ -331,7 +331,7 @@ class BitOutputArchive {
         const BitAbstractArchiveCreator& mArchiveCreator;
 
         std::unique_ptr< BitInputArchive > mInputArchive;
-        uint32_t mInputArchiveItemsCount;
+        std::uint32_t mInputArchiveItemsCount;
 
         BitItemsVector mNewItems;
         DeletedItems mDeletedItems;

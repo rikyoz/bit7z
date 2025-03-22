@@ -22,7 +22,7 @@ class BitInputArchive;
 
 class FixedBufferExtractCallback final : public ExtractCallback {
     public:
-        FixedBufferExtractCallback( const BitInputArchive& inputArchive, byte_t* buffer, size_t size );
+        FixedBufferExtractCallback( const BitInputArchive& inputArchive, byte_t* buffer, std::size_t size );
 
         FixedBufferExtractCallback( const FixedBufferExtractCallback& ) = delete;
 
@@ -36,12 +36,12 @@ class FixedBufferExtractCallback final : public ExtractCallback {
 
     private:
         byte_t* mBuffer;
-        size_t mSize;
+        std::size_t mSize;
         CMyComPtr< ISequentialOutStream > mOutMemStream;
 
         void releaseStream() override;
 
-        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
+        auto getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
 }  // namespace bit7z

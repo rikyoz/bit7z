@@ -34,7 +34,7 @@ void BufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-auto BufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT try {
+auto BufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT try {
     if ( isItemFolder( index ) ) {
         return S_OK;
     }

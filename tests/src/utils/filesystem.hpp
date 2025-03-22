@@ -52,7 +52,7 @@ inline auto exe_path() -> fs::path {
     return fs::path{ path.data() };
 #elif defined( __APPLE__ )
     std::array< char, PROC_PIDPATHINFO_MAXSIZE > result{ 0 };
-    ssize_t result_size = proc_pidpath( getpid(), result.data(), result.size() );
+    std::ssize_t result_size = proc_pidpath( getpid(), result.data(), result.size() );
     return ( result_size > 0 ) ? std::string( result.data(), result_size ) : "";
 #else
     std::error_code error;
@@ -109,8 +109,8 @@ struct FilesystemItemInfo {
     const tchar* ext;
     fs::file_type type;
     std::size_t size;
-    uint32_t crc32;
-    uint16_t crc16;
+    std::uint32_t crc32;
+    std::uint16_t crc16;
 };
 
 extern const FilesystemItemInfo italy;

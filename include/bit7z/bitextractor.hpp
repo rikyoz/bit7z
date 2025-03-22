@@ -101,7 +101,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outBuffer   the output buffer where the content of the extracted file will be put.
          * @param index        the index of the file to be extracted from the archive.
          */
-        void extract( Input inArchive, buffer_t& outBuffer, uint32_t index = 0 ) const {
+        void extract( Input inArchive, buffer_t& outBuffer, std::uint32_t index = 0 ) const {
             BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
         }
@@ -113,7 +113,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outStream   the (binary) stream where the content of the extracted file will be put.
          * @param index       the index of the file to be extracted from the archive.
          */
-        void extract( Input inArchive, std::ostream& outStream, uint32_t index = 0 ) const {
+        void extract( Input inArchive, std::ostream& outStream, std::uint32_t index = 0 ) const {
             BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outStream, index );
         }
@@ -181,7 +181,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outDir       the output directory where the extracted files will be placed.
          */
         void extractItems( Input inArchive,
-                           const std::vector< uint32_t >& indices,
+                           const IndicesVector& indices,
                            const tstring& outDir = {} ) const {
             if ( indices.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );
@@ -263,7 +263,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
                                     const std::function< bool( const tstring& ) >& filter ) const {
             BitInputArchive inputArchive( *this, inArchive );
 
-            std::vector< uint32_t > matchedIndices;
+            IndicesVector matchedIndices;
             const bool shouldExtractMatchedItems = policy == FilterPolicy::Include;
             // Searching for files inside the archive that match the given filter
             for ( const auto& item : inputArchive ) {

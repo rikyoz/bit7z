@@ -36,7 +36,7 @@ auto ProcessedItem::path() const -> fs::path {
     return mFilePath;
 }
 
-auto ProcessedItem::attributes() const -> uint32_t {
+auto ProcessedItem::attributes() const -> std::uint32_t {
     return mAttributes;
 }
 
@@ -58,7 +58,7 @@ auto ProcessedItem::hasModifiedTime() const -> bool {
 }
 #endif
 
-void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
+void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
     const BitPropVariant prop = inputArchive.itemProperty( itemIndex, BitProperty::Path );
 
     if ( !prop.isString() && !prop.isEmpty() ) {
@@ -76,7 +76,7 @@ void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, uint32_t 
     }
 }
 
-void ProcessedItem::loadAttributes( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
+void ProcessedItem::loadAttributes( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
     mAttributes = 0;
     mAreAttributesDefined = false;
 
@@ -111,7 +111,7 @@ void ProcessedItem::loadAttributes( const BitInputArchive& inputArchive, uint32_
     }
 }
 
-void ProcessedItem::loadTimeMetadata( const BitInputArchive& inputArchive, uint32_t itemIndex ) {
+void ProcessedItem::loadTimeMetadata( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
     mModifiedTime = inputArchive.itemProperty( itemIndex, BitProperty::MTime );
 #ifdef _WIN32
     mCreationTime = inputArchive.itemProperty( itemIndex, BitProperty::CTime );
