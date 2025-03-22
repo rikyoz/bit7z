@@ -52,8 +52,8 @@ inline auto exe_path() -> fs::path {
     return fs::path{ path.data() };
 #elif defined( __APPLE__ )
     std::array< char, PROC_PIDPATHINFO_MAXSIZE > result{ 0 };
-    std::ssize_t result_size = proc_pidpath( getpid(), result.data(), result.size() );
-    return ( result_size > 0 ) ? std::string( result.data(), result_size ) : "";
+    const auto result_size = proc_pidpath( getpid(), result.data(), result.size() );
+    return ( result_size > 0 ) ? std::string{ result.data(), static_cast< std::size_t >( result_size ) } : "";
 #else
     std::error_code error;
     const fs::path result = fs::read_symlink( self_exe_path, error );
