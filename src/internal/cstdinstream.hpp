@@ -32,7 +32,7 @@ class CStdInStream final : public IInStream, public CMyUnknownImp {
 
         auto operator=( CStdInStream&& ) -> CStdInStream& = delete;
 
-        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdInStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CStdInStream() ) = default;
 
         // IInStream
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );

@@ -43,7 +43,7 @@ class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
 
         auto operator=( CMultiVolumeInStream&& ) -> CMultiVolumeInStream& = delete;
 
-        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CMultiVolumeInStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeInStream() ) = default;
 
         // IInStream
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );

@@ -32,7 +32,7 @@ class CStdOutStream final : public IOutStream, public CMyUnknownImp {
 
         auto operator=( CStdOutStream&& ) -> CStdOutStream& = delete;
 
-        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CStdOutStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CStdOutStream() ) = default;
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );

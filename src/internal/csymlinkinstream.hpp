@@ -28,7 +28,7 @@ struct CSymlinkInStream final : IInStream, CMyUnknownImp {
 
     auto operator=( CSymlinkInStream&& ) -> CSymlinkInStream& = delete;
 
-    MY_UNKNOWN_VIRTUAL_DESTRUCTOR ( ~CSymlinkInStream() ) = default;
+    MY_UNKNOWN_DESTRUCTOR( ~CSymlinkInStream() ) = default;
 
     // IInStream
     BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );

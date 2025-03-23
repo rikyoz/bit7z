@@ -33,7 +33,7 @@ class CRawOutStream final : public ISequentialOutStream, public CMyUnknownImp {
 
         auto operator=( CRawOutStream&& ) -> CRawOutStream& = delete;
 
-        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CRawOutStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CRawOutStream() ) = default;
 
         // IOutStream
         BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
