@@ -127,6 +127,20 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
         REQUIRE( fs::is_empty( testDir.path() ) );
     }
 
+    if ( info.retainDirectories() && expectedItems.size() > 1 ) {
+        const auto first = info.find( to_tstring( expectedItems.front().inArchivePath.native() ) );
+        REQUIRE( first != info.cend() );
+
+        const auto last = info.find( to_tstring( expectedItems.back().inArchivePath.native() ) );
+        REQUIRE( last != info.cend() );
+
+        // extractTo must directly support brace-initialization of the indices vector.
+        REQUIRE_NOTHROW( info.extractTo( testDir, { first->index(), last->index() } ) );
+        REQUIRE_FILESYSTEM_ITEM( expectedItems.front() );
+        REQUIRE_FILESYSTEM_ITEM( expectedItems.back() );
+        REQUIRE( fs::is_empty( testDir.path() ) );
+    }
+
     for ( const auto& expectedItem : expectedItems ) {
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
