@@ -369,7 +369,7 @@ void BitInputArchive::extractFolderTo( const tstring& outDir,
     const auto folderFsPath = tstring_to_path( folderPath );
     const auto folderName = isPathSeparator( folderPath.back() ) ?
         folderFsPath.parent_path().filename() : folderFsPath.filename();
-    const auto renameCallback = [ & ]( std::uint32_t index, const tstring& path ) -> tstring {
+    auto renameCallback = [ & ]( std::uint32_t index, const tstring& path ) -> tstring {
         // Note: we use the native item's path rather than the second parameter of the callback
         // to avoid unnecessary string conversions when creating the filesystem path object.
         const auto item = itemAt( index );
@@ -412,7 +412,7 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) cons
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
-    const auto bufferCallback = [&outBuffer]( std::uint32_t, const tstring& ) -> buffer_t& {
+    auto bufferCallback = [&outBuffer]( std::uint32_t, const tstring& ) -> buffer_t& {
         return outBuffer;
     };
     const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
@@ -477,7 +477,7 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
         }
     }
 
-    const auto bufferCallback = [&outMap]( std::uint32_t, const tstring& path ) -> buffer_t& {
+    auto bufferCallback = [&outMap]( std::uint32_t, const tstring& path ) -> buffer_t& {
         // Note: the [] operator creates the buffer if it does not already exist.
         return outMap[ path ];
     };
