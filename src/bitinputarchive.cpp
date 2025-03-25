@@ -320,24 +320,30 @@ auto containsDotOrDotDot( const tstring& path ) -> bool {
     std::size_t pos = 0;
 
     // Search for the first occurrence of '.'
-    while ( ( pos = path.find( BIT7Z_STRING( '.' ), pos ) ) != std::string::npos ) {
+    do {
+        pos = path.find( BIT7Z_STRING( '.' ), pos );
+        // Exit the loop if no more dots are found.
+        if ( pos == std::string::npos ) {
+            return false;
+        }
+
         // Check if we found a single "." or double dots ".." by looking at surrounding characters.
 
         // Case 1: Single dot "."
-        if ( ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) && // Preceding char is a separator or start of string.
-             ( pos + 1 == length || isPathSeparator( path[ pos + 1 ] ) ) ) { // Following char is a separator or end of string.
+        if ( ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) && // Start of string, or preceding char is a separator.
+             ( pos + 1 == length || isPathSeparator( path[ pos + 1 ] ) ) ) { // End of string, or following char is a separator.
             return true;
         }
 
         // Case 2: Double dots ".."
         if ( ( pos + 1 < length && path[ pos + 1 ] == BIT7Z_STRING( '.' ) && // Two consecutive dots.
-             ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) ) && // Preceding char is a separator or start of string.
-             ( pos + 2 == length || isPathSeparator( path[ pos + 2 ] ) ) ) { // Following char is a separator or end of string.
+             ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) ) && // Start of string, or preceding char is a separator.
+             ( pos + 2 == length || isPathSeparator( path[ pos + 2 ] ) ) ) { // End of string, or following char is a separator.
             return true;
         }
 
         ++pos;
-    }
+    } while( pos != std::string::npos );
 
     return false;
 }
