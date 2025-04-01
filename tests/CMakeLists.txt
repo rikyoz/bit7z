@@ -31,7 +31,8 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bitoutputarchive.cpp
      src/test_bitpropvariant.cpp
      src/test_bitstreamcompressor.cpp
-     src/test_bitstreamextractor.cpp )
+     src/test_bitstreamextractor.cpp
+     src/test_bitindicesview.cpp )
 
 # internal API sources
 set( INTERNAL_API_SOURCE_FILES

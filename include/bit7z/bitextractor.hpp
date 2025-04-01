@@ -181,7 +181,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outDir       the output directory where the extracted files will be placed.
          */
         void extractItems( Input inArchive,
-                           const IndicesVector& indices,
+                           BitIndicesView indices,
                            const tstring& outDir = {} ) const {
             if ( indices.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );

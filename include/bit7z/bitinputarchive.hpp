@@ -15,6 +15,7 @@
 #include "bitdefines.hpp"
 #include "bitformat.hpp"
 #include "bitfs.hpp"
+#include "bitindicesview.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
@@ -51,35 +52,6 @@ enum class FolderPathPolicy : std::uint8_t {
     Strip,    ///< Remove the folder path from the extracted path.
     KeepName, ///< Preserve the folder name in the extracted path.
     KeepPath, ///< Preserve the full folder path in the extracted path.
-};
-
-using IndicesVector = std::vector< std::uint32_t >;
-
-class IndicesView final {
-        const std::uint32_t* mIndices;
-        std::uint32_t mSize;
-
-        constexpr IndicesView( const std::uint32_t* indices, std::size_t size )
-            : mIndices{ indices }, mSize{ static_cast< std::uint32_t >( size ) } {}
-
-    public:
-        constexpr IndicesView() : mIndices{ nullptr }, mSize{ (std::numeric_limits< std::uint32_t >::max)() } {}
-
-        explicit constexpr IndicesView( const std::uint32_t& index ) : mIndices{ &index }, mSize{ 1 } {}
-
-        // Note: this constructor can't be constexpr until C++20 due to std::vector's methods.
-        explicit IndicesView( const IndicesVector& indices )
-            : IndicesView{ indices.empty() ? IndicesView{} : IndicesView{ indices.data(), indices.size() } } {}
-
-        BIT7Z_NODISCARD
-        constexpr auto data() const -> const std::uint32_t* {
-            return mIndices;
-        }
-
-        BIT7Z_NODISCARD
-        constexpr auto size() const -> std::uint32_t {
-            return mSize;
-        }
 };
 
 /**
@@ -232,27 +204,12 @@ class BitInputArchive {
         }
 
         /**
-         * @brief Extracts the archive to the chosen directory.
-         *
-         * @param outDir   the output directory where the extracted files will be put.
-         */
-        void extractTo( const tstring& outDir ) const;
-
-        /**
          * @brief Extracts the specified items to the chosen directory.
          *
          * @param outDir   the output directory where the extracted files will be put.
-         * @param indices  the indices of the files in the archive that must be extracted.
+         * @param indices  (optional) the indices of the files in the archive that must be extracted.
          */
-        void extractTo( const tstring& outDir, const IndicesVector& indices ) const;
-
-        /**
-         * @brief Extracts the archive to the chosen directory.
-         *
-         * @param outDir   the output directory where the extracted files will be put.
-         * @param index    the index of the item to be extracted.
-         */
-        void extractTo( const tstring& outDir, std::uint32_t index ) const;
+        void extractTo( const tstring& outDir, BitIndicesView indices = {} ) const;
 
         /**
          * @brief Extracts the archive to the chosen directory,
@@ -371,16 +328,7 @@ class BitInputArchive {
          * @param callback the function providing the buffers.
          * @param indices  (optional) the indices of the files in the archive that must be extracted.
          */
-        void extractTo( BufferCallback callback, const IndicesVector& indices = {} ) const;
-
-        /**
-         * @brief Extracts the content of the archive to the given raw data callback.
-         *
-         * @note You can set a FileCallback to check the file being extracted.
-         *
-         * @param callback  a function providing the extracted raw data to the user.
-         */
-        void extractTo( RawDataCallback callback ) const;
+        void extractTo( BufferCallback callback, BitIndicesView indices = {} ) const;
 
         /**
          * @brief Extracts the raw content of the archive to the given callback.
@@ -390,24 +338,16 @@ class BitInputArchive {
          * @param callback  a function providing the extracted raw data to the user.
          * @param indices
          */
-        void extractTo( RawDataCallback callback, const IndicesVector& indices ) const;
+        void extractTo( RawDataCallback callback, BitIndicesView indices = {} ) const;
 
         /**
          * @brief Tests the archive without extracting its content.
          *
+         * @param indices  (optional) the indices of the items to be tested.
+         *
          * @throws BitException if the archive is not valid.
          */
-        void test() const;
-
-        /**
-         * @brief Tests the archive items at the given indices without extracting them.
-         *
-         * @param indices  the indices of the items to be tested.
-         *
-         * @throws BitException if any given index is not valid, or if any item at the given indices is not valid,
-         *                      or the whole archive is not valid.
-         */
-        void test( const IndicesVector& indices ) const;
+        void test(BitIndicesView indices = {}) const;
 
         /**
          * @brief Tests the archive item at the given index without extracting it.
@@ -563,13 +503,13 @@ class BitInputArchive {
 
         void extractSequentially( BufferQueue& queue, std::uint32_t index ) const;
 
-        void extractArchive( ExtractCallback* callback, std::int32_t mode, IndicesView indices = {} ) const;
+        void extractArchive( ExtractCallback* callback, std::int32_t mode, BitIndicesView indices = {} ) const;
 
         BIT7Z_NODISCARD
         auto isInvalidIndex( std::uint32_t index ) const -> bool;
 
         BIT7Z_NODISCARD
-        auto findInvalidIndex( const IndicesVector& indices ) const -> IndicesVector::const_iterator;
+        auto findInvalidIndex( BitIndicesView indices ) const -> BitIndicesView::ConstIterator;
 
         BIT7Z_NODISCARD
         auto close() const noexcept -> HRESULT;
@@ -585,7 +525,7 @@ class BitInputArchive {
         BIT7Z_NODISCARD
         auto openArchiveStream( const fs::path& name, IInStream* inStream, ArchiveStartOffset startOffset ) -> IInArchive*;
 
-        void testArchive( const IndicesVector& indices ) const;
+        void testArchive( BitIndicesView indices ) const;
 
         friend class BitAbstractArchiveOpener;
 

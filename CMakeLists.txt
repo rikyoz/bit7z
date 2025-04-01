@@ -40,6 +40,7 @@ set( PUBLIC_HEADERS
      include/bit7z/bitformat.hpp
      include/bit7z/bitfs.hpp
      include/bit7z/bitgenericitem.hpp
+     include/bit7z/bitindicesview.hpp
      include/bit7z/bitinputarchive.hpp
      include/bit7z/bititemsvector.hpp
      include/bit7z/bitmemcompressor.hpp
