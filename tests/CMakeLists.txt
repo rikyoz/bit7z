@@ -93,11 +93,18 @@ endif()
 
 message( STATUS "Language standard used for the tests: C++${CMAKE_CXX_STANDARD}" )
 
-option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON )
-message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
-if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
-    target_compile_definitions( ${TESTS_TARGET} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
-    target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+set( BIT7Z_TESTS_7Z_LIBRARY_PATH "" CACHE STRING "The path of the 7-Zip library to be used for running the tests" )
+if( NOT BIT7Z_TESTS_7Z_LIBRARY_PATH STREQUAL "" )
+    message( STATUS "Use custom 7-zip library for tests: ${BIT7Z_TESTS_7Z_LIBRARY_PATH}" )
+    target_compile_definitions( ${TESTS_TARGET} PRIVATE BIT7Z_TESTS_7Z_LIBRARY_PATH="${BIT7Z_TESTS_7Z_LIBRARY_PATH}" )
+    target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE BIT7Z_TESTS_7Z_LIBRARY_PATH="${BIT7Z_TESTS_7Z_LIBRARY_PATH}" )
+else()
+    option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON )
+    message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
+    if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+        target_compile_definitions( ${TESTS_TARGET} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+        target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+    endif()
 endif()
 
 # Avoiding linking unnecessary libraries.
