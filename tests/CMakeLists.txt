@@ -49,6 +49,11 @@ add_executable( ${TESTS_TARGET_PUBLIC} ${SOURCE_FILES} ${PUBLIC_API_SOURCE_FILES
 
 if( BIT7Z_TESTS_FILESYSTEM )
     set( BIT7Z_TESTS_DATA_DIR ${CMAKE_CURRENT_BINARY_DIR}/data )
+    if( NOT BIT7Z_TESTS_DATA_DIR_TARGET )
+        set( BIT7Z_TESTS_DATA_DIR_TARGET ${BIT7Z_TESTS_DATA_DIR} )
+    else()
+        message( STATUS "Custom test data dir on target: ${BIT7Z_TESTS_DATA_DIR_TARGET}" )
+    endif()
 
     include( FetchContent )
     FetchContent_Declare( bit7z-test-data
@@ -61,11 +66,11 @@ if( BIT7Z_TESTS_FILESYSTEM )
     message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
     target_compile_definitions( ${TESTS_TARGET} PRIVATE
                                 BIT7Z_TESTS_FILESYSTEM
-                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR_TARGET}" )
     target_compile_definitions( ${TESTS_TARGET_PUBLIC} PRIVATE
                                 BIT7Z_TESTS_PUBLIC_API_ONLY
                                 BIT7Z_TESTS_FILESYSTEM
-                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR_TARGET}" )
     if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
         file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
     endif()
