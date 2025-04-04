@@ -126,7 +126,7 @@ struct PROPVARIANT {
     WORD wReserved2;
     WORD wReserved3;
     union {
-        char cVal;
+        signed char cVal;
         unsigned char bVal;
         short iVal;
         unsigned short uiVal;
