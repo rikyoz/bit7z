@@ -49,6 +49,8 @@ constexpr PortableErrorTest hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     { HRESULT_WIN32_TEST( ERROR_OPEN_FAILED ),
 #ifdef _WIN32
       "The system cannot open the device or file specified.",
+#elif defined( __linux__ ) && !defined ( __GLIBC__ )
+      "I/O error",
 #else
         "Input/output error",
 #endif
@@ -67,6 +69,8 @@ constexpr PortableErrorTest hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     { HRESULT_WIN32_TEST( ERROR_SEEK ),
 #ifdef _WIN32
       "The drive cannot locate a specific area or track on the disk.",
+#elif defined( __linux__ ) && !defined ( __GLIBC__ )
+      "I/O error",
 #else
         "Input/output error",
 #endif
@@ -74,6 +78,8 @@ constexpr PortableErrorTest hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     { HRESULT_WIN32_TEST( ERROR_READ_FAULT ),
 #ifdef _WIN32
       "The system cannot read from the specified device.",
+#elif defined( __linux__ ) && !defined ( __GLIBC__ )
+      "I/O error",
 #else
         "Input/output error",
 #endif
@@ -81,6 +87,8 @@ constexpr PortableErrorTest hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
     { HRESULT_WIN32_TEST( ERROR_WRITE_FAULT ),
 #ifdef _WIN32
       "The system cannot write to the specified device.",
+#elif defined( __linux__ ) && !defined ( __GLIBC__ )
+      "I/O error",
 #else
         "Input/output error",
 #endif
