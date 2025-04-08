@@ -20,7 +20,9 @@ namespace bit7z {
 namespace test {
 
 inline auto sevenzip_lib_path() -> tstring {
-#ifdef BIT7Z_TESTS_USE_SYSTEM_7ZIP
+#ifdef BIT7Z_TESTS_7Z_LIBRARY_PATH
+    static const tstring lib_path = BIT7Z_STRING( BIT7Z_TESTS_7Z_LIBRARY_PATH );
+#elif defined( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
 #ifdef _WIN64
     static const tstring lib_path = BIT7Z_STRING( "C:\\Program Files\\7-Zip\\7z.dll" );
 #elif defined( _WIN32 )
