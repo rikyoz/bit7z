@@ -13,6 +13,7 @@
 #include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <string>
 
@@ -93,6 +94,21 @@ auto starts_with( const std::basic_string< CharT >& str, const std::basic_string
 template< typename CharT >
 auto starts_with( const std::basic_string< CharT >& str, const CharT* prefix ) -> bool {
     return str.rfind( prefix, 0 ) == 0;
+}
+
+// Note: the implementation using std::equal seems to be faster than the alternatives in most cases;
+// see https://quick-bench.com/q/UFlQjJmTe1N8hawBwhx4kqOxUR4 for a comparison.
+template< typename CharT >
+auto ends_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& suffix ) -> bool {
+    return str.size() >= suffix.size() && std::equal( suffix.crbegin(), suffix.crend(), str.crbegin() );
+}
+
+template< typename CharT, std::size_t SuffixSize >
+// NOLINTNEXTLINE(*-avoid-c-arrays)
+auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[SuffixSize] ) -> bool {
+    // Note: the suffix C array has a null termination character.
+    return str.size() >= ( SuffixSize - 1 ) &&
+           std::equal( std::crbegin( suffix ) + 1, std::crend( suffix ), str.crbegin() );
 }
 
 /**

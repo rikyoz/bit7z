@@ -22,6 +22,7 @@
 #include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/operationresult.hpp"
+#include "internal/stringutil.hpp"
 
 #include <algorithm>
 #include <cstdint>
@@ -163,7 +164,7 @@ auto BitArchiveReader::isEncrypted() const -> bool {
 }
 
 auto BitArchiveReader::isMultiVolume() const -> bool {
-    if ( extractionFormat() == BitFormat::Split ) {
+    if ( extractionFormat() == BitFormat::Split || ends_with( archivePath(), BIT7Z_STRING( ".001" ) ) ) {
         return true;
     }
     const BitPropVariant isMultiVolume = archiveProperty( BitProperty::IsVolume );
@@ -176,6 +177,21 @@ auto BitArchiveReader::isSolid() const -> bool {
 }
 
 auto BitArchiveReader::volumesCount() const -> std::uint32_t {
+    if ( extractionFormat() != BitFormat::Split && ends_with( archivePath(), BIT7Z_STRING( ".001" ) ) ) {
+        constexpr size_t kVolumeDigits = 3u;
+
+        std::uint32_t result = 1u;
+        fs::path volumePath = tstring_to_path( archivePath() );
+        do {
+            tstring volumeExt = to_tstring( ++result );
+            if ( volumeExt.length() < kVolumeDigits ) {
+                volumeExt.insert( volumeExt.begin(), kVolumeDigits - volumeExt.length(), BIT7Z_STRING( '0' ) );
+            }
+            volumePath.replace_extension( volumeExt );
+        } while ( fs::exists( volumePath ) );
+        return result - 1;
+    }
+
     const BitPropVariant volumesCount = archiveProperty( BitProperty::NumVolumes );
     return volumesCount.isEmpty() ? 1 : volumesCount.getUInt32();
 }
