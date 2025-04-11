@@ -180,16 +180,16 @@ auto BitArchiveReader::volumesCount() const -> std::uint32_t {
     if ( extractionFormat() != BitFormat::Split && ends_with( archivePath(), BIT7Z_STRING( ".001" ) ) ) {
         constexpr size_t kVolumeDigits = 3u;
 
-        std::uint32_t result = 1u;
+        std::uint32_t result = 2u;
         fs::path volumePath = tstring_to_path( archivePath() );
         do {
-            tstring volumeExt = to_tstring( ++result );
+            tstring volumeExt = to_tstring( result++ );
             if ( volumeExt.length() < kVolumeDigits ) {
                 volumeExt.insert( volumeExt.begin(), kVolumeDigits - volumeExt.length(), BIT7Z_STRING( '0' ) );
             }
             volumePath.replace_extension( volumeExt );
         } while ( fs::exists( volumePath ) );
-        return result - 1;
+        return result - 2;
     }
 
     const BitPropVariant volumesCount = archiveProperty( BitProperty::NumVolumes );
