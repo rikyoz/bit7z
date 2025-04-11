@@ -97,18 +97,20 @@ auto starts_with( const std::basic_string< CharT >& str, const CharT* prefix ) -
 }
 
 // Note: the implementation using std::equal seems to be faster than the alternatives in most cases;
-// see https://quick-bench.com/q/UFlQjJmTe1N8hawBwhx4kqOxUR4 for a comparison.
+// see https://quick-bench.com/q/G9D6M1h11PrwwmqcS7taJoAIdZU for a comparison.
 template< typename CharT >
 auto ends_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& suffix ) -> bool {
-    return str.size() >= suffix.size() && std::equal( suffix.crbegin(), suffix.crend(), str.crbegin() );
+    return str.size() >= suffix.size() &&
+           std::equal( suffix.crbegin(), suffix.crend(), str.crbegin(), str.crbegin() + suffix.size() );
 }
 
-template< typename CharT, std::size_t SuffixSize >
+template< typename CharT, std::size_t N >
 // NOLINTNEXTLINE(*-avoid-c-arrays)
-auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[SuffixSize] ) -> bool {
+auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[N] ) -> bool {
     // Note: the suffix C array has a null termination character.
-    return str.size() >= ( SuffixSize - 1 ) &&
-           std::equal( std::crbegin( suffix ) + 1, std::crend( suffix ), str.crbegin() );
+    constexpr auto suffixSize = N - 1;
+    return str.size() >= suffixSize &&
+           std::equal( std::crbegin( suffix ) + 1, std::crend( suffix ), str.crbegin(), str.crbegin() + suffixSize );
 }
 
 /**
