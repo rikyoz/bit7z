@@ -406,8 +406,8 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
             SECTION( "Opening as a whole archive" ) {
                 const BitArchiveReader info( lib, arcFileName.string< tchar >(), testArchive.format() );
-                // REQUIRE( info.isMultiVolume() );
-                // REQUIRE( info.volumesCount() == 3 );
+                REQUIRE( info.isMultiVolume() );
+                REQUIRE( info.volumesCount() == 3 );
                 REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
                 REQUIRE_ARCHIVE_TESTS( info );
             }
