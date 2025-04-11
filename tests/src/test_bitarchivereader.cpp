@@ -288,8 +288,8 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 const BitArchiveReader info( test::sevenzip_lib(),
                                              arcFileName.string< tchar >(),
                                              testArchive.format() );
-                // REQUIRE( info.isMultiVolume() );
-                // REQUIRE( info.volumesCount() == 3 );
+                REQUIRE( info.isMultiVolume() );
+                REQUIRE( info.volumesCount() == 3 );
                 REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
             }
         }

@@ -15,9 +15,9 @@
 #include <internal/stringutil.hpp>
 
 #include <string>
-#include <tuple>
 
 #if !defined( _WIN32 ) || ( !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE ) )
+#include <tuple>
 
 #define NARROWING_TEST_STR( str ) std::make_tuple( L##str, (str) )
 
@@ -96,3 +96,44 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[stringutil][widen]"
 }
 
 #endif
+
+TEST_CASE( "util: ends_with", "[stringutil][ends_with]" ) {
+    using bit7z::ends_with;
+    using bit7z::tstring;
+
+    const tstring emptyTestString;
+    REQUIRE( ends_with( emptyTestString, BIT7Z_STRING( "" ) ) );
+    REQUIRE_FALSE( ends_with( emptyTestString, BIT7Z_STRING( " " ) ) );
+    REQUIRE_FALSE( ends_with( emptyTestString, BIT7Z_STRING( "h" ) ) );
+    REQUIRE_FALSE( ends_with( emptyTestString, BIT7Z_STRING( "hello world!" ) ) );
+    REQUIRE( ends_with( emptyTestString, tstring{ BIT7Z_STRING( "" ) } ) );
+    REQUIRE_FALSE( ends_with( emptyTestString, tstring{ BIT7Z_STRING( " " ) } ) );
+    REQUIRE_FALSE( ends_with( emptyTestString, tstring{ BIT7Z_STRING( "h" ) } ) );
+    REQUIRE_FALSE( ends_with( emptyTestString, tstring{ BIT7Z_STRING( "hello world!" ) } ) );
+
+    const tstring oneCharTestString{ BIT7Z_STRING( "a" ) };
+    REQUIRE( ends_with( oneCharTestString, BIT7Z_STRING( "" ) ) );
+    REQUIRE( ends_with( oneCharTestString, BIT7Z_STRING( "a" ) ) );
+    REQUIRE_FALSE( ends_with( oneCharTestString, BIT7Z_STRING( "h" ) ) );
+    REQUIRE_FALSE( ends_with( oneCharTestString, BIT7Z_STRING( "hello world!" ) ) );
+    REQUIRE( ends_with( oneCharTestString, tstring{ BIT7Z_STRING( "" ) } ) );
+    REQUIRE( ends_with( oneCharTestString, tstring{ BIT7Z_STRING( "a" ) } ) );
+    REQUIRE_FALSE( ends_with( oneCharTestString, tstring{ BIT7Z_STRING( "h" ) } ) );
+    REQUIRE_FALSE( ends_with( oneCharTestString, tstring{ BIT7Z_STRING( "hello world!" ) } ) );
+
+    const tstring testString{ BIT7Z_STRING( "hello world!" ) };
+    REQUIRE_FALSE( ends_with( testString, BIT7Z_STRING( "a" ) ) );
+    REQUIRE_FALSE( ends_with( testString, BIT7Z_STRING( "h" ) ) );
+    REQUIRE_FALSE( ends_with( testString, BIT7Z_STRING( "hello" ) ) );
+    REQUIRE( ends_with( testString, BIT7Z_STRING( "" ) ) );
+    REQUIRE( ends_with( testString, BIT7Z_STRING( "!" ) ) );
+    REQUIRE( ends_with( testString, BIT7Z_STRING( " world!" ) ) );
+    REQUIRE( ends_with( testString, BIT7Z_STRING( "hello world!" ) ) );
+    REQUIRE_FALSE( ends_with( testString, tstring{ BIT7Z_STRING( "a" ) } ) );
+    REQUIRE_FALSE( ends_with( testString, tstring{ BIT7Z_STRING( "h" ) } ) );
+    REQUIRE_FALSE( ends_with( testString, tstring{ BIT7Z_STRING( "hello" ) } ) );
+    REQUIRE( ends_with( testString, tstring{ BIT7Z_STRING( "" ) } ) );
+    REQUIRE( ends_with( testString, tstring{ BIT7Z_STRING( "!" ) } ) );
+    REQUIRE( ends_with( testString, tstring{ BIT7Z_STRING( " world!" ) } ) );
+    REQUIRE( ends_with( testString, tstring{ BIT7Z_STRING( "hello world!" ) } ) );
+}
