@@ -68,19 +68,18 @@ auto AllocStringBuffer( LPCSTR str, std::uint32_t byteLength ) -> BSTR {
 
     // Allocating memory for storing the BSTR as a byte array.
     // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
-    auto* bstrBuffer = static_cast< byte_t* >( std::calloc( bufferSize, sizeof( byte_t ) ) );
+    auto* bstrBuffer = static_cast< bstr_prefix_t* >( std::calloc( bufferSize, sizeof( byte_t ) ) );
 
     if ( bstrBuffer == nullptr ) { // Failed to allocate memory for the BSTR buffer.
         return nullptr;
     }
 
-    // Storing the BSTR's number of bytes as a prefix of it.
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    *reinterpret_cast< bstr_prefix_t* >( bstrBuffer ) = byteLength;
+    // Storing the number of bytes of the BSTR as a prefix of it.
+    *bstrBuffer = byteLength;
 
     // The actual BSTR must point after the byteLength prefix.
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
-    const auto result = reinterpret_cast< BSTR >( bstrBuffer + sizeof( bstr_prefix_t ) );
+    const auto result = reinterpret_cast< BSTR >( bstrBuffer + 1 );
     if ( str != nullptr ) {
         // Copying byte-by-byte the input string to the BSTR.
         // Note: flawfinder warns about not checking for buffer overflows; this is a false alarm,

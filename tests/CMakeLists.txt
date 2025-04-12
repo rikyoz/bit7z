@@ -63,23 +63,35 @@ if( BIT7Z_TESTS_FILESYSTEM )
         message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
     endif()
 
+    if( NOT BIT7Z_TESTS_DATA_DIR_TARGET )
+        set( BIT7Z_TESTS_DATA_DIR_TARGET ${BIT7Z_TESTS_DATA_DIR} )
+    else()
+        message( STATUS "Custom test data dir on target: ${BIT7Z_TESTS_DATA_DIR_TARGET}" )
+    endif()
+
     target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE
                                 BIT7Z_TESTS_FILESYSTEM
-                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR_TARGET}" )
 
-    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
+    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR_TARGET}/test_filesystem/empty )
         file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
     endif()
 
     if( NOT EXISTS ${CMAKE_SOURCE_DIR}/test_filesystem/folder/subfolder )
-        file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/folder/subfolder )
+        file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR_TARGET}/test_filesystem/folder/subfolder )
     endif()
 endif()
 
-option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON )
-message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
-if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
-    target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+set( BIT7Z_TESTS_7Z_LIBRARY_PATH "" CACHE STRING "The path of the 7-Zip library to be used for running the tests" )
+if( NOT BIT7Z_TESTS_7Z_LIBRARY_PATH STREQUAL "" )
+    message( STATUS "Use custom 7-zip library for tests: ${BIT7Z_TESTS_7Z_LIBRARY_PATH}" )
+    target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE BIT7Z_TESTS_7Z_LIBRARY_PATH="${BIT7Z_TESTS_7Z_LIBRARY_PATH}" )
+else()
+    option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON )
+    message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
+    if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+        target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
+    endif()
 endif()
 
 # Avoiding linking unnecessary libraries.
