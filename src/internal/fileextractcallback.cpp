@@ -82,8 +82,11 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
     auto filePath = getCurrentItemPath();
+    if ( filePath.empty() || ( isItemFolder( index ) && filePath == L"/" ) ) {
+        return S_OK;
+    }
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-    mFilePathOnDisk = mDirectoryPath / filesystem::fsutil::sanitize_path( filePath );
+    mFilePathOnDisk = filesystem::fsutil::sanitized_extraction_path( mDirectoryPath, filePath );
 #else
     mFilePathOnDisk = mDirectoryPath / filePath;
 #endif

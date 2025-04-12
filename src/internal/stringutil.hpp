@@ -13,6 +13,7 @@
 #include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 
+#include <algorithm>
 namespace bit7z {
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
@@ -76,6 +77,23 @@ inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
 
 inline auto starts_with( const native_string& str, const native_string& prefix ) -> bool {
     return str.rfind( prefix, 0 ) == 0;
+}
+
+// Note: the implementation using std::equal seems to be faster than the alternatives in most cases;
+// see https://quick-bench.com/q/G9D6M1h11PrwwmqcS7taJoAIdZU for a comparison.
+template< typename CharT >
+auto ends_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& suffix ) -> bool {
+    return str.size() >= suffix.size() &&
+           std::equal( suffix.crbegin(), suffix.crend(), str.crbegin(), str.crbegin() + suffix.size() );
+}
+
+template< typename CharT, std::size_t N >
+// NOLINTNEXTLINE(*-avoid-c-arrays)
+auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[N] ) -> bool {
+    // Note: the suffix C array has a null termination character.
+    constexpr auto suffixSize = N - 1;
+    return str.size() >= suffixSize &&
+           std::equal( std::crbegin( suffix ) + 1, std::crend( suffix ), str.crbegin(), str.crbegin() + suffixSize );
 }
 
 /**

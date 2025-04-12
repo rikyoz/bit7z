@@ -406,8 +406,8 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
 
             SECTION( "Opening as a whole archive" ) {
                 const BitArchiveReader info( lib, arcFileName.string< tchar >(), testArchive.format() );
-                // REQUIRE( info.isMultiVolume() );
-                // REQUIRE( info.volumesCount() == 3 );
+                REQUIRE( info.isMultiVolume() );
+                REQUIRE( info.volumesCount() == 3 );
                 REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
                 REQUIRE_ARCHIVE_TESTS( info );
             }
@@ -1115,6 +1115,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extens
     SECTION( "Checking archive start by scanning through the input file" ){
 #ifdef BIT7Z_AUTO_FORMAT
         const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
         if ( reader.archivePath().empty() ) {
             REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
             REQUIRE_NOTHROW( reader.test() );
@@ -1122,6 +1123,10 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extens
             REQUIRE( reader.detectedFormat() == BitFormat::Zip );
             REQUIRE_THROWS( reader.test() );
         }
+#else
+        REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
+        REQUIRE_NOTHROW( reader.test() );
+#endif
 #else
         const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip );
         REQUIRE_THROWS( reader.test() );

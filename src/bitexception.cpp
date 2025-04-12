@@ -21,7 +21,8 @@ auto bit7z::make_hresult_code( HRESULT res ) noexcept -> std::error_code {
 }
 
 auto bit7z::last_error_code() noexcept -> std::error_code {
-    return std::error_code{ static_cast< int >( GetLastError() ), std::system_category() };
+    const auto error = static_cast< int >( GetLastError() );
+    return std::error_code{ error, std::system_category() };
 }
 
 using bit7z::BitException;

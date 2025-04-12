@@ -28,6 +28,7 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
 // Note: format detection by extension doesn't actually require the file to exist.
 TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
@@ -129,6 +130,7 @@ TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
         REQUIRE( detect_format_from_extension( "valid." + test.extension ) == test.format );
     }
 }
+#endif
 
 TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
@@ -286,7 +288,9 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
 TEST_CASE( "formatdetect: Format detection of an archive file without an extension", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
     REQUIRE( detect_format_from_extension( "noextension" ) == BitFormat::Auto );
+#endif
 
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
     const BitArchiveReader reader{ lib, BIT7Z_STRING( "noextension" ) };

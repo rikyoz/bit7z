@@ -33,6 +33,7 @@
 
 #include <7zip/IStream.h>
 
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
 /**
  * @brief Constexpr recursive implementation of the djb2 hashing function.
  *
@@ -44,8 +45,10 @@ auto constexpr str_hash( bit7z::tchar const* input ) -> uint64_t { // NOLINT(mis
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, *-magic-numbers)
     return *input != 0 ? static_cast< uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381; //-V2563
 }
+#endif
 
 namespace bit7z {
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
 /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
  *       format, but the ifs are faster and have less memory footprint. */
 auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* {
@@ -184,10 +187,13 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
         case str_hash( BIT7Z_STRING( "z" ) ):
         case str_hash( BIT7Z_STRING( "taz" ) ):
             return &BitFormat::Z;
+        case str_hash( BIT7Z_STRING( "zst" ) ):
+            return &BitFormat::Zstd;
         default:
             return nullptr;
     }
 }
+#endif
 
 /* NOTE 1: For signatures with less than 8 bytes (size of uint64_t), remaining bytes are set to 0
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
@@ -239,6 +245,7 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
     constexpr auto kXarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
     constexpr auto kZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
     constexpr auto kZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
+    constexpr auto kZstdSignature = 0x28B52FFD00000000ULL;
 
     switch ( signature ) {
         case kRarSignature:
@@ -326,6 +333,8 @@ auto find_format_by_signature( uint64_t signature ) noexcept -> const BitInForma
         case kZSignature1: // 1F 9D
         case kZSignature2: // 1F A0
             return &BitFormat::Z;
+        case kZstdSignature:
+            return &BitFormat::Zstd;
         default:
             return nullptr;
     }
@@ -447,6 +456,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
                         make_error_code( BitError::NoMatchingSignature ) );
 }
 
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 #   define is_digit(ch) std::iswdigit(ch) != 0
 const auto to_lower = std::towlower;
@@ -485,6 +495,7 @@ auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat
     // The extension did not match any known format extension, delegating the decision to the client.
     return BitFormat::Auto;
 }
+#endif
 }  // namespace bit7z
 
 #endif

@@ -354,7 +354,8 @@ void fsutil::increase_opened_files_limit() {
 }
 
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-inline auto is_windows_reserved_name( const std::wstring& component ) -> bool {
+namespace {
+auto is_windows_reserved_name( const std::wstring& component ) -> bool {
     // Reserved file names that can't be used on Windows: CON, PRN, AUX, and NUL.
     if ( component == L"CON" || component == L"PRN" || component == L"AUX" || component == L"NUL" ) {
         return true;
@@ -364,11 +365,19 @@ inline auto is_windows_reserved_name( const std::wstring& component ) -> bool {
     // LPT0, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, and LPT9.
     constexpr auto reserved_component_size = 4;
     return component.size() == reserved_component_size &&
-           ( component.find(L"COM") == 0 || component.find(L"LPT") == 0 ) &&
+           ( component.rfind( L"COM", 0 ) == 0 || component.rfind( L"LPT", 0 ) == 0 ) &&
            std::iswdigit( component.back() ) != 0;
 }
 
-inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
+auto sanitize_path_component( std::wstring component ) -> std::wstring {
+    const auto firstNonSlash = component.find_first_not_of( L"/\\" );
+    if ( firstNonSlash == std::wstring::npos ) {
+        return L"";
+    }
+    if ( firstNonSlash != 0 ) {
+        component.erase( 0, firstNonSlash );
+    }
+
     // If the component is a reserved name on Windows, we prepend it with a '_' character.
     if ( is_windows_reserved_name( component ) ) {
         component.insert( 0, 1, L'_' );
@@ -383,14 +392,23 @@ inline auto sanitize_path_component( std::wstring component ) -> std::wstring {
     }, L'_' );
     return component;
 }
+} // namespace
 
 auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
-    fs::path sanitizedPath = path.root_path().make_preferred();
-    for( const auto& pathComponent : path.relative_path() ) {
+    if ( path == L"/" ) {
+        return L"_";
+    }
+
+    fs::path sanitizedPath;
+    for( const auto& pathComponent : path ) {
         // cppcheck-suppress useStlAlgorithm
         sanitizedPath /= sanitize_path_component( pathComponent.wstring() );
     }
     return sanitizedPath;
+}
+
+auto fsutil::sanitized_extraction_path( const fs::path& outDir, const fs::path& itemPath ) -> fs::path {
+    return outDir / sanitize_path( itemPath );
 }
 #endif
 

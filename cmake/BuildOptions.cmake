@@ -8,6 +8,12 @@ option( BIT7Z_AUTO_FORMAT "Enable or disable auto format detection" )
 message( STATUS "Auto format detection: ${BIT7Z_AUTO_FORMAT}" )
 if( BIT7Z_AUTO_FORMAT )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_AUTO_FORMAT )
+
+    option( BIT7Z_DETECT_FROM_EXTENSION "Enable or disable detection of archive format from file extension" ON )
+    message( STATUS "Detect format from file extension: ${BIT7Z_DETECT_FROM_EXTENSION}" )
+    if( BIT7Z_DETECT_FROM_EXTENSION )
+        target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_DETECT_FROM_EXTENSION )
+    endif()
 endif()
 
 option( BIT7Z_REGEX_MATCHING "Enable or disable regex matching of archived files" )
