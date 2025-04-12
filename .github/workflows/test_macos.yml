@@ -26,7 +26,7 @@ jobs:
       fail-fast: false
 
       matrix:
-        os: [macos-13, macos-14]
+        os: [macos-13, macos-14, macos-15]
         c_compiler: [gcc-11, gcc-12, gcc-13, gcc-14, clang]
         arch: [x64, arm64]
         bit7z_7zip_version: [23.01, 24.09]
@@ -59,6 +59,12 @@ jobs:
             bit7z_link_libcpp: ON
           - c_compiler: gcc-14
             bit7z_link_libcpp: ON
+          - os: macos-15
+            c_compiler: gcc-11
+          - os: macos-15
+            bit7z_7zip_version: 23.01
+          - os: macos-15
+            arch: x64
           - os: macos-14
             arch: x64
           - os: macos-13
