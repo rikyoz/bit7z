@@ -114,6 +114,12 @@ jobs:
       run:
         brew install gcc@11
 
+    - name: Reinstall GCC on macOS 15
+      if: ${{ contains(matrix.os, 'macos-15') && !contains(matrix.c_compiler, 'clang') }}
+      shell: bash
+      run:
+        brew reinstall gcc
+
     - name: Building and testing bit7z
       uses: ./.github/actions/ci_action
       with:
