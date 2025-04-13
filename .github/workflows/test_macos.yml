@@ -35,6 +35,12 @@ jobs:
         bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
         include:
+          - os: macos-13
+            os_version: 13
+          - os: macos-14
+            os_version: 14
+          - os: macos-15
+            os_version: 15
           - c_compiler: gcc-11
             cpp_compiler: g++-11
             enable_sanitizers: OFF
@@ -73,10 +79,16 @@ jobs:
             bit7z_detect_from_extension: ON
 
     name: |
-      macOS (${{ matrix.arch }}), ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}
+      macOS ${{ matrix.os_version }} (${{ matrix.arch }}), ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}
 
     steps:
     - uses: actions/checkout@v4
+
+    - name: Install XCode
+      if: ${{ contains(matrix.os, 'macos-15') }}
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
 
     - name: Install XCode
       if: ${{ contains(matrix.os, 'macos-14') }}
