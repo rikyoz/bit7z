@@ -21,30 +21,25 @@
 #include <cstring>
 #include <limits>
 
-auto wcsnlen_s( const wchar_t* str, std::size_t maxSize ) -> std::size_t {
-    if ( str == nullptr || maxSize == 0 ) {
-        return 0;
-    }
-
-    std::size_t result = 0;
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    for ( ; result < maxSize && str[ result ] != L'\0'; ++result ) {
-        // continue;
-    }
-    return result;
-}
-
 auto SysAllocString( const OLECHAR* str ) -> BSTR {
     if ( str == nullptr ) {
         return nullptr;
     }
 
-    const auto len = static_cast< UINT >( wcsnlen_s( str, FILENAME_MAX ) );
-    return SysAllocStringLen( str, len );
+    const auto length = [ &str ]() -> UINT {
+        UINT result = 0;
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        for ( ; result < FILENAME_MAX && str[ result ] != L'\0'; ++result ) {
+            // continue;
+        }
+        return result;
+    }();
+    return SysAllocStringLen( str, length );
 }
 
 using bstr_prefix_t = std::uint32_t;
 
+namespace {
 /* Internal implementation of SysAllocStringByteLen for Unix systems.
  *
  * Notes:
@@ -67,7 +62,8 @@ auto AllocStringBuffer( LPCSTR str, std::uint32_t byteLength ) -> BSTR {
     const auto bufferSize = sizeof( bstr_prefix_t ) + byteLength + sizeof( OLECHAR );
 
     // Allocating memory for storing the BSTR as a byte array.
-    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
+    // ReSharper disable once CppDFAMemoryLeak
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory, *-no-malloc, *-unix.MallocSizeof)
     auto* bstrBuffer = static_cast< bstr_prefix_t* >( std::calloc( bufferSize, sizeof( byte_t ) ) );
 
     if ( bstrBuffer == nullptr ) { // Failed to allocate memory for the BSTR buffer.
@@ -79,15 +75,17 @@ auto AllocStringBuffer( LPCSTR str, std::uint32_t byteLength ) -> BSTR {
 
     // The actual BSTR must point after the byteLength prefix.
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
-    const auto result = reinterpret_cast< BSTR >( bstrBuffer + 1 );
+    auto *const result = reinterpret_cast< BSTR >( bstrBuffer + 1 );
     if ( str != nullptr ) {
         // Copying byte-by-byte the input string to the BSTR.
         // Note: flawfinder warns about not checking for buffer overflows; this is a false alarm,
         // since are using the correct destination size we just allocated using calloc.
         std::memcpy( result, str, byteLength ); // flawfinder: ignore
     }
+    // ReSharper disable once CppDFAMemoryLeak
     return result;
 }
+} // namespace
 
 auto SysAllocStringLen( const OLECHAR* str, UINT length ) -> BSTR {
     const auto byteLength = length * sizeof( OLECHAR );
@@ -109,7 +107,7 @@ void SysFreeString( BSTR bstr ) { // NOLINT(readability-non-const-parameter)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
     auto* bstrBuffer = reinterpret_cast< byte_t* >( bstr ) - sizeof( bstr_prefix_t );
 
-    // NOLINTNEXTLINE(cppcoreguidelines-no-malloc, cppcoreguidelines-owning-memory)
+    // NOLINTNEXTLINE(cppcoreguidelines-owning-memory, *-no-malloc)
     std::free( static_cast< void* >( bstrBuffer ) );
 }
 
