@@ -147,7 +147,7 @@ endif()
 
 # Catch2
 CPMAddPackage( NAME Catch2
-               GIT_TAG 359e3ea5c87f6226686c70e48e576db21e07ed94
+               GIT_TAG 27d8db1770dd5cd3688656095f242474431584a1
                OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
                GITHUB_REPOSITORY "rikyoz/Catch2"
                GIT_PROGRESS ON )
