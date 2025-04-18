@@ -1642,14 +1642,15 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bi
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( BIT7Z_STRING( "folder\\subfolder2" ),
+    const auto folderPath = GENERATE( as< tstring >(),
+                                      BIT7Z_STRING( "folder\\subfolder2" ),
                                       BIT7Z_STRING( "folder\\subfolder2\\" ),
                                       BIT7Z_STRING( "folder/subfolder2" ),
                                       BIT7Z_STRING( "folder/subfolder2/" ),
                                       BIT7Z_STRING( "folder/subfolder2\\" ),
                                       BIT7Z_STRING( "folder\\subfolder2/" ) );
 #else
-    const auto folderPath = GENERATE( "folder/subfolder2", "folder/subfolder2/" );
+    const auto folderPath = GENERATE( as< tstring >(), "folder/subfolder2", "folder/subfolder2/" );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
@@ -1808,11 +1809,12 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "duplicate" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( BIT7Z_STRING( "duplicate" ),
+    const auto folderPath = GENERATE( as< tstring >(),
+                                      BIT7Z_STRING( "duplicate" ),
                                       BIT7Z_STRING( "duplicate\\" ),
                                       BIT7Z_STRING( "duplicate/" ) );
 #else
-    const auto folderPath = GENERATE( "duplicate", "duplicate/" );
+    const auto folderPath = GENERATE( as< tstring >(), "duplicate", "duplicate/" );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
@@ -1873,11 +1875,12 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "duplicate" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( BIT7Z_STRING( "clouds.jpg" ),
+    const auto folderPath = GENERATE( as< tstring >(),
+                                      BIT7Z_STRING( "clouds.jpg" ),
                                       BIT7Z_STRING( "clouds.jpg\\" ),
                                       BIT7Z_STRING( "clouds.jpg/" ) );
 #else
-    const auto folderPath = GENERATE( "clouds.jpg", "clouds.jpg/" );
+    const auto folderPath = GENERATE( as< tstring >(), "clouds.jpg", "clouds.jpg/" );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
@@ -1937,7 +1940,8 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an a
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( BIT7Z_STRING( "" ),
+    const auto folderPath = GENERATE( as< tstring >(), 
+                                      BIT7Z_STRING( "" ),
                                       BIT7Z_STRING( "/" ),
                                       BIT7Z_STRING( "\\" ),
                                       BIT7Z_STRING( "." ),
@@ -1973,7 +1977,8 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an a
                                       BIT7Z_STRING( "folder/sub" ) ,
                                       BIT7Z_STRING( "folder\\sub" ) );
 #else
-    const auto folderPath = GENERATE( "",
+    const auto folderPath = GENERATE( as< tstring >(), 
+                                      "",
                                       "/",
                                       ".",
                                       "./",
