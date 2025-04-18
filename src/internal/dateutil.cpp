@@ -26,7 +26,11 @@ using FileTimeDuration = std::chrono::duration< std::int64_t, FileTimeTickRate >
 // Seconds between 01/01/1601 (NT epoch) and 01/01/1970 (Unix epoch):
 constexpr std::chrono::seconds nt_to_unix_epoch{ -11644473600 };
 
-#if defined( BIT7Z_USE_STANDARD_FILESYSTEM ) && defined( __GLIBCXX__ )
+#if defined( BIT7Z_USE_STANDARD_FILESYSTEM ) && defined( _GLIBCXX_RELEASE ) && _GLIBCXX_RELEASE > 8
+#define BIT7Z_GLIBCXX_FILE_CLOCK_EPOCH
+#endif
+
+#ifdef BIT7Z_GLIBCXX_FILE_CLOCK_EPOCH
 // Seconds between 01/01/1970 (Unix epoch) and 01/01/2174 (libstdc++'s file_clock epoch).
 constexpr std::chrono::seconds libstdcpp_file_clock_epoch{ -6437664000 };
 #endif
@@ -39,7 +43,7 @@ auto FILETIME_to_file_time_type( FILETIME fileTime ) -> fs::file_time_type {
 
     const auto unixFileTime = fileTimeDuration + nt_to_unix_epoch;
     const auto systemFileTime = std::chrono::duration_cast< fs::file_time_type::clock::duration >( unixFileTime );
-#if defined( BIT7Z_USE_STANDARD_FILESYSTEM ) && defined( __GLIBCXX__ )
+#ifdef BIT7Z_GLIBCXX_FILE_CLOCK_EPOCH
     return fs::file_time_type{ systemFileTime + libstdcpp_file_clock_epoch };
 #else
     return fs::file_time_type{ systemFileTime };
