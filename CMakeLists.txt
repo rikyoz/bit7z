@@ -241,13 +241,13 @@ endif()
 # 7-zip source code
 target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
 
-# filesystem library (needed if std::filesystem is not available)
-if( ghc_filesystem_ADDED )
-    target_link_libraries( ${LIB_TARGET} PRIVATE ghc_filesystem )
-elseif( BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
-    target_precompile_headers( ${LIB_TARGET}
-                               PRIVATE
-                               <filesystem>)
+# filesystem library
+#  - empty library for modern compilers (no extra linking required).
+#  - libstdc++fs/libc++fs for older versions of libstdc++/libc++.
+#  - ghc::filesystem for even older libraries supporting only C++11/C++14 standards.
+target_link_libraries( ${LIB_TARGET} PRIVATE filesystem_lib )
+if( NOT ghc_filesystem_ADDED AND BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
+    target_precompile_headers( ${LIB_TARGET} PRIVATE <filesystem> )
 endif()
 
 # public includes

@@ -161,8 +161,8 @@ target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE CATCH_CONFIG_CONSOLE_
 set( TESTS_TARGET bit7z-tests )
 add_executable( ${TESTS_TARGET} src/main.cpp ${PUBLIC_API_SOURCE_FILES} ${INTERNAL_API_SOURCE_FILES} )
 target_link_libraries( ${TESTS_TARGET} PRIVATE ${TESTS_BASE_TARGET} )
-if( BIT7Z_TESTS_FILESYSTEM AND NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES )
-    target_link_libraries( ${TESTS_TARGET} PRIVATE ghc_filesystem )
+if( BIT7Z_TESTS_FILESYSTEM )
+    target_link_libraries( ${TESTS_TARGET} PRIVATE filesystem_lib )
 endif()
 
 set( TESTS_TARGET_PUBLIC bit7z-tests-public )

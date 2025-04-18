@@ -46,7 +46,8 @@ if( BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
 endif()
 
 # ghc::filesystem library
-if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES OR BIT7Z_BUILD_TESTS )
+# Note: the public API tests app compiles using the C++11 standard, so it will always needs ghc::filesystem
+if( NOT USE_STANDARD_FILESYSTEM OR BIT7Z_BUILD_TESTS )
     CPMAddPackage( NAME ghc_filesystem
                    GITHUB_REPOSITORY rikyoz/filesystem
                    GIT_TAG b99c2aebd5ddd6fb2f190731ba80b949fc3842b5
@@ -61,4 +62,17 @@ if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES OR BIT7Z_BUI
                                        "${ghc_filesystem_SOURCE_DIR}/include/ghc/filesystem.hpp" )
         endif()
     endif()
+endif()
+
+if( USE_STANDARD_FILESYSTEM )
+    add_library( filesystem_lib INTERFACE IMPORTED )
+    if( STANDARD_FILESYSTEM_LINKS )
+        # No extra library to link.
+    elseif( STANDARD_FILESYSTEM_NEEDS_LIBSTDC++FS )
+        target_link_libraries( filesystem_lib INTERFACE stdc++fs )
+    elseif( STANDARD_FILESYSTEM_NEEDS_LIBC++FS )
+        target_link_libraries( filesystem_lib INTERFACE c++fs )
+    endif()
+else()
+    add_library( filesystem_lib ALIAS ghc_filesystem )
 endif()
