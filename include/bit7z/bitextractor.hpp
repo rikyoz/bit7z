@@ -122,18 +122,45 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             inputArchive.extractTo( outBuffer, index );
         }
 
+        /**
+         * @brief Extracts a file to the pre-allocated output buffer.
+         *
+         * @tparam N        the size of the output buffer (it must be equal to the unpacked size
+         *                  of the item to be extracted).
+         * @param inArchive the input archive to extract from.
+         * @param outBuffer the pre-allocated output buffer.
+         * @param index     the index of the file to be extracted.
+         */
         template< std::size_t N >
         void extract( Input inArchive, std::array< byte_t, N >& outBuffer, std::uint32_t index = 0 ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
         }
 
+        /**
+         * @brief Extracts a file to the pre-allocated output buffer.
+         *
+         * @tparam N        the size of the output buffer (it must be equal to the unpacked size
+         *                  of the item to be extracted).
+         * @param inArchive the input archive to extract from.
+         * @param outBuffer the pre-allocated output buffer.
+         * @param index     the index of the file to be extracted.
+         */
         template< std::size_t N >
         void extract( Input inArchive, byte_t (& outBuffer)[N], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
         }
 
+        /**
+         * @brief Extracts a file to the pre-allocated output buffer.
+         *
+         * @param inArchive the input archive to extract from.
+         * @param outBuffer the pre-allocated output buffer.
+         * @param size      the size of the output buffer (it must be equal to the unpacked size
+         *                  of the item to be extracted).
+         * @param index     the index of the file to be extracted.
+         */
         void extract( Input inArchive, byte_t* outBuffer, std::size_t size, std::uint32_t index = 0 ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, size, index );
@@ -163,11 +190,27 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             inputArchive.extractTo( outMap );
         }
 
+        /**
+         * @brief Extracts the content of the given archive to the buffers provided by the given BufferCallback.
+         *
+         * @param inArchive the input archive to be extracted.
+         * @param callback  the function providing the buffers.
+         * @param indices   (optional) the indices of the files in the archive that must be extracted.
+         */
         void extract( Input inArchive, BufferCallback callback, BitIndicesView indices = {} ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( std::move( callback ), indices );
         }
 
+        /**
+         * @brief Extracts the raw content of the archive to the given callback.
+         *
+         * @note You can set a FileCallback to check the file being extracted.
+         *
+         * @param inArchive the input archive to be extracted.
+         * @param callback  a function providing the extracted raw data to the user.
+         * @param indices   (optional) the indices of the files in the archive that must be extracted.
+         */
         void extractTo( Input inArchive, RawDataCallback callback, BitIndicesView indices = {} ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( std::move( callback ), indices );

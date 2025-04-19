@@ -343,7 +343,7 @@ class BitInputArchive {
          * @note You can set a FileCallback to check the file being extracted.
          *
          * @param callback  a function providing the extracted raw data to the user.
-         * @param indices
+         * @param indices   (optional) the indices of the files in the archive that must be extracted.
          */
         void extractTo( RawDataCallback callback, BitIndicesView indices = {} ) const;
 
