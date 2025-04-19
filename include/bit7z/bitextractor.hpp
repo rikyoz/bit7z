@@ -95,6 +95,22 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         /**
+         * @brief Extracts a folder from the archive to the chosen directory.
+         *
+         * @param inArchive     the input archive to extract from.
+         * @param outDir        the output directory where the extracted folder will be put.
+         * @param folderPath    the path of the folder inside the archive to be extracted.
+         * @param policy        (optional) the path policy to be used for extracting the folder.
+         */
+        void extractFolder( Input inArchive,
+                            const tstring& outDir,
+                            const tstring& folderPath,
+                            FolderPathPolicy policy = FolderPathPolicy::Strip ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractFolderTo( outDir, folderPath, policy );
+        }
+
+        /**
          * @brief Extracts a file from the given archive to the output buffer.
          *
          * @param inArchive   the input archive to extract from.
@@ -104,6 +120,23 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         void extract( Input inArchive, buffer_t& outBuffer, std::uint32_t index = 0 ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
+        }
+
+        template< std::size_t N >
+        void extract( Input inArchive, std::array< byte_t, N >& outBuffer, std::uint32_t index = 0 ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outBuffer, index );
+        }
+
+        template< std::size_t N >
+        void extract( Input inArchive, byte_t (& outBuffer)[N], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outBuffer, index );
+        }
+
+        void extract( Input inArchive, byte_t* outBuffer, std::size_t size, std::uint32_t index = 0 ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( outBuffer, size, index );
         }
 
         /**
@@ -128,6 +161,16 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         void extract( Input inArchive, std::map< tstring, buffer_t >& outMap ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outMap );
+        }
+
+        void extract( Input inArchive, BufferCallback callback, BitIndicesView indices = {} ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( std::move( callback ), indices );
+        }
+
+        void extractTo( Input inArchive, RawDataCallback callback, BitIndicesView indices = {} ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( std::move( callback ), indices );
         }
 
         /**
@@ -250,10 +293,11 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * If the archive is not valid, a BitException is thrown.
          *
          * @param inArchive   the input archive to be tested.
+         * @param indices     (optional) the indices of the items to be tested in the archive.
          */
-        void test( Input inArchive ) const {
+        void test( Input inArchive, BitIndicesView indices = {} ) const {
             const BitInputArchive inputArchive( *this, inArchive );
-            inputArchive.test();
+            inputArchive.test( indices );
         }
 
     private:

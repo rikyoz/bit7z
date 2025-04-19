@@ -226,6 +226,13 @@ class BitInputArchive {
          */
         void extractTo( const tstring& outDir, RenameCallback renameCallback ) const;
 
+        /**
+         * @brief Extracts a folder from the archive to the chosen directory.
+         *
+         * @param outDir        the output directory where the extracted folder will be put.
+         * @param folderPath    the path of the folder inside the archive to be extracted.
+         * @param policy        (optional) the path policy to be used for extracting the folder.
+         */
         void extractFolderTo( const tstring& outDir,
                               const tstring& folderPath,
                               FolderPathPolicy policy = FolderPathPolicy::Strip ) const;
@@ -252,14 +259,14 @@ class BitInputArchive {
         /**
          * @brief Extracts a file to the pre-allocated output buffer.
          *
-         * @tparam N     the size of the output buffer (it must be equal to the unpacked size
-         *               of the item to be extracted).
-         * @param buffer the pre-allocated output buffer.
-         * @param index  the index of the file to be extracted.
+         * @tparam N        the size of the output buffer (it must be equal to the unpacked size
+         *                  of the item to be extracted).
+         * @param outBuffer the pre-allocated output buffer.
+         * @param index     the index of the file to be extracted.
          */
         template< std::size_t N >
-        void extractTo( std::array< byte_t, N >& buffer, std::uint32_t index = 0 ) const {
-            extractTo( buffer.data(), buffer.size(), index );
+        void extractTo( std::array< byte_t, N >& outBuffer, std::uint32_t index = 0 ) const {
+            extractTo( outBuffer.data(), outBuffer.size(), index );
         }
 
         template< std::size_t N >
@@ -271,14 +278,14 @@ class BitInputArchive {
         /**
          * @brief Extracts a file to the pre-allocated output buffer.
          *
-         * @tparam N     the size of the output buffer (it must be equal to the unpacked size
-         *               of the item to be extracted).
-         * @param buffer the pre-allocated output buffer.
-         * @param index  the index of the file to be extracted.
+         * @tparam N        the size of the output buffer (it must be equal to the unpacked size
+         *                  of the item to be extracted).
+         * @param outBuffer the pre-allocated output buffer.
+         * @param index     the index of the file to be extracted.
          */
         template< std::size_t N >
-        void extractTo( byte_t (& buffer)[N], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
-            extractTo( buffer, N, index );
+        void extractTo( byte_t (& outBuffer)[N], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+            extractTo( outBuffer, N, index );
         }
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
@@ -289,12 +296,12 @@ class BitInputArchive {
         /**
          * @brief Extracts a file to the pre-allocated output buffer.
          *
-         * @param buffer the pre-allocated output buffer.
-         * @param size   the size of the output buffer (it must be equal to the unpacked size
-         *               of the item to be extracted).
-         * @param index  the index of the file to be extracted.
+         * @param outBuffer the pre-allocated output buffer.
+         * @param size      the size of the output buffer (it must be equal to the unpacked size
+         *                  of the item to be extracted).
+         * @param index     the index of the file to be extracted.
          */
-        void extractTo( byte_t* buffer, std::size_t size, std::uint32_t index = 0 ) const;
+        void extractTo( byte_t* outBuffer, std::size_t size, std::uint32_t index = 0 ) const;
 
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         void extract( std::ostream& outStream, std::uint32_t index = 0 ) const {
@@ -347,7 +354,7 @@ class BitInputArchive {
          *
          * @throws BitException if the archive is not valid.
          */
-        void test(BitIndicesView indices = {}) const;
+        void test( BitIndicesView indices = {} ) const;
 
         /**
          * @brief Tests the archive item at the given index without extracting it.

@@ -432,8 +432,8 @@ void BitInputArchive::extractTo( std::ostream& outStream, std::uint32_t index ) 
     extractArchive( extractCallback, NAskMode::kExtract, index );
 }
 
-void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, std::uint32_t index ) const {
-    if ( buffer == nullptr ) {
+void BitInputArchive::extractTo( byte_t* outBuffer, std::size_t size, std::uint32_t index ) const {
+    if ( outBuffer == nullptr ) {
         throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
                             make_error_code( BitError::NullOutputBuffer ) );
     }
@@ -454,7 +454,7 @@ void BitInputArchive::extractTo( byte_t* buffer, std::size_t size, std::uint32_t
                             make_error_code( BitError::InvalidOutputBufferSize ) );
     }
 
-    const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, buffer, size );
+    const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, outBuffer, size );
     extractArchive( extractCallback, NAskMode::kExtract, index );
 }
 
