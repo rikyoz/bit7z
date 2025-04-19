@@ -32,19 +32,19 @@ class BitArchiveItem : public BitGenericItem {
         /**
          * @return true if and only if the item is a directory (i.e., it has the property BitProperty::IsDir).
          */
-        BIT7Z_NODISCARD auto isDir() const -> bool override;
+        BIT7Z_NODISCARD auto isDir() const -> bool final;
 
         /**
          * @return true if and only if the item is a symbolic link (either has a non-empty BitProperty::SymLink,
          *         or it has POSIX/Win32 symbolic link file attributes).
          */
-        BIT7Z_NODISCARD auto isSymLink() const -> bool override;
+        BIT7Z_NODISCARD auto isSymLink() const -> bool final;
 
         /**
          * @return the item's name; if not available, it tries to get it from the element's path or,
          *         if not possible, it returns an empty string.
          */
-        BIT7Z_NODISCARD auto name() const -> tstring override;
+        BIT7Z_NODISCARD auto name() const -> tstring final;
 
         /**
          * @return the extension of the item, if available or if it can be inferred from the name;
@@ -56,7 +56,7 @@ class BitArchiveItem : public BitGenericItem {
          * @return the path of the item in the archive, if available or inferable from the name, or an empty string
          *         otherwise.
          */
-        BIT7Z_NODISCARD auto path() const -> tstring override;
+        BIT7Z_NODISCARD auto path() const -> tstring final;
 
         /**
          * @note Same as path(), but returning a native string (i.e., std::wstring on Windows, std::string elsewhere).
@@ -77,7 +77,7 @@ class BitArchiveItem : public BitGenericItem {
         /**
          * @return the uncompressed size of the item.
          */
-        BIT7Z_NODISCARD auto size() const -> std::uint64_t override;
+        BIT7Z_NODISCARD auto size() const -> std::uint64_t final;
 
         /**
          * @return the item creation time.
@@ -97,7 +97,7 @@ class BitArchiveItem : public BitGenericItem {
         /**
          * @return the item attributes.
          */
-        BIT7Z_NODISCARD auto attributes() const -> std::uint32_t override;
+        BIT7Z_NODISCARD auto attributes() const -> std::uint32_t final;
 
         /**
          * @return the compressed size of the item.
