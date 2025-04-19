@@ -79,7 +79,7 @@ auto AllocStringBuffer( LPCSTR str, std::uint32_t byteLength ) -> BSTR {
     if ( str != nullptr ) {
         // Copying byte-by-byte the input string to the BSTR.
         // Note: flawfinder warns about not checking for buffer overflows; this is a false alarm,
-        // since are using the correct destination size we just allocated using calloc.
+        // since we are using the correct destination size we just allocated using calloc.
         std::memcpy( result, str, byteLength ); // flawfinder: ignore
     }
     // ReSharper disable once CppDFAMemoryLeak

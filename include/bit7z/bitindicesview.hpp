@@ -182,7 +182,7 @@ class BitIndicesView final {
         BIT7Z_NODISCARD
         constexpr auto empty() const noexcept -> bool {
             return mIndices == nullptr;
-        };
+        }
 };
 // NOLINTEND(*-explicit-conversions, *-avoid-c-arrays, *-pro-bounds-pointer-arithmetic)
 } // namespace bit7z
