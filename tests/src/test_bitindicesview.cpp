@@ -47,8 +47,8 @@ TEST_CASE( "Creating an empty view", "[bitindicesview]" ) {
     REQUIRE( ( view.cend() - view.cbegin() ) == 0 );
 }
 
-TEST_CASE( "Creating a view of a single integer", "[bitindicesview]" ) {
-    const std::uint32_t index = GENERATE(0, 1, 42, 1024);
+TEMPLATE_TEST_CASE( "Creating a view of a single integer", "[bitindicesview]", const std::uint32_t, std::uint32_t ) {
+    TestType index = GENERATE(0, 1, 42, 1024);
     CAPTURE( index );
 
     // Note: Using () instead of {} avoids calling the initializer_list constructor,
@@ -187,8 +187,8 @@ TEST_CASE( "Creating a view of a non-empty std::vector", "[bitindicesview]" ) {
     REQUIRE( std::equal( view.cbegin(), view.cend(), testIndices.cbegin() ) );
 }
 
-TEST_CASE( "Creating a view of an empty std::array", "[bitindicesview]" ) {
-    constexpr std::array< std::uint32_t, 0 > array{};
+TEMPLATE_TEST_CASE( "Creating a view of an empty std::array", "[bitindicesview]", const std::uint32_t, std::uint32_t ) {
+    constexpr std::array< TestType, 0 > array{};
     // ReSharper disable once CppVariableCanBeMadeConstexpr
     const BitIndicesView view{ array };
 
@@ -217,8 +217,8 @@ TEST_CASE( "Creating a view of an empty std::array", "[bitindicesview]" ) {
     REQUIRE( ( view.cend() - view.cbegin() ) == 0 );
 }
 
-TEST_CASE( "Creating a view of a non-empty std::array", "[bitindicesview]" ) {
-    constexpr std::array< std::uint32_t, 16 > testIndices = {1, 3, 5, 7, 9, 11, 13, 15, 17};
+TEMPLATE_TEST_CASE( "Creating a view of a non-empty std::array", "[bitindicesview]", const std::uint32_t, std::uint32_t ) {
+    constexpr std::array< TestType, 16 > testIndices = {1, 3, 5, 7, 9, 11, 13, 15, 17};
     const BitIndicesView view{ testIndices };
 
     REQUIRE_FALSE( view.data() == nullptr );
@@ -250,9 +250,9 @@ TEST_CASE( "Creating a view of a non-empty std::array", "[bitindicesview]" ) {
     REQUIRE( std::equal( view.cbegin(), view.cend(), testIndices.cbegin() ) );
 }
 
-TEST_CASE( "Creating a view of a C array", "[bitindicesview]" ) {
+TEMPLATE_TEST_CASE( "Creating a view of a C array", "[bitindicesview]", const std::uint32_t, std::uint32_t ) {
     constexpr std::size_t arraySize = 16u;
-    constexpr std::uint32_t testIndices[arraySize] = {2, 4, 6, 8, 10, 12, 14, 16}; // NOLINT(*-avoid-c-arrays)
+    TestType testIndices[arraySize] = {2, 4, 6, 8, 10, 12, 14, 16}; // NOLINT(*-avoid-c-arrays)
     const BitIndicesView view{ testIndices };
 
     REQUIRE_FALSE( view.data() == nullptr );

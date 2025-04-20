@@ -123,12 +123,18 @@ class BitIndicesView final {
                 }
         };
 
-        using value_type = std::uint32_t;
+        // BitIndicesView is basically a C++20's std::span< const std::uint32_t >.
+        // Note: still not using C++14's traits style as bit7z's public API must be written in C++11.
+        using element_type = std::remove_pointer< decltype( mIndices ) >::type;
+        using value_type = std::remove_cv< element_type >::type;
         using size_type = decltype( mSize );
+        using difference_type = std::ptrdiff_t;
+        using pointer = element_type*;
+        using const_pointer = const element_type*;
+        using reference = element_type&;
+        using const_reference = const element_type&;
         using iterator = ConstIterator;
         using const_iterator = ConstIterator;
-        using pointer = decltype( mIndices );
-        using const_pointer = decltype( mIndices );
 
         constexpr BitIndicesView() noexcept : mIndices{ nullptr }, mSize{ 0 } {}
 
@@ -139,14 +145,16 @@ class BitIndicesView final {
             : BitIndicesView{ indices.data(), indices.size() } {}
 
         template< std::size_t N >
-        /* implicit */ constexpr BitIndicesView( const std::uint32_t (&indices)[N] ) noexcept
-            : BitIndicesView{ static_cast< const std::uint32_t* >( indices ), N } {}
+        /* implicit */ constexpr BitIndicesView( element_type (&indices)[N] ) noexcept
+            : BitIndicesView{ static_cast< const_pointer >( indices ), N } {}
 
-        template< std::size_t N >
-        /* implicit */ constexpr BitIndicesView( const std::array< std::uint32_t, N >& indices ) noexcept
+        template< typename U,
+                  std::size_t N,
+                  typename = typename std::enable_if< std::is_convertible< U(*)[], element_type(*)[] >::value >::type >
+        /* implicit */ constexpr BitIndicesView( const std::array< U, N >& indices ) noexcept
             : BitIndicesView{ indices.data(), indices.size() } {}
 
-        BitIndicesView( std::initializer_list< std::uint32_t > indices ) noexcept
+        BitIndicesView( std::initializer_list< value_type > indices ) noexcept
             : BitIndicesView{ indices.begin(), indices.size() } {}
 
         BIT7Z_NODISCARD
