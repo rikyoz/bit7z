@@ -78,11 +78,11 @@ auto BitArchiveItem::nativePath() const -> native_string {
     return path.getNativeString();
 }
 
-auto BitArchiveItem::rawPath() const -> std::wstring {
+auto BitArchiveItem::rawPath() const -> sevenzip_string {
     BitPropVariant path = itemProperty( BitProperty::Path );
     if ( path.isEmpty() ) {
         path = itemProperty( BitProperty::Name );
-        return path.isEmpty() ? std::wstring{} : path.getRawString();
+        return path.isEmpty() ? sevenzip_string{} : path.getRawString();
     }
     return path.getRawString();
 }
