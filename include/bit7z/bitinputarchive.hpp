@@ -172,6 +172,8 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto archivePath() const noexcept -> const tstring&;
 
+        BIT7Z_NODISCARD auto archiveHasPath() const noexcept -> bool;
+
         /**
          * @return the BitAbstractArchiveHandler object containing the settings for reading the archive.
          */

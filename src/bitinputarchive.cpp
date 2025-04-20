@@ -256,6 +256,10 @@ auto BitInputArchive::archivePath() const noexcept -> const tstring& {
     return mArchivePath;
 }
 
+auto BitInputArchive::archiveHasPath() const noexcept -> bool {
+    return !mArchivePath.empty();
+}
+
 auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandler& {
     return mArchiveHandler;
 }
