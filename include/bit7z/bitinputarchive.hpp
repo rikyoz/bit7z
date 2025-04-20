@@ -518,7 +518,7 @@ class BitInputArchive {
         auto isInvalidIndex( std::uint32_t index ) const -> bool;
 
         BIT7Z_NODISCARD
-        auto findInvalidIndex( BitIndicesView indices ) const -> BitIndicesView::ConstIterator;
+        auto findInvalidIndex( BitIndicesView indices ) const -> BitIndicesView::const_iterator;
 
         BIT7Z_NODISCARD
         auto close() const noexcept -> HRESULT;

@@ -601,7 +601,7 @@ auto BitInputArchive::mainSubfileIndex() const -> std::uint32_t {
     return mainSubfileIndex;
 }
 
-auto BitInputArchive::findInvalidIndex( BitIndicesView indices ) const -> BitIndicesView::ConstIterator {
+auto BitInputArchive::findInvalidIndex( BitIndicesView indices ) const -> BitIndicesView::const_iterator {
     if ( indices.data() == nullptr ) {
         return indices.cend();
     }
