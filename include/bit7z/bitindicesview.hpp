@@ -26,13 +26,6 @@ using IndicesArray = std::array< std::uint32_t, N >;
 
 // NOLINTBEGIN(*-explicit-conversions, *-avoid-c-arrays, *-pro-bounds-pointer-arithmetic)
 class BitIndicesView final {
-        const std::uint32_t* mIndices;
-        std::uint32_t mSize;
-
-        constexpr BitIndicesView( const std::uint32_t* indices, std::size_t size ) noexcept
-            : mIndices{ size == 0 ? nullptr : indices },
-              mSize{ static_cast< std::uint32_t >( size ) } {}
-
     public:
         class ConstIterator final {
                 const std::uint32_t* mPointer;
@@ -125,9 +118,9 @@ class BitIndicesView final {
 
         // BitIndicesView is basically a C++20's std::span< const std::uint32_t >.
         // Note: still not using C++14's traits style as bit7z's public API must be written in C++11.
-        using element_type = std::remove_pointer< decltype( mIndices ) >::type;
+        using element_type = const std::uint32_t; // T in std::span<T>.
         using value_type = std::remove_cv< element_type >::type;
-        using size_type = decltype( mSize );
+        using size_type = std::uint32_t; // 7-Zip uses 32-bits for the size of the indices array.
         using difference_type = std::ptrdiff_t;
         using pointer = element_type*;
         using const_pointer = const element_type*;
@@ -191,6 +184,14 @@ class BitIndicesView final {
         constexpr auto empty() const noexcept -> bool {
             return mIndices == nullptr;
         }
+
+    private:
+        const_pointer mIndices;
+        size_type mSize;
+
+        constexpr BitIndicesView( const_pointer indices, std::size_t size ) noexcept
+            : mIndices{ size == 0 ? nullptr : indices },
+              mSize{ static_cast< size_type >( size ) } {}
 };
 // NOLINTEND(*-explicit-conversions, *-avoid-c-arrays, *-pro-bounds-pointer-arithmetic)
 } // namespace bit7z
