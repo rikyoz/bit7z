@@ -142,4 +142,10 @@
 #   define BIT7Z_ALWAYS_INLINE inline
 #endif
 
+#if BIT7Z_CPP_STANDARD >= 14
+#   define BIT7Z_CPP14_CONSTEXPR constexpr
+#else
+#   define BIT7Z_CPP14_CONSTEXPR /*constexpr*/
+#endif
+
 #endif //BITDEFINES_HPP

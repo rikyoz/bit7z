@@ -98,6 +98,7 @@ set( HEADERS
      src/internal/opencallback.hpp
      src/internal/operationcategory.hpp
      src/internal/operationresult.hpp
+     src/internal/optional.hpp
      src/internal/processeditem.hpp
      src/internal/rawdataextractcallback.hpp
      src/internal/renameditem.hpp
