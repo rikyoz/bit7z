@@ -17,6 +17,7 @@
 #include "internal/extractcallback.hpp"
 #include "internal/processeditem.hpp"
 #include "internal/operationresult.hpp"
+#include "internal/optional.hpp"
 
 #include <cstdint>
 
@@ -46,7 +47,7 @@ class FileExtractCallback final : public ExtractCallback {
         bool mRetainDirectories;
         RenameCallback mRenameCallback;
 
-        ProcessedItem mCurrentItem;
+        Optional< ProcessedItem > mCurrentItem;
 
         CMyComPtr< CFileOutStream > mFileOutStream;
 

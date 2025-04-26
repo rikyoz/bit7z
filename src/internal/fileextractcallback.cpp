@@ -52,19 +52,21 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
         return result;
     }
 
+    // Note: here mCurrentItem is engaged with a value, so there's no need to check if it has one.
+
 #ifdef _WIN32
-    const auto creationTime = mCurrentItem.creationTime();
-    const auto accessTime = mCurrentItem.accessTime();
-    const auto modifiedTime = mCurrentItem.modifiedTime();
+    const auto creationTime = mCurrentItem->creationTime();
+    const auto accessTime = mCurrentItem->accessTime();
+    const auto modifiedTime = mCurrentItem->modifiedTime();
     filesystem::fsutil::set_file_time( mFilePathOnDisk, creationTime, accessTime, modifiedTime );
 #else
-    if ( mCurrentItem.hasModifiedTime() ) {
-        filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem.modifiedTime() );
+    if ( mCurrentItem->hasModifiedTime() ) {
+        filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem->modifiedTime() );
     }
 #endif
 
-    if ( mCurrentItem.areAttributesDefined() ) {
-        filesystem::fsutil::set_file_attributes( mFilePathOnDisk, mCurrentItem.attributes() );
+    if ( mCurrentItem->areAttributesDefined() ) {
+        filesystem::fsutil::set_file_attributes( mFilePathOnDisk, mCurrentItem->attributes() );
     }
     return result;
 }
@@ -73,9 +75,9 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
 auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
-    mCurrentItem.loadItemInfo( inputArchive(), index );
+    const auto& item = mCurrentItem.emplace( inputArchive(), index );
 
-    auto filePath = mCurrentItem.path();
+    auto filePath = item.path();
 
     if ( mRenameCallback ) {
 #if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )

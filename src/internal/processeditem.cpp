@@ -23,10 +23,8 @@
 
 namespace bit7z {
 
-ProcessedItem::ProcessedItem()
-    : mAttributes{ 0 }, mAreAttributesDefined{ false } {}
-
-void ProcessedItem::loadItemInfo( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
+ProcessedItem::ProcessedItem( const BitInputArchive& inputArchive, std::uint32_t itemIndex )
+    : mAttributes{ 0 }, mAreAttributesDefined{ false } {
     loadFilePath( inputArchive, itemIndex );
     loadAttributes( inputArchive, itemIndex );
     loadTimeMetadata( inputArchive, itemIndex );

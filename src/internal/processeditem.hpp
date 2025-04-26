@@ -23,9 +23,7 @@ class BitInputArchive;
 
 class ProcessedItem final {
     public:
-        ProcessedItem();
-
-        void loadItemInfo( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
+        ProcessedItem( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
 
         BIT7Z_NODISCARD auto path() const -> fs::path;
 
