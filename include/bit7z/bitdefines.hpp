@@ -19,13 +19,21 @@
 //#define BIT7Z_USE_STD_BYTE
 //#define BIT7Z_USE_NATIVE_STRING
 
-#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 202302L ) || ( defined( __cplusplus ) && __cplusplus >= 202302L )
+#if defined( _MSVC_LANG ) && !defined( __clang__ )
+#   define BIT7Z_CPP_VERSION _MSVC_LANG
+#elif defined( __cplusplus )
+#   define BIT7Z_CPP_VERSION __cplusplus
+#else
+#   define BIT7Z_CPP_VERSION 201103L
+#endif
+
+#if BIT7Z_CPP_VERSION >= 202302L
 #   define BIT7Z_CPP_STANDARD 23
-#elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 202002L ) || ( defined( __cplusplus ) && __cplusplus >= 202002L )
+#elif BIT7Z_CPP_VERSION >= 202002L
 #   define BIT7Z_CPP_STANDARD 20
-#elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || ( defined( __cplusplus ) && __cplusplus >= 201703L )
+#elif BIT7Z_CPP_VERSION >= 201703L
 #   define BIT7Z_CPP_STANDARD 17
-#elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201402L ) || ( defined( __cplusplus ) && __cplusplus >= 201402L )
+#elif BIT7Z_CPP_VERSION >= 201402L
 #   define BIT7Z_CPP_STANDARD 14
 #else
 #   define BIT7Z_CPP_STANDARD 11
