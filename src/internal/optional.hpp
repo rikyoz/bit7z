@@ -28,6 +28,8 @@ struct nullopt_t {
 
 static constexpr nullopt_t nullopt{0};
 
+constexpr struct empty_init_t{} empty_init{};
+
 constexpr struct in_place_t{} in_place{};
 
 template< typename T, bool = std::is_trivially_destructible< T >::value >
@@ -35,7 +37,7 @@ union OptionalStorage { // NOLINT(*-special-member-functions)
     byte_t mEmptyByte;
     T mValue;
 
-    constexpr OptionalStorage() noexcept : mEmptyByte{} {}
+    explicit constexpr OptionalStorage( empty_init_t /* unused */ ) noexcept : mEmptyByte{} {}
 
     template < typename... Args >
     explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {}
@@ -49,7 +51,7 @@ union OptionalStorage<T, false> { // NOLINT(*-special-member-functions)
     byte_t mEmptyByte;
     T mValue;
 
-    constexpr OptionalStorage() noexcept : mEmptyByte{} {}
+    explicit constexpr OptionalStorage( empty_init_t /* unused */ ) noexcept : mEmptyByte{} {}
 
     template < typename... Args >
     explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {}
@@ -90,19 +92,20 @@ class Optional final : OptionalBase< T > {
 
         friend struct OptionalBase<T>;
 
-        constexpr Optional() noexcept : mEngaged{ false } {}
+        constexpr Optional() noexcept : mEngaged{ false }, mStorage{ empty_init } {}
 
         //NOLINTNEXTLINE(*-explicit-conversions)
-        /* implicit */ constexpr Optional( nullopt_t /*unused*/ ) noexcept : mEngaged{ false } {}
+        /* implicit */ constexpr Optional( nullopt_t /* unused */ ) noexcept
+            : mEngaged{ false }, mStorage{ empty_init } {}
 
-        /* implicit */ Optional( const Optional& other ) : mEngaged{ other.mEngaged } {
+        /* implicit */ Optional( const Optional& other ) : mEngaged{ other.mEngaged }, mStorage{ empty_init } {
             if ( other.mEngaged ) {
                 new( data() ) T( *other );
             }
         }
 
         /* implicit */ Optional( Optional&& other ) noexcept( std::is_nothrow_move_constructible<T>::value )
-            : mEngaged{ other.mEngaged } {
+            : mEngaged{ other.mEngaged }, mStorage{ empty_init } {
             if ( other.mEngaged ) {
                 new( data() ) T( std::move( *other ) );
             }
