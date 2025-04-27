@@ -142,7 +142,8 @@
 #   define BIT7Z_ALWAYS_INLINE inline
 #endif
 
-#if BIT7Z_CPP_STANDARD >= 14
+// Note: MSVC 2015 doesn't fully support C++14's constexpr
+#if BIT7Z_CPP_STANDARD >= 14 && !( defined( _MSC_VER ) && _MSC_VER <= 1900 )
 #   define BIT7Z_CPP14_CONSTEXPR constexpr
 #else
 #   define BIT7Z_CPP14_CONSTEXPR /*constexpr*/
