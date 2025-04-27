@@ -140,13 +140,15 @@ class Optional final : OptionalBase< T > {
         }
 
         auto operator=( Optional&& other ) noexcept( is_movable< T >::value ) -> Optional& {
-            if ( !other.mEngaged ) {
-                reset();
-            } else if ( mEngaged ) {
-                stored_value() = std::move( *other );
-            } else {
-                new( data() ) T( std::move( *other ) );
-                mEngaged = true;
+            if ( this != &other ) {
+                if ( !other.mEngaged ) {
+                    reset();
+                } else if ( mEngaged ) {
+                    stored_value() = std::move( *other );
+                } else {
+                    new( data() ) T( std::move( *other ) );
+                    mEngaged = true;
+                }
             }
             return *this;
         }
@@ -171,19 +173,19 @@ class Optional final : OptionalBase< T > {
             return *this;
         }
 
-        BIT7Z_CPP14_CONSTEXPR auto operator*() & -> T& {
+        BIT7Z_CPP14_CONSTEXPR auto operator*() & noexcept -> T& {
             return stored_value();
         }
 
-        constexpr auto operator*() const& -> const T& {
+        constexpr auto operator*() const& noexcept -> const T& {
             return stored_value();
         }
 
-        BIT7Z_CPP14_CONSTEXPR auto operator->() & -> T* {
+        BIT7Z_CPP14_CONSTEXPR auto operator->() & noexcept -> T* {
             return data();
         }
 
-        constexpr auto operator->() const& -> const T* {
+        constexpr auto operator->() const& noexcept -> const T* {
             return data();
         }
 
