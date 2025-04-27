@@ -39,11 +39,12 @@ set( INTERNAL_API_SOURCE_FILES
      src/test_bititemsvector.cpp # BitItemsVector is not meant to be used by the user
      src/test_cbufferinstream.cpp
      src/test_dateutil.cpp
+     src/test_formatdetect.cpp
      src/test_fsutil.cpp
      src/test_util.cpp
      src/test_stringutil.cpp
      src/test_windows.cpp
-     src/test_formatdetect.cpp )
+     src/test_optional.cpp )
 
 set( TESTS_BASE_TARGET bit7z-tests-base )
 add_library( ${TESTS_BASE_TARGET} INTERFACE )
