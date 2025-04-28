@@ -343,7 +343,7 @@ BIT7Z_ALWAYS_INLINE
 auto shouldFilterItem( const native_string& path, const BitArchiveItemOffset& item, FolderPathPolicy policy ) -> bool {
     constexpr auto nativeDotDot = BIT7Z_NATIVE_STRING( ".." );
     return ( starts_with( path, nativeDotDot ) ||
-           ( path == nativeDot && ( policy == FolderPathPolicy::Strip || !item.isDir() ) ) );
+           ( ( path.empty() || path == nativeDot ) && ( policy == FolderPathPolicy::Strip || !item.isDir() ) ) );
 }
 } // namespace
 
