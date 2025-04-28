@@ -188,7 +188,11 @@ TEST_CASE( "Creating a view of a non-empty std::vector", "[bitindicesview]" ) {
 }
 
 TEMPLATE_TEST_CASE( "Creating a view of an empty std::array", "[bitindicesview]", const std::uint32_t, std::uint32_t ) {
+#if defined( _MSC_VER ) && _MSC_VER <= 1900
     constexpr std::array< TestType, 0 > array = {0}; // Note: the {0} is needed for MSVC 2015.
+#else
+    constexpr std::array< TestType, 0 > array = {};
+#endif
     // ReSharper disable once CppVariableCanBeMadeConstexpr
     const BitIndicesView view{ array };
 
