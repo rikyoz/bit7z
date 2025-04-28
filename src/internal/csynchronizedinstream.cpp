@@ -16,6 +16,10 @@
 
 #include <algorithm> // For std::copy_n
 
+#if defined( _MSC_VER ) && _MSC_VER <= 1900 && !defined( _SCL_SECURE_NO_WARNINGS )
+#   define _SCL_SECURE_NO_WARNINGS
+#endif
+
 namespace bit7z {
 
 CSynchronizedInStream::CSynchronizedInStream( std::uint64_t maxMemoryUsage,
