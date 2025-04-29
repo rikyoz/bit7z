@@ -39,19 +39,19 @@ auto RawDataExtractCallback::getOutStream( uint32_t index, ISequentialOutStream*
         return S_OK;
     }
 
-    // Get Name
-    const BitPropVariant prop = itemProperty( index, BitProperty::Path );
-    tstring fullPath;
-
-    if ( prop.isEmpty() ) {
-        fullPath = kEmptyFileAlias;
-    } else if ( prop.isString() ) {
-        fullPath = prop.getString();
-    } else {
-        return E_FAIL;
-    }
-
     if ( mHandler.fileCallback() ) {
+        // Get Name
+        const BitPropVariant prop = itemProperty( index, BitProperty::Path );
+        tstring fullPath;
+
+        if ( prop.isEmpty() ) {
+            fullPath = kEmptyFileAlias;
+        } else if ( prop.isString() ) {
+            fullPath = prop.getString();
+        } else {
+            return E_FAIL;
+        }
+
         mHandler.fileCallback()( fullPath );
     }
 
