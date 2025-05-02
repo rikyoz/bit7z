@@ -322,10 +322,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             }
 
             const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
-            return extractMatchingFilter( inArchive, outBuffer, policy,
-                                          [ &regexFilter ]( const tstring& itemPath ) -> bool {
-                                              return std::regex_match( itemPath, regexFilter );
-                                          } );
+            extractMatchingFilter( inArchive, outBuffer, policy, [ &regexFilter ]( const tstring& itemPath ) -> bool {
+                return std::regex_match( itemPath, regexFilter );
+            } );
         }
 
 #endif
