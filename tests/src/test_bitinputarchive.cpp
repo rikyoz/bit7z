@@ -103,7 +103,6 @@ void require_extracts_items_to_filesystem( const BitArchiveReader& info, const E
 
     std::vector< uint32_t > testIndices( info.itemsCount() );
     std::iota( testIndices.begin(), testIndices.end(), 0 );
-    CAPTURE( testIndices );
     REQUIRE_NOTHROW( info.extractTo( testDir, testIndices ) );
     for ( const auto& expectedItem : expectedItems ) {
         REQUIRE_FILESYSTEM_ITEM( expectedItem );

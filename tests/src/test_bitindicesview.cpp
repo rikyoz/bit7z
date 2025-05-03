@@ -53,7 +53,6 @@ TEST_CASE( "Creating an empty view", "[bitindicesview]" ) {
 
 TEMPLATE_TEST_CASE( "Creating a view of a single integer", "[bitindicesview]", const std::uint32_t, std::uint32_t ) {
     TestType index = GENERATE(0, 1, 42, 1024);
-    CAPTURE( index );
 
     // Note: Using () instead of {} avoids calling the initializer_list constructor,
     // which would cause lifetime issues (the view would store a dangling pointer
@@ -158,7 +157,6 @@ TEST_CASE( "Creating a view of a non-empty std::vector", "[bitindicesview]" ) {
     std::vector< std::uint32_t > testIndices( 16 );
     std::iota( testIndices.begin(), testIndices.end(), 0u );
     std::shuffle( testIndices.begin(), testIndices.end(), std::mt19937{ std::random_device{}() } );
-    CAPTURE( testIndices );
 
     const BitIndicesView view{ testIndices };
 
