@@ -380,6 +380,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             const bool shouldExtractMatchedItem = policy == FilterPolicy::Include;
             // Searching for files inside the archive that match the given filter
             for ( const auto& item : inputArchive ) {
+                if ( item.isDir() ) {
+                    continue;
+                }
                 const bool itemMatches = filter( item.path() );
                 if ( itemMatches == shouldExtractMatchedItem ) {
                     /* The if-condition is equivalent to an exclusive NOR (negated XOR) between
@@ -389,7 +392,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
                 }
             }
 
-            throw BitException( "Failed to extract items", make_error_code( BitError::NoMatchingItems ) );
+            throw BitException( "Failed to extract file", make_error_code( BitError::NoMatchingFile ) );
         }
 };
 
