@@ -51,6 +51,8 @@ auto InternalCategory::message( int errorValue ) const -> std::string {
             return "The item is marked as deleted.";
         case BitError::NoMatchingItems:
             return "No matching item was found in the archive.";
+        case BitError::NoMatchingFile:
+            return "No matching file was found in the archive.";
         case BitError::NoMatchingSignature:
             return "No known signature found.";
         case BitError::NonEmptyOutputBuffer:
@@ -89,6 +91,7 @@ auto InternalCategory::default_error_condition( int errorValue ) const noexcept 
         case BitError::InvalidZipPassword:
             return std::make_error_condition( std::errc::invalid_argument );
         case BitError::NoMatchingItems:
+        case BitError::NoMatchingFile:
             return std::make_error_condition( std::errc::no_such_file_or_directory );
         case BitError::RequestedWrongVariantType:
         case BitError::UnsupportedOperation:

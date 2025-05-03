@@ -45,6 +45,7 @@ TEST_CASE( "BitError: Checking that error values correspond to the correct failu
                                        ERROR_SOURCE( ItemIsAFolder, InvalidArgument ),
                                        ERROR_SOURCE( ItemMarkedAsDeleted, OperationNotPermitted ),
                                        ERROR_SOURCE( NoMatchingItems, NoSuchItem ),
+                                       ERROR_SOURCE( NoMatchingFile, NoSuchItem ),
                                        ERROR_SOURCE( NoMatchingSignature, InvalidArchive ),
                                        ERROR_SOURCE( NonEmptyOutputBuffer, InvalidArgument ),
                                        ERROR_SOURCE( RequestedWrongVariantType, OperationNotSupported ),

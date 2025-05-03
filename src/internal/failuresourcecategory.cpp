@@ -81,7 +81,7 @@ auto FailureSourceCategory::equivalent( const std::error_code& code, int conditi
         case BitFailureSource::FormatDetectionError:
             return code == BitError::NoMatchingSignature;
         case BitFailureSource::NoSuchItem:
-            return code == BitError::NoMatchingItems || code == std::errc::no_such_file_or_directory;
+            return code == BitError::NoMatchingItems || code == BitError::NoMatchingFile || code == std::errc::no_such_file_or_directory;
         case BitFailureSource::OperationNotSupported:
             return code == std::errc::operation_not_supported ||
                    code == std::errc::not_supported ||

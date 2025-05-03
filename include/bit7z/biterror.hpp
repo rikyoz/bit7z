@@ -34,6 +34,7 @@ enum struct BitError {
     ItemIsAFolder,
     ItemMarkedAsDeleted,
     NoMatchingItems,
+    NoMatchingFile,
     NoMatchingSignature,
     NonEmptyOutputBuffer,
     NullOutputBuffer,
