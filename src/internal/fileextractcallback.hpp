@@ -29,7 +29,8 @@ class FileExtractCallback final : public ExtractCallback {
     public:
         FileExtractCallback( const BitInputArchive& inputArchive,
                              const tstring& directoryPath,
-                             RenameCallback callback = {} );
+                             FilterCallback filterCallback = {},
+                             RenameCallback renameCallback = {} );
 
         FileExtractCallback( const FileExtractCallback& ) = delete;
 
@@ -41,11 +42,15 @@ class FileExtractCallback final : public ExtractCallback {
 
         ~FileExtractCallback() override = default;
 
+        BIT7Z_NODISCARD
+        auto extractionAttempted() const -> bool override;
+
     private:
         fs::path mDirectoryPath;  // Output directory
         fs::path mFilePathOnDisk; // Full path to the file on disk
         bool mRetainDirectories;
         RenameCallback mRenameCallback;
+        bool mExtractionAttempted;
 
         Optional< ProcessedItem > mCurrentItem;
 

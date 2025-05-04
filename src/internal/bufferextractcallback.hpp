@@ -22,7 +22,9 @@ class BitInputArchive;
 
 class BufferExtractCallback final : public ExtractCallback {
     public:
-        BufferExtractCallback( const BitInputArchive& inputArchive, BufferCallback callback );
+        BufferExtractCallback( const BitInputArchive& inputArchive,
+                               BufferCallback callback,
+                               FilterCallback filterCallback = {} );
 
         BufferExtractCallback( const BufferExtractCallback& ) = delete;
 
@@ -34,9 +36,13 @@ class BufferExtractCallback final : public ExtractCallback {
 
         ~BufferExtractCallback() override = default;
 
+        BIT7Z_NODISCARD
+        auto extractionAttempted() const -> bool override;
+
     private:
         BufferCallback mBufferCallback;
         CMyComPtr< ISequentialOutStream > mOutMemStream;
+        bool mExtractionAttempted;
 
         void releaseStream() override;
 

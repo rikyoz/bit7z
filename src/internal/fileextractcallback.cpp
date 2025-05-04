@@ -30,11 +30,17 @@ namespace bit7z {
 
 FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
                                           const tstring& directoryPath,
-                                          RenameCallback callback )
-    : ExtractCallback( inputArchive ),
+                                          FilterCallback filterCallback,
+                                          RenameCallback renameCallback )
+    : ExtractCallback( inputArchive, std::move( filterCallback ) ),
       mDirectoryPath( tstring_to_path( directoryPath ) ),
       mRetainDirectories( inputArchive.handler().retainDirectories() ),
-      mRenameCallback{ std::move( callback ) } {}
+      mRenameCallback{ std::move( renameCallback ) },
+      mExtractionAttempted{ false } {}
+
+auto FileExtractCallback::extractionAttempted() const -> bool {
+    return mExtractionAttempted;
+}
 
 void FileExtractCallback::releaseStream() {
     mFileOutStream.Release(); // We need to release the file to change its modified time.
@@ -157,6 +163,7 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
     } else {
         // No action needed
     }
+    mExtractionAttempted = true;
     return S_OK;
 }
 

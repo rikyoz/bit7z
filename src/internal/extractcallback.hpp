@@ -10,6 +10,7 @@
 #ifndef EXTRACTCALLBACK_HPP
 #define EXTRACTCALLBACK_HPP
 
+#include "bitabstractarchivehandler.hpp"
 #include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
@@ -76,11 +77,14 @@ class ExtractCallback : public Callback,
         BIT7Z_NODISCARD
         auto errorException() const -> const std::exception_ptr&;
 
+        BIT7Z_NODISCARD
+        virtual auto extractionAttempted() const -> bool ;
+
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835 //-V3504
 
     protected:
-        explicit ExtractCallback( const BitInputArchive& inputArchive );
+        explicit ExtractCallback( const BitInputArchive& inputArchive, FilterCallback filterCallback = {} );
 
         BIT7Z_NODISCARD
         auto extractMode() const noexcept -> ExtractMode;
@@ -105,6 +109,7 @@ class ExtractCallback : public Callback,
         ExtractMode mExtractMode;
         bool mIsLastItemEncrypted;
         std::exception_ptr mErrorException;
+        FilterCallback mFilterCallback;
 };
 
 }  // namespace bit7z

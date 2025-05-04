@@ -30,11 +30,12 @@
 
 namespace bit7z {
 
-ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
+ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive, FilterCallback filterCallback )
     : Callback( inputArchive.handler() ),
       mInputArchive( inputArchive ),
       mExtractMode( ExtractMode::Extract ),
-      mIsLastItemEncrypted{ false } {}
+      mIsLastItemEncrypted{ false },
+      mFilterCallback{ std::move( filterCallback ) } {}
 
 auto ExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
     releaseStream();
@@ -86,6 +87,17 @@ try {
 
     if ( askExtractMode != NArchive::NExtract::NAskMode::kExtract ) {
         return S_OK;
+    }
+
+    if ( mFilterCallback ) {
+        const auto filterResult = mFilterCallback( mInputArchive.itemAt( index ) );
+        if ( filterResult == FilterResult::Skip ) {
+            return S_OK;
+        }
+        if ( filterResult == FilterResult::Abort ) {
+            return E_ABORT;
+        }
+        // if filterResult == FilterResult::Process, continue.
     }
 
     return getOutStream( index, outStream );
@@ -166,6 +178,10 @@ auto ExtractCallback::inputArchive() const -> const BitInputArchive& {
 
 auto ExtractCallback::errorException() const -> const std::exception_ptr& {
     return mErrorException;
+}
+
+auto ExtractCallback::extractionAttempted() const -> bool {
+    return true;
 }
 
 auto ExtractCallback::extractMode() const noexcept -> ExtractMode {

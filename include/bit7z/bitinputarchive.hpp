@@ -214,6 +214,38 @@ class BitInputArchive {
         void extractTo( const tstring& outDir, BitIndicesView indices = {} ) const;
 
         /**
+         * @brief Extracts to the output directory all the items whose paths match the given wildcard pattern.
+         *
+         * @param outDir       the output directory where extracted files will be put.
+         * @param itemFilter   the wildcard pattern used for matching the paths of items inside the archive.
+         * @param policy       the filtering policy to be applied to the matched items.
+         */
+        void extractMatchingTo( const tstring& outDir,
+                                const tstring& itemFilter,
+                                FilterPolicy policy = FilterPolicy::Include ) const;
+
+#ifdef BIT7Z_REGEX_MATCHING
+        /**
+         * @brief Extracts to the output directory all the items whose paths match the given regex pattern.
+         *
+         * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
+         *
+         * @param outDir       the output directory where extracted files will be put.
+         * @param regex        the regex used for matching the paths of files inside the archive.
+         * @param policy       the filtering policy to be applied to the matched items.
+         */
+        void extractMatchingRegexTo( const tstring& outDir, const tstring& regex, FilterPolicy policy ) const;
+#endif
+
+        /**
+         * @brief Extracts to the output directory all the items that satisfy the given filtering criteria.
+         *
+         * @param outDir            the output directory where extracted files will be put.
+         * @param filterCallback    the filtering callback that specifies whether to extract an item or not.
+         */
+        void extractTo( const tstring& outDir, FilterCallback filterCallback ) const;
+
+        /**
          * @brief Extracts the archive to the chosen directory,
          * specifying the names of the extracted items via a RenameCallback.
          *
@@ -251,6 +283,38 @@ class BitInputArchive {
          * @param index       the index of the file to be extracted.
          */
         void extractTo( buffer_t& outBuffer, std::uint32_t index = 0 ) const;
+
+        /**
+         * @brief Extracts to the output buffer the first file whose path matches the given wildcard pattern.
+         *
+         * @param outBuffer    the output buffer where to extract the file.
+         * @param itemFilter   the wildcard pattern used for matching the paths of files inside the archive.
+         * @param policy       the filtering policy to be applied to the matched items.
+         */
+        void extractMatchingTo( buffer_t& outBuffer,
+                                const tstring& itemFilter,
+                                FilterPolicy policy = FilterPolicy::Include ) const;
+
+#ifdef BIT7Z_REGEX_MATCHING
+        /**
+         * @brief Extracts to the output buffer the first file in the archive that matches the given regex pattern.
+         *
+         * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
+         *
+         * @param outBuffer    the output buffer where the extracted file will be put.
+         * @param regex        the regex used for matching the paths of files inside the archive.
+         * @param policy       the filtering policy to be applied to the matched items.
+         */
+        void extractMatchingRegexTo( buffer_t& outBuffer, const tstring& regex, FilterPolicy policy ) const;
+#endif
+
+        /**
+         * @brief Extracts to the output buffer the first item satisfying the given filtering criteria.
+         *
+         * @param outBuffer         the output buffer where the extracted file will be put.
+         * @param filterCallback    the filtering callback that specifies whether to extract an item or not.
+         */
+        void extractTo( buffer_t& outBuffer, FilterCallback filterCallback ) const;
 
         template< std::size_t N >
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")

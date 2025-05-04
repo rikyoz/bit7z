@@ -20,6 +20,7 @@
 namespace bit7z {
 
 class BitInFormat;
+class BitArchiveItem;
 
 /**
  * @brief A function whose argument is the total size of the ongoing operation.
@@ -63,6 +64,20 @@ using RenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >
  * @brief A function returning a reference to the buffer where to extract the item at the given index/path.
  */
 using BufferCallback = std::function< buffer_t&( std::uint32_t, const tstring& ) >;
+
+/**
+ * @brief Enumeration representing the result of applying a filter callback on an archive item.
+ */
+enum struct FilterResult : std::uint8_t {
+    Process, ///< Continue processing the item.
+    Skip,    ///< Skip the item (do not process it).
+    Abort    ///< Abort the whole operation.
+};
+
+/**
+ * @brief A function returning what to do with the given archive item.
+ */
+using FilterCallback = std::function< FilterResult( const BitArchiveItem& ) >;
 
 /**
  * @brief Enumeration representing how a handler should deal when an output file already exists.

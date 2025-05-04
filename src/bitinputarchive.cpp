@@ -294,10 +294,74 @@ void BitInputArchive::extractTo( const tstring& outDir, BitIndicesView indices )
     extractArchive( callback, NAskMode::kExtract, indices );
 }
 
+namespace {
+BIT7Z_ALWAYS_INLINE
+auto shouldProcessItem( const BitArchiveItem& item, const tstring& itemFilter, bool extractMatchingItems ) -> bool {
+    /* This condition is true only if the current item either:
+     *  - matches the wildcard pattern, and we must include any matching item; or
+     *  - doesn't match the wildcard pattern, and we must exclude those that match. */
+    return filesystem::fsutil::wildcard_match( itemFilter, item.path() ) == extractMatchingItems;
+}
+
+BIT7Z_ALWAYS_INLINE
+auto shouldProcessItem( const BitArchiveItem& item, const tregex& itemFilter, bool extractMatchingItems ) -> bool {
+    /* This condition is true only if the current item either:
+     *  - matches the regex pattern, and we must include any matching item; or
+     *  - doesn't match the regex pattern, and we must exclude those that match. */
+    return std::regex_match( item.path(), itemFilter ) == extractMatchingItems;
+}
+} // namespace
+
+void BitInputArchive::extractMatchingTo( const tstring& outDir,
+                                         const tstring& itemFilter,
+                                         FilterPolicy policy ) const {
+    if ( itemFilter.empty() ) {
+        throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
+    }
+
+    const bool extractMatchingItems = policy == FilterPolicy::Include;
+    extractTo( outDir, [ & ]( const BitArchiveItem& item ) -> FilterResult {
+        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::Process : FilterResult::Skip;
+    } );
+}
+
+#ifdef BIT7Z_REGEX_MATCHING
+
+void BitInputArchive::extractMatchingRegexTo( const tstring& outDir,
+                                              const tstring& regex,
+                                              FilterPolicy policy = FilterPolicy::Include ) const {
+    if ( regex.empty() ) {
+        throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
+    }
+
+    const bool extractMatchingItems = policy == FilterPolicy::Include;
+    const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+    extractTo( outDir, [ & ]( const BitArchiveItem& item ) -> FilterResult {
+        return shouldProcessItem( item, regexFilter, extractMatchingItems )
+            ? FilterResult::Process
+            : FilterResult::Skip;
+    } );
+}
+
+#endif
+
+void BitInputArchive::extractTo( const tstring& outDir, FilterCallback filterCallback ) const {
+    const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >(
+        *this,
+        outDir,
+        std::move( filterCallback )
+    );
+    extractArchive( callback, NAskMode::kExtract );
+    if ( !callback->extractionAttempted() ) {
+        throw BitException( "Cannot extract items", make_error_code( BitError::NoMatchingItems ) );
+    }
+}
+
 void BitInputArchive::extractTo( const tstring& outDir, RenameCallback renameCallback ) const {
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >(
         *this,
         outDir,
+        FilterCallback{},
         std::move( renameCallback )
     );
     extractArchive( callback, NAskMode::kExtract );
@@ -387,6 +451,7 @@ void BitInputArchive::extractFolderTo( const tstring& outDir,
     };
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this,
                                                                                    outDir,
+                                                                                   FilterCallback{},
                                                                                    std::move( renameCallback ) );
     extractArchive( callback, NAskMode::kExtract );
     if ( matchingCount == 0 ) {
@@ -406,7 +471,7 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) cons
                             make_error_code( BitError::ItemIsAFolder ) );
     }
 
-    auto bufferCallback = [&outBuffer]( std::uint32_t, const tstring& ) -> buffer_t& {
+    auto bufferCallback = [ &outBuffer ]( std::uint32_t, const tstring& ) -> buffer_t& {
         return outBuffer;
     };
     const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
@@ -418,6 +483,52 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) cons
     } catch ( const BitException& ) {
         outBuffer.clear();
         throw;
+    }
+}
+
+void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tstring& itemFilter, FilterPolicy policy ) const {
+    if ( itemFilter.empty() ) {
+        throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
+    }
+
+    const bool extractMatchingItems = policy == FilterPolicy::Include;
+    extractTo(  outBuffer, [ & ]( const BitArchiveItem& item ) -> FilterResult {
+        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::Process : FilterResult::Skip;
+    } );
+}
+
+#ifdef BIT7Z_REGEX_MATCHING
+
+void BitInputArchive::extractMatchingRegexTo( buffer_t& outBuffer,
+                                              const tstring& regex,
+                                              FilterPolicy policy = FilterPolicy::Include ) const {
+    if ( regex.empty() ) {
+        throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
+    }
+
+    const bool extractMatchingItems = policy == FilterPolicy::Include;
+    const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+    extractTo( outBuffer, [ & ]( const BitArchiveItem& item ) -> FilterResult {
+        return shouldProcessItem( item, regexFilter, extractMatchingItems )
+            ? FilterResult::Process
+            : FilterResult::Skip;
+    } );
+}
+
+#endif
+
+void BitInputArchive::extractTo( buffer_t& outBuffer, FilterCallback filterCallback ) const {
+    auto bufferCallback = [ &outBuffer ]( std::uint32_t, const tstring& ) -> buffer_t& {
+        return outBuffer;
+    };
+    const auto callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
+        *this,
+        std::move( bufferCallback ),
+        std::move( filterCallback )
+    );
+    extractArchive( callback, NAskMode::kExtract );
+    if ( !callback->extractionAttempted() ) {
+        throw BitException( "Cannot extract items", make_error_code( BitError::NoMatchingFile ) );
     }
 }
 
