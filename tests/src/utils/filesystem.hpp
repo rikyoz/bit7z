@@ -138,6 +138,8 @@ struct ExpectedItem {
     bool isEncrypted;
 };
 
+using ExpectedItems = std::vector< ExpectedItem >;
+
 struct ArchiveContent {
     std::size_t fileCount;
     std::size_t size;

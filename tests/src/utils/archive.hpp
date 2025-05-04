@@ -113,8 +113,6 @@ void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLoca
 
 #define REQUIRE_FILESYSTEM_ITEM( expectedItem ) require_filesystem_item( expectedItem, BIT7Z_CURRENT_LOCATION )
 
-using ExpectedItems = std::vector< ExpectedItem >;
-
 } // namespace test
 } // namespace bit7z
 
