@@ -303,6 +303,7 @@ auto shouldProcessItem( const BitArchiveItem& item, const tstring& itemFilter, b
     return filesystem::fsutil::wildcard_match( itemFilter, item.path() ) == extractMatchingItems;
 }
 
+#ifdef BIT7Z_REGEX_MATCHING
 BIT7Z_ALWAYS_INLINE
 auto shouldProcessItem( const BitArchiveItem& item, const tregex& itemFilter, bool extractMatchingItems ) -> bool {
     /* This condition is true only if the current item either:
@@ -310,6 +311,7 @@ auto shouldProcessItem( const BitArchiveItem& item, const tregex& itemFilter, bo
      *  - doesn't match the regex pattern, and we must exclude those that match. */
     return std::regex_match( item.path(), itemFilter ) == extractMatchingItems;
 }
+#endif
 } // namespace
 
 void BitInputArchive::extractMatchingTo( const tstring& outDir,
