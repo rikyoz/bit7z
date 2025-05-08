@@ -12,14 +12,12 @@
 
 #include "bititemsvector.hpp"
 #include "bittypes.hpp"
-#include "internal/fsitem.hpp"
-
-#include <vector>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-void listDirectoryItems( const FilesystemItem& directory,
+void listDirectoryItems( const fs::path& basePath,
+                         const fs::path& inArchivePath,
                          const tstring& filter,
                          IndexingOptions options,
                          BitItemsVector& result );

@@ -51,8 +51,6 @@ class RenamedItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto filesystemPath() const -> const fs::path& override;
 
-        BIT7Z_NODISCARD auto filesystemName() const -> fs::path override;
-
     private:
         std::reference_wrapper< const BitInputArchive > mInputArchive;
         std::uint32_t mIndex;

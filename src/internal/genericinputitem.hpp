@@ -39,9 +39,6 @@ struct GenericInputItem : BitGenericItem {
         virtual auto filesystemPath() const -> const fs::path& = 0;
 
         BIT7Z_NODISCARD
-        virtual auto filesystemName() const -> fs::path = 0;
-
-        BIT7Z_NODISCARD
         virtual auto hasNewData() const noexcept -> bool;
 
         BIT7Z_NODISCARD

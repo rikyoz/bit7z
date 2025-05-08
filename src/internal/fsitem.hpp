@@ -60,8 +60,6 @@ class FilesystemItem final : public GenericInputItem {
 
         BIT7Z_NODISCARD auto filesystemPath() const -> const fs::path& override;
 
-        BIT7Z_NODISCARD auto filesystemName() const -> fs::path override;
-
     private:
         fs::directory_entry mFileEntry;
         WIN32_FILE_ATTRIBUTE_DATA mFileAttributeData;

@@ -16,6 +16,7 @@
 #include "bittypes.hpp"
 #include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
+#include "internal/fsitem.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stdinputitem.hpp"
 #include "internal/stringutil.hpp"
@@ -40,7 +41,7 @@ void indexDirectory( BitItemsVector& outVector,
     if ( filter.empty() && !dirItem.inArchivePath().empty() ) {
         outVector.emplace_back( std::make_unique< FilesystemItem >( dirItem ) );
     }
-    listDirectoryItems( dirItem, filter, options, outVector );
+    filesystem::listDirectoryItems( inDir, dirItem.inArchivePath(), filter, options, outVector );
 }
 
 namespace {
@@ -51,7 +52,7 @@ void indexItem( BitItemsVector& outVector, const FilesystemItem& item, IndexingO
         if ( !item.inArchivePath().empty() ) {
             outVector.emplace_back( std::make_unique< FilesystemItem >( item ) );
         }
-        listDirectoryItems( item, {}, options, outVector );
+        filesystem::listDirectoryItems( item.filesystemPath(), item.inArchivePath(), {}, options, outVector );
     } else {
         // No action needed
     }

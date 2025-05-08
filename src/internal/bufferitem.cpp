@@ -73,8 +73,4 @@ auto BufferItem::filesystemPath() const -> const fs::path& {
     return mBufferName;
 }
 
-auto BufferItem::filesystemName() const -> fs::path {
-    return mBufferName.filename();
-}
-
 } // namespace bit7z

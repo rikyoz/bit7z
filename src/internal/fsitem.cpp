@@ -164,11 +164,6 @@ auto FilesystemItem::filesystemPath() const -> const fs::path& {
     return mFileEntry.path();
 }
 
-auto FilesystemItem::filesystemName() const -> fs::path {
-    BIT7Z_MAYBE_UNUSED std::error_code error;
-    return fs::canonical( mFileEntry, error ).filename();
-}
-
 auto FilesystemItem::itemProperty( BitProperty property ) const -> BitPropVariant {
     std::error_code error;
     if ( property == BitProperty::SymLink && mFileEntry.is_symlink( error ) ) {

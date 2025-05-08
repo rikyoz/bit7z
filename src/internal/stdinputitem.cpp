@@ -79,8 +79,4 @@ auto StdInputItem::filesystemPath() const -> const fs::path& {
     return mStreamPath;
 }
 
-auto StdInputItem::filesystemName() const -> fs::path {
-    return mStreamPath.filename();
-}
-
 } // namespace bit7z

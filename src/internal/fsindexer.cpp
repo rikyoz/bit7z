@@ -33,17 +33,17 @@ auto countItemsInPath( const fs::path& path ) -> std::size_t {
 }
 } // namespace
 
-void listDirectoryItems( const FilesystemItem& directory,
+void listDirectoryItems( const fs::path& basePath,
+                         const fs::path& inArchivePath,
                          const tstring& filter,
                          IndexingOptions options,
                          BitItemsVector& result ) {
+    std::error_code error;
     const bool includeRootPath = filter.empty() ||
-                                 !directory.filesystemPath().has_parent_path() ||
-                                 directory.inArchivePath().filename() != directory.filesystemName();
+                                 !basePath.has_parent_path() ||
+                                 inArchivePath.filename() != fs::canonical( basePath, error ).filename();
     const bool shouldIncludeMatchedItems = options.filterPolicy == FilterPolicy::Include;
 
-    const fs::path& basePath = directory.filesystemPath();
-    std::error_code error;
     result.reserve( result.size() + countItemsInPath( basePath ) );
     for ( auto iterator = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
           iterator != fs::recursive_directory_iterator{};
@@ -62,7 +62,7 @@ void listDirectoryItems( const FilesystemItem& directory,
         const bool itemMatches = ( !options.onlyFiles || !itemIsDir ) && fsutil::wildcard_match( filter, itemName );
         if ( itemMatches == shouldIncludeMatchedItems ) {
             const auto prefix = fs::relative( itemPath, basePath, error ).remove_filename();
-            const auto searchPath = includeRootPath ? directory.inArchivePath() / prefix : prefix;
+            const auto searchPath = includeRootPath ? inArchivePath / prefix : prefix;
             result.emplace_back( std::make_unique< FilesystemItem >( currentEntry, searchPath, options.symlinkPolicy ) );
         }
 

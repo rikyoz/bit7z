@@ -81,8 +81,4 @@ auto RenamedItem::filesystemPath() const -> const fs::path& {
     return mNewPath;
 }
 
-auto RenamedItem::filesystemName() const -> fs::path {
-    return mNewPath.filename();
-}
-
 } // namespace bit7z
