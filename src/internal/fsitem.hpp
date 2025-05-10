@@ -28,8 +28,8 @@ class FilesystemItem final : public GenericInputItem {
                                  fs::path inArchivePath = fs::path{},
                                  SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
 
-        explicit FilesystemItem( fs::directory_entry entry,
-                                 const fs::path& searchPath,
+        explicit FilesystemItem( const fs::path& searchPath,
+                                 fs::directory_entry entry,
                                  SymlinkPolicy symlinkPolicy );
 
         BIT7Z_NODISCARD auto isDots() const -> bool;

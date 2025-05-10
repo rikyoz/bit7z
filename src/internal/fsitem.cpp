@@ -59,7 +59,7 @@ FilesystemItem::FilesystemItem( const fs::path& itemPath, fs::path inArchivePath
     initAttributes( mFileEntry.path() );
 }
 
-FilesystemItem::FilesystemItem( fs::directory_entry entry, const fs::path& searchPath, SymlinkPolicy symlinkPolicy )
+FilesystemItem::FilesystemItem( const fs::path& searchPath, fs::directory_entry entry, SymlinkPolicy symlinkPolicy )
     : mFileEntry( std::move( entry ) ),
       mFileAttributeData(),
       mInArchivePath( fsutil::in_archive_path( mFileEntry.path(), searchPath ) ),
