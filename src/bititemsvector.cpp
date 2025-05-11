@@ -14,15 +14,9 @@
 
 #include "bitexception.hpp"
 #include "bittypes.hpp"
-#include "internal/bufferitem.hpp"
 #include "internal/fsindexer.hpp"
-#include "internal/fsitem.hpp"
-#include "internal/fsutil.hpp"
-#include "internal/stdinputitem.hpp"
 #include "internal/stringutil.hpp"
 
-#include <cstddef>
-#include <istream>
 #include <map>
 #include <memory>
 #include <system_error>
@@ -30,29 +24,33 @@
 
 namespace bit7z {
 
-using filesystem::FilesystemItem;
-
 void indexDirectory( BitItemsVector& outVector,
                      const fs::path& inDir,
                      const tstring& filter,
                      IndexingOptions options ) {
     // Note: if inDir is an invalid path, FilesystemItem constructor throws a BitException.
-    const FilesystemItem dirItem{ inDir, options.retainFolderStructure ? inDir : fs::path{}, options.symlinkPolicy };
-    if ( filter.empty() && !dirItem.inArchivePath().empty() ) {
-        outVector.emplace_back( std::make_unique< FilesystemItem >( dirItem ) );
+    const BitInputItem item{ inDir, options.retainFolderStructure ? inDir : fs::path{}, options.symlinkPolicy };
+    if ( filter.empty() && !item.inArchivePath().empty() ) {
+        outVector.emplace_back( item );
     }
-    filesystem::listDirectoryItems( inDir, dirItem.inArchivePath(), filter, options, outVector );
+    filesystem::listDirectoryItems( inDir, item.inArchivePath(), filter, options, outVector );
 }
 
 namespace {
-void indexItem( BitItemsVector& outVector, const FilesystemItem& item, IndexingOptions options ) {
+void indexItem( BitItemsVector& outVector,
+                const fs::path& filePath,
+                const fs::path& inArchivePath,
+                IndexingOptions options ) {
+    BitInputItem item{ filePath, inArchivePath, options.symlinkPolicy };
     if ( !item.isDir() ) {
-        outVector.emplace_back( std::make_unique< FilesystemItem >( item ) );
+        outVector.emplace_back( std::move( item ) );
     } else if ( options.recursive ) { // The item is a directory
         if ( !item.inArchivePath().empty() ) {
-            outVector.emplace_back( std::make_unique< FilesystemItem >( item ) );
+            outVector.emplace_back( item );
         }
-        filesystem::listDirectoryItems( item.filesystemPath(), item.inArchivePath(), {}, options, outVector );
+        // Note: we are using item.inArchivePath() rather than the parameter as the first is calculated more accurately
+        // by the BitInputItem class constructor.
+        filesystem::listDirectoryItems( filePath, item.inArchivePath(), {}, options, outVector );
     } else {
         // No action needed
     }
@@ -62,19 +60,13 @@ void indexItem( BitItemsVector& outVector, const FilesystemItem& item, IndexingO
 void indexPaths( BitItemsVector& outVector, const std::vector< tstring >& inPaths, IndexingOptions options ) {
     for ( const auto& inputPath : inPaths ) {
         const auto filePath = tstring_to_path( inputPath );
-        const FilesystemItem item{ filePath,
-                                   options.retainFolderStructure ? filePath : fs::path{},
-                                   options.symlinkPolicy };
-        indexItem( outVector, item, options );
+        indexItem( outVector, filePath, options.retainFolderStructure ? filePath : fs::path{}, options );
     }
 }
 
 void indexPathsMap( BitItemsVector& outVector, const std::map< tstring, tstring >& inPaths, IndexingOptions options ) {
     for ( const auto& filePair : inPaths ) {
-        const FilesystemItem item{ tstring_to_path( filePair.first ),
-                                   tstring_to_path( filePair.second ),
-                                   options.symlinkPolicy };
-        indexItem( outVector, item, options );
+        indexItem( outVector, tstring_to_path( filePair.first ), tstring_to_path( filePair.second ), options );
     }
 }
 
@@ -84,15 +76,15 @@ void indexFile( BitItemsVector& outVector, const tstring& inFile, const tstring&
         throw BitException( "Input path points to a directory, not a file",
                             std::make_error_code( std::errc::invalid_argument ), inFile );
     }
-    outVector.emplace_back( std::make_unique< FilesystemItem >( filePath, tstring_to_path( name ), symlinkPolicy ) );
+    outVector.emplace_back( filePath, tstring_to_path( name ), symlinkPolicy );
 }
 
 void indexBuffer( BitItemsVector& outVector, const buffer_t& inBuffer, const tstring& name ) {
-    outVector.emplace_back( std::make_unique< BufferItem >( inBuffer, tstring_to_path( name ) ) );
+    outVector.emplace_back( inBuffer, name );
 }
 
 void indexStream( BitItemsVector& outVector, std::istream& inStream, const tstring& name ) {
-    outVector.emplace_back( std::make_unique< StdInputItem >( inStream, tstring_to_path( name ) ) );
+    outVector.emplace_back( inStream, name );
 }
 
 } // namespace bit7z

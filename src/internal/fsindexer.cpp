@@ -14,11 +14,9 @@
 
 #include "bitabstractarchivehandler.hpp"
 #include "bittypes.hpp"
-#include "internal/fsitem.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 
-#include <memory>
 #include <vector>
 #include <system_error>
 
@@ -63,7 +61,7 @@ void listDirectoryItems( const fs::path& basePath,
         if ( itemMatches == shouldIncludeMatchedItems ) {
             const auto prefix = fs::relative( itemPath, basePath, error ).remove_filename();
             const auto searchPath = includeRootPath ? inArchivePath / prefix : prefix;
-            result.emplace_back( std::make_unique< FilesystemItem >( searchPath, currentEntry, options.symlinkPolicy ) );
+            result.emplace_back( searchPath, currentEntry, options.symlinkPolicy );
         }
 
         /* We don't need to recurse inside the current item if:

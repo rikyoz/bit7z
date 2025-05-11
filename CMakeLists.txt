@@ -42,6 +42,7 @@ set( PUBLIC_HEADERS
      include/bit7z/bitgenericitem.hpp
      include/bit7z/bitindicesview.hpp
      include/bit7z/bitinputarchive.hpp
+     include/bit7z/bitinputitem.hpp
      include/bit7z/bititemsvector.hpp
      include/bit7z/bitmemcompressor.hpp
      include/bit7z/bitmemextractor.hpp
@@ -58,7 +59,6 @@ set( PUBLIC_HEADERS
 set( HEADERS
      src/internal/archiveproperties.hpp
      src/internal/bufferextractcallback.hpp
-     src/internal/bufferitem.hpp
      src/internal/bufferqueue.hpp
      src/internal/bufferutil.hpp
      src/internal/callback.hpp
@@ -86,10 +86,8 @@ set( HEADERS
      src/internal/fixedbufferextractcallback.hpp
      src/internal/formatdetect.hpp
      src/internal/fsindexer.hpp
-     src/internal/fsitem.hpp
      src/internal/fsutil.hpp
      src/internal/fs.hpp
-     src/internal/genericinputitem.hpp
      src/internal/guiddef.hpp
      src/internal/guids.hpp
      src/internal/hresultcategory.hpp
@@ -101,9 +99,7 @@ set( HEADERS
      src/internal/optional.hpp
      src/internal/processeditem.hpp
      src/internal/rawdataextractcallback.hpp
-     src/internal/renameditem.hpp
      src/internal/sequentialextractcallback.hpp
-     src/internal/stdinputitem.hpp
      src/internal/streamextractcallback.hpp
      src/internal/streamutil.hpp
      src/internal/stringutil.hpp
@@ -128,6 +124,7 @@ set( SOURCES
      src/bitfilecompressor.cpp
      src/bitformat.cpp
      src/bitinputarchive.cpp
+     src/bitinputitem.cpp
      src/bititemsvector.cpp
      src/bitnestedarchivereader.cpp
      src/bitoutputarchive.cpp
@@ -135,7 +132,6 @@ set( SOURCES
      src/bitsharedlibrary.cpp
      src/bittypes.cpp
      src/internal/bufferextractcallback.cpp
-     src/internal/bufferitem.cpp
      src/internal/bufferqueue.cpp
      src/internal/bufferutil.cpp
      src/internal/callback.cpp
@@ -162,9 +158,7 @@ set( SOURCES
      src/internal/fixedbufferextractcallback.cpp
      src/internal/formatdetect.cpp
      src/internal/fsindexer.cpp
-     src/internal/fsitem.cpp
      src/internal/fsutil.cpp
-     src/internal/genericinputitem.cpp
      src/internal/guids.cpp
      src/internal/hresultcategory.cpp
      src/internal/internalcategory.cpp
@@ -173,9 +167,7 @@ set( SOURCES
      src/internal/operationresult.cpp
      src/internal/processeditem.cpp
      src/internal/rawdataextractcallback.cpp
-     src/internal/renameditem.cpp
      src/internal/sequentialextractcallback.cpp
-     src/internal/stdinputitem.cpp
      src/internal/streamextractcallback.cpp
      src/internal/stringutil.cpp
      src/internal/updatecallback.cpp

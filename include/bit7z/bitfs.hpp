@@ -26,6 +26,7 @@
 namespace ghc {
 namespace filesystem {
 class path;
+class directory_entry;
 } // namespace filesystem
 } // namespace ghc
 #endif

@@ -27,7 +27,6 @@
 #include "internal/cfileoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
 #include "internal/cstdoutstream.hpp"
-#include "internal/genericinputitem.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
@@ -214,7 +213,7 @@ void BitOutputArchive::compressOut( IOutArchive* outArc,
                                     UpdateCallback* updateCallback ) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Update ) {
         for ( const auto& newItem : mNewItems ) {
-            auto newItemPath = path_to_tstring( newItem->inArchivePath() );
+            auto newItemPath = path_to_tstring( newItem.inArchivePath() );
             auto updatedItem = mInputArchive->find( newItemPath );
             if ( updatedItem != mInputArchive->cend() ) {
                 setDeletedIndex( updatedItem->index() );
@@ -363,13 +362,13 @@ auto BitOutputArchive::itemsCount() const -> std::uint32_t {
 
 auto BitOutputArchive::itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant {
     const auto newItemIndex = static_cast< std::size_t >( index ) - static_cast< std::size_t >( mInputArchiveItemsCount );
-    const GenericInputItem& newItem = *mNewItems[ newItemIndex ];
+    const auto& newItem = mNewItems[ newItemIndex ];
     return newItem.itemProperty( property );
 }
 
 auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT {
     const auto newItemIndex = static_cast< std::size_t >( index ) - static_cast< std::size_t >( mInputArchiveItemsCount );
-    const GenericInputItem& newItem = *mNewItems[ newItemIndex ];
+    const auto& newItem = mNewItems[ newItemIndex ];
 
     const HRESULT res = newItem.getStream( inStream );
     if ( FAILED( res ) ) {

@@ -14,7 +14,7 @@
 #include "bittypes.hpp"
 #include "internal/callback.hpp"
 #include "internal/com.hpp"
-#include "internal/fsitem.hpp"
+#include "internal/fs.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/Archive/IArchive.h>
@@ -23,8 +23,6 @@
 #include <string>
 
 namespace bit7z {
-
-using filesystem::FilesystemItem;
 
 class BitAbstractArchiveHandler;
 

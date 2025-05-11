@@ -23,10 +23,6 @@
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
-#include "internal/bufferitem.hpp"
-#include "internal/fsitem.hpp"
-#include "internal/renameditem.hpp"
-#include "internal/stdinputitem.hpp"
 #include "internal/stringutil.hpp"
 
 #include <algorithm>
@@ -65,46 +61,42 @@ BitArchiveEditor::~BitArchiveEditor() = default;
 
 void BitArchiveEditor::renameItem( std::uint32_t index, const tstring& newPath ) {
     checkIndex( index );
-    mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath ); //-V108
+    setEditedItem( index, BitInputItem{ *inputArchive(), index, newPath } );
 }
 
 void BitArchiveEditor::renameItem( const tstring& oldPath, const tstring& newPath ) {
-    auto index = findItem( oldPath );
-    mEditedItems[ index ] = std::make_unique< RenamedItem >( *inputArchive(), index, newPath ); //-V108
+    const auto index = findItem( oldPath );
+    setEditedItem( index, BitInputItem{ *inputArchive(), index, newPath } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( std::uint32_t index, const tstring& inFile ) {
-    using filesystem::FilesystemItem;
-
     checkIndex( index );
     const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), itemName.getNativeString() ); //-V108
+    setEditedItem( index, BitInputItem{ tstring_to_path( inFile ), itemName.getNativeString() } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( std::uint32_t index, const buffer_t& inBuffer ) {
     checkIndex( index );
     const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< BufferItem >( inBuffer, itemName.getNativeString() ); //-V108
+    setEditedItem( index, BitInputItem{ inBuffer, itemName.getString() } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( std::uint32_t index, std::istream& inStream ) {
     checkIndex( index );
     const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    mEditedItems[ index ] = std::make_unique< StdInputItem >( inStream, itemName.getNativeString() ); //-V108
+    setEditedItem( index, BitInputItem{ inStream, itemName.getString() } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const tstring& inFile ) {
-    using filesystem::FilesystemItem;
-    mEditedItems[ findItem( itemPath ) ] = std::make_unique< FilesystemItem >( tstring_to_path( inFile ), //-V108
-                                                                               tstring_to_path( itemPath ) );
+    setEditedItem( findItem( itemPath ), BitInputItem{ tstring_to_path( inFile ), tstring_to_path( itemPath ) } );
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const buffer_t& inBuffer ) {
-    mEditedItems[ findItem( itemPath ) ] = std::make_unique< BufferItem >( inBuffer, itemPath ); //-V108
+    setEditedItem( findItem( itemPath ), BitInputItem{ inBuffer, itemPath } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStream ) {
-    mEditedItems[ findItem( itemPath ) ] = std::make_unique< StdInputItem >( inStream, itemPath ); //-V108
+    setEditedItem( findItem( itemPath ), BitInputItem{ inStream, itemPath } ); //-V108
 }
 
 void BitArchiveEditor::deleteItem( std::uint32_t index, DeletePolicy policy ) {
@@ -199,6 +191,10 @@ void BitArchiveEditor::markItemAsDeleted( std::uint32_t index ) {
     setDeletedIndex( index );
 }
 
+void BitArchiveEditor::setEditedItem( std::uint32_t index, BitInputItem&& item ) {
+    mEditedItems.emplace( std::make_pair( index, std::move( item ) ) );
+}
+
 void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
     if ( mode == UpdateMode::None ) {
         throw BitException( "Cannot set update mode to UpdateMode::None",
@@ -247,7 +243,7 @@ auto BitArchiveEditor::itemProperty( InputIndex index, BitProperty property ) co
     if ( mappedIndex < inputArchiveItemsCount() ) {
         const auto res = mEditedItems.find( mappedIndex );
         if ( res != mEditedItems.end() ) {
-            return res->second->itemProperty( property );
+            return res->second.itemProperty( property );
         }
         return inputArchive()->itemProperty( mappedIndex, property );
     }
@@ -259,7 +255,7 @@ auto BitArchiveEditor::itemStream( InputIndex index, ISequentialInStream** inStr
     if ( mappedIndex < inputArchiveItemsCount() ) { //old item in the archive
         const auto res = mEditedItems.find( mappedIndex );
         if ( res != mEditedItems.end() ) { //user wants to update the old item in the archive
-            return res->second->getStream( inStream );
+            return res->second.getStream( inStream );
         }
         return S_OK;
     }
@@ -274,7 +270,7 @@ auto BitArchiveEditor::hasNewData( std::uint32_t index ) const noexcept -> bool 
 
     const auto editedItem = mEditedItems.find( mappedIndex );
     if ( editedItem != mEditedItems.end() ) {
-        return editedItem->second->hasNewData(); //renamed item -> false (no new data), updated item -> true
+        return editedItem->second.hasNewData(); //renamed item -> false (no new data), updated item -> true
     }
     return false;
 }

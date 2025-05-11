@@ -12,6 +12,7 @@
 
 #include "bitabstractarchivehandler.hpp"
 #include "bitfs.hpp"
+#include "bitinputitem.hpp"
 #include "bittypes.hpp"
 
 #include <cstddef>
@@ -22,15 +23,7 @@
 
 namespace bit7z {
 
-struct GenericInputItem;
-using GenericInputItemPtr = std::unique_ptr< GenericInputItem >;
-
 /** @cond **/
-enum struct SymlinkPolicy : std::uint8_t {
-    Follow,
-    DoNotFollow
-};
-
 struct IndexingOptions {
     FilterPolicy filterPolicy = FilterPolicy::Include;
     bool recursive = true;
@@ -40,7 +33,7 @@ struct IndexingOptions {
 };
 /** @endcond **/
 
-using BitItemsVector = std::vector< GenericInputItemPtr >;
+using BitItemsVector = std::vector< BitInputItem >;
 
 /**
  * @brief Indexes the given directory, adding to the vector all the files that match the wildcard filter.

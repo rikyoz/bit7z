@@ -202,6 +202,8 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         auto hasNewProperties( std::uint32_t index ) const noexcept -> bool override;
 
         void markItemAsDeleted( std::uint32_t index );
+
+        void setEditedItem( std::uint32_t index, BitInputItem&& item );
 };
 
 }  // namespace bit7z
