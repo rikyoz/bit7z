@@ -13,7 +13,6 @@
 #include "internal/fsutil.hpp"
 
 #include "bittypes.hpp"
-#include "internal/stringutil.hpp"
 
 #ifndef _WIN32
 #include "internal/dateutil.hpp"

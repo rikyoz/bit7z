@@ -27,7 +27,7 @@
 #include "internal/cfileoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
 #include "internal/cstdoutstream.hpp"
-#include "internal/stringutil.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
 

@@ -23,6 +23,7 @@
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 
 #include <algorithm>

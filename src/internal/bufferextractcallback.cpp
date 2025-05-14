@@ -19,7 +19,7 @@
 #include "internal/cbufferoutstream.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/fs.hpp"
-#include "internal/stringutil.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
 #include <cstdint>

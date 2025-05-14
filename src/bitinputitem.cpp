@@ -17,6 +17,7 @@
 #include "internal/cfileinstream.hpp"
 #include "internal/csymlinkinstream.hpp"
 #include "internal/dateutil.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 

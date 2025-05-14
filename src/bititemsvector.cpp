@@ -15,10 +15,9 @@
 #include "bitexception.hpp"
 #include "bittypes.hpp"
 #include "internal/fsindexer.hpp"
-#include "internal/stringutil.hpp"
+#include "internal/fsutil.hpp"
 
 #include <map>
-#include <memory>
 #include <system_error>
 #include <vector>
 

@@ -17,6 +17,7 @@
 #include "bitpropvariant.hpp"
 #include "internal/callback.hpp"
 #include "internal/cfileinstream.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 

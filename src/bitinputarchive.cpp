@@ -26,6 +26,7 @@
 #include "internal/extractcallback.hpp"
 #include "internal/fileextractcallback.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/opencallback.hpp"
 #include "internal/operationresult.hpp"
 #include "internal/rawdataextractcallback.hpp"

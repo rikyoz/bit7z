@@ -13,7 +13,7 @@
 #include "filehandle.hpp"
 
 #include "bitexception.hpp"
-#include "internal/stringutil.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
 #ifndef _WIN32

@@ -16,8 +16,8 @@
 #include "bitinputarchive.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/extractcallback.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/windows.hpp"
-#include "internal/stringutil.hpp"
 
 #include <cstdint>
 
