@@ -59,7 +59,7 @@ void listDirectoryItems( const fs::path& basePath,
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
         const bool itemMatches = ( !options.onlyFiles || !itemIsDir ) && fsutil::wildcard_match( filter, itemName );
         if ( itemMatches == shouldIncludeMatchedItems ) {
-            const auto prefix = fs::relative( itemPath, basePath, error ).remove_filename();
+            const auto prefix = itemPath.lexically_relative( basePath ).remove_filename();
             const auto searchPath = includeRootPath ? inArchivePath / prefix : prefix;
             result.emplace_back( searchPath, currentEntry, options.symlinkPolicy );
         }
