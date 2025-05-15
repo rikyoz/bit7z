@@ -192,7 +192,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
 
     // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
     //       directory, hence we must declare the vector inside the test case and not outside.
-    const std::array< TestItem, 28 > testItems{ {
+    const std::array< TestItem, 36 > testItems{ {
         { ".",                                                "" },
         { "./",                                               "" },
         { "..",                                               "" },
@@ -200,9 +200,17 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
         { "italy.svg",                                        "italy.svg" },
         { "folder",                                           "folder" },
         { "folder/",                                          "folder/" },
+        { "folder/..",                                        "" },
+        { "folder/../",                                       "" },
+        { "folder/.",                                         "folder" },
+        { "folder/./",                                        "folder" },
         { "folder/clouds.jpg",                                "folder/clouds.jpg" },
         { "folder/subfolder2",                                "folder/subfolder2" },
         { "folder/subfolder2/",                               "folder/subfolder2/" },
+        { "folder/subfolder2/..",                             "folder" },
+        { "folder/subfolder2/../",                            "folder" },
+        { "folder/subfolder2/.",                              "subfolder2" },
+        { "folder/subfolder2/./",                             "subfolder2" },
         { "folder/subfolder2/homework.doc",                   "folder/subfolder2/homework.doc" },
         { "./italy.svg",                                      "italy.svg" },
         { "./folder",                                         "folder" },

@@ -54,41 +54,43 @@ auto fsutil::extension( const fs::path& path ) -> tstring {
     return result.substr( 1 );
 }
 
-inline auto contains_dot_references( const fs::path& path ) -> bool {
-    return std::find_if( path.begin(), path.end(), [] ( const fs::path& component ) -> bool {
-        return component == BIT7Z_NATIVE_STRING( "." ) || component == BIT7Z_NATIVE_STRING( ".." );
-    }) != path.end();
+namespace {
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto path_real_filename( const fs::path& filePath ) -> fs::path {
+    const auto normalPath = filePath.lexically_normal();
+    return normalPath.has_filename() ? normalPath.filename() : normalPath.parent_path().filename();
 }
+} // namespace
 
 auto fsutil::in_archive_path( const fs::path& filePath, const fs::path& searchPath ) -> fs::path {
     /* Note: the following algorithm tries to emulate the behavior of 7-zip when dealing with
              paths of items in archives. */
 
-    const auto& normalPath = filePath.lexically_normal();
+    const bool pathNeedsNormalization = contains_dot_references( filePath.native() );
+    // Note: path normalization is computationally expensive,
+    // so to obtain the filename of the given path we try to avoid it when possible.
+    auto filename = !pathNeedsNormalization
+        ? ( filePath.has_filename() ? filePath.filename() : filePath.parent_path().filename() )
+        : path_real_filename( filePath );
 
-    auto filename = normalPath.filename();
-    if ( filename == BIT7Z_NATIVE_STRING( "." ) || filename == BIT7Z_NATIVE_STRING( ".." ) ) {
+    if ( filename.native() == BIT7Z_NATIVE_STRING( "." ) || filename.native() == BIT7Z_NATIVE_STRING( ".." ) ) {
         return {};
     }
-    if ( filename.empty() ) {
-        filename = normalPath.parent_path().filename();
+
+    if ( !searchPath.empty() ) {
+        // Note: in this case, if the file was found while indexing a directory passed by the user, we need to retain
+        // the internal structure of that folder (searchPath).
+        return searchPath / filename;
     }
 
-    if ( filePath.is_absolute() || contains_dot_references( filePath.native() ) ) {
-        // Note: in this case, if the file was found while indexing a directory passed by the user, we need to retain
-        // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
-        if ( searchPath.empty() ) {
-            return filename;
-        }
-        return searchPath / filename;
+    // Search path is empty, so the file was directly added by the user, not via indexing.
+
+    if ( filePath.is_absolute() || pathNeedsNormalization ) {
+        return filename;
     }
 
     // Here, the path is relative and without ./ or ../ => e.g. foo/bar/test.txt
-
-    if ( !searchPath.empty() ) {
-        // The item was found while indexing a directory
-        return searchPath / filename;
-    }
     return filePath;
 }
 
