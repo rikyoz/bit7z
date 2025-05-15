@@ -74,7 +74,7 @@ auto fsutil::in_archive_path( const fs::path& filePath, const fs::path& searchPa
         filename = normalPath.parent_path().filename();
     }
 
-    if ( filePath.is_absolute() || contains_dot_references( filePath ) ) {
+    if ( filePath.is_absolute() || contains_dot_references( filePath.native() ) ) {
         // Note: in this case, if the file was found while indexing a directory passed by the user, we need to retain
         // the internal structure of that folder (mSearchPath), otherwise we use only the file name.
         if ( searchPath.empty() ) {

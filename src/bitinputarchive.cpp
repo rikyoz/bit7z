@@ -371,39 +371,6 @@ void BitInputArchive::extractTo( const tstring& outDir, RenameCallback renameCal
 }
 
 namespace {
-auto containsDotOrDotDot( const tstring& path ) -> bool {
-    const std::size_t length = path.length();
-    std::size_t pos = 0;
-
-    // Search for the first occurrence of '.'
-    do {
-        pos = path.find( BIT7Z_STRING( '.' ), pos );
-        // Exit the loop if no more dots are found.
-        if ( pos == std::string::npos ) {
-            return false;
-        }
-
-        // Check if we found a single "." or double dots ".." by looking at surrounding characters.
-
-        // Case 1: Single dot "."
-        if ( ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) && // Start of string, or preceding char is a separator.
-             ( pos + 1 == length || isPathSeparator( path[ pos + 1 ] ) ) ) { // End of string, or following char is a separator.
-            return true;
-        }
-
-        // Case 2: Double dots ".."
-        if ( ( pos + 1 < length && path[ pos + 1 ] == BIT7Z_STRING( '.' ) && // Two consecutive dots.
-             ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) ) && // Start of string, or preceding char is a separator.
-             ( pos + 2 == length || isPathSeparator( path[ pos + 2 ] ) ) ) { // End of string, or following char is a separator.
-            return true;
-        }
-
-        ++pos;
-    } while( pos != std::string::npos );
-
-    return false;
-}
-
 constexpr auto nativeDot = BIT7Z_NATIVE_STRING( "." );
 
 BIT7Z_ALWAYS_INLINE
@@ -417,7 +384,7 @@ auto shouldFilterItem( const native_string& path, const BitArchiveItemOffset& it
 void BitInputArchive::extractFolderTo( const tstring& outDir,
                                        const tstring& folderPath,
                                        FolderPathPolicy policy ) const {
-    if ( folderPath.empty() || containsDotOrDotDot( folderPath ) ) {
+    if ( folderPath.empty() || filesystem::fsutil::contains_dot_references( folderPath ) ) {
         throw BitException( "Invalid folder path to be extracted from the archive",
                             std::make_error_code( std::errc::invalid_argument ) );
     }

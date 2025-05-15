@@ -17,6 +17,8 @@
 #include "internal/stringutil.hpp"
 #include "internal/windows.hpp"
 
+#include <type_traits>
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 
 /**
@@ -50,6 +52,53 @@ namespace fsutil {
 BIT7Z_NODISCARD auto stem( const tstring& path ) -> tstring;
 
 BIT7Z_NODISCARD auto extension( const fs::path& path ) -> tstring;
+
+template< typename T, typename Enable = void >
+struct dot_constant;
+
+template< typename CharT >
+struct dot_constant< CharT, typename std::enable_if< std::is_same< CharT, char >::value >::type > {
+    static constexpr char value = '.';
+};
+
+template< typename CharT >
+struct dot_constant< CharT, typename std::enable_if<std::is_same< CharT, wchar_t >::value >::type > {
+    static constexpr wchar_t value = L'.';
+};
+
+template< typename CharT >
+auto contains_dot_references( const std::basic_string< CharT >& path ) -> bool {
+    const std::size_t length = path.length();
+    std::size_t pos = 0;
+
+    // Search for the first occurrence of '.'
+    do {
+        pos = path.find( dot_constant< CharT >::value, pos );
+        // Exit the loop if no more dots are found.
+        if ( pos == std::basic_string<CharT>::npos ) {
+            return false;
+        }
+
+        // Check if we found a single "." or double dots ".." by looking at surrounding characters.
+
+        // Case 1: Single dot "."
+        if ( ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) && // Start of string, or preceding char is a separator.
+             ( pos + 1 == length || isPathSeparator( path[ pos + 1 ] ) ) ) { // End of string, or following char is a separator.
+            return true;
+             }
+
+        // Case 2: Double dots ".."
+        if ( ( pos + 1 < length && path[ pos + 1 ] == dot_constant< CharT >::value && // Two consecutive dots.
+             ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) ) && // Start of string, or preceding char is a separator.
+             ( pos + 2 == length || isPathSeparator( path[ pos + 2 ] ) ) ) { // End of string, or following char is a separator.
+            return true;
+             }
+
+        ++pos;
+    } while( pos != std::basic_string<CharT>::npos );
+
+    return false;
+}
 
 // Note: wildcard_match is "semi-public", so we cannot pass the path as fs::path.
 BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& path ) -> bool;
