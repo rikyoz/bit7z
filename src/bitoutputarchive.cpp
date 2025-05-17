@@ -200,12 +200,13 @@ auto BitOutputArchive::initOutFileStream( const fs::path& outArchive,
         return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), outArchive );
     }
 
-    fs::path outPath = outArchive;
-    if ( updatingArchive ) {
-        outPath += ".tmp";
+    if ( !updatingArchive ) { // No need to create a copy of the output archive path.
+        return bit7z::make_com< CFileOutStream, IOutStream >( outArchive, updatingArchive );
     }
 
-    return bit7z::make_com< CFileOutStream, IOutStream >( outPath, updatingArchive );
+    fs::path tmpArchive = outArchive;
+    tmpArchive += ".tmp";
+    return bit7z::make_com< CFileOutStream, IOutStream >( tmpArchive, updatingArchive );
 }
 
 void BitOutputArchive::compressOut( IOutArchive* outArc,
