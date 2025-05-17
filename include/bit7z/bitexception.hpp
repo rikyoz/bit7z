@@ -21,7 +21,16 @@
 
 namespace bit7z {
 
-using FailedFiles = std::vector< std::pair< tstring, std::error_code > >;
+/**
+ * @brief An alias for a pair holding:
+ *  1) the path or identifier of a file (tstring)
+ *  2) the error that occurred when processing that file (std::error_code) */
+using FailedFile = std::pair< tstring, std::error_code >;
+
+/**
+ * @brief An alias for a sequence of FailedFile entries.
+ */
+using FailedFiles = std::vector< FailedFile >;
 
 auto make_hresult_code( HRESULT res ) noexcept -> std::error_code;
 
