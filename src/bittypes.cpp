@@ -22,10 +22,6 @@ namespace bit7z {
 auto to_tstring( const native_string& str ) -> tstring {
     return narrow( str.c_str(), str.size() );
 }
-#else
-auto to_tstring( const native_string& str ) -> const tstring& {
-    return str;
-}
 #endif
 
 } // namespace bit7z

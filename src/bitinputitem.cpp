@@ -163,31 +163,31 @@ BitInputItem::BitInputItem( const fs::path& itemPath, SymlinkPolicy symlinkPolic
 
 BitInputItem::BitInputItem( const fs::path& itemPath, const fs::path& inArchivePath, SymlinkPolicy symlinkPolicy )
     : mProperties{ fileProperties( itemPath, symlinkPolicy ) },
-      mPath{ path_to_tstring( itemPath ) },
+      mPath{ itemPath.native() },
       mInArchivePath{ path_to_wide_string( !inArchivePath.empty() ? inArchivePath : in_archive_path( itemPath ) ) },
       mFilesystemItem{ symlinkPolicy } {}
 
 BitInputItem::BitInputItem( const fs::path& searchPath, const fs::directory_entry& entry, SymlinkPolicy symlinkPolicy )
     : mProperties{ entryProperties( entry, symlinkPolicy ) },
-      mPath{ path_to_tstring( entry.path() ) },
+      mPath{ entry.path().native() },
       mInArchivePath{ path_to_wide_string( in_archive_path( entry.path(), searchPath ) ) },
       mFilesystemItem{ symlinkPolicy } {}
 
 BitInputItem::BitInputItem( const buffer_t& buffer, const tstring& path )
     : mProperties{ bufferProperties( buffer ) },
-      mPath{ path },
+      mPath{ NATIVE( path ) },
       mInArchivePath{ WIDEN( path ) },
       mBufferItem{ buffer } {}
 
 BitInputItem::BitInputItem( std::istream& stream, const tstring& path )
     : mProperties{ streamProperties( stream ) },
-      mPath{ path },
+      mPath{ NATIVE( path ) },
       mInArchivePath{ WIDEN( path ) },
       mStdItem{ stream } {}
 
 BitInputItem::BitInputItem( const BitInputArchive& inputArchive, std::uint32_t index, const tstring& newPath )
     : mProperties{ renamedItemProperties( inputArchive, index ) },
-      mPath{ newPath },
+      mPath{ NATIVE( newPath ) },
       mInArchivePath{ WIDEN( newPath ) },
       mRenamedItem{ RenamedInputItemInitTag{} } {}
 
@@ -203,7 +203,7 @@ auto BitInputItem::size() const noexcept -> std::uint64_t {
     return mProperties.size;
 }
 
-auto BitInputItem::path() const -> const tstring& {
+auto BitInputItem::path() const -> const native_string& {
     return mPath;
 }
 
@@ -252,12 +252,11 @@ auto BitInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT 
 
     CMyComPtr< ISequentialInStream > inStreamLoc;
     if ( mProperties.inputType == InputItemType::Filesystem ) {
-        const auto path = tstring_to_path( mPath );
         // NOLINTNEXTLINE(*-pro-type-union-access)
         if ( mFilesystemItem.symlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
-            inStreamLoc = bit7z::make_com< CSymlinkInStream >( path );
+            inStreamLoc = bit7z::make_com< CSymlinkInStream >( mPath );
         } else {
-            inStreamLoc = bit7z::make_com< CFileInStream >( path );
+            inStreamLoc = bit7z::make_com< CFileInStream >( mPath );
         }
     } else if ( mProperties.inputType == InputItemType::Buffer ) {
         // NOLINTNEXTLINE(*-pro-type-union-access)

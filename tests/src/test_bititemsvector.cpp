@@ -2025,11 +2025,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].inArchivePath() == testInput.expectedItem );
-#if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-        REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile );
-#else
-        REQUIRE( itemsVector[ 0 ].path() == to_utf8string( testInput.inputFile ) );
-#endif
+        REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile.native() );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput.inputFile ) );
     }
 }
@@ -2065,11 +2061,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
 
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].inArchivePath() == L"custom_name.ext" );
-#if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
-        REQUIRE( itemsVector[ 0 ].path() == testInput );
-#else
-        REQUIRE( itemsVector[ 0 ].path() == to_utf8string( testInput ) );
-#endif
+        REQUIRE( itemsVector[ 0 ].path() == testInput.native() );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
 }
@@ -2095,7 +2087,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
         REQUIRE_NOTHROW( indexStream( itemsVector, input_stream, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].inArchivePath() == L"custom_name.ext" );
-        REQUIRE( itemsVector[ 0 ].path() == BIT7Z_STRING( "custom_name.ext" ) );
+        REQUIRE( itemsVector[ 0 ].path() == BIT7Z_NATIVE_STRING( "custom_name.ext" ) );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
 }
@@ -2121,7 +2113,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
         REQUIRE_NOTHROW( indexBuffer( itemsVector, input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].inArchivePath() == L"custom_name.ext" );
-        REQUIRE( itemsVector[ 0 ].path() == BIT7Z_STRING( "custom_name.ext" ) );
+        REQUIRE( itemsVector[ 0 ].path() == BIT7Z_NATIVE_STRING( "custom_name.ext" ) );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
 }

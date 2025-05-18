@@ -139,7 +139,7 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
     if ( *mDetectedFormat != BitFormat::Split && arcPath.extension() == ".001" ) {
         fileStream = bit7z::make_com< CMultiVolumeInStream, IInStream >( arcPath );
     } else {
-        fileStream = bit7z::make_com< CFileInStream, IInStream >( arcPath );
+        fileStream = bit7z::make_com< CFileInStream, IInStream >( arcPath.native() );
     }
     mInArchive = openArchiveStream( arcPath, fileStream, startOffset );
 }

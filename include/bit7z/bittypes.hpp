@@ -116,7 +116,8 @@ auto to_tstring( T arg ) -> std::basic_string< tchar > {
  *
  * @note On Linux or on Windows when BIT7Z_USE_NATIVE_STRING is used,
  * both native_string and tstring are aliases of the same string type;
- * in this case, no conversion is performed, and a const reference to the original string is returned.
+ * in this case, no conversion is performed, and a const reference to the original string is returned,
+ * or the original string is moved to a new string object if it is a temporary object.
  *
  * @param str   The native string to be converted.
  *
@@ -125,7 +126,15 @@ auto to_tstring( T arg ) -> std::basic_string< tchar > {
 #if defined( _WIN32 ) && !defined( BIT7Z_USE_NATIVE_STRING )
 auto to_tstring( const native_string& str ) -> tstring;
 #else
-auto to_tstring( const native_string& str ) -> const tstring&;
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( native_string&& str ) -> tstring {
+    return std::move( str );
+}
+
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( const native_string& str ) -> const tstring& {
+    return str;
+}
 #endif
 
 template< typename Enum >

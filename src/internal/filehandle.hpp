@@ -115,7 +115,7 @@ class FileHandle {
     protected:
         handle_t mHandle; // NOLINT(*-non-private-member-variables-in-classes)
 
-        explicit FileHandle( const fs::path& filePath, OpenFlags openFlags );
+        explicit FileHandle( const native_string& filePath, OpenFlags openFlags );
 
     public:
         explicit FileHandle( const FileHandle& ) = delete;
@@ -133,13 +133,13 @@ class FileHandle {
 };
 
 struct OutputFile final : FileHandle {
-    explicit OutputFile( const fs::path& filePath, FileFlag fileFlag );
+    explicit OutputFile( const native_string& filePath, FileFlag fileFlag );
 
     auto write( const void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 };
 
 struct InputFile final : FileHandle {
-    explicit InputFile( const fs::path& filePath );
+    explicit InputFile( const native_string& filePath );
 
     auto read( void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 };

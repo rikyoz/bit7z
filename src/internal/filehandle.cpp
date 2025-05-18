@@ -31,7 +31,7 @@ namespace bit7z {
 namespace {
 
 BIT7Z_ALWAYS_INLINE
-auto open_file( const fs::path& filePath, OpenFlags openFlags ) -> handle_t {
+auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t {
 #ifdef _WIN32
     const handle_t handle = ::CreateFileW( filePath.c_str(),
                                            to_underlying( openFlags.accessFlag ),
@@ -54,7 +54,7 @@ auto open_file( const fs::path& filePath, OpenFlags openFlags ) -> handle_t {
 
 } // namespace
 
-FileHandle::FileHandle( const fs::path& filePath, OpenFlags openFlags )
+FileHandle::FileHandle( const native_string& filePath, OpenFlags openFlags )
     : mHandle{ open_file( filePath, openFlags ) } {}
 
 FileHandle::~FileHandle() {
@@ -97,7 +97,7 @@ auto FileHandle::seek( SeekOrigin origin,
     return S_OK;
 }
 
-OutputFile::OutputFile( const fs::path& filePath, FileFlag fileFlag )
+OutputFile::OutputFile( const native_string& filePath, FileFlag fileFlag )
     : FileHandle{ filePath, OpenFlags{ AccessFlag::WriteOnly, fileFlag } } {}
 
 namespace {
@@ -142,7 +142,7 @@ auto OutputFile::write( const void* data, std::uint32_t size, std::uint32_t& pro
 // Guaranteeing that the input file open flags are calculated at compile time.
 static constexpr OpenFlags openInputFlags{ AccessFlag::ReadOnly, FileFlag::Existing };
 
-InputFile::InputFile( const fs::path& filePath )
+InputFile::InputFile( const native_string& filePath )
     : FileHandle{ filePath, openInputFlags } {}
 
 namespace {

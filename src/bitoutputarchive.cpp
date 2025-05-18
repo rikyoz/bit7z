@@ -373,7 +373,7 @@ auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStr
 
     const HRESULT res = newItem.getStream( inStream );
     if ( FAILED( res ) ) {
-        mFailedFiles.emplace_back( newItem.path(), make_hresult_code( res ) );
+        mFailedFiles.emplace_back( to_tstring( newItem.path() ), make_hresult_code( res ) );
     }
     return res;
 }

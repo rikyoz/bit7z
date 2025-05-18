@@ -23,7 +23,7 @@ namespace bit7z {
 
 class CFileInStream : public IInStream, public CMyUnknownImp {
     public:
-        explicit CFileInStream( const fs::path& filePath );
+        explicit CFileInStream( const native_string& filePath );
 
         CFileInStream( const CFileInStream& ) = delete;
 

@@ -82,7 +82,7 @@ class BitInputItem final {
         auto size() const noexcept -> std::uint64_t;
 
         BIT7Z_NODISCARD
-        auto path() const -> const tstring&;
+        auto path() const -> const native_string&;
 
         BIT7Z_NODISCARD
         auto attributes() const noexcept -> std::uint32_t;
@@ -101,8 +101,9 @@ class BitInputItem final {
 
     private:
         InputItemProperties mProperties;
-        tstring mPath;
-        sevenzip_string mInArchivePath;
+        // Note: we need to store paths as strings rather than fs::path as the public API is in C++14.
+        native_string mPath; // std::wstring on Windows, std::string elsewhere.
+        sevenzip_string mInArchivePath; // std::wstring on every OS.
 
         // Unfortunately, we cannot use std::variant as we need to support C++11/C++14 in the public API.
         union {

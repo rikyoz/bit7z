@@ -15,7 +15,7 @@
 namespace bit7z {
 
 CFileOutStream::CFileOutStream( const fs::path& filePath, bool createAlways )
-    : mFile( filePath, createAlways ? FileFlag::CreateAlways : FileFlag::CreateNew ), mFilePath{ filePath } {}
+    : mFile( filePath.native(), createAlways ? FileFlag::CreateAlways : FileFlag::CreateNew ), mFilePath{ filePath } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {

@@ -21,8 +21,14 @@ namespace bit7z {
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 // On Windows, with native strings enabled, strings are already wide!
 #   define WIDEN( tstr ) tstr
+#   define NATIVE( tstr ) tstr
 #else
 #   define WIDEN( tstr ) bit7z::widen(tstr)
+#   ifdef _WIN32
+#       define NATIVE( tstr ) bit7z::widen(tstr)
+#   else
+#       define NATIVE( tstr ) tstr
+#   endif
 
 auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string;
 

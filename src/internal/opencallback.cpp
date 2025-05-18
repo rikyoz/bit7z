@@ -73,7 +73,7 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         }
 
         try {
-            auto inStreamTemp = bit7z::make_com< CFileInStream >( streamPath );
+            auto inStreamTemp = bit7z::make_com< CFileInStream >( streamPath.native() );
             *inStream = inStreamTemp.Detach();
         } catch ( const BitException& ex ) {
             return ex.nativeCode();
