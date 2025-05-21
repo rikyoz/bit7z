@@ -270,42 +270,6 @@ auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModifi
 }
 #endif
 
-auto fsutil::get_file_attributes_ex( const fs::path& filePath,
-                                     SymlinkPolicy symlinkPolicy,
-                                     WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool {
-    if ( filePath.empty() ) {
-        return false;
-    }
-
-#ifdef _WIN32
-    (void)symlinkPolicy;
-    return ::GetFileAttributesExW( filePath.c_str(), GetFileExInfoStandard, &fileMetadata ) != FALSE;
-#else
-    stat_t statInfo{};
-    const auto statRes = symlinkPolicy == SymlinkPolicy::Follow ?
-                         os_stat( filePath.c_str(), &statInfo ) :
-                         os_lstat( filePath.c_str(), &statInfo );
-    if ( statRes != 0 ) {
-        return false;
-    }
-
-    // File attributes
-    fileMetadata.dwFileAttributes = S_ISDIR( statInfo.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
-    if ( ( statInfo.st_mode & S_IWUSR ) == 0 ) {
-        fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
-    }
-    constexpr auto kMask = 0xFFFFu;
-    const std::uint32_t unixAttributes = ( ( statInfo.st_mode & kMask ) << 16u );
-    fileMetadata.dwFileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + unixAttributes;
-
-    // File times
-    fileMetadata.ftCreationTime = time_to_FILETIME( statInfo.st_ctime );
-    fileMetadata.ftLastAccessTime = time_to_FILETIME( statInfo.st_atime );
-    fileMetadata.ftLastWriteTime = time_to_FILETIME( statInfo.st_mtime );
-    return true;
-#endif
-}
-
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 
 namespace {

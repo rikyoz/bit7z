@@ -21,17 +21,40 @@
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
+#ifndef _WIN32
+#include <sys/stat.h>
+
+#if defined( __APPLE__ ) || defined( BSD ) || \
+defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
+using stat_t = struct stat;
+const auto os_lstat = &lstat;
+const auto os_stat = &stat;
+#else
+using stat_t = struct stat64;
+const auto os_lstat = &lstat64;
+const auto os_stat = &stat64;
+#endif
+#else
+using stat_t = WIN32_FILE_ATTRIBUTE_DATA;
+#endif
+
 namespace bit7z {
 namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto fileSize( const fs::path& filePath, SymlinkPolicy policy, bool isSymLink ) -> std::uint64_t {
-    std::error_code error;
+auto fileSize( const fs::path& filePath,
+               const stat_t& data,
+               SymlinkPolicy policy,
+               bool isSymLink ) -> std::uint64_t {
     if ( policy == SymlinkPolicy::DoNotFollow && isSymLink ) {
+        std::error_code error;
         return fs::read_symlink( filePath, error ).u8string().size();
     }
-    const auto res = fs::file_size( filePath, error );
-    return !error ? res : 0;
+#ifdef _WIN32
+    return ( static_cast< std::uint64_t >( data.nFileSizeHigh ) << 32 ) | data.nFileSizeLow;
+#else
+    return static_cast< std::uint64_t >( data.st_size );
+#endif
 }
 
 BIT7Z_NODISCARD
@@ -51,63 +74,58 @@ auto getFileTime( const BitInputArchive& inputArchive, std::uint32_t index, BitP
     return creationTime.isFileTime() ? creationTime.getFileTime() : current_file_time();
 }
 
-BIT7Z_NODISCARD
-BIT7Z_ALWAYS_INLINE
-auto getFileAttributes( const fs::path& itemPath, SymlinkPolicy symlinkPolicy ) -> WIN32_FILE_ATTRIBUTE_DATA {
-    WIN32_FILE_ATTRIBUTE_DATA fileAttributeData; // NOLINT(*-member-init)
-    if ( !filesystem::fsutil::get_file_attributes_ex( itemPath, symlinkPolicy, fileAttributeData ) ) {
-        //should not happen, but anyway...
-        const auto error = last_error_code();
-        throw BitException( "Could not retrieve file attributes", error, path_to_tstring( itemPath ) );
-    }
-    return fileAttributeData;
-}
-} // namespace
+#define HAS_FLAG(attributes, x) \
+    (((attributes) & static_cast<decltype(attributes)>(x)) == static_cast<decltype(attributes)>(x))
 
-using filesystem::fsutil::in_archive_path;
-
-namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputItemProperties {
-    std::error_code error;
-    const auto fileStatus = fs::status( itemPath, error );
-    if ( !fs::exists( fileStatus ) ) {
-        error = std::make_error_code( std::errc::no_such_file_or_directory );
+#ifdef _WIN32
+    WIN32_FILE_ATTRIBUTE_DATA fileMetadata;
+    const auto result = ::GetFileAttributesExW( itemPath.c_str(), GetFileExInfoStandard, &fileMetadata );
+    if ( result == FALSE ) {
+        const auto error = last_error_code();
+        throw BitException( "Could not read filesystem item properties", error, path_to_tstring( itemPath ) );
     }
-    if ( error ) {
-        throw BitException( "Invalid file path", error, path_to_tstring( itemPath ) );
-    }
-    const auto attributes = getFileAttributes( itemPath, policy );
+    const bool isSymLink = HAS_FLAG( fileMetadata.dwFileAttributes, FILE_ATTRIBUTE_REPARSE_POINT );
     return {
-        fileSize( itemPath, policy, fs::is_symlink( fileStatus ) ),
-        attributes.ftLastWriteTime,
-        attributes.ftLastAccessTime,
-        attributes.ftCreationTime,
-        static_cast< std::uint32_t >( attributes.dwFileAttributes ),
-        fs::is_directory( fileStatus ),
-        fs::is_symlink( fileStatus ),
+        fileSize( itemPath, fileMetadata, policy, isSymLink ),
+        fileMetadata.ftLastWriteTime,
+        fileMetadata.ftLastAccessTime,
+        fileMetadata.ftCreationTime,
+        static_cast< std::uint32_t >( fileMetadata.dwFileAttributes ),
         InputItemType::Filesystem
     };
-}
+#else
+    stat_t statInfo{};
+    const auto statRes = policy == SymlinkPolicy::Follow
+        ? os_stat( itemPath.c_str(), &statInfo )
+        : os_lstat( itemPath.c_str(), &statInfo );
+    if ( statRes != 0 ) {
+        const auto error = last_error_code();
+        throw BitException( "Could not read filesystem item properties", error, path_to_tstring( itemPath ) );
+    }
 
-BIT7Z_NODISCARD
-BIT7Z_ALWAYS_INLINE
-auto entryProperties( const fs::directory_entry& entry, SymlinkPolicy policy ) -> InputItemProperties {
-    std::error_code error;
-    // Note: there's no need to check if the entry exists, as it is obtained while indexing a directory.
-    const auto isSymlink = entry.is_symlink( error );
-    const auto attributes = getFileAttributes( entry.path(), policy );
+    std::uint32_t fileAttributes = S_ISDIR( statInfo.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
+    if ( ( statInfo.st_mode & S_IWUSR ) == 0 ) {
+        fileAttributes |= FILE_ATTRIBUTE_READONLY;
+    }
+    const bool isSymLink = S_ISLNK( statInfo.st_mode );
+    if ( isSymLink ) {
+        fileAttributes |= FILE_ATTRIBUTE_REPARSE_POINT;
+    }
+    constexpr auto kMask = 0xFFFFu;
+    const std::uint32_t unixAttributes = ( ( statInfo.st_mode & kMask ) << 16u );
+    fileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + unixAttributes;
     return {
-        fileSize( entry, policy, isSymlink ),
-        attributes.ftLastWriteTime,
-        attributes.ftLastAccessTime,
-        attributes.ftCreationTime,
-        static_cast< std::uint32_t >( attributes.dwFileAttributes ),
-        entry.is_directory( error ),
-        isSymlink,
+        fileSize( itemPath, statInfo, policy, isSymLink ),
+        time_to_FILETIME( statInfo.st_mtime ),
+        time_to_FILETIME( statInfo.st_atime ),
+        time_to_FILETIME( statInfo.st_ctime ),
+        fileAttributes,
         InputItemType::Filesystem
     };
+#endif
 }
 
 BIT7Z_NODISCARD
@@ -120,8 +138,6 @@ auto bufferProperties( const buffer_t& buffer ) -> InputItemProperties {
         currentTime,
         currentTime,
         static_cast< std::uint32_t >( FILE_ATTRIBUTE_NORMAL ),
-        false,
-        false,
         InputItemType::Buffer
     };
 }
@@ -136,8 +152,6 @@ auto streamProperties( std::istream& stream ) -> InputItemProperties {
         currentTime,
         currentTime,
         static_cast< std::uint32_t >( FILE_ATTRIBUTE_NORMAL ),
-        false,
-        false,
         InputItemType::StdStream
     };
 }
@@ -151,12 +165,12 @@ auto renamedItemProperties( const BitInputArchive& inputArchive, std::uint32_t i
         getFileTime( inputArchive, index, BitProperty::ATime ),
         getFileTime( inputArchive, index, BitProperty::CTime ),
         inputArchive.itemProperty( index, BitProperty::Attrib ).getUInt32(),
-        inputArchive.itemProperty( index, BitProperty::IsDir ).getBool(),
-        inputArchive.itemAt( index ).isSymLink(),
         InputItemType::RenamedItem
     };
 }
 } // namespace
+
+using filesystem::fsutil::in_archive_path;
 
 BitInputItem::BitInputItem( const fs::path& itemPath, SymlinkPolicy symlinkPolicy )
     : BitInputItem{ itemPath, fs::path{}, symlinkPolicy } {}
@@ -168,7 +182,7 @@ BitInputItem::BitInputItem( const fs::path& itemPath, const fs::path& inArchiveP
       mFilesystemItem{ symlinkPolicy } {}
 
 BitInputItem::BitInputItem( const fs::path& searchPath, const fs::directory_entry& entry, SymlinkPolicy symlinkPolicy )
-    : mProperties{ entryProperties( entry, symlinkPolicy ) },
+    : mProperties{ fileProperties( entry.path(), symlinkPolicy ) },
       mPath{ entry.path().native() },
       mInArchivePath{ path_to_wide_string( in_archive_path( entry.path(), searchPath ) ) },
       mFilesystemItem{ symlinkPolicy } {}
@@ -192,11 +206,11 @@ BitInputItem::BitInputItem( const BitInputArchive& inputArchive, std::uint32_t i
       mRenamedItem{ RenamedInputItemInitTag{} } {}
 
 auto BitInputItem::isDir() const noexcept -> bool {
-    return mProperties.isDir;
+    return HAS_FLAG( mProperties.attributes, FILE_ATTRIBUTE_DIRECTORY );
 }
 
 auto BitInputItem::isSymLink() const noexcept -> bool {
-    return mProperties.isSymLink;
+    return HAS_FLAG( mProperties.attributes, FILE_ATTRIBUTE_REPARSE_POINT );
 }
 
 auto BitInputItem::size() const noexcept -> std::uint64_t {
@@ -222,7 +236,7 @@ auto BitInputItem::itemProperty( BitProperty property ) const -> BitPropVariant 
             prop = mInArchivePath;
             break;
         case BitProperty::IsDir:
-            prop = mProperties.isDir;
+            prop = isDir();
             break;
         case BitProperty::Size:
             prop = mProperties.size;

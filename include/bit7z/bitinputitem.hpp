@@ -51,8 +51,6 @@ struct InputItemProperties final {
     FILETIME lastAccessTime;
     FILETIME creationTime;
     std::uint32_t attributes;
-    bool isDir;
-    bool isSymLink;
     InputItemType inputType;
 };
 
@@ -103,7 +101,7 @@ class BitInputItem final {
         InputItemProperties mProperties;
         // Note: we need to store paths as strings rather than fs::path as the public API is in C++14.
         native_string mPath; // std::wstring on Windows, std::string elsewhere.
-        sevenzip_string mInArchivePath; // std::wstring on every OS.
+        sevenzip_string mInArchivePath; // std::wstring on every OS, used by 7-Zip.
 
         // Unfortunately, we cannot use std::variant as we need to support C++11/C++14 in the public API.
         union {

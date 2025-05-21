@@ -98,14 +98,6 @@ inline constexpr auto HRESULT_FROM_WIN32( unsigned int x ) -> HRESULT {
 constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
 #endif
 
-// Win32 structs
-struct WIN32_FILE_ATTRIBUTE_DATA {
-    std::uint32_t dwFileAttributes;
-    FILETIME ftCreationTime;
-    FILETIME ftLastAccessTime;
-    FILETIME ftLastWriteTime;
-};
-
 // Win32 enums
 enum VARENUM {
     VT_EMPTY = 0,

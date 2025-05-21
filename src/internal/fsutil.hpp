@@ -103,10 +103,6 @@ auto contains_dot_references( const std::basic_string< CharT >& path ) -> bool {
 // Note: wildcard_match is "semi-public", so we cannot pass the path as fs::path.
 BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& path ) -> bool;
 
-BIT7Z_NODISCARD auto get_file_attributes_ex( const fs::path& filePath,
-                                             SymlinkPolicy symlinkPolicy,
-                                             WIN32_FILE_ATTRIBUTE_DATA& fileMetadata ) noexcept -> bool;
-
 #ifdef _WIN32
 // TODO: In future, use std::optional instead of empty FILETIME objects.
 auto set_file_time( const fs::path& filePath, FILETIME creation, FILETIME access, FILETIME modified ) noexcept -> bool;
