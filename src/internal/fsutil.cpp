@@ -12,13 +12,13 @@
 
 #include "internal/fsutil.hpp"
 
+#include "bitexception.hpp"
 #include "bittypes.hpp"
 
 #ifndef _WIN32
 #include "internal/dateutil.hpp"
 
 #include <sys/resource.h> // for rlimit, getrlimit, and setrlimit
-#include <sys/stat.h>
 #include <unistd.h>
 
 // For some reason, GCC on macOS requires including <climits> for defining OPEN_MAX.
@@ -184,19 +184,6 @@ static const mode_t global_umask = []() noexcept -> mode_t {
 
 #endif
 
-#ifndef _WIN32
-#if defined( __APPLE__ ) || defined( BSD ) || \
-    defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
-using stat_t = struct stat;
-const auto os_lstat = &lstat;
-const auto os_stat = &stat;
-#else
-using stat_t = struct stat64;
-const auto os_lstat = &lstat64;
-const auto os_stat = &stat64;
-#endif
-#endif
-
 auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
@@ -205,7 +192,7 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
 #ifdef _WIN32
     return ::SetFileAttributesW( filePath.c_str(), attributes ) != FALSE;
 #else
-    stat_t fileStat{};
+    FileMetadata fileStat{};
     if ( os_lstat( filePath.c_str(), &fileStat ) != 0 ) {
         return false;
     }

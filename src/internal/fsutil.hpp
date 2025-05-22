@@ -11,6 +11,7 @@
 #define FSUTIL_HPP
 
 #include "bitdefines.hpp"
+#include "bitexception.hpp"
 #include "bititemsvector.hpp" // For SymlinkPolicy
 #include "bittypes.hpp"
 #include "internal/fs.hpp"
@@ -18,6 +19,23 @@
 #include "internal/windows.hpp"
 
 #include <type_traits>
+
+#ifndef _WIN32
+#include <sys/stat.h>
+
+#   if defined( __APPLE__ ) || defined( BSD ) || \
+        defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
+using FileMetadata = struct stat;
+const auto os_lstat = &lstat;
+const auto os_stat = &stat;
+#   else
+using FileMetadata = struct stat64;
+const auto os_lstat = &lstat64;
+const auto os_stat = &stat64;
+#   endif
+#else
+using FileMetadata = WIN32_FILE_ATTRIBUTE_DATA;
+#endif
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 
@@ -45,8 +63,36 @@ constexpr auto isPathSeparator( wchar_t character ) -> bool {
 }
 #endif
 
-namespace filesystem {
+inline auto path_to_tstring( const fs::path& path ) -> tstring {
+    /* In an ideal world, we should only use fs::path's string< tchar >() function for converting a path to a tstring.
+     * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
+     * which is the default encoding of bit7z. */
+#if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
+    return path.native();
+#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE ) && !defined( BIT7Z_CPP20_U8STRING )
+    return path.u8string();
+#else // On Windows, if we are using either the system codepage or building bit7z using the C++20 standard.
+    /* If we encounter a path with Unicode characters, MSVC will throw an exception
+     * while converting from a fs::path to std::string if any character is invalid in the system codepage.
+     * Hence, here we use bit7z's own string conversion function, which substitutes invalid Unicode characters
+     * with '?' characters. */
+    const auto& native_path = path.native();
+    return narrow( native_path.c_str(), native_path.size() );
+#endif
+}
 
+inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
+#if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+    return path.wstring();
+#else
+    /* On some compilers and platforms (e.g., GCC before v12.3),
+     * the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
+     * So we simply convert to tstring, and then widen it if necessary. */
+    return WIDEN( path.string< tchar >() );
+#endif
+}
+
+namespace filesystem {
 namespace fsutil {
 
 BIT7Z_NODISCARD auto stem( const tstring& path ) -> tstring;
@@ -110,6 +156,26 @@ auto set_file_time( const fs::path& filePath, FILETIME creation, FILETIME access
 auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
 #endif
 
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto get_file_metadata( const fs::path& filePath, SymlinkPolicy policy ) -> FileMetadata {
+    FileMetadata fileMetadata;
+#ifdef _WIN32
+    (void)policy;
+    const auto result = ::GetFileAttributesExW( filePath.c_str(), GetFileExInfoStandard, &fileMetadata );
+    if ( result == FALSE ) {
+#else
+    const auto statRes = policy == SymlinkPolicy::Follow
+        ? os_stat( filePath.c_str(), &fileMetadata )
+        : os_lstat( filePath.c_str(), &fileMetadata );
+    if ( statRes != 0 ) {
+#endif
+        const auto error = last_error_code();
+        throw BitException( "Could not read filesystem item properties", error, path_to_tstring( filePath ) );
+    }
+    return fileMetadata;
+}
+
 auto set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
 
 BIT7Z_NODISCARD auto in_archive_path( const fs::path& filePath,
@@ -149,26 +215,8 @@ auto sanitize_path( const fs::path& path ) -> fs::path;
 auto sanitized_extraction_path( const fs::path& outDir, const fs::path& itemPath ) -> fs::path;
 #endif
 
-}  // namespace fsutil
-}  // namespace filesystem
-
-inline auto path_to_tstring( const fs::path& path ) -> tstring {
-    /* In an ideal world, we should only use fs::path's string< tchar >() function for converting a path to a tstring.
-     * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
-     * which is the default encoding of bit7z. */
-#if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
-    return path.native();
-#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE ) && !defined( BIT7Z_CPP20_U8STRING )
-    return path.u8string();
-#else // On Windows, if we are using either the system codepage or building bit7z using the C++20 standard.
-    /* If we encounter a path with Unicode characters, MSVC will throw an exception
-     * while converting from a fs::path to std::string if any character is invalid in the system codepage.
-     * Hence, here we use bit7z's own string conversion function, which substitutes invalid Unicode characters
-     * with '?' characters. */
-    const auto& native_path = path.native();
-    return narrow( native_path.c_str(), native_path.size() );
-#endif
-}
+} // namespace fsutil
+} // namespace filesystem
 
 #if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
 #define PATH_FROM_TSTRING( str ) fs::u8path( str )
@@ -194,17 +242,6 @@ inline auto tstring_to_path( const tstring& str ) -> fs::path {
 #endif
 #ifdef _MSC_VER
 #pragma warning(pop)
-#endif
-}
-
-inline auto path_to_wide_string( const fs::path& path ) -> std::wstring {
-#if defined( _MSC_VER ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
-    return path.wstring();
-#else
-    /* On some compilers and platforms (e.g., GCC before v12.3),
-     * the direct conversion of the fs::path to wstring might throw an exception due to unicode characters.
-     * So we simply convert to tstring, and then widen it if necessary. */
-    return WIDEN( path.string< tchar >() );
 #endif
 }
 

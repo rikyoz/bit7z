@@ -21,29 +21,12 @@
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
-#ifndef _WIN32
-#include <sys/stat.h>
-
-#if defined( __APPLE__ ) || defined( BSD ) || \
-defined( __FreeBSD__ ) || defined( __NetBSD__ ) || defined( __OpenBSD__ ) || defined( __DragonFly__ )
-using stat_t = struct stat;
-const auto os_lstat = &lstat;
-const auto os_stat = &stat;
-#else
-using stat_t = struct stat64;
-const auto os_lstat = &lstat64;
-const auto os_stat = &stat64;
-#endif
-#else
-using stat_t = WIN32_FILE_ATTRIBUTE_DATA;
-#endif
-
 namespace bit7z {
 namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto fileSize( const fs::path& filePath,
-               const stat_t& data,
+               const FileMetadata& data,
                SymlinkPolicy policy,
                bool isSymLink ) -> std::uint64_t {
     if ( policy == SymlinkPolicy::DoNotFollow && isSymLink ) {
@@ -74,19 +57,14 @@ auto getFileTime( const BitInputArchive& inputArchive, std::uint32_t index, BitP
     return creationTime.isFileTime() ? creationTime.getFileTime() : current_file_time();
 }
 
-#define HAS_FLAG(attributes, x) \
-    (((attributes) & static_cast<decltype(attributes)>(x)) == static_cast<decltype(attributes)>(x))
+#define HAS_FLAG( attributes, x ) \
+    ( ( ( attributes ) & static_cast< decltype( attributes ) >( x ) ) == static_cast< decltype( attributes ) >( x ) )
 
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputItemProperties {
+    const FileMetadata fileMetadata = filesystem::fsutil::get_file_metadata( itemPath, policy );
 #ifdef _WIN32
-    WIN32_FILE_ATTRIBUTE_DATA fileMetadata;
-    const auto result = ::GetFileAttributesExW( itemPath.c_str(), GetFileExInfoStandard, &fileMetadata );
-    if ( result == FALSE ) {
-        const auto error = last_error_code();
-        throw BitException( "Could not read filesystem item properties", error, path_to_tstring( itemPath ) );
-    }
     const bool isSymLink = HAS_FLAG( fileMetadata.dwFileAttributes, FILE_ATTRIBUTE_REPARSE_POINT );
     return {
         fileSize( itemPath, fileMetadata, policy, isSymLink ),
@@ -97,31 +75,22 @@ auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputIt
         InputItemType::Filesystem
     };
 #else
-    stat_t statInfo{};
-    const auto statRes = policy == SymlinkPolicy::Follow
-        ? os_stat( itemPath.c_str(), &statInfo )
-        : os_lstat( itemPath.c_str(), &statInfo );
-    if ( statRes != 0 ) {
-        const auto error = last_error_code();
-        throw BitException( "Could not read filesystem item properties", error, path_to_tstring( itemPath ) );
-    }
-
-    std::uint32_t fileAttributes = S_ISDIR( statInfo.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
-    if ( ( statInfo.st_mode & S_IWUSR ) == 0 ) {
+    std::uint32_t fileAttributes = S_ISDIR( fileMetadata.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
+    if ( ( fileMetadata.st_mode & S_IWUSR ) == 0 ) {
         fileAttributes |= FILE_ATTRIBUTE_READONLY;
     }
-    const bool isSymLink = S_ISLNK( statInfo.st_mode );
+    const bool isSymLink = S_ISLNK( fileMetadata.st_mode );
     if ( isSymLink ) {
         fileAttributes |= FILE_ATTRIBUTE_REPARSE_POINT;
     }
     constexpr auto kMask = 0xFFFFu;
-    const std::uint32_t unixAttributes = ( ( statInfo.st_mode & kMask ) << 16u );
+    const std::uint32_t unixAttributes = ( ( fileMetadata.st_mode & kMask ) << 16u );
     fileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + unixAttributes;
     return {
-        fileSize( itemPath, statInfo, policy, isSymLink ),
-        time_to_FILETIME( statInfo.st_mtime ),
-        time_to_FILETIME( statInfo.st_atime ),
-        time_to_FILETIME( statInfo.st_ctime ),
+        fileSize( itemPath, fileMetadata, policy, isSymLink ),
+        time_to_FILETIME( fileMetadata.st_mtime ),
+        time_to_FILETIME( fileMetadata.st_atime ),
+        time_to_FILETIME( fileMetadata.st_ctime ),
         fileAttributes,
         InputItemType::Filesystem
     };
