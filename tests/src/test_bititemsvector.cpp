@@ -57,7 +57,7 @@ auto in_archive_paths( const BitItemsVector& vector ) -> std::vector< fs::path >
     paths.reserve( vector.size() );
     std::transform( vector.cbegin(), vector.cend(), std::back_inserter( paths ),
                     []( const auto& item ) {
-                        return item.inArchivePath();
+                        return to_native_string( item.inArchivePath() );
                     } );
     return paths;
 }
@@ -1973,7 +1973,7 @@ TEST_CASE( "BitItemsVector: Indexing a non-existing file should fail", "[bititem
 
 struct TestFile {
     fs::path inputFile;
-    fs::path expectedItem;
+    sevenzip_string expectedItem;
 };
 
 TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
