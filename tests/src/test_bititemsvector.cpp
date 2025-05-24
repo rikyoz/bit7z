@@ -1973,7 +1973,7 @@ TEST_CASE( "BitItemsVector: Indexing a non-existing file should fail", "[bititem
 
 struct TestFile {
     fs::path inputFile;
-    sevenzip_string expectedItem;
+    fs::path expectedItem;
 };
 
 TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
@@ -1983,35 +1983,35 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
     const auto testInput =
         GENERATE(
-            TestFile{ "Lorem Ipsum.pdf", L"Lorem Ipsum.pdf" },
-            TestFile{ "empty/../Lorem Ipsum.pdf", L"Lorem Ipsum.pdf" },
-            TestFile{ "folder/subfolder2/../../Lorem Ipsum.pdf", L"Lorem Ipsum.pdf" },
-            TestFile{ "italy.svg", L"italy.svg" },
-            TestFile{ "noext", L"noext" },
-            TestFile{ BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ), L"σαράντα δύο.txt" },
-            TestFile{ "folder/clouds.jpg", L"folder/clouds.jpg" },
-            TestFile{ "dot.folder/../folder/clouds.jpg", L"clouds.jpg" },
-            TestFile{ "folder/subfolder2/../clouds.jpg", L"clouds.jpg" },
-            TestFile{ "folder/subfolder2/homework.doc", L"folder/subfolder2/homework.doc" },
-            TestFile{ "folder/subfolder2/The quick brown fox.pdf", L"folder/subfolder2/The quick brown fox.pdf" },
-            TestFile{ "folder/subfolder2/frequency.xlsx", L"folder/subfolder2/frequency.xlsx" },
-            TestFile{ "dot.folder/hello.json", L"dot.folder/hello.json" }
+            TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "empty/../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "folder/subfolder2/../../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "italy.svg", "italy.svg" },
+            TestFile{ "noext", "noext" },
+            TestFile{ BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ), BIT7Z_NATIVE_STRING( "σαράντα δύο.txt" ) },
+            TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
+            TestFile{ "dot.folder/../folder/clouds.jpg", "clouds.jpg" },
+            TestFile{ "folder/subfolder2/../clouds.jpg", "clouds.jpg" },
+            TestFile{ "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
+            TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
+            TestFile{ "folder/subfolder2/frequency.xlsx", "folder/subfolder2/frequency.xlsx" },
+            TestFile{ "dot.folder/hello.json", "dot.folder/hello.json" }
         );
 #else
     const auto testInput =
         GENERATE(
-            TestFile{ "Lorem Ipsum.pdf", L"Lorem Ipsum.pdf" },
-            TestFile{ "empty/../Lorem Ipsum.pdf", L"Lorem Ipsum.pdf" },
-            TestFile{ "folder/subfolder2/../../Lorem Ipsum.pdf", L"Lorem Ipsum.pdf" },
-            TestFile{ "italy.svg", L"italy.svg" },
-            TestFile{ "noext", L"noext" },
-            TestFile{ "folder/clouds.jpg", L"folder/clouds.jpg" },
-            TestFile{ "dot.folder/../folder/clouds.jpg", L"clouds.jpg" },
-            TestFile{ "folder/subfolder2/../clouds.jpg", L"clouds.jpg" },
-            TestFile{ "folder/subfolder2/homework.doc", L"folder/subfolder2/homework.doc" },
-            TestFile{ "folder/subfolder2/The quick brown fox.pdf", L"folder/subfolder2/The quick brown fox.pdf" },
-            TestFile{ "folder/subfolder2/frequency.xlsx", L"folder/subfolder2/frequency.xlsx" },
-            TestFile{ "dot.folder/hello.json", L"dot.folder/hello.json" }
+            TestFile{ "Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "empty/../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "folder/subfolder2/../../Lorem Ipsum.pdf", "Lorem Ipsum.pdf" },
+            TestFile{ "italy.svg", "italy.svg" },
+            TestFile{ "noext", "noext" },
+            TestFile{ "folder/clouds.jpg", "folder/clouds.jpg" },
+            TestFile{ "dot.folder/../folder/clouds.jpg", "clouds.jpg" },
+            TestFile{ "folder/subfolder2/../clouds.jpg", "clouds.jpg" },
+            TestFile{ "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
+            TestFile{ "folder/subfolder2/The quick brown fox.pdf", "folder/subfolder2/The quick brown fox.pdf" },
+            TestFile{ "folder/subfolder2/frequency.xlsx", "folder/subfolder2/frequency.xlsx" },
+            TestFile{ "dot.folder/hello.json", "dot.folder/hello.json" }
         );
 #endif
 
@@ -2024,7 +2024,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
 #endif
 
         REQUIRE( itemsVector.size() == 1 );
-        REQUIRE( itemsVector[ 0 ].inArchivePath() == testInput.expectedItem );
+        REQUIRE( to_native_string( itemsVector[ 0 ].inArchivePath() ) == testInput.expectedItem );
         REQUIRE( itemsVector[ 0 ].path() == testInput.inputFile.native() );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput.inputFile ) );
     }
