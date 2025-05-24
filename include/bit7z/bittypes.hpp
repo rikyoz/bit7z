@@ -124,17 +124,40 @@ auto to_tstring( T arg ) -> std::basic_string< tchar > {
  * @return the converted tstring.
  */
 #if defined( _WIN32 ) && !defined( BIT7Z_USE_NATIVE_STRING )
+BIT7Z_NODISCARD
 auto to_tstring( const native_string& str ) -> tstring;
 #else
+BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto to_tstring( native_string&& str ) -> tstring {
     return std::move( str );
 }
 
+BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto to_tstring( const native_string& str ) -> const tstring& {
     return str;
 }
+#endif
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_native_string( native_string&& str ) -> native_string {
+    return std::move( str );
+}
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_native_string( const native_string& str ) -> const native_string& {
+    return str;
+}
+
+#if !defined( _WIN32 )
+BIT7Z_NODISCARD
+auto to_native_string( const sevenzip_string& str ) -> native_string;
+#elif !defined( BIT7Z_USE_NATIVE_STRING )
+BIT7Z_NODISCARD
+auto to_native_string( const tstring& str ) -> native_string;
 #endif
 
 template< typename Enum >

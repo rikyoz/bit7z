@@ -12,7 +12,7 @@
 
 #include "bittypes.hpp"
 
-#if defined( _WIN32 ) && !defined( BIT7Z_USE_NATIVE_STRING )
+#if defined( _WIN32 ) || !defined( BIT7Z_USE_NATIVE_STRING )
 #include "internal/stringutil.hpp"
 #endif
 
@@ -24,4 +24,13 @@ auto to_tstring( const native_string& str ) -> tstring {
 }
 #endif
 
+#if !defined( _WIN32 )
+auto to_native_string( const sevenzip_string& str ) -> native_string {
+    return narrow( str.data(), str.size() );
+}
+#elif !defined( BIT7Z_USE_NATIVE_STRING )
+auto to_native_string( const tstring& str ) -> native_string {
+    return widen( str );
+}
+#endif
 } // namespace bit7z
