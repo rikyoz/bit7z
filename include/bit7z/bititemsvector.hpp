@@ -15,10 +15,7 @@
 #include "bitinputitem.hpp"
 #include "bittypes.hpp"
 
-#include <cstddef>
-#include <istream>
 #include <map>
-#include <memory>
 #include <vector>
 
 namespace bit7z {
@@ -46,9 +43,25 @@ using BitItemsVector = std::vector< BitInputItem >;
  *                  and all of its subdirectories.
  */
 void indexDirectory( BitItemsVector& outVector,
-                     const fs::path& inDir,
+                     const tstring& inDir,
                      const tstring& filter = {},
                      IndexingOptions options = {} );
+
+/**
+ * @brief Indexes the content of the given directory, adding to the vector all the files that match the wildcard filter.
+ *
+ * @param outVector the output vector.
+ * @param inDir     the directory to be indexed.
+ * @param filter    (optional) the wildcard filter to be used for indexing;
+ *                  empty string means "index all files".
+ * @param options   (optional) the settings to be used while indexing the given directory
+ *                  and all of its subdirectories.
+ */
+void indexDirectoryContent( BitItemsVector& outVector,
+                            const tstring& inDir,
+                            const tstring& filter = {},
+                            IndexingOptions options = {} );
+
 /**
  * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
  *

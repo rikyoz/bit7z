@@ -43,6 +43,7 @@ enum struct BitError {
     UnsupportedVariantType,
     WrongUpdateMode,
     InvalidZipPassword,
+    InvalidDirectoryPath
 };
 
 auto make_error_code( BitError error ) noexcept -> std::error_code;

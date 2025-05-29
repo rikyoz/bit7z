@@ -245,6 +245,20 @@ inline auto tstring_to_path( const tstring& str ) -> fs::path {
 #endif
 }
 
+inline auto sevenzip_string_to_path( const sevenzip_string& str ) -> fs::path {
+#if BIT7Z_AUTO_PREFIX_LONG_PATHS
+    fs::path result{ str };
+    if ( filesystem::fsutil::should_format_long_path( result ) ) {
+        result = filesystem::fsutil::format_long_path( result );
+    }
+    return result;
+#elif defined( _WIN32 ) || !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
+    return str;
+#else
+    return narrow( str.data(), str.size() );
+#endif
+}
+
 }  // namespace bit7z
 
 #endif // FSUTIL_HPP

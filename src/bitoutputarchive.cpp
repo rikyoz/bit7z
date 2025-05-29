@@ -152,14 +152,14 @@ void BitOutputArchive::addFiles( const tstring& inDir, const tstring& filter, Fi
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.onlyFiles = true;
     options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    indexDirectory( mNewItems, tstring_to_path( inDir ), filter, options );
+    indexDirectory( mNewItems, inDir, filter, options );
 }
 
 void BitOutputArchive::addDirectory( const tstring& inDir ) {
     IndexingOptions options{};
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    indexDirectory( mNewItems, tstring_to_path( inDir ), {}, options );
+    indexDirectory( mNewItems, inDir, {}, options );
 }
 
 void BitOutputArchive::addDirectoryContents( const tstring& inDir, const tstring& filter, bool recursive ) {
@@ -176,8 +176,7 @@ void BitOutputArchive::addDirectoryContents( const tstring& inDir,
     options.onlyFiles = !recursive;
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
-    std::error_code error;
-    indexDirectory( mNewItems, fs::absolute( tstring_to_path( inDir ), error ), filter, options );
+    indexDirectoryContent( mNewItems, inDir, filter, options );
 }
 
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {

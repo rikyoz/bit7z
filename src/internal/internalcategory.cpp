@@ -35,6 +35,8 @@ auto InternalCategory::message( int errorValue ) const -> std::string {
             return "No indices specified.";
         case BitError::InvalidArchivePath:
             return "Invalid archive path.";
+        case BitError::InvalidDirectoryPath:
+            return "Invalid directory path.";
         case BitError::InvalidOutputBufferSize:
             return "Invalid output buffer size.";
         case BitError::InvalidCompressionMethod:
@@ -80,6 +82,7 @@ auto InternalCategory::default_error_condition( int errorValue ) const noexcept 
         case BitError::FormatFeatureNotSupported:
         case BitError::IndicesNotSpecified:
         case BitError::InvalidArchivePath:
+        case BitError::InvalidDirectoryPath:
         case BitError::InvalidOutputBufferSize:
         case BitError::InvalidCompressionMethod:
         case BitError::InvalidDictionarySize:

@@ -12,6 +12,7 @@
 
 #include "bititemsvector.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bittypes.hpp"
 #include "internal/fsindexer.hpp"
@@ -24,15 +25,36 @@
 namespace bit7z {
 
 void indexDirectory( BitItemsVector& outVector,
-                     const fs::path& inDir,
+                     const tstring& inDir,
                      const tstring& filter,
                      IndexingOptions options ) {
+    const auto inDirPath = tstring_to_path( inDir );
     // Note: if inDir is an invalid path, FilesystemItem constructor throws a BitException.
-    const BitInputItem item{ inDir, options.retainFolderStructure ? inDir : fs::path{}, options.symlinkPolicy };
+    const BitInputItem item{ inDirPath, options.retainFolderStructure ? inDirPath : fs::path{}, options.symlinkPolicy };
     if ( filter.empty() && !item.inArchivePath().empty() ) {
         outVector.emplace_back( item );
     }
-    filesystem::listDirectoryItems( inDir, item.inArchivePath(), filter, options, outVector );
+    filesystem::listDirectoryItems( inDirPath, item.inArchivePath(), filter, options, outVector );
+}
+
+void indexDirectoryContent( BitItemsVector& outVector,
+                            const tstring& inDir,
+                            const tstring& filter,
+                            IndexingOptions options ) {
+    if ( inDir.empty() ) {
+        throw BitException( "Could not index directory", make_error_code( BitError::InvalidDirectoryPath ), inDir );
+    }
+    std::error_code error;
+    const auto inDirPath = fs::absolute( tstring_to_path( inDir ), error );
+    if ( error ) {
+        throw BitException( "Could not index directory", error, inDir );
+    }
+    if ( !fs::exists( inDirPath, error ) ) {
+        throw BitException( "Could not index directory",
+                            make_error_code( std::errc::no_such_file_or_directory ),
+                            inDir );
+    }
+    filesystem::listDirectoryItems( inDirPath, fs::path{}, filter, options, outVector );
 }
 
 namespace {

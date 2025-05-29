@@ -12,15 +12,26 @@
 
 #include "bititemsvector.hpp"
 #include "bittypes.hpp"
+#include "internal/fsutil.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
 void listDirectoryItems( const fs::path& basePath,
-                         const fs::path& inArchivePath,
+                         const fs::path& inArchivePathStr,
                          const tstring& filter,
                          IndexingOptions options,
                          BitItemsVector& result );
+
+BIT7Z_ALWAYS_INLINE
+void listDirectoryItems( const fs::path& basePath,
+                         const sevenzip_string& inArchivePathStr,
+                         const tstring& filter,
+                         IndexingOptions options,
+                         BitItemsVector& result ) {
+    const fs::path inArchivePath = sevenzip_string_to_path( inArchivePathStr );
+    listDirectoryItems( basePath, inArchivePath, filter, options, result );
+}
 
 }  // namespace filesystem
 }  // namespace bit7z
