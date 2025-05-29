@@ -3611,13 +3611,82 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
                                          BIT7Z_STRING( "dot.folder/hello.json" ) );
 
     DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) << " as a buffer" ) {
-        REQUIRE_LOAD_FILE( input_buffer, testInput );
+        REQUIRE_LOAD_FILE( inputBuffer, testInput );
 
         BitItemsVector itemsVector;
-        REQUIRE_NOTHROW( indexBuffer( itemsVector, input_buffer, BIT7Z_STRING( "custom_name.ext" ) ) );
+        REQUIRE_NOTHROW( indexBuffer( itemsVector, inputBuffer, BIT7Z_STRING( "custom_name.ext" ) ) );
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].inArchivePath() == L"custom_name.ext" );
         REQUIRE( itemsVector[ 0 ].path() == BIT7Z_NATIVE_STRING( "custom_name.ext" ) );
         REQUIRE( itemsVector[ 0 ].size() == fs::file_size( testInput ) );
     }
 }
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+
+TEST_CASE( "BitItemsVector: Indexing long paths", "[bititemsvector]" ) {
+    // Note: this is not static so that we always use a different test directory on each section run.
+    const TempTestDirectory testDir{ "test_bititemsvector" };
+
+    const std::string longName = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    std::string longPath;
+    longPath.reserve( MAX_PATH );
+
+    const std::size_t iterations = (( MAX_PATH - testDir.path().native().size() ) / (longName.size() + 1));
+    for ( std::size_t i = 0; i < iterations; ++i ) {
+        if ( i > 0 ) {
+            longPath += '\\';
+        }
+        longPath += longName;
+    }
+
+#ifndef BIT7Z_USE_STANDARD_FILESYSTEM // GHC's filesystem library already automatically prepends the long path prefix
+    REQUIRE( fs::create_directories( testDir.path() / longPath ) );
+#else
+    REQUIRE( fs::create_directories( fs::path{ LR"(\\?\)" } += ( testDir.path() / longPath ) ) );
+#endif
+    REQUIRE( set_current_dir( longPath ) );
+
+    const fs::path testPath = fs::current_path() / (longName + ".txt");
+    REQUIRE( testPath.native().size() > MAX_PATH );
+#ifndef BIT7Z_USE_STANDARD_FILESYSTEM
+    const fs::path testLongPath = testPath;
+#else
+    const fs::path testLongPath = fs::path{ LR"(\\?\)" } += testPath;
+#endif
+
+    {
+        fs::ofstream testFile{ testLongPath, std::ios::out };
+        REQUIRE( testFile.is_open() );
+        testFile << "hello world";
+    }
+    REQUIRE( fs::exists( testLongPath ) );
+
+    BitItemsVector itemsVector;
+
+    SECTION( "Long file path" ) {
+        REQUIRE_NOTHROW( indexFile( itemsVector, testPath.string< tchar >() ) );
+        REQUIRE( itemsVector.size() == 1 );
+        REQUIRE( itemsVector[ 0 ].path() == testLongPath );
+    }
+
+    SECTION( "Long directory path" ) {
+        REQUIRE_NOTHROW( indexDirectory( itemsVector, testPath.parent_path().string< tchar >() ) );
+        REQUIRE( itemsVector.size() == 2 );
+        REQUIRE( itemsVector[ 0 ].path() == testLongPath.parent_path().native() );
+        REQUIRE( itemsVector[ 1 ].path() == testLongPath.native() );
+    }
+
+    SECTION( "Content of long directory path" ) {
+        REQUIRE_NOTHROW( indexDirectoryContent( itemsVector, testPath.parent_path().string< tchar >() ) );
+        REQUIRE( itemsVector.size() == 1 );
+        REQUIRE( itemsVector[ 0 ].path() == testLongPath.native() );
+    }
+
+    REQUIRE( fs::remove( testLongPath ) );
+    REQUIRE_NOTHROW( fs::current_path( testDir.path() ) );
+    REQUIRE( fs::remove_all( longName ) );
+}
+
+#endif
