@@ -61,7 +61,17 @@ void listDirectoryItems( const fs::path& basePath,
         if ( itemMatches == shouldIncludeMatchedItems ) {
             const auto prefix = itemPath.lexically_relative( basePath ).remove_filename();
             const auto searchPath = includeRootPath ? inArchivePath / prefix : prefix;
+#ifdef BIT7Z_AUTO_PREFIX_LONG_PATHS
+            if ( fsutil::should_format_long_path( itemPath ) ) {
+                result.emplace_back( searchPath,
+                                     fs::directory_entry{ fsutil::format_long_path( itemPath ), error },
+                                     options.symlinkPolicy );
+            } else {
+                result.emplace_back( searchPath, currentEntry, options.symlinkPolicy );
+            }
+#else
             result.emplace_back( searchPath, currentEntry, options.symlinkPolicy );
+#endif
         }
 
         /* We don't need to recurse inside the current item if:

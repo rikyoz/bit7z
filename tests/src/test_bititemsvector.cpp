@@ -3630,12 +3630,16 @@ TEST_CASE( "BitItemsVector: Indexing long paths", "[bititemsvector]" ) {
 
     const std::string longName = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    std::string longPath;
-    longPath.reserve( MAX_PATH );
+    constexpr std::size_t maxPath = MAX_PATH - 12;
 
-    const std::size_t iterations = (( MAX_PATH - testDir.path().native().size() ) / (longName.size() + 1));
-    for ( std::size_t i = 0; i < iterations; ++i ) {
-        if ( i > 0 ) {
+    std::string longPath;
+    longPath.reserve( maxPath );
+
+    // Path size of the test dir + separator (between the test dir and the long path).
+    const auto testPathSize = testDir.path().native().size() + 1;
+    const auto longNameSize = longName.size();
+    while ( testPathSize + longPath.size() + 1 + longNameSize < maxPath ) {
+        if (!longPath.empty()) {
             longPath += '\\';
         }
         longPath += longName;
@@ -3648,8 +3652,11 @@ TEST_CASE( "BitItemsVector: Indexing long paths", "[bititemsvector]" ) {
 #endif
     REQUIRE( set_current_dir( longPath ) );
 
-    const fs::path testPath = fs::current_path() / (longName + ".txt");
-    REQUIRE( testPath.native().size() > MAX_PATH );
+    const auto currentPath = fs::current_path();
+    REQUIRE( currentPath.native().size() < maxPath );
+
+    const fs::path testPath = currentPath / (longName + ".txt");
+    REQUIRE( testPath.native().size() > maxPath );
 #ifndef BIT7Z_USE_STANDARD_FILESYSTEM
     const fs::path testLongPath = testPath;
 #else
@@ -3669,19 +3676,26 @@ TEST_CASE( "BitItemsVector: Indexing long paths", "[bititemsvector]" ) {
         REQUIRE_NOTHROW( indexFile( itemsVector, testPath.string< tchar >() ) );
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].path() == testLongPath );
+        REQUIRE( itemsVector[ 0 ].inArchivePath() == testLongPath.filename().native() );
     }
 
     SECTION( "Long directory path" ) {
         REQUIRE_NOTHROW( indexDirectory( itemsVector, testPath.parent_path().string< tchar >() ) );
         REQUIRE( itemsVector.size() == 2 );
-        REQUIRE( itemsVector[ 0 ].path() == testLongPath.parent_path().native() );
+
+        const auto parentFolderPath = testPath.parent_path();
+        const auto parentFolderName = parentFolderPath.filename();
+        REQUIRE( itemsVector[ 0 ].path() == parentFolderPath.native() );
+        REQUIRE( itemsVector[ 0 ].inArchivePath() == parentFolderName.native() );
         REQUIRE( itemsVector[ 1 ].path() == testLongPath.native() );
+        REQUIRE( itemsVector[ 1 ].inArchivePath() == ( parentFolderName / testLongPath.filename() ).native() );
     }
 
     SECTION( "Content of long directory path" ) {
         REQUIRE_NOTHROW( indexDirectoryContent( itemsVector, testPath.parent_path().string< tchar >() ) );
         REQUIRE( itemsVector.size() == 1 );
         REQUIRE( itemsVector[ 0 ].path() == testLongPath.native() );
+        REQUIRE( itemsVector[ 0 ].inArchivePath() == testLongPath.filename().native() );
     }
 
     REQUIRE( fs::remove( testLongPath ) );
