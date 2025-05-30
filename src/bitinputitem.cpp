@@ -36,7 +36,7 @@ auto fileSize( const fs::path& filePath,
 #ifdef _WIN32
     return ( static_cast< std::uint64_t >( data.nFileSizeHigh ) << 32 ) | data.nFileSizeLow;
 #else
-    return static_cast< std::uint64_t >( data.st_size );
+    return S_ISDIR( data.st_mode ) ? 0 : static_cast< std::uint64_t >( data.st_size );
 #endif
 }
 

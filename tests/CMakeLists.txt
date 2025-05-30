@@ -24,6 +24,8 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bitexception.cpp
      src/test_bitfilecompressor.cpp
      src/test_bitfileextractor.cpp
+     src/test_bitindicesview.cpp
+     src/test_bitinputitem.cpp
      src/test_bitinputarchive.cpp
      src/test_bitmemcompressor.cpp
      src/test_bitmemextractor.cpp
@@ -31,8 +33,7 @@ set( PUBLIC_API_SOURCE_FILES
      src/test_bitoutputarchive.cpp
      src/test_bitpropvariant.cpp
      src/test_bitstreamcompressor.cpp
-     src/test_bitstreamextractor.cpp
-     src/test_bitindicesview.cpp )
+     src/test_bitstreamextractor.cpp )
 
 # internal API sources
 set( INTERNAL_API_SOURCE_FILES
