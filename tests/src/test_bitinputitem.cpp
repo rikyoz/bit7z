@@ -13,7 +13,7 @@
 // Note: technically, BitInputItem belongs to the public API, but it accepts fs::path objects in its constructors,
 // so the library user should not (and is not expected to) directly use BitInputItem objects.
 // Hence, we can test this class only when both bit7z and the test app use the same filesystem library.
-#if defined( __MINGW32__ ) || defined( BIT7Z_DISABLE_USE_STD_FILESYSTEM ) || !defined( BIT7Z_TESTS_PUBLIC_API_ONLY )
+#if !defined( BIT7Z_TESTS_PUBLIC_API_ONLY )
 
 #include <catch2/catch.hpp>
 
@@ -133,7 +133,7 @@ TEST_CASE( "BitInputItem rename constructor should correctly read the metadata o
            "[bitinputitem]" ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const BitArchiveReader reader{ test::sevenzip_lib(), "multiple_items.7z", BitFormat::SevenZip };
+    const BitArchiveReader reader{ test::sevenzip_lib(), BIT7Z_STRING( "multiple_items.7z" ), BitFormat::SevenZip };
     const auto originalItem = reader.find( loremIpsum.name );
 
     const fs::path newItemPath = BIT7Z_NATIVE_STRING( "New Name.pdf" );
