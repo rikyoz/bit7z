@@ -10,17 +10,21 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+// Note: technically, BitInputItem belongs to the public API, but it accepts fs::path objects in its constructors,
+// so the library user should not (and is not expected to) directly use BitInputItem objects.
+// Hence, we can test this class only when both bit7z and the test app use the same filesystem library.
+#if defined( __MINGW32__ ) || defined( BIT7Z_DISABLE_USE_STD_FILESYSTEM ) || !defined( BIT7Z_TESTS_PUBLIC_API_ONLY )
+
 #include <catch2/catch.hpp>
 
 #include "utils/filesystem.hpp"
+#include "utils/shared_lib.hpp"
 
+#include "bitarchivereader.hpp"
 #include "bitexception.hpp"
 #include "bitinputitem.hpp"
 
 #include <sstream>
-
-#include "bitarchivereader.hpp"
-#include "utils/shared_lib.hpp"
 
 using bit7z::buffer_t;
 using bit7z::tstring;
@@ -143,3 +147,5 @@ TEST_CASE( "BitInputItem rename constructor should correctly read the metadata o
     REQUIRE( newItem.inArchivePath() == newItemPath.wstring() );
     REQUIRE_FALSE( newItem.hasNewData() );
 }
+
+#endif
