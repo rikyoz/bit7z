@@ -146,6 +146,14 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant;
 
+        /**
+         * Checks whether the item at the given index has the specified property.
+        *
+         * @param index     the index (in the archive) of the item.
+         * @param property  the property to be checked for existence.
+         *
+         * @return true if the item has the property, false otherwise.
+         */
         BIT7Z_NODISCARD auto itemHasProperty( std::uint32_t index, BitProperty property ) const -> bool;
 
         /**
@@ -172,6 +180,9 @@ class BitInputArchive {
          */
         BIT7Z_NODISCARD auto archivePath() const noexcept -> const tstring&;
 
+        /**
+         * @return whether the archive has a path (i.e., filesystem archive), or not (e.g., buffer archive).
+         */
         BIT7Z_NODISCARD auto archiveHasPath() const noexcept -> bool;
 
         /**
@@ -218,7 +229,7 @@ class BitInputArchive {
          *
          * @param outDir       the output directory where extracted files will be put.
          * @param itemFilter   the wildcard pattern used for matching the paths of items inside the archive.
-         * @param policy       the filtering policy to be applied to the matched items.
+         * @param policy       (optional) the filtering policy to be applied to the matching items.
          */
         void extractMatchingTo( const tstring& outDir,
                                 const tstring& itemFilter,
@@ -232,9 +243,11 @@ class BitInputArchive {
          *
          * @param outDir       the output directory where extracted files will be put.
          * @param regex        the regex used for matching the paths of files inside the archive.
-         * @param policy       the filtering policy to be applied to the matched items.
+         * @param policy       (optional) the filtering policy to be applied to the matching items.
          */
-        void extractMatchingRegexTo( const tstring& outDir, const tstring& regex, FilterPolicy policy ) const;
+        void extractMatchingRegexTo( const tstring& outDir,
+                                     const tstring& regex,
+                                     FilterPolicy policy = FilterPolicy::Include ) const;
 #endif
 
         /**

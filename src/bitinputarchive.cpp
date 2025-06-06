@@ -332,7 +332,7 @@ void BitInputArchive::extractMatchingTo( const tstring& outDir,
 
 void BitInputArchive::extractMatchingRegexTo( const tstring& outDir,
                                               const tstring& regex,
-                                              FilterPolicy policy = FilterPolicy::Include ) const {
+                                              FilterPolicy policy ) const {
     if ( regex.empty() ) {
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
