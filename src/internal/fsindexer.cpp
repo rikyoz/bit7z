@@ -43,10 +43,10 @@ void listDirectoryItems( const fs::path& basePath,
     const bool shouldIncludeMatchedItems = options.filterPolicy == FilterPolicy::Include;
 
     result.reserve( result.size() + countItemsInPath( basePath ) );
-    for ( auto iterator = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
-          iterator != fs::recursive_directory_iterator{};
-          ++iterator ) {
-        const auto& currentEntry = *iterator;
+    for ( auto it = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
+          it != fs::recursive_directory_iterator{};
+          ++it ) {
+        const auto& currentEntry = *it;
         const auto& itemPath = currentEntry.path();
 
         const auto itemIsDir = currentEntry.is_directory( error );
@@ -78,7 +78,7 @@ void listDirectoryItems( const fs::path& basePath,
          *  - it is not a directory; or
          *  - we are not indexing recursively, and the directory's name doesn't match the wildcard filter. */
         if ( !itemIsDir || ( !options.recursive && ( itemMatches != shouldIncludeMatchedItems ) ) ) {
-            iterator.disable_recursion_pending();
+            it.disable_recursion_pending();
         }
     }
 }
