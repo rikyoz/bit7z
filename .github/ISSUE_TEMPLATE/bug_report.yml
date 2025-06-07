@@ -58,7 +58,16 @@ body:
       label: 7-zip version
       multiple: true
       options:
+        - v24.09
+        - v24.08
+        - v24.07
+        - v24.06
+        - v24.05
+        - v24.04
+        - v24.03
+        - v24.01
         - v23.01
+        - v23.00
         - v22.01
         - v22.00
         - v21.07
