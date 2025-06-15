@@ -37,15 +37,113 @@ using convert_type = std::codecvt_utf8< wchar_t >;
 #endif
 
 #include <cstddef>
+#include <cstdint>
 #include <locale>
 #include <string>
 
 namespace bit7z {
 
+#if !defined( _WIN32 )
+namespace {
+constexpr char32_t kReplacementChar = 0xFFFDu;
+constexpr char32_t kHighStart = 0xD800u;
+constexpr char32_t kHighEnd = 0xDBFFu;
+constexpr char32_t kLowStart  = 0xDC00u;
+constexpr char32_t lowEnd = 0xDFFFu;
+constexpr char32_t utf16SurrogateShift = 10u;
+constexpr char32_t utf16SurrogateOffset = 0x35FDC00u;
+
+BIT7Z_ALWAYS_INLINE
+constexpr auto isHighSurrogate( char32_t codepoint ) noexcept -> bool {
+    return kHighStart <= codepoint && codepoint <= kHighEnd;
+}
+
+BIT7Z_ALWAYS_INLINE
+constexpr auto isLowSurrogate( char32_t codepoint ) noexcept -> bool {
+    return kLowStart <= codepoint && codepoint <= lowEnd;
+}
+
+BIT7Z_ALWAYS_INLINE
+constexpr auto isSurrogate( char32_t codepoint ) noexcept -> bool {
+    return kHighStart <= codepoint && codepoint <= lowEnd;
+}
+
+// NOLINTBEGIN(*-magic-numbers)
+BIT7Z_ALWAYS_INLINE
+void toUtf8( char32_t codepoint, std::string& result ) {
+    // Maximum codepoint expressible in N UTF-8 bytes.
+    constexpr char32_t kMaxOneByteUtf8 = 0x007Fu;      // U+0000 ... U+007F
+    constexpr char32_t kMaxTwoBytesUtf8 = 0x07FFu;     // U+0080 ... U+07FF
+    constexpr char32_t kMaxThreeBytesUtf8 = 0xFFFFu;   // U+0800 ... U+FFFF
+    constexpr char32_t kMaxFourBytesUtf8 = 0x10FFFFu;  // Maximum valid Unicode code-point
+
+    if ( codepoint <= kMaxOneByteUtf8 ) {
+        // 1-byte UTF-8: [U+0000, U+007F]
+        result.push_back( static_cast< char >( codepoint ) ); // 0xxxxxxx
+    } else if ( codepoint <= kMaxTwoBytesUtf8 ) {
+        // 2-bytes UTF-8: [U+0080, U+07FF]
+        result.push_back( static_cast< char >( 0xC0u | ( ( codepoint >> 6 ) & 0x1Fu ) ) );  // 110xxxxx
+        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) );           // 10xxxxxx
+    } else if ( codepoint <= kMaxThreeBytesUtf8 ) {
+        // 3-bytes UTF-8: [U+0800, U+FFFF]
+        // Note: UTF-16 surrogates are in this range, but we don't need to check for them
+        // as this function gets passed a valid UTF-32 codepoint.
+        if ( codepoint == kReplacementChar && ends_with( result, "\xEF\xBF\xBD" ) ) {
+            // Avoiding sequences of multiple replacement characters.
+            return;
+        }
+        result.push_back( static_cast< char >( 0xE0u | ( ( codepoint >> 12 ) & 0x0Fu ) ) ); // 1110xxxx
+        result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 6 ) & 0x3Fu ) ) );  // 10xxxxxx
+        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) );           // 10xxxxxx
+    } else if ( codepoint <= kMaxFourBytesUtf8 ) {
+        // 4-bytes UTF-8: [U+10000, U+10FFFF]
+        result.push_back( static_cast< char >( 0xF0u | ( ( codepoint >> 18 ) & 0x07u ) ) ); // 11110xxx
+        result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 12 ) & 0x3Fu ) ) ); // 10xxxxxx
+        result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 6 ) & 0x3Fu ) ) );  // 10xxxxxx
+        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) );           // 10xxxxxx
+    } else if ( !ends_with( result, "\xEF\xBF\xBD" ) ) {
+        // TODO: Add option to throw an exception on invalid UTF sequences
+        // Invalid code point, use replacement character U+FFFD
+        result += "\xEF\xBF\xBD";
+    }
+}
+// NOLINTEND(*-magic-numbers)
+
+BIT7Z_ALWAYS_INLINE
+auto decodeCodepoint( const wchar_t* wideString, std::size_t size, std::size_t& index ) -> char32_t {
+    // NOLINTNEXTLINE(*-pro-bounds-pointer-arithmetic)
+    const auto currentChar = static_cast< char32_t >( wideString[ index ] );
+    if ( !isSurrogate( currentChar ) ) {
+        return currentChar;
+    }
+
+    if ( isHighSurrogate( currentChar ) && index + 1 < size ) {
+        // High surrogate, must be followed by a low surrogate
+        // NOLINTNEXTLINE(*-pro-bounds-pointer-arithmetic)
+        const auto nextChar = static_cast< char32_t >( wideString[ index + 1 ] );
+        if ( isLowSurrogate( nextChar ) ) {
+            ++index;
+            // The RFC 2781 standard formula for calculating the codepoint is the following:
+            // codepoint = ((high - 0xD800) << 10u) + (low - 0xDC00) + 0x10000;
+            // which can be simplified as follows:
+            // codepoint = (high << 10u) - (0xD800 << 10u) + (low - 0xDC00) + 0x10000;
+            // codepoint = (high << 10u) + low + (-(0xD800 << 10u) - 0xDC00 + 0x10000);
+            // codepoint = (high << 10u) + low - (0x3600000 + 0xDC00 - 0x10000);
+            return ( currentChar << utf16SurrogateShift ) + nextChar - utf16SurrogateOffset;
+        }
+    }
+
+    // TODO: Add option to throw an exception on invalid UTF sequences.
+    // Invalid code point, use replacement character U+FFFD.
+    return kReplacementChar;
+}
+} // namespace
+#endif
+
 #if !defined( _WIN32 ) || !defined( BIT7Z_USE_NATIVE_STRING )
 auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string {
     if ( wideString == nullptr || size == 0 ) {
-        return "";
+        return {};
     }
 #ifdef _WIN32
     const int narrowStringSize = WideCharToMultiByte( CODEPAGE,
@@ -70,13 +168,15 @@ auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string {
                          nullptr,
                          nullptr );
     return result;
-#elif !defined( BIT7Z_USE_STANDARD_FILESYSTEM )
-    (void)size; // To avoid warnings of unused size argument...
-    return fs::detail::toUtf8( wideString );
 #else
-    std::wstring_convert< convert_type, wchar_t > converter;
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-    return converter.to_bytes( wideString, wideString + size );
+    // Note: this function supports wide strings containing a mix of UTF-16 and UTF-32 code units.
+    std::string result;
+    result.reserve( size * 3 );
+    for ( std::size_t index = 0; index < size; ++index ) {
+        const char32_t utf32char = decodeCodepoint( wideString, size, index );
+        toUtf8( utf32char, result );
+    }
+    return result;
 #endif
 }
 
