@@ -36,26 +36,26 @@ auto widen( const std::string& narrowString ) -> std::wstring;
 #endif
 
 template< typename CharT >
-auto starts_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& prefix ) -> bool {
+auto starts_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& prefix ) noexcept -> bool {
     return str.rfind( prefix, 0 ) == 0;
 }
 
 template< typename CharT >
-auto starts_with( const std::basic_string< CharT >& str, const CharT* prefix ) -> bool {
+auto starts_with( const std::basic_string< CharT >& str, const CharT* prefix ) noexcept -> bool {
     return str.rfind( prefix, 0 ) == 0;
 }
 
 // Note: the implementation using std::equal seems to be faster than the alternatives in most cases;
 // see https://quick-bench.com/q/G9D6M1h11PrwwmqcS7taJoAIdZU for a comparison.
 template< typename CharT >
-auto ends_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& suffix ) -> bool {
+auto ends_with( const std::basic_string< CharT >& str, const std::basic_string< CharT >& suffix ) noexcept -> bool {
     return str.size() >= suffix.size() &&
            std::equal( suffix.crbegin(), suffix.crend(), str.crbegin(), str.crbegin() + suffix.size() );
 }
 
 template< typename CharT, std::size_t N >
 // NOLINTNEXTLINE(*-avoid-c-arrays)
-auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[N] ) -> bool {
+auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[N] ) noexcept -> bool {
     // Note: the suffix C array has a null termination character.
     constexpr auto suffixSize = N - 1;
     return str.size() >= suffixSize &&
