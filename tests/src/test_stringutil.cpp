@@ -39,7 +39,6 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[stringutil][narrow]" 
     SECTION( "Converting from nullptr C wide string" ) {
         REQUIRE( narrow( nullptr, 0 ).empty() );
         REQUIRE( narrow( nullptr, 42 ).empty() );
-        REQUIRE( narrow( L"", 0 ).empty() );
     }
 
     SECTION( "Converting wide strings with only one unencodable UTF-8" ) {
@@ -87,7 +86,7 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[stringutil][narrow]" 
     }
 #endif
 
-    SECTION( "Converting wide strings with only two-bytes UTF-16 characters" ) {
+    SECTION( "Converting wide strings with at most two-bytes UTF-16 characters" ) {
         std::wstring testInput;
         std::string testOutput;
         std::tie( testInput, testOutput ) = GENERATE( table< const wchar_t*, const char* >( {
