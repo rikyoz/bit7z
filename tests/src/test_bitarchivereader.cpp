@@ -540,6 +540,58 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
     const BitArchiveReader info( test::sevenzip_lib(), to_tstring( arcFileName ), BitFormat::BZip2 );
     REQUIRE_ITEM_TYPE( info, "クラウド.jpg", fs::file_type::regular );
 }
+
+TEST_CASE( "BitArchiveReader: Verifying the internal string encoding used by 7-Zip", "[bitarchivereader]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+
+    SECTION( "Archives with UTF-16 raw strings" ) {
+        const auto testFormat = GENERATE( as< TestInputFormat >(),
+                                  TestInputFormat{ "7z", BitFormat::SevenZip },
+                                  TestInputFormat{ "zip", BitFormat::Zip } );
+
+        DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+            const fs::path arcFileName = "string_encoding_check." + testFormat.extension;
+
+            const BitArchiveReader info( test::sevenzip_lib(), to_tstring( arcFileName ), testFormat.format );
+            const BitPropVariant itemName = info.itemProperty( 0, BitProperty::Path );
+            REQUIRE( itemName.isString() );
+
+            // Note: the architectures supported by bit7z are all little endian.
+            // For some reason, 7-Zip uses UTF-16 for wide strings also on Unix systems (which usually use UTF-32).
+            const auto raw = itemName.getRawString();
+            REQUIRE( raw == L"\xD852\xDF62.txt" ); // UTF-16LE
+
+            const auto native = itemName.getNativeString();
+#if defined( _WIN32 )
+            REQUIRE( native == L"\xD852\xDF62.txt" ); // UTF-16LE
+#else
+            REQUIRE( native == "\xF0\xA4\xAD\xA2.txt" ); // UTF-8
+#endif
+
+#if !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
+            const auto str = itemName.getString();
+#   if defined( BIT7Z_USE_NATIVE_STRING )
+            REQUIRE( str == L"\xD852\xDF62.txt" ); // UTF-16LE
+#   else
+            REQUIRE( str == "\xF0\xA4\xAD\xA2.txt" ); // UTF-8
+#   endif
+#endif
+        }
+    }
+
+#ifndef _WIN32
+    SECTION( "Zip archive with UTF-8 flag not set" ) {
+        const BitArchiveReader info( test::sevenzip_lib(), BIT7Z_STRING( "string_encoding_check_utf8_noflag.zip" ), BitFormat::Zip );
+        const BitPropVariant itemName = info.itemProperty( 0, BitProperty::Path );
+        REQUIRE( itemName.isString() );
+
+        // Note: the architectures supported by bit7z are all little endian.
+        const auto raw = itemName.getRawString();
+        // For some reason, 7-Zip uses UTF-16 for wide strings also on Unix systems (which usually use UTF-32).
+        REQUIRE( raw == L"\xD852\xDF62.txt" ); // UTF-16LE
+    }
+#endif
+}
 #endif
 
 #ifdef BIT7Z_AUTO_FORMAT
