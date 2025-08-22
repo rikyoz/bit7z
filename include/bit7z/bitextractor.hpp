@@ -99,6 +99,19 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         /**
+         * @brief Extracts the content of the given archive into a provided map of memory buffers, where the keys are
+         * indices of the files (inside the archive) to be extracted, and the values are preallocated buffers to
+         * which extraction is to be performed.
+         *
+         * @param inArchive             the input archive to be extracted.
+         * @param indicesWithBuffers    the map with indices of files and preallocated buffers.
+         */
+        void extract( Input inArchive, const std::map< uint32_t, ByteSpan > & indicesWithBuffers ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( indicesWithBuffers );
+        }
+
+        /**
          * @brief Extracts the files in the archive that match the given wildcard pattern to the chosen directory.
          *
          * @param inArchive    the input archive to extract from.

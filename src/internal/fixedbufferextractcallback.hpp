@@ -29,14 +29,14 @@ class FixedBufferExtractCallback final : public ExtractCallback {
 
         ~FixedBufferExtractCallback() override = default;
 
+        void releaseStream() override;
+
+        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
+
     private:
         byte_t* mBuffer;
         size_t mSize;
         CMyComPtr< ISequentialOutStream > mOutMemStream;
-
-        void releaseStream() override;
-
-        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
 }  // namespace bit7z

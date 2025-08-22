@@ -16,6 +16,7 @@
 #include "bitarchiveitemoffset.hpp"
 #include "bitformat.hpp"
 #include "bitfs.hpp"
+#include "bytespan.hpp"
 
 struct IInStream;
 struct IInArchive;
@@ -262,6 +263,16 @@ class BitInputArchive {
          */
         void extractTo( byte_t* buffer, std::size_t size, uint32_t index = 0 ) const;
 
+        /**
+         * @brief Extracts a file to the pre-allocated output buffer.
+         *
+         * @param memview the pre-allocated output buffer (which size must be equal to the unpacked size of the item).
+         * @param index  the index of the file to be extracted.
+         */
+        void extractTo( ByteSpan memview, uint32_t index = 0 ) const {
+            extractTo( memview.data(), memview.size(), index);
+        }
+
         BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
         inline void extract( std::ostream& outStream, uint32_t index = 0 ) const {
             extractTo( outStream, index );
@@ -287,6 +298,15 @@ class BitInputArchive {
          * @param outMap   the output map.
          */
         void extractTo( std::map< tstring, std::vector< byte_t > >& outMap ) const;
+
+        /**
+         * @brief Extracts the content of the archive to a map of preallocated memory buffers as BitSpans (which size needs to match
+         * extracted item size of file at given idex), where the keys are the indices
+         * of the files, and the values are their decompressed contents.
+         *
+         * @param outputBuffers the map of indices of files to extract together with buffers indicating where to extract items.
+         */
+        void extractTo( const std::map< uint32_t, ByteSpan > & outputBuffers) const;
 
         /**
          * @brief Tests the archive without extracting its content.

@@ -35,6 +35,8 @@
 
 #include <algorithm>
 
+#include "internal/fixedbuffersextractcallback.hpp"
+
 using namespace NWindows;
 using namespace NArchive;
 
@@ -267,6 +269,19 @@ inline auto findInvalidIndex( const std::vector< uint32_t >& indices,
     });
 }
 
+inline auto findInvalidIndex( const std::map< uint32_t, ByteSpan >& indices,
+                          uint32_t itemsCount ) -> std::map< uint32_t, ByteSpan >::const_iterator {
+    return std::find_if( indices.cbegin(), indices.cend(), [&]( auto const& element ) -> bool {
+        return element.first >= itemsCount;
+    });
+}
+
+inline auto findNullBuffer( const std::map< uint32_t, ByteSpan >& indices ) -> std::map< uint32_t, ByteSpan >::const_iterator {
+    return std::find_if( indices.cbegin(), indices.cend(), [&]( auto const& element ) -> bool {
+        return element.second.data() == nullptr;
+    });
+}
+
 void BitInputArchive::extractTo( const tstring& outDir, const std::vector< uint32_t >& indices ) const {
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
     const auto invalidIndex = findInvalidIndex( indices, itemsCount() );
@@ -354,6 +369,40 @@ void BitInputArchive::extractTo( std::map< tstring, std::vector< byte_t > >& out
 
     auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >( *this, outMap );
     extract_arc( mInArchive, filesIndices, extractCallback );
+}
+
+void BitInputArchive::extractTo( const std::map<uint32_t, ByteSpan>& outputBuffers ) const {
+    const auto invalidIndex = findInvalidIndex(outputBuffers, itemsCount());
+    if (invalidIndex != outputBuffers.cend()) {
+        throw BitException( "Cannot extract the item at the index " + std::to_string( invalidIndex->first ) + " to the buffer",
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
+    const auto nullBufferItem = findNullBuffer(outputBuffers);
+    if (nullBufferItem != outputBuffers.cend()) {
+        throw BitException( "Cannot extract the item at the index " + std::to_string( nullBufferItem->first ) + " to the buffer",
+                            make_error_code( BitError::NullOutputBuffer ) );
+    }
+
+    const auto invalidSizeBuffer = std::find_if(outputBuffers.cbegin(), outputBuffers.cend(), [this](const auto& element) {
+        const uint32_t& index = element.first;
+        const ByteSpan& buffer = element.second;
+        auto itemSize = itemProperty(index, BitProperty::Size).getUInt64();
+        return itemSize != buffer.size();
+    });
+
+    if (invalidSizeBuffer != outputBuffers.cend()) {
+        throw BitException("Cannot extract the item at the index " + std::to_string( invalidSizeBuffer->first ) + " to the buffer", make_error_code( BitError::InvalidOutputBufferSize ));
+    }
+
+    std::vector< uint32_t > indices;
+    indices.reserve(outputBuffers.size());
+    for (const auto& [idx, buffer] : outputBuffers) {
+        indices.push_back(idx);
+    }
+
+    auto extractCallback = bit7z::make_com< FixedBuffersExtractCallback, ExtractCallback >( *this, outputBuffers );
+    extract_arc( mInArchive, indices, extractCallback);
 }
 
 void BitInputArchive::test() const {

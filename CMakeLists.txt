@@ -49,7 +49,8 @@ set( PUBLIC_HEADERS
      include/bit7z/bitstreamcompressor.hpp
      include/bit7z/bitstreamextractor.hpp
      include/bit7z/bittypes.hpp
-     include/bit7z/bitwindows.hpp )
+     include/bit7z/bitwindows.hpp
+     include/bit7z/bytespan.hpp)
 
 # header files
 set( HEADERS
@@ -76,6 +77,7 @@ set( HEADERS
      src/internal/failuresourcecategory.hpp
      src/internal/fileextractcallback.hpp
      src/internal/fixedbufferextractcallback.hpp
+     src/internal/fixedbuffersextractcallback.hpp
      src/internal/formatdetect.hpp
      src/internal/fsindexer.hpp
      src/internal/fsitem.hpp
@@ -98,7 +100,7 @@ set( HEADERS
      src/internal/stringutil.hpp
      src/internal/updatecallback.hpp
      src/internal/util.hpp
-     src/internal/windows.hpp )
+     src/internal/windows.hpp)
 
 # source files
 set( SOURCES
@@ -142,6 +144,7 @@ set( SOURCES
      src/internal/failuresourcecategory.cpp
      src/internal/fileextractcallback.cpp
      src/internal/fixedbufferextractcallback.cpp
+     src/internal/fixedbuffersextractcallback.cpp
      src/internal/formatdetect.cpp
      src/internal/fsindexer.cpp
      src/internal/fsitem.cpp
