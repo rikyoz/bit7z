@@ -35,7 +35,7 @@ namespace {
         BitOutputArchive actualCompressor{ compressor };
 
         for ( const auto& filenameAndContent : filenamesAndContents ) {
-            const std::string& filename = filenameAndContent.first;
+            const tstring& filename = filenameAndContent.first;
             const buffer_t& content = filenameAndContent.second;
             actualCompressor.addFile( content, filename );
         }
