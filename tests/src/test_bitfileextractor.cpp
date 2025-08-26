@@ -74,9 +74,7 @@ namespace {
 
     auto prepareExtractionData( const BitInputArchive& archive ) -> PreExtractionData {
         PreExtractionData result;
-        const auto numberOfItems = archive.itemsCount();
-        for ( uint32_t index =0; index < numberOfItems; ++index ) {
-            auto item = archive.itemAt( index );
+        for ( const auto& item : archive ) {
             if ( item.isDir() ) {
                 continue;
             }
@@ -84,6 +82,7 @@ namespace {
             if ( neededSizeToExtract == 0 ) {
                 continue;
             }
+            const auto index = item.index();
             result.buffers.emplace( index, buffer_t(neededSizeToExtract) );
             result.bufferViews.emplace( index, ByteSpan{ result.buffers[ index ].data(), result.buffers[ index ].size() } );
             result.fileNameToIndex.emplace( item.name(), index );
