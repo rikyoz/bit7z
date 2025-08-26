@@ -19,7 +19,6 @@
 #include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
-#include <internal/stringutil.hpp>
 #include <internal/windows.hpp>
 
 // Needed by MSVC for defining the S_XXXX macros.
@@ -147,7 +146,7 @@ using stream_t = fs::ifstream;
 
 // Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
 void getInputArchive( const fs::path& path, tstring& archive ) {
-    archive = path_to_tstring( path );
+    archive = to_tstring( path.native() );
 }
 
 void getInputArchive( const fs::path& path, buffer_t& archive ) {
@@ -863,7 +862,7 @@ TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
     fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
-    const BitArchiveReader info( lib, path_to_tstring( arcFileName ), BitFormat::BZip2 );
+    const BitArchiveReader info( lib, to_tstring( arcFileName.native() ), BitFormat::BZip2 );
     REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
 }
 #endif
