@@ -59,7 +59,7 @@ namespace {
         return buffer;
     }
 
-    auto tstringToVector( const tstring& input ) -> buffer_t {
+    auto stringToVector( const std::string& input ) -> buffer_t {
         buffer_t result;
         result.reserve( input.size() );
         std::copy( input.begin(), input.end(), std::back_inserter( result ) );
@@ -95,16 +95,16 @@ namespace {
 TEST_CASE( "BitFileExtractor", "extract to map of ByteSpans" ) {
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-    std::map< tstring, buffer_t > files{
-        { tstring{ "simple.txt" }, tstringToVector( "simple file content in simple.txt") },
-        { tstring{ "empty.bar" }, buffer_t{} },
-        { tstring{ "medium_file.buff" }, generateBuffer( 5*1024*1024 ) },
+    const std::map< tstring, buffer_t > files{
+        { BIT7Z_STRING( "simple.txt" ), stringToVector( "simple file content in simple.txt") },
+        { BIT7Z_STRING( "empty.bar" ), buffer_t{} },
+        { BIT7Z_STRING( "medium_file.buff" ), generateBuffer( 5 * 1024 * 1024 ) },
     };
 
     auto archiveAsBuffer = createArchive( lib, files );
 
     const BitFileExtractor extractor{ lib, BitFormat::SevenZip };
-    BitInputArchive actualExtractor{ extractor, archiveAsBuffer };
+    const BitInputArchive actualExtractor{ extractor, archiveAsBuffer };
 
     auto extractionData = prepareExtractionData( actualExtractor );
 
@@ -112,9 +112,14 @@ TEST_CASE( "BitFileExtractor", "extract to map of ByteSpans" ) {
         return extractionData.fileNameToIndex.find( fileName ) != extractionData.fileNameToIndex.end();
     };
 
-    REQUIRE( archiveContains( "simple.txt" ) );
-    CHECK( !archiveContains( "empty.bar" ) );
-    REQUIRE( archiveContains( "medium_file.buff" ) );
+    const tstring simpleFileName = BIT7Z_STRING( "simple.txt" );
+    REQUIRE( archiveContains( simpleFileName ) );
+
+    const tstring emptyFileName = BIT7Z_STRING( "empty.bar" );
+    REQUIRE_FALSE( archiveContains( emptyFileName ) );
+
+    const tstring mediumFileName = BIT7Z_STRING( "medium_file.buff" );
+    REQUIRE( archiveContains( mediumFileName ) );
 
     actualExtractor.extractTo( extractionData.bufferViews );
 
@@ -123,8 +128,8 @@ TEST_CASE( "BitFileExtractor", "extract to map of ByteSpans" ) {
         return extractionData.buffers.at( idx );
     };
 
-    CHECK( extractedFileContent( "simple.txt" ) == files[ "simple.txt" ] );
-    CHECK( extractedFileContent( "medium_file.buff" ) == files["medium_file.buff" ] );
+    REQUIRE( extractedFileContent( BIT7Z_STRING( "simple.txt" ) ) == files.at( simpleFileName ) );
+    REQUIRE( extractedFileContent( BIT7Z_STRING( "medium_file.buff" ) ) == files.at( mediumFileName ) );
 }
 
 TEST_CASE( "BitFileExtractor: TODO", "[bitfileextractor]" ) {
