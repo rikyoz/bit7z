@@ -98,6 +98,8 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
         case str_hash( BIT7Z_STRING( "ar" ) ):
         case str_hash( BIT7Z_STRING( "deb" ) ):
             return &BitFormat::Deb;
+        case str_hash( BIT7Z_STRING( "apfs" ) ):
+            return &BitFormat::APFS;
         case str_hash( BIT7Z_STRING( "apm" ) ):
             return &BitFormat::APM;
         case str_hash( BIT7Z_STRING( "arj" ) ):
@@ -408,6 +410,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
         { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // NTFS 0x20 0x20 0x20 0x20
         { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // Nullsoft
         { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // Compress
+        { 0x4E58534200000000, 0x20,  4, BitFormat::APFS },   // NXSB
         { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 0x7F 0x10 0xDA 0xBE
         { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // ustar
         /* Note: since GPT files contain also the FAT signature, we must check the GPT signature before the FAT one. */
