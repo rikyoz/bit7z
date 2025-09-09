@@ -48,6 +48,7 @@ namespace BitFormat {
     const BitInFormat Zstd( 0x0E );
     const BitInFormat LVM( 0xBF );
     const BitInFormat AVB( 0xC0 );
+    const BitInFormat LP( 0xC1 );
     const BitInFormat APFS( 0xC3 );
     const BitInFormat Vhdx( 0xC4 );
     const BitInFormat COFF( 0xC6 );
