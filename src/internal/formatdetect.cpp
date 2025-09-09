@@ -199,6 +199,9 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
             return &BitFormat::VDI;
         case str_hash( BIT7Z_STRING( "vhd" ) ):
             return &BitFormat::Vhd;
+        case str_hash( BIT7Z_STRING( "vhdx" ) ):
+        case str_hash( BIT7Z_STRING( "avhdx" ) ):
+            return &BitFormat::Vhdx;
         case str_hash( BIT7Z_STRING( "xar" ) ):
         case str_hash( BIT7Z_STRING( "pkg" ) ):
             return &BitFormat::Xar;
@@ -264,6 +267,7 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
     constexpr auto kVmdkSignature = 0x4B444D0000000000ULL; // KDMV
     constexpr auto kVdiSignature = 0x3C3C3C2000000000ULL; // Alternatively, 0x7F10DABE at offset 0x40
     constexpr auto kVhdSignature = 0x636F6E6563746978ULL; // conectix
+    constexpr auto kVhdxSignature = 0x7668647866696C65;// vhdxfile
     constexpr auto kXarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
     constexpr auto kZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
     constexpr auto kZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
@@ -358,6 +362,8 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
             return &BitFormat::VDI;
         case kVhdSignature: // c  o  n  e  c  t  i  x
             return &BitFormat::Vhd;
+        case kVhdxSignature: // v  h  d  x  f  i  l  e
+            return &BitFormat::Vhdx;
         case kXarSignature: // x  a  r  !  00 1C
             return &BitFormat::Xar;
         case kZSignature1: // 1F 9D
