@@ -152,6 +152,8 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
         case str_hash( BIT7Z_STRING( "lzh" ) ):
         case str_hash( BIT7Z_STRING( "lha" ) ):
             return &BitFormat::Lzh;
+        case str_hash( BIT7Z_STRING( "lvm" ) ):
+            return &BitFormat::LVM;
         case str_hash( BIT7Z_STRING( "lzma" ) ):
             return &BitFormat::Lzma;
         case str_hash( BIT7Z_STRING( "lzma86" ) ):
@@ -232,6 +234,7 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
     constexpr auto kElfSignature = 0x7F454C4600000000ULL; // 0x7F ELF
     constexpr auto kPeSignature = 0x4D5A000000000000ULL; // MZ
     constexpr auto kFlvSignature = 0x464C560100000000ULL; // FLV 0x01
+    constexpr auto kLvmSignature = 0x4C4142454C4F4E45;// LABELONE
     constexpr auto kLzmaSignature = 0x5D00000000000000ULL; //
     constexpr auto kLzma86Signature = 0x015D000000000000ULL; //
     constexpr auto kMachoSignature1 = 0xCEFAEDFE00000000ULL; // 0xCE 0xFA 0xED 0xFE
@@ -305,6 +308,8 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
             return &BitFormat::Pe;
         case kFlvSignature:
             return &BitFormat::Flv;
+        case kLvmSignature:
+            return &BitFormat::LVM;
         case kLzmaSignature:
             return &BitFormat::Lzma;
         case kLzma86Signature:
