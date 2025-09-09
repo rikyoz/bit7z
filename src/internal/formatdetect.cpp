@@ -179,6 +179,8 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
             return &BitFormat::QCow;
         case str_hash( BIT7Z_STRING( "rpm" ) ):
             return &BitFormat::Rpm;
+        case str_hash( BIT7Z_STRING( "simg" ) ):
+            return &BitFormat::Sparse;
         case str_hash( BIT7Z_STRING( "squashfs" ) ):
             return &BitFormat::SquashFS;
         case str_hash( BIT7Z_STRING( "swf" ) ):
@@ -250,6 +252,7 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
     constexpr auto kPpmdSignature = 0x8FAFAC8400000000ULL; // 0x8F 0xAF 0xAC 0x84
     constexpr auto kQcowSignature = 0x514649FB00000000ULL; // QFI 0xFB 0x00 0x00 0x00
     constexpr auto kRpmSignature = 0xEDABEEDB00000000ULL; // 0xED 0xAB 0xEE 0xDB
+    constexpr auto kSparseSignature = 0x3AFF26ED00000000ULL; // 0x3A 0xFF 0x26 0xED
     constexpr auto kSquashfsSignature1 = 0x7371736800000000ULL; // sqsh
     constexpr auto kSquashfsSignature2 = 0x6873717300000000ULL; // hsqs
     constexpr auto kSquashfsSignature3 = 0x7368737100000000ULL; // shsq
@@ -335,6 +338,8 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
             return &BitFormat::QCow;
         case kRpmSignature:
             return &BitFormat::Rpm;
+        case kSparseSignature:
+            return &BitFormat::Sparse;
         case kSquashfsSignature1:
         case kSquashfsSignature2:
         case kSquashfsSignature3:

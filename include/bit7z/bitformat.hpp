@@ -177,6 +177,7 @@ extern const BitInFormat Zstd;      ///< ZSTD Archive Format
 extern const BitInFormat LVM;       ///< LVM Archive Format
 extern const BitInFormat AVB;       ///< AVB Archive Format
 extern const BitInFormat LP;        ///< LP Archive Format
+extern const BitInFormat Sparse;    ///< Sparse Archive Format
 extern const BitInFormat APFS;      ///< APFS Archive Format
 extern const BitInFormat Vhdx;      ///< VHDX Archive Format
 extern const BitInFormat COFF;      ///< COFF Archive Format
