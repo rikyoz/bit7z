@@ -21,6 +21,11 @@
 
 namespace bit7z {
 
+using IndicesVector = std::vector< std::uint32_t >;
+
+template< std::size_t N >
+using IndicesArray = std::array< std::uint32_t, N >;
+
 using BitIndicesView = BitView< const std::uint32_t >;
 
 } // namespace bit7z

@@ -51,6 +51,8 @@
 #include <utility>
 #include <vector>
 
+#include "internal/rawdataextractcallbackwid.hpp"
+
 using namespace NWindows;
 using namespace NArchive;
 
@@ -563,6 +565,21 @@ void BitInputArchive::extractTo( BufferCallback callback, BitIndicesView indices
     const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
         *this,
         std::move( callback )
+    );
+    extractArchive( extractCallback, NAskMode::kExtract, indices );
+}
+
+void BitInputArchive::extractTo(FileAwareExtraction<FileAwarenessOption::WithoutFileName> &callback,
+        BitIndicesView indices) const {
+    const auto invalidIndex = findInvalidIndex( indices );
+    if ( invalidIndex != indices.cend() ) {
+        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+                            make_error_code( BitError::InvalidIndex ) );
+    }
+
+    const auto extractCallback = bit7z::make_com< RawDataExtractCallbackWid, ExtractCallback >(
+        *this,
+        callback
     );
     extractArchive( extractCallback, NAskMode::kExtract, indices );
 }

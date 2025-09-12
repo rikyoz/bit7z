@@ -43,7 +43,7 @@ public:
         : mStart{ &index }, mSize{ 1 } {}
 
     // Note: this constructor can't be constexpr until C++20 due to std::vector's methods.
-    /* implicit */ BitView( const std::vector< T >& indices ) noexcept
+    /* implicit */ BitView( const std::vector< value_type >& indices ) noexcept
         : BitView{ indices.data(), indices.size() } {}
 
     template< std::size_t N >

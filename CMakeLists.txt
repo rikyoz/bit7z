@@ -99,6 +99,7 @@ set( HEADERS
      src/internal/optional.hpp
      src/internal/processeditem.hpp
      src/internal/rawdataextractcallback.hpp
+     src/internal/rawdataextractcallbackwid.hpp
      src/internal/sequentialextractcallback.hpp
      src/internal/streamextractcallback.hpp
      src/internal/streamutil.hpp
@@ -167,6 +168,7 @@ set( SOURCES
      src/internal/operationresult.cpp
      src/internal/processeditem.cpp
      src/internal/rawdataextractcallback.cpp
+     src/internal/rawdataextractcallbackwid.cpp
      src/internal/sequentialextractcallback.cpp
      src/internal/streamextractcallback.cpp
      src/internal/stringutil.cpp
