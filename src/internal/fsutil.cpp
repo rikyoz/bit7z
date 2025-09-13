@@ -190,6 +190,15 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
     }
 
 #ifdef _WIN32
+    if ( ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
+        constexpr auto kUnixWritePermissionsMask = 0222u;
+        // Most likely, this is a Tar archive, which doesn't store Windows attributes, but only Unix permissions.
+        // 7-Zip returns them as (unixPermissions << 16) | FILE_ATTRIBUTE_UNIX_EXTENSION
+        const auto unixPermissions = static_cast< std::uint32_t >( attributes >> 16u );
+        if ( ( unixPermissions & kUnixWritePermissionsMask ) == 0u ) { // No write permissions
+            attributes = FILE_ATTRIBUTE_READONLY;
+        }
+    }
     return ::SetFileAttributesW( filePath.c_str(), attributes ) != FALSE;
 #else
     FileMetadata fileStat{};
