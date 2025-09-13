@@ -210,9 +210,40 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         * @param inArchive             the input archive to be extracted.
         * @param indicesWithBuffers    the map with indices of files and preallocated buffers.
         */
-        void extract( Input inArchive, const std::map< uint32_t, BitView< byte_t > > & indicesWithBuffers ) const {
+        void extract( Input inArchive, const std::map< std::uint32_t, BitView< byte_t > > & indicesWithBuffers ) const {
             BitInputArchive inputArchive( *this, inArchive );
-            inputArchive.extractTo( indicesWithBuffers );
+            struct ExtractionCallback : FileAwareExtraction<FileAwarenessOption::WithoutFileName> {
+
+                bool write(const byte_t *dataStart, std::size_t dataSize) override {
+                    auto buffer = indicesWithBuffers.at(currentIdx);
+                    auto bufferStart = buffer.data();
+                    //todo handle too small buffers
+                    if (buffer.size() < lastWritePosition + dataSize) {
+                        return false;
+                    }
+                    std::copy_n(dataStart, dataSize, bufferStart+lastWritePosition);
+                    lastWritePosition += dataSize;
+
+                    return true;
+                }
+
+                void onNewFile(std::uint32_t index) override {
+                    currentIdx = index;
+                    lastWritePosition = 0;
+                }
+
+                const std::map< uint32_t, BitView< byte_t > > & indicesWithBuffers;
+                std::uint32_t currentIdx = -1;
+                std::size_t lastWritePosition=0;
+            } callback{indicesWithBuffers};
+
+            std::vector<std::uint32_t> indices;
+            indices.resize(indicesWithBuffers.size());
+            for (const auto& [key, value] : indicesWithBuffers) {
+                indices.push_back(key);
+            }
+
+            extractTo(inArchive, callback, indices);
         }
 
         /**
