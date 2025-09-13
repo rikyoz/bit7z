@@ -814,19 +814,71 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format sh
     }
 }
 
+namespace {
+BIT7Z_ALWAYS_INLINE
+auto isHiddenFile( const BitArchiveItem& item ) -> bool {
+    return item.nativePath() == BIT7Z_NATIVE_STRING( "hidden" );
+}
+
+#ifndef _WIN32
+BIT7Z_ALWAYS_INLINE
+auto formatSupportsSymlinks( const BitInFormat& format ) -> bool {
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    // NOTE: p7zip doesn't support the Unix link attribute in Tar archives.
+    return format != BitFormat::Rar5 && format != BitFormat::Wim && format != BitFormat::Tar;
+#else
+    return format != BitFormat::Rar5 && format != BitFormat::Wim;
+#endif
+}
+#endif
+
+BIT7Z_ALWAYS_INLINE
+auto formatSupportsUnixPermissions( const BitInFormat& format ) -> bool {
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    // NOTE: p7zip doesn't support the Unix permissions in Tar archives.
+    return format != BitFormat::Tar;
+#else
+    return true;
+#endif
+}
+} // namespace
+
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with different file types inside",
+TEMPLATE_TEST_CASE( "BitInputArchive: Correctly keeping file attributes after extraction",
                     "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
-    // Note: for some reason, 7-Zip fails to test or extract Rar archives containing symbolic links.
-
     const auto testFormat = GENERATE( as< TestInputFormat >(),
                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-    //TestInputFormat{ "rar", BitFormat::Rar5 },
+                                      TestInputFormat{ "rar", BitFormat::Rar5 },
                                       TestInputFormat{ "tar", BitFormat::Tar },
                                       TestInputFormat{ "wim", BitFormat::Wim },
                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    const TempDirectory outDir{ "test_bitarchivereader" };
+    const auto filterCallback = [&testFormat]( const BitArchiveItem& item ) -> FilterResult {
+        const auto isAltStream = item.itemProperty( BitProperty::IsAltStream );
+        if ( isAltStream.isBool() && isAltStream.getBool() ) {
+            return FilterResult::Skip; // Ignoring alternate stream in WIM archives.
+        }
+#ifdef _WIN32
+        if ( testFormat.format == BitFormat::Tar && isHiddenFile( item ) ) {
+            // Tar archives do not store the Windows' hidden file attribute.
+            return FilterResult::Skip;
+        }
+        return item.isSymLink() ? FilterResult::Skip : FilterResult::Process;
+#else
+        if ( !formatSupportsSymlinks( testFormat.format ) && item.isSymLink() ) {
+            // NOTE: 7-Zip seems to not support symlinks in Rar5 archives.
+            // TODO: Fix extraction of Windows reparse points (symlinks) from Wim archives on Linux.
+            return FilterResult::Skip;
+        }
+        if ( !formatSupportsUnixPermissions( testFormat.format ) && item.nativePath() == BIT7Z_NATIVE_STRING( "read_only" ) ) {
+            return FilterResult::Skip;
+        }
+        return isHiddenFile( item ) ? FilterResult::Skip : FilterResult::Process;
+#endif
+    };
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "file_type." + testFormat.extension;
@@ -834,18 +886,58 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with dif
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format );
+        info.extractTo( to_tstring( outDir.path() ), filterCallback );
 
-        REQUIRE_ARCHIVE_TESTS( info );
-#ifdef BIT7Z_BUILD_FOR_P7ZIP
-        // p7zip doesn't correctly report symbolic links in Wim and Tar archives.
-        if ( testFormat.format != BitFormat::Wim && testFormat.format != BitFormat::Tar ) {
-#else
-        // 7-Zip doesn't correctly report symbolic links in Wim archives.
-        if ( testFormat.format != BitFormat::Wim ) {
-#endif
-            // TODO(fix): Wim format gives some issues when extracting symbolic links.
-            REQUIRE_ARCHIVE_EXTRACTS( info, file_type_content().items );
+        std::error_code error;
+        const auto dirPath = outDir.path() / "dir";
+        const auto dirStatus = fs::status( dirPath, error );
+        REQUIRE_FALSE( error );
+        REQUIRE( fs::exists( dirStatus ) );
+        REQUIRE( fs::is_directory( dirStatus ) );
+        REQUIRE( fs::remove_all( dirPath ) );
+
+        const auto regularPath = outDir.path() / "regular";
+        const auto regularStatus = fs::status( regularPath, error );
+        REQUIRE_FALSE( error );
+        REQUIRE( fs::exists( regularStatus ) );
+        REQUIRE( fs::is_regular_file( regularStatus ) );
+        REQUIRE( fs::remove( regularPath ) );
+
+#ifdef _WIN32
+        if ( testFormat.format != BitFormat::Tar ) {
+            const auto hiddenPath = outDir.path() / "hidden";
+            const auto hiddenStatus = fs::status( hiddenPath, error );
+            REQUIRE_FALSE( error );
+            REQUIRE( fs::exists( hiddenStatus ) );
+            const auto attributes = GetFileAttributesW( hiddenPath.c_str() );
+            REQUIRE( ( attributes & FILE_ATTRIBUTE_HIDDEN ) == FILE_ATTRIBUTE_HIDDEN );
+            REQUIRE( fs::remove( hiddenPath ) );
         }
+#else
+        if ( formatSupportsSymlinks( testFormat.format ) ) {
+            const auto symlinkPath = outDir.path() / "symlink";
+            const auto symlinkStatus = fs::symlink_status( symlinkPath, error );
+            REQUIRE_FALSE( error );
+            REQUIRE( fs::exists( symlinkStatus ) );
+            REQUIRE( fs::is_symlink( symlinkStatus ) );
+            REQUIRE( fs::remove( symlinkPath ) );
+        }
+#endif
+
+        if ( formatSupportsUnixPermissions( testFormat.format ) ) {
+            const auto readOnlyPath = outDir.path() / "read_only";
+            const auto readOnlyStatus = fs::status( readOnlyPath, error );
+            REQUIRE_FALSE( error );
+            REQUIRE( fs::exists( readOnlyStatus ) );
+            const auto readOnlyPermissions = readOnlyStatus.permissions();
+            REQUIRE( (readOnlyPermissions & fs::perms::owner_write) == fs::perms::none );
+            REQUIRE( (readOnlyPermissions & fs::perms::group_write) == fs::perms::none );
+            REQUIRE( (readOnlyPermissions & fs::perms::others_write) == fs::perms::none );
+            REQUIRE( fs::remove( readOnlyPath ) );
+        }
+
+        INFO( outDir.path() );
+        REQUIRE( fs::is_empty( outDir.path() ) );
     }
 }
 
