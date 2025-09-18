@@ -212,7 +212,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         */
         void extract( Input inArchive, const std::map< std::uint32_t, BitView< byte_t > > & indicesWithBuffers ) const {
             BitInputArchive inputArchive( *this, inArchive );
-            struct ExtractionCallback : FileAwareExtraction<FileAwarenessOption::WithoutFileName> {
+            struct ExtractionCallback : FileAwareExtraction {
 
                 bool write(const byte_t *dataStart, std::size_t dataSize) override {
                     auto buffer = indicesWithBuffers.at(currentIdx);
@@ -227,7 +227,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
                     return true;
                 }
 
-                void onNewFile(std::uint32_t index) override {
+                void onNewFile(std::uint32_t index, std::string /*fileName*/) override {
                     currentIdx = index;
                     lastWritePosition = 0;
                 }
@@ -269,43 +269,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         * @param callback  a function providing the extracted raw data to the user.
         * @param indices   (optional) the indices of the files in the archive that must be extracted.
         */
-        void extractTo( Input inArchive, FileAwareExtraction<FileAwarenessOption::WithFileName>& callback, BitIndicesView indices = {} ) {
-            const BitInputArchive inputArchive( *this, inArchive );
-            auto previousFileCallback = fileCallback();
-            tstring currentFile;
-            setFileCallback([&](const tstring& file) {
-                currentFile = file;
-                if (previousFileCallback)
-                    previousFileCallback(file);
-            });
-
-            struct FileAwareExtractionImpl : FileAwareExtraction<FileAwarenessOption::WithoutFileName> {
-                bool write(const byte_t *dataStart, std::size_t dataSize) override {
-                    return actualCallback.write(dataStart, dataSize);
-                }
-
-                void onNewFile(std::uint32_t index) override {
-                    actualCallback.onNewFile(index, currentFile);
-                }
-
-                FileAwareExtraction<FileAwarenessOption::WithFileName>& actualCallback;
-                tstring& currentFile;
-            } callbackImpl {callback, currentFile};
-
-            inputArchive.extractTo( callbackImpl , indices );
-            setFileCallback(previousFileCallback);
-        }
-
-        /**
-        * @brief Extracts the raw content of the archive to the given extraction interface.
-        *
-        * @note You can set a FileCallback to check the file being extracted.
-        *
-        * @param inArchive the input archive to be extracted.
-        * @param callback  a function providing the extracted raw data to the user.
-        * @param indices   (optional) the indices of the files in the archive that must be extracted.
-        */
-        void extractTo( Input inArchive, FileAwareExtraction<FileAwarenessOption::WithoutFileName>& callback, BitIndicesView indices = {} ) const {
+        void extractTo( Input inArchive, FileAwareExtraction& callback, BitIndicesView indices = {} ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( callback , indices );
         }

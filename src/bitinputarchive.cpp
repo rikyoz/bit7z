@@ -569,8 +569,8 @@ void BitInputArchive::extractTo( BufferCallback callback, BitIndicesView indices
     extractArchive( extractCallback, NAskMode::kExtract, indices );
 }
 
-void BitInputArchive::extractTo(FileAwareExtraction<FileAwarenessOption::WithoutFileName> &callback,
-        BitIndicesView indices) const {
+
+void BitInputArchive::extractTo(FileAwareExtraction &callback, BitIndicesView indices) const {
     const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {
         throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),

@@ -41,19 +41,18 @@ auto RawDataExtractCallbackWid::getOutStream( uint32_t index, ISequentialOutStre
         return S_OK;
     }
 
-    if ( mHandler.fileCallback() ) {
-        // Get Name
-        const BitPropVariant prop = itemProperty( index, BitProperty::Path );
-        tstring fullPath;
+    const BitPropVariant prop = itemProperty( index, BitProperty::Path );
+    tstring fullPath;
 
-        if ( prop.isEmpty() ) {
-            fullPath = kEmptyFileAlias;
-        } else if ( prop.isString() ) {
-            fullPath = prop.getString();
-        } else {
-            return E_FAIL;
-        }
+    if ( prop.isEmpty() ) {
+        fullPath = kEmptyFileAlias;
+    } else if ( prop.isString() ) {
+        fullPath = prop.getString();
+    } else {
+        return E_FAIL;
+    }
 
+    if (mHandler.fileCallback()) {
         mHandler.fileCallback()( fullPath );
     }
 
@@ -61,7 +60,7 @@ auto RawDataExtractCallbackWid::getOutStream( uint32_t index, ISequentialOutStre
         return mCallback.write(data_start, data_size);
     };
 
-    mCallback.onNewFile(index);
+    mCallback.onNewFile(index, std::move(fullPath));
     auto outStreamLoc = bit7z::make_com< CRawOutStream, ISequentialOutStream >( std::move(callback) );
     mCallbackStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();

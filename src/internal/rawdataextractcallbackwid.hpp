@@ -22,7 +22,7 @@ class BitInputArchive;
 
 class RawDataExtractCallbackWid final : public ExtractCallback {
     public:
-        using CallbackType = FileAwareExtraction<FileAwarenessOption::WithoutFileName>;
+        using CallbackType = FileAwareExtraction;
         RawDataExtractCallbackWid( const BitInputArchive& inputArchive, CallbackType& callback );
 
         RawDataExtractCallbackWid( const RawDataExtractCallbackWid& ) = delete;
