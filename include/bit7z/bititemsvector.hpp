@@ -73,6 +73,20 @@ void indexDirectoryContent( BitItemsVector& outVector,
 void indexPaths( BitItemsVector& outVector, const std::vector< tstring >& inPaths, IndexingOptions options = {} );
 
 /**
+ * @brief Indexes the given vector of <filesystem path, in-archive path> pairs, adding to the vector all the files.
+ *
+ * @note The first element of each pair represent the filesystem paths to be indexed;
+ * the second element of each pair is the user-defined (possibly different) path wanted for the file the inside archive.
+ *
+ * @param outVector the output vector.
+ * @param inPaths   vector of <filesystem path, in-archive path> pairs.
+ * @param options   (optional) the settings to be used while indexing the given directory
+ *                  and all of its subdirectories.
+ */
+void indexPaths( BitItemsVector& outVector,
+                 const std::vector< std::pair< tstring, tstring > >& inPaths,
+                 IndexingOptions options = {} );
+/**
  * @brief Indexes the given map of filesystem paths, adding to the vector all the files.
  *
  * @note Map keys represent the filesystem paths to be indexed; the corresponding mapped values are

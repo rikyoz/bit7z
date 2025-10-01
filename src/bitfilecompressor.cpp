@@ -41,6 +41,16 @@ void BitFileCompressor::compress( const std::vector< tstring >& inPaths, const t
     outputArchive.compressTo( outFile );
 }
 
+void BitFileCompressor::compress( const std::vector< std::pair< tstring, tstring > >& inPaths,
+                                  const tstring& outFile ) const {
+    if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+        throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
+    }
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addItems( inPaths );
+    outputArchive.compressTo( outFile );
+}
+
 void BitFileCompressor::compress( const std::map< tstring, tstring >& inPaths, const tstring& outFile ) const {
     if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );

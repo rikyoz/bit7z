@@ -113,6 +113,13 @@ void BitOutputArchive::addItems( const std::vector< tstring >& inPaths ) {
     indexPaths( mNewItems, inPaths, options );
 }
 
+void BitOutputArchive::addItems( const std::vector< std::pair< tstring, tstring > >& inPaths ) {
+    IndexingOptions options{};
+    options.retainFolderStructure = mArchiveCreator.retainDirectories();
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexPaths( mNewItems, inPaths, options );
+}
+
 void BitOutputArchive::addItems( const std::map< tstring, tstring >& inPaths ) {
     IndexingOptions options{};
     options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;

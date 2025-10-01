@@ -85,6 +85,14 @@ void indexPaths( BitItemsVector& outVector, const std::vector< tstring >& inPath
     }
 }
 
+void indexPaths( BitItemsVector& outVector,
+                 const std::vector< std::pair< tstring, tstring > >& inPaths,
+                 IndexingOptions options ) {
+    for ( const auto& entry : inPaths ) {
+        indexItem( outVector, tstring_to_path( entry.first ), tstring_to_path( entry.second ), options );
+    }
+}
+
 void indexPathsMap( BitItemsVector& outVector, const std::map< tstring, tstring >& inPaths, IndexingOptions options ) {
     for ( const auto& filePair : inPaths ) {
         indexItem( outVector, tstring_to_path( filePair.first ), tstring_to_path( filePair.second ), options );

@@ -60,6 +60,19 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          *
          * The items in the first argument must be the relative or absolute paths to files or
          * directories existing on the filesystem.
+         * Each pair in the vector must follow the following format:
+         *  {"path to file in the filesystem", "alias path in the archive"}.
+         *
+         * @param inPaths  a vector of <filesystem path, in-archive path> pairs.
+         * @param outFile  the path (relative or absolute) to the output archive file.
+         */
+        void compress( const std::vector< std::pair< tstring, tstring > >& inPaths, const tstring& outFile ) const;
+
+        /**
+         * @brief Compresses the given files or directories using the specified aliases.
+         *
+         * The items in the first argument must be the relative or absolute paths to files or
+         * directories existing on the filesystem.
          * Each pair in the map must follow the following format:
          *  {"path to file in the filesystem", "alias path in the archive"}.
          *
