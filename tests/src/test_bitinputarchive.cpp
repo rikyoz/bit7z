@@ -933,6 +933,8 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Correctly keeping file attributes after ex
             REQUIRE( (readOnlyPermissions & fs::perms::owner_write) == fs::perms::none );
             REQUIRE( (readOnlyPermissions & fs::perms::group_write) == fs::perms::none );
             REQUIRE( (readOnlyPermissions & fs::perms::others_write) == fs::perms::none );
+            // Some compiler/system combinations fail removing the file if it is read only.
+            REQUIRE_NOTHROW( fs::permissions( readOnlyPath, fs::perms::owner_write ) );
             REQUIRE( fs::remove( readOnlyPath ) );
         }
 
