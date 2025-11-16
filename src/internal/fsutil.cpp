@@ -323,42 +323,79 @@ void fsutil::increase_opened_files_limit() {
 
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 namespace {
-auto is_windows_reserved_name( const std::wstring& component ) -> bool {
-    // Reserved file names that can't be used on Windows: CON, PRN, AUX, and NUL.
-    if ( component == L"CON" || component == L"PRN" || component == L"AUX" || component == L"NUL" ) {
+BIT7Z_NODISCARD
+auto is_windows_reserved_name( const std::wstring& component, std::size_t offset ) -> bool {
+    const auto upperComponent = to_uppercase( component, offset );
+
+    // Reserved file names that can't be used on Windows: CON, PRN, AUX, NUL, CONIN$, CONOUT$.
+    if ( upperComponent == L"CON" || upperComponent == L"PRN" || upperComponent == L"AUX" || upperComponent == L"NUL" ||
+         upperComponent == L"CONIN$" || upperComponent == L"CONOUT$" ) {
         return true;
     }
     // Reserved file names that can't be used on Windows:
     // COM0, COM1, COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9,
     // LPT0, LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, and LPT9.
     constexpr auto reserved_component_size = 4;
-    return component.size() == reserved_component_size &&
-           ( component.rfind( L"COM", 0 ) == 0 || component.rfind( L"LPT", 0 ) == 0 ) &&
-           std::iswdigit( component.back() ) != 0;
+    return upperComponent.size() == reserved_component_size &&
+           ( starts_with( upperComponent, L"COM" ) || starts_with( upperComponent, L"LPT" ) ) &&
+           std::iswdigit( upperComponent.back() ) != 0;
 }
 
+BIT7Z_NODISCARD
 auto sanitize_path_component( std::wstring component ) -> std::wstring {
+    if ( component.empty() ) {
+        return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.
+    }
+
     const auto firstNonSlash = component.find_first_not_of( L"/\\" );
     if ( firstNonSlash == std::wstring::npos ) {
-        return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.;
+        return {};
     }
     if ( firstNonSlash != 0 ) {
         component.erase( 0, firstNonSlash );
     }
 
+    const auto firstNonSpace = component.find_first_not_of( L' ' );
+    if ( firstNonSpace == std::wstring::npos ) {
+        return L"_";
+    }
+
     // If the component is a reserved name on Windows, we prepend it with a '_' character.
-    if ( is_windows_reserved_name( component ) ) {
-        component.insert( 0, 1, L'_' );
+    if ( is_windows_reserved_name( component, firstNonSpace ) ) {
+        component.insert( firstNonSpace, 1, L'_' );
         return component;
     }
 
-    // Replacing all reserved characters in the component with the '_' character.
-    std::replace_if( component.begin(), component.end(), []( wchar_t chr ) {
+    // Replacing all reserved characters in the component with the '_' character
+    // (https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file).
+    std::replace_if( component.begin(), component.end(), []( wchar_t chr ) -> bool {
         constexpr auto kLastNonPrintableAscii = 31;
         return chr <= kLastNonPrintableAscii || chr == L'<' || chr == L'>' || chr == L':' ||
-               chr == L'"' || chr == L'/' || chr == L'|' || chr == L'?' || chr == L'*';
+               chr == L'"' || chr == L'/' || chr == L'\\' || chr == L'|' || chr == L'?' || chr == L'*';
     }, L'_' );
     return component;
+}
+
+BIT7Z_NODISCARD
+auto sanitize_path_components( const fs::path& path ) -> fs::path {
+    fs::path sanitizedPath;
+    for( const auto& pathComponent : path ) {
+        // cppcheck-suppress useStlAlgorithm
+        sanitizedPath /= sanitize_path_component( pathComponent.wstring() );
+    }
+    return sanitizedPath;
+}
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto is_drive_relative( const fs::path& path ) -> bool {
+    // NOLINTBEGIN(*-pro-bounds-avoid-unchecked-container-access)
+    const auto& nativePath = path.native();
+    return nativePath.size() > 2 &&
+           std::iswalpha( nativePath[0] ) != 0 &&
+           nativePath[1] == L':' &&
+           !isPathSeparator( nativePath[2] );
+    // NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 }
 } // namespace
 
@@ -367,12 +404,16 @@ auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
         return L"_";
     }
 
-    fs::path sanitizedPath;
-    for( const auto& pathComponent : path ) {
-        // cppcheck-suppress useStlAlgorithm
-        sanitizedPath /= sanitize_path_component( pathComponent.wstring() );
+    if ( is_drive_relative( path ) ) {
+        // Drive-relative paths are sanitized as C_<rest of the path> (e.g., C:file.txt -> C_file.txt).
+        const auto sanitizedRoot = sanitize_path_component( path.root_path().native() );
+        return sanitizedRoot + sanitize_path_components( path.relative_path() ).native();
     }
-    return sanitizedPath;
+
+    // Absolute paths: C:/abc/COM0/?invalid:filename.txt -> C_/abc/_COM0/_invalid_filename.txt
+    // Relative paths:   /abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
+    //                    abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
+    return sanitize_path_components( path );
 }
 
 auto fsutil::sanitized_extraction_path( const fs::path& outDir, const fs::path& itemPath ) -> fs::path {

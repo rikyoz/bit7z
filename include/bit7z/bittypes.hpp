@@ -80,6 +80,7 @@ using native_string = std::wstring;
 using native_string = std::string;
 #define BIT7Z_NATIVE_STRING( str ) str
 #endif
+using native_char = native_string::value_type;
 
 /**
  * @note On Windows, if the `BIT7Z_USE_NATIVE_STRING` option is enabled, `tchar` is an alias of `wchar_t`.

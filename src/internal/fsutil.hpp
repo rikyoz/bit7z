@@ -49,7 +49,7 @@ namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
  *
  * @return true if the character is a valid path separator on the target platform, false otherwise.
  */
-constexpr auto isPathSeparator( char character ) -> bool {
+constexpr auto isPathSeparator( const char character ) noexcept -> bool {
 #ifdef _WIN32
     return character == '/' || character == '\\';
 #else
@@ -58,7 +58,7 @@ constexpr auto isPathSeparator( char character ) -> bool {
 }
 
 #ifdef _WIN32
-constexpr auto isPathSeparator( wchar_t character ) -> bool {
+constexpr auto isPathSeparator( const wchar_t character ) noexcept -> bool {
     return character == L'/' || character == L'\\';
 }
 #endif
@@ -208,6 +208,7 @@ void increase_opened_files_limit();
  *
  * @return the sanitized path, where illegal characters are replaced with the '_' character.
  */
+BIT7Z_NODISCARD
 auto sanitize_path( const fs::path& path ) -> fs::path;
 
 auto sanitized_extraction_path( const fs::path& outDir, const fs::path& itemPath ) -> fs::path;
