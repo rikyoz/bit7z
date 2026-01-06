@@ -90,6 +90,24 @@ inline auto path_to_sevenzip_string( const fs::path& path ) -> std::wstring {
 #endif
 }
 
+class SafeOutPathBuilder final {
+    fs::path mBasePath;
+
+    public:
+        explicit SafeOutPathBuilder( const tstring& basePath );
+
+        BIT7Z_NODISCARD
+        auto buildPath( const fs::path& path ) const -> fs::path;
+
+#ifndef _WIN32
+        BIT7Z_NODISCARD
+        auto restoreSymlink( const fs::path& symlinkFilePath ) const -> bool;
+#endif
+
+        BIT7Z_NODISCARD
+        auto basePath() const -> const fs::path&;
+};
+
 namespace filesystem {
 namespace fsutil {
 
@@ -174,7 +192,11 @@ auto get_file_metadata( const fs::path& filePath, SymlinkPolicy policy ) -> File
     return fileMetadata;
 }
 
-auto set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool;
+auto set_file_attributes(
+    const SafeOutPathBuilder& pathBuilder,
+    const fs::path& filePath,
+    DWORD attributes
+) noexcept -> bool;
 
 BIT7Z_NODISCARD auto in_archive_path( const fs::path& filePath,
                                       const fs::path& searchPath = fs::path{} ) -> fs::path;
@@ -214,19 +236,6 @@ auto sanitize_path( const fs::path& path ) -> fs::path;
 
 } // namespace fsutil
 } // namespace filesystem
-
-class SafeOutPathBuilder final {
-        fs::path mBasePath;
-
-    public:
-        explicit SafeOutPathBuilder( const tstring& basePath );
-
-        BIT7Z_NODISCARD
-        auto buildPath( const fs::path& path ) const -> fs::path;
-
-        BIT7Z_NODISCARD
-        auto basePath() const -> const fs::path&;
-};
 
 #if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
 #define PATH_FROM_TSTRING( str ) fs::u8path( str )

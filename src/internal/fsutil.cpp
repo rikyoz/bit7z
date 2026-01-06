@@ -21,7 +21,6 @@
 #include "internal/dateutil.hpp"
 
 #include <sys/resource.h> // for rlimit, getrlimit, and setrlimit
-#include <unistd.h>
 
 // For some reason, GCC on macOS requires including <climits> for defining OPEN_MAX.
 #if defined( __APPLE__ ) && !defined( __clang__ )
@@ -141,36 +140,6 @@ auto fsutil::wildcard_match( const tstring& pattern, const tstring& str ) -> boo
 }
 
 #ifndef _WIN32
-
-auto restore_symlink( const std::string& name ) -> bool {
-    std::ifstream ifs( name, std::ios::in | std::ios::binary );
-    if ( !ifs.is_open() ) {
-        return false;
-    }
-
-    // Reading the path stored in the link file.
-    std::string linkPath;
-    linkPath.resize( MAX_PATHNAME_LEN );
-    ifs.getline( &linkPath[ 0 ], MAX_PATHNAME_LEN ); // NOLINT(readability-container-data-pointer)
-
-    if ( !ifs ) { // Error while reading the path, exiting.
-        return false;
-    }
-
-    // Shrinking the path string to its actual size.
-    linkPath.resize( static_cast< std::size_t >( ifs.gcount() ) );
-
-    // No need to keep the file open.
-    ifs.close();
-
-    // Removing the link file.
-    std::error_code error;
-    fs::remove( name, error );
-
-    // Restoring the symbolic link to the target file.
-    return !error && symlink( linkPath.c_str(), name.c_str() ) == 0;
-}
-
 static const mode_t global_umask = []() noexcept -> mode_t {
     // Getting and setting the current umask.
     // Note: flawfinder warns about umask with the mask set to 0;
@@ -186,12 +155,17 @@ static const mode_t global_umask = []() noexcept -> mode_t {
 
 #endif
 
-auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) noexcept -> bool {
+auto fsutil::set_file_attributes(
+    const SafeOutPathBuilder& pathBuilder,
+    const fs::path& filePath,
+    DWORD attributes
+) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
 
 #ifdef _WIN32
+    (void)pathBuilder; // Unused on Windows.
     if ( ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
         constexpr auto kUnixWritePermissionsMask = 0222u;
         // Most likely, this is a Tar archive, which doesn't store Windows attributes, but only Unix permissions.
@@ -211,7 +185,7 @@ auto fsutil::set_file_attributes( const fs::path& filePath, DWORD attributes ) n
     if ( ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) != 0 ) {
         fileStat.st_mode = static_cast< mode_t >( attributes >> 16U );
         if ( S_ISLNK( fileStat.st_mode ) ) {
-            return restore_symlink( filePath );
+            return pathBuilder.restoreSymlink( filePath );
         }
 
         if ( S_ISDIR( fileStat.st_mode ) ) {
@@ -565,6 +539,50 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
 
     return builtPath;
 }
+
+#ifndef _WIN32
+// TODO: Add support for symbolic links on Windows (reparse points).
+// TODO: Add support for stopping the extraction process if the symbolic link cannot be restored.
+auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const -> bool {
+    fs::ifstream ifs( symlinkFilePath, std::ios::in | std::ios::binary );
+    if ( !ifs.is_open() ) {
+        return false;
+    }
+
+    // Reading the path stored in the link file.
+    std::string targetPath;
+    targetPath.resize( MAX_PATHNAME_LEN );
+    // NOLINTNEXTLINE(readability-container-data-pointer, *-pro-bounds-avoid-unchecked-container-access)
+    ifs.getline( &targetPath[ 0 ], MAX_PATHNAME_LEN );
+
+    if ( !ifs ) { // Error while reading the path, exiting.
+        return false;
+    }
+
+    // Shrinking the path string to its actual size.
+    targetPath.resize( static_cast< std::size_t >( ifs.gcount() ) );
+
+    // No need to keep the file open.
+    ifs.close();
+
+    // Removing the link file.
+    std::error_code error;
+    fs::remove( symlinkFilePath, error );
+
+    if ( error ) {
+        return false;
+    }
+
+    const auto safeTargetPath = filesystem::sanitize_path_join( mBasePath, targetPath ).lexically_normal();
+    if ( filesystem::path_is_outside_base( safeTargetPath, mBasePath ) ) {
+        return false;
+    }
+
+    // Restoring the symbolic link to the target file.
+    fs::create_symlink( safeTargetPath, symlinkFilePath, error );
+    return !error;
+}
+#endif
 
 auto SafeOutPathBuilder::basePath() const -> const fs::path& {
     return mBasePath;

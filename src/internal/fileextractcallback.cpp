@@ -72,7 +72,7 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
 #endif
 
     if ( mCurrentItem->areAttributesDefined() ) {
-        filesystem::fsutil::set_file_attributes( mFilePathOnDisk, mCurrentItem->attributes() );
+        filesystem::fsutil::set_file_attributes( mOutPathBuilder, mFilePathOnDisk, mCurrentItem->attributes() );
     }
     return result;
 }
