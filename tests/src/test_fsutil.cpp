@@ -15,6 +15,7 @@
 #include "utils/filesystem.hpp"
 #include "utils/test.hpp"
 
+#include <bit7z/biterror.hpp>
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
 #include <internal/fsutil.hpp>
@@ -299,14 +300,21 @@ TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
 }
 #endif
 
+namespace {
+BIT7Z_ALWAYS_INLINE
+auto quoted( const fs::path& path ) -> std::string {
+    return bit7z::test::quoted( path.c_str() );
+}
+} // namespace
+
+using bit7z::test::quoted;
+
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 namespace {
 struct SanitizationTest {
     const native_char* path;
     const native_char* expectedPath;
 };
-
-using bit7z::test::quoted;
 } // namespace
 
 TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
@@ -644,3 +652,661 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
     }
 }
 #endif
+
+namespace {
+// Helper function to test base path normalization of SafeOutPathBuilder.
+auto normalizedBasePath( const tstring& basePath ) -> fs::path {
+    return SafeOutPathBuilder{ basePath }.basePath();
+}
+} // namespace
+
+TEST_CASE( "fsutil: Base path normalization", "[fsutil][SafeOutPathBuilder]" ) {
+    SECTION( "Path separators normalization" ) {
+#ifdef _WIN32
+        const tstring separators = GENERATE(
+            BIT7Z_STRING( "/" ),
+            BIT7Z_STRING( "//" ),
+            BIT7Z_STRING( "/////" ),
+            BIT7Z_STRING( "\\" ),
+            BIT7Z_STRING( "\\\\" ),
+            BIT7Z_STRING( "\\\\\\" ),
+            BIT7Z_STRING( "/\\" ),
+            BIT7Z_STRING( "//\\\\" ),
+            BIT7Z_STRING( "\\/" ),
+            BIT7Z_STRING( "\\\\//" )
+        );
+#else
+        const tstring separators = GENERATE(
+            BIT7Z_STRING( "/" ),
+            BIT7Z_STRING( "//" ),
+            BIT7Z_STRING( "/////" )
+        );
+#endif
+
+        SECTION( "Trailing separators are normalized" ) {
+            SECTION( "Relative paths" ) {
+                const auto expectedPath = fs::absolute( "out/" );
+                REQUIRE( normalizedBasePath( BIT7Z_STRING( "out" ) + separators ) == expectedPath );
+                REQUIRE( normalizedBasePath( BIT7Z_STRING( "out/dir" ) + separators ) == expectedPath / "dir" / "" );
+            }
+
+#ifdef _WIN32
+            SECTION( "Drive-relative paths" ) {
+                // Paths starting with "/" are relative to current drive's root on Windows
+#else
+            SECTION( "Absolute paths" ) {
+#endif
+                const auto expectedPath = fs::absolute( "/out/" );
+                REQUIRE( normalizedBasePath( BIT7Z_STRING( "/out" ) + separators ) == expectedPath );
+                REQUIRE( normalizedBasePath( BIT7Z_STRING( "/out/dir" ) + separators ) == expectedPath / "dir" / "" );
+            }
+
+#ifdef _WIN32
+            SECTION( "Windows drive paths" ) {
+                const fs::path expectedPath = L"D:\\";
+                REQUIRE( normalizedBasePath( BIT7Z_STRING( "D:" ) + separators ) == expectedPath );
+                REQUIRE( normalizedBasePath( BIT7Z_STRING( "D:/out" ) + separators ) == expectedPath / "out" / "" );
+            }
+#endif
+        }
+
+        SECTION( "Internal separators are normalized" ) {
+            const auto pathSuffix = separators + BIT7Z_STRING( "dir/" );
+            REQUIRE( normalizedBasePath( BIT7Z_STRING( "out" ) + pathSuffix ) == fs::absolute( "out/dir/" ) );
+            REQUIRE( normalizedBasePath( BIT7Z_STRING( "/out" ) + pathSuffix ) == fs::absolute( "/out/dir/" ) );
+#ifdef _WIN32
+            REQUIRE( normalizedBasePath( BIT7Z_STRING( "D:/out" ) + pathSuffix ) == fs::absolute( "D:/out/dir/" ) );
+#endif
+        }
+    }
+
+    SECTION( "Empty and dot paths resolve to current directory" ) {
+        // Using fs::equivalent to handle trailing separator differences across implementations.
+        const auto currentPath = fs::current_path();
+        REQUIRE( fs::equivalent( normalizedBasePath( BIT7Z_STRING( "" ) ), currentPath ) );
+        REQUIRE( fs::equivalent( normalizedBasePath( BIT7Z_STRING( "." ) ), currentPath ) );
+        REQUIRE( fs::equivalent( normalizedBasePath( BIT7Z_STRING( "./" ) ), currentPath ) );
+    }
+
+#ifdef _WIN32
+    SECTION( "UNC paths should be preserved" ) {
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "\\\\server\\path" ) ) == L"\\\\server\\path" );
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "\\\\?\\abc\\def" ) ) == L"\\\\?\\abc\\def" );
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "\\\\?\\UNC\\server\\path" ) ) == L"\\\\?\\UNC\\server\\path" );
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "\\\\?\\UNC\\\\server\\path" ) ) == L"\\\\?\\UNC\\server\\path" );
+    }
+#endif
+
+#if defined( _WIN32 ) && !defined( GHC_FILESYSTEM_VERSION )
+    SECTION( "Invalid base paths (UNC paths without server)" ) {
+        // "//" and "\\\\" are invalid UNC paths on Windows (at least for MSVC's std::filesystem).
+        REQUIRE_THROWS( normalizedBasePath( BIT7Z_STRING( "//" ) ) );
+        REQUIRE_THROWS( normalizedBasePath( BIT7Z_STRING( "///////" ) ) );
+        REQUIRE_THROWS( normalizedBasePath( BIT7Z_STRING( "\\\\" ) ) );
+        REQUIRE_THROWS( normalizedBasePath( BIT7Z_STRING( "\\\\\\\\\\" ) ) );
+    }
+#else
+    SECTION( "Unix absolute or Windows drive root base paths" ) {
+        // ghc::filesystem treats these paths as root paths rather than UNC paths.
+        const auto expectedPath = fs::absolute( "/" );
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "//" ) ) == expectedPath );
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "///////" ) ) == expectedPath );
+#ifdef _WIN32
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "\\\\" ) ) == expectedPath );
+        REQUIRE( normalizedBasePath( BIT7Z_STRING( "\\\\\\\\\\" ) ) == expectedPath );
+#endif
+    }
+#endif
+}
+
+TEST_CASE( "fsutil: Basic path building tests", "[fsutil][SafeOutPathBuilder]" ) {
+    const tstring testBasePath = GENERATE(
+        BIT7Z_STRING( "" ),
+        BIT7Z_STRING( "." ),
+        BIT7Z_STRING( "./" ),
+        BIT7Z_STRING( "/" ),
+        BIT7Z_STRING( "/out" ),
+        BIT7Z_STRING( "/out/dir"),
+        BIT7Z_STRING( "out" ),
+        BIT7Z_STRING( "out/dir" ),
+        // Note: these paths have different meaning on Windows and on Unix.
+        BIT7Z_STRING( "C:" ),
+        BIT7Z_STRING( "C:/" ),
+        BIT7Z_STRING( "C:/out" ),
+        BIT7Z_STRING( "D:" ),
+        BIT7Z_STRING( "D:/" ),
+        BIT7Z_STRING( "D:/out" )
+    );
+
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        BIT7Z_NATIVE_STRING( "abc" ),
+        BIT7Z_NATIVE_STRING( "abc/" ),
+        BIT7Z_NATIVE_STRING( "folder/subfolder" ),
+        BIT7Z_NATIVE_STRING( "folder/subfolder/" ),
+        BIT7Z_NATIVE_STRING( "file.txt" ),
+        BIT7Z_NATIVE_STRING( "dir/file.txt" ),
+        BIT7Z_NATIVE_STRING( "dir/subdir/file.txt" )
+    );
+
+    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+        const SafeOutPathBuilder builder{ testBasePath };
+        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath );
+    }
+}
+
+#ifdef BIT7Z_PATH_SANITIZATION
+#   ifdef _WIN32
+TEST_CASE( "fsutil: Path building with invalid Windows item paths", "[fsutil][SafeOutPathBuilder]" ) {
+    const tstring testBasePath = GENERATE(
+        BIT7Z_STRING( "" ),
+        BIT7Z_STRING( "." ),
+        BIT7Z_STRING( "/" ),
+        BIT7Z_STRING( "/out" ),
+        BIT7Z_STRING( "/out/dir" ),
+        BIT7Z_STRING( "out" ),
+        BIT7Z_STRING( "out/dir" ),
+        BIT7Z_STRING( "C:" ),
+        BIT7Z_STRING( "C:/" ),
+        BIT7Z_STRING( "C:/out" ),
+        BIT7Z_STRING( "D:" ),
+        BIT7Z_STRING( "D:/" ),
+        BIT7Z_STRING( "D:/out" )
+    );
+
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        L"/",
+        L"/abc",
+        L"/abc/def",
+        L"\\\\server", // UNC Path.
+        L"\\\\server\\share",
+        L"\\\\?\\", // Prefixed long paths.
+        L"\\\\?\\abc\\def",
+        L"\\\\?\\UNC\\server\\share",
+        L"C:abc", // Drive-relative paths (sanitized to C_<rest of the path>).
+        L"C:..",
+        L"C:../abc/def",
+        L"Test/COM0/hello?world<.txt", // Path with invalid file names or characters.
+        L"C:/abc", // Absolute paths.
+        L"C:/abc/def"
+    );
+
+    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+        const SafeOutPathBuilder builder{ testBasePath };
+        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitize_path( testItemPath ) );
+    }
+}
+#   else
+TEST_CASE( "fsutil: Path building with absolute paths", "[fsutil][SafeOutPathBuilder]" ) {
+    const std::string testBasePath = GENERATE(
+        "",
+        ".",
+        "/",
+        "/out",
+        "/out/dir",
+        "out",
+        "out/dir"
+    );
+
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        "/",
+        "/abc",
+        "/abc/def"
+    );
+
+    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+        const SafeOutPathBuilder builder{ testBasePath };
+        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.relative_path() );
+    }
+}
+#   endif
+
+
+TEST_CASE( "fsutil: Path building with paths with dot components", "[fsutil][SafeOutPathBuilder]" ) {
+    const tstring testBasePath = GENERATE(
+        BIT7Z_STRING( "" ),
+        BIT7Z_STRING( "." ),
+        BIT7Z_STRING( "/" ),
+        BIT7Z_STRING( "/out" ),
+        BIT7Z_STRING( "/out/dir" ),
+        BIT7Z_STRING( "out" ),
+        BIT7Z_STRING( "out/dir" ),
+        BIT7Z_STRING( "C:" ),
+        BIT7Z_STRING( "C:/" ),
+        BIT7Z_STRING( "C:/out" ),
+        BIT7Z_STRING( "D:" ),
+        BIT7Z_STRING( "D:/" ),
+        BIT7Z_STRING( "D:/out" )
+    );
+
+#ifdef _WIN32
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        L".",
+        L"/.",
+        L"./",
+        L"/./",
+        L"\\\\.\\"
+    );
+#else
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        L".",
+        L"/.",
+        L"./",
+        L"/./"
+    );
+#endif
+
+    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+        const SafeOutPathBuilder builder{ testBasePath };
+        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / "" );
+        REQUIRE( builder.buildPath( testItemPath / "abc" ) == builder.basePath() / "abc" );
+        REQUIRE( builder.buildPath( testItemPath / "subdir/file.txt" ) == builder.basePath() / "subdir/file.txt" );
+    }
+}
+
+TEST_CASE( "fsutil: Path building with an empty path should return the base path", "[fsutil][SafeOutPathBuilder]" ) {
+    const tstring testBasePath = GENERATE(
+        BIT7Z_STRING( "" ),
+        BIT7Z_STRING( "." ),
+        BIT7Z_STRING( "/" ),
+        BIT7Z_STRING( "/out" ),
+        BIT7Z_STRING( "/out/dir" ),
+        BIT7Z_STRING( "out" ),
+        BIT7Z_STRING( "out/dir" ),
+        BIT7Z_STRING( "C:" ),
+        BIT7Z_STRING( "C:/" ),
+        BIT7Z_STRING( "C:/out" ),
+        BIT7Z_STRING( "D:" ),
+        BIT7Z_STRING( "D:/" ),
+        BIT7Z_STRING( "D:/out" )
+    );
+
+    DYNAMIC_SECTION( "empty path item inside base path " << quoted( testBasePath ) ) {
+        const SafeOutPathBuilder builder{ testBasePath };
+        REQUIRE( builder.buildPath( "" ) == builder.basePath() );
+    }
+}
+#else
+TEST_CASE( "fsutil: Path building with absolute paths should fail", "[fsutil][SafeOutPathBuilder]" ) {
+    const tstring testBasePath = GENERATE(
+        BIT7Z_STRING( "" ),
+        BIT7Z_STRING( "." ),
+        BIT7Z_STRING( "/" ),
+        BIT7Z_STRING( "/out" ),
+        BIT7Z_STRING( "/out/dir" ),
+        BIT7Z_STRING( "out" ),
+        BIT7Z_STRING( "out/dir" ),
+        // Note: the following paths have different meaning on Windows and on Unix.
+        BIT7Z_STRING( "C:" ),
+        BIT7Z_STRING( "C:/" ),
+        BIT7Z_STRING( "C:/out" ),
+        BIT7Z_STRING( "D:" ),
+        BIT7Z_STRING( "D:/" ),
+        BIT7Z_STRING( "D:/out" )
+    );
+
+#   ifdef _WIN32
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        L"C:\\", // Absolute paths.
+        L"C:\\abc",
+        L"C:\\abc\\def",
+        L"\\\\abc", // UNC Paths.
+        L"\\\\abc\\",
+        L"\\\\abc\\def",
+        L"\\\\.", // DOS device path.
+        L"\\\\.\\",
+        L"\\\\.\\abc\\def",
+        L"\\\\.\\UNC\\server\\share",
+        L"\\\\?", // Prefixed long paths.
+        L"\\\\?\\",
+        L"\\\\?\\abc\\def",
+        L"\\\\?\\UNC\\server\\share"
+    );
+#   else
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        "/",
+        "/abc",
+        "/abc/def"
+    );
+#   endif
+
+    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+        const SafeOutPathBuilder builder{ testBasePath };
+        REQUIRE_THROWS_MATCHES(
+            builder.buildPath( testItemPath ),
+            BitException,
+            Catch::Matchers::Predicate< BitException >(
+                []( const BitException& exception ) -> bool {
+                    return exception.code() == BitError::ItemHasAbsolutePath;
+                },
+                "Error code should be BitError::ItemHasAbsolutePath"
+            )
+        );
+    }
+}
+
+TEST_CASE( "fsutil: Path building with relative paths", "[fsutil][SafeOutPathBuilder]" ) {
+    const tstring testBasePath = GENERATE(
+        BIT7Z_STRING( "" ),
+        BIT7Z_STRING( "." ),
+        BIT7Z_STRING( "/" ),
+        BIT7Z_STRING( "/out" ),
+        BIT7Z_STRING( "/out/dir" ),
+        BIT7Z_STRING( "out" ),
+        BIT7Z_STRING( "out/dir" ),
+        // Note: the following paths have different meaning on Windows and on Unix.
+        BIT7Z_STRING( "C:" ),
+        BIT7Z_STRING( "C:/" ),
+        BIT7Z_STRING( "C:/out" ),
+        BIT7Z_STRING( "D:" ),
+        BIT7Z_STRING( "D:/" ),
+        BIT7Z_STRING( "D:/out" )
+    );
+
+#   ifdef _WIN32
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        L"/",
+        L"/abc",
+        L"/abc/def",
+        L"abc/",
+        L"abc/def/"
+    );
+#   else
+    const auto testItemPath = GENERATE( as< fs::path >(),
+        "abc/",
+        "abc/def/"
+    );
+#   endif
+    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+        const SafeOutPathBuilder builder{ testBasePath };
+        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.relative_path() );
+    }
+}
+
+#   ifdef _WIN32
+TEST_CASE( "fsutil: Path building with Windows' drive-relative paths", "[fsutil][SafeOutPathBuilder]" ) {
+    SECTION ( "Simple drive-relative paths (same root as base path)" ) {
+        const tstring testBasePath = GENERATE(
+            BIT7Z_STRING( "" ),
+            BIT7Z_STRING( "." ),
+            BIT7Z_STRING( "/" ),
+            BIT7Z_STRING( "/out" ),
+            BIT7Z_STRING( "/out/dir" ),
+            BIT7Z_STRING( "out" ),
+            BIT7Z_STRING( "out/dir" ),
+            BIT7Z_STRING( "C:" ),
+            BIT7Z_STRING( "C:/" ),
+            BIT7Z_STRING( "C:/out" ),
+            BIT7Z_STRING( "D:" ),
+            BIT7Z_STRING( "D:/" ),
+            BIT7Z_STRING( "D:/out" )
+        );
+
+        const auto testItemPath = GENERATE( as< fs::path >(),
+            L"C:",
+            L"C:abc",
+            L"C:abc/def/file.txt",
+            L"C:file.txt",
+            L"D:",
+            L"D:abc",
+            L"D:abc/def/file.txt",
+            L"D:file.txt"
+        );
+
+        DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+            const SafeOutPathBuilder builder{ testBasePath };
+            REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.relative_path() );
+        }
+    }
+}
+#   endif
+#endif
+
+struct PathBuildTest {
+    tstring basePath;
+    fs::path itemPath;
+    fs::path expectedPath;
+};
+
+TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][SafeOutPathBuilder]" ) {
+    SECTION( "Basic ZipSlip attack" ) {
+        const auto testBasePath = GENERATE( as< tstring >(),
+            BIT7Z_STRING( "" ),
+            BIT7Z_STRING( "." ),
+            BIT7Z_STRING( ".." ),
+            BIT7Z_STRING( "out" ),
+            BIT7Z_STRING( "/out" ),
+            BIT7Z_STRING( "out/dir" ),
+            BIT7Z_STRING( "/out/dir" ),
+            // Note: C: is the current directory on the drive C, C:\\ is the root directory of the drive C
+            BIT7Z_STRING( "C:" ),
+            // NOTE: On Windows, the following are absolute paths.
+            BIT7Z_STRING( "C:/out" ),
+            BIT7Z_STRING( "C:/out/dir" )
+        );
+
+        const auto slipPath = GENERATE( as< fs::path >(),
+            BIT7Z_NATIVE_STRING( "../evil.txt" ),
+            BIT7Z_NATIVE_STRING( "../../evil.txt" ),
+            BIT7Z_NATIVE_STRING( "../../../../etc/passwd" ),
+            BIT7Z_NATIVE_STRING( "../../../../tmp/pwned" ),
+            BIT7Z_NATIVE_STRING( "../folder/" ),
+            BIT7Z_NATIVE_STRING( "../folder/evil.txt" ),
+            BIT7Z_NATIVE_STRING( "../folder/../../evil.txt" ),
+            BIT7Z_NATIVE_STRING( "../../../../../etc/passwd" ),
+            BIT7Z_NATIVE_STRING( "folder/../../evil.txt" ),
+            BIT7Z_NATIVE_STRING( "folder/../../../../etc/passwd" ),
+            BIT7Z_NATIVE_STRING( "a/b/c/../../../../evil.txt" ),
+            BIT7Z_NATIVE_STRING( "C:abc/../../" ),
+            BIT7Z_NATIVE_STRING( "C:../../../" )
+        );
+
+        DYNAMIC_SECTION(
+            "Building output path for " << quoted( slipPath ) << " "
+            "inside base path " << quoted( testBasePath ) << " should fail"
+        ) {
+            REQUIRE_THROWS_MATCHES(
+                SafeOutPathBuilder{ testBasePath }.buildPath( slipPath ),
+                BitException,
+                Catch::Matchers::Predicate< BitException >(
+                    []( const BitException& exception ) -> bool {
+                        return exception.code() == BitError::ItemPathOutsideOutputDirectory;
+                    },
+                    "Error code should be BitError::ItemPathOutsideOutputDirectory"
+                )
+            );
+        }
+    }
+
+    SECTION( "Near zip attacks" ) {
+#ifdef _WIN32
+        const auto testBasePath = GENERATE( as< tstring >(),
+            BIT7Z_STRING( "/" ),
+            BIT7Z_STRING( "\\" ),
+            BIT7Z_STRING( "C:/" ),
+            BIT7Z_STRING( "C:\\" )
+        );
+#else
+        const tstring testBasePath = "/";
+#endif
+
+        const auto nearSlipPath = GENERATE( as< fs::path >(),
+            BIT7Z_NATIVE_STRING( "out/dir/../../../../../../notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "out/dir/../../notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "out/../../notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "../notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "../../notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "../../../../../../notEvil.txt" )
+        );
+
+        // The base path is the root directory, and notEvil.txt is expected to be inside the root directory.
+        const auto expectedPath = fs::absolute( "/notEvil.txt" );
+
+        DYNAMIC_SECTION( nearSlipPath << " inside base path " << quoted( testBasePath ) ) {
+            REQUIRE( SafeOutPathBuilder{ testBasePath }.buildPath( nearSlipPath ) == expectedPath );
+        }
+    }
+
+    // Note: we already tested throwing when the item path is an absolute path;
+    // here, we are testing the specific case where the base path can be a substring of the item path.
+    SECTION( "Edge cases (substring)" ) {
+        // https://www.sonarsource.com/blog/openrefine-zip-slip/
+#ifdef _WIN32
+        const tstring testBasePath = GENERATE(
+            BIT7Z_STRING( "C:/Users/john" ),
+            BIT7Z_STRING( "C:/Users/john/" )
+        );
+
+        const auto testItemPath = GENERATE( as< fs::path >(),
+            L"C:/Users/johnny",
+            L"C:/Users/johnny/.ssh/id_rsa"
+        );
+#else
+        const tstring testBasePath = GENERATE(
+            BIT7Z_STRING( "/home/john" ),
+            BIT7Z_STRING( "/home/john/" )
+        );
+
+        const auto testItemPath = GENERATE( as< fs::path >(),
+            "/home/johnny",
+            "/home/johnny/.ssh/id_rsa"
+        );
+#endif
+#ifndef BIT7Z_PATH_SANITIZATION
+        REQUIRE_THROWS( SafeOutPathBuilder{ testBasePath }.buildPath( testItemPath ) );
+#else
+        DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+            const SafeOutPathBuilder sanitizer{ testBasePath };
+#ifdef _WIN32
+            REQUIRE( sanitizer.buildPath( testItemPath ) == sanitizer.basePath() / sanitize_path( testItemPath ) );
+#else
+            REQUIRE( sanitizer.buildPath( testItemPath ) == sanitizer.basePath() / testItemPath.relative_path() );
+#endif
+        }
+#endif
+    }
+
+    SECTION( "Edge cases (inside)" ) {
+        const tstring testBasePath = GENERATE(
+            BIT7Z_STRING( "" ),
+            BIT7Z_STRING( "." ),
+            BIT7Z_STRING( "/" ),
+            BIT7Z_STRING( "/out" ),
+            BIT7Z_STRING( "/out/dir" ),
+            BIT7Z_STRING( "out" ),
+            BIT7Z_STRING( "out/dir" ),
+            BIT7Z_STRING( "C:" ),
+            BIT7Z_STRING( "C:/" ),
+            BIT7Z_STRING( "C:/out" ),
+            BIT7Z_STRING( "D:" ),
+            BIT7Z_STRING( "D:/" ),
+            BIT7Z_STRING( "D:/out" )
+        );
+
+        const auto testItemPath = GENERATE( as< fs::path >(),
+            BIT7Z_NATIVE_STRING( "subdir/../legal.txt" ),
+            BIT7Z_NATIVE_STRING( "a/b/c/../notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "a/b/c/../../notEvil.txt" ),
+            BIT7Z_NATIVE_STRING( "a/b/c/../../../notEvil.txt" )
+        );
+
+        DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+            const SafeOutPathBuilder builder{ testBasePath };
+            REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.lexically_normal() );
+        }
+    }
+
+    SECTION( "Edge cases (path traversal that are actually inside the base path)" ) {
+        const auto testValues = GENERATE(
+            // Paths that traverse up then back into the same directory
+            PathBuildTest{ BIT7Z_STRING( "out" ), "../out", "out" },
+            PathBuildTest{ BIT7Z_STRING( "out" ), "../out/", "out/" },
+            PathBuildTest{ BIT7Z_STRING( "out" ), "../out/folder/notEvil.txt", "out/folder/notEvil.txt" },
+            PathBuildTest{ BIT7Z_STRING( "out" ), "../out/notEvil.txt", "out/notEvil.txt" },
+            PathBuildTest{ BIT7Z_STRING( "out" ), "folder/../notEvil.txt", "out/notEvil.txt" },
+
+            // Multiple traversals that end up inside
+            PathBuildTest{ BIT7Z_STRING( "out" ), "folder/../../out/notEvil.txt", "out/notEvil.txt" },
+            PathBuildTest{ BIT7Z_STRING( "out" ), "../out/folder/../../out/notEvil.txt", "out/notEvil.txt" },
+            PathBuildTest{ BIT7Z_STRING( "out" ), "a/b/c/../../../../out/notEvil.txt", "out/notEvil.txt" },
+
+            // Nested base paths
+            PathBuildTest{ BIT7Z_STRING( "out/dir" ), "../../out/dir", "out/dir" },
+            PathBuildTest{ BIT7Z_STRING( "out/dir" ), "../../out/dir/", "out/dir/" },
+            PathBuildTest{ BIT7Z_STRING( "out/dir" ), "../dir/folder/notEvil.txt", "out/dir/folder/notEvil.txt" },
+            PathBuildTest{ BIT7Z_STRING( "out/dir" ), "../dir/notEvil.txt", "out/dir/notEvil.txt" },
+
+            // Multiple traversals of nested base paths that end up inside
+            PathBuildTest{ BIT7Z_STRING( "out/dir" ), "folder/../../dir/notEvil.txt", "out/dir/notEvil.txt" },
+            PathBuildTest{ BIT7Z_STRING( "out/dir" ), "../dir/folder/../../dir/notEvil.txt", "out/dir/notEvil.txt" },
+            PathBuildTest{ BIT7Z_STRING( "out/dir" ), "a/b/c/../../../../dir/notEvil.txt", "out/dir/notEvil.txt" }
+        );
+
+        DYNAMIC_SECTION( quoted( testValues.itemPath ) << " inside base path " << quoted( testValues.basePath ) ) {
+            const SafeOutPathBuilder builder{ testValues.basePath };
+            REQUIRE( builder.buildPath( testValues.itemPath ) == fs::absolute( testValues.expectedPath ) );
+        }
+    }
+
+    SECTION( "Edge cases (case insensitivity, valid on Windows, not on Unix)" ) {
+        const auto testValues = GENERATE(
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../DIR" ),
+                BIT7Z_NATIVE_STRING( "out/DIR" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../DIR/" ),
+                BIT7Z_NATIVE_STRING( "out/DIR/" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../../Out/DIR" ),
+                BIT7Z_NATIVE_STRING( "Out/DIR" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../../Out/DIR/" ),
+                BIT7Z_NATIVE_STRING( "Out/DIR/" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir/testɐ" ),
+                BIT7Z_NATIVE_STRING( "../testⱯ" ),
+                BIT7Z_NATIVE_STRING( "out/dir/testⱯ" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir/testⱯ" ),
+                BIT7Z_NATIVE_STRING( "../testɐ" ),
+                BIT7Z_NATIVE_STRING( "out/dir/testɐ" )
+            }
+        );
+        DYNAMIC_SECTION( quoted( testValues.itemPath ) << " inside base path " << quoted( testValues.basePath ) ) {
+#ifdef _WIN32
+            const SafeOutPathBuilder sanitizer{ testValues.basePath };
+            REQUIRE( sanitizer.buildPath( testValues.itemPath ) == fs::absolute( testValues.expectedPath ) );
+#else
+            REQUIRE_THROWS( SafeOutPathBuilder{ testValues.basePath }.buildPath( testValues.itemPath ) );
+#endif
+        }
+    }
+
+#ifdef _WIN32
+    /* According to the Unicode folding and case conversion rules,
+     * these characters should be treated the same in case-insensitive comparisons.
+     * However, Windows does not follow these rules, primarily for compatibility reasons.*/
+    SECTION( "Edge cases (Windows' case insensitivity quirks)" ) {
+        // German's ß and its uppercase variants ẞ/SS.
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/german/Straße" ) }.buildPath( L"../STRAẞE" ) );
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/german/Straße" ) }.buildPath( L"../STRASSE" ) );
+        // Turkish's dotted i and its uppercase variant İ.
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/iki" ) }.buildPath( L"../İKİ" ) );
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/İki" ) }.buildPath( L"../iKİ" ) );
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/İKİ" ) }.buildPath( L"../iki" ) );
+        // Turkish's dotless ı and its uppercase variant I.
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/ışık" ) }.buildPath( L"../IŞIK" ) );
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/Işık" ) }.buildPath( L"../ışIK" ) );
+        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/IŞIK" ) }.buildPath( L"../ışık" ) );
+    }
+#endif
+}

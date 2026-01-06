@@ -33,7 +33,7 @@ FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
                                           FilterCallback filterCallback,
                                           RenameCallback renameCallback )
     : ExtractCallback( inputArchive, std::move( filterCallback ) ),
-      mDirectoryPath( tstring_to_path( directoryPath ) ),
+      mOutPathBuilder( directoryPath ),
       mRetainDirectories( inputArchive.handler().retainDirectories() ),
       mRenameCallback{ std::move( renameCallback ) },
       mExtractionAttempted{ false } {}
@@ -98,11 +98,8 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
     if ( filePath.empty() || ( isItemFolder( index ) && filePath == L"/" ) ) {
         return S_OK;
     }
-#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-    mFilePathOnDisk = filesystem::fsutil::sanitized_extraction_path( mDirectoryPath, filePath );
-#else
-    mFilePathOnDisk = mDirectoryPath / filePath;
-#endif
+
+    mFilePathOnDisk = mOutPathBuilder.buildPath( filePath );
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
     if ( filesystem::fsutil::should_format_long_path( mFilePathOnDisk ) ) {

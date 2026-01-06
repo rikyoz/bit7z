@@ -15,6 +15,7 @@
 #include "bittypes.hpp"
 #include "internal/cfileoutstream.hpp"
 #include "internal/extractcallback.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/processeditem.hpp"
 #include "internal/operationresult.hpp"
 #include "internal/optional.hpp"
@@ -46,7 +47,7 @@ class FileExtractCallback final : public ExtractCallback {
         auto extractionAttempted() const -> bool override;
 
     private:
-        fs::path mDirectoryPath;  // Output directory
+        SafeOutPathBuilder mOutPathBuilder;
         fs::path mFilePathOnDisk; // Full path to the file on disk
         bool mRetainDirectories;
         RenameCallback mRenameCallback;

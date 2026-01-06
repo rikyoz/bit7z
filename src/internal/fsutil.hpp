@@ -210,12 +210,23 @@ void increase_opened_files_limit();
  */
 BIT7Z_NODISCARD
 auto sanitize_path( const fs::path& path ) -> fs::path;
-
-auto sanitized_extraction_path( const fs::path& outDir, const fs::path& itemPath ) -> fs::path;
 #endif
 
 } // namespace fsutil
 } // namespace filesystem
+
+class SafeOutPathBuilder final {
+        fs::path mBasePath;
+
+    public:
+        explicit SafeOutPathBuilder( const tstring& basePath );
+
+        BIT7Z_NODISCARD
+        auto buildPath( const fs::path& path ) const -> fs::path;
+
+        BIT7Z_NODISCARD
+        auto basePath() const -> const fs::path&;
+};
 
 #if defined( _MSC_VER ) && !defined( BIT7Z_USE_NATIVE_STRING ) && !defined( BIT7Z_USE_SYSTEM_CODEPAGE )
 #define PATH_FROM_TSTRING( str ) fs::u8path( str )

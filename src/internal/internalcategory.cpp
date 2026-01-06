@@ -71,6 +71,10 @@ auto InternalCategory::message( int errorValue ) const -> std::string {
             return "Wrong update mode.";
         case BitError::InvalidZipPassword:
             return "7-Zip only supports printable ASCII characters for passwords when creating Zip archives.";
+        case BitError::ItemPathOutsideOutputDirectory:
+            return "The extracted item path would be outside the output directory";
+        case BitError::ItemHasAbsolutePath:
+            return "The item has an absolute path.";
         default:
             return "Unknown internal error (code " + std::to_string( errorValue ) + ").";
     }
@@ -102,6 +106,8 @@ auto InternalCategory::default_error_condition( int errorValue ) const noexcept 
             return std::make_error_condition( std::errc::not_supported );
         case BitError::ItemMarkedAsDeleted:
         case BitError::WrongUpdateMode:
+        case BitError::ItemPathOutsideOutputDirectory:
+        case BitError::ItemHasAbsolutePath:
             return std::make_error_condition( std::errc::operation_not_permitted );
         default:
             return error_category::default_error_condition( errorValue );

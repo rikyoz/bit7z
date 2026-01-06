@@ -12,6 +12,8 @@
 
 #include <catch2/catch.hpp>
 
+#include <bit7z/bitdefines.hpp>
+
 #include <locale>
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)

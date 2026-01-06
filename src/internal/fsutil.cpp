@@ -12,8 +12,10 @@
 
 #include "internal/fsutil.hpp"
 
+#include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bittypes.hpp"
+#include "bitwindows.hpp"
 
 #ifndef _WIN32
 #include "internal/dateutil.hpp"
@@ -415,11 +417,156 @@ auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
     //                    abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
     return sanitize_path_components( path );
 }
+#endif
 
-auto fsutil::sanitized_extraction_path( const fs::path& outDir, const fs::path& itemPath ) -> fs::path {
-    return outDir / sanitize_path( itemPath );
+namespace {
+#if !defined( _WIN32 ) || !defined( BIT7Z_PATH_SANITIZATION )
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto is_absolute( const fs::path& path ) -> bool {
+#if defined( _WIN32 ) && defined( GHC_FILESYSTEM_VERSION )
+    // For ghc::filesystem, \\server is not absolute (bug?), but we want a consistent behavior on Windows.
+    return path.is_absolute() || ( starts_with( path.native(), L"\\\\" ) && !path.has_root_directory() );
+#else
+    return path.is_absolute();
+#endif
 }
 #endif
 
+BIT7Z_NODISCARD
+auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::path {
+#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+    return base / fsutil::sanitize_path( path );
+#else
+    if ( is_absolute( path ) ) {
+#ifdef BIT7Z_PATH_SANITIZATION
+        return base / path.relative_path();
+#else
+        throw BitException(
+            "Invalid item path",
+            make_error_code( BitError::ItemHasAbsolutePath ),
+            path_to_tstring( path )
+        );
+#endif
+    }
+
+#ifdef _WIN32
+    if ( path.has_root_path() ) {
+        // The path either has a root name (e.g., drive letter) or a root directory
+        // (not both, since it's a relative path).
+        return base / path.relative_path();
+    }
+#endif
+
+    return base / path;
+#endif
+}
+
+BIT7Z_NODISCARD
+auto path_is_outside_base( const fs::path& path, const fs::path& basePath ) noexcept -> bool {
+    const auto& nativePath = path.native();
+    const auto& nativeBase = basePath.native();
+
+#ifdef _WIN32
+    /* Partially quoting Douglas Adams: “In the beginning, a case-insensitive filesystem was created.
+     * This has made a lot of people very angry and been widely regarded as a bad move”.
+     *
+     * On Windows, paths are usually case-insensitive, i.e. out/dir/ is equivalent to OUT/DIR/.
+     * Since Windows 10 version 1803 (build 17134) and later, users can set the content of a specific folder
+     * to be case-sensitive, as on Unix systems.
+     * However, we do not currently take this edge case into account,
+     * as it is not easy to handle programmatically and is not worth the hassle.
+     * In the worst case, we reject extracting a file that could be extracted (not a security issue). */
+    const auto result = std::mismatch(
+        nativeBase.cbegin(),
+        nativeBase.cend(),
+        nativePath.cbegin(),
+        nativePath.cend(),
+        []( wchar_t first, wchar_t second ) noexcept -> bool {
+            /* Here we use user32.lib's CharUpperBuffW because it provides case conversions regardless of locale.
+             *
+             * According to some old MSDN blog posts, using CharUpperBuffW (or CharUpperW) is
+             * the correct way to compare paths on Windows, i.e. the closest to how the OS behaves.
+             * References: https://archives.miloush.net/michkap/archive/2005/10/17/481600.html
+             *             https://archives.miloush.net/michkap/archive/2005/10/18/482088.html
+             *
+             * Note: CharUpperW would work as well, but it requires some reinterpret_casts to work properly.
+             *       CompareStringOrdinal also would work, but it has slightly more overhead for single characters.
+             *
+             * Note 2: The C++ standard alternative, std::towupper, is locale-dependent,
+             *         and often doesn't correctly handle non-ASCII. */
+            CharUpperBuffW( &first, 1 );
+            CharUpperBuffW( &second, 1 );
+            return first == second;
+        }
+    );
+#else
+    const auto result = std::mismatch( nativeBase.begin(), nativeBase.end(), nativePath.begin(), nativePath.end() );
+#endif
+
+    if ( result.first != nativeBase.cend() ) { // Base path didn't fully match.
+        /* Here the path is inside the base only if it fully matched,
+         * the mismatch in the base path is on its last character,
+         * and this latter is a path separator (e.g., base:/home/user/, path:/home/user).*/
+        return result.second != nativePath.cend() || // The path didn't fully match -> outside.
+               std::next( result.first ) != nativeBase.cend() || // Mismatch not on last base char -> outside.
+               !isPathSeparator( nativeBase.back() ); // Last base char (mismatch) is not a path separator -> outside.
+    }
+
+    if ( result.second == nativePath.cend() ) {
+        return false; // Both base and path matched fully, thus they're the same path (inside).
+    }
+
+    if ( isPathSeparator( nativeBase.back() ) ) {
+        return false; // Base path fully matched, prefix match is sufficient (inside).
+    }
+
+    /* Here, base path fully matched, and it doesn't end with a trailing path separator.
+     * If the first mismatched character on the path is a path separator, the path is inside,
+     * e.g., base = /home/john and path = /home/john/hello.txt (in general path = <base>/<...>).
+     * Otherwise, the path is outside (e.g., base = /home/john and path = /home/johnny).*/
+    return !isPathSeparator( *result.second );
+}
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto sanitize_base_path( const tstring& basePath ) -> fs::path {
+    if ( basePath.empty() ) {
+        return fs::current_path();
+    }
+    auto result = tstring_to_path( basePath );
+    if ( !result.is_absolute() ) {
+        result = fs::absolute( result );
+    }
+    return result.lexically_normal();
+}
+} // namespace
 } // namespace filesystem
+
+SafeOutPathBuilder::SafeOutPathBuilder( const tstring& basePath )
+    : mBasePath{ filesystem::sanitize_base_path( basePath ) } {
+#ifdef _WIN32
+    if ( mBasePath == BIT7Z_NATIVE_STRING( "//" ) || mBasePath == BIT7Z_NATIVE_STRING( "\\\\" ) ) {
+        throw BitException{ "Invalid output base path", BitError::InvalidDirectoryPath };
+    }
+#endif
+}
+
+auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
+    if ( path.empty() ) {
+        return mBasePath;
+    }
+
+    const auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
+    if ( filesystem::path_is_outside_base( builtPath, mBasePath ) ) {
+        throw BitException{ "Cannot extract the item '" + path.string() + "'",
+                    BitError::ItemPathOutsideOutputDirectory };
+    }
+
+    return builtPath;
+}
+
+auto SafeOutPathBuilder::basePath() const -> const fs::path& {
+    return mBasePath;
+}
 } // namespace bit7z

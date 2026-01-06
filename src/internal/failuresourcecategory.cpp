@@ -87,7 +87,8 @@ auto FailureSourceCategory::equivalent( const std::error_code& code, int conditi
                    code == std::errc::not_supported ||
                    code == std::errc::function_not_supported;
         case BitFailureSource::OperationNotPermitted:
-            return code == std::errc::operation_not_permitted;
+            return code == std::errc::operation_not_permitted ||
+                   code == BitError::ItemPathOutsideOutputDirectory;
         case BitFailureSource::UnavailableData:
             return code == OperationResult::Unavailable;
         case BitFailureSource::UnexpectedEnd:
