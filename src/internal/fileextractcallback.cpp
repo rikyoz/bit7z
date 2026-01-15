@@ -15,11 +15,11 @@
 #include "bitexception.hpp"
 #include "bitinputarchive.hpp"
 #include "bittypes.hpp"
-#include "extractcallback.hpp"
+#include "internal/extractcallback.hpp"
 #include "internal/fsutil.hpp"
+#include "internal/operationresult.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
-#include "operationresult.hpp"
 
 #include <cstdint>
 #include <system_error>

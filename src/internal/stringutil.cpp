@@ -236,7 +236,7 @@ auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string {
                          kCodePageWcFlags,
                          wideString,
                          -1,
-                         &result[ 0 ],  // NOLINT(readability-container-data-pointer)
+                         &result[ 0 ], // NOLINT(readability-container-data-pointer, *-avoid-unchecked-container-access)
                          static_cast< int >( narrowStringSize ),
                          nullptr,
                          nullptr );
@@ -272,7 +272,7 @@ auto widen( const std::string& narrowString ) -> std::wstring {
                          0,
                          narrowString.c_str(),
                          narrowStringSize,
-                         &result[ 0 ], // NOLINT(readability-container-data-pointer)
+                         &result[ 0 ], // NOLINT(readability-container-data-pointer, *-avoid-unchecked-container-access)
                          wideStringSize );
     return result;
 #else
