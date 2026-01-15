@@ -1249,6 +1249,30 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
     }
 
     SECTION( "Edge cases (case insensitivity, valid on Windows, not on Unix)" ) {
+#ifdef BIT7Z_USE_SYSTEM_CODEPAGE
+        const auto testValues = GENERATE(
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../DIR" ),
+                BIT7Z_NATIVE_STRING( "out/DIR" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../DIR/" ),
+                BIT7Z_NATIVE_STRING( "out/DIR/" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../../Out/DIR" ),
+                BIT7Z_NATIVE_STRING( "Out/DIR" )
+            },
+            PathBuildTest{
+                BIT7Z_STRING( "out/dir" ),
+                BIT7Z_NATIVE_STRING( "../../Out/DIR/" ),
+                BIT7Z_NATIVE_STRING( "Out/DIR/" )
+            }
+        );
+#else
         const auto testValues = GENERATE(
             PathBuildTest{
                 BIT7Z_STRING( "out/dir" ),
@@ -1281,6 +1305,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
                 BIT7Z_NATIVE_STRING( "out/dir/testɐ" )
             }
         );
+#endif
         DYNAMIC_SECTION( quoted( testValues.itemPath ) << " inside base path " << quoted( testValues.basePath ) ) {
 #ifdef _WIN32
             const SafeOutPathBuilder sanitizer{ testValues.basePath };
