@@ -29,6 +29,9 @@ enum struct SymlinkPolicy : std::uint8_t {
 
 struct FilesystemInputItem final {
     SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow;
+#if defined( _MSC_VER ) && _MSC_VER <= 1900
+    explicit FilesystemInputItem( SymlinkPolicy policy ) : symlinkPolicy{ policy } {}
+#endif
 };
 
 using BufferInputItem = std::reference_wrapper< const buffer_t >;

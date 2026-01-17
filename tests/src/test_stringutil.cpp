@@ -90,7 +90,7 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[stringutil][narrow]" 
     }
 
     SECTION( "Converting wide strings with a lone surrogate (invalid in UTF-8)" ) {
-        const std::wstring testInput = GENERATE(
+        const auto testInput = GENERATE( as< std::wstring >(),
             L"\xD800", // Lone high surrogates.
             L"\xD801",
             L"\xD83D",
@@ -163,8 +163,9 @@ TEST_CASE( "util: Narrowing wide string to std::string", "[stringutil][narrow]" 
             NARROWING_TEST_STR( "\uFFFD" ), // Replacement character U+FFFD
             NARROWING_TEST_STR( "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" ), // メタルガルルモン
             // Long string with mixed characters (no UTF-16 surrogates in input string).
-            NARROWING_TEST_STR( "English, \u65E5\u672C\u8A9E, \uD55C\uAD6D\uC5B4, "
-                                "\u0627\u0644\u0639\u0631\u0628\u064A\u0629" )
+            NARROWING_TEST_STR(
+                "English, \u65E5\u672C\u8A9E, \uD55C\uAD6D\uC5B4, \u0627\u0644\u0639\u0631\u0628\u064A\u0629"
+            )
         } ) );
 
         DYNAMIC_SECTION( "Converting L\"" << toHexString( testInput ) << "\" to narrow string" ) {
@@ -592,8 +593,9 @@ TEST_CASE( "util: Widening narrow string to std::wstring", "[stringutil][widen]"
             WIDENING_TEST_STR( "\uFFFD" ), // Replacement character U+FFFD
             WIDENING_TEST_STR( "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" ), // メタルガルルモン
             // Long string with mixed characters (no UTF-16 surrogates in output string).
-            WIDENING_TEST_STR( "English, \u65E5\u672C\u8A9E, \uD55C\uAD6D\uC5B4, "
-                               "\u0627\u0644\u0639\u0631\u0628\u064A\u0629" )
+            WIDENING_TEST_STR(
+                "English, \u65E5\u672C\u8A9E, \uD55C\uAD6D\uC5B4, \u0627\u0644\u0639\u0631\u0628\u064A\u0629"
+            )
         } ) );
 
         DYNAMIC_SECTION( "Converting \"" << toHexString( testInput ) << "\" to wide string" ) {
