@@ -69,9 +69,7 @@ inline auto path_to_tstring( const fs::path& path ) -> tstring {
      * which is the default encoding of bit7z. */
 #if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
     return path.native();
-#elif !defined( BIT7Z_USE_SYSTEM_CODEPAGE ) && !defined( BIT7Z_CPP20_U8STRING )
-    return path.u8string();
-#else // On Windows, if we are using either the system codepage or building bit7z using the C++20 standard.
+#else // Windows, without BIT7Z_USE_NATIVE_STRING.
     /* If we encounter a path with Unicode characters, MSVC will throw an exception
      * while converting from a fs::path to std::string if any character is invalid in the system codepage.
      * Hence, here we use bit7z's own string conversion function, which substitutes invalid Unicode characters

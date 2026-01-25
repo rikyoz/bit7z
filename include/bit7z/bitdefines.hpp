@@ -49,10 +49,6 @@
 #   endif
 #endif
 
-#if !defined( BIT7Z_CPP20_U8STRING ) && ( BIT7Z_CPP_STANDARD >= 20 && defined( __cpp_lib_char8_t ) )
-#   define BIT7Z_CPP20_U8STRING
-#endif
-
 /* Macro defines for [[nodiscard]] and [[maybe_unused]] attributes. */
 #if defined( __has_cpp_attribute )
 #   if __has_cpp_attribute( nodiscard )

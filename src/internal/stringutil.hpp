@@ -12,11 +12,25 @@
 
 #include "bittypes.hpp"
 
+#include "bitwindows.hpp"
+
 #include <algorithm>
 #include <cstddef>
 #include <string>
 
 namespace bit7z {
+
+#ifdef BIT7Z_USE_SYSTEM_CODEPAGE
+constexpr auto kDefaultCodePage = CP_ACP;
+#else
+constexpr auto kDefaultCodePage = CP_UTF8;
+#endif
+
+#ifdef _WIN32
+auto narrow( const wchar_t* wideString, std::size_t size, unsigned codePage = kDefaultCodePage ) -> std::string;
+#else
+auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string;
+#endif
 
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 // On Windows, with native strings enabled, strings are already wide!
@@ -29,9 +43,6 @@ namespace bit7z {
 #   else
 #       define NATIVE( tstr ) tstr
 #   endif
-
-auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string;
-
 auto widen( const std::string& narrowString ) -> std::wstring;
 #endif
 

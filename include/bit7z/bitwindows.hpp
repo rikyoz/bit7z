@@ -97,6 +97,11 @@ constexpr auto ERROR_NO_MORE_FILES = 0x100018;
 constexpr auto ERROR_DIRECTORY = 267;
 #endif
 
+#ifndef CP_UTF8
+// Win32 codepages
+constexpr auto CP_UTF8 = 65001u;
+#endif
+
 // Win32 structs.
 struct FILETIME {
     DWORD dwLowDateTime;
