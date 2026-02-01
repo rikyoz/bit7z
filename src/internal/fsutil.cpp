@@ -289,9 +289,10 @@ auto fsutil::format_long_path( const fs::path& path ) -> fs::path {
     fs::path longPath = kLongPathPrefix;
     // Note: we call this function after checking if we should format the given path as a long path.
     // This means that if the path starts with the \\ prefix,
-    // it is a UNC path and not a long path prefixed with \\?\.
+    // it is a UNC path (e.g., \\server\share) and not a long path prefixed with \\?\.
     if ( starts_with( path.native(), BIT7Z_NATIVE_STRING( R"(\\)" ) ) ) {
-        longPath += L"UNC\\";
+        longPath += L"UNC";
+        return longPath / &path.native()[2]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
     }
     longPath += path;
     return longPath;
