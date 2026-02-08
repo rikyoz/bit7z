@@ -1117,8 +1117,10 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
             "Building output path for " << quoted( slipPath ) << " "
             "inside base path " << quoted( testBasePath ) << " should fail"
         ) {
+            const SafeOutPathBuilder builder{ testBasePath };
+            INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
             REQUIRE_THROWS_MATCHES(
-                SafeOutPathBuilder{ testBasePath }.buildPath( slipPath ),
+                builder.buildPath( slipPath ),
                 BitException,
                 Catch::Matchers::Predicate< BitException >(
                     []( const BitException& exception ) -> bool {
@@ -1156,7 +1158,9 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         const auto expectedPath = fs::absolute( "/notEvil.txt" );
 
         DYNAMIC_SECTION( nearSlipPath << " inside base path " << quoted( testBasePath ) ) {
-            REQUIRE( SafeOutPathBuilder{ testBasePath }.buildPath( nearSlipPath ) == expectedPath );
+            const SafeOutPathBuilder builder{ testBasePath };
+            INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
+            REQUIRE( builder.buildPath( nearSlipPath ) == expectedPath );
         }
     }
 
@@ -1186,7 +1190,9 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         );
 #endif
 #ifndef BIT7Z_PATH_SANITIZATION
-        REQUIRE_THROWS( SafeOutPathBuilder{ testBasePath }.buildPath( testItemPath ) );
+        const SafeOutPathBuilder builder{ testBasePath };
+        INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
+        REQUIRE_THROWS( builder.buildPath( testItemPath ) );
 #else
         DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
             const SafeOutPathBuilder sanitizer{ testBasePath };
@@ -1225,6 +1231,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 
         DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
             const SafeOutPathBuilder builder{ testBasePath };
+            INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
             REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.lexically_normal() );
         }
     }
@@ -1257,6 +1264,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 
         DYNAMIC_SECTION( quoted( testValues.itemPath ) << " inside base path " << quoted( testValues.basePath ) ) {
             const SafeOutPathBuilder builder{ testValues.basePath };
+            INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
             REQUIRE( builder.buildPath( testValues.itemPath ) == fs::absolute( testValues.expectedPath ) );
         }
     }
@@ -1321,8 +1329,9 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 #endif
         DYNAMIC_SECTION( quoted( testValues.itemPath ) << " inside base path " << quoted( testValues.basePath ) ) {
 #ifdef _WIN32
-            const SafeOutPathBuilder sanitizer{ testValues.basePath };
-            REQUIRE( sanitizer.buildPath( testValues.itemPath ) == fs::absolute( testValues.expectedPath ) );
+            const SafeOutPathBuilder builder{ testValues.basePath };
+            INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
+            REQUIRE( builder.buildPath( testValues.itemPath ) == fs::absolute( testValues.expectedPath ) );
 #else
             REQUIRE_THROWS( SafeOutPathBuilder{ testValues.basePath }.buildPath( testValues.itemPath ) );
 #endif
@@ -1335,12 +1344,15 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
      * However, Windows does not follow these rules, primarily for compatibility reasons.*/
     SECTION( "Edge cases (Windows' case insensitivity quirks)" ) {
         // German's ß and its uppercase variants ẞ/SS.
-        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/german/Straße" ) }.buildPath( L"../STRAẞE" ) );
-        REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/german/Straße" ) }.buildPath( L"../STRASSE" ) );
+        const SafeOutPathBuilder german{ BIT7Z_STRING( "out/dir/german/Straße" ) };
+        REQUIRE_THROWS( german.buildPath( L"../STRAẞE" ) );
+        REQUIRE_THROWS( german.buildPath( L"../STRASSE" ) );
+
         // Turkish's dotted i and its uppercase variant İ.
         REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/iki" ) }.buildPath( L"../İKİ" ) );
         REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/İki" ) }.buildPath( L"../iKİ" ) );
         REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/İKİ" ) }.buildPath( L"../iki" ) );
+
         // Turkish's dotless ı and its uppercase variant I.
         REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/ışık" ) }.buildPath( L"../IŞIK" ) );
         REQUIRE_THROWS( SafeOutPathBuilder{ BIT7Z_STRING( "out/dir/turkish/Işık" ) }.buildPath( L"../ışIK" ) );
