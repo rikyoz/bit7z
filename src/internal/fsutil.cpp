@@ -505,7 +505,7 @@ auto path_is_outside_base( const fs::path& path, const fs::path& basePath ) noex
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto sanitize_base_path( const tstring& basePath ) -> fs::path {
-    if ( basePath.empty() ) {
+    if ( basePath.empty() || basePath == BIT7Z_STRING( "." ) ) {
         return fs::current_path();
     }
     auto result = tstring_to_path( basePath );

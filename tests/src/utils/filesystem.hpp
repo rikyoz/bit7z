@@ -32,6 +32,8 @@ constexpr auto self_exe_path = "/proc/self/exe";
 
 #include <internal/fs.hpp>
 
+#include <cstdlib>
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
@@ -66,6 +68,29 @@ inline auto exe_path() -> fs::path {
 constexpr auto test_data_dir = BIT7Z_TESTS_DATA_DIR;
 constexpr auto test_filesystem_dir = BIT7Z_TESTS_DATA_DIR "/test_filesystem";
 constexpr auto test_archives_dir = BIT7Z_TESTS_DATA_DIR "/test_archives";
+
+inline auto user_dir() -> fs::path {
+#ifdef _WIN32
+    const auto *const userProfile = _wgetenv( L"USERPROFILE" );
+    if (userProfile != nullptr) {
+        return userProfile;
+    }
+
+    const auto *const homeDrive = _wgetenv( L"HOMEDRIVE" );
+    if (homeDrive == nullptr) {
+        return {};
+    }
+
+    const auto *const homePath = _wgetenv( L"HOMEPATH" );
+    if (homePath == nullptr) {
+        return {};
+    }
+
+    return fs::path{ homeDrive } / homePath;
+#else
+    return std::getenv( "HOME" );
+#endif
+}
 
 inline auto current_dir() -> fs::path {
     std::error_code error;
