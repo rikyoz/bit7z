@@ -6,7 +6,7 @@ image:
   - Visual Studio 2017
   - Visual Studio 2019
   - Visual Studio 2022
-  - Ubuntu
+  - Ubuntu2204
 
 environment:
   bit7z_version: $(APPVEYOR_REPO_TAG_NAME)
@@ -87,18 +87,18 @@ matrix:
       compiler: gcc
     - image: Visual Studio 2022
       compiler: clang
-    - image: Ubuntu
+    - image: Ubuntu2204
       compiler: msvc
-    - image: Ubuntu
+    - image: Ubuntu2204
       compiler: msvc_mt
-    - image: Ubuntu
+    - image: Ubuntu2204
       compiler: mingw
 
 for:
 -
   matrix:
     only:
-      - image: Ubuntu
+      - image: Ubuntu2204
 
   init: |-
     if [ "${compiler}" = "gcc" ];
@@ -109,6 +109,7 @@ for:
     fi
     if [ "${arch}" = "x86" ];
     then
+      sudo dpkg --add-architecture i386;
       sudo apt-get update;
       sudo apt-get install -y g++-9-multilib;
     fi
