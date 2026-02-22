@@ -35,7 +35,11 @@ if( MSVC )
 
     # C++ standard conformance options of MSVC
     target_compile_options( ${LIB_TARGET} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
-                            /Zc:forScope /Zc:strictStrings /Zc:throwingNew /Zc:referenceBinding )
+                            /Zc:forScope /Zc:strictStrings )
+
+    if( NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
+        target_compile_options( ${LIB_TARGET} PRIVATE /Zc:throwingNew /Zc:referenceBinding )
+    endif()
 
     if( CMAKE_GENERATOR MATCHES "Visual Studio" )
         target_compile_options( ${LIB_TARGET} PRIVATE /MP$ENV{NUMBER_OF_PROCESSORS} )
