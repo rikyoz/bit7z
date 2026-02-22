@@ -69,24 +69,39 @@ constexpr auto test_data_dir = BIT7Z_TESTS_DATA_DIR;
 constexpr auto test_filesystem_dir = BIT7Z_TESTS_DATA_DIR "/test_filesystem";
 constexpr auto test_archives_dir = BIT7Z_TESTS_DATA_DIR "/test_archives";
 
+#ifdef _WIN32
+inline auto getenv( const wchar_t* name ) -> std::wstring {
+    std::size_t requiredSize = 0;
+    _wgetenv_s( &requiredSize, nullptr, 0, name );
+    if ( requiredSize == 0 ) {
+        return {}; // The environment variable doesn't exist.
+    }
+
+    std::wstring result( requiredSize, L'\0' );
+    // NOLINTNEXTLINE(*-container-data-pointer, *-pro-bounds-avoid-unchecked-container-access)
+    _wgetenv_s( &requiredSize, &result[0], requiredSize, name );
+    return result;
+}
+#endif
+
 inline auto user_dir() -> fs::path {
 #ifdef _WIN32
-    const auto *const userProfile = _wgetenv( L"USERPROFILE" );
-    if (userProfile != nullptr) {
-        return userProfile;
+    auto userProfile = getenv( L"USERPROFILE" );
+    if (!userProfile.empty()) {
+        return std::move( userProfile );
     }
 
-    const auto *const homeDrive = _wgetenv( L"HOMEDRIVE" );
-    if (homeDrive == nullptr) {
+    auto homeDrive = getenv( L"HOMEDRIVE" );
+    if (homeDrive.empty()) {
         return {};
     }
 
-    const auto *const homePath = _wgetenv( L"HOMEPATH" );
-    if (homePath == nullptr) {
+    auto homePath = getenv( L"HOMEPATH" );
+    if (homePath.empty()) {
         return {};
     }
 
-    return fs::path{ homeDrive } / homePath;
+    return fs::path{ std::move( homeDrive ) } / std::move( homePath );
 #else
     return std::getenv( "HOME" );
 #endif
