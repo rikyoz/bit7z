@@ -1095,7 +1095,7 @@ struct PathBuildTest {
 } // namespace
 
 TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][SafeOutPathBuilder]" ) {
-    SECTION( "Basic ZipSlip attack" ) {
+    SECTION( "Basic ZipSlip attacks" ) {
         const auto testBasePath = GENERATE( as< tstring >(),
             BIT7Z_STRING( "" ),
             BIT7Z_STRING( "." ),
@@ -1152,7 +1152,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
     }
 
 #if defined( _WIN32 ) && !defined( BIT7Z_PATH_SANITIZATION )
-        SECTION( "Basic ZipSlip attack" ) {
+    SECTION( "Basic ZipSlip attacks with drive-relative path" ) {
         const auto testBasePath = GENERATE( as< tstring >(),
             BIT7Z_STRING( "" ),
             BIT7Z_STRING( "." ),
@@ -1173,10 +1173,20 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 
         const SafeOutPathBuilder builder{ testBasePath };
         INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
-        // <base path drive letter>:..
-        const auto slipPath = std::wstring{ builder.basePath().native()[0] } + BIT7Z_NATIVE_STRING( ":.." );
-        INFO( "Slip path: " << quoted( slipPath ) );
-        REQUIRE_THROWS( builder.buildPath( slipPath ) );
+
+        const auto slipPath = GENERATE_REF( as< fs::path >(),
+            // <base path drive letter>:..
+            std::wstring{ builder.basePath().native()[0] } + BIT7Z_NATIVE_STRING( ":.." ),
+            // Path with uncommon root drive letter different from the base path drive letter.
+            L"A:.."
+        );
+
+        DYNAMIC_SECTION(
+            "Building output path for " << quoted( slipPath ) << " "
+            "inside base path " << quoted( testBasePath ) << " should fail"
+        ) {
+            REQUIRE_THROWS( builder.buildPath( slipPath ) );
+        }
 
         fs::current_path( oldCurrentPath );
     }
