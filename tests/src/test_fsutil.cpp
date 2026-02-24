@@ -1075,7 +1075,11 @@ TEST_CASE( "fsutil: Path building with Windows' drive-relative paths", "[fsutil]
         DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
             const SafeOutPathBuilder builder{ testBasePath };
             INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
-            REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.relative_path() );
+            if ( testItemPath.root_name() != builder.basePath().root_name() ) {
+                REQUIRE_THROWS( builder.buildPath( testItemPath ) );
+            } else {
+                REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.relative_path() );
+            }
         }
     }
 }
@@ -1146,6 +1150,37 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 
         fs::current_path( oldCurrentPath );
     }
+
+#if defined( _WIN32 ) && !defined( BIT7Z_PATH_SANITIZATION )
+        SECTION( "Basic ZipSlip attack" ) {
+        const auto testBasePath = GENERATE( as< tstring >(),
+            BIT7Z_STRING( "" ),
+            BIT7Z_STRING( "." ),
+            BIT7Z_STRING( ".." ),
+            BIT7Z_STRING( "out" ),
+            BIT7Z_STRING( "/out" ),
+            BIT7Z_STRING( "out/dir" ),
+            BIT7Z_STRING( "/out/dir" ),
+            // Note: On Windows, C: is the current directory on the drive C, C:\\ is the root directory of the drive C.
+            BIT7Z_STRING( "C:" ),
+            // NOTE: On Windows, the following are absolute paths.
+            BIT7Z_STRING( "C:/out" ),
+            BIT7Z_STRING( "C:/out/dir" )
+        );
+
+        const auto oldCurrentPath = fs::current_path();
+        fs::current_path( test::filesystem::user_dir() );
+
+        const SafeOutPathBuilder builder{ testBasePath };
+        INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
+        // <base path drive letter>:..
+        const auto slipPath = std::wstring{ builder.basePath().native()[0] } + BIT7Z_NATIVE_STRING( ":.." );
+        INFO( "Slip path: " << quoted( slipPath ) );
+        REQUIRE_THROWS( builder.buildPath( slipPath ) );
+
+        fs::current_path( oldCurrentPath );
+    }
+#endif
 
     SECTION( "Near zip attacks" ) {
 #ifdef _WIN32

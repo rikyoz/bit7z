@@ -425,9 +425,18 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
     }
 
 #ifdef _WIN32
+    if ( path.has_root_name() && path.root_name() != base.root_name() ) {
+        // "C:<path>" (but base path has different drive letter).
+        throw BitException{
+            "Cannot extract the item '" + path.string() + "'",
+            BitError::ItemPathOutsideOutputDirectory
+        };
+    }
+
     if ( path.has_root_path() ) {
         // The path either has a root name (e.g., drive letter) or a root directory
         // (not both, since it's a relative path).
+        // E.g., "C:<path>" or "/<path>" (which is drive-relative on Windows).
         return base / path.relative_path();
     }
 #endif
