@@ -134,7 +134,7 @@ else()
 endif()
 
 option( BIT7Z_PATH_SANITIZATION "Enable or disable path sanitization when extracting archives \
-                                 containing files with invalid Windows names" )
+                                 containing files with invalid paths" )
 message( STATUS "Path sanitization: ${BIT7Z_PATH_SANITIZATION}" )
 if( BIT7Z_PATH_SANITIZATION )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_PATH_SANITIZATION )

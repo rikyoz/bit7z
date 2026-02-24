@@ -240,7 +240,7 @@ auto BitInputArchive::isItemEncrypted( std::uint32_t index ) const -> bool {
 
 auto BitInputArchive::initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT {
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    return mInArchive->QueryInterface( ::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
+    return mInArchive->QueryInterface( bit7z::IID_IOutArchive, reinterpret_cast< void** >( newArc ) );
 }
 
 auto BitInputArchive::detectedFormat() const noexcept -> const BitInFormat& {
@@ -268,7 +268,7 @@ auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandle
 void BitInputArchive::useFormatProperty( const wchar_t* name, const BitPropVariant& property ) const {
     CMyComPtr< ISetProperties > setProperties;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    HRESULT res = mInArchive->QueryInterface( ::IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) );
+    HRESULT res = mInArchive->QueryInterface( bit7z::IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) );
     if ( res != S_OK ) {
         throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
     }

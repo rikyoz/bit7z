@@ -331,7 +331,7 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* outArchive ) const {
 
     CMyComPtr< ISetProperties > setProperties;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    HRESULT res = outArchive->QueryInterface( ::IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) );
+    HRESULT res = outArchive->QueryInterface( bit7z::IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) );
     if ( res != S_OK ) {
         throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
     }
