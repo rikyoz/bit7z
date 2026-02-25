@@ -56,32 +56,33 @@ target_include_directories( ${TESTS_BASE_TARGET} INTERFACE
                             "${PROJECT_SOURCE_DIR}/src" )
 
 if( BIT7Z_TESTS_FILESYSTEM )
-    CPMAddPackage( NAME bit7z_test_data
-                   GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
-                   VERSION 1.17.1
-                   DOWNLOAD_ONLY YES
-                   GIT_PROGRESS ON )
-    if( bit7z_test_data_ADDED )
-        set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )
-        message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
-    endif()
-
-    if( NOT BIT7Z_TESTS_DATA_DIR_TARGET )
-        set( BIT7Z_TESTS_DATA_DIR_TARGET ${BIT7Z_TESTS_DATA_DIR} )
+    if( NOT BIT7Z_TESTS_DATA_DIR )
+        CPMAddPackage( NAME bit7z_test_data
+                       GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
+                       VERSION 1.17.1
+                       DOWNLOAD_ONLY YES
+                       GIT_PROGRESS ON )
+        if( bit7z_test_data_ADDED )
+            set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )
+            message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
+        else()
+            message( FATAL_ERROR "Could not download the test data repository" )
+        endif()
     else()
-        message( STATUS "Custom test data dir on target: ${BIT7Z_TESTS_DATA_DIR_TARGET}" )
+        file( TO_CMAKE_PATH ${BIT7Z_TESTS_DATA_DIR} BIT7Z_TESTS_DATA_DIR )
+        message( STATUS "Custom test data dir: ${BIT7Z_TESTS_DATA_DIR}" )
     endif()
 
     target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE
                                 BIT7Z_TESTS_FILESYSTEM
-                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR_TARGET}" )
+                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
 
-    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR_TARGET}/test_filesystem/empty )
+    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
         file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
     endif()
 
-    if( NOT EXISTS ${CMAKE_SOURCE_DIR}/test_filesystem/folder/subfolder )
-        file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR_TARGET}/test_filesystem/folder/subfolder )
+    if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/folder/subfolder )
+        file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/folder/subfolder )
     endif()
 endif()
 
