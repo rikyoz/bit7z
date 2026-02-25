@@ -203,6 +203,50 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         /**
+        * @brief Extracts the content of the given archive into a provided map of memory buffers, where the keys are
+        * indices of the files (inside the archive) to be extracted, and the values are preallocated buffers to
+        * which extraction is to be performed.
+        *
+        * @param inArchive             the input archive to be extracted.
+        * @param indicesWithBuffers    the map with indices of files and preallocated buffers.
+        */
+        void extract( Input inArchive, const std::map< std::uint32_t, BitView< byte_t > > & indicesWithBuffers ) const {
+            BitInputArchive inputArchive( *this, inArchive );
+            struct ExtractionCallback : FileAwareExtraction {
+
+                bool write(const byte_t *dataStart, std::size_t dataSize) override {
+                    auto buffer = indicesWithBuffers.at(currentIdx);
+                    auto bufferStart = buffer.data();
+                    //todo handle too small buffers
+                    if (buffer.size() < lastWritePosition + dataSize) {
+                        return false;
+                    }
+                    std::copy_n(dataStart, dataSize, bufferStart+lastWritePosition);
+                    lastWritePosition += dataSize;
+
+                    return true;
+                }
+
+                void onNewFile(std::uint32_t index, std::string /*fileName*/) override {
+                    currentIdx = index;
+                    lastWritePosition = 0;
+                }
+
+                const std::map< uint32_t, BitView< byte_t > > & indicesWithBuffers;
+                std::uint32_t currentIdx = -1;
+                std::size_t lastWritePosition=0;
+            } callback{indicesWithBuffers};
+
+            std::vector<std::uint32_t> indices;
+            indices.resize(indicesWithBuffers.size());
+            for (const auto& [key, value] : indicesWithBuffers) {
+                indices.push_back(key);
+            }
+
+            extractTo(inArchive, callback, indices);
+        }
+
+        /**
          * @brief Extracts the raw content of the archive to the given callback.
          *
          * @note You can set a FileCallback to check the file being extracted.
@@ -214,6 +258,20 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         void extractTo( Input inArchive, RawDataCallback callback, BitIndicesView indices = {} ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( std::move( callback ), indices );
+        }
+
+        /**
+        * @brief Extracts the raw content of the archive to the given extraction interface.
+        *
+        * @note You can set a FileCallback to check the file being extracted.
+        *
+        * @param inArchive the input archive to be extracted.
+        * @param callback  a function providing the extracted raw data to the user.
+        * @param indices   (optional) the indices of the files in the archive that must be extracted.
+        */
+        void extractTo( Input inArchive, FileAwareExtraction& callback, BitIndicesView indices = {} ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo( callback , indices );
         }
 
         /**

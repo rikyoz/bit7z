@@ -79,6 +79,15 @@ enum struct FilterResult : std::uint8_t {
  */
 using FilterCallback = std::function< FilterResult( const BitArchiveItem& ) >;
 
+
+struct FileAwareExtraction{
+    virtual bool write( const byte_t* dataStart, std::size_t dataSize) = 0;
+    virtual void onNewFile(std::uint32_t index, tstring fileName) = 0;
+
+protected:
+    ~FileAwareExtraction() = default;
+};
+
 /**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
  */

@@ -216,6 +216,16 @@ class BitInputArchive {
             extractTo( outDir, indices );
         }
 
+       /**
+       * @brief Extracts the raw content of the archive to the given extraction interface.
+       *
+       *
+       * @param inArchive the input archive to be extracted.
+       * @param callback  a function providing the extracted raw data to the user.
+       * @param indices   (optional) the indices of the files in the archive that must be extracted.
+       */
+        void extractTo( FileAwareExtraction& callback, BitIndicesView indices = {} ) const;
+
         /**
          * @brief Extracts the specified items to the chosen directory.
          *

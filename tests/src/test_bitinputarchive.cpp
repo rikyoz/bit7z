@@ -32,6 +32,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <iostream>
 #include <numeric>
 #include <random>
 #include <sstream>
@@ -2122,5 +2123,66 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an a
 
         REQUIRE_THROWS( info.extractFolderTo( testOutDir, folderPath ) );
         REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
+
+TEMPLATE_TEST_CASE( "BitInputArchive: Extract to callback",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
+
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#else
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       // TestInputFormat{ "iso", BitFormat::Iso }, iso format has reverse ids of the elements? todo
+                                       TestInputFormat{ "rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+#endif
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = fs::path{ "multiple_files" }.concat( "." + testArchive.extension );
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+        BitArchiveReader info( lib, inputArchive, testArchive.format );
+
+        struct Extractor final : FileAwareExtraction {
+            bool write(const byte_t *dataStart, std::size_t dataSize) override {
+                totalSize += dataSize;
+                auto& currentCrc = idToCrc.at(currentIdx);
+                currentCrc = crc32( dataStart, dataSize, currentCrc );
+                return true;
+            }
+
+            void onNewFile(std::uint32_t const index, tstring fileName) override {
+                idToCrc[index] = {};
+                idToPath[index] = std::move(fileName);
+                currentIdx = index;
+            }
+
+            std::size_t totalSize{};
+            std::map<std::uint32_t, std::uint32_t> idToCrc;
+            std::map<std::uint32_t, tstring> idToPath;
+            std::size_t currentIdx{0};
+        } extractor;
+
+        info.extractTo(extractor);
+
+        auto const& expectations = multiple_files_content();
+        CHECK(expectations.size == extractor.totalSize);
+        CHECK(expectations.fileCount == extractor.idToCrc.size());
+        for (std::size_t idx=0; idx < expectations.items.size(); ++idx) {
+            CHECK(expectations.items[idx].fileInfo.crc32 == extractor.idToCrc[idx]);
+            CHECK(expectations.items[idx].fileInfo.name == extractor.idToPath[idx]);
+        }
     }
 }
