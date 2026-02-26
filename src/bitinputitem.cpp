@@ -28,15 +28,18 @@ BIT7Z_ALWAYS_INLINE
 auto fileSize( const fs::path& filePath,
                const FileMetadata& data,
                SymlinkPolicy policy,
-               bool isSymLink ) -> std::uint64_t {
-    if ( policy == SymlinkPolicy::DoNotFollow && isSymLink ) {
+               fs::file_type fileType ) -> std::uint64_t {
+    if ( fileType == fs::file_type::directory ) {
+        return 0;
+    }
+    if ( policy == SymlinkPolicy::DoNotFollow && fileType == fs::file_type::symlink ) {
         std::error_code error;
         return fs::read_symlink( filePath, error ).u8string().size();
     }
 #ifdef _WIN32
     return ( static_cast< std::uint64_t >( data.nFileSizeHigh ) << 32 ) | data.nFileSizeLow;
 #else
-    return S_ISDIR( data.st_mode ) ? 0 : static_cast< std::uint64_t >( data.st_size );
+    return static_cast< std::uint64_t >( data.st_size );
 #endif
 }
 
@@ -60,14 +63,34 @@ auto getFileTime( const BitInputArchive& inputArchive, std::uint32_t index, BitP
 #define HAS_FLAG( attributes, x ) \
     ( ( ( attributes ) & static_cast< decltype( attributes ) >( x ) ) == static_cast< decltype( attributes ) >( x ) )
 
+auto fileType( const FileMetadata& fileMetadata ) noexcept -> fs::file_type {
+#ifdef _WIN32
+    if ( HAS_FLAG( fileMetadata.dwFileAttributes, FILE_ATTRIBUTE_DIRECTORY ) ) {
+        return fs::file_type::directory;
+    }
+    if ( HAS_FLAG( fileMetadata.dwFileAttributes, FILE_ATTRIBUTE_REPARSE_POINT ) ) {
+        return fs::file_type::symlink;
+    }
+    return fs::file_type::regular;
+#else
+    if ( S_ISDIR( fileMetadata.st_mode ) ) {
+        return fs::file_type::directory;
+    }
+    if ( S_ISLNK( fileMetadata.st_mode ) ) {
+        return fs::file_type::symlink;
+    }
+    return fs::file_type::regular;
+#endif
+}
+
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputItemProperties {
     const FileMetadata fileMetadata = filesystem::fsutil::get_file_metadata( itemPath, policy );
+    const auto type = fileType( fileMetadata );
 #ifdef _WIN32
-    const bool isSymLink = HAS_FLAG( fileMetadata.dwFileAttributes, FILE_ATTRIBUTE_REPARSE_POINT );
     return {
-        fileSize( itemPath, fileMetadata, policy, isSymLink ),
+        fileSize( itemPath, fileMetadata, policy, type ),
         fileMetadata.ftLastWriteTime,
         fileMetadata.ftLastAccessTime,
         fileMetadata.ftCreationTime,
@@ -75,19 +98,18 @@ auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputIt
         InputItemType::Filesystem
     };
 #else
-    std::uint32_t fileAttributes = S_ISDIR( fileMetadata.st_mode ) ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
+    std::uint32_t fileAttributes = type == fs::file_type::directory ? FILE_ATTRIBUTE_DIRECTORY : FILE_ATTRIBUTE_ARCHIVE;
     if ( ( fileMetadata.st_mode & S_IWUSR ) == 0 ) {
         fileAttributes |= FILE_ATTRIBUTE_READONLY;
     }
-    const bool isSymLink = S_ISLNK( fileMetadata.st_mode );
-    if ( isSymLink ) {
+    if ( type == fs::file_type::symlink ) {
         fileAttributes |= FILE_ATTRIBUTE_REPARSE_POINT;
     }
     constexpr auto kMask = 0xFFFFu;
     const std::uint32_t unixAttributes = ( ( fileMetadata.st_mode & kMask ) << 16u );
     fileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + unixAttributes;
     return {
-        fileSize( itemPath, fileMetadata, policy, isSymLink ),
+        fileSize( itemPath, fileMetadata, policy, type ),
         time_to_FILETIME( fileMetadata.st_mtime ),
         time_to_FILETIME( fileMetadata.st_atime ),
         time_to_FILETIME( fileMetadata.st_ctime ),
