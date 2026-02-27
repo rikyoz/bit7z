@@ -2124,3 +2124,65 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an a
         REQUIRE( fs::is_empty( testOutDir.path() ) );
     }
 }
+
+TEMPLATE_TEST_CASE( "BitInputArchive: Zip slip attacks",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "zip_slip" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "zip_slip." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader reader( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        REQUIRE_THROWS( reader.extractTo( testOutDir ) );
+        REQUIRE_NOTHROW( reader.extractTo( testOutDir, []( const BitArchiveItem& item ) -> FilterResult {
+            return fs::path{ item.nativePath() }.filename() == BIT7Z_NATIVE_STRING( "evil.txt" )
+                ? FilterResult::Skip
+                : FilterResult::Process;
+        } ) );
+        REQUIRE( fs::exists( "good.txt" ) );
+        REQUIRE( fs::remove( "good.txt" ) );
+        REQUIRE( fs::exists( "folder/clouds.jpg" ) );
+        REQUIRE( fs::remove( "folder/clouds.jpg" ) );
+        REQUIRE( fs::remove_all( "folder" ) );
+        REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
+
+#ifdef _WIN32
+TEMPLATE_TEST_CASE( "BitInputArchive: Path sanitization",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "path_sanitization" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "path_sanitization." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader reader( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+#ifdef BIT7Z_PATH_SANITIZATION
+        REQUIRE_NOTHROW( reader.extractTo( testOutDir ) );
+#else
+        REQUIRE_THROWS( reader.extractTo( testOutDir ) );
+#endif
+    }
+}
+#endif

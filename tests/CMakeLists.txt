@@ -59,7 +59,7 @@ if( BIT7Z_TESTS_FILESYSTEM )
     if( NOT BIT7Z_TESTS_DATA_DIR )
         CPMAddPackage( NAME bit7z_test_data
                        GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
-                       VERSION 1.17.1
+                       VERSION 1.17.3
                        DOWNLOAD_ONLY YES
                        GIT_PROGRESS ON )
         if( bit7z_test_data_ADDED )
