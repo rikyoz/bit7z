@@ -95,12 +95,12 @@ jobs:
     - name: Fix missing g++-9
       shell: bash
       if: ${{ contains(matrix.c_compiler, 'gcc-9') }}
-      run: sudo apt-get install gcc-9 g++-9 -y
+      run: sudo apt-get update && sudo apt-get install gcc-9 g++-9 -y
 
     - name: Fix missing g++-10
       shell: bash
       if: ${{ contains(matrix.c_compiler, 'gcc-10') }}
-      run: sudo apt-get install gcc-10 g++-10 -y
+      run: sudo apt-get update && sudo apt-get install gcc-10 g++-10 -y
 
     - name: Fix missing clang-13
       shell: bash
