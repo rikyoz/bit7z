@@ -14,12 +14,17 @@
 
 #include "bitexception.hpp"
 #include "bittypes.hpp"
+#include "internal/stringutil.hpp"
 
 #ifdef _WIN32
-#   include "internal/stringutil.hpp"
 #   define ERROR_CODE( errc ) bit7z::last_error_code()
 #else
 #   include <dlfcn.h>
+
+#   define LoadLibraryW( lib_name ) dlopen( (lib_name), RTLD_LAZY )
+#   define GetProcAddress dlsym
+#   define FreeLibrary dlclose
+
 #   define ERROR_CODE( errc ) std::make_error_code( errc )  //same behavior as boost::shared_library
 #endif
 
@@ -28,11 +33,7 @@ namespace bit7z {
 namespace {
 BIT7Z_ALWAYS_INLINE
 auto load_library( const tstring& libraryPath ) -> LibraryHandle {
-#ifdef _WIN32
-    LibraryHandle handle = LoadLibraryW( WIDEN( libraryPath ).c_str() );
-#else
-    LibraryHandle handle = dlopen( libraryPath.c_str(), RTLD_LAZY );
-#endif
+    auto* const handle = LoadLibraryW( NATIVE( libraryPath ).c_str() );
     if ( handle == nullptr ) {
         // Note: MSVC 2015 doesn't correctly get the last error
         // when inlining the error variable in the BitException constructor call,
@@ -47,19 +48,11 @@ auto load_library( const tstring& libraryPath ) -> LibraryHandle {
 BitSharedLibrary::BitSharedLibrary( const tstring& libraryPath ) : mLibrary{ load_library( libraryPath ) } {}
 
 BitSharedLibrary::~BitSharedLibrary() {
-#ifdef _WIN32
     FreeLibrary( mLibrary );
-#else
-    dlclose( mLibrary );
-#endif
 }
 
 auto BitSharedLibrary::getSymbol( const char* symbolName ) const -> LibrarySymbol {
-#ifdef _WIN32
-    LibrarySymbol symbol = GetProcAddress( mLibrary, symbolName );
-#else
-    LibrarySymbol symbol = dlsym( mLibrary, symbolName );
-#endif
+    auto* const symbol = GetProcAddress( mLibrary, symbolName );
     if ( symbol  == nullptr ) {
         throw BitException( "Failed to get the function symbol", ERROR_CODE( std::errc::invalid_seek ) );
     }
