@@ -19,6 +19,7 @@ endif()
 set( PUBLIC_HEADERS
      include/bit7z/bit7z.hpp
      include/bit7z/bit7zlibrary.hpp
+     include/bit7z/bit7zlibraryloader.hpp
      include/bit7z/bitabstractarchivecreator.hpp
      include/bit7z/bitabstractarchivehandler.hpp
      include/bit7z/bitabstractarchiveopener.hpp
@@ -110,6 +111,7 @@ set( HEADERS
 # source files
 set( SOURCES
      src/bit7zlibrary.cpp
+     src/bit7zlibraryloader.cpp
      src/bitabstractarchivecreator.cpp
      src/bitabstractarchivehandler.cpp
      src/bitabstractarchiveopener.cpp
