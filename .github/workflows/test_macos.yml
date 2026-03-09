@@ -28,7 +28,7 @@ jobs:
       matrix:
         os: [macos-14, macos-15, macos-26]
         c_compiler: [gcc-12, gcc-13, gcc-14, gcc-15, clang]
-        bit7z_7zip_version: [23.01, 24.09]
+        bit7z_7zip_version: [23.01, 26.00]
         bit7z_auto_format: [OFF, ON]
         bit7z_detect_from_extension: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
