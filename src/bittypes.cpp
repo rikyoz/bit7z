@@ -12,7 +12,7 @@
 
 #include "bittypes.hpp"
 
-#if defined( _WIN32 ) || !defined( BIT7Z_USE_NATIVE_STRING )
+#if !defined( _WIN32 ) || !defined( BIT7Z_USE_NATIVE_STRING )
 #include "internal/stringutil.hpp"
 #endif
 
