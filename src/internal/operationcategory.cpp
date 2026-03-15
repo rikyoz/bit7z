@@ -26,7 +26,7 @@ auto OperationCategory::name() const noexcept -> const char* {
 auto OperationCategory::message( int errorValue ) const -> std::string {
     switch ( static_cast< OperationResult >( errorValue ) ) {
         case OperationResult::CRCError:
-            return "CRC failed";
+            return "CRC failed.";
         case OperationResult::CRCErrorEncrypted:
             return "CRC error in encrypted file (wrong password?).";
         case OperationResult::DataAfterEnd:

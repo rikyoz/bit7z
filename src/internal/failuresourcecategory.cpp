@@ -13,10 +13,9 @@
 #include "internal/failuresourcecategory.hpp"
 
 #include "biterror.hpp"
+#include "internal/openerror.hpp"
 #include "internal/operationcategory.hpp"
 #include "internal/operationresult.hpp"
-
-#include <7zip/Archive/IArchive.h>
 
 #include <string>
 #include <system_error>
@@ -67,39 +66,52 @@ auto FailureSourceCategory::equivalent( int error, const std::error_condition& c
 auto FailureSourceCategory::equivalent( const std::error_code& code, int condition ) const noexcept -> bool {
     switch ( static_cast< BitFailureSource >( condition ) ) {
         case BitFailureSource::CRCError:
-            return code == OperationResult::CRCError || code == OperationResult::CRCErrorEncrypted;
+            return code == OperationResult::CRCError ||
+                    code == OpenError::CRCError ||
+                    code == OperationResult::CRCErrorEncrypted;
         case BitFailureSource::DataAfterEnd:
-            return code == OperationResult::DataAfterEnd;
+            return code == OperationResult::DataAfterEnd || code == OpenError::DataAfterEnd;
         case BitFailureSource::DataError:
-            return code == OperationResult::DataError || code == OperationResult::DataErrorEncrypted;
+            return code == OperationResult::DataError ||
+                    code == OpenError::DataError ||
+                    code == OperationResult::DataErrorEncrypted;
         case BitFailureSource::InvalidArchive:
-            return code == OperationResult::IsNotArc || code == BitError::NoMatchingSignature;
+            return code == OperationResult::IsNotArc ||
+                    code == OpenError::IsNotArc ||
+                    code == OpenError::UnconfirmedStart ||
+                    code == BitError::NoMatchingSignature;
         case BitFailureSource::InvalidArgument:
             return code == std::errc::invalid_argument;
         case BitFailureSource::HeadersError:
-            return code == OperationResult::HeadersError;
+            return code == OperationResult::HeadersError || code == OpenError::HeadersError;
         case BitFailureSource::FormatDetectionError:
             return code == BitError::NoMatchingSignature;
         case BitFailureSource::NoSuchItem:
-            return code == BitError::NoMatchingItems || code == BitError::NoMatchingFile || code == std::errc::no_such_file_or_directory;
+            return code == BitError::NoMatchingItems ||
+                    code == BitError::NoMatchingFile ||
+                    code == std::errc::no_such_file_or_directory;
         case BitFailureSource::OperationNotSupported:
             return code == std::errc::operation_not_supported ||
-                   code == std::errc::not_supported ||
-                   code == std::errc::function_not_supported;
+                    code == std::errc::not_supported ||
+                    code == std::errc::function_not_supported ||
+                    code == OperationResult::UnsupportedMethod ||
+                    code == OpenError::UnsupportedMethod ||
+                    code == OpenError::UnsupportedFeature;
         case BitFailureSource::OperationNotPermitted:
             return code == std::errc::operation_not_permitted ||
-                   code == BitError::ItemPathOutsideOutputDirectory ||
-                   code == BitError::ItemHasAbsolutePath;
+                    code == BitError::ItemPathOutsideOutputDirectory ||
+                    code == BitError::ItemHasAbsolutePath;
         case BitFailureSource::UnavailableData:
-            return code == OperationResult::Unavailable;
+            return code == OperationResult::Unavailable || code == OpenError::UnavailableStart;
         case BitFailureSource::UnexpectedEnd:
-            return code == OperationResult::UnexpectedEnd;
+            return code == OperationResult::UnexpectedEnd || code == OpenError::UnexpectedEnd;
         case BitFailureSource::WrongPassword:
             return code == OperationResult::WrongPassword ||
-                   code == OperationResult::DataErrorEncrypted ||
-                   code == OperationResult::CRCErrorEncrypted ||
-                   code == OperationResult::OpenErrorEncrypted ||
-                   code == OperationResult::EmptyPassword;
+                    code == OperationResult::DataErrorEncrypted ||
+                    code == OperationResult::CRCErrorEncrypted ||
+                    code == OperationResult::OpenErrorEncrypted ||
+                    code == OperationResult::EmptyPassword ||
+                    code == OpenError::EncryptedHeadersError;
         default:
             return false;
     }

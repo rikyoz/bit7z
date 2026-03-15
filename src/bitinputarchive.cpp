@@ -28,6 +28,7 @@
 #include "internal/fixedbufferextractcallback.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/opencallback.hpp"
+#include "internal/openerror.hpp"
 #include "internal/operationresult.hpp"
 #include "internal/rawdataextractcallback.hpp"
 #include "internal/sequentialextractcallback.hpp"
@@ -88,14 +89,18 @@ auto BitInputArchive::openArchiveStream( const fs::path& name,
         return inArchive->Open( inStream, nullptr, openCallback );
     }();
 
+    if ( res == S_OK ) {
+        return inArchive.Detach();
+    }
+
 #ifdef BIT7Z_AUTO_FORMAT
-    if ( res != S_OK && mArchiveHandler.format() == BitFormat::Auto && !detectedBySignature ) {
+    if ( mArchiveHandler.format() == BitFormat::Auto && !detectedBySignature ) {
         /* User wanted auto-detection of the format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
          * NOTE: If user specified explicitly a format (i.e., not BitFormat::Auto), this check is not performed,
-         *       and an exception is thrown (next if).
+         *       and an exception is thrown.
          * NOTE 2: If signature detection was already performed (detectedBySignature == false), it detected
-         *         a wrong format, no further check can be done, and an exception must be thrown (next if). */
+         *         a wrong format, no further check can be done, and an exception must be thrown. */
 
         /* Opening the file might have changed the current file pointer, so we reset it to the beginning of the file
          * to correctly read the file signature. */
@@ -103,16 +108,29 @@ auto BitInputArchive::openArchiveStream( const fs::path& name,
         mDetectedFormat = &( detect_format_from_signature( inStream ) );
         inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
         res = inArchive->Open( inStream, nullptr, openCallback );
+        if ( res == S_OK ) {
+            return inArchive.Detach();
+        }
     }
 #endif
 
-    if ( res != S_OK ) {
-        const auto error = openCallback->passwordWasAsked() ?
-                           make_error_code( OperationResult::OpenErrorEncrypted ) : make_hresult_code( res );
-        throw BitException( "Could not open the archive", error, path_to_tstring( name ) );
-    }
+    const auto error = [&]() -> std::error_code {
+        if ( openCallback->passwordWasAsked() ) {
+            return make_error_code( OperationResult::OpenErrorEncrypted );
+        }
 
-    return inArchive.Detach();
+        BitPropVariant errorFlagsProp;
+        inArchive->GetArchiveProperty( static_cast< PROPID >( BitProperty::ErrorFlags ), &errorFlagsProp );
+        if ( !errorFlagsProp.isUInt32() ) {
+            return make_hresult_code( res );
+        }
+        const auto errorFlags = errorFlagsProp.getUInt32();
+        if ( errorFlags == 0 ) {
+            return make_hresult_code( res );
+        }
+        return make_open_error_code( errorFlags );
+    }();
+    throw BitException( "Could not open the archive", error, path_to_tstring( name ) );
 }
 
 inline auto detect_format( const BitInFormat& format, const fs::path& arcPath ) -> const BitInFormat* {

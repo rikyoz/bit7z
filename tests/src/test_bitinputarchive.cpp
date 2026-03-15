@@ -808,7 +808,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format sh
             DYNAMIC_SECTION( "Wrong format: " << wrongFormat.extension ) {
                 TestType inputArchive{};
                 getInputArchive( arcFileName, inputArchive );
-                REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, wrongFormat.format ) );
+
+                REQUIRE_THROWS_WITH(
+                    BitArchiveReader( test::sevenzip_lib(), inputArchive, wrongFormat.format ),
+                    Catch::Matchers::EndsWith( "Invalid archive, or wrong format used." )
+                );
             }
         }
     }

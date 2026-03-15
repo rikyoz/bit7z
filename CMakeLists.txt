@@ -95,6 +95,8 @@ set( HEADERS
      src/internal/internalcategory.hpp
      src/internal/macros.hpp
      src/internal/opencallback.hpp
+     src/internal/opencategory.hpp
+     src/internal/openerror.hpp
      src/internal/operationcategory.hpp
      src/internal/operationresult.hpp
      src/internal/optional.hpp
@@ -165,6 +167,8 @@ set( SOURCES
      src/internal/hresultcategory.cpp
      src/internal/internalcategory.cpp
      src/internal/opencallback.cpp
+     src/internal/opencategory.cpp
+     src/internal/openerror.cpp
      src/internal/operationcategory.cpp
      src/internal/operationresult.cpp
      src/internal/processeditem.cpp

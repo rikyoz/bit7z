@@ -1,0 +1,32 @@
+/*
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) 2014-2026 Riccardo Ostani - All Rights Reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+#ifndef OPENCATEGORY_HPP
+#define OPENCATEGORY_HPP
+
+#include "bitdefines.hpp"
+
+#include <system_error>
+#include <string>
+
+namespace bit7z {
+
+struct OpenCategory final : std::error_category {
+    BIT7Z_NODISCARD auto name() const noexcept -> const char* override;
+
+    BIT7Z_NODISCARD auto message( int errorValue ) const -> std::string override;
+
+    BIT7Z_NODISCARD auto default_error_condition( int errorValue ) const noexcept -> std::error_condition override;
+};
+
+auto open_category() noexcept -> const std::error_category&;
+
+}  // namespace bit7z
+
+#endif //OPENCATEGORY_HPP
