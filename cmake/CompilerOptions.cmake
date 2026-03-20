@@ -90,6 +90,13 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
     if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 6.0 )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wno-missing-braces -Wmissing-field-initializers )
     endif()
+    if(
+        MSVC AND
+        CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19 AND
+        CMAKE_CXX_COMPILER_VERSION VERSION_LESS 21
+    )
+        target_compile_options( ${LIB_TARGET} PRIVATE -Wno-cast-function-type )
+    endif()
 endif()
 
 if( APPLE )
