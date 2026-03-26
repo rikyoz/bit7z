@@ -12,14 +12,19 @@
 
 #include "internal/cmultivolumeinstream.hpp"
 
+#include "biterror.hpp"
+#include "bitexception.hpp"
 #include "bittypes.hpp"
-#include "internal/cvolumeinstream.hpp"
 #include "internal/fs.hpp"
-#include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-#include <cstddef>
+#include <algorithm>
 #include <cstdint>
+
+#ifndef _WIN32
+#include <climits> // For _POSIX_OPEN_MAX
+#include <unistd.h> // For sysconf
+#endif
 
 namespace bit7z {
 
@@ -36,36 +41,152 @@ CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mCur
             volumeExt.insert( volumeExt.begin(), kVolumeDigits - volumeExt.length(), BIT7Z_STRING( '0' ) );
         }
         volumePath.replace_extension( volumeExt );
-
-        // TODO: Avoid keeping all the volumes streams open
-        constexpr auto kOpenedFilesThreshold = 500;
-        if ( volumeIndex == kOpenedFilesThreshold ) {
-            // Note: we use == to avoid increasing the limit more than once;
-            // the volumeIndex is always increasing, so it is not an issue here.
-            filesystem::fsutil::increase_opened_files_limit();
-        }
     }
 }
 
-auto CMultiVolumeInStream::currentVolume() -> const CMyComPtr< CVolumeInStream >& {
+// NOLINTBEGIN(*-pro-bounds-avoid-unchecked-container-access)
+auto CMultiVolumeInStream::currentVolume() -> CachedVolume& {
     std::size_t left = 0;
-    std::size_t right = mVolumes.size();
-    std::size_t midpoint = right / 2;
+    std::size_t right = mVolumesCache.size();
+    std::size_t midpoint = mLastOpenedVolume == kNoVolume ? right / 2 : mLastOpenedVolume;
     while ( true ) {
-        auto& volume = mVolumes[ midpoint ];
-        if ( mCurrentPosition < volume->globalOffset() ) {
+        auto& cachedVolume = mVolumesCache[ midpoint ];
+        if ( mCurrentPosition < cachedVolume.globalOffset ) {
+            // We need to search in [left, midpoint).
             right = midpoint;
-        } else if ( mCurrentPosition >= volume->globalOffset() + volume->size() ) {
+        } else if ( mCurrentPosition >= cachedVolume.globalOffset + cachedVolume.volumeSize ) {
+            // We need to search in [midpoint + 1, right).
             left = midpoint + 1;
         } else {
-            return volume;
+#ifdef _WIN32
+            if ( midpoint == mLastOpenedVolume ) {
+                return cachedVolume; // Already the last opened, nothing to do.
+            }
+#else
+            if ( midpoint == mNewestVolume ) {
+                return cachedVolume; // Already the newest, nothing to do.
+            }
+#endif
+
+            // Volume found, not the currently newest, so we update it to be the newest.
+            ensureVolumeOpen( cachedVolume, midpoint );
+            return cachedVolume;
         }
         midpoint = ( left + right ) / 2;
     }
 }
 
+#ifndef _WIN32
+namespace {
+// Here we use the same constants and thresholds used by 7-Zip.
+
+// 7-Zip takes into account this number of handles as reserved for other internal needs of the process.
+constexpr std::size_t kHandlesReserve = 10;
+
+// 7-Zip supposes that we have up to 3 file processing tasks within the process.
+constexpr std::size_t kProcessingTasks = 3;
+
+auto openHandlesThreshold() -> std::size_t {
+    constexpr std::size_t kMinOpenHandles = 3;
+
+    long systemMaxOpenHandles = sysconf( _SC_OPEN_MAX );
+    if ( systemMaxOpenHandles < 1 ) {
+#ifdef _POSIX_OPEN_MAX
+        systemMaxOpenHandles = _POSIX_OPEN_MAX;
+#else
+        systemMaxOpenHandles = 30;
+#endif
+    }
+    const auto availableOpenHandles = static_cast< std::size_t >( systemMaxOpenHandles );
+    const auto result = availableOpenHandles > kHandlesReserve
+        ? ( availableOpenHandles - kHandlesReserve ) / kProcessingTasks
+        : 1;
+    return std::max( result, kMinOpenHandles );
+}
+} // namespace
+#endif
+
+void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume& cachedVolume, VolumeIndex midpoint ) {
+#ifdef _WIN32
+    if ( cachedVolume.stream == nullptr ) {
+        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
+    }
+    mLastOpenedVolume = midpoint;
+#else
+    if ( cachedVolume.stream == nullptr ) {
+        // The volume was evicted from the LRU list, so we need to reopen it.
+        static const auto openedFilesThreshold = openHandlesThreshold();
+
+        // Opening the volume before evicting the oldest one so that
+        // we can handle an open failure without evicting the oldest one.
+        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
+        ++mOpenCount;
+
+        if ( mOpenCount >= openedFilesThreshold ) {
+            // Too many open volumes, evicting the oldest one (i.e., the tail of the open volumes list).
+            auto& oldest = mVolumesCache[ mOldestVolume ];
+
+            // The "new" oldest volume is the volume before the "old" oldest volume.
+            mOldestVolume = oldest.newerVolume;
+            if ( mOldestVolume != kNoVolume ) {
+                mVolumesCache[ mOldestVolume ].olderVolume = kNoVolume;
+            }
+
+            // Evicting the "old" oldest volume.
+            oldest.newerVolume = kNoVolume;
+            oldest.olderVolume = kNoVolume;
+            oldest.stream.Release();
+            --mOpenCount;
+        }
+
+        if ( cachedVolume.seekPosition != 0 ) {
+            // Restoring the seek position so Read() can skip re-seeking in the common case.
+            UInt64 newPosition{}; // UInt64 (not std::uint64_t) to match Seek's output parameter type on all platforms.
+            const HRESULT seekResult = cachedVolume.stream->Seek(
+                static_cast< Int64 >( cachedVolume.seekPosition ),
+                STREAM_SEEK_SET,
+                &newPosition
+            );
+            if ( seekResult != S_OK ) {
+                cachedVolume.seekPosition = 0; // Failed to seek, stream is still at the beginning.
+            } else {
+                cachedVolume.seekPosition = newPosition;
+            }
+        }
+    } else {
+        // Before promoting this volume to the head, we unlink it from its current position.
+        if ( cachedVolume.olderVolume != kNoVolume ) {
+            // Before: newer <- cached <- older, after: newer <- older
+            mVolumesCache[ cachedVolume.olderVolume ].newerVolume = cachedVolume.newerVolume;
+        } else {
+            // Before: newer <- cached (oldest), after: newer (oldest)
+            mOldestVolume = cachedVolume.newerVolume;
+        }
+        if ( cachedVolume.newerVolume != kNoVolume ) {
+            // Before: newer -> cached -> older, after: newer -> older
+            mVolumesCache[ cachedVolume.newerVolume ].olderVolume = cachedVolume.olderVolume;
+        }
+    }
+
+    if ( mNewestVolume != kNoVolume ) {
+        // Before: newest, after: (newest) cached <- (old) newest
+        mVolumesCache[ mNewestVolume ].newerVolume = midpoint;
+    }
+    if ( mOldestVolume == kNoVolume ) {
+        mOldestVolume = midpoint;
+    }
+
+    // Promoting this volume to the head of the open volumes list.
+    cachedVolume.olderVolume = mNewestVolume;
+    cachedVolume.newerVolume = kNoVolume;
+    mNewestVolume = midpoint;
+    mLastOpenedVolume = midpoint;
+#endif
+}
+// NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
+
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept try {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
@@ -74,24 +195,36 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
         return S_OK;
     }
 
-    const auto& volume = currentVolume();
-    UInt64 localOffset = mCurrentPosition - volume->globalOffset();
-    HRESULT result = volume->Seek( static_cast< Int64 >( localOffset ), STREAM_SEEK_SET, &localOffset );
-    if ( result != S_OK ) {
-        return result;
+    auto& cachedVolume = currentVolume();
+
+    UInt64 localOffset = mCurrentPosition - cachedVolume.globalOffset;
+    HRESULT result = S_OK;
+    if ( localOffset != cachedVolume.seekPosition ) {
+        result = cachedVolume.stream->Seek( static_cast< Int64 >( localOffset ), STREAM_SEEK_SET, &localOffset );
+        if ( result != S_OK ) {
+            return result;
+        }
+        cachedVolume.seekPosition = localOffset;
     }
 
-    const std::uint64_t remaining = volume->size() - localOffset;
+    const std::uint64_t remaining = cachedVolume.volumeSize - localOffset;
     if ( size > remaining ) {
         size = static_cast< UInt32 >( remaining );
     }
-    result = volume->Read( data, size, &size );
+    result = cachedVolume.stream->Read( data, size, &size );
+    // Note: size is the number of bytes successfully read by CFileInStream::Read,
+    // so we don't need to check for result here, and we can update the positions unconditionally.
     mCurrentPosition += size;
+    cachedVolume.seekPosition += size;
 
     if ( processedSize != nullptr ) {
         *processedSize = size;
     }
     return result;
+} catch ( const BitException& ex ) {
+    return ex.hresultCode();
+} catch ( ... ) {
+    return E_FAIL;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -120,13 +253,22 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
 }
 
 void CMultiVolumeInStream::addVolume( const fs::path& volumePath ) {
-    std::uint64_t globalOffset = 0;
-    if ( !mVolumes.empty() ) {
-        const auto& lastStream = mVolumes.back();
-        globalOffset = lastStream->globalOffset() + lastStream->size();
+    const auto volumeSize = fs::file_size( volumePath );
+    if ( volumeSize == 0 ) {
+        throw BitException{ "Invalid volume archive", make_error_code( BitError::Fail ) };
     }
-    mVolumes.emplace_back( make_com< CVolumeInStream >( volumePath, globalOffset ) );
-    mTotalSize += mVolumes.back()->size();
+    mTotalSize += volumeSize;
+
+    const std::uint64_t globalOffset = [&]() -> std::uint64_t {
+        if ( mVolumesCache.empty() ) {
+            return 0;
+        }
+
+        const auto& lastStream = mVolumesCache.back();
+        return lastStream.globalOffset + lastStream.volumeSize;
+    }();
+    CachedVolume cachedVolume{ volumePath, volumeSize, globalOffset, 0u, {} };
+    mVolumesCache.push_back( std::move( cachedVolume ) );
 }
 
 } // namespace bit7z
