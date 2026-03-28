@@ -51,7 +51,7 @@ runs:
         echo "${{ inputs.path }}" >> "$GITHUB_PATH"
 
     - name: Cache Dependencies
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       id: cache-dependencies
       with:
         path: ${{ inputs.cpm_cache }}
@@ -59,7 +59,7 @@ runs:
 
     - name: Restore Ninja cache
       id: ninja-cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         path: ${{ github.workspace }}/ninja
         key: ${{ runner.os }}-${{ inputs.arch }}-ninja
@@ -93,7 +93,7 @@ runs:
         -S '${{ github.workspace }}'
 
     - name: Cache 7z.so
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       id: cache-7z-so
       if: ${{ runner.os != 'Windows' && inputs.sevenzip_version != 16.02 }}
       with:
