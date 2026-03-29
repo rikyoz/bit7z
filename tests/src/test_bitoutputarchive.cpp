@@ -47,7 +47,7 @@ TEST_CASE( "BitOutputArchive: Creating a multi-volume archive", "[bitoutputarchi
     REQUIRE_FALSE( fs::exists( outputArchive ) );
 
     const tstring firstVolume = outputArchive + BIT7Z_STRING( ".001" );
-    REQUIRE( fs::exists( outputArchive + ".001" ) );
+    REQUIRE( fs::exists( outputArchive + BIT7Z_STRING( ".001" ) ) );
 
     {
         const BitArchiveReader info( test::sevenzip_lib(), firstVolume, BitFormat::SevenZip );
