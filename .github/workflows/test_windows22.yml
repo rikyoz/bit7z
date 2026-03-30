@@ -64,7 +64,7 @@ jobs:
         curl -L https://7-zip.org/a/7z2301.exe --output 7z2301.exe
         7z x 7z2301.exe 7z.dll -o"C:\Program Files (x86)\7-Zip"
     
-    - uses: ilammy/msvc-dev-cmd@v1
+    - uses: rainmakerv3/msvc-dev-cmd@v1
       with:
         arch: ${{ matrix.arch }}
 
