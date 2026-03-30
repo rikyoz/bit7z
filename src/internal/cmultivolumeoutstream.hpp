@@ -36,10 +36,10 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         std::uint64_t mCurrentVolumeOffset;
 
         // Offset from the beginning of the whole output archive.
-        std::uint64_t mAbsoluteOffset;
+        std::uint64_t mAbsolutePosition;
 
         // Total size of the output archive (sum of the volumes' sizes).
-        std::uint64_t mFullSize;
+        std::uint64_t mTotalSize;
 
         std::vector< CMyComPtr< CVolumeOutStream > > mVolumes;
 

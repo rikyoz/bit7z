@@ -42,9 +42,9 @@ struct CachedVolume final {
 using VolumesCache = std::vector< CachedVolume >;
 
 class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
-        std::uint64_t mCurrentPosition;
+        std::uint64_t mAbsolutePosition;
         std::uint64_t mTotalSize;
-        VolumesCache mVolumesCache;
+        VolumesCache mVolumes;
 #ifndef _WIN32
         std::size_t mOpenCount = 0;
         VolumeIndex mNewestVolume = kNoVolume;

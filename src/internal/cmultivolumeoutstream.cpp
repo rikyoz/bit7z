@@ -31,8 +31,8 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( std::uint64_t volSize, fs::path ar
       mVolumePrefix( std::move( archiveName ) ),
       mCurrentVolumeIndex( 0 ),
       mCurrentVolumeOffset( 0 ),
-      mAbsoluteOffset( 0 ),
-      mFullSize( 0 ) {}
+      mAbsolutePosition( 0 ),
+      mTotalSize( 0 ) {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
@@ -85,11 +85,12 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
 
     /* Updating the offsets */
     mCurrentVolumeOffset += writtenSize;
-    mAbsoluteOffset += writtenSize;
+    mAbsolutePosition += writtenSize;
 
-    if ( mAbsoluteOffset > mFullSize ) {
+    /* We might have written beyond the old known full size of the output archive, updating it. */
+    if ( mAbsolutePosition > mTotalSize ) {
         /* We wrote beyond the old known full size of the output archive, updating it. */
-        mFullSize = mAbsoluteOffset;
+        mTotalSize = mAbsolutePosition;
     }
 
     if ( mCurrentVolumeOffset > volume->currentSize() ) {
@@ -115,20 +116,20 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
         case STREAM_SEEK_SET:
             break;
         case STREAM_SEEK_CUR:
-            seekPosition = mAbsoluteOffset;
+            seekPosition = mAbsolutePosition;
             break;
         case STREAM_SEEK_END:
-            seekPosition = mFullSize;
+            seekPosition = mTotalSize;
             break;
         default:
             return STG_E_INVALIDFUNCTION;
     }
 
     RINOK( seek_to_offset( seekPosition, offset ) ) //-V3504
-    mAbsoluteOffset = seekPosition;
-    mCurrentVolumeOffset = mAbsoluteOffset;
+    mAbsolutePosition = seekPosition;
+    mCurrentVolumeOffset = mAbsolutePosition;
     if ( newPosition != nullptr ) {
-        *newPosition = mAbsoluteOffset;
+        *newPosition = mAbsolutePosition;
     }
     mCurrentVolumeIndex = 0;
     return S_OK;
@@ -152,9 +153,9 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
             return E_FAIL;
         }
     }
-    mCurrentVolumeOffset = mAbsoluteOffset;
+    mCurrentVolumeOffset = mAbsolutePosition;
     mCurrentVolumeIndex = 0;
-    mFullSize = newSize;
+    mTotalSize = newSize;
     return S_OK;
 }
 
