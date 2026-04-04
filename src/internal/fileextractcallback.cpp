@@ -148,7 +148,7 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
             // TODO: Handle errors
         }
 
-        auto outStreamLoc = bit7z::make_com< CFileOutStream >( mFilePathOnDisk, true );
+        auto outStreamLoc = bit7z::make_com< CFileOutStream >( mFilePathOnDisk, FileFlag::CreateAlways );
         mFileOutStream = outStreamLoc;
         *outStream = outStreamLoc.Detach();
     } else if ( mRetainDirectories ) { // Directory, and we must retain it

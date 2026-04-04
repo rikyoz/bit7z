@@ -207,12 +207,12 @@ auto BitOutputArchive::initOutFileStream( const fs::path& outArchive,
     }
 
     if ( !updatingArchive ) { // No need to create a copy of the output archive path.
-        return bit7z::make_com< CFileOutStream, IOutStream >( outArchive, updatingArchive );
+        return bit7z::make_com< CFileOutStream, IOutStream >( outArchive );
     }
 
     fs::path tmpArchive = outArchive;
     tmpArchive += ".tmp";
-    return bit7z::make_com< CFileOutStream, IOutStream >( tmpArchive, updatingArchive );
+    return bit7z::make_com< CFileOutStream, IOutStream >( tmpArchive, FileFlag::CreateAlways );
 }
 
 void BitOutputArchive::compressOut( IOutArchive* outArc,
