@@ -130,6 +130,9 @@ void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume& cachedVolume, VolumeI
             mOldestVolume = oldest.newerVolume;
             if ( mOldestVolume != kNoVolume ) {
                 mVolumes[ mOldestVolume ].olderVolume = kNoVolume;
+            } else {
+                // The "old" oldest volume didn't have a newer volume, i.e., the list had only one volume.
+                mNewestVolume = kNoVolume;
             }
 
             // Evicting the "old" oldest volume.
