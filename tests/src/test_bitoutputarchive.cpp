@@ -34,32 +34,44 @@ TEST_CASE( "BitOutputArchive: TODO", "[bitoutputarchive]" ) {
 TEST_CASE( "BitOutputArchive: Creating a multi-volume archive", "[bitoutputarchive]" ) {
     const auto inputFile = fs::path{ test_filesystem_dir } / "folder" / "clouds.jpg";
 
-    BitArchiveWriter writer( test::sevenzip_lib(), BitFormat::SevenZip );
-    REQUIRE_NOTHROW( writer.addFile( to_tstring( inputFile ) ) );
+    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+        TestOutputFormat{ "bz2", BitFormat::BZip2 },
+        TestOutputFormat{ "gz", BitFormat::GZip },
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "xz", BitFormat::Xz },
+        TestOutputFormat{ "wim", BitFormat::Wim },
+        TestOutputFormat{ "zip", BitFormat::Zip }
+    );
 
-    const TempTestDirectory testOutDir{ "test_bitoutputarchive" };
-    INFO( "Output directory: " << testOutDir )
+    DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+        BitArchiveWriter writer( test::sevenzip_lib(), testFormat.format );
+        REQUIRE_NOTHROW( writer.addFile( to_tstring( inputFile ) ) );
 
-    const tstring outputArchive = BIT7Z_STRING( "cloud.7z" );
-    REQUIRE_NOTHROW( writer.setVolumeSize( 1024 ) );
-    REQUIRE_NOTHROW( writer.compressTo( outputArchive ) );
+        const TempTestDirectory testOutDir{ "test_bitoutputarchive" };
+        INFO( "Output directory: " << testOutDir )
 
-    REQUIRE_FALSE( fs::exists( outputArchive ) );
+        const tstring outputArchive = BIT7Z_STRING( "cloud.7z" );
+        REQUIRE_NOTHROW( writer.setVolumeSize( 1024 ) );
+        REQUIRE_NOTHROW( writer.compressTo( outputArchive ) );
 
-    const tstring firstVolume = outputArchive + BIT7Z_STRING( ".001" );
-    REQUIRE( fs::exists( outputArchive + BIT7Z_STRING( ".001" ) ) );
+        REQUIRE_FALSE( fs::exists( outputArchive ) );
 
-    {
-        const BitArchiveReader info( test::sevenzip_lib(), firstVolume, BitFormat::SevenZip );
-        REQUIRE_NOTHROW( info.test() );
+        const tstring firstVolume = outputArchive + BIT7Z_STRING( ".001" );
+        REQUIRE( fs::exists( outputArchive + BIT7Z_STRING( ".001" ) ) );
 
-        buffer_t fileBuffer;
-        REQUIRE_NOTHROW( info.extractTo( fileBuffer ) );
-        REQUIRE( crc32( fileBuffer ) == clouds.crc32 );
-    }
+        {
+            const BitArchiveReader info{ test::sevenzip_lib(), firstVolume, testFormat.format };
+            REQUIRE_NOTHROW( info.test() );
 
-    for ( const auto& volume : fs::directory_iterator{ testOutDir.path() } ) {
-        fs::remove( volume );
+            buffer_t fileBuffer;
+            REQUIRE_NOTHROW( info.extractTo( fileBuffer ) );
+            REQUIRE( crc32( fileBuffer ) == clouds.crc32 );
+        }
+
+        for ( const auto& volume : fs::directory_iterator{ testOutDir.path() } ) {
+            fs::remove( volume );
+        }
     }
 }
 
