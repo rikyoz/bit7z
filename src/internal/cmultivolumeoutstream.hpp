@@ -10,9 +10,9 @@
 #ifndef CMULTIVOLUMEOUTSTREAM_HPP
 #define CMULTIVOLUMEOUTSTREAM_HPP
 
-#include "internal/com.hpp"
-#include "internal/cvolumeoutstream.hpp"
+#include "internal/cfileoutstream.hpp"
 #include "internal/guiddef.hpp"
+#include "internal/volumescache.hpp"
 
 #include <7zip/IStream.h>
 
@@ -41,7 +41,17 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Total size of the output archive (sum of the volumes' sizes).
         std::uint64_t mTotalSize;
 
-        std::vector< CMyComPtr< CVolumeOutStream > > mVolumes;
+#ifndef _WIN32
+        std::size_t mOpenCount = 0;
+        std::size_t mNewestVolume = kNoVolume;
+        std::size_t mOldestVolume = kNoVolume;
+#endif
+
+        VolumesCache< CFileOutStream > mVolumes;
+
+        auto currentVolume() -> CachedVolume< CFileOutStream >&;
+
+        void ensureVolumeOpen( CachedVolume<CFileOutStream>& cachedVolume, std::size_t volumeIndex );
 
     public:
         CMultiVolumeOutStream( std::uint64_t volSize, fs::path archiveName );

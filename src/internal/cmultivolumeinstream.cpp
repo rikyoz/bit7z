@@ -18,14 +18,6 @@
 #include "internal/fs.hpp"
 #include "internal/util.hpp"
 
-#include <algorithm>
-#include <cstdint>
-
-#ifndef _WIN32
-#include <climits> // For _POSIX_OPEN_MAX
-#include <unistd.h> // For sysconf
-#endif
-
 namespace bit7z {
 
 CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mAbsolutePosition{ 0 }, mTotalSize{ 0 } {
@@ -45,7 +37,7 @@ CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mAbs
 }
 
 // NOLINTBEGIN(*-pro-bounds-avoid-unchecked-container-access)
-auto CMultiVolumeInStream::currentVolume() -> CachedVolume& {
+auto CMultiVolumeInStream::currentVolume() -> CachedVolume< CFileInStream >& {
     std::size_t left = 0;
     std::size_t right = mVolumes.size();
     std::size_t midpoint = mLastOpenedVolume == kNoVolume ? right / 2 : mLastOpenedVolume;
@@ -76,37 +68,7 @@ auto CMultiVolumeInStream::currentVolume() -> CachedVolume& {
     }
 }
 
-#ifndef _WIN32
-namespace {
-// Here we use the same constants and thresholds used by 7-Zip.
-
-// 7-Zip takes into account this number of handles as reserved for other internal needs of the process.
-constexpr std::size_t kHandlesReserve = 10;
-
-// 7-Zip supposes that we have up to 3 file processing tasks within the process.
-constexpr std::size_t kProcessingTasks = 3;
-
-auto openHandlesThreshold() -> std::size_t {
-    constexpr std::size_t kMinOpenHandles = 3;
-
-    long systemMaxOpenHandles = sysconf( _SC_OPEN_MAX );
-    if ( systemMaxOpenHandles < 1 ) {
-#ifdef _POSIX_OPEN_MAX
-        systemMaxOpenHandles = _POSIX_OPEN_MAX;
-#else
-        systemMaxOpenHandles = 30;
-#endif
-    }
-    const auto availableOpenHandles = static_cast< std::size_t >( systemMaxOpenHandles );
-    const auto result = availableOpenHandles > kHandlesReserve
-        ? ( availableOpenHandles - kHandlesReserve ) / kProcessingTasks
-        : 1;
-    return std::max( result, kMinOpenHandles );
-}
-} // namespace
-#endif
-
-void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume& cachedVolume, VolumeIndex midpoint ) {
+void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t midpoint ) {
 #ifdef _WIN32
     if ( cachedVolume.stream == nullptr ) {
         cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
@@ -270,7 +232,7 @@ void CMultiVolumeInStream::addVolume( const fs::path& volumePath ) {
         const auto& lastStream = mVolumes.back();
         return lastStream.globalOffset + lastStream.volumeSize;
     }();
-    CachedVolume cachedVolume{ volumePath, volumeSize, globalOffset, 0u, {} };
+    CachedVolume< CFileInStream > cachedVolume{ volumePath, volumeSize, globalOffset, 0u, {} };
     mVolumes.push_back( std::move( cachedVolume ) );
 }
 

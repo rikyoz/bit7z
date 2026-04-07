@@ -14,7 +14,6 @@
 
 #include "bitexception.hpp"
 #include "bittypes.hpp"
-#include "internal/cvolumeoutstream.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
@@ -34,6 +33,93 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( std::uint64_t volSize, fs::path ar
       mAbsolutePosition( 0 ),
       mTotalSize( 0 ) {}
 
+auto CMultiVolumeOutStream::currentVolume() -> CachedVolume<CFileOutStream>& {
+    return mVolumes[ mCurrentVolumeIndex ];
+}
+
+void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex ) {
+#ifdef _WIN32
+    (void)volumeIndex;
+    if ( cachedVolume.stream == nullptr ) {
+        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native() );
+    }
+#else
+    if ( cachedVolume.stream == nullptr ) {
+        // The volume was evicted from the LRU list, so we need to reopen it.
+        static const auto openedFilesThreshold = openHandlesThreshold();
+
+        // Opening the volume before evicting the oldest one so that
+        // we can handle an open failure without evicting the oldest one.
+        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), FileFlag::OpenAlways );
+        ++mOpenCount;
+
+        if ( mOpenCount >= openedFilesThreshold ) {
+            // Too many open volumes, evicting the newest one (i.e., the head of the open volumes list).
+            // Many archive formats store their internal metadata at the beginning of the archive (7-Zip does the same).
+            auto& newest = mVolumes[ mNewestVolume ];
+
+            // The "new" newest volume is the volume before the "old" newest volume.
+            mNewestVolume = newest.olderVolume;
+            if ( mNewestVolume != kNoVolume ) {
+                mVolumes[ mNewestVolume ].newerVolume = kNoVolume;
+            } else {
+                // The "old" newest volume didn't have an older volume, i.e., the list had only one volume.
+                mOldestVolume = kNoVolume;
+            }
+
+            // Evicting the "old" newest volume.
+            newest.newerVolume = kNoVolume;
+            newest.olderVolume = kNoVolume;
+            newest.stream.Release();
+            --mOpenCount;
+        }
+
+        if ( cachedVolume.seekPosition != 0 ) {
+            // Restoring the seek position so Write() can skip re-seeking in the common case.
+            UInt64 newPosition{}; // UInt64 (not std::uint64_t) to match Seek's output parameter type on all platforms.
+            const HRESULT seekResult = cachedVolume.stream->Seek(
+                static_cast< Int64 >( cachedVolume.seekPosition ),
+                STREAM_SEEK_SET,
+                &newPosition
+            );
+            if ( seekResult != S_OK ) {
+                cachedVolume.seekPosition = 0; // Failed to seek, stream is still at the beginning.
+            } else {
+                cachedVolume.seekPosition = newPosition;
+            }
+        }
+    } else if ( volumeIndex == mNewestVolume ) {
+        return; // Already the newest open volume, nothing to do.
+    } else {
+        // Before promoting this volume to the head, we unlink it from its current position.
+        if ( cachedVolume.olderVolume != kNoVolume ) {
+            // Before: newer <- cached <- older, after: newer <- older
+            mVolumes[ cachedVolume.olderVolume ].newerVolume = cachedVolume.newerVolume;
+        } else {
+            // Before: newer <- cached (oldest), after: newer (oldest)
+            mOldestVolume = cachedVolume.newerVolume;
+        }
+        if ( cachedVolume.newerVolume != kNoVolume ) {
+            // Before: newer -> cached -> older, after: newer -> older
+            mVolumes[ cachedVolume.newerVolume ].olderVolume = cachedVolume.olderVolume;
+        }
+    }
+
+    if ( mNewestVolume != kNoVolume ) {
+        // Before: newest, after: (newest) cached <- (old) newest
+        mVolumes[ mNewestVolume ].newerVolume = volumeIndex;
+    }
+    if ( mOldestVolume == kNoVolume ) {
+        mOldestVolume = volumeIndex;
+    }
+
+    // Promoting this volume to the head of the open volumes list.
+    cachedVolume.olderVolume = mNewestVolume;
+    cachedVolume.newerVolume = kNoVolume;
+    mNewestVolume = volumeIndex;
+#endif
+}
+
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
@@ -43,65 +129,64 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
     mCurrentVolumeIndex += static_cast< std::size_t >( mCurrentVolumeOffset / mMaxVolumeSize );
     mCurrentVolumeOffset = mCurrentVolumeOffset % mMaxVolumeSize;
 
-    while ( mCurrentVolumeIndex >= mVolumes.size() ) {
+    for ( auto newVolumeIndex = mVolumes.size(); newVolumeIndex <= mCurrentVolumeIndex; ++newVolumeIndex ) {
         /* The current volume stream still doesn't exist, so we need to create it. */
-        tstring name = to_tstring( static_cast< std::uint64_t >( mCurrentVolumeIndex ) + 1 );
+        tstring name = to_tstring( static_cast< std::uint64_t >( newVolumeIndex ) + 1 );
         if ( name.length() < 3 ) {
             name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
         }
 
         fs::path volumePath = mVolumePrefix;
         volumePath += BIT7Z_STRING( "." ) + name;
-        try {
-            // TODO: Avoid keeping all the volumes streams open
-            constexpr auto kOpenedFilesThreshold = 500;
-            if ( mCurrentVolumeIndex == kOpenedFilesThreshold ) {
-                // Since we have created many volumes, it is likely we'll keep creating more.
-                // Hence, we increase the limit to the number of files that can be opened by the current process
-                // to avoid problems in the future.
-                filesystem::fsutil::increase_opened_files_limit();
-            }
-            mVolumes.emplace_back( make_com< CVolumeOutStream >( volumePath ) );
-        } catch ( const BitException& ex ) {
-            return ex.nativeCode();
-        }
+        CachedVolume< CFileOutStream > volume{
+            volumePath,
+            0u,
+            newVolumeIndex * mMaxVolumeSize,
+            0u,
+            {}
+        };
+        mVolumes.emplace_back( std::move( volume ) );
     }
 
     /* Getting the current volume stream. */
-    const CMyComPtr< CVolumeOutStream >& volume = mVolumes[ mCurrentVolumeIndex ];
+    auto& volume = currentVolume();
 
-    if ( mCurrentVolumeOffset != volume->currentOffset() ) {
+    try {
+        ensureVolumeOpen( volume, mCurrentVolumeIndex );
+    } catch ( const BitException& ex ) {
+        return ex.hresultCode();
+    } catch ( ... ) {
+        return E_FAIL;
+    }
+
+    if ( mCurrentVolumeOffset != volume.seekPosition ) {
         /* The offset we must write to is different from the last offset we wrote to. */
-        RINOK( volume->Seek( static_cast< std::int64_t >( mCurrentVolumeOffset ), STREAM_SEEK_SET, nullptr ) ) //-V3504
+        UInt64 newPosition{};
+        RINOK( volume.stream->Seek( static_cast< Int64 >( mCurrentVolumeOffset ), STREAM_SEEK_SET, &newPosition ) ) //-V3504
+        volume.seekPosition = newPosition;
     }
 
     /* Determining how much we can write to the volume stream */
-    const auto writeSize = static_cast< std::uint32_t >( ( std::min )( static_cast< std::uint64_t >( size ),
-                                                                  mMaxVolumeSize - volume->currentOffset() ) );
+    const auto writeSize = std::min( size, static_cast< UInt32 >( mMaxVolumeSize - volume.seekPosition ) );
 
     /* Writing to the volume stream */
     UInt32 writtenSize{};
-    RINOK( volume->Write( data, writeSize, &writtenSize ) ) //-V3504
+    RINOK( volume.stream->Write( data, writeSize, &writtenSize ) ) //-V3504
 
     /* Updating the offsets */
+    volume.seekPosition += writtenSize;
     mCurrentVolumeOffset += writtenSize;
     mAbsolutePosition += writtenSize;
 
     /* We might have written beyond the old known full size of the output archive, updating it. */
-    if ( mAbsolutePosition > mTotalSize ) {
-        /* We wrote beyond the old known full size of the output archive, updating it. */
-        mTotalSize = mAbsolutePosition;
-    }
-
-    if ( mCurrentVolumeOffset > volume->currentSize() ) {
-        volume->setCurrentSize( mCurrentVolumeOffset );
-    }
+    mTotalSize = std::max(mAbsolutePosition, mTotalSize);
+    volume.volumeSize = std::max(mCurrentVolumeOffset, volume.volumeSize);
 
     if ( processedSize != nullptr ) {
         *processedSize += writtenSize;
     }
 
-    if ( volume->currentOffset() == mMaxVolumeSize ) {
+    if ( volume.seekPosition == mMaxVolumeSize ) {
         /* We reached the max size for the current volume, so we need to continue on the next one. */
         ++mCurrentVolumeIndex;
         mCurrentVolumeOffset = 0;
@@ -135,24 +220,90 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
     return S_OK;
 }
 
+namespace {
+// Utility function for computing the ceil division of two unsigned integers.
+// Computes ceil( a / b ) for unsigned integers using ( ( a - 1 ) / b ) + 1 instead of the naive
+// ( a + b - 1 ) / b to avoid overflow, with an explicit check for a == 0 to prevent underflow.
+template<typename T, typename = typename std::enable_if< std::is_unsigned<T>::value >::type >
+constexpr auto ceil_div( T a, T b ) -> T {
+    return a == 0 ? 0 : ( ( a - 1 ) / b ) + 1;
+}
+} // namespace
+
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
-    for ( const auto& volume : mVolumes ) {
-        if ( newSize < volume->currentSize() ) {
-            RINOK( volume->SetSize( newSize ) ) //-V3504
+    // Max number of volumes we can track/index in the vector of volumes.
+    // Note: we exclude one for the kNoVolume index flag value.
+    const auto maxVolumes = mVolumes.max_size() - 1;
+
+    // The new size would produce a number of volumes above the maximum allowed.
+    // Note: mMaxVolumeSize is non-zero by construction.
+    if ( ceil_div( newSize, mMaxVolumeSize ) > maxVolumes ) {
+        return E_INVALIDARG;
+    }
+
+    while ( !mVolumes.empty() ) {
+        auto& lastVolume = mVolumes.back();
+
+        // This volume starts before newSize, so it may need truncation (handled below) but not deletion.
+        if ( lastVolume.globalOffset < newSize ) {
             break;
         }
-        newSize -= volume->currentSize();
-    }
-    while ( !mVolumes.empty() ) {
-        const fs::path volumePath = mVolumes.back()->volumePath();
-        mVolumes.pop_back();
+
+        // The volume starts at or beyond the new size, so it must be released and deleted.
+        if ( lastVolume.stream != nullptr ) {
+            lastVolume.stream.Release();
+#ifndef _WIN32
+            // Unlink from the open-volumes list.
+            if ( lastVolume.newerVolume != kNoVolume ) {
+                mVolumes[ lastVolume.newerVolume ].olderVolume = kNoVolume;
+            } else { // lastVolume is the newest volume
+                mNewestVolume = lastVolume.olderVolume;
+            }
+            if ( lastVolume.olderVolume != kNoVolume ) {
+                mVolumes[ lastVolume.olderVolume ].newerVolume = kNoVolume;
+            } else { // lastVolume is the oldest volume
+                mOldestVolume = lastVolume.newerVolume;
+            }
+            --mOpenCount;
+#endif
+        }
+
         std::error_code error;
-        fs::remove( volumePath, error );
+        fs::remove( lastVolume.volumePath, error );
         if ( error ) {
             return E_FAIL;
         }
+        mVolumes.pop_back();
     }
+
+    if ( !mVolumes.empty() ) {
+        auto& lastVolume = mVolumes.back();
+
+        const auto newVolumeSize = newSize - lastVolume.globalOffset;
+        if ( newVolumeSize < lastVolume.volumeSize ) {
+            // Truncating the last volume as it extends beyond newSize.
+
+            if ( lastVolume.stream == nullptr ) {
+                try {
+                    // Volume was evicted, we need to reopen it.
+                    ensureVolumeOpen( lastVolume, mVolumes.size() - 1 );
+                } catch ( const BitException& ex ) {
+                    return ex.hresultCode();
+                } catch ( ... ) {
+                    return E_FAIL;
+                }
+            }
+
+            // Truncating the volume size of the last volume.
+
+            if ( lastVolume.stream != nullptr ) { // ensureVolumeOpen may fail to reopen the stream.
+                RINOK( lastVolume.stream->SetSize( static_cast< UInt64 >( newVolumeSize ) ) );
+                lastVolume.volumeSize = newVolumeSize;
+            }
+        }
+    }
+
     mCurrentVolumeOffset = mAbsolutePosition;
     mCurrentVolumeIndex = 0;
     mTotalSize = newSize;

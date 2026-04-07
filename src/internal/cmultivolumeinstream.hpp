@@ -14,47 +14,28 @@
 #include "internal/cfileinstream.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/macros.hpp"
+#include "internal/volumescache.hpp"
 
 #include <7zip/IStream.h>
 
-#include <cstdint>
-#include <limits>
 #include <vector>
 
 namespace bit7z {
 
-using VolumeIndex = std::size_t;
-
-constexpr auto kNoVolume = std::numeric_limits< VolumeIndex >::max();
-
-struct CachedVolume final {
-    fs::path volumePath;
-    std::uint64_t volumeSize;
-    std::uint64_t globalOffset;
-    std::uint64_t seekPosition;
-    CMyComPtr< CFileInStream > stream;
-#ifndef _WIN32
-    VolumeIndex newerVolume = kNoVolume;
-    VolumeIndex olderVolume = kNoVolume;
-#endif
-};
-
-using VolumesCache = std::vector< CachedVolume >;
-
 class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
         std::uint64_t mAbsolutePosition;
         std::uint64_t mTotalSize;
-        VolumesCache mVolumes;
+        VolumesCache< CFileInStream > mVolumes;
 #ifndef _WIN32
         std::size_t mOpenCount = 0;
-        VolumeIndex mNewestVolume = kNoVolume;
-        VolumeIndex mOldestVolume = kNoVolume;
+        std::size_t mNewestVolume = kNoVolume;
+        std::size_t mOldestVolume = kNoVolume;
 #endif
-        VolumeIndex mLastOpenedVolume = kNoVolume;
+        std::size_t mLastOpenedVolume = kNoVolume;
 
-        auto currentVolume() -> CachedVolume&;
+        auto currentVolume() -> CachedVolume< CFileInStream >&;
 
-        void ensureVolumeOpen( CachedVolume& cachedVolume, VolumeIndex midpoint );
+        void ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t midpoint );
 
         void addVolume( const fs::path& volumePath );
 
