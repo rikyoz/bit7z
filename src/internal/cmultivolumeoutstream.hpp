@@ -29,12 +29,6 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Common name prefix of every volume.
         fs::path mVolumePrefix;
 
-        // The current volume stream on which we are working.
-        std::size_t mCurrentVolumeIndex;
-
-        // Offset from the beginning of the current volume stream (i.e., the one at mCurrentVolumeIndex).
-        std::uint64_t mCurrentVolumeOffset;
-
         // Offset from the beginning of the whole output archive.
         std::uint64_t mAbsolutePosition;
 

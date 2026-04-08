@@ -28,13 +28,41 @@ namespace bit7z {
 CMultiVolumeOutStream::CMultiVolumeOutStream( std::uint64_t volSize, fs::path archiveName )
     : mMaxVolumeSize( volSize ),
       mVolumePrefix( std::move( archiveName ) ),
-      mCurrentVolumeIndex( 0 ),
-      mCurrentVolumeOffset( 0 ),
       mAbsolutePosition( 0 ),
       mTotalSize( 0 ) {}
 
 auto CMultiVolumeOutStream::currentVolume() -> CachedVolume<CFileOutStream>& {
-    return mVolumes[ mCurrentVolumeIndex ];
+    const auto volumeIndex = static_cast< std::size_t >( mAbsolutePosition / mMaxVolumeSize );
+
+    for ( auto newVolumeIndex = mVolumes.size(); newVolumeIndex <= volumeIndex; ++newVolumeIndex ) {
+        /* The current volume stream still doesn't exist, so we need to create it. */
+        tstring name = to_tstring( static_cast< std::uint64_t >( newVolumeIndex ) + 1 );
+        if ( name.length() < 3 ) {
+            name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
+        }
+
+        fs::path volumePath = mVolumePrefix;
+        volumePath += BIT7Z_STRING( "." ) + name;
+        CachedVolume< CFileOutStream > volume{
+            volumePath,
+            0u,
+            newVolumeIndex * mMaxVolumeSize,
+            0u,
+            {}
+        };
+        mVolumes.emplace_back( std::move( volume ) );
+    }
+
+    auto& cachedVolume = mVolumes[ volumeIndex ];
+
+#ifndef _WIN32
+    if ( volumeIndex == mNewestVolume ) {
+        return cachedVolume; // Already the newest open volume, no need to ensure it is opened.
+    }
+#endif
+
+    ensureVolumeOpen( cachedVolume, volumeIndex );
+    return cachedVolume;
 }
 
 void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex ) {
@@ -88,8 +116,6 @@ void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& ca
                 cachedVolume.seekPosition = newPosition;
             }
         }
-    } else if ( volumeIndex == mNewestVolume ) {
-        return; // Already the newest open volume, nothing to do.
     } else {
         // Before promoting this volume to the head, we unlink it from its current position.
         if ( cachedVolume.olderVolume != kNoVolume ) {
@@ -121,48 +147,19 @@ void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& ca
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept try {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
-    }
-
-    mCurrentVolumeIndex += static_cast< std::size_t >( mCurrentVolumeOffset / mMaxVolumeSize );
-    mCurrentVolumeOffset = mCurrentVolumeOffset % mMaxVolumeSize;
-
-    for ( auto newVolumeIndex = mVolumes.size(); newVolumeIndex <= mCurrentVolumeIndex; ++newVolumeIndex ) {
-        /* The current volume stream still doesn't exist, so we need to create it. */
-        tstring name = to_tstring( static_cast< std::uint64_t >( newVolumeIndex ) + 1 );
-        if ( name.length() < 3 ) {
-            name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
-        }
-
-        fs::path volumePath = mVolumePrefix;
-        volumePath += BIT7Z_STRING( "." ) + name;
-        CachedVolume< CFileOutStream > volume{
-            volumePath,
-            0u,
-            newVolumeIndex * mMaxVolumeSize,
-            0u,
-            {}
-        };
-        mVolumes.emplace_back( std::move( volume ) );
     }
 
     /* Getting the current volume stream. */
     auto& volume = currentVolume();
 
-    try {
-        ensureVolumeOpen( volume, mCurrentVolumeIndex );
-    } catch ( const BitException& ex ) {
-        return ex.hresultCode();
-    } catch ( ... ) {
-        return E_FAIL;
-    }
-
-    if ( mCurrentVolumeOffset != volume.seekPosition ) {
+    const auto volumeOffset = mAbsolutePosition % mMaxVolumeSize;
+    if ( volumeOffset != volume.seekPosition ) {
         /* The offset we must write to is different from the last offset we wrote to. */
         UInt64 newPosition{};
-        RINOK( volume.stream->Seek( static_cast< Int64 >( mCurrentVolumeOffset ), STREAM_SEEK_SET, &newPosition ) ) //-V3504
+        RINOK( volume.stream->Seek( static_cast< Int64 >( volumeOffset ), STREAM_SEEK_SET, &newPosition ) ) //-V3504
         volume.seekPosition = newPosition;
     }
 
@@ -173,25 +170,22 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
     UInt32 writtenSize{};
     RINOK( volume.stream->Write( data, writeSize, &writtenSize ) ) //-V3504
 
-    /* Updating the offsets */
+    /* Updating the positions */
     volume.seekPosition += writtenSize;
-    mCurrentVolumeOffset += writtenSize;
     mAbsolutePosition += writtenSize;
 
     /* We might have written beyond the old known full size of the output archive, updating it. */
-    mTotalSize = std::max(mAbsolutePosition, mTotalSize);
-    volume.volumeSize = std::max(mCurrentVolumeOffset, volume.volumeSize);
+    mTotalSize = std::max( mAbsolutePosition, mTotalSize );
+    volume.volumeSize = std::max( volume.seekPosition, volume.volumeSize );
 
     if ( processedSize != nullptr ) {
         *processedSize += writtenSize;
     }
-
-    if ( volume.seekPosition == mMaxVolumeSize ) {
-        /* We reached the max size for the current volume, so we need to continue on the next one. */
-        ++mCurrentVolumeIndex;
-        mCurrentVolumeOffset = 0;
-    }
     return S_OK;
+} catch ( const BitException& ex ) {
+    return ex.hresultCode();
+} catch ( ... ) {
+    return E_FAIL;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -212,11 +206,9 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
 
     RINOK( seek_to_offset( seekPosition, offset ) ) //-V3504
     mAbsolutePosition = seekPosition;
-    mCurrentVolumeOffset = mAbsolutePosition;
     if ( newPosition != nullptr ) {
         *newPosition = mAbsolutePosition;
     }
-    mCurrentVolumeIndex = 0;
     return S_OK;
 }
 
@@ -304,8 +296,6 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
         }
     }
 
-    mCurrentVolumeOffset = mAbsolutePosition;
-    mCurrentVolumeIndex = 0;
     mTotalSize = newSize;
     return S_OK;
 }
