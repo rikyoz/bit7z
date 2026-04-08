@@ -162,28 +162,29 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
 
     auto& cachedVolume = currentVolume();
 
-    UInt64 localOffset = mAbsolutePosition - cachedVolume.globalOffset;
-    HRESULT result = S_OK;
-    if ( localOffset != cachedVolume.seekPosition ) {
-        result = cachedVolume.stream->Seek( static_cast< Int64 >( localOffset ), STREAM_SEEK_SET, &localOffset );
-        if ( result != S_OK ) {
-            return result;
-        }
-        cachedVolume.seekPosition = localOffset;
+    const auto volumeOffset = mAbsolutePosition - cachedVolume.globalOffset;
+    if ( volumeOffset != cachedVolume.seekPosition ) {
+        /* The offset we must read from is different from the last offset we read from. */
+        UInt64 newPosition{};
+        RINOK( cachedVolume.stream->Seek( static_cast< Int64 >( volumeOffset ), STREAM_SEEK_SET, &newPosition ) );
+        cachedVolume.seekPosition = newPosition;
     }
 
-    const std::uint64_t remaining = cachedVolume.volumeSize - localOffset;
-    if ( size > remaining ) {
-        size = static_cast< UInt32 >( remaining );
-    }
-    result = cachedVolume.stream->Read( data, size, &size );
+    /* Determining how much we can read from the volume stream */
+    const auto readSize = std::min( size, static_cast< UInt32 >( cachedVolume.volumeSize - cachedVolume.seekPosition ) );
+
+    /* Reading the volume stream */
+    UInt32 bytesRead{};
+    const auto result = cachedVolume.stream->Read( data, readSize, &bytesRead );
+
     // Note: size is the number of bytes successfully read by CFileInStream::Read,
     // so we don't need to check for result here, and we can update the positions unconditionally.
-    mAbsolutePosition += size;
-    cachedVolume.seekPosition += size;
+    /* Updating the positions */
+    mAbsolutePosition += bytesRead;
+    cachedVolume.seekPosition += bytesRead;
 
     if ( processedSize != nullptr ) {
-        *processedSize = size;
+        *processedSize += bytesRead;
     }
     return result;
 } catch ( const BitException& ex ) {
