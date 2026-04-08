@@ -224,9 +224,9 @@ namespace {
 // Utility function for computing the ceil division of two unsigned integers.
 // Computes ceil( a / b ) for unsigned integers using ( ( a - 1 ) / b ) + 1 instead of the naive
 // ( a + b - 1 ) / b to avoid overflow, with an explicit check for a == 0 to prevent underflow.
-template<typename T, typename = typename std::enable_if< std::is_unsigned<T>::value >::type >
-constexpr auto ceil_div( T a, T b ) -> T {
-    return a == 0 ? 0 : ( ( a - 1 ) / b ) + 1;
+template<typename T, typename = typename std::enable_if< std::is_unsigned< T >::value >::type >
+constexpr auto ceil_div( T dividend, T divisor ) -> T {
+    return dividend == 0 ? 0 : ( ( dividend - 1 ) / divisor ) + 1;
 }
 } // namespace
 
@@ -238,7 +238,7 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
 
     // The new size would produce a number of volumes above the maximum allowed.
     // Note: mMaxVolumeSize is non-zero by construction.
-    if ( ceil_div( newSize, mMaxVolumeSize ) > maxVolumes ) {
+    if ( ceil_div( static_cast< std::uint64_t >( newSize ), mMaxVolumeSize ) > maxVolumes ) {
         return E_INVALIDARG;
     }
 
