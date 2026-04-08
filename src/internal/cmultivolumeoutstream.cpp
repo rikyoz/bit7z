@@ -167,19 +167,19 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
     const auto writeSize = std::min( size, static_cast< UInt32 >( mMaxVolumeSize - volume.seekPosition ) );
 
     /* Writing to the volume stream */
-    UInt32 writtenSize{};
-    RINOK( volume.stream->Write( data, writeSize, &writtenSize ) ) //-V3504
+    UInt32 bytesWritten{};
+    RINOK( volume.stream->Write( data, writeSize, &bytesWritten ) ) //-V3504
 
     /* Updating the positions */
-    volume.seekPosition += writtenSize;
-    mAbsolutePosition += writtenSize;
+    volume.seekPosition += bytesWritten;
+    mAbsolutePosition += bytesWritten;
 
     /* We might have written beyond the old known full size of the output archive, updating it. */
     mTotalSize = std::max( mAbsolutePosition, mTotalSize );
     volume.volumeSize = std::max( volume.seekPosition, volume.volumeSize );
 
     if ( processedSize != nullptr ) {
-        *processedSize += writtenSize;
+        *processedSize += bytesWritten;
     }
     return S_OK;
 } catch ( const BitException& ex ) {
