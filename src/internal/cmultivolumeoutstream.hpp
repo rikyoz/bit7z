@@ -35,17 +35,13 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Total size of the output archive (sum of the volumes' sizes).
         std::uint64_t mTotalSize;
 
-#ifndef _WIN32
-        std::size_t mOpenCount = 0;
-        std::size_t mNewestVolume = kNoVolume;
-        std::size_t mOldestVolume = kNoVolume;
-#endif
-
-        VolumesCache< CFileOutStream > mVolumes;
+        // Many archive formats store their internal metadata at the beginning of the archive (7-Zip does the same).
+        // So we evict the newest opened volume, rather than the oldest one, in this case.
+        VolumesCache< CFileOutStream, EvictionPolicy::Newest > mVolumes;
 
         auto currentVolume() -> CachedVolume< CFileOutStream >&;
 
-        void ensureVolumeOpen( CachedVolume<CFileOutStream>& cachedVolume, std::size_t volumeIndex );
+        void ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex );
 
     public:
         CMultiVolumeOutStream( std::uint64_t volSize, fs::path archiveName );

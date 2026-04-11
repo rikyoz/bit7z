@@ -56,7 +56,7 @@ auto CMultiVolumeOutStream::currentVolume() -> CachedVolume<CFileOutStream>& {
     auto& cachedVolume = mVolumes[ volumeIndex ];
 
 #ifndef _WIN32
-    if ( volumeIndex == mNewestVolume ) {
+    if ( volumeIndex == mVolumes.newest() ) {
         return cachedVolume; // Already the newest open volume, no need to ensure it is opened.
     }
 #endif
@@ -73,76 +73,11 @@ void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& ca
     }
 #else
     if ( cachedVolume.stream == nullptr ) {
-        // The volume was evicted from the LRU list, so we need to reopen it.
-        static const auto openedFilesThreshold = openHandlesThreshold();
-
-        // Opening the volume before evicting the oldest one so that
-        // we can handle an open failure without evicting the oldest one.
         cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), FileFlag::OpenAlways );
-        ++mOpenCount;
-
-        if ( mOpenCount >= openedFilesThreshold ) {
-            // Too many open volumes, evicting the newest one (i.e., the head of the open volumes list).
-            // Many archive formats store their internal metadata at the beginning of the archive (7-Zip does the same).
-            auto& newest = mVolumes[ mNewestVolume ];
-
-            // The "new" newest volume is the volume before the "old" newest volume.
-            mNewestVolume = newest.olderVolume;
-            if ( mNewestVolume != kNoVolume ) {
-                mVolumes[ mNewestVolume ].newerVolume = kNoVolume;
-            } else {
-                // The "old" newest volume didn't have an older volume, i.e., the list had only one volume.
-                mOldestVolume = kNoVolume;
-            }
-
-            // Evicting the "old" newest volume.
-            newest.newerVolume = kNoVolume;
-            newest.olderVolume = kNoVolume;
-            newest.stream.Release();
-            --mOpenCount;
-        }
-
-        if ( cachedVolume.seekPosition != 0 ) {
-            // Restoring the seek position so Write() can skip re-seeking in the common case.
-            UInt64 newPosition{}; // UInt64 (not std::uint64_t) to match Seek's output parameter type on all platforms.
-            const HRESULT seekResult = cachedVolume.stream->Seek(
-                static_cast< Int64 >( cachedVolume.seekPosition ),
-                STREAM_SEEK_SET,
-                &newPosition
-            );
-            if ( seekResult != S_OK ) {
-                cachedVolume.seekPosition = 0; // Failed to seek, stream is still at the beginning.
-            } else {
-                cachedVolume.seekPosition = newPosition;
-            }
-        }
+        mVolumes.trackReopen( cachedVolume, volumeIndex );
     } else {
-        // Before promoting this volume to the head, we unlink it from its current position.
-        if ( cachedVolume.olderVolume != kNoVolume ) {
-            // Before: newer <- cached <- older, after: newer <- older
-            mVolumes[ cachedVolume.olderVolume ].newerVolume = cachedVolume.newerVolume;
-        } else {
-            // Before: newer <- cached (oldest), after: newer (oldest)
-            mOldestVolume = cachedVolume.newerVolume;
-        }
-        if ( cachedVolume.newerVolume != kNoVolume ) {
-            // Before: newer -> cached -> older, after: newer -> older
-            mVolumes[ cachedVolume.newerVolume ].olderVolume = cachedVolume.olderVolume;
-        }
+        mVolumes.promote( cachedVolume, volumeIndex );
     }
-
-    if ( mNewestVolume != kNoVolume ) {
-        // Before: newest, after: (newest) cached <- (old) newest
-        mVolumes[ mNewestVolume ].newerVolume = volumeIndex;
-    }
-    if ( mOldestVolume == kNoVolume ) {
-        mOldestVolume = volumeIndex;
-    }
-
-    // Promoting this volume to the head of the open volumes list.
-    cachedVolume.olderVolume = mNewestVolume;
-    cachedVolume.newerVolume = kNoVolume;
-    mNewestVolume = volumeIndex;
 #endif
 }
 
@@ -216,7 +151,7 @@ namespace {
 // Utility function for computing the ceil division of two unsigned integers.
 // Computes ceil( a / b ) for unsigned integers using ( ( a - 1 ) / b ) + 1 instead of the naive
 // ( a + b - 1 ) / b to avoid overflow, with an explicit check for a == 0 to prevent underflow.
-template<typename T, typename = typename std::enable_if< std::is_unsigned< T >::value >::type >
+template< typename T, typename = typename std::enable_if< std::is_unsigned< T >::value >::type >
 constexpr auto ceil_div( T dividend, T divisor ) -> T {
     return dividend == 0 ? 0 : ( ( dividend - 1 ) / divisor ) + 1;
 }
@@ -244,21 +179,11 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
 
         // The volume starts at or beyond the new size, so it must be released and deleted.
         if ( lastVolume.stream != nullptr ) {
-            lastVolume.stream.Release();
 #ifndef _WIN32
-            // Unlink from the open-volumes list.
-            if ( lastVolume.newerVolume != kNoVolume ) {
-                mVolumes[ lastVolume.newerVolume ].olderVolume = kNoVolume;
-            } else { // lastVolume is the newest volume
-                mNewestVolume = lastVolume.olderVolume;
-            }
-            if ( lastVolume.olderVolume != kNoVolume ) {
-                mVolumes[ lastVolume.olderVolume ].newerVolume = kNoVolume;
-            } else { // lastVolume is the oldest volume
-                mOldestVolume = lastVolume.newerVolume;
-            }
-            --mOpenCount;
+            mVolumes.unlink( lastVolume );
+            mVolumes.trackClosed();
 #endif
+            lastVolume.stream.Release();
         }
 
         std::error_code error;

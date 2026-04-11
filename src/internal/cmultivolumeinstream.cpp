@@ -55,7 +55,7 @@ auto CMultiVolumeInStream::currentVolume() -> CachedVolume< CFileInStream >& {
                 return cachedVolume; // Already the last opened, nothing to do.
             }
 #else
-            if ( midpoint == mNewestVolume ) {
+            if ( midpoint == mVolumes.newest() ) {
                 return cachedVolume; // Already the newest, nothing to do.
             }
 #endif
@@ -67,88 +67,23 @@ auto CMultiVolumeInStream::currentVolume() -> CachedVolume< CFileInStream >& {
         midpoint = ( left + right ) / 2;
     }
 }
+// NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 
-void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t midpoint ) {
+void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex ) {
 #ifdef _WIN32
     if ( cachedVolume.stream == nullptr ) {
         cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
     }
-    mLastOpenedVolume = midpoint;
 #else
     if ( cachedVolume.stream == nullptr ) {
-        // The volume was evicted from the LRU list, so we need to reopen it.
-        static const auto openedFilesThreshold = openHandlesThreshold();
-
-        // Opening the volume before evicting the oldest one so that
-        // we can handle an open failure without evicting the oldest one.
         cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
-        ++mOpenCount;
-
-        if ( mOpenCount >= openedFilesThreshold ) {
-            // Too many open volumes, evicting the oldest one (i.e., the tail of the open volumes list).
-            auto& oldest = mVolumes[ mOldestVolume ];
-
-            // The "new" oldest volume is the volume before the "old" oldest volume.
-            mOldestVolume = oldest.newerVolume;
-            if ( mOldestVolume != kNoVolume ) {
-                mVolumes[ mOldestVolume ].olderVolume = kNoVolume;
-            } else {
-                // The "old" oldest volume didn't have a newer volume, i.e., the list had only one volume.
-                mNewestVolume = kNoVolume;
-            }
-
-            // Evicting the "old" oldest volume.
-            oldest.newerVolume = kNoVolume;
-            oldest.olderVolume = kNoVolume;
-            oldest.stream.Release();
-            --mOpenCount;
-        }
-
-        if ( cachedVolume.seekPosition != 0 ) {
-            // Restoring the seek position so Read() can skip re-seeking in the common case.
-            UInt64 newPosition{}; // UInt64 (not std::uint64_t) to match Seek's output parameter type on all platforms.
-            const HRESULT seekResult = cachedVolume.stream->Seek(
-                static_cast< Int64 >( cachedVolume.seekPosition ),
-                STREAM_SEEK_SET,
-                &newPosition
-            );
-            if ( seekResult != S_OK ) {
-                cachedVolume.seekPosition = 0; // Failed to seek, stream is still at the beginning.
-            } else {
-                cachedVolume.seekPosition = newPosition;
-            }
-        }
+        mVolumes.trackReopen( cachedVolume, volumeIndex );
     } else {
-        // Before promoting this volume to the head, we unlink it from its current position.
-        if ( cachedVolume.olderVolume != kNoVolume ) {
-            // Before: newer <- cached <- older, after: newer <- older
-            mVolumes[ cachedVolume.olderVolume ].newerVolume = cachedVolume.newerVolume;
-        } else {
-            // Before: newer <- cached (oldest), after: newer (oldest)
-            mOldestVolume = cachedVolume.newerVolume;
-        }
-        if ( cachedVolume.newerVolume != kNoVolume ) {
-            // Before: newer -> cached -> older, after: newer -> older
-            mVolumes[ cachedVolume.newerVolume ].olderVolume = cachedVolume.olderVolume;
-        }
+        mVolumes.promote( cachedVolume, volumeIndex );
     }
-
-    if ( mNewestVolume != kNoVolume ) {
-        // Before: newest, after: (newest) cached <- (old) newest
-        mVolumes[ mNewestVolume ].newerVolume = midpoint;
-    }
-    if ( mOldestVolume == kNoVolume ) {
-        mOldestVolume = midpoint;
-    }
-
-    // Promoting this volume to the head of the open volumes list.
-    cachedVolume.olderVolume = mNewestVolume;
-    cachedVolume.newerVolume = kNoVolume;
-    mNewestVolume = midpoint;
-    mLastOpenedVolume = midpoint;
 #endif
+    mLastOpenedVolume = volumeIndex;
 }
-// NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept try {

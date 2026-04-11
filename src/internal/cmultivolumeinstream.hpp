@@ -25,17 +25,12 @@ namespace bit7z {
 class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
         std::uint64_t mAbsolutePosition;
         std::uint64_t mTotalSize;
-        VolumesCache< CFileInStream > mVolumes;
-#ifndef _WIN32
-        std::size_t mOpenCount = 0;
-        std::size_t mNewestVolume = kNoVolume;
-        std::size_t mOldestVolume = kNoVolume;
-#endif
+        VolumesCache< CFileInStream, EvictionPolicy::Oldest > mVolumes;
         std::size_t mLastOpenedVolume = kNoVolume;
 
         auto currentVolume() -> CachedVolume< CFileInStream >&;
 
-        void ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t midpoint );
+        void ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex );
 
         void addVolume( const fs::path& volumePath );
 
