@@ -158,6 +158,49 @@ TestDirectory::~TestDirectory() {
     set_current_dir( mOldCurrentDirectory );
 }
 
+auto random_test_id() -> std::string {
+    static constexpr auto hex_digits = "0123456789abcdef";
+    static constexpr auto hex_count = 16;
+
+    thread_local static std::default_random_engine random_engine{ std::random_device{}() };
+    thread_local static std::uniform_int_distribution<> distribution{ 0, hex_count - 1 };
+
+    std::string str( 8, '\0' );
+    for ( char& str_char : str ) {
+        str_char = hex_digits[ distribution( random_engine ) ]; // NOLINT(*-pro-bounds-pointer-arithmetic)
+    }
+    return str;
+}
+
+auto create_temp_directory( const std::string& name ) -> fs::path {
+    const auto tempDir = fs::temp_directory_path() / name;
+    if ( !fs::exists( tempDir ) ) { // Creating the temp directory since it doesn't exist.
+        fs::create_directory( tempDir );
+    } else if ( !fs::is_empty( tempDir ) ) { // The temp directory already exists, but it contains some files.
+        for ( const auto& entry : fs::directory_iterator( tempDir ) ) {
+            fs::remove_all( entry );
+        }
+    }
+    return tempDir;
+}
+
+TempDirectory::TempDirectory( const std::string& dirName )
+    : mDirectory{ create_temp_directory( dirName + "_" + random_test_id() ) } {}
+
+TempDirectory::~TempDirectory() {
+    if ( fs::is_empty( mDirectory ) ) {
+        fs::remove( mDirectory );
+    }
+}
+
+auto TempDirectory::path() const -> const fs::path& {
+    return mDirectory;
+}
+
+TempDirectory::operator tstring() const {
+    return to_tstring( mDirectory );
+}
+
 } // namespace filesystem
 } // namespace test
 } // namespace bit7z

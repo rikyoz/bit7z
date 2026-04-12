@@ -188,6 +188,29 @@ class TestDirectory {
         ~TestDirectory();
 };
 
+class TempDirectory {
+    public:
+        explicit TempDirectory( const std::string& dirName );
+
+        explicit TempDirectory( const TempDirectory& ) = delete;
+
+        explicit TempDirectory( TempDirectory&& ) = delete;
+
+        auto operator=( const TempDirectory& ) -> TempDirectory& = delete;
+
+        auto operator=( TempDirectory&& ) -> TempDirectory& = delete;
+
+        ~TempDirectory();
+
+        BIT7Z_NODISCARD
+        auto path() const -> const fs::path&;
+
+        operator tstring() const; // NOLINT(*-explicit-constructor, *-explicit-conversions)
+
+    private:
+        fs::path mDirectory;
+};
+
 #endif
 
 } // namespace filesystem
