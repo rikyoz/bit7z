@@ -539,14 +539,20 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
     std::string targetPath;
     targetPath.resize( MAX_PATHNAME_LEN );
     // NOLINTNEXTLINE(readability-container-data-pointer, *-pro-bounds-avoid-unchecked-container-access)
-    ifs.getline( &targetPath[ 0 ], MAX_PATHNAME_LEN );
+    ifs.read( &targetPath[ 0 ], MAX_PATHNAME_LEN );
 
-    if ( !ifs ) { // Error while reading the path, exiting.
+    if ( ifs.bad() ) { // Error while reading the path, exiting.
         return false;
     }
 
     // Shrinking the path string to its actual size.
     targetPath.resize( static_cast< std::size_t >( ifs.gcount() ) );
+
+    // Null bytes are invalid in POSIX paths and would cause a mismatch between
+    // the validated path and the OS-interpreted path (which truncates at the first null).
+    if ( targetPath.find( '\0' ) != std::string::npos ) {
+        return false;
+    }
 
     // No need to keep the file open.
     ifs.close();
