@@ -22,7 +22,9 @@ class CFileOutStream : public CStdOutStream {
     public:
         explicit CFileOutStream( fs::path filePath, bool createAlways = false );
 
-        BIT7Z_NODISCARD auto path() const -> const fs::path&;
+        BIT7Z_NODISCARD auto path() const & -> const fs::path&;
+
+        BIT7Z_NODISCARD auto path() && -> fs::path;
 
         BIT7Z_NODISCARD auto fail() const -> bool;
 

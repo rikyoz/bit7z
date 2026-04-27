@@ -348,7 +348,7 @@ class BitOutputArchive {
 
         auto initOutArchive() const -> CMyComPtr< IOutArchive >;
 
-        auto initOutFileStream( const fs::path& outArchive, bool updatingArchive ) const -> CMyComPtr< IOutStream >;
+        auto initOutFileStream( const fs::path& outArchive ) const -> CMyComPtr< IOutStream >;
 
         BitOutputArchive( const BitAbstractArchiveCreator& creator,
                           const fs::path& inArc,

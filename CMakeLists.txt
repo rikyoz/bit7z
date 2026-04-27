@@ -54,6 +54,7 @@ set( PUBLIC_HEADERS
 # header files
 set( HEADERS
      src/internal/archiveproperties.hpp
+     src/internal/atomicfilereplacer.hpp
      src/internal/bufferextractcallback.hpp
      src/internal/bufferitem.hpp
      src/internal/bufferutil.hpp
@@ -92,6 +93,7 @@ set( HEADERS
      src/internal/operationresult.hpp
      src/internal/processeditem.hpp
      src/internal/renameditem.hpp
+     src/internal/securetempdir.hpp
      src/internal/stdinputitem.hpp
      src/internal/streamextractcallback.hpp
      src/internal/streamutil.hpp
@@ -121,6 +123,7 @@ set( SOURCES
      src/bitoutputarchive.cpp
      src/bitpropvariant.cpp
      src/bittypes.cpp
+     src/internal/atomicfilereplacer.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferitem.cpp
      src/internal/bufferutil.cpp
@@ -155,6 +158,7 @@ set( SOURCES
      src/internal/operationresult.cpp
      src/internal/processeditem.cpp
      src/internal/renameditem.cpp
+     src/internal/securetempdir.cpp
      src/internal/stdinputitem.cpp
      src/internal/streamextractcallback.cpp
      src/internal/stringutil.cpp
