@@ -229,6 +229,12 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
 void BitOutputArchive::compressTo( const tstring& outFile ) {
     using namespace bit7z::filesystem;
     const fs::path outPath = tstring_to_path( outFile );
+    if ( !outPath.has_filename() ) {
+        throw BitException( "Invalid output archive path",
+                            make_error_code( BitError::InvalidArchivePath ),
+                            outFile );
+    }
+
     std::error_code error;
     if ( fs::exists( outPath, error ) ) {
         const OverwriteMode overwriteMode = mArchiveCreator.overwriteMode();
