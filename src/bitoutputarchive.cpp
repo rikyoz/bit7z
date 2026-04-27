@@ -207,6 +207,10 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
     const CMyComPtr< IOutArchive > newArc = initOutArchive();
 
     if ( updatingArchive ) {
+        if ( mArchiveCreator.volumeSize() > 0 ) {
+            throw BitException( "Cannot update a multi-volume archive in place",
+                                make_error_code( BitError::UnsupportedOperation ) );
+        }
         AtomicFileReplacer replacer{ outFile };
         compressOut( newArc, replacer.stream(), updateCallback );
 
