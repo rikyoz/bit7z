@@ -12,18 +12,15 @@
 
 #include "internal/cmultivolumeinstream.hpp"
 
+#include "biterror.hpp"
+#include "bitexception.hpp"
 #include "bittypes.hpp"
-#include "internal/cvolumeinstream.hpp"
 #include "internal/fs.hpp"
-#include "internal/fsutil.hpp"
 #include "internal/util.hpp"
-
-#include <cstddef>
-#include <cstdint>
 
 namespace bit7z {
 
-CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mCurrentPosition{ 0 }, mTotalSize{ 0 } {
+CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mAbsolutePosition{ 0 }, mTotalSize{ 0 } {
     constexpr std::size_t kVolumeDigits = 3u;
     std::size_t volumeIndex = 1u;
     fs::path volumePath = firstVolume;
@@ -36,62 +33,99 @@ CMultiVolumeInStream::CMultiVolumeInStream( const fs::path& firstVolume ) : mCur
             volumeExt.insert( volumeExt.begin(), kVolumeDigits - volumeExt.length(), BIT7Z_STRING( '0' ) );
         }
         volumePath.replace_extension( volumeExt );
-
-        // TODO: Avoid keeping all the volumes streams open
-        constexpr auto kOpenedFilesThreshold = 500;
-        if ( volumeIndex == kOpenedFilesThreshold ) {
-            // Note: we use == to avoid increasing the limit more than once;
-            // the volumeIndex is always increasing, so it is not an issue here.
-            filesystem::fsutil::increase_opened_files_limit();
-        }
     }
 }
 
-auto CMultiVolumeInStream::currentVolume() -> const CMyComPtr< CVolumeInStream >& {
+// NOLINTBEGIN(*-pro-bounds-avoid-unchecked-container-access)
+auto CMultiVolumeInStream::currentVolume() -> CachedVolume< CFileInStream >& {
     std::size_t left = 0;
     std::size_t right = mVolumes.size();
-    std::size_t midpoint = right / 2;
+    std::size_t midpoint = mLastOpenedVolume == kNoVolume ? right / 2 : mLastOpenedVolume;
     while ( true ) {
-        auto& volume = mVolumes[ midpoint ];
-        if ( mCurrentPosition < volume->globalOffset() ) {
+        auto& cachedVolume = mVolumes[ midpoint ];
+        if ( mAbsolutePosition < cachedVolume.globalOffset ) {
+            // We need to search in [left, midpoint).
             right = midpoint;
-        } else if ( mCurrentPosition >= volume->globalOffset() + volume->size() ) {
+        } else if ( mAbsolutePosition >= cachedVolume.globalOffset + cachedVolume.volumeSize ) {
+            // We need to search in [midpoint + 1, right).
             left = midpoint + 1;
         } else {
-            return volume;
+#ifdef _WIN32
+            if ( midpoint == mLastOpenedVolume ) {
+                return cachedVolume; // Already the last opened, nothing to do.
+            }
+#else
+            if ( midpoint == mVolumes.newest() ) {
+                return cachedVolume; // Already the newest, nothing to do.
+            }
+#endif
+
+            // Volume found, not the currently newest, so we update it to be the newest.
+            ensureVolumeOpen( cachedVolume, midpoint );
+            return cachedVolume;
         }
         midpoint = ( left + right ) / 2;
     }
 }
+// NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
+
+void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex ) {
+#ifdef _WIN32
+    if ( cachedVolume.stream == nullptr ) {
+        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
+    }
+#else
+    if ( cachedVolume.stream == nullptr ) {
+        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
+        mVolumes.trackReopen( cachedVolume, volumeIndex );
+    } else {
+        mVolumes.promote( cachedVolume, volumeIndex );
+    }
+#endif
+    mLastOpenedVolume = volumeIndex;
+}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept try {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
     }
 
-    if ( size == 0 || mCurrentPosition >= mTotalSize ) {
+    if ( size == 0 || mAbsolutePosition >= mTotalSize ) {
         return S_OK;
     }
 
-    const auto& volume = currentVolume();
-    UInt64 localOffset = mCurrentPosition - volume->globalOffset();
-    HRESULT result = volume->Seek( static_cast< Int64 >( localOffset ), STREAM_SEEK_SET, &localOffset );
-    if ( result != S_OK ) {
-        return result;
+    auto& cachedVolume = currentVolume();
+
+    const auto volumeOffset = mAbsolutePosition - cachedVolume.globalOffset;
+    if ( volumeOffset != cachedVolume.seekPosition ) {
+        /* The offset we must read from is different from the last offset we read from. */
+        UInt64 newPosition{};
+        RINOK( cachedVolume.stream->Seek( static_cast< Int64 >( volumeOffset ), STREAM_SEEK_SET, &newPosition ) );
+        cachedVolume.seekPosition = newPosition;
     }
 
-    const std::uint64_t remaining = volume->size() - localOffset;
-    if ( size > remaining ) {
-        size = static_cast< UInt32 >( remaining );
-    }
-    result = volume->Read( data, size, &size );
-    mCurrentPosition += size;
+    /* Determining how much we can read from the volume stream */
+    const auto readSize = std::min( size, static_cast< UInt32 >( cachedVolume.volumeSize - cachedVolume.seekPosition ) );
+
+    /* Reading the volume stream */
+    UInt32 bytesRead{};
+    const auto result = cachedVolume.stream->Read( data, readSize, &bytesRead );
+
+    // Note: size is the number of bytes successfully read by CFileInStream::Read,
+    // so we don't need to check for result here, and we can update the positions unconditionally.
+    /* Updating the positions */
+    mAbsolutePosition += bytesRead;
+    cachedVolume.seekPosition += bytesRead;
 
     if ( processedSize != nullptr ) {
-        *processedSize = size;
+        *processedSize += bytesRead;
     }
     return result;
+} catch ( const BitException& ex ) {
+    return ex.hresultCode();
+} catch ( ... ) {
+    return E_FAIL;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -101,7 +135,7 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
         case STREAM_SEEK_SET:
             break;
         case STREAM_SEEK_CUR:
-            seekPosition = mCurrentPosition;
+            seekPosition = mAbsolutePosition;
             break;
         case STREAM_SEEK_END:
             seekPosition = mTotalSize;
@@ -111,22 +145,31 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
     }
 
     RINOK( seek_to_offset( seekPosition, offset ) ) //-V3504
-    mCurrentPosition = seekPosition;
+    mAbsolutePosition = seekPosition;
 
     if ( newPosition != nullptr ) {
-        *newPosition = mCurrentPosition;
+        *newPosition = mAbsolutePosition;
     }
     return S_OK;
 }
 
 void CMultiVolumeInStream::addVolume( const fs::path& volumePath ) {
-    std::uint64_t globalOffset = 0;
-    if ( !mVolumes.empty() ) {
-        const auto& lastStream = mVolumes.back();
-        globalOffset = lastStream->globalOffset() + lastStream->size();
+    const auto volumeSize = fs::file_size( volumePath );
+    if ( volumeSize == 0 ) {
+        throw BitException{ "Invalid volume archive", make_error_code( BitError::Fail ) };
     }
-    mVolumes.emplace_back( make_com< CVolumeInStream >( volumePath, globalOffset ) );
-    mTotalSize += mVolumes.back()->size();
+    mTotalSize += volumeSize;
+
+    const std::uint64_t globalOffset = [&]() -> std::uint64_t {
+        if ( mVolumes.empty() ) {
+            return 0;
+        }
+
+        const auto& lastStream = mVolumes.back();
+        return lastStream.globalOffset + lastStream.volumeSize;
+    }();
+    CachedVolume< CFileInStream > cachedVolume{ volumePath, volumeSize, globalOffset, 0u, {} };
+    mVolumes.push_back( std::move( cachedVolume ) );
 }
 
 } // namespace bit7z

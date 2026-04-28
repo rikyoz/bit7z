@@ -10,9 +10,9 @@
 #ifndef CMULTIVOLUMEOUTSTREAM_HPP
 #define CMULTIVOLUMEOUTSTREAM_HPP
 
-#include "internal/com.hpp"
-#include "internal/cvolumeoutstream.hpp"
+#include "internal/cfileoutstream.hpp"
 #include "internal/guiddef.hpp"
+#include "internal/volumescache.hpp"
 
 #include <7zip/IStream.h>
 
@@ -29,19 +29,19 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         // Common name prefix of every volume.
         fs::path mVolumePrefix;
 
-        // The current volume stream on which we are working.
-        std::size_t mCurrentVolumeIndex;
-
-        // Offset from the beginning of the current volume stream (i.e., the one at mCurrentVolumeIndex).
-        std::uint64_t mCurrentVolumeOffset;
-
         // Offset from the beginning of the whole output archive.
-        std::uint64_t mAbsoluteOffset;
+        std::uint64_t mAbsolutePosition;
 
         // Total size of the output archive (sum of the volumes' sizes).
-        std::uint64_t mFullSize;
+        std::uint64_t mTotalSize;
 
-        std::vector< CMyComPtr< CVolumeOutStream > > mVolumes;
+        // Many archive formats store their internal metadata at the beginning of the archive (7-Zip does the same).
+        // So we evict the newest opened volume, rather than the oldest one, in this case.
+        VolumesCache< CFileOutStream, EvictionPolicy::Newest > mVolumes;
+
+        auto currentVolume() -> CachedVolume< CFileOutStream >&;
+
+        void ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex );
 
     public:
         CMultiVolumeOutStream( std::uint64_t volSize, fs::path archiveName );

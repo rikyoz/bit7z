@@ -22,7 +22,7 @@ namespace bit7z {
 
 class CFileOutStream : public IOutStream, public CMyUnknownImp {
     public:
-        explicit CFileOutStream( const fs::path& filePath, bool createAlways = false );
+        explicit CFileOutStream( const fs::path& filePath, FileFlag fileFlag = FileFlag::CreateNew );
 
         CFileOutStream( const CFileOutStream& ) = delete;
 

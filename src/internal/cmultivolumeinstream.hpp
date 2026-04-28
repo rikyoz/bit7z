@@ -11,24 +11,26 @@
 #define CMULTIVOLUMEINSTREAM_HPP
 
 #include "internal/com.hpp"
-#include "internal/cvolumeinstream.hpp"
+#include "internal/cfileinstream.hpp"
 #include "internal/guiddef.hpp"
 #include "internal/macros.hpp"
+#include "internal/volumescache.hpp"
 
 #include <7zip/IStream.h>
 
-#include <cstdint>
 #include <vector>
 
 namespace bit7z {
 
 class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
-        std::uint64_t mCurrentPosition;
+        std::uint64_t mAbsolutePosition;
         std::uint64_t mTotalSize;
+        VolumesCache< CFileInStream, EvictionPolicy::Oldest > mVolumes;
+        std::size_t mLastOpenedVolume = kNoVolume;
 
-        std::vector< CMyComPtr< CVolumeInStream > > mVolumes;
+        auto currentVolume() -> CachedVolume< CFileInStream >&;
 
-        auto currentVolume() -> const CMyComPtr< CVolumeInStream >&;
+        void ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex );
 
         void addVolume( const fs::path& volumePath );
 

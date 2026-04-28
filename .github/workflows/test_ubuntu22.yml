@@ -84,7 +84,7 @@ jobs:
       Ubuntu (${{ matrix.arch }}), ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     # Custom version of https://github.com/mjp41/workaround8649/blob/main/action.yml for ubuntu-22.04-arm
     - name: Update toolchains
