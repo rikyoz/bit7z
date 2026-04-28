@@ -216,10 +216,10 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
         }
     }
 #else
-    SECTION( "pre-existing <archive>.tmp causes applyChanges to refuse rather than follow it" ) {
-        /* Windows-only: the update may target "<archive>.tmp", but it must
-         * refuse if anything (regular file, symlink, junction, ...) already
-         * exists at that path. */
+    SECTION( "pre-existing <archive>.tmp does not block the update" ) {
+        /* Windows-only: when "<archive>.tmp" already exists, the update must
+         * step past it via a numeric postfix and proceed. The pre-existing
+         * entry must remain untouched. */
         const fs::path archiveTmpPath = scoped.path() / BIT7Z_NATIVE_STRING( "archive.7z.tmp" );
         const std::string sentinelText = "sentinel-text";
         {
@@ -231,22 +231,27 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
         {
             BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
             editor.updateItem( itemName, updatedBytes );
-            REQUIRE_THROWS( editor.applyChanges() );
+            REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
+        // The pre-existing entry must not have been overwritten.
         REQUIRE( read_file_text( archiveTmpPath ) == sentinelText );
 
-        // The original archive must remain untouched and the pre-existing file must not be overwritten.
+        // The archive must now hold the updated content.
         BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
         REQUIRE( reader.itemsCount() == 1u );
+        std::vector< byte_t > content;
+        reader.extractTo( content );
+        REQUIRE( content == updatedBytes );
     }
 
     SECTION( "pre-placed symlink at <archive>.tmp does not redirect the update" ) {
         /* Windows mirror of the POSIX symlink test. Creating a symlink on
          * Windows requires admin privileges or Developer Mode; the test
-         * self-skips when it's not possible to create the symlink. When
-         * the symlink can be created, the update must reject it: neither
-         * the symlink target nor the original archive should be touched. */
+         * self-skips when it's not possible to create the symlink. When the
+         * symlink can be created, the update must step past it via a numeric
+         * postfix: the symlink target must remain untouched, and the symlink
+         * itself must not be replaced. */
         const fs::path archiveTmpPath = scoped.path() / BIT7Z_NATIVE_STRING( "archive.7z.tmp" );
         const fs::path victim = scoped.path() / BIT7Z_NATIVE_STRING( "victim.txt" );
         const std::string victimText = "victim-original";
@@ -263,17 +268,24 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
             {
                 BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
                 editor.updateItem( itemName, updatedBytes );
-                REQUIRE_THROWS( editor.applyChanges() );
+                REQUIRE_NOTHROW( editor.applyChanges() );
             }
 
+            // The victim file must not have been touched via the symlink.
             REQUIRE( read_file_text( victim ) == victimText );
+
+            // The symlink itself must still be a symlink (not replaced).
             std::error_code symlinkStatusError;
             const auto status = fs::symlink_status( archiveTmpPath, symlinkStatusError );
             REQUIRE_FALSE( symlinkStatusError );
             REQUIRE( fs::is_symlink( status ) );
 
+            // The archive must now hold the updated content.
             BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
             REQUIRE( reader.itemsCount() == 1u );
+            std::vector< byte_t > content;
+            reader.extractTo( content );
+            REQUIRE( content == updatedBytes );
         }
     }
 #endif

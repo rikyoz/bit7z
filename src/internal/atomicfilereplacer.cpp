@@ -14,6 +14,7 @@
 
 #include "bitexception.hpp"
 #include "internal/stringutil.hpp"
+#include "internal/util.hpp"
 
 #include <system_error>
 #include <utility>
@@ -22,16 +23,36 @@ namespace bit7z {
 
 #ifdef _WIN32
 namespace {
-auto makeTempPath( const fs::path& targetPath ) -> fs::path {
-    fs::path tmp = targetPath;
-    tmp += L".tmp";
-    return tmp;
+/* Opens a CFileOutStream at "<target>.tmp", retrying with numeric postfixes
+ * "<target>.tmp1", ".tmp2", ... on collision.
+ * Mirrors 7-Zip's retry-on-collision behavior (1 + 65535 retries). */
+auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutStream > {
+    constexpr auto kMaxTempPathRetries = std::numeric_limits< std::uint16_t >::max();
+    fs::path tmpCandidatePath = targetPath;
+    tmpCandidatePath += L".tmp";
+    std::uint32_t i = 0u; // Note: wider than kMaxTempPathRetries so that we can detect when we pass the limit.
+    do {
+        try {
+            return make_com< CFileOutStream >( tmpCandidatePath );
+        } catch ( const BitException& ex ) {
+            if ( ex.code() != std::errc::file_exists ) {
+                throw;
+            }
+        }
+        if ( ++i > kMaxTempPathRetries ) {
+            break;
+        }
+        tmpCandidatePath.replace_extension( L".tmp" + std::to_wstring( i ) );
+    } while ( true );
+    throw BitException( "Could not allocate a unique temporary file name",
+                        std::make_error_code( std::errc::file_exists ),
+                        path_to_tstring( targetPath ) );
 }
 } // namespace
 
 AtomicFileReplacer::AtomicFileReplacer( const fs::path& targetPath )
     : mTargetPath{ targetPath },
-      mStream{ new CFileOutStream{ makeTempPath( targetPath ) } } {}
+      mStream{ openUniqueTempStream( targetPath ) } {}
 #else
 AtomicFileReplacer::AtomicFileReplacer( const fs::path& targetPath )
     : mTempDir{ targetPath },
