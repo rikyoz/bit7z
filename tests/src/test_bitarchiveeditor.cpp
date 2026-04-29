@@ -617,3 +617,42 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
     }
 #endif
 }
+
+/*
+ * In-place multi-volume updates must be refused, matching 7-Zip's own
+ * refusal of update operations on multi-volume archives. When the editor
+ * is configured with a non-zero volume size, the in-place update must throw
+ * before any output is written, so the original archive isn't silently
+ * transformed into a single-file archive.
+ */
+TEST_CASE( "BitArchiveEditor: applyChanges refuses in-place multi-volume updates", "[bitarchiveeditor]" ) {
+    const Bit7zLibrary lib{ sevenzip_lib_path() };
+    const TempTestDirectory testDir{ "bitarchiveeditor" };
+
+    const fs::path archivePath = testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" );
+    const tstring archivePathStr = to_tstring( archivePath );
+    const tstring itemName = BIT7Z_STRING( "data.txt" );
+
+    const buffer_t originalBytes = as_bytes( "Hello, World!" );
+    const buffer_t updatedBytes = as_bytes( "Updated World!" );
+
+    {
+        BitArchiveWriter writer{ lib, BitFormat::SevenZip };
+        writer.addFile( originalBytes, itemName );
+        writer.compressTo( archivePathStr );
+    }
+    REQUIRE( fs::exists( archivePath ) );
+
+    {
+        BitArchiveEditor editor{ lib, archivePathStr, BitFormat::SevenZip };
+        editor.setVolumeSize( 1024 ); // any non-zero size enables splitting
+        editor.updateItem( itemName, updatedBytes );
+        REQUIRE_THROWS( editor.applyChanges() );
+    }
+
+    BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+    REQUIRE( reader.itemsCount() == 1u );
+    buffer_t content;
+    reader.extractTo( content );
+    REQUIRE( content == originalBytes );
+}
