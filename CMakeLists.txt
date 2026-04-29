@@ -59,6 +59,7 @@ set( PUBLIC_HEADERS
 # header files
 set( HEADERS
      src/internal/archiveproperties.hpp
+     src/internal/atomicfilereplacer.hpp
      src/internal/bufferextractcallback.hpp
      src/internal/bufferqueue.hpp
      src/internal/bufferutil.hpp
@@ -134,6 +135,7 @@ set( SOURCES
      src/bitpropvariant.cpp
      src/bitsharedlibrary.cpp
      src/bittypes.cpp
+     src/internal/atomicfilereplacer.cpp
      src/internal/bufferextractcallback.cpp
      src/internal/bufferqueue.cpp
      src/internal/bufferutil.cpp

@@ -38,6 +38,12 @@ class CFileOutStream : public IOutStream, public CMyUnknownImp {
         void setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept;
 #endif
 
+        BIT7Z_NODISCARD
+        auto path() const & noexcept -> const fs::path&;
+
+        BIT7Z_NODISCARD
+        auto path() && noexcept -> fs::path;
+
         // IOutStream
         BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
 

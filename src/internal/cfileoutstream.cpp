@@ -23,6 +23,14 @@ void CFileOutStream::setFileTime( FILETIME creation, FILETIME access, FILETIME m
 }
 #endif
 
+auto CFileOutStream::path() const & noexcept -> const fs::path& {
+    return mFilePath;
+}
+
+auto CFileOutStream::path() && noexcept -> fs::path {
+    return std::move( mFilePath );
+}
+
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {

@@ -153,6 +153,15 @@ auto to_tstring( const native_string& str ) -> const tstring& {
 }
 #endif
 
+template< typename T, typename = typename std::enable_if< std::is_arithmetic<T>::value, T >::type >
+auto to_native_string( T arg ) -> native_string {
+#ifdef _WIN32
+    return std::to_wstring( arg );
+#else
+    return std::to_string( arg );
+#endif
+}
+
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto to_native_string( native_string&& str ) -> native_string {
