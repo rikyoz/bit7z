@@ -112,6 +112,8 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wnon-virtual-dtor )
     endif()
     if( MINGW )
+        # We need compatibility with Vista and later, as we use FILE_ATTRIBUTE_TAG_INFO/GetFileInformationByHandleEx.
+        target_compile_definitions( ${LIB_TARGET} PRIVATE WINVER=0x0600 _WIN32_WINNT=0x600 )
         # Some versions of MinGW might complain that the library is too big when linking to it.
         # Using -Wa,-mbig-obj fixes the linking error.
         # (https://digitalkarabela.com/mingw-w64-how-to-fix-file-too-big-too-many-sections/).

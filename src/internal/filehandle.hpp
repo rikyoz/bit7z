@@ -86,21 +86,58 @@ enum struct FileFlag : std::uint16_t {
 };
 #endif
 
+/**
+ * @brief Enumeration of additional open-time flags, designed as a bitmask.
+ *
+ *   - None → No extra flag.
+ *   - NoFollow → Fail the open if the final path component is a symbolic link
+ *                (O_NOFOLLOW on Unix; emulated on Windows via FILE_FLAG_OPEN_REPARSE_POINT
+ *                plus a post-open reparse-tag check).
+ */
+#ifdef _WIN32
+enum struct ExtraFlag : std::uint8_t {
+    None = 0,
+    NoFollow = 0x1 // Semantic bit; translated to Win32 in open_file.
+};
+#else
+enum struct ExtraFlag : std::uint32_t {
+    None = 0,
+    NoFollow = O_NOFOLLOW
+};
+#endif
+
+/**
+ * @brief Returns the bit representation of a flag enum value, widened to uint32_t
+ *        to avoid signed-int promotion during bitwise operations.
+ */
+template< typename Flag >
+BIT7Z_NODISCARD
+constexpr auto flagBits( Flag flag ) noexcept -> std::uint32_t {
+    return static_cast< std::uint32_t >( to_underlying( flag ) );
+}
+
+template< typename Flag >
+BIT7Z_NODISCARD
+constexpr auto hasFlag( Flag set, Flag bit ) noexcept -> bool {
+    return ( flagBits( set ) & flagBits( bit ) ) == flagBits( bit );
+}
+
 struct OpenFlags {
 #ifdef _WIN32
     AccessFlag accessFlag;
     FileFlag fileFlag;
+    ExtraFlag extraFlag;
 #else
     private:
-        std::uint16_t mValue;
+        std::uint32_t mValue;
 
     public:
-        constexpr OpenFlags( AccessFlag accessFlag, FileFlag fileFlag ) noexcept
-            : mValue{ static_cast< std::uint16_t >( to_underlying( accessFlag ) | to_underlying( fileFlag ) ) } {}
+        constexpr OpenFlags( AccessFlag accessFlag, FileFlag fileFlag, ExtraFlag extraFlag ) noexcept
+            : mValue{ flagBits( accessFlag ) | flagBits( fileFlag ) | flagBits( extraFlag ) } {}
 
         BIT7Z_NODISCARD
-        constexpr auto value() const noexcept -> std::uint16_t {
-            return mValue;
+        constexpr auto value() const noexcept -> int {
+            return static_cast< int >( mValue );
         }
 #endif
 };
@@ -127,7 +164,9 @@ class FileHandle {
 };
 
 struct OutputFile final : FileHandle {
-    explicit OutputFile( const native_string& filePath, FileFlag fileFlag );
+    explicit OutputFile( const native_string& filePath,
+                         FileFlag fileFlag,
+                         ExtraFlag extraFlag = ExtraFlag::NoFollow );
 
     auto write( const void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 
@@ -142,6 +181,8 @@ struct OutputFile final : FileHandle {
 
 struct InputFile final : FileHandle {
     explicit InputFile( const native_string& filePath );
+
+    explicit InputFile( const native_string& filePath, ExtraFlag extraFlag );
 
     auto read( void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 };

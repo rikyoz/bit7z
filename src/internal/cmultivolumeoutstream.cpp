@@ -69,11 +69,17 @@ void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& ca
 #ifdef _WIN32
     (void)volumeIndex;
     if ( cachedVolume.stream == nullptr ) {
-        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native() );
+        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), FileFlag::CreateNew );
     }
 #else
     if ( cachedVolume.stream == nullptr ) {
-        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), FileFlag::OpenAlways );
+        // The volume was evicted from the LRU list, so we need to reopen it.
+        // Opening the volume before evicting the oldest one so that
+        // we can handle an open failure without evicting the oldest one.
+        // First-open vs reopen heuristic: the LRU promotes a just-opened volume to MRU,
+        // so it cannot be evicted before the first Write makes volumeSize > 0.
+        const auto fileFlag = cachedVolume.volumeSize > 0 ? FileFlag::Existing : FileFlag::CreateNew;
+        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), fileFlag );
         mVolumes.trackReopen( cachedVolume, volumeIndex );
     } else {
         mVolumes.promote( cachedVolume, volumeIndex );

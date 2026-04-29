@@ -16,7 +16,9 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-#ifndef _WIN32
+#ifdef _WIN32
+#include "bitwindows.hpp" // For FILE_ATTRIBUTE_TAG_INFO and GetFileInformationByHandleEx.
+#else
 #include <sys/stat.h> // For S_IRUSR and S_IWUSR
 #include <unistd.h>
 
@@ -33,12 +35,17 @@ namespace {
 BIT7Z_ALWAYS_INLINE
 auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t {
 #ifdef _WIN32
+    DWORD flagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
+    if ( hasFlag( openFlags.extraFlag, ExtraFlag::NoFollow ) ) {
+        // Open the reparse point itself so CreateFileW doesn't traverse it.
+        flagsAndAttributes |= FILE_FLAG_OPEN_REPARSE_POINT;
+    }
     const handle_t handle = ::CreateFileW( filePath.c_str(),
                                            to_underlying( openFlags.accessFlag ),
                                            FILE_SHARE_READ,
                                            nullptr,
                                            to_underlying( openFlags.fileFlag ),
-                                           FILE_ATTRIBUTE_NORMAL,
+                                           flagsAndAttributes,
                                            nullptr );
     if ( handle == INVALID_HANDLE_VALUE ) { // NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
 #else
@@ -49,6 +56,28 @@ auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t
         const std::error_code error = last_error_code();
         throw BitException( "Could not open the file", error, path_to_tstring( filePath ) );
     }
+#ifdef _WIN32
+    // Emulate the strict POSIX O_NOFOLLOW semantics: fail only on symlinks, not on other
+    // reparse-point kinds (junctions, mount points, etc.), matching S_IFLNK on Unix.
+    if ( hasFlag( openFlags.extraFlag, ExtraFlag::NoFollow ) ) {
+        FILE_ATTRIBUTE_TAG_INFO tagInfo{};
+        const BOOL queryOk = ::GetFileInformationByHandleEx( handle,
+                                                             FileAttributeTagInfo,
+                                                             &tagInfo,
+                                                             sizeof( tagInfo ) );
+        if ( queryOk == FALSE ) {
+            const std::error_code error = last_error_code();
+            CloseHandle( handle );
+            throw BitException( "Could not query file reparse tag", error, path_to_tstring( filePath ) );
+        }
+        if ( tagInfo.ReparseTag == IO_REPARSE_TAG_SYMLINK ) {
+            CloseHandle( handle );
+            throw BitException( "Refusing to open a symbolic link",
+                                std::make_error_code( std::errc::too_many_symbolic_link_levels ),
+                                path_to_tstring( filePath ) );
+        }
+    }
+#endif
     return handle;
 }
 
@@ -97,8 +126,8 @@ auto FileHandle::seek( SeekOrigin origin,
     return S_OK;
 }
 
-OutputFile::OutputFile( const native_string& filePath, FileFlag fileFlag )
-    : FileHandle{ filePath, OpenFlags{ AccessFlag::WriteOnly, fileFlag } } {}
+OutputFile::OutputFile( const native_string& filePath, FileFlag fileFlag, ExtraFlag extraFlag )
+    : FileHandle{ filePath, OpenFlags{ AccessFlag::WriteOnly, fileFlag, extraFlag } } {}
 
 namespace {
 BIT7Z_ALWAYS_INLINE
@@ -162,10 +191,13 @@ auto OutputFile::setFileTime( FILETIME creation, FILETIME access, FILETIME modif
 #endif
 
 // Guaranteeing that the input file open flags are calculated at compile time.
-static constexpr OpenFlags openInputFlags{ AccessFlag::ReadOnly, FileFlag::Existing };
+static constexpr OpenFlags openInputFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ExtraFlag::None };
 
 InputFile::InputFile( const native_string& filePath )
     : FileHandle{ filePath, openInputFlags } {}
+
+InputFile::InputFile( const native_string& filePath, ExtraFlag extraFlag )
+    : FileHandle{ filePath, OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, extraFlag } } {}
 
 namespace {
 BIT7Z_ALWAYS_INLINE

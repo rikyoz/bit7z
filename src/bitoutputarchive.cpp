@@ -215,7 +215,7 @@ auto BitOutputArchive::initOutFileStream( const fs::path& outArchive,
 
     fs::path tmpArchive = outArchive;
     tmpArchive += ".tmp";
-    return bit7z::make_com< CFileOutStream, IOutStream >( tmpArchive, FileFlag::CreateAlways );
+    return bit7z::make_com< CFileOutStream, IOutStream >( tmpArchive, FileFlag::CreateNew );
 }
 
 void BitOutputArchive::compressOut( IOutArchive* outArc,
