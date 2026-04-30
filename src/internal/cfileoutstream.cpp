@@ -12,10 +12,22 @@
 
 #include "internal/cfileoutstream.hpp"
 
+#include "internal/fsutil.hpp"
+
 namespace bit7z {
 
 CFileOutStream::CFileOutStream( const fs::path& filePath, FileFlag fileFlag )
     : mFile( filePath.native(), fileFlag ), mFilePath{ filePath } {}
+
+#ifdef _WIN32
+void CFileOutStream::setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept {
+    (void)mFile.setFileTime( creation, access, modified );
+}
+#else
+void CFileOutStream::setFileTime( FILETIME modified ) const noexcept {
+    filesystem::fsutil::set_file_modified_time( mFilePath, modified );
+}
+#endif
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
@@ -48,9 +60,7 @@ STDMETHODIMP CFileOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newP
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) noexcept {
-    std::error_code error;
-    fs::resize_file( mFilePath, newSize, error );
-    return error ? E_FAIL : S_OK;
+    return mFile.resize( static_cast< std::uint64_t >( newSize ) ) ? S_OK : E_FAIL;
 }
 
 } // namespace bit7z

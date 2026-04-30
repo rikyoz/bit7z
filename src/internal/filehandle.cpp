@@ -33,9 +33,12 @@ namespace {
 BIT7Z_ALWAYS_INLINE
 auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t {
 #ifdef _WIN32
+    const auto shareMode = openFlags.accessFlag == AccessFlag::ReadOnly
+        ? FILE_SHARE_READ
+        : FILE_SHARE_READ | FILE_SHARE_WRITE;
     const handle_t handle = ::CreateFileW( filePath.c_str(),
                                            to_underlying( openFlags.accessFlag ),
-                                           FILE_SHARE_READ | FILE_SHARE_WRITE,
+                                           shareMode,
                                            nullptr,
                                            to_underlying( openFlags.fileFlag ),
                                            FILE_ATTRIBUTE_NORMAL,
@@ -138,6 +141,28 @@ auto OutputFile::write( const void* data, std::uint32_t size, std::uint32_t& pro
     } while ( size > 0 );
     return S_OK;
 }
+
+auto OutputFile::resize( std::uint64_t newSize ) const noexcept -> bool {
+#ifdef _WIN32
+    std::uint64_t newPosition = 0;
+    const auto result = seek( SeekOrigin::Begin, static_cast< std::int64_t >( newSize ), newPosition );
+    if ( result != S_OK || newPosition != newSize ) {
+        return false;
+    }
+
+    return ::SetEndOfFile( mHandle ) != FALSE;
+#elif defined( NO_LSEEK64 )
+    return ftruncate( mHandle, static_cast< off_t >( newSize ) ) == 0;
+#else
+    return ftruncate64( mHandle, static_cast< off64_t >( newSize ) ) == 0;
+#endif
+}
+
+#ifdef _WIN32
+auto OutputFile::setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept -> bool {
+    return ::SetFileTime( mHandle, &creation, &access, &modified ) != FALSE;
+}
+#endif
 
 // Guaranteeing that the input file open flags are calculated at compile time.
 static constexpr OpenFlags openInputFlags{ AccessFlag::ReadOnly, FileFlag::Existing };

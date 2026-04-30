@@ -43,18 +43,12 @@ auto FileExtractCallback::extractionAttempted() const -> bool {
 }
 
 void FileExtractCallback::releaseStream() {
-    mFileOutStream.Release(); // We need to release the file to change its modified time.
+    mFileOutStream.Release();
 }
 
 auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
     const HRESULT result = operationResult != OperationResult::Success ? E_FAIL : S_OK;
     if ( mFileOutStream == nullptr ) {
-        return result;
-    }
-
-    mFileOutStream.Release(); // We need to release the file to change its modified time.
-
-    if ( extractMode() != ExtractMode::Extract ) { // No need to set attributes or modified time of the file.
         return result;
     }
 
@@ -64,12 +58,18 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
     const auto creationTime = mCurrentItem->creationTime();
     const auto accessTime = mCurrentItem->accessTime();
     const auto modifiedTime = mCurrentItem->modifiedTime();
-    filesystem::fsutil::set_file_time( mFilePathOnDisk, creationTime, accessTime, modifiedTime );
+    mFileOutStream->setFileTime( creationTime, accessTime, modifiedTime );
 #else
     if ( mCurrentItem->hasModifiedTime() ) {
-        filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem->modifiedTime() );
+        mFileOutStream->setFileTime( mCurrentItem->modifiedTime() );
     }
 #endif
+
+    mFileOutStream.Release();
+
+    if ( extractMode() != ExtractMode::Extract ) { // No need to set attributes or modified time of the file.
+        return result;
+    }
 
     if ( mCurrentItem->areAttributesDefined() ) {
         filesystem::fsutil::set_file_attributes( mOutPathBuilder, mFilePathOnDisk, mCurrentItem->attributes() );

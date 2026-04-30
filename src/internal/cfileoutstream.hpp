@@ -34,6 +34,12 @@ class CFileOutStream : public IOutStream, public CMyUnknownImp {
 
         MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CFileOutStream() ) = default;
 
+#ifdef _WIN32
+        void setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept;
+#else
+        void setFileTime( FILETIME modified ) const noexcept;
+#endif
+
         // IOutStream
         BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
 

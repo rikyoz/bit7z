@@ -136,6 +136,14 @@ struct OutputFile final : FileHandle {
     explicit OutputFile( const native_string& filePath, FileFlag fileFlag );
 
     auto write( const void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
+
+    BIT7Z_NODISCARD
+    auto resize( std::uint64_t newSize ) const noexcept -> bool;
+
+#ifdef _WIN32
+    BIT7Z_NODISCARD
+    auto setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept -> bool;
+#endif
 };
 
 struct InputFile final : FileHandle {
