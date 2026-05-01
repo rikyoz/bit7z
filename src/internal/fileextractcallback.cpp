@@ -88,12 +88,6 @@ auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** o
 
     mFilePathOnDisk = mOutPathBuilder.buildPath( filePath );
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( filesystem::fsutil::should_format_long_path( mFilePathOnDisk ) ) {
-        mFilePathOnDisk = filesystem::fsutil::format_long_path( mFilePathOnDisk );
-    }
-#endif
-
     if ( !isItemFolder( index ) ) { // File
         if ( mHandler.fileCallback() ) {
             // Here we don't use the path_to_tstring function to avoid allocating a string object

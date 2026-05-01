@@ -590,6 +590,12 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
                     BitError::ItemPathOutsideOutputDirectory };
     }
 
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( filesystem::fsutil::should_format_long_path( builtPath ) ) {
+        return filesystem::fsutil::format_long_path( builtPath );
+    }
+#endif
+
     return builtPath;
 }
 
