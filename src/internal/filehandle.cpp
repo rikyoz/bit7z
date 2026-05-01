@@ -33,12 +33,9 @@ namespace {
 BIT7Z_ALWAYS_INLINE
 auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t {
 #ifdef _WIN32
-    const auto shareMode = openFlags.accessFlag == AccessFlag::ReadOnly
-        ? FILE_SHARE_READ
-        : FILE_SHARE_READ | FILE_SHARE_WRITE;
     const handle_t handle = ::CreateFileW( filePath.c_str(),
                                            to_underlying( openFlags.accessFlag ),
-                                           shareMode,
+                                           FILE_SHARE_READ,
                                            nullptr,
                                            to_underlying( openFlags.fileFlag ),
                                            FILE_ATTRIBUTE_NORMAL,
