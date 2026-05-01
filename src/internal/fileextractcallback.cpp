@@ -107,12 +107,6 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
 
     mFilePathOnDisk = mOutPathBuilder.buildPath( filePath );
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( filesystem::fsutil::should_format_long_path( mFilePathOnDisk ) ) {
-        mFilePathOnDisk = filesystem::fsutil::format_long_path( mFilePathOnDisk );
-    }
-#endif
-
     if ( !itemIsFolder ) { // File
         if ( mHandler.fileCallback() ) {
 #if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
