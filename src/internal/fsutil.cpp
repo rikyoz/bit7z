@@ -206,30 +206,7 @@ auto fsutil::set_file_attributes(
 #endif
 }
 
-#ifdef _WIN32
-auto fsutil::set_file_time( const fs::path& filePath,
-                            FILETIME creation,
-                            FILETIME access,
-                            FILETIME modified ) noexcept -> bool {
-    if ( filePath.empty() ) {
-        return false;
-    }
-
-    bool res = false;
-    const HANDLE hFile = ::CreateFileW( filePath.c_str(),
-                                        GENERIC_READ | FILE_WRITE_ATTRIBUTES,
-                                        FILE_SHARE_READ,
-                                        nullptr,
-                                        OPEN_EXISTING,
-                                        0,
-                                        nullptr );
-    if ( hFile != INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
-        res = ::SetFileTime( hFile, &creation, &access, &modified ) != FALSE;
-        CloseHandle( hFile );
-    }
-    return res;
-}
-#else
+#ifndef _WIN32
 auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;

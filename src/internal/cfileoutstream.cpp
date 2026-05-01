@@ -23,10 +23,6 @@ CFileOutStream::CFileOutStream( const fs::path& filePath, FileFlag fileFlag )
 void CFileOutStream::setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept {
     (void)mFile.setFileTime( creation, access, modified );
 }
-#else
-void CFileOutStream::setFileTime( FILETIME modified ) const noexcept {
-    filesystem::fsutil::set_file_modified_time( mFilePath, modified );
-}
 #endif
 
 COM_DECLSPEC_NOTHROW

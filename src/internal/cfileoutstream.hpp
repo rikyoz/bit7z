@@ -36,8 +36,6 @@ class CFileOutStream : public IOutStream, public CMyUnknownImp {
 
 #ifdef _WIN32
         void setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept;
-#else
-        void setFileTime( FILETIME modified ) const noexcept;
 #endif
 
         // IOutStream
