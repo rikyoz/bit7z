@@ -57,7 +57,8 @@ auto fsutil::extension( const fs::path& path ) -> tstring {
 
 inline auto contains_dot_references( const fs::path& path ) -> bool {
     return std::find_if( path.begin(), path.end(), [] ( const fs::path& component ) -> bool {
-        return component == BIT7Z_NATIVE_STRING( "." ) || component == BIT7Z_NATIVE_STRING( ".." );
+        const auto& nativeComponent = component.native();
+        return nativeComponent == BIT7Z_NATIVE_STRING( "." ) || nativeComponent == BIT7Z_NATIVE_STRING( ".." );
     }) != path.end();
 }
 
@@ -460,6 +461,18 @@ auto is_absolute( const fs::path& path ) -> bool {
 }
 #endif
 
+#if defined( BIT7Z_PATH_SANITIZATION ) && !defined( _WIN32 )
+// On POSIX, sanitize_path only replaces NUL bytes; if there are none,
+// skip the intermediate fs::path allocation and join the input directly.
+BIT7Z_NODISCARD
+auto join_with_sanitization( const fs::path& base, const fs::path& path ) -> fs::path {
+    if ( path.native().find( fs::path::value_type{} ) == fs::path::string_type::npos ) {
+        return base / path;
+    }
+    return base / fsutil::sanitize_path( path );
+}
+#endif
+
 BIT7Z_NODISCARD
 auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::path {
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
@@ -479,7 +492,8 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
 
     if ( is_absolute( path ) ) {
 #ifdef BIT7Z_PATH_SANITIZATION
-        return base / fsutil::sanitize_path( path.relative_path() );
+        // POSIX-only
+        return join_with_sanitization( base, path.relative_path() );
 #else
         throw BitException(
             "Invalid item path",
@@ -507,7 +521,8 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
 #endif
 
 #ifdef BIT7Z_PATH_SANITIZATION
-    return base / fsutil::sanitize_path( path );
+    // POSIX-only
+    return join_with_sanitization( base, path );
 #else
     return base / path;
 #endif
