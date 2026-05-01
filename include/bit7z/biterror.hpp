@@ -45,7 +45,8 @@ enum struct BitError {
     InvalidZipPassword,
     InvalidDirectoryPath,
     ItemPathOutsideOutputDirectory,
-    ItemHasAbsolutePath
+    ItemHasAbsolutePath,
+    InvalidItemPath
 };
 
 auto make_error_code( BitError error ) noexcept -> std::error_code;

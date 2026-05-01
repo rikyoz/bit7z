@@ -218,10 +218,13 @@ BIT7Z_NODISCARD auto format_long_path( const fs::path& path ) -> fs::path;
  */
 void increase_opened_files_limit();
 
-#if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
+#ifdef BIT7Z_PATH_SANITIZATION
 /**
- * Sanitizes the given file path, removing any eventual Windows illegal character
- * (https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file)
+ * Sanitizes the given file path, removing any eventual illegal path character.
+ * For Windows illegal path characters: https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file.
+ * For Unix illegal path characters: https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/V1_chap03.html#tag_03_170
+ *
+ * @note On Unix, we only sanitize null byte characters \0, as path separators are automatically handled by fs::path.
  *
  * @param path The path to be sanitized.
  *

@@ -351,8 +351,11 @@ auto is_drive_relative( const fs::path& path ) -> bool {
     // NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 }
 } // namespace
+#endif
 
+#ifdef BIT7Z_PATH_SANITIZATION
 auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
+#ifdef _WIN32
     if ( path == L"/" ) {
         return L"_";
     }
@@ -367,6 +370,11 @@ auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
     // Relative paths:   /abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
     //                    abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
     return sanitize_path_components( path );
+#else
+    auto result = path.native();
+    std::replace( result.begin(), result.end(), '\0', '_' );
+    return fs::path{ std::move( result ) };
+#endif
 }
 #endif
 
@@ -389,9 +397,21 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
     return base / fsutil::sanitize_path( path );
 #else
+#ifndef BIT7Z_PATH_SANITIZATION
+    // Null bytes would cause a mismatch between the validated path and the OS-interpreted path,
+    // which truncates at the first null on both POSIX (char*) and Win32 (LPWSTR) APIs.
+    if ( path.native().find( fs::path::value_type{} ) != fs::path::string_type::npos ) {
+        throw BitException(
+            "Invalid item path",
+            make_error_code( BitError::InvalidItemPath ),
+            path_to_tstring( path )
+        );
+    }
+#endif
+
     if ( is_absolute( path ) ) {
 #ifdef BIT7Z_PATH_SANITIZATION
-        return base / path.relative_path();
+        return base / fsutil::sanitize_path( path.relative_path() );
 #else
         throw BitException(
             "Invalid item path",
@@ -418,7 +438,11 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
     }
 #endif
 
+#ifdef BIT7Z_PATH_SANITIZATION
+    return base / fsutil::sanitize_path( path );
+#else
     return base / path;
+#endif
 #endif
 }
 
@@ -517,7 +541,7 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
         return mBasePath;
     }
 
-    const auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
+    auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
     if ( filesystem::path_is_outside_base( builtPath, mBasePath ) ) {
         throw BitException{ "Cannot extract the item '" + path.string() + "'",
                     BitError::ItemPathOutsideOutputDirectory };

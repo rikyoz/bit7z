@@ -75,6 +75,8 @@ auto InternalCategory::message( int errorValue ) const -> std::string {
             return "The extracted item path would be outside the output directory";
         case BitError::ItemHasAbsolutePath:
             return "The item has an absolute path.";
+        case BitError::InvalidItemPath:
+            return "The item has an invalid path.";
         default:
             return "Unknown internal error (code " + std::to_string( errorValue ) + ").";
     }
@@ -108,6 +110,7 @@ auto InternalCategory::default_error_condition( int errorValue ) const noexcept 
         case BitError::WrongUpdateMode:
         case BitError::ItemPathOutsideOutputDirectory:
         case BitError::ItemHasAbsolutePath:
+        case BitError::InvalidItemPath:
             return std::make_error_condition( std::errc::operation_not_permitted );
         default:
             return error_category::default_error_condition( errorValue );
