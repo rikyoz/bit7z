@@ -555,6 +555,7 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
         return mBasePath;
     }
 
+    // TODO: Avoid normalization if not needed.
     auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
     if ( filesystem::path_is_outside_base( builtPath, mBasePath ) ) {
         throw BitException{ "Cannot extract the item '" + path.string() + "'",
@@ -609,6 +610,7 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
         return false;
     }
 
+    // TODO: Avoid normalization if not needed.
     const auto safeTargetPath = filesystem::sanitize_path_join( mBasePath, targetPath ).lexically_normal();
     if ( filesystem::path_is_outside_base( safeTargetPath, mBasePath ) ) {
         return false;
