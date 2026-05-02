@@ -19,6 +19,7 @@
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
 #include <internal/fsutil.hpp>
+#include <internal/stringutil.hpp>
 #ifndef _WIN32
 #include <internal/windows.hpp> // for MAX_PATHNAME_LEN
 #endif
@@ -1095,7 +1096,117 @@ struct PathBuildTest {
     fs::path itemPath;
     fs::path expectedPath;
 };
+
+#ifndef _WIN32
+void writeSymlinkFile( const fs::path& filePath, const std::string& content ) {
+    fs::ofstream ofs{ filePath, std::ios::out | std::ios::binary };
+    ofs.write( content.data(), static_cast< std::streamsize >( content.size() ) );
+}
+#endif
 } // namespace
+
+TEST_CASE( "fsutil: Path building with item paths containing redundant separators",
+           "[fsutil][SafeOutPathBuilder]" ) {
+    // buildPath and restoreSymlink share the same sanitize+lexically_normal pipeline,
+    // so the symlink case is covered alongside buildPath rather than in a separate test case.
+    SECTION( "Internal and trailing redundant separators" ) {
+        // Runs of redundant separators (alone or combined with . / ..) must be
+        // collapsed in the output via lexically_normal(). ends_with on the native
+        // string checks the tail without hardcoding the absolute base prefix that
+        // sanitize_base_path produces, while still detecting a regression that drops
+        // the lexically_normal() call.
+        const auto testItemPath = GENERATE( as< fs::path >(),
+            BIT7Z_NATIVE_STRING( "foo//bar" ),
+            BIT7Z_NATIVE_STRING( "foo///bar" ),
+            BIT7Z_NATIVE_STRING( "foo///.////bar" ),
+            BIT7Z_NATIVE_STRING( "foo///..////bar" ),
+            BIT7Z_NATIVE_STRING( "a//b//c.txt" ),
+            BIT7Z_NATIVE_STRING( "a/./b//c.txt" ),
+            BIT7Z_NATIVE_STRING( "subdir//file.txt" ),
+            BIT7Z_NATIVE_STRING( "trailing//" )
+        );
+
+        const auto expectedSuffix = fs::path::preferred_separator + testItemPath.lexically_normal().native();
+        DYNAMIC_SECTION( "Built path should end with " << quoted( expectedSuffix ) ) {
+            using namespace test::filesystem;
+            const TempDirectory tempDir{ "test_fsutil" };
+            const TestDirectory testDir{ tempDir.path() };
+
+            const SafeOutPathBuilder builder{ BIT7Z_STRING( "out" ) };
+            INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
+            REQUIRE( ends_with( builder.buildPath( testItemPath ).native(), expectedSuffix ) );
+
+#ifndef _WIN32
+            // To create the symlink file, the base directory must exist.
+            fs::create_directory( builder.basePath() );
+            const auto symlinkFile = builder.basePath() / "link";
+            writeSymlinkFile( symlinkFile, testItemPath.native() );
+
+            REQUIRE( builder.restoreSymlink( symlinkFile ) );
+            REQUIRE( fs::is_symlink( symlinkFile ) );
+            REQUIRE( ends_with( fs::read_symlink( symlinkFile ).native(), expectedSuffix ) );
+#endif
+            fs::remove_all( builder.basePath() );
+        }
+    }
+
+    SECTION( "Leading redundant separators are handled safely" ) {
+        // Leading multi-separator inputs (zip-slip-style "//etc/passwd", UNC-like
+        // "\\\\server\\share\\evil") decompose differently across platforms and
+        // stdlibs: POSIX leaves exactly "//" implementation-defined while
+        // standardizing 3+ leading slashes to a single slash; Windows treats
+        // leading separators as UNC; and C++ <filesystem> implementations (MSVC,
+        // libstdc++, ghc::filesystem) have historically differed on the edge
+        // cases. Rather than pinning expected outputs across that matrix, assert
+        // the security property: buildPath / restoreSymlink either reject via
+        // BitException, or strip the leading separators and join the remainder
+        // under the base.
+        const auto testItemPath = GENERATE( as< fs::path >(),
+            BIT7Z_NATIVE_STRING( "//foo" ),
+            BIT7Z_NATIVE_STRING( "//foo/bar" ),
+            BIT7Z_NATIVE_STRING( "///foo" ),
+            BIT7Z_NATIVE_STRING( "///foo/bar" ),
+            BIT7Z_NATIVE_STRING( "/////foo" ),
+            BIT7Z_NATIVE_STRING( "/////foo/bar" )
+        );
+
+        DYNAMIC_SECTION( quoted( testItemPath ) ) {
+            using namespace test::filesystem;
+            const TempDirectory tempDir{ "test_fsutil" };
+            const TestDirectory testDir{ tempDir.path() };
+
+            const SafeOutPathBuilder builder{ BIT7Z_STRING( "out" ) };
+#ifdef BIT7Z_PATH_SANITIZATION
+            const auto sanitizedTestPath = [&testItemPath]() {
+                const auto firstNonSeparator = testItemPath.native().find_first_not_of( BIT7Z_NATIVE_STRING( "/\\" ) );
+                return testItemPath.native().substr( firstNonSeparator );
+            }();
+            const auto expectedPath = builder.basePath() / sanitizedTestPath;
+            INFO( "Expected path: " << quoted( expectedPath ) );
+            REQUIRE( builder.buildPath( testItemPath ) == expectedPath );
+#else
+            REQUIRE_THROWS_AS( builder.buildPath( testItemPath ), BitException );
+#endif
+
+#ifndef _WIN32
+            fs::create_directory( builder.basePath() );
+            const auto symlinkFile = builder.basePath() / "link";
+            writeSymlinkFile( symlinkFile, testItemPath.native() );
+
+#ifdef BIT7Z_PATH_SANITIZATION
+            REQUIRE( builder.restoreSymlink( symlinkFile ) );
+            REQUIRE( fs::is_symlink( symlinkFile ) );
+            REQUIRE( fs::read_symlink( symlinkFile ) == expectedPath.lexically_normal() );
+#else
+            // sanitize_path_join throws after the file is removed; no symlink is created.
+            REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
+            REQUIRE_FALSE( fs::exists( symlinkFile ) );
+#endif
+            fs::remove_all( builder.basePath() );
+#endif
+        }
+    }
+}
 
 TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][SafeOutPathBuilder]" ) {
     SECTION( "Basic ZipSlip attacks" ) {
@@ -1426,13 +1537,6 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 }
 
 #ifndef _WIN32
-
-namespace {
-void writeSymlinkFile( const fs::path& filePath, const std::string& content ) {
-    fs::ofstream ofs{ filePath, std::ios::out | std::ios::binary };
-    ofs.write( content.data(), static_cast< std::streamsize >( content.size() ) );
-}
-} // namespace
 
 TEST_CASE( "fsutil: Restoring symlinks with valid targets", "[fsutil][SafeOutPathBuilder]" ) {
     using test::filesystem::TempDirectory;
