@@ -1731,7 +1731,7 @@ TEST_CASE( "fsutil: Restoring symlinks with newlines in target", "[fsutil][SafeO
     }
 }
 
-TEST_CASE( "fsutil: Restoring symlinks rejects targets with null bytes", "[fsutil][SafeOutPathBuilder]" ) {
+TEST_CASE( "fsutil: Restoring symlinks handles targets with null bytes", "[fsutil][SafeOutPathBuilder]" ) {
     using test::filesystem::TempDirectory;
 
     const TempDirectory tempDir{ "test_fsutil" };
@@ -1742,33 +1742,71 @@ TEST_CASE( "fsutil: Restoring symlinks rejects targets with null bytes", "[fsuti
         const auto symlinkFile = basePath / "link";
         writeSymlinkFile( symlinkFile, std::string{ "target\0../../etc/passwd", 23 } );
 
+#ifdef BIT7Z_PATH_SANITIZATION
+        REQUIRE( builder.restoreSymlink( symlinkFile ) );
+        REQUIRE( fs::is_symlink( symlinkFile ) );
+        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / "etc/passwd" );
+#else
+        REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
+        REQUIRE_FALSE( fs::exists( symlinkFile ) );
+#endif
+    }
+
+    SECTION( "Path traversal attempt after null byte within the target should always fail" ) {
+        const auto symlinkFile = basePath / "link";
+        writeSymlinkFile( symlinkFile, std::string{ "target\0../../../etc/passwd", 26 } );
+
+        // In all cases, we remove the file and produce no symlink, but via different mechanisms:
+        // Sanitization ON: NUL -> _ gives target_../../../etc/passwd, which normalizes outside base -> return false.
+        // Sanitization OFF: target\0../../../etc/passwd -> throws (path has an invalid character)
+#ifdef BIT7Z_PATH_SANITIZATION
         REQUIRE_FALSE( builder.restoreSymlink( symlinkFile ) );
-        // File is not removed since the null check happens before fs::remove
-        REQUIRE( fs::is_regular_file( symlinkFile ) );
+#else
+        REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
+#endif
+        REQUIRE_FALSE( fs::exists( symlinkFile ) );
     }
 
     SECTION( "Null byte at the end of the target" ) {
         const auto symlinkFile = basePath / "link";
         writeSymlinkFile( symlinkFile, std::string{ "target.txt\0", 11 } );
 
-        REQUIRE_FALSE( builder.restoreSymlink( symlinkFile ) );
-        REQUIRE( fs::is_regular_file( symlinkFile ) );
+#ifdef BIT7Z_PATH_SANITIZATION
+        REQUIRE( builder.restoreSymlink( symlinkFile ) );
+        REQUIRE( fs::is_symlink( symlinkFile ) );
+        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / "target.txt_" );
+#else
+        REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
+        REQUIRE_FALSE( fs::exists( symlinkFile ) );
+#endif
     }
 
-    SECTION( "Path traversal attempt with null byte within the target should fail" ) {
+    SECTION( "Null byte corrupts .., preventing traversal" ) {
         const auto symlinkFile = basePath / "link";
         writeSymlinkFile( symlinkFile, std::string{ "..\0", 3 } );
 
-        REQUIRE_FALSE( builder.restoreSymlink( symlinkFile ) );
-        REQUIRE( fs::is_regular_file( symlinkFile ) );
+#ifdef BIT7Z_PATH_SANITIZATION
+        REQUIRE( builder.restoreSymlink( symlinkFile ) );
+        REQUIRE( fs::is_symlink( symlinkFile ) );
+        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / ".._" );
+#else
+        REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
+        REQUIRE_FALSE( fs::exists( symlinkFile ) );
+#endif
     }
 
     SECTION( "Target is just a null byte" ) {
         const auto symlinkFile = basePath / "link";
         writeSymlinkFile( symlinkFile, std::string{ "\0", 1 } );
 
-        REQUIRE_FALSE( builder.restoreSymlink( symlinkFile ) );
-        REQUIRE( fs::is_regular_file( symlinkFile ) );
+#ifdef BIT7Z_PATH_SANITIZATION
+        REQUIRE( builder.restoreSymlink( symlinkFile ) );
+        REQUIRE( fs::is_symlink( symlinkFile ) );
+        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / "_" );
+#else
+        REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
+        REQUIRE_FALSE( fs::exists( symlinkFile ) );
+#endif
     }
 }
 
