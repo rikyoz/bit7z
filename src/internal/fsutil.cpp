@@ -661,12 +661,6 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
     // Shrinking the path string to its actual size.
     targetPath.resize( static_cast< std::size_t >( ifs.gcount() ) );
 
-    // Null bytes are invalid in POSIX paths and would cause a mismatch between
-    // the validated path and the OS-interpreted path (which truncates at the first null).
-    if ( targetPath.find( '\0' ) != std::string::npos ) {
-        return false;
-    }
-
     // No need to keep the file open.
     ifs.close();
 
