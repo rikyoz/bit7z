@@ -17,8 +17,10 @@
 #include "bitexception.hpp"
 #include "internal/stringutil.hpp"
 
-#include <cerrno>
+// For mkdtemp
+#include <unistd.h> // IWYU pragma: keep
 #include <cstdlib>
+
 #include <string>
 #include <system_error>
 #include <utility>
