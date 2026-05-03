@@ -1176,16 +1176,23 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
             const TestDirectory testDir{ tempDir.path() };
 
             const SafeOutPathBuilder builder{ BIT7Z_STRING( "out" ) };
-#ifdef BIT7Z_PATH_SANITIZATION
+#if !defined( BIT7Z_PATH_SANITIZATION ) && !defined( _WIN32 )
+            REQUIRE_THROWS_AS( builder.buildPath( testItemPath ), BitException );
+#else
             const auto sanitizedTestPath = [&testItemPath]() {
                 const auto firstNonSeparator = testItemPath.native().find_first_not_of( BIT7Z_NATIVE_STRING( "/\\" ) );
                 return testItemPath.native().substr( firstNonSeparator );
             }();
             const auto expectedPath = builder.basePath() / sanitizedTestPath;
-            INFO( "Expected path: " << quoted( expectedPath ) );
-            REQUIRE( builder.buildPath( testItemPath ) == expectedPath );
-#else
-            REQUIRE_THROWS_AS( builder.buildPath( testItemPath ), BitException );
+#   ifndef BIT7Z_PATH_SANITIZATION
+            if ( testItemPath.has_root_name() ) {
+                REQUIRE_THROWS_AS( builder.buildPath( testItemPath ), BitException );
+            } else
+#   endif
+            {
+                INFO( "Expected path: " << quoted( expectedPath ) );
+                REQUIRE( builder.buildPath( testItemPath ) == expectedPath );
+            }
 #endif
 
 #ifndef _WIN32
