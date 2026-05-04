@@ -1148,7 +1148,7 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
 
             REQUIRE( builder.restoreSymlink( symlinkFile ) );
             REQUIRE( fs::is_symlink( symlinkFile ) );
-            REQUIRE( ends_with( fs::read_symlink( symlinkFile ).native(), expectedSuffix ) );
+            REQUIRE( fs::read_symlink( symlinkFile ) == testItemPath.lexically_normal() );
 #endif
             fs::remove_all( builder.basePath() );
         }
@@ -1183,7 +1183,7 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
 #if !defined( BIT7Z_PATH_SANITIZATION ) && !defined( _WIN32 )
             REQUIRE_THROWS_AS( builder.buildPath( testItemPath ), BitException );
 #else
-            const auto sanitizedTestPath = [&testItemPath]() {
+            const fs::path sanitizedTestPath = [&testItemPath]() {
                 const auto firstNonSeparator = testItemPath.native().find_first_not_of( BIT7Z_NATIVE_STRING( "/\\" ) );
                 return testItemPath.native().substr( firstNonSeparator );
             }();
@@ -1207,7 +1207,7 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
 #ifdef BIT7Z_PATH_SANITIZATION
             REQUIRE( builder.restoreSymlink( symlinkFile ) );
             REQUIRE( fs::is_symlink( symlinkFile ) );
-            REQUIRE( fs::read_symlink( symlinkFile ) == expectedPath.lexically_normal() );
+            REQUIRE( fs::read_symlink( symlinkFile ) == sanitizedTestPath.lexically_normal() );
 #else
             // sanitize_path_join throws after the file is removed; no symlink is created.
             REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
@@ -1558,38 +1558,63 @@ TEST_CASE( "fsutil: Restoring symlinks with valid targets", "[fsutil][SafeOutPat
 
     SECTION( "Simple filename target" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, "target.txt" );
+        const fs::path symlinkTarget = "target.txt";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "target.txt" ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget );
+        fs::remove( symlinkFile );
     }
 
     SECTION( "Target in subdirectory" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, "subdir/target.txt" );
+        const fs::path symlinkTarget = "subdir/target.txt";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "subdir/target.txt" ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget );
+        fs::remove( symlinkFile );
     }
 
-    SECTION( "Target with dot component" ) {
+    SECTION( "Target with dot component is normalized" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, "subdir/./target.txt" );
+        const fs::path symlinkTarget = "subdir/./target.txt";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "subdir/target.txt" ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget.lexically_normal() );
+        fs::remove( symlinkFile );
     }
 
-    SECTION( "Target with safe internal .. that stays within base" ) {
+    SECTION( "Target with .. is normalized: subdir/../target.txt -> target.txt" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, "subdir/../target.txt" );
+        const fs::path symlinkTarget = "subdir/../target.txt";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "target.txt" ).lexically_normal() );
+        // Deliberate normalization: subdir/../target.txt collapses to target.txt.
+        // This prevents second-order traversal through a rogue 'subdir' symlink.
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget.lexically_normal() );
+        fs::remove( symlinkFile );
+    }
+
+    SECTION( "Symlink in subdirectory with .. pointing to sibling is allowed" ) {
+        const auto subdir = basePath / "subdir";
+        fs::create_directory( subdir );
+
+        const auto symlinkFile = subdir / "link";
+        const fs::path symlinkTarget = "../sibling.txt";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
+
+        // ../sibling.txt from basePath/subdir resolves to basePath/sibling.txt — within base.
+        REQUIRE( builder.restoreSymlink( symlinkFile ) );
+        REQUIRE( fs::is_symlink( symlinkFile ) );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget );
+        fs::remove_all( subdir );
     }
 }
 
@@ -1624,6 +1649,20 @@ TEST_CASE( "fsutil: Restoring symlinks rejects path traversal", "[fsutil][SafeOu
         REQUIRE_FALSE( fs::exists( symlinkFile ) );
     }
 
+    SECTION( "Symlink in subdirectory with .. escaping base" ) {
+        const auto subdir = basePath / "subdir";
+        fs::create_directory( subdir );
+
+        const auto symlinkFile = subdir / "evil_link";
+        writeSymlinkFile( symlinkFile, "../../escape" );
+
+        // ../../escape from basePath/subdir goes two levels up, past basePath.
+        REQUIRE_FALSE( builder.restoreSymlink( symlinkFile ) );
+        REQUIRE_FALSE( fs::exists( symlinkFile ) );
+        REQUIRE( fs::is_empty( subdir ) );
+        fs::remove_all( subdir );
+    }
+
 #ifndef BIT7Z_PATH_SANITIZATION
     SECTION( "Absolute path target throws" ) {
         const auto symlinkFile = basePath / "abs_link";
@@ -1636,11 +1675,14 @@ TEST_CASE( "fsutil: Restoring symlinks rejects path traversal", "[fsutil][SafeOu
 #else
     SECTION( "Absolute path target is sanitized to be within base" ) {
         const auto symlinkFile = basePath / "abs_link";
-        writeSymlinkFile( symlinkFile, "/etc/passwd" );
+        const fs::path symlinkTarget = "/etc/passwd";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "etc/passwd" ).lexically_normal() );
+        // Regression: the stored symlink must be a relative path within base,
+        // not the original absolute path that sanitize_path_join stripped.
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget.relative_path() );
     }
 #endif
 }
@@ -1675,25 +1717,23 @@ TEST_CASE( "fsutil: Restoring symlinks edge cases", "[fsutil][SafeOutPathBuilder
         REQUIRE_FALSE( fs::is_regular_file( fs::symlink_status( symlinkFile ) ) );
     }
 
-    SECTION( "Target exactly MAX_PATHNAME_LEN bytes is fully read" ) {
+    SECTION( "Target at read-buffer limit is fully read" ) {
         const auto symlinkFile = basePath / "link";
-        const std::string target( MAX_PATHNAME_LEN, 'x' );
-        writeSymlinkFile( symlinkFile, target );
+        const fs::path symlinkTarget{ std::string(MAX_PATHNAME_LEN, 'x' ) };
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / target ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget );
     }
 
     SECTION( "Target exceeding MAX_PATHNAME_LEN bytes is silently truncated" ) {
         const auto symlinkFile = basePath / "link";
-        const std::string target( MAX_PATHNAME_LEN + 100, 'y' );
-        writeSymlinkFile( symlinkFile, target );
+        writeSymlinkFile( symlinkFile, std::string( MAX_PATHNAME_LEN + 100, 'y' ) );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        const std::string truncated( MAX_PATHNAME_LEN, 'y' );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / truncated ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == std::string( MAX_PATHNAME_LEN, 'y' ) );
     }
 }
 
@@ -1706,39 +1746,42 @@ TEST_CASE( "fsutil: Restoring symlinks with newlines in target", "[fsutil][SafeO
 
     SECTION( "Target starting with a newline" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, "\nfile.txt" );
+        const fs::path symlinkTarget = "\nfile.txt";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "\nfile.txt" ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget );
     }
 
     SECTION( "Target containing a newline" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, "dir\nfile.txt" );
+        const fs::path symlinkTarget = "dir\nfile.txt";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "dir\nfile.txt" ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget );
     }
 
     SECTION( "Newline should prevent dot-dot from being treated as parent traversal" ) {
         const auto symlinkFile = basePath / "link";
-        const auto target = GENERATE( "..\n", "..\n/dir", "\n..", "\n../dir" );
-        writeSymlinkFile( symlinkFile, target );
+        const auto symlinkTarget = GENERATE( as< fs::path >(), "..\n", "..\n/dir", "\n..", "\n../dir" );
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / target ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget.lexically_normal() );
     }
 
     SECTION( "Target ending with a newline" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, "target.txt\n" );
+        const fs::path symlinkTarget = "target.txt\n";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == ( basePath / "target.txt\n" ).lexically_normal() );
+        REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget );
     }
 }
 
@@ -1756,7 +1799,7 @@ TEST_CASE( "fsutil: Restoring symlinks handles targets with null bytes", "[fsuti
 #ifdef BIT7Z_PATH_SANITIZATION
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / "etc/passwd" );
+        REQUIRE( fs::read_symlink( symlinkFile ) == "etc/passwd" );
 #else
         REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
         REQUIRE_FALSE( fs::exists( symlinkFile ) );
@@ -1785,7 +1828,7 @@ TEST_CASE( "fsutil: Restoring symlinks handles targets with null bytes", "[fsuti
 #ifdef BIT7Z_PATH_SANITIZATION
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / "target.txt_" );
+        REQUIRE( fs::read_symlink( symlinkFile ) == "target.txt_" );
 #else
         REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
         REQUIRE_FALSE( fs::exists( symlinkFile ) );
@@ -1799,7 +1842,7 @@ TEST_CASE( "fsutil: Restoring symlinks handles targets with null bytes", "[fsuti
 #ifdef BIT7Z_PATH_SANITIZATION
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / ".._" );
+        REQUIRE( fs::read_symlink( symlinkFile ) == ".._" );
 #else
         REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
         REQUIRE_FALSE( fs::exists( symlinkFile ) );
@@ -1813,7 +1856,7 @@ TEST_CASE( "fsutil: Restoring symlinks handles targets with null bytes", "[fsuti
 #ifdef BIT7Z_PATH_SANITIZATION
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == basePath / "_" );
+        REQUIRE( fs::read_symlink( symlinkFile ) == "_" );
 #else
         REQUIRE_THROWS_AS( builder.restoreSymlink( symlinkFile ), BitException );
         REQUIRE_FALSE( fs::exists( symlinkFile ) );
