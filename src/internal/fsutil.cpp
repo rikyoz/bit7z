@@ -604,14 +604,26 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
         return false;
     }
 
+    const auto symlinkParent = symlinkFilePath.parent_path();
+
     // TODO: Avoid normalization if not needed.
-    const auto safeTargetPath = filesystem::sanitize_path_join( mBasePath, targetPath ).lexically_normal();
-    if ( filesystem::path_is_outside_base( safeTargetPath, mBasePath ) ) {
+    const auto resolvedTargetPath = filesystem::sanitize_path_join( symlinkParent, targetPath ).lexically_normal();
+    if ( filesystem::path_is_outside_base( resolvedTargetPath, mBasePath ) ) {
         return false;
     }
 
+    // We determined that the resolved symlink target path is inside the base path.
+    // So it is safe to create the symbolic link using the target path stored in the archive.
+
+    // sanitize_path_join may have rewritten targetPath; derive target from validated result.
+    const auto symlinkTarget = resolvedTargetPath.lexically_relative( symlinkParent );
+    if ( symlinkTarget.empty() ) {
+        return false; // Defensive, should not happen.
+    }
+
     // Restoring the symbolic link to the target file.
-    fs::create_symlink( safeTargetPath, symlinkFilePath, error );
+    // Note: when the OS will resolve this symbolic link target, it will resolve it against the symlink's parent path.
+    fs::create_symlink( symlinkTarget, symlinkFilePath, error );
     return !error;
 }
 #endif
