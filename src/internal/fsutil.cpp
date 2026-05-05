@@ -383,9 +383,15 @@ namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto is_absolute( const fs::path& path ) -> bool {
-#if defined( _WIN32 ) && defined( GHC_FILESYSTEM_VERSION )
-    // For ghc::filesystem, \\server is not absolute (bug?), but we want a consistent behavior on Windows.
+#ifdef GHC_FILESYSTEM_VERSION
+#   ifdef _WIN32
+    // On Windows, ghc::filesystem considers \\server as not absolute (bug?), but we want a consistent behavior.
     return path.is_absolute() || ( starts_with( path.native(), L"\\\\" ) && !path.has_root_directory() );
+#   else
+    // ghc::filesystem considers //foo as not absolute (not a bug), but we want a consistent behavior.
+    const auto& nativePath = path.native();
+    return !nativePath.empty() && isPathSeparator( nativePath.front() );
+#   endif
 #else
     return path.is_absolute();
 #endif
@@ -423,8 +429,15 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
 
     if ( is_absolute( path ) ) {
 #ifdef BIT7Z_PATH_SANITIZATION
-        // POSIX-only
-        return join_with_sanitization( base, path.relative_path() );
+        // POSIX-only: strip leading slashes from the native string directly; relative_path()
+        // is unreliable here because ghc::filesystem returns empty for //foo (consumed as
+        // root_name) and returns //foo for ///foo (another root_name).
+        const auto& native = path.native();
+        const auto firstNonSlash = native.find_first_not_of( '/' );
+        const auto strippedPath = firstNonSlash != fs::path::string_type::npos
+            ? fs::path{ native.substr( firstNonSlash ) }
+            : fs::path{};
+        return join_with_sanitization( base, strippedPath );
 #else
         throw BitException(
             "Invalid item path",

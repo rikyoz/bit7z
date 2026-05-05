@@ -1680,6 +1680,19 @@ TEST_CASE( "fsutil: Restoring symlinks rejects path traversal", "[fsutil][SafeOu
         // not the original absolute path that sanitize_path_join stripped.
         REQUIRE( fs::read_symlink( symlinkFile ) == symlinkTarget.relative_path() );
     }
+
+    SECTION( "Double-slash absolute path target is sanitized to be within base" ) {
+        const auto symlinkFile = basePath / "abs_link";
+        const fs::path symlinkTarget = "//etc/passwd";
+        writeSymlinkFile( symlinkFile, symlinkTarget.native() );
+
+        REQUIRE( builder.restoreSymlink( symlinkFile ) );
+        REQUIRE( fs::is_symlink( symlinkFile ) );
+        // All leading slashes are stripped from the native string; relative_path() is not
+        // used here because ghc::filesystem parses //etc as a root_name, making
+        // relative_path() return "passwd" rather than "etc/passwd".
+        REQUIRE( fs::read_symlink( symlinkFile ) == fs::path{ "etc/passwd" } );
+    }
 #endif
 }
 
