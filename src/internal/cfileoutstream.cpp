@@ -12,12 +12,10 @@
 
 #include "internal/cfileoutstream.hpp"
 
-#include "internal/fsutil.hpp"
-
 namespace bit7z {
 
 CFileOutStream::CFileOutStream( const fs::path& filePath, FileFlag fileFlag )
-    : mFile( filePath.native(), fileFlag ), mFilePath{ filePath } {}
+    : mFile( filePath.native(), fileFlag ) {}
 
 #ifdef _WIN32
 void CFileOutStream::setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept {
