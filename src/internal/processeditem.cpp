@@ -50,10 +50,6 @@ auto ProcessedItem::creationTime() const -> FILETIME {
 auto ProcessedItem::accessTime() const -> FILETIME {
     return mAccessTime.isFileTime() ? mAccessTime.getFileTime() : FILETIME{};
 }
-#else
-auto ProcessedItem::hasModifiedTime() const -> bool {
-    return mModifiedTime.isFileTime();
-}
 #endif
 
 void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
@@ -119,6 +115,14 @@ void ProcessedItem::loadTimeMetadata( const BitInputArchive& inputArchive, std::
 
 auto ProcessedItem::areAttributesDefined() const -> bool {
     return mAreAttributesDefined;
+}
+
+auto ProcessedItem::hasTimeAttributes() const noexcept -> bool {
+#ifdef _WIN32
+    return mAccessTime.isFileTime() || mCreationTime.isFileTime() || mModifiedTime.isFileTime();
+#else
+    return mModifiedTime.isFileTime();
+#endif
 }
 
 } // namespace bit7z

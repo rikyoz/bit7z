@@ -55,7 +55,7 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
     // Note: here mCurrentItem is engaged with a value, so there's no need to check if it has one.
 
 #ifdef _WIN32
-    if ( extractMode() == ExtractMode::Extract ) {
+    if ( extractMode() == ExtractMode::Extract && mCurrentItem->hasTimeAttributes() ) {
         const auto creationTime = mCurrentItem->creationTime();
         const auto accessTime = mCurrentItem->accessTime();
         const auto modifiedTime = mCurrentItem->modifiedTime();
@@ -70,7 +70,7 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
     }
 
 #ifndef _WIN32
-    if ( mCurrentItem->hasModifiedTime() ) {
+    if ( mCurrentItem->hasTimeAttributes() ) {
         filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem->modifiedTime() );
     }
 #endif
