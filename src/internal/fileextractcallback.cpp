@@ -99,7 +99,9 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
         filePath = tstring_to_path( mRenameCallback( index, filePathString ) );
     }
 
-    if ( filePath.empty() || ( isItemFolder( index ) && filePath == L"/" ) ) {
+    const auto itemIsFolder = isItemFolder( index );
+
+    if ( filePath.empty() || ( itemIsFolder && filePath == BIT7Z_NATIVE_STRING( "/" ) ) ) {
         return S_OK;
     }
 
@@ -111,7 +113,7 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
     }
 #endif
 
-    if ( !isItemFolder( index ) ) { // File
+    if ( !itemIsFolder ) { // File
         if ( mHandler.fileCallback() ) {
 #if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
             // Here we don't use the path_to_tstring function to avoid allocating a new string object.
