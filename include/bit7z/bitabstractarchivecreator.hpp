@@ -121,6 +121,16 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto storeSymbolicLinks() const noexcept -> bool;
 
         /**
+         * @return whether the archive creator stores the creation timestamps of items.
+         */
+        BIT7Z_NODISCARD auto storeCreationTime() const noexcept -> bool;
+
+        /**
+         * @return whether the archive creator stores the last access timestamps of items.
+         */
+        BIT7Z_NODISCARD auto storeLastAccessTime() const noexcept -> bool;
+
+        /**
          * @brief Sets up a password for the output archives.
          *
          * When setting a password, the produced archives will be encrypted using the default
@@ -247,6 +257,20 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @param storeSymlinks    if true, symbolic links will be stored as links.
          */
         void setStoreSymbolicLinks( bool storeSymlinks ) noexcept;
+
+        /**
+         * @brief Sets whether the creator will store creation timestamps of items.
+         *
+         * @param storeCreationTime if true, creation timestamps of items will be stored in the output archive.
+         */
+        void setStoreCreationTime( bool storeCreationTime ) noexcept;
+
+        /**
+         * @brief Sets whether the creator will store last access timestamps of items.
+         *
+         * @param storeLastAccessTime if true, last access timestamps of items will be stored in the output archive.
+         */
+        void setStoreLastAccessTime( bool storeLastAccessTime ) noexcept;
 
         /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation

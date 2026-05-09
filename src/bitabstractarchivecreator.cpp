@@ -190,6 +190,14 @@ auto BitAbstractArchiveCreator::storeSymbolicLinks() const noexcept -> bool {
     return mStoreSymbolicLinks;
 }
 
+auto BitAbstractArchiveCreator::storeCreationTime() const noexcept -> bool {
+    return mExtraProperties.count( L"tc" );
+}
+
+auto BitAbstractArchiveCreator::storeLastAccessTime() const noexcept -> bool {
+    return mExtraProperties.count( L"ta" );
+}
+
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders );
 }
@@ -286,6 +294,22 @@ void BitAbstractArchiveCreator::setStoreSymbolicLinks( bool storeSymlinks ) noex
     mStoreSymbolicLinks = storeSymlinks;
     // p7zip/7-zip behavior: when enabling storing symbolic links ("-snl" switch), they enable the solid mode.
     setSolidMode( storeSymlinks );
+}
+
+void BitAbstractArchiveCreator::setStoreCreationTime( bool storeCreationTime ) noexcept {
+    if ( storeCreationTime ) {
+        setFormatProperty( L"tc", true );
+    } else {
+        mExtraProperties.erase( L"tc" );
+    }
+}
+
+void BitAbstractArchiveCreator::setStoreLastAccessTime( bool storeLastAccessTime ) noexcept {
+    if ( storeLastAccessTime ) {
+        setFormatProperty( L"ta", true );
+    } else {
+        mExtraProperties.erase( L"ta" );
+    }
 }
 
 auto dictionary_property_name( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {

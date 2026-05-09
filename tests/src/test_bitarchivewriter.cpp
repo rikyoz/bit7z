@@ -16,8 +16,9 @@
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
 
+#include <bit7z/bitarchivereader.hpp>
 #include <bit7z/bitformat.hpp>
-#include <bitarchivereader.hpp>
+#include <bit7z/bitinputitem.hpp>
 #include <bit7z/bitarchivewriter.hpp>
 
 using namespace bit7z;
@@ -76,3 +77,98 @@ TEST_CASE( "BitArchiveWriter: Creating an archive containing files with Unicode 
 }
 
 #endif
+
+TEST_CASE( "BitArchiveWriter: addFile returns a reference to the added item", "[bitarchivewriter]" ) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    SECTION( "Filesystem file" ) {
+        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        const BitInputItem& item = writer.addFile( italy.name );
+        REQUIRE( !item.isDir() );
+        REQUIRE( item.size() == static_cast< std::uint64_t >( italy.size ) );
+    }
+
+    SECTION( "Buffer" ) {
+        const auto buffer = load_file( italy.name );
+        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        const BitInputItem& item = writer.addFile( buffer, italy.name );
+        REQUIRE( !item.isDir() );
+        REQUIRE( item.size() == static_cast< std::uint64_t >( italy.size ) );
+    }
+
+    SECTION( "Stream" ) {
+        std::ifstream stream{ italy.name, std::ios::binary };
+        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        const BitInputItem& item = writer.addFile( stream, italy.name );
+        REQUIRE( !item.isDir() );
+    }
+}
+
+TEST_CASE( "BitArchiveWriter: addFile allows customizing the last write time", "[bitarchivewriter]" ) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    // 2020-01-20 17:00:00 UTC
+    const auto knownTime = time_type::clock::from_time_t( 1'579'539'600 );
+
+    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "wim", BitFormat::Wim },
+        TestOutputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Format " << testFormat.extension ) {
+        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        auto& item = writer.addFile( italy.name );
+        item.setLastWriteTime( knownTime );
+
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
+
+        const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+        REQUIRE( reader.itemAt( 0 ).lastWriteTime() == knownTime );
+    }
+}
+
+// TAR is excluded: 7-Zip's TAR writer maps creation time to the POSIX 'ctime' (change time) field,
+// so it does not round-trip correctly.
+TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last access times", "[bitarchivewriter]" ) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    // 2020-01-20 17:00:00 UTC
+    const auto knownTime = time_type::clock::from_time_t( 1'579'539'600 );
+
+    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "wim", BitFormat::Wim },
+        TestOutputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Format " << testFormat.extension ) {
+        SECTION( "Setting the creation time" ) {
+            BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+            writer.setStoreCreationTime( true );
+            auto& item = writer.addFile( italy.name );
+            item.setCreationTime( knownTime );
+
+            buffer_t outBuffer;
+            REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
+
+            const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+            REQUIRE( reader.itemAt( 0 ).creationTime() == knownTime );
+        }
+
+        SECTION( "Setting the last access time" ) {
+            BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+            writer.setStoreLastAccessTime( true );
+            auto& item = writer.addFile( italy.name );
+            item.setLastAccessTime( knownTime );
+
+            buffer_t outBuffer;
+            REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
+
+            const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+            REQUIRE( reader.itemAt( 0 ).lastAccessTime() == knownTime );
+        }
+    }
+}
