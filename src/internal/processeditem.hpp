@@ -25,7 +25,7 @@ class ProcessedItem final {
     public:
         ProcessedItem( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
 
-        BIT7Z_NODISCARD auto path() const -> fs::path;
+        BIT7Z_NODISCARD auto path() const -> const fs::path&;
 
         BIT7Z_NODISCARD auto attributes() const -> std::uint32_t;
 

@@ -30,7 +30,7 @@ ProcessedItem::ProcessedItem( const BitInputArchive& inputArchive, std::uint32_t
     loadTimeMetadata( inputArchive, itemIndex );
 }
 
-auto ProcessedItem::path() const -> fs::path {
+auto ProcessedItem::path() const -> const fs::path& {
     return mFilePath;
 }
 
