@@ -67,28 +67,22 @@ enum struct AccessFlag : std::uint8_t {
 
 /**
  * @brief Enumeration representing file opening modes.
- *
- *   - Existing → Open a file only if it already exists, fail otherwise.
- *   - TruncateExisting → Open a file only if it already exists, truncating it to zero bytes.
- *   - CreateNew → Create a new file if it doesn't exist, fail otherwise.
- *   - OpenAlways → Open a file, creating it if it doesn't exist.
- *   - CreateAlways → Open a file, creating it if it doesn't exist, truncating it otherwise.
  */
 #ifdef _WIN32
 enum struct FileFlag : std::uint8_t {
-    Existing = OPEN_EXISTING,
-    TruncateExisting = TRUNCATE_EXISTING,
-    CreateNew = CREATE_NEW,
-    OpenAlways = OPEN_ALWAYS,
-    CreateAlways = CREATE_ALWAYS
+    Existing         = OPEN_EXISTING,    ///< Open an existing file; fail if it does not exist.
+    TruncateExisting = TRUNCATE_EXISTING, ///< Truncate an existing file to zero bytes; fail if it does not exist.
+    CreateNew        = CREATE_NEW,        ///< Create a new file; fail if it already exists.
+    OpenAlways       = OPEN_ALWAYS,       ///< Open a file if it exists, or create it if it does not.
+    CreateAlways     = CREATE_ALWAYS      ///< Create a file, truncating it if it already exists.
 };
 #else
 enum struct FileFlag : std::uint16_t {
-    Existing = 0,
-    TruncateExisting = O_TRUNC,
-    CreateNew = O_CREAT | O_EXCL,
-    OpenAlways = O_CREAT,
-    CreateAlways = O_CREAT | O_TRUNC
+    Existing         = 0,               ///< Open an existing file; fail if it does not exist.
+    TruncateExisting = O_TRUNC,          ///< Truncate an existing file to zero bytes; fail if it does not exist.
+    CreateNew        = O_CREAT | O_EXCL, ///< Create a new file; fail if it already exists.
+    OpenAlways       = O_CREAT,          ///< Open a file if it exists, or create it if it does not.
+    CreateAlways     = O_CREAT | O_TRUNC ///< Create a file, truncating it if it already exists.
 };
 #endif
 
