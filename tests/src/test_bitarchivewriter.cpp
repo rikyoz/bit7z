@@ -108,7 +108,7 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing the last write time", "
     static const TestDirectory testDir{ test_filesystem_dir };
 
     // 2020-01-20 17:00:00 UTC
-    const auto knownTime = time_type::clock::from_time_t( 1'579'539'600 );
+    const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
         TestOutputFormat{ "7z", BitFormat::SevenZip },
@@ -136,7 +136,7 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
     static const TestDirectory testDir{ test_filesystem_dir };
 
     // 2020-01-20 17:00:00 UTC
-    const auto knownTime = time_type::clock::from_time_t( 1'579'539'600 );
+    const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
         TestOutputFormat{ "7z", BitFormat::SevenZip },
