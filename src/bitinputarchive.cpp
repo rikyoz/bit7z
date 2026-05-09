@@ -680,6 +680,16 @@ auto BitInputArchive::find( const tstring& path ) const noexcept -> BitInputArch
 #endif
 }
 
+auto BitInputArchive::findByName( const tstring& name ) const noexcept -> BitInputArchive::ConstIterator {
+    // Note: when tstring is the same type as native_string (BIT7Z_USE_NATIVE_STRING is ON, or we are on a POSIX system)
+    // we just take a reference to the name string; in other cases, we get a new string, and the reference variable
+    // extends its lifetime.
+    const auto& nameToFind = to_native_string( name );
+    return std::find_if( begin(), end(), [ &nameToFind ]( const BitArchiveItemOffset& oldItem ) -> bool {
+        return oldItem.nativeName() == nameToFind;
+    } );
+}
+
 auto BitInputArchive::contains( const tstring& path ) const noexcept -> bool {
     return find( path ) != end();
 }

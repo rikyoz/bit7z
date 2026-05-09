@@ -38,10 +38,19 @@ auto BitArchiveItem::isDir() const -> bool {
     return !isDir.isEmpty() && isDir.getBool();
 }
 
+namespace {
 BIT7Z_NODISCARD
-inline auto filename( const fs::path& path ) -> tstring {
+BIT7Z_ALWAYS_INLINE
+auto filename( const fs::path& path ) -> tstring {
     return path_to_tstring( path.filename() );
 }
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto nativeFilename( const fs::path& path ) -> native_string {
+    return path.filename().native();
+}
+} // namespace
 
 auto BitArchiveItem::name() const -> tstring {
     BitPropVariant name = itemProperty( BitProperty::Name );
@@ -50,6 +59,15 @@ auto BitArchiveItem::name() const -> tstring {
         return name.isEmpty() ? tstring{} : filename( name.getNativeString() );
     }
     return name.getString();
+}
+
+auto BitArchiveItem::nativeName() const -> native_string {
+    BitPropVariant name = itemProperty( BitProperty::Name );
+    if ( name.isEmpty() ) {
+        name = itemProperty( BitProperty::Path );
+        return name.isEmpty() ? native_string{} : nativeFilename( name.getNativeString() );
+    }
+    return name.getNativeString();
 }
 
 auto BitArchiveItem::extension() const -> tstring {

@@ -576,6 +576,16 @@ class BitInputArchive {
         BIT7Z_NODISCARD auto find( const tstring& path ) const noexcept -> BitInputArchive::ConstIterator;
 
         /**
+         * @brief Find an item in the archive that has the given name (last component of its path within the archive).
+         *
+         * @param name the name to be searched in the archive.
+         *
+         * @return an iterator to the item with the given name, or an iterator equal to the end() iterator
+         * if no item is found.
+         */
+        BIT7Z_NODISCARD auto findByName( const tstring& name ) const noexcept -> BitInputArchive::ConstIterator;
+
+        /**
          * @brief Find if there is an item in the archive that has the given path.
          *
          * @param path the path to be searched in the archive.

@@ -47,6 +47,14 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD auto name() const -> tstring final;
 
         /**
+         * @note Same as name(), but returning a native string (i.e., std::wstring on Windows, std::string elsewhere).
+         *
+         * @return the name of the item in the archive, if available or inferable from the path, or an empty string
+         *         otherwise.
+         */
+        BIT7Z_NODISCARD auto nativeName() const -> native_string;
+
+        /**
          * @return the extension of the item, if available or if it can be inferred from the name;
          *         otherwise it returns an empty string (e.g., when the item is a folder).
          */
