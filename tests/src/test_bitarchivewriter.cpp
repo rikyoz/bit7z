@@ -83,23 +83,23 @@ TEST_CASE( "BitArchiveWriter: addFile returns a reference to the added item", "[
 
     SECTION( "Filesystem file" ) {
         BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
-        const BitInputItem& item = writer.addFile( italy.name );
+        const BitInputItem& item = writer.addFile( loremIpsum.name );
         REQUIRE( !item.isDir() );
-        REQUIRE( item.size() == static_cast< std::uint64_t >( italy.size ) );
+        REQUIRE( item.size() == static_cast< std::uint64_t >( loremIpsum.size ) );
     }
 
     SECTION( "Buffer" ) {
-        const auto buffer = load_file( italy.name );
+        const auto buffer = load_file( loremIpsum.name );
         BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
-        const BitInputItem& item = writer.addFile( buffer, italy.name );
+        const BitInputItem& item = writer.addFile( buffer, loremIpsum.name );
         REQUIRE( !item.isDir() );
-        REQUIRE( item.size() == static_cast< std::uint64_t >( italy.size ) );
+        REQUIRE( item.size() == static_cast< std::uint64_t >( loremIpsum.size ) );
     }
 
     SECTION( "Stream" ) {
-        std::ifstream stream{ italy.name, std::ios::binary };
+        std::ifstream stream{ loremIpsum.name, std::ios::binary };
         BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
-        const BitInputItem& item = writer.addFile( stream, italy.name );
+        const BitInputItem& item = writer.addFile( stream, loremIpsum.name );
         REQUIRE( !item.isDir() );
     }
 }

@@ -73,14 +73,14 @@ TEST_CASE( "BitInputItem filesystem constructor should correctly read the metada
            "[bitinputitem]" ) {
     static const TempTestDirectory testDir{ "test_bitinputitem" };
 
-    const fs::path targetPath = fs::path{ test_filesystem_dir } / italy.name;
-    const fs::path symlinkPath = BIT7Z_NATIVE_STRING( "symlink.svg" );
+    const fs::path targetPath = fs::path{ test_filesystem_dir } / loremIpsum.name;
+    const fs::path symlinkPath = BIT7Z_NATIVE_STRING( "symlink.pdf" );
     fs::create_symlink( targetPath, symlinkPath );
 
     const BitInputItem item{ symlinkPath, SymlinkPolicy::Follow };
     REQUIRE_FALSE( item.isDir() );
     REQUIRE_FALSE( item.isSymLink() );
-    REQUIRE( item.size() == italy.size );
+    REQUIRE( item.size() == loremIpsum.size );
     REQUIRE( item.path() == symlinkPath.native() );
     REQUIRE( item.attributes() != 0 ); // TODO: Better check file attributes
     REQUIRE( item.inArchivePath() == symlinkPath.wstring() );
