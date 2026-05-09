@@ -138,11 +138,18 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
     // 2020-01-20 17:00:00 UTC
     const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
+#if BIT7Z_7ZIP_VERSION_MAJOR >= 24
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
         TestOutputFormat{ "7z", BitFormat::SevenZip },
         TestOutputFormat{ "wim", BitFormat::Wim },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
+#else
+    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "zip", BitFormat::Zip }
+    );
+#endif
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
         SECTION( "Setting the creation time" ) {
