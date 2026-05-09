@@ -355,10 +355,14 @@ void BitInputArchive::extractMatchingRegexTo( const tstring& outDir,
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
 
-    const bool extractMatchingItems = policy == FilterPolicy::Include;
     const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+    extractMatchingTo( outDir, regexFilter, policy );
+}
+
+void BitInputArchive::extractMatchingTo( const tstring& outDir, const tregex& regex, FilterPolicy policy ) const {
+    const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo( outDir, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, regexFilter, extractMatchingItems )
+        return shouldProcessItem( item, regex, extractMatchingItems )
             ? FilterResult::Process
             : FilterResult::Skip;
     } );
@@ -494,10 +498,14 @@ void BitInputArchive::extractMatchingRegexTo( buffer_t& outBuffer,
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
 
-    const bool extractMatchingItems = policy == FilterPolicy::Include;
     const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+    extractMatchingTo( outBuffer, regexFilter, policy );
+}
+
+void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tregex& regex, FilterPolicy policy ) const {
+    const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo( outBuffer, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, regexFilter, extractMatchingItems )
+        return shouldProcessItem( item, regex, extractMatchingItems )
             ? FilterResult::Process
             : FilterResult::Skip;
     } );

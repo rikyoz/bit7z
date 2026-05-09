@@ -248,6 +248,19 @@ class BitInputArchive {
         void extractMatchingRegexTo( const tstring& outDir,
                                      const tstring& regex,
                                      FilterPolicy policy = FilterPolicy::Include ) const;
+
+        /**
+         * @brief Extracts to the output directory all the items whose paths match the given regex pattern.
+         *
+         * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
+         *
+         * @param outDir       the output directory where extracted files will be put.
+         * @param regex        the regex used for matching the paths of files inside the archive.
+         * @param policy       (optional) the filtering policy to be applied to the matching items.
+         */
+        void extractMatchingTo( const tstring& outDir,
+                                const tregex& regex,
+                                FilterPolicy policy = FilterPolicy::Include ) const;
 #endif
 
         /**
@@ -293,7 +306,7 @@ class BitInputArchive {
          * @brief Extracts a file to the output buffer.
          *
          * @param outBuffer   the output buffer where the content of the archive will be put.
-         * @param index       the index of the file to be extracted.
+         * @param index       (optional) the index of the file to be extracted.
          */
         void extractTo( buffer_t& outBuffer, std::uint32_t index = 0 ) const;
 
@@ -302,7 +315,7 @@ class BitInputArchive {
          *
          * @param outBuffer    the output buffer where to extract the file.
          * @param itemFilter   the wildcard pattern used for matching the paths of files inside the archive.
-         * @param policy       the filtering policy to be applied to the matched items.
+         * @param policy       (optional) the filtering policy to be applied to the matched items.
          */
         void extractMatchingTo( buffer_t& outBuffer,
                                 const tstring& itemFilter,
@@ -316,9 +329,24 @@ class BitInputArchive {
          *
          * @param outBuffer    the output buffer where the extracted file will be put.
          * @param regex        the regex used for matching the paths of files inside the archive.
-         * @param policy       the filtering policy to be applied to the matched items.
+         * @param policy       (optional) the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegexTo( buffer_t& outBuffer, const tstring& regex, FilterPolicy policy ) const;
+        void extractMatchingRegexTo( buffer_t& outBuffer,
+                                     const tstring& regex,
+                                     FilterPolicy policy = FilterPolicy::Include ) const;
+
+        /**
+         * @brief Extracts to the output buffer the first file in the archive that matches the given regex pattern.
+         *
+         * @note Available only when compiling bit7z using the BIT7Z_REGEX_MATCHING preprocessor define.
+         *
+         * @param outBuffer    the output buffer where the extracted file will be put.
+         * @param regex        the regex used for matching the paths of files inside the archive.
+         * @param policy       (optional) the filtering policy to be applied to the matched items.
+         */
+        void extractMatchingTo( buffer_t& outBuffer,
+                                const tregex& regex,
+                                FilterPolicy policy = FilterPolicy::Include ) const;
 #endif
 
         /**
