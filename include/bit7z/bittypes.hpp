@@ -127,6 +127,18 @@ auto to_tstring( T arg ) -> std::basic_string< tchar > {
 #if defined( _WIN32 ) && !defined( BIT7Z_USE_NATIVE_STRING )
 BIT7Z_NODISCARD
 auto to_tstring( const native_string& str ) -> tstring;
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( tstring&& str ) -> tstring {
+    return std::move( str );
+}
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( const tstring& str ) -> const tstring& {
+    return str;
+}
 #else
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
@@ -153,7 +165,7 @@ auto to_native_string( const native_string& str ) -> const native_string& {
     return str;
 }
 
-#if !defined( _WIN32 )
+#ifndef _WIN32
 BIT7Z_NODISCARD
 auto to_native_string( const sevenzip_string& str ) -> native_string;
 #elif !defined( BIT7Z_USE_NATIVE_STRING )
