@@ -100,6 +100,12 @@ class BitInputItem final {
         BIT7Z_NODISCARD
         auto hasNewData() const noexcept -> bool;
 
+        void setCreationTime( time_type creationTime ) noexcept;
+
+        void setLastWriteTime( time_type lastWriteTime ) noexcept;
+
+        void setLastAccessTime( time_type lastAccessTime ) noexcept;
+
     private:
         InputItemProperties mProperties;
         // Note: we need to store paths as strings rather than fs::path as the public API is in C++14.

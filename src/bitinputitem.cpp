@@ -280,4 +280,16 @@ auto BitInputItem::hasNewData() const noexcept -> bool {
     return mProperties.inputType != InputItemType::RenamedItem;
 }
 
+void BitInputItem::setCreationTime( time_type creationTime ) noexcept {
+    mProperties.creationTime = time_type_to_FILETIME( creationTime );
+}
+
+void BitInputItem::setLastWriteTime( time_type lastWriteTime ) noexcept {
+    mProperties.lastWriteTime = time_type_to_FILETIME( lastWriteTime );
+}
+
+void BitInputItem::setLastAccessTime( time_type lastAccessTime ) noexcept {
+    mProperties.lastAccessTime = time_type_to_FILETIME( lastAccessTime );
+}
+
 } // namespace bit7z

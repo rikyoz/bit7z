@@ -70,9 +70,27 @@ TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
 #endif
 
         SECTION( "From FILETIME to bit7z::time_type" ) {
-            auto result = FILETIME_to_time_type( testDate.fileTime );
-            auto output = bit7z::time_type::clock::to_time_t( result );
+            const auto result = FILETIME_to_time_type( testDate.fileTime );
+            const auto output = bit7z::time_type::clock::to_time_t( result );
             REQUIRE( output == testDate.dateTime );
+        }
+
+        SECTION( "From bit7z::time_type to FILETIME" ) {
+            const auto input = bit7z::time_type::clock::from_time_t( testDate.dateTime );
+            const auto result = time_type_to_FILETIME( input );
+            REQUIRE( result.dwHighDateTime == testDate.fileTime.dwHighDateTime );
+            REQUIRE( result.dwLowDateTime == testDate.fileTime.dwLowDateTime );
+        }
+
+        SECTION( "Round-trip: FILETIME with sub-second precision -> bit7z::time_type -> FILETIME" ) {
+            // 1,000,000 × 100ns = 100ms; a multiple of 10 to remain lossless on microseconds-resolution clocks.
+            FILETIME original = testDate.fileTime;
+            original.dwLowDateTime += 1'000'000;
+
+            const auto asTimeType = FILETIME_to_time_type( original );
+            const auto result = time_type_to_FILETIME( asTimeType );
+            REQUIRE( result.dwHighDateTime == original.dwHighDateTime );
+            REQUIRE( result.dwLowDateTime == original.dwLowDateTime );
         }
     }
 }

@@ -70,6 +70,16 @@ auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
     return time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unixEpoch ) };
 }
 
+auto time_type_to_FILETIME( time_type timePoint ) -> FILETIME {
+    const auto unixEpoch = std::chrono::duration_cast< FileTimeDuration >( timePoint.time_since_epoch() );
+    const auto ntEpoch = unixEpoch - nt_to_unix_epoch;
+    const auto ticks = static_cast< std::uint64_t >( ntEpoch.count() );
+    FILETIME fileTime{};
+    fileTime.dwLowDateTime  = static_cast< DWORD >( ticks );
+    fileTime.dwHighDateTime = static_cast< DWORD >( ticks >> 32ull );
+    return fileTime;
+}
+
 auto current_file_time() -> FILETIME {
 #ifdef _WIN32
     FILETIME fileTime{};
