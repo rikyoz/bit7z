@@ -491,9 +491,7 @@ void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tstring& ite
 
 #ifdef BIT7Z_REGEX_MATCHING
 
-void BitInputArchive::extractMatchingRegexTo( buffer_t& outBuffer,
-                                              const tstring& regex,
-                                              FilterPolicy policy = FilterPolicy::Include ) const {
+void BitInputArchive::extractMatchingRegexTo( buffer_t& outBuffer, const tstring& regex, FilterPolicy policy ) const {
     if ( regex.empty() ) {
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
