@@ -121,12 +121,12 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto storeSymbolicLinks() const noexcept -> bool;
 
         /**
-         * @return whether the archive creator stores the creation timestamps of items.
+         * @return true if the creator has been explicitly configured to store creation timestamps of items.
          */
         BIT7Z_NODISCARD auto storeCreationTime() const noexcept -> bool;
 
         /**
-         * @return whether the archive creator stores the last access timestamps of items.
+         * @return true if the creator has been explicitly configured to store last access timestamps of items.
          */
         BIT7Z_NODISCARD auto storeLastAccessTime() const noexcept -> bool;
 

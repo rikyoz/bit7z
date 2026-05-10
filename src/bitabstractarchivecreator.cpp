@@ -191,11 +191,13 @@ auto BitAbstractArchiveCreator::storeSymbolicLinks() const noexcept -> bool {
 }
 
 auto BitAbstractArchiveCreator::storeCreationTime() const noexcept -> bool {
-    return mExtraProperties.count( L"tc" );
+    const auto it = mExtraProperties.find( L"tc" );
+    return it != mExtraProperties.cend() && it->second.isBool() && it->second.getBool();
 }
 
 auto BitAbstractArchiveCreator::storeLastAccessTime() const noexcept -> bool {
-    return mExtraProperties.count( L"ta" );
+    const auto it = mExtraProperties.find( L"ta" );
+    return it != mExtraProperties.cend() && it->second.isBool() && it->second.getBool();
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
@@ -297,19 +299,11 @@ void BitAbstractArchiveCreator::setStoreSymbolicLinks( bool storeSymlinks ) noex
 }
 
 void BitAbstractArchiveCreator::setStoreCreationTime( bool storeCreationTime ) noexcept {
-    if ( storeCreationTime ) {
-        setFormatProperty( L"tc", true );
-    } else {
-        mExtraProperties.erase( L"tc" );
-    }
+    setFormatProperty( L"tc", storeCreationTime );
 }
 
 void BitAbstractArchiveCreator::setStoreLastAccessTime( bool storeLastAccessTime ) noexcept {
-    if ( storeLastAccessTime ) {
-        setFormatProperty( L"ta", true );
-    } else {
-        mExtraProperties.erase( L"ta" );
-    }
+    setFormatProperty( L"ta", storeLastAccessTime );
 }
 
 auto dictionary_property_name( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {
