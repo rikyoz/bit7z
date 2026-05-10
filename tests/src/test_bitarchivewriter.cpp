@@ -154,6 +154,8 @@ TEST_CASE( "BitArchiveWriter: setStoreLastWriteTime(false) suppresses MTime in t
 // or zero FILETIME respectively), so the property is never fully absent. We verify instead that the
 // user-set knownTime is not persisted: 7-Zip never retrieves it from the callback when tm=false,
 // so whatever ends up in the archive is a zero/epoch-derived value, not knownTime.
+// Note: WIM's SetProperties did not recognize tm/tc/ta until 7-Zip 23.01; passing them on older versions
+// returns E_INVALIDARG ("The parameter is incorrect.").
 TEST_CASE( "BitArchiveWriter: setStoreLastWriteTime(false) does not persist the item's MTime",
            "[bitarchivewriter]" ) {
     static const TestDirectory testDir{ test_filesystem_dir };
@@ -161,11 +163,18 @@ TEST_CASE( "BitArchiveWriter: setStoreLastWriteTime(false) does not persist the 
     // 2020-01-20 17:00:00 UTC
     const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
+#if BIT7Z_7ZIP_VERSION_MAJOR >= 23
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
         TestOutputFormat{ "tar", BitFormat::Tar },
         TestOutputFormat{ "wim", BitFormat::Wim },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
+#else
+    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "zip", BitFormat::Zip }
+    );
+#endif
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
         BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
