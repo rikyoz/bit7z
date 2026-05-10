@@ -61,16 +61,22 @@ auto time_to_FILETIME( std::time_t value ) -> FILETIME {
 
 #endif
 
-auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
-    const FileTimeDuration fileTimeDuration{
-        ( static_cast< std::uint64_t >( fileTime.dwHighDateTime ) << 32ull ) + fileTime.dwLowDateTime
-    };
+namespace {
+template< typename TargetDuration >
+using IsFinerThan100ns = std::ratio_less< typename TargetDuration::period, FileTimeTickRate >;
 
-    const auto unixEpoch = fileTimeDuration + nt_to_unix_epoch;
+// Coarser-than-100ns clocks (e.g., microseconds): every FileTimeDuration value fits in TargetDuration.
+template< typename TargetDuration, std::enable_if_t< !IsFinerThan100ns< TargetDuration >::value, int > = 0 >
+BIT7Z_MAYBE_UNUSED
+auto filetimeCast( const FileTimeDuration unixEpoch ) -> time_type {
+    return time_type{ std::chrono::duration_cast< TargetDuration >( unixEpoch ) };
+}
 
-    // Clamp before casting to avoid signed overflow when the FILETIME represents a date outside
-    // the range of time_type (e.g., FILETIME{0,0} = 1601/01/01 underflows nanosecond-precision clocks on Linux).
-    using TargetDuration = std::chrono::system_clock::duration;
+// Finer-than-100ns clocks (e.g., nanoseconds): duration_cast multiplies the count, which overflows
+// for dates far outside the Unix epoch (e.g., FILETIME{0,0} = 1601/01/01 -> clamp to time_type::min()).
+template< typename TargetDuration, std::enable_if_t< IsFinerThan100ns< TargetDuration >::value, int > = 0 >
+BIT7Z_MAYBE_UNUSED
+auto filetimeCast( const FileTimeDuration unixEpoch ) -> time_type {
     if ( unixEpoch < std::chrono::duration_cast< FileTimeDuration >( TargetDuration::min() ) ) {
         return time_type::min();
     }
@@ -78,6 +84,15 @@ auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
         return time_type::max();
     }
     return time_type{ std::chrono::duration_cast< TargetDuration >( unixEpoch ) };
+}
+} // namespace
+
+auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
+    const FileTimeDuration fileTimeDuration{
+        ( static_cast< std::uint64_t >( fileTime.dwHighDateTime ) << 32ull ) + fileTime.dwLowDateTime
+    };
+    const auto unixEpoch = fileTimeDuration + nt_to_unix_epoch;
+    return filetimeCast< time_type::duration >( unixEpoch );
 }
 
 auto time_type_to_FILETIME( time_type timePoint ) -> FILETIME {

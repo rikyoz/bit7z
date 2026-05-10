@@ -83,9 +83,9 @@ TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
         }
 
         SECTION( "Round-trip: FILETIME with sub-second precision -> bit7z::time_type -> FILETIME" ) {
-            // 1,000,000 × 100ns = 100ms; a multiple of 10 to remain lossless on microseconds-resolution clocks.
+            // 1000000 × 100ns = 100ms; a multiple of 10 to remain lossless on microseconds-resolution clocks.
             FILETIME original = testDate.fileTime;
-            original.dwLowDateTime += 1'000'000;
+            original.dwLowDateTime += 1000000; // NOLINT(*-magic-numbers)
 
             const auto asTimeType = FILETIME_to_time_type( original );
             const auto result = time_type_to_FILETIME( asTimeType );
