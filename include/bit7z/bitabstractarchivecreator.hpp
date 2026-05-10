@@ -266,7 +266,9 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         /**
          * @brief Sets whether the creator will store last write timestamps of items.
          *
-         * @param storeLastWriteTime if true, last write timestamps of items will be stored in the output archive.
+         * @note By default, all archive formats store last write timestamps; pass false to suppress them.
+         *
+         * @param storeLastWriteTime if false, last write timestamps will be omitted from the output archive.
          */
         void setStoreLastWriteTime( bool storeLastWriteTime ) noexcept;
 
