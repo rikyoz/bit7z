@@ -209,7 +209,7 @@ void BitArchiveEditor::applyChanges() {
         // Nothing to do here.
         return;
     }
-    auto archivePath = inputArchive()->archivePath();
+    const auto& archivePath = inputArchive()->archivePath();
     compressTo( archivePath );
     mEditedItems.clear();
     setInputArchive( std::make_unique< BitInputArchive >( *this, archivePath, ArchiveStartOffset::FileStart ) );
