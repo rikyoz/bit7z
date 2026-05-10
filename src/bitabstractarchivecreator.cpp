@@ -190,14 +190,19 @@ auto BitAbstractArchiveCreator::storeSymbolicLinks() const noexcept -> bool {
     return mStoreSymbolicLinks;
 }
 
+auto BitAbstractArchiveCreator::storeLastWriteTime() const noexcept -> bool {
+    const auto propertyIt = mExtraProperties.find( L"tm" );
+    return propertyIt != mExtraProperties.cend() && propertyIt->second.isBool() && propertyIt->second.getBool();
+}
+
 auto BitAbstractArchiveCreator::storeCreationTime() const noexcept -> bool {
-    const auto it = mExtraProperties.find( L"tc" );
-    return it != mExtraProperties.cend() && it->second.isBool() && it->second.getBool();
+    const auto propertyIt = mExtraProperties.find( L"tc" );
+    return propertyIt != mExtraProperties.cend() && propertyIt->second.isBool() && propertyIt->second.getBool();
 }
 
 auto BitAbstractArchiveCreator::storeLastAccessTime() const noexcept -> bool {
-    const auto it = mExtraProperties.find( L"ta" );
-    return it != mExtraProperties.cend() && it->second.isBool() && it->second.getBool();
+    const auto propertyIt = mExtraProperties.find( L"ta" );
+    return propertyIt != mExtraProperties.cend() && propertyIt->second.isBool() && propertyIt->second.getBool();
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
@@ -296,6 +301,10 @@ void BitAbstractArchiveCreator::setStoreSymbolicLinks( bool storeSymlinks ) noex
     mStoreSymbolicLinks = storeSymlinks;
     // p7zip/7-zip behavior: when enabling storing symbolic links ("-snl" switch), they enable the solid mode.
     setSolidMode( storeSymlinks );
+}
+
+void BitAbstractArchiveCreator::setStoreLastWriteTime( bool storeLastWriteTime ) noexcept {
+    setFormatProperty( L"tm", storeLastWriteTime );
 }
 
 void BitAbstractArchiveCreator::setStoreCreationTime( bool storeCreationTime ) noexcept {

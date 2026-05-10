@@ -121,6 +121,11 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto storeSymbolicLinks() const noexcept -> bool;
 
         /**
+         * @return true if the creator has been explicitly configured to store last write timestamps of items.
+         */
+        BIT7Z_NODISCARD auto storeLastWriteTime() const noexcept -> bool;
+
+        /**
          * @return true if the creator has been explicitly configured to store creation timestamps of items.
          */
         BIT7Z_NODISCARD auto storeCreationTime() const noexcept -> bool;
@@ -257,6 +262,13 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @param storeSymlinks    if true, symbolic links will be stored as links.
          */
         void setStoreSymbolicLinks( bool storeSymlinks ) noexcept;
+
+        /**
+         * @brief Sets whether the creator will store last write timestamps of items.
+         *
+         * @param storeLastWriteTime if true, last write timestamps of items will be stored in the output archive.
+         */
+        void setStoreLastWriteTime( bool storeLastWriteTime ) noexcept;
 
         /**
          * @brief Sets whether the creator will store creation timestamps of items.
