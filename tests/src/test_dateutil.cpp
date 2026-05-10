@@ -95,6 +95,16 @@ TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
     }
 }
 
+TEST_CASE( "fsutil: FILETIME_to_time_type clamps out-of-range FILETIMEs", "[fsutil][date functions]" ) {
+    // FILETIME{0, 0} is the NT epoch (1601-01-01), which predates the Unix epoch by ~369 years.
+    // On nanosecond-precision clocks (e.g., Linux), converting it would overflow signed 64-bit arithmetic;
+    // the function must clamp to time_type::min() rather than invoking UB.
+    // On 100ns-precision clocks (e.g., Windows), no overflow occurs and the exact date is returned.
+    // In both cases the result must be strictly before the Unix epoch.
+    const auto result = FILETIME_to_time_type( FILETIME{ 0, 0 } );
+    REQUIRE( result < time_type::clock::from_time_t( 0 ) );
+}
+
 #ifndef _WIN32
 TEST_CASE( "fsutil: Date conversion of current time should preserve information up to seconds",
            "[fsutil][date functions]" ) {

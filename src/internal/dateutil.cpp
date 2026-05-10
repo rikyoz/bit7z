@@ -67,7 +67,17 @@ auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
     };
 
     const auto unixEpoch = fileTimeDuration + nt_to_unix_epoch;
-    return time_type{ std::chrono::duration_cast< std::chrono::system_clock::duration >( unixEpoch ) };
+
+    // Clamp before casting to avoid signed overflow when the FILETIME represents a date outside
+    // the range of time_type (e.g., FILETIME{0,0} = 1601/01/01 underflows nanosecond-precision clocks on Linux).
+    using TargetDuration = std::chrono::system_clock::duration;
+    if ( unixEpoch < std::chrono::duration_cast< FileTimeDuration >( TargetDuration::min() ) ) {
+        return time_type::min();
+    }
+    if ( unixEpoch > std::chrono::duration_cast< FileTimeDuration >( TargetDuration::max() ) ) {
+        return time_type::max();
+    }
+    return time_type{ std::chrono::duration_cast< TargetDuration >( unixEpoch ) };
 }
 
 auto time_type_to_FILETIME( time_type timePoint ) -> FILETIME {
