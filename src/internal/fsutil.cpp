@@ -109,7 +109,7 @@ auto w_match( tstring::const_iterator patternIt, // NOLINT(misc-no-recursion)
                 ++strIt;
                 break;
             case BIT7Z_STRING( '*' ): {
-                while ( patternIt + 1 != patternEnd && *( patternIt + 1 ) == '*' ) {
+                while ( patternIt + 1 != patternEnd && *( patternIt + 1 ) == BIT7Z_STRING( '*' ) ) {
                     ++patternIt;
                 }
                 if ( patternIt + 1 == patternEnd ) {
