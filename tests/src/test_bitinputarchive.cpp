@@ -863,24 +863,24 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Correctly keeping file attributes after ex
     const auto filterCallback = [&testFormat]( const BitArchiveItem& item ) -> FilterResult {
         const auto isAltStream = item.itemProperty( BitProperty::IsAltStream );
         if ( isAltStream.isBool() && isAltStream.getBool() ) {
-            return FilterResult::Skip; // Ignoring alternate stream in WIM archives.
+            return FilterResult::SkipItem; // Ignoring alternate stream in WIM archives.
         }
 #ifdef _WIN32
         if ( testFormat.format == BitFormat::Tar && isHiddenFile( item ) ) {
             // Tar archives do not store the Windows' hidden file attribute.
-            return FilterResult::Skip;
+            return FilterResult::SkipItem;
         }
-        return item.isSymLink() ? FilterResult::Skip : FilterResult::Process;
+        return item.isSymLink() ? FilterResult::SkipItem : FilterResult::ProcessItem;
 #else
         if ( !formatSupportsSymlinks( testFormat.format ) && item.isSymLink() ) {
             // NOTE: 7-Zip seems to not support symlinks in Rar5 archives.
             // TODO: Fix extraction of Windows reparse points (symlinks) from Wim archives on Linux.
-            return FilterResult::Skip;
+            return FilterResult::SkipItem;
         }
         if ( !formatSupportsUnixPermissions( testFormat.format ) && item.nativePath() == BIT7Z_NATIVE_STRING( "read_only" ) ) {
-            return FilterResult::Skip;
+            return FilterResult::SkipItem;
         }
-        return isHiddenFile( item ) ? FilterResult::Skip : FilterResult::Process;
+        return isHiddenFile( item ) ? FilterResult::SkipItem : FilterResult::ProcessItem;
 #endif
     };
 
@@ -2150,8 +2150,8 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Zip slip attacks",
         REQUIRE_THROWS( reader.extractTo( testOutDir ) );
         REQUIRE_NOTHROW( reader.extractTo( testOutDir, []( const BitArchiveItem& item ) -> FilterResult {
             return fs::path{ item.nativePath() }.filename() == BIT7Z_NATIVE_STRING( "evil.txt" )
-                ? FilterResult::Skip
-                : FilterResult::Process;
+                ? FilterResult::SkipItem
+                : FilterResult::ProcessItem;
         } ) );
         REQUIRE( fs::exists( "good.txt" ) );
         REQUIRE( fs::remove( "good.txt" ) );

@@ -91,13 +91,13 @@ try {
 
     if ( mFilterCallback ) {
         const auto filterResult = mFilterCallback( mInputArchive.itemAt( index ) );
-        if ( filterResult == FilterResult::Skip ) {
+        if ( filterResult == FilterResult::SkipItem ) {
             return S_OK;
         }
-        if ( filterResult == FilterResult::Abort ) {
+        if ( filterResult == FilterResult::AbortOperation ) {
             return E_ABORT;
         }
-        // if filterResult == FilterResult::Process, continue.
+        // if filterResult == FilterResult::ProcessItem, continue.
     }
 
     return getOutStream( index, outStream );

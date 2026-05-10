@@ -342,7 +342,7 @@ void BitInputArchive::extractMatchingTo( const tstring& outDir,
 
     const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo( outDir, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::Process : FilterResult::Skip;
+        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::ProcessItem : FilterResult::SkipItem;
     } );
 }
 
@@ -363,8 +363,8 @@ void BitInputArchive::extractMatchingTo( const tstring& outDir, const tregex& re
     const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo( outDir, [ & ]( const BitArchiveItem& item ) -> FilterResult {
         return shouldProcessItem( item, regex, extractMatchingItems )
-            ? FilterResult::Process
-            : FilterResult::Skip;
+            ? FilterResult::ProcessItem
+            : FilterResult::SkipItem;
     } );
 }
 
@@ -485,7 +485,7 @@ void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tstring& ite
 
     const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo(  outBuffer, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::Process : FilterResult::Skip;
+        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::ProcessItem : FilterResult::SkipItem;
     } );
 }
 
@@ -504,8 +504,8 @@ void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tregex& rege
     const bool extractMatchingItems = policy == FilterPolicy::Include;
     extractTo( outBuffer, [ & ]( const BitArchiveItem& item ) -> FilterResult {
         return shouldProcessItem( item, regex, extractMatchingItems )
-            ? FilterResult::Process
-            : FilterResult::Skip;
+            ? FilterResult::ProcessItem
+            : FilterResult::SkipItem;
     } );
 }
 

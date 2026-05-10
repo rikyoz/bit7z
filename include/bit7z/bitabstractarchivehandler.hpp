@@ -69,9 +69,12 @@ using BufferCallback = std::function< buffer_t&( std::uint32_t, const tstring& )
  * @brief Enumeration representing the result of applying a filter callback on an archive item.
  */
 enum struct FilterResult : std::uint8_t {
-    Process, ///< Continue processing the item.
-    Skip,    ///< Skip the item (do not process it).
-    Abort    ///< Abort the whole operation.
+    ProcessItem,    ///< Continue processing the item.
+    SkipItem,       ///< Skip the item (do not process it).
+    AbortOperation, ///< Abort the whole operation.
+    BIT7Z_DEPRECATED_ENUMERATOR( Process, ProcessItem, "Use FilterResult::ProcessItem" ),
+    BIT7Z_DEPRECATED_ENUMERATOR( Skip, SkipItem, "Use FilterResult::SkipItem" ),
+    BIT7Z_DEPRECATED_ENUMERATOR( Abort, AbortOperation, "Use FilterResult::AbortOperation" ),
 };
 
 /**
