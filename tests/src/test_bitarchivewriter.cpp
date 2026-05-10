@@ -144,11 +144,13 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
         TestOutputFormat{ "wim", BitFormat::Wim },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
-#else
+#elif BIT7Z_7ZIP_VERSION_MAJOR > 16
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
         TestOutputFormat{ "7z", BitFormat::SevenZip },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
+#else
+    const auto testFormat = TestOutputFormat{ "7z", BitFormat::SevenZip };
 #endif
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
