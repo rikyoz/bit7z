@@ -169,11 +169,13 @@ TEST_CASE( "BitArchiveWriter: setStoreLastWriteTime(false) does not persist the 
         TestOutputFormat{ "wim", BitFormat::Wim },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
-#else
+#elif BIT7Z_7ZIP_VERSION_MAJOR > 16
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
         TestOutputFormat{ "tar", BitFormat::Tar },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
+#else
+    const auto testFormat = TestOutputFormat{ "7z", BitFormat::SevenZip };
 #endif
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
