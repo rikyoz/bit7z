@@ -15,7 +15,7 @@
 namespace bit7z {
 
 CFileOutStream::CFileOutStream( const fs::path& filePath, FileFlag fileFlag )
-    : mFile( filePath.native(), fileFlag ) {}
+    : mFile( filePath.native(), fileFlag ), mFilePath{ filePath } {}
 
 #ifdef _WIN32
 void CFileOutStream::setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept {

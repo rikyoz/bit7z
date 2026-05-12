@@ -56,6 +56,7 @@ class CFileOutStream : public IOutStream, public CMyUnknownImp {
 
     private:
         OutputFile mFile;
+        fs::path mFilePath;
 };
 
 }  // namespace bit7z
