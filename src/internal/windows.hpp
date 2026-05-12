@@ -16,6 +16,7 @@
 
 #include <Common/MyTypes.h> // For HRESULT_FROM_WIN32.
 
+#include <climits>
 #include <cstdint>
 
 /* Note: we must avoid including other headers of p7zip, like stdafx.h. */
@@ -59,7 +60,11 @@ constexpr auto FILE_ATTRIBUTE_NORMAL         = 128u;
 constexpr auto FILE_ATTRIBUTE_REPARSE_POINT  = 1024u;
 #endif
 
-constexpr auto MAX_PATHNAME_LEN = 1024;
+#ifdef PATH_MAX
+constexpr auto MAX_PATH_SIZE = PATH_MAX - 1;
+#else
+constexpr auto MAX_PATH_SIZE = 1023; // Conservative POSIX fallback (1024, counting the null character terminator)
+#endif
 
 // Win32 VARIANT_BOOL constants
 constexpr auto VARIANT_TRUE = static_cast< VARIANT_BOOL >( -1 );
