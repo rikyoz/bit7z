@@ -1732,7 +1732,7 @@ TEST_CASE( "fsutil: Restoring symlinks edge cases", "[fsutil][SafeOutPathBuilder
 
     SECTION( "Target at read-buffer limit is fully read" ) {
         const auto symlinkFile = basePath / "link";
-        const fs::path symlinkTarget{ std::string( MAX_PATH_SIZE, 'x' ) };
+        const fs::path symlinkTarget{ std::string( MAX_PATH_LENGTH, 'x' ) };
         writeSymlinkFile( symlinkFile, symlinkTarget.native() );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
@@ -1742,11 +1742,11 @@ TEST_CASE( "fsutil: Restoring symlinks edge cases", "[fsutil][SafeOutPathBuilder
 
     SECTION( "Target exceeding MAX_PATHNAME_LEN bytes is silently truncated" ) {
         const auto symlinkFile = basePath / "link";
-        writeSymlinkFile( symlinkFile, std::string( MAX_PATH_SIZE + 100, 'y' ) );
+        writeSymlinkFile( symlinkFile, std::string( MAX_PATH_LENGTH + 100, 'y' ) );
 
         REQUIRE( builder.restoreSymlink( symlinkFile ) );
         REQUIRE( fs::is_symlink( symlinkFile ) );
-        REQUIRE( fs::read_symlink( symlinkFile ) == std::string( MAX_PATH_SIZE, 'y' ) );
+        REQUIRE( fs::read_symlink( symlinkFile ) == std::string( MAX_PATH_LENGTH, 'y' ) );
     }
 }
 

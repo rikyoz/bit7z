@@ -59,9 +59,9 @@ constexpr auto FILE_ATTRIBUTE_REPARSE_POINT  = 1024u;
 #endif
 
 #ifdef PATH_MAX
-constexpr auto MAX_PATH_SIZE = PATH_MAX - 1;
+constexpr auto MAX_PATH_LENGTH = PATH_MAX - 1;
 #else
-constexpr auto MAX_PATH_SIZE = 1023; // Conservative POSIX fallback (1024, counting the null character terminator)
+constexpr auto MAX_PATH_LENGTH = 1023; // Conservative POSIX fallback (not counting the null character terminator)
 #endif
 
 // Win32 VARIANT_BOOL constants
