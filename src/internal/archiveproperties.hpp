@@ -23,6 +23,28 @@
 namespace bit7z {
 
 class ArchiveProperties final {
+    public:
+        BIT7Z_NODISCARD
+        auto empty() const -> bool {
+            return mNames.empty();
+        }
+
+        BIT7Z_NODISCARD
+        auto names() const -> const wchar_t* const* {
+            return mNames.data();
+        }
+
+        BIT7Z_NODISCARD
+        auto values() const -> const PROPVARIANT* {
+            return mValues.data();
+        }
+
+        BIT7Z_NODISCARD
+        auto size() const -> std::size_t {
+            return mNames.size();
+        }
+
+    private:
         std::vector< const wchar_t* > mNames{};
         std::vector< BitPropVariant > mValues{};
 
@@ -46,27 +68,6 @@ class ArchiveProperties final {
         }
 
         friend class BitAbstractArchiveCreator;
-
-    public:
-        BIT7Z_NODISCARD
-        auto empty() const -> bool {
-            return mNames.empty();
-        }
-
-        BIT7Z_NODISCARD
-        auto names() const -> const wchar_t* const* {
-            return mNames.data();
-        }
-
-        BIT7Z_NODISCARD
-        auto values() const -> const PROPVARIANT* {
-            return mValues.data();
-        }
-
-        BIT7Z_NODISCARD
-        auto size() const -> std::size_t {
-            return mNames.size();
-        }
 };
 
 } // namespace bit7z

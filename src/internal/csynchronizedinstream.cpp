@@ -22,14 +22,15 @@
 
 namespace bit7z {
 
-CSynchronizedInStream::CSynchronizedInStream( std::uint64_t maxMemoryUsage,
-                                              const BitInputArchive& parentArchive,
-                                              std::uint32_t index )
-    : mBufferQueue{ maxMemoryUsage },
-      mParentArchive{ parentArchive },
-      mIndex{ index },
-      mExtractionStarted{ false },
-      mExtractionFinished{ false } {
+CSynchronizedInStream::CSynchronizedInStream(
+    std::uint64_t maxMemoryUsage,
+    const BitInputArchive& parentArchive,
+    std::uint32_t index
+) : mBufferQueue{ maxMemoryUsage },
+    mParentArchive{ parentArchive },
+    mIndex{ index },
+    mExtractionStarted{ false },
+    mExtractionFinished{ false } {
     mCurrentReadPosition = mReadBuffer.begin();
 }
 

@@ -28,7 +28,7 @@ auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat
 
 #endif
 
-auto detect_format_from_signature( IInStream * stream ) -> const BitInFormat&;
+auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat&;
 
 } // namespace bit7z
 

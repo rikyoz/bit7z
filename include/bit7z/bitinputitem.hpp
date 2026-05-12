@@ -64,9 +64,11 @@ class BitInputItem final {
     public:
         explicit BitInputItem( const fs::path& itemPath, SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
 
-        BitInputItem( const fs::path& itemPath,
-                      const fs::path& inArchivePath,
-                      SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
+        BitInputItem(
+            const fs::path& itemPath,
+            const fs::path& inArchivePath,
+            SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow
+        );
 
         BitInputItem( const fs::path& searchPath, const fs::directory_entry& entry, SymlinkPolicy symlinkPolicy );
 

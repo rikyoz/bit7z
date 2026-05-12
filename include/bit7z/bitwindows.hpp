@@ -121,6 +121,7 @@ struct PROPVARIANT {
     WORD wReserved1;
     WORD wReserved2;
     WORD wReserved3;
+
     union {
 #if defined( __arm__ ) || defined( __aarch64__ )
         signed char cVal;
@@ -143,7 +144,7 @@ struct PROPVARIANT {
     };
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif
 

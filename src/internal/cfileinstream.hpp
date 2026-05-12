@@ -47,6 +47,6 @@ class CFileInStream : public IInStream, public CMyUnknownImp {
         InputFile mFile;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CFILEINSTREAM_HPP

@@ -72,8 +72,8 @@ auto fsutil::in_archive_path( const fs::path& filePath, const fs::path& searchPa
     // Note: path normalization is computationally expensive,
     // so to obtain the filename of the given path we try to avoid it when possible.
     auto filename = !pathNeedsNormalization
-        ? ( filePath.has_filename() ? filePath.filename() : filePath.parent_path().filename() )
-        : path_real_filename( filePath );
+                        ? ( filePath.has_filename() ? filePath.filename() : filePath.parent_path().filename() )
+                        : path_real_filename( filePath );
 
     if ( filename.native() == BIT7Z_NATIVE_STRING( "." ) || filename.native() == BIT7Z_NATIVE_STRING( ".." ) ) {
         return {};
@@ -96,10 +96,12 @@ auto fsutil::in_archive_path( const fs::path& filePath, const fs::path& searchPa
 }
 
 // A modified version of the code found here: https://stackoverflow.com/a/3300547
-auto w_match( tstring::const_iterator patternIt, // NOLINT(misc-no-recursion)
-              const tstring::const_iterator& patternEnd,
-              tstring::const_iterator strIt,
-              const tstring::const_iterator& strEnd ) -> bool {
+auto w_match( // NOLINT(misc-no-recursion)
+    tstring::const_iterator patternIt,
+    const tstring::const_iterator& patternEnd,
+    tstring::const_iterator strIt,
+    const tstring::const_iterator& strEnd
+) -> bool {
     for ( ; patternIt != patternEnd; ++patternIt ) {
         switch ( *patternIt ) {
             case BIT7Z_STRING( '?' ):
@@ -165,7 +167,7 @@ auto fsutil::set_file_attributes(
     }
 
 #ifdef _WIN32
-    (void)pathBuilder; // Unused on Windows.
+    ( void )pathBuilder; // Unused on Windows.
     if ( ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
         constexpr auto kUnixWritePermissionsMask = 0222u;
         // Most likely, this is a Tar archive, which doesn't store Windows attributes, but only Unix permissions.
@@ -232,7 +234,7 @@ auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
         return false;
     }
     const auto& pathStr = path.native();
-    if ( pathStr.size() < static_cast<std::size_t>( MAX_PATH - kMaxDosFilenameSize ) ) {
+    if ( pathStr.size() < static_cast< std::size_t >( MAX_PATH - kMaxDosFilenameSize ) ) {
         return false;
     }
     return !starts_with( pathStr, kLongPathPrefix );
@@ -245,7 +247,7 @@ auto fsutil::format_long_path( const fs::path& path ) -> fs::path {
     // it is a UNC path (e.g., \\server\share) and not a long path prefixed with \\?\.
     if ( starts_with( path.native(), BIT7Z_NATIVE_STRING( R"(\\)" ) ) ) {
         longPath += L"UNC";
-        longPath /= &path.native()[2]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
+        longPath /= &path.native()[ 2 ]; // NOLINT(*-pro-bounds-avoid-unchecked-container-access)
     } else {
         longPath += path;
     }
@@ -321,18 +323,23 @@ auto sanitize_path_component( std::wstring component ) -> std::wstring {
 
     // Replacing all reserved characters in the component with the '_' character
     // (https://docs.microsoft.com/en-us/windows/win32/fileio/naming-a-file).
-    std::replace_if( component.begin(), component.end(), []( wchar_t chr ) -> bool {
-        constexpr auto kLastNonPrintableAscii = 31;
-        return chr <= kLastNonPrintableAscii || chr == L'<' || chr == L'>' || chr == L':' ||
-               chr == L'"' || chr == L'/' || chr == L'\\' || chr == L'|' || chr == L'?' || chr == L'*';
-    }, L'_' );
+    std::replace_if(
+        component.begin(),
+        component.end(),
+        [] ( wchar_t chr ) -> bool {
+            constexpr auto kLastNonPrintableAscii = 31;
+            return chr <= kLastNonPrintableAscii || chr == L'<' || chr == L'>' || chr == L':' ||
+                   chr == L'"' || chr == L'/' || chr == L'\\' || chr == L'|' || chr == L'?' || chr == L'*';
+        },
+        L'_'
+    );
     return component;
 }
 
 BIT7Z_NODISCARD
 auto sanitize_path_components( const fs::path& path ) -> fs::path {
     fs::path sanitizedPath;
-    for( const auto& pathComponent : path ) {
+    for ( const auto& pathComponent : path ) {
         // cppcheck-suppress useStlAlgorithm
         sanitizedPath /= sanitize_path_component( pathComponent.wstring() );
     }
@@ -345,9 +352,9 @@ auto is_drive_relative( const fs::path& path ) -> bool {
     // NOLINTBEGIN(*-pro-bounds-avoid-unchecked-container-access)
     const auto& nativePath = path.native();
     return nativePath.size() > 2 &&
-           std::iswalpha( nativePath[0] ) != 0 &&
-           nativePath[1] == L':' &&
-           !isPathSeparator( nativePath[2] );
+           std::iswalpha( nativePath[ 0 ] ) != 0 &&
+           nativePath[ 1 ] == L':' &&
+           !isPathSeparator( nativePath[ 2 ] );
     // NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 }
 } // namespace
@@ -435,8 +442,8 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
         const auto& native = path.native();
         const auto firstNonSlash = native.find_first_not_of( '/' );
         const auto strippedPath = firstNonSlash != fs::path::string_type::npos
-            ? fs::path{ native.substr( firstNonSlash ) }
-            : fs::path{};
+                                      ? fs::path{ native.substr( firstNonSlash ) }
+                                      : fs::path{};
         return join_with_sanitization( base, strippedPath );
 #else
         throw BitException(
@@ -493,7 +500,7 @@ auto path_is_outside_base( const fs::path& path, const fs::path& basePath ) noex
         nativeBase.cend(),
         nativePath.cbegin(),
         nativePath.cend(),
-        []( wchar_t first, wchar_t second ) noexcept -> bool {
+        [] ( wchar_t first, wchar_t second ) noexcept -> bool {
             /* Here we use user32.lib's CharUpperBuffW because it provides case conversions regardless of locale.
              *
              * According to some old MSDN blog posts, using CharUpperBuffW (or CharUpperW) is
@@ -571,8 +578,10 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
     // TODO: Avoid normalization if not needed.
     auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
     if ( filesystem::path_is_outside_base( builtPath, mBasePath ) ) {
-        throw BitException{ "Cannot extract the item '" + path.string() + "'",
-                    BitError::ItemPathOutsideOutputDirectory };
+        throw BitException{
+            "Cannot extract the item '" + path.string() + "'",
+            BitError::ItemPathOutsideOutputDirectory
+        };
     }
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )

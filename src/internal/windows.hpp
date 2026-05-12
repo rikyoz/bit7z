@@ -84,7 +84,9 @@ constexpr auto VARIANT_FALSE = static_cast< VARIANT_BOOL >( 0 );
 #endif
 
 // Win32 APIs
-inline auto WINAPI GetLastError() -> DWORD { return static_cast< DWORD >( errno ); }
+inline auto WINAPI GetLastError() -> DWORD {
+    return static_cast< DWORD >( errno );
+}
 
 constexpr auto FACILITY_ERRNO = 0x800;
 constexpr auto FACILITY_WIN32 = 7;
@@ -95,9 +97,9 @@ constexpr auto WIN32_MASK = 0x0000FFFF;
 
 /* Note: p7zip uses FACILITY_WIN32, 7-zip version of HRESULT_FROM_WIN32 uses FACILITY_ERRNO. */
 inline constexpr auto HRESULT_FROM_WIN32( unsigned int x ) -> HRESULT {
-    return ( static_cast< HRESULT >( x ) > 0 ) ?
-                static_cast< HRESULT >( ( x & WIN32_MASK ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 ) :
-                static_cast< HRESULT >( x );
+    return ( static_cast< HRESULT >( x ) > 0 )
+               ? static_cast< HRESULT >( ( x & WIN32_MASK ) | ( FACILITY_WIN32 << 16u ) | 0x80000000 )
+               : static_cast< HRESULT >( x );
 }
 
 constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
@@ -105,31 +107,31 @@ constexpr auto ERROR_NEGATIVE_SEEK = 0x100131;
 
 // Win32 enums
 enum VARENUM {
-    VT_EMPTY = 0,
-    VT_NULL = 1,
-    VT_I2 = 2,
-    VT_I4 = 3,
-    VT_R4 = 4,
-    VT_R8 = 5,
-    VT_CY = 6,
-    VT_DATE = 7,
-    VT_BSTR = 8,
+    VT_EMPTY    = 0,
+    VT_NULL     = 1,
+    VT_I2       = 2,
+    VT_I4       = 3,
+    VT_R4       = 4,
+    VT_R8       = 5,
+    VT_CY       = 6,
+    VT_DATE     = 7,
+    VT_BSTR     = 8,
     VT_DISPATCH = 9,
-    VT_ERROR = 10,
-    VT_BOOL = 11,
-    VT_VARIANT = 12,
-    VT_UNKNOWN = 13,
-    VT_DECIMAL = 14,
-    VT_I1 = 16,
-    VT_UI1 = 17,
-    VT_UI2 = 18,
-    VT_UI4 = 19,
-    VT_I8 = 20,
-    VT_UI8 = 21,
-    VT_INT = 22,
-    VT_UINT = 23,
-    VT_VOID = 24,
-    VT_HRESULT = 25,
+    VT_ERROR    = 10,
+    VT_BOOL     = 11,
+    VT_VARIANT  = 12,
+    VT_UNKNOWN  = 13,
+    VT_DECIMAL  = 14,
+    VT_I1       = 16,
+    VT_UI1      = 17,
+    VT_UI2      = 18,
+    VT_UI4      = 19,
+    VT_I8       = 20,
+    VT_UI8      = 21,
+    VT_INT      = 22,
+    VT_UINT     = 23,
+    VT_VOID     = 24,
+    VT_HRESULT  = 25,
     VT_FILETIME = 64
 };
 

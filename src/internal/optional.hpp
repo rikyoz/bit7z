@@ -19,18 +19,20 @@
 
 namespace bit7z {
 template< typename T >
-using is_movable = std::integral_constant< bool, std::is_move_constructible<T>::value &&
-                                                 std::is_nothrow_move_constructible< T >::value >;
+using is_movable = std::integral_constant<
+    bool,
+    std::is_move_constructible< T >::value && std::is_nothrow_move_constructible< T >::value
+>;
 
 struct nullopt_t {
     constexpr explicit nullopt_t( int /*unused*/ ) noexcept {}
 };
 
-static constexpr nullopt_t nullopt{0};
+static constexpr nullopt_t nullopt{ 0 };
 
-constexpr struct empty_init_t{} empty_init{};
+constexpr struct empty_init_t {} empty_init{};
 
-constexpr struct in_place_t{} in_place{};
+constexpr struct in_place_t {} in_place{};
 
 template< typename T, bool = std::is_trivially_destructible< T >::value >
 union OptionalStorage { // NOLINT(*-special-member-functions)
@@ -39,7 +41,7 @@ union OptionalStorage { // NOLINT(*-special-member-functions)
 
     explicit constexpr OptionalStorage( empty_init_t /* unused */ ) noexcept : mEmptyByte{} {}
 
-    template < typename... Args >
+    template< typename... Args >
     explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {}
 
     // Using the default destructor to make OptionalStorage trivially-destructible (as the type T).
@@ -53,7 +55,7 @@ union OptionalStorage< T, false > { // NOLINT(*-special-member-functions)
 
     explicit constexpr OptionalStorage( empty_init_t /* unused */ ) noexcept : mEmptyByte{} {}
 
-    template < typename... Args >
+    template< typename... Args >
     explicit constexpr OptionalStorage( Args&&... args ) : mValue( std::forward< Args >( args )... ) {}
 
     // Non-trivially-destructible types need the destructor body; OptionalStorage will not be trivially-destructible.
@@ -66,12 +68,12 @@ template< typename T >
 class Optional;
 
 // CRTP base for conditional destruction
-template < typename T, bool = std::is_trivially_destructible< T >::value >
+template< typename T, bool = std::is_trivially_destructible< T >::value >
 struct OptionalBase {
     // Trivially destructible: default destructor
 };
 
-template < typename T >
+template< typename T >
 struct OptionalBase< T, false > { // NOLINT(*-special-member-functions)
     // Non-trivial destructor: destroy stored T if engaged
     ~OptionalBase() noexcept {
@@ -90,7 +92,7 @@ class Optional final : OptionalBase< T > {
         using value_type = T;
         using base_type = OptionalBase< T >;
 
-        friend struct OptionalBase<T>;
+        friend struct OptionalBase< T >;
 
         constexpr Optional() noexcept : mEngaged{ false }, mStorage{ empty_init } {}
 
@@ -104,7 +106,7 @@ class Optional final : OptionalBase< T > {
             }
         }
 
-        /* implicit */ Optional( Optional&& other ) noexcept( std::is_nothrow_move_constructible<T>::value )
+        /* implicit */ Optional( Optional&& other ) noexcept( std::is_nothrow_move_constructible< T >::value )
             : mEngaged{ other.mEngaged }, mStorage{ empty_init } {
             if ( other.mEngaged ) {
                 new( data() ) T( std::move( *other ) );
@@ -180,7 +182,7 @@ class Optional final : OptionalBase< T > {
             return stored_value();
         }
 
-        constexpr auto operator*() const& noexcept -> const T& {
+        constexpr auto operator*() const & noexcept -> const T& {
             return stored_value();
         }
 
@@ -188,7 +190,7 @@ class Optional final : OptionalBase< T > {
             return data();
         }
 
-        constexpr auto operator->() const& noexcept -> const T* {
+        constexpr auto operator->() const & noexcept -> const T* {
             return data();
         }
 
@@ -204,7 +206,7 @@ class Optional final : OptionalBase< T > {
         BIT7Z_NODISCARD
         BIT7Z_CPP14_CONSTEXPR auto value() & -> T& {
             if ( !mEngaged ) {
-                throw BitException{"Bad Optional access", BitError::Fail};
+                throw BitException{ "Bad Optional access", BitError::Fail };
             }
             return stored_value();
         }
@@ -214,7 +216,7 @@ class Optional final : OptionalBase< T > {
         BIT7Z_NODISCARD
         BIT7Z_CPP14_CONSTEXPR auto value() const & -> const T& {
             if ( !mEngaged ) {
-                throw BitException{"Bad Optional access", BitError::Fail};
+                throw BitException{ "Bad Optional access", BitError::Fail };
             }
             return stored_value();
         }
@@ -229,7 +231,7 @@ class Optional final : OptionalBase< T > {
         template< typename... Args >
         auto emplace( Args&&... args ) -> T& {
             reset();
-            new ( raw_data() ) T( std::forward< Args >( args )... );
+            new( raw_data() ) T( std::forward< Args >( args )... );
             mEngaged = true;
             return stored_value();
         }
@@ -238,7 +240,7 @@ class Optional final : OptionalBase< T > {
         BIT7Z_NODISCARD
         BIT7Z_CPP14_CONSTEXPR auto raw_data() noexcept -> void* {
             // Note: this is not UB only when used after reset(), as the storage is then uninitialized.
-            return const_cast< void * >( static_cast< const void * >( data() ) ); // NOLINT(*-pro-type-const-cast)
+            return const_cast< void* >( static_cast< const void* >( data() ) ); // NOLINT(*-pro-type-const-cast)
         }
 
         BIT7Z_NODISCARD
@@ -247,7 +249,7 @@ class Optional final : OptionalBase< T > {
         }
 
         BIT7Z_NODISCARD
-        constexpr auto data() const& noexcept -> const T* {
+        constexpr auto data() const & noexcept -> const T* {
             return &mStorage.mValue;
         }
 
@@ -257,12 +259,12 @@ class Optional final : OptionalBase< T > {
         }
 
         BIT7Z_NODISCARD
-        constexpr auto stored_value() const& noexcept -> const T& {
+        constexpr auto stored_value() const & noexcept -> const T& {
             return mStorage.mValue;
         }
 
         bool mEngaged;
-        OptionalStorage<T> mStorage;
+        OptionalStorage< T > mStorage;
 };
 
 } // namespace bit7z

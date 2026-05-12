@@ -62,6 +62,6 @@ class BitArchiveItemOffset final : public BitArchiveItem {
         friend class BitInputArchive;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITARCHIVEITEMOFFSET_HPP

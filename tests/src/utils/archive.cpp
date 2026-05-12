@@ -19,10 +19,12 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
-void require_archive_item( const BitInFormat& format,
-                           const BitArchiveItem& item,
-                           const ExpectedItem& expectedItem,
-                           const SourceLocation& location ) {
+void require_archive_item(
+    const BitInFormat& format,
+    const BitArchiveItem& item,
+    const ExpectedItem& expectedItem,
+    const SourceLocation& location
+) {
     INFO( "Failed while checking archive item " << Catch::StringMaker< tstring >::convert( item.name() ) )
     INFO( "  from " << location.file_name() << ":" << location.line() )
     REQUIRE( item.isDir() == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
@@ -53,9 +55,11 @@ void require_archive_item( const BitInFormat& format,
     }
 }
 
-void require_archive_content( const BitArchiveReader& info,
-                              const TestArchiveContent& input,
-                              const SourceLocation& location ) {
+void require_archive_content(
+    const BitArchiveReader& info,
+    const TestArchiveContent& input,
+    const SourceLocation& location
+) {
     INFO( "Failed while checking content of " << Catch::StringMaker< tstring >::convert( info.archivePath() ) )
     INFO( "  from " << location.file_name() << ":" << location.line() )
     REQUIRE_FALSE( info.archiveProperties().empty() );
@@ -91,7 +95,9 @@ void require_archive_content( const BitArchiveReader& info,
                 REQUIRE( info.contains( item.path() ) );
             }
             REQUIRE( info.isItemEncrypted( item.index() ) == expectedItem.isEncrypted );
-            REQUIRE( info.isItemFolder( item.index() ) == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
+            REQUIRE(
+                info.isItemFolder( item.index() ) == ( expectedItem.fileInfo.type == fs::file_type::directory )
+            );
             require_archive_item( format, item, expectedItem, location );
             found_items++;
             break;

@@ -59,6 +59,6 @@ class CFileOutStream : public IOutStream, public CMyUnknownImp {
         fs::path mFilePath;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CFILEOUTSTREAM_HPP

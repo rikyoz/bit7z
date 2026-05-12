@@ -84,9 +84,11 @@ class BitOutputArchive {
          * @param inFile        (optional) the path to an input archive file.
          * @param startOffset   (optional) where to search the start of the input archive within the input file.
          */
-        explicit BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                                   const tstring& inFile,
-                                   ArchiveStartOffset startOffset = ArchiveStartOffset::None );
+        explicit BitOutputArchive(
+            const BitAbstractArchiveCreator& creator,
+            const tstring& inFile,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        );
 
         /**
          * @brief Constructs a BitOutputArchive object, opening an input file archive from the given buffer.
@@ -100,9 +102,11 @@ class BitOutputArchive {
          * @param inBuffer  the buffer containing an input archive file.
          * @param startOffset   (optional) where to search the start of the input archive within the input file.
          */
-        BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                          const buffer_t& inBuffer,
-                          ArchiveStartOffset startOffset = ArchiveStartOffset::None );
+        BitOutputArchive(
+            const BitAbstractArchiveCreator& creator,
+            const buffer_t& inBuffer,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        );
 
         /**
          * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
@@ -112,9 +116,11 @@ class BitOutputArchive {
          * @param inStream  the standard input stream of the input archive file.
          * @param startOffset   (optional) where to search the start of the input archive within the input file.
          */
-        BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                          std::istream& inStream,
-                          ArchiveStartOffset startOffset = ArchiveStartOffset::None );
+        BitOutputArchive(
+            const BitAbstractArchiveCreator& creator,
+            std::istream& inStream,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        );
 
         BitOutputArchive( const BitOutputArchive& ) = delete;
 
@@ -209,10 +215,12 @@ class BitOutputArchive {
          *                  and all of its subdirectories.
          * @param policy    (optional) the filtering policy to be applied to the matched items.
          */
-        void addFiles( const tstring& inDir,
-                       const tstring& filter = BIT7Z_STRING( "*" ),
-                       FilterPolicy policy = FilterPolicy::Include,
-                       bool recursive = true );
+        void addFiles(
+            const tstring& inDir,
+            const tstring& filter = BIT7Z_STRING( "*" ),
+            FilterPolicy policy = FilterPolicy::Include,
+            bool recursive = true
+        );
 
         /**
          * @brief Adds the given directory path and all its content.
@@ -247,10 +255,12 @@ class BitOutputArchive {
          *                  and all of its subdirectories.
          * @param policy    (optional) the filtering policy to be applied to the matched items.
          */
-        void addDirectoryContents( const tstring& inDir,
-                                   const tstring& filter = BIT7Z_STRING( "*" ),
-                                   FilterPolicy policy = FilterPolicy::Include,
-                                   bool recursive = true );
+        void addDirectoryContents(
+            const tstring& inDir,
+            const tstring& filter = BIT7Z_STRING( "*" ),
+            FilterPolicy policy = FilterPolicy::Include,
+            bool recursive = true
+        );
 
         /**
          * @brief Compresses all the items added to this object to the specified archive file path.
@@ -373,9 +383,11 @@ class BitOutputArchive {
 
         auto initOutFileStream( const fs::path& outArchive ) const -> CMyComPtr< IOutStream >;
 
-        BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                          const fs::path& inArc,
-                          ArchiveStartOffset archiveStart );
+        BitOutputArchive(
+            const BitAbstractArchiveCreator& creator,
+            const fs::path& inArc,
+            ArchiveStartOffset archiveStart
+        );
 
         void compressToFile( const fs::path& outFile, UpdateCallback* updateCallback );
 
@@ -386,6 +398,6 @@ class BitOutputArchive {
         void updateInputIndices();
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITOUTPUTARCHIVE_HPP

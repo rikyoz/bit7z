@@ -28,10 +28,12 @@ class BitInputArchive;
 
 class FileExtractCallback final : public ExtractCallback {
     public:
-        FileExtractCallback( const BitInputArchive& inputArchive,
-                             const tstring& directoryPath,
-                             FilterCallback filterCallback = {},
-                             RenameCallback renameCallback = {} );
+        FileExtractCallback(
+            const BitInputArchive& inputArchive,
+            const tstring& directoryPath,
+            FilterCallback filterCallback = {},
+            RenameCallback renameCallback = {}
+        );
 
         FileExtractCallback( const FileExtractCallback& ) = delete;
 
@@ -64,6 +66,6 @@ class FileExtractCallback final : public ExtractCallback {
         auto getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // FILEEXTRACTCALLBACK_HPP

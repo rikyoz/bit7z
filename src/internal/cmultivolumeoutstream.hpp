@@ -23,25 +23,25 @@
 namespace bit7z {
 
 class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
-        // Size of a single volume.
-        std::uint64_t mMaxVolumeSize;
+    // Size of a single volume.
+    std::uint64_t mMaxVolumeSize;
 
-        // Common name prefix of every volume.
-        fs::path mVolumePrefix;
+    // Common name prefix of every volume.
+    fs::path mVolumePrefix;
 
-        // Offset from the beginning of the whole output archive.
-        std::uint64_t mAbsolutePosition;
+    // Offset from the beginning of the whole output archive.
+    std::uint64_t mAbsolutePosition;
 
-        // Total size of the output archive (sum of the volumes' sizes).
-        std::uint64_t mTotalSize;
+    // Total size of the output archive (sum of the volumes' sizes).
+    std::uint64_t mTotalSize;
 
-        // Many archive formats store their internal metadata at the beginning of the archive (7-Zip does the same).
-        // So we evict the newest opened volume, rather than the oldest one, in this case.
-        VolumesCache< CFileOutStream, EvictionPolicy::Newest > mVolumes;
+    // Many archive formats store their internal metadata at the beginning of the archive (7-Zip does the same).
+    // So we evict the newest opened volume, rather than the oldest one, in this case.
+    VolumesCache< CFileOutStream, EvictionPolicy::Newest > mVolumes;
 
-        auto currentVolume() -> CachedVolume< CFileOutStream >&;
+    auto currentVolume() -> CachedVolume< CFileOutStream >&;
 
-        void ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex );
+    void ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex );
 
     public:
         CMultiVolumeOutStream( std::uint64_t volSize, fs::path archiveName );
@@ -67,6 +67,6 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511 //-V835 //-V3504
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CMULTIVOLUMEOUTSTREAM_HPP

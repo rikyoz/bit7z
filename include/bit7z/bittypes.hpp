@@ -107,7 +107,7 @@ using tstring = std::basic_string< tchar >;
 using tregex = std::basic_regex< tchar >;
 #endif
 
-template< typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type >
+template< typename T, typename = typename std::enable_if< std::is_arithmetic< T >::value, T >::type >
 auto to_tstring( T arg ) -> std::basic_string< tchar > {
     return StringTraits< tchar >::convertToString( arg );
 }
@@ -153,7 +153,7 @@ auto to_tstring( const native_string& str ) -> const tstring& {
 }
 #endif
 
-template< typename T, typename = typename std::enable_if< std::is_arithmetic<T>::value, T >::type >
+template< typename T, typename = typename std::enable_if< std::is_arithmetic< T >::value, T >::type >
 auto to_native_string( T arg ) -> native_string {
 #ifdef _WIN32
     return std::to_wstring( arg );
@@ -194,6 +194,6 @@ template< typename From, typename To >
 using is_explicitly_convertible = std::integral_constant< bool, std::is_constructible< To, From >::value &&
                                                                 !std::is_convertible< From, To >::value >;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITTYPES_HPP

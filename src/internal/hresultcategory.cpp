@@ -27,16 +27,19 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
 #ifdef _WIN32
     // Note: also MinGW supports FormatMessageA, so we use it.
     LPSTR messageBuffer = nullptr;
-    const auto msgSize = FormatMessageA( FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                                         FORMAT_MESSAGE_FROM_SYSTEM |
-                                         FORMAT_MESSAGE_IGNORE_INSERTS |
-                                         FORMAT_MESSAGE_MAX_WIDTH_MASK,
-                                         nullptr,
-                                         static_cast< DWORD >( errorValue ),
-                                         0,
-                                         reinterpret_cast< LPSTR >( &messageBuffer ), // NOLINT(*-pro-type-reinterpret-cast)
-                                         0,
-                                         nullptr );
+    const auto msgSize = FormatMessageA(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM |
+        FORMAT_MESSAGE_IGNORE_INSERTS |
+        FORMAT_MESSAGE_MAX_WIDTH_MASK,
+        nullptr,
+        static_cast< DWORD >( errorValue ),
+        0,
+        reinterpret_cast< LPSTR >( &messageBuffer ),
+        // NOLINT(*-pro-type-reinterpret-cast)
+        0,
+        nullptr
+    );
     if ( msgSize == 0 ) {
         return "Unknown error";
     }
@@ -156,7 +159,7 @@ auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -
 #endif
             }
             /* E.g., E_FAIL
-               Note: the resulting error_condition's category is std::hresult_category() */
+             * Note: the resulting error_condition's category is std::hresult_category() */
             return error_category::default_error_condition( errorValue );
     }
 }

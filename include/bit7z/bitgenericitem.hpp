@@ -73,12 +73,16 @@ class BitGenericItem {
 
     protected:
         BitGenericItem() = default;
+
         BitGenericItem( const BitGenericItem& ) = default;
+
         BitGenericItem( BitGenericItem&& ) noexcept = default;
+
         auto operator=( const BitGenericItem& ) -> BitGenericItem& = default;
+
         auto operator=( BitGenericItem&& ) noexcept -> BitGenericItem& = default;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITGENERICITEM_HPP

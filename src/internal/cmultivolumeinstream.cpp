@@ -67,6 +67,7 @@ auto CMultiVolumeInStream::currentVolume() -> CachedVolume< CFileInStream >& {
         midpoint = ( left + right ) / 2;
     }
 }
+
 // NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 
 void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex ) {
@@ -106,7 +107,10 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
     }
 
     /* Determining how much we can read from the volume stream */
-    const auto readSize = std::min( size, static_cast< UInt32 >( cachedVolume.volumeSize - cachedVolume.seekPosition ) );
+    const auto readSize = std::min(
+        size,
+        static_cast< UInt32 >( cachedVolume.volumeSize - cachedVolume.seekPosition )
+    );
 
     /* Reading the volume stream */
     UInt32 bytesRead{};

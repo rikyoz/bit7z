@@ -24,10 +24,11 @@
 
 namespace bit7z {
 
-FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive& inputArchive,
-                                                        byte_t* buffer,
-                                                        std::size_t size )
-    : ExtractCallback( inputArchive ), mBuffer( buffer ), mSize( size ) {}
+FixedBufferExtractCallback::FixedBufferExtractCallback(
+    const BitInputArchive& inputArchive,
+    byte_t* buffer,
+    std::size_t size
+) : ExtractCallback( inputArchive ), mBuffer( buffer ), mSize( size ) {}
 
 void FixedBufferExtractCallback::releaseStream() {
     mOutMemStream.Release();

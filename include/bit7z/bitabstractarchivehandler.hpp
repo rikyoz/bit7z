@@ -86,11 +86,11 @@ using FilterCallback = std::function< FilterResult( const BitArchiveItem& ) >;
  * @brief Enumeration representing how a handler should deal when an output file already exists.
  */
 enum struct OverwriteMode {
-    None = 0, ///< The handler will throw an exception if the output file or buffer already exists.
+    None = 0,  ///< The handler will throw an exception if the output file or buffer already exists.
     Overwrite, ///< The handler will overwrite the old file or buffer with the new one.
-    Skip, ///< The handler will skip writing to the output file or buffer.
-//TODO:    RenameOutput,
-//TODO:    RenameExisting
+    Skip,      ///< The handler will skip writing to the output file or buffer.
+    //TODO:    RenameOutput,
+    //TODO:    RenameExisting
 };
 
 /**
@@ -260,9 +260,11 @@ class BitAbstractArchiveHandler {
         void setOverwriteMode( OverwriteMode mode );
 
     protected:
-        explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib,
-                                            tstring password = {},
-                                            OverwriteMode overwriteMode = OverwriteMode::None );
+        explicit BitAbstractArchiveHandler(
+            const Bit7zLibrary& lib,
+            tstring password = {},
+            OverwriteMode overwriteMode = OverwriteMode::None
+        );
 
     private:
         const Bit7zLibrary& mLibrary;
@@ -278,6 +280,6 @@ class BitAbstractArchiveHandler {
         PasswordCallback mPasswordCallback;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEHANDLER_HPP

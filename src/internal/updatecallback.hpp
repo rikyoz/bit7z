@@ -58,10 +58,13 @@ class UpdateCallback final : public Callback,
 
         BIT7Z_STDMETHOD( GetVolumeStream, UInt32 index, ISequentialOutStream** volumeStream );
 
-        BIT7Z_STDMETHOD( GetUpdateItemInfo, UInt32 index,
-                         Int32* newData,
-                         Int32* newProperties,
-                         UInt32* indexInArchive );
+        BIT7Z_STDMETHOD(
+            GetUpdateItemInfo,
+            UInt32 index,
+            Int32* newData,
+            Int32* newProperties,
+            UInt32* indexInArchive
+        );
 
         BIT7Z_STDMETHOD( SetOperationResult, Int32 operationResult );
 
@@ -76,6 +79,6 @@ class UpdateCallback final : public Callback,
         bool mNeedBeClosed;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // UPDATECALLBACK_HPP

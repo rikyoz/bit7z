@@ -48,6 +48,6 @@ class CBufferOutStream final : public IOutStream, public CMyUnknownImp {
         buffer_t::iterator mCurrentPosition;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CBUFFEROUTSTREAM_HPP

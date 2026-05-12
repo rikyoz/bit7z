@@ -20,36 +20,37 @@
 namespace bit7z {
 
 class BufferQueue final {
-    std::queue< buffer_t > mQueue;
-    mutable std::mutex mMutex;
-    std::condition_variable mEmptyCondition;
-    std::condition_variable mFullCondition;
-    std::atomic_bool mFinished{ false };
-    std::atomic< std::uint64_t > mMemoryUsage;
-    std::uint64_t mMaxMemoryUsage;
+    public:
+        explicit BufferQueue( std::uint64_t maxMemoryUsage );
 
-public:
-    explicit BufferQueue( std::uint64_t maxMemoryUsage );
+        BufferQueue( const BufferQueue& ) = delete;
 
-    BufferQueue( const BufferQueue& ) = delete;
+        BufferQueue( BufferQueue&& other ) = delete;
 
-    BufferQueue( BufferQueue&& other ) = delete;
+        auto operator=( const BufferQueue& ) -> BufferQueue& = delete;
 
-    auto operator=( const BufferQueue& ) -> BufferQueue& = delete;
+        auto operator=( BufferQueue&& ) -> BufferQueue& = delete;
 
-    auto operator=( BufferQueue&& ) -> BufferQueue& = delete;
+        ~BufferQueue() = default;
 
-    ~BufferQueue() = default;
+        auto pop() -> buffer_t;
 
-    auto pop() -> buffer_t;
+        void push( buffer_t&& item );
 
-    void push( buffer_t&& item );
+        void notifyFinished();
 
-    void notifyFinished();
+        void reset();
 
-    void reset();
+        auto empty() const -> bool;
 
-    auto empty() const -> bool;
+    private:
+        std::queue< buffer_t > mQueue;
+        mutable std::mutex mMutex;
+        std::condition_variable mEmptyCondition;
+        std::condition_variable mFullCondition;
+        std::atomic_bool mFinished{ false };
+        std::atomic< std::uint64_t > mMemoryUsage;
+        std::uint64_t mMaxMemoryUsage;
 };
 
 } // namespace bit7z

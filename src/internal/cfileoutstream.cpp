@@ -19,7 +19,7 @@ CFileOutStream::CFileOutStream( const fs::path& filePath, FileFlag fileFlag )
 
 #ifdef _WIN32
 void CFileOutStream::setFileTime( FILETIME creation, FILETIME access, FILETIME modified ) const noexcept {
-    (void)mFile.setFileTime( creation, access, modified );
+    ( void )mFile.setFileTime( creation, access, modified );
 }
 #endif
 
@@ -58,7 +58,6 @@ STDMETHODIMP CFileOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newP
     }
     return result;
 }
-
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) noexcept {

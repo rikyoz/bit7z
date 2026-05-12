@@ -24,8 +24,11 @@ class AtomicFileReplacer final {
         explicit AtomicFileReplacer( const fs::path& targetPath );
 
         AtomicFileReplacer( const AtomicFileReplacer& ) = delete;
+
         AtomicFileReplacer( AtomicFileReplacer&& ) = delete;
+
         auto operator=( const AtomicFileReplacer& ) -> AtomicFileReplacer& = delete;
+
         auto operator=( AtomicFileReplacer&& ) -> AtomicFileReplacer& = delete;
 
         ~AtomicFileReplacer() = default;

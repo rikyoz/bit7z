@@ -60,6 +60,6 @@ class ProcessedItem final {
         void loadTimeMetadata( const BitInputArchive& inputArchive, std::uint32_t itemIndex );
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //PROCESSEDITEM_HPP

@@ -43,11 +43,13 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const tstring& inArchive,
-                          ArchiveStartOffset startOffset,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const tstring& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the given archive file path.
@@ -57,10 +59,12 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const tstring& inArchive,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const tstring& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive in the given buffer.
@@ -72,11 +76,13 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const buffer_t& inArchive,
-                          ArchiveStartOffset startOffset,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const buffer_t& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive in the given buffer.
@@ -86,10 +92,12 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const buffer_t& inArchive,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const buffer_t& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive from the given standard input stream.
@@ -101,11 +109,13 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          std::istream& inArchive,
-                          ArchiveStartOffset startOffset,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            std::istream& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive from the given standard input stream.
@@ -115,12 +125,14 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          std::istream& inArchive,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            std::istream& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITARCHIVEWRITER_HPP

@@ -22,9 +22,11 @@ class BitInputArchive;
 
 class BufferExtractCallback final : public ExtractCallback {
     public:
-        BufferExtractCallback( const BitInputArchive& inputArchive,
-                               BufferCallback callback,
-                               FilterCallback filterCallback = {} );
+        BufferExtractCallback(
+            const BitInputArchive& inputArchive,
+            BufferCallback callback,
+            FilterCallback filterCallback = {}
+        );
 
         BufferExtractCallback( const BufferExtractCallback& ) = delete;
 
@@ -49,5 +51,5 @@ class BufferExtractCallback final : public ExtractCallback {
         auto getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 #endif // BUFFEREXTRACTCALLBACK_HPP

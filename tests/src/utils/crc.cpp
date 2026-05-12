@@ -98,10 +98,17 @@ constexpr auto is_power_of_two( std::size_t value ) -> bool {
 template< std::size_t Bits >
 using crc_table = std::array< const uint_t< Bits >, 256 >;
 
-template< std::size_t Bits,
-          uint_t< Bits > mask,
-          typename = typename std::enable_if< is_power_of_two( Bits ) >::type >
-auto crc( const crc_table< Bits >& table, uint_t< Bits > initial, const void* buffer, std::size_t length ) noexcept -> uint_t< Bits > {
+template<
+    std::size_t Bits,
+    uint_t< Bits > mask,
+    typename = typename std::enable_if< is_power_of_two( Bits ) >::type
+>
+auto crc(
+    const crc_table< Bits >& table,
+    uint_t< Bits > initial,
+    const void* buffer,
+    std::size_t length
+) noexcept -> uint_t< Bits > {
     static constexpr auto last_byte_mask = 0xFFu;
 
     if ( buffer == nullptr ) {
@@ -112,7 +119,7 @@ auto crc( const crc_table< Bits >& table, uint_t< Bits > initial, const void* bu
     const auto* byte_buffer = static_cast< const uint8_t* >( buffer );
     for ( std::size_t i = 0; i < length; ++i ) {
         // NOLINTNEXTLINE(*-pro-bounds-pointer-arithmetic, *-pro-bounds-constant-array-index)
-        crc = table[ byte_buffer[ i ] ^ ( crc & last_byte_mask ) ] ^ (crc >> 8U);
+        crc = table[ byte_buffer[ i ] ^ ( crc & last_byte_mask ) ] ^ ( crc >> 8U );
     }
     return crc ^ mask;
 }

@@ -64,7 +64,7 @@ auto get_free_ram() -> std::uint64_t {
     return static_cast< std::uint64_t >( pages ) * static_cast< std::uint64_t >( page_size );
 #else
     struct sysinfo info{};
-    sysinfo( &info );
+    sysinfo (&info);
     return ( info.freeram + info.bufferram ) * info.mem_unit;
 #endif
 }
@@ -72,35 +72,40 @@ auto get_free_ram() -> std::uint64_t {
 #ifdef BIT7Z_AUTO_FORMAT
 inline auto validateFormat( const BitInFormat& format ) -> const BitInFormat& {
     if ( format == BitFormat::Auto ) {
-        throw BitException{ "Automatic format detection not supported in nested archives",
-                            BitError::UnsupportedOperation };
+        throw BitException{
+            "Automatic format detection not supported in nested archives",
+            BitError::UnsupportedOperation
+        };
     }
     return format;
 }
+
 #define VALIDATE_FORMAT(x) validateFormat(x)
 #else
 #define VALIDATE_FORMAT(x) x
 #endif
 
-BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
-                                                const BitInputArchive& parentArchive,
-                                                const BitInFormat& format,
-                                                const tstring& password )
-    : BitNestedArchiveReader{ lib, parentArchive, 0, format, password } {}
+BitNestedArchiveReader::BitNestedArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& parentArchive,
+    const BitInFormat& format,
+    const tstring& password
+) : BitNestedArchiveReader{ lib, parentArchive, 0, format, password } {}
 
-BitNestedArchiveReader::BitNestedArchiveReader( const Bit7zLibrary& lib,
-                                                const BitInputArchive& parentArchive,
-                                                std::uint32_t index,
-                                                const BitInFormat& format,
-                                                const tstring& password )
-    : BitAbstractArchiveOpener{ lib, VALIDATE_FORMAT( format ), password },
-      mNestedArchive{ *this, parentArchive.itemAt( index ) },
-      mParentArchive{ parentArchive },
-      mIndexInParent{ index },
-      mMaxMemoryUsage{ std::max( get_free_ram() / 4, kMinMaxMemoryUsage ) },
-      mCachedItemsCount{ 0 },
-      mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
-      mOpenCount{ 0 } {}
+BitNestedArchiveReader::BitNestedArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& parentArchive,
+    std::uint32_t index,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener{ lib, VALIDATE_FORMAT( format ), password },
+    mNestedArchive{ *this, parentArchive.itemAt( index ) },
+    mParentArchive{ parentArchive },
+    mIndexInParent{ index },
+    mMaxMemoryUsage{ std::max( get_free_ram() / 4, kMinMaxMemoryUsage ) },
+    mCachedItemsCount{ 0 },
+    mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
+    mOpenCount{ 0 } {}
 
 auto BitNestedArchiveReader::maxMemoryUsage() const noexcept -> std::uint64_t {
     return mMaxMemoryUsage;
@@ -210,9 +215,11 @@ void BitNestedArchiveReader::test() const {
 }
 
 void BitNestedArchiveReader::openSequentially() const {
-    const auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >( mMaxMemoryUsage,
-                                                                                       mParentArchive,
-                                                                                       mIndexInParent );
+    const auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >(
+        mMaxMemoryUsage,
+        mParentArchive,
+        mIndexInParent
+    );
     mNestedArchive.openArchiveSeqStream( stream );
     mLastReadItem = 0;
     ++mOpenCount;

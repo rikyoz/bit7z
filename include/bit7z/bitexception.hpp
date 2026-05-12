@@ -108,6 +108,6 @@ class BitException final : public std::system_error {
         FailedFiles mFailedFiles;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITEXCEPTION_HPP

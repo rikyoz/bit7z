@@ -43,15 +43,15 @@ class ExtractCallback;
  * @brief Offset from where the archive starts within the input file.
  */
 enum struct ArchiveStartOffset : std::uint8_t {
-    None, ///< Don't specify an archive start offset. For some formats, like Zip archives,
-          ///< this means that the whole input file will be searched for the archive's start.
+    None,   ///< Don't specify an archive start offset. For some formats, like Zip archives,
+            ///< this means that the whole input file will be searched for the archive's start.
     FileStart ///< Check only the file start for the archive's start.
 };
 
 enum class FolderPathPolicy : std::uint8_t {
-    Strip,    ///< Remove the folder path from the extracted path.
-    KeepName, ///< Preserve the folder name in the extracted path.
-    KeepPath, ///< Preserve the full folder path in the extracted path.
+    Strip,      ///< Remove the folder path from the extracted path.
+    KeepName,   ///< Preserve the folder name in the extracted path.
+    KeepPath,   ///< Preserve the full folder path in the extracted path.
 };
 
 /**
@@ -68,9 +68,11 @@ class BitInputArchive {
          * @param startOffset (optional) specifies whether to search for the archive's start throughout the
  *                            entire file or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler,
-                         const tstring& inFile,
-                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
+        BitInputArchive(
+            const BitAbstractArchiveHandler& handler,
+            const tstring& inFile,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the input file archive.
@@ -81,9 +83,11 @@ class BitInputArchive {
          * @param startOffset (optional) whether to search for the archive's start throughout the entire file
          *                    or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler,
-                         const fs::path& arcPath,
-                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
+        BitInputArchive(
+            const BitAbstractArchiveHandler& handler,
+            const fs::path& arcPath,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive given in the input buffer.
@@ -94,9 +98,11 @@ class BitInputArchive {
          * @param startOffset (optional) whether to search for the archive's start throughout the entire file
          *                    or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler,
-                         const buffer_t& inBuffer,
-                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
+        BitInputArchive(
+            const BitAbstractArchiveHandler& handler,
+            const buffer_t& inBuffer,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        );
 
         /**
          * @brief Constructs a BitInputArchive object, opening the archive by reading the given input stream.
@@ -107,9 +113,11 @@ class BitInputArchive {
          * @param startOffset (optional) whether to search for the archive's start throughout the entire file
          *                    or only at the beginning. The default behavior is to search at the beginning.
          */
-        BitInputArchive( const BitAbstractArchiveHandler& handler,
-                         std::istream& inStream,
-                         ArchiveStartOffset startOffset = ArchiveStartOffset::None );
+        BitInputArchive(
+            const BitAbstractArchiveHandler& handler,
+            std::istream& inStream,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        );
 
         BitInputArchive( const BitInputArchive& ) = delete;
 
@@ -205,13 +213,15 @@ class BitInputArchive {
          * @param name  the name of the property.
          * @param value the property value.
          */
-        template< typename T,
-                  typename = typename std::enable_if< is_explicitly_convertible< T, BitPropVariant >::value >::type >
+        template<
+            typename T,
+            typename = typename std::enable_if< is_explicitly_convertible< T, BitPropVariant >::value >::type
+        >
         void useFormatProperty( const wchar_t* name, T&& value ) const { // NOLINT(*-avoid-c-arrays)
             useFormatProperty( name, BitPropVariant{ std::forward< T >( value ) } );
         }
 
-        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
         void extract( const tstring& outDir, const IndicesVector& indices = {} ) const {
             extractTo( outDir, indices );
         }
@@ -231,9 +241,11 @@ class BitInputArchive {
          * @param itemFilter   the wildcard pattern used for matching the paths of items inside the archive.
          * @param policy       (optional) the filtering policy to be applied to the matching items.
          */
-        void extractMatchingTo( const tstring& outDir,
-                                const tstring& itemFilter,
-                                FilterPolicy policy = FilterPolicy::Include ) const;
+        void extractMatchingTo(
+            const tstring& outDir,
+            const tstring& itemFilter,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const;
 
 #ifdef BIT7Z_REGEX_MATCHING
         /**
@@ -245,9 +257,11 @@ class BitInputArchive {
          * @param regex        the regex used for matching the paths of files inside the archive.
          * @param policy       (optional) the filtering policy to be applied to the matching items.
          */
-        void extractMatchingRegexTo( const tstring& outDir,
-                                     const tstring& regex,
-                                     FilterPolicy policy = FilterPolicy::Include ) const;
+        void extractMatchingRegexTo(
+            const tstring& outDir,
+            const tstring& regex,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const;
 
         /**
          * @brief Extracts to the output directory all the items whose paths match the given regex pattern.
@@ -258,9 +272,11 @@ class BitInputArchive {
          * @param regex        the regex used for matching the paths of files inside the archive.
          * @param policy       (optional) the filtering policy to be applied to the matching items.
          */
-        void extractMatchingTo( const tstring& outDir,
-                                const tregex& regex,
-                                FilterPolicy policy = FilterPolicy::Include ) const;
+        void extractMatchingTo(
+            const tstring& outDir,
+            const tregex& regex,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const;
 #endif
 
         /**
@@ -293,11 +309,13 @@ class BitInputArchive {
          * @param folderPath    the path of the folder inside the archive to be extracted.
          * @param policy        (optional) the path policy to be used for extracting the folder.
          */
-        void extractFolderTo( const tstring& outDir,
-                              const tstring& folderPath,
-                              FolderPathPolicy policy = FolderPathPolicy::Strip ) const;
+        void extractFolderTo(
+            const tstring& outDir,
+            const tstring& folderPath,
+            FolderPathPolicy policy = FolderPathPolicy::Strip
+        ) const;
 
-        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
         void extract( buffer_t& outBuffer, std::uint32_t index = 0 ) const {
             extractTo( outBuffer, index );
         }
@@ -317,9 +335,11 @@ class BitInputArchive {
          * @param itemFilter   the wildcard pattern used for matching the paths of files inside the archive.
          * @param policy       (optional) the filtering policy to be applied to the matched items.
          */
-        void extractMatchingTo( buffer_t& outBuffer,
-                                const tstring& itemFilter,
-                                FilterPolicy policy = FilterPolicy::Include ) const;
+        void extractMatchingTo(
+            buffer_t& outBuffer,
+            const tstring& itemFilter,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const;
 
 #ifdef BIT7Z_REGEX_MATCHING
         /**
@@ -331,9 +351,11 @@ class BitInputArchive {
          * @param regex        the regex used for matching the paths of files inside the archive.
          * @param policy       (optional) the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegexTo( buffer_t& outBuffer,
-                                     const tstring& regex,
-                                     FilterPolicy policy = FilterPolicy::Include ) const;
+        void extractMatchingRegexTo(
+            buffer_t& outBuffer,
+            const tstring& regex,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const;
 
         /**
          * @brief Extracts to the output buffer the first file in the archive that matches the given regex pattern.
@@ -344,9 +366,11 @@ class BitInputArchive {
          * @param regex        the regex used for matching the paths of files inside the archive.
          * @param policy       (optional) the filtering policy to be applied to the matched items.
          */
-        void extractMatchingTo( buffer_t& outBuffer,
-                                const tregex& regex,
-                                FilterPolicy policy = FilterPolicy::Include ) const;
+        void extractMatchingTo(
+            buffer_t& outBuffer,
+            const tregex& regex,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const;
 #endif
 
         /**
@@ -358,7 +382,7 @@ class BitInputArchive {
         void extractTo( buffer_t& outBuffer, FilterCallback filterCallback ) const;
 
         template< std::size_t N >
-        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
         void extract( std::array< byte_t, N >& buffer, std::uint32_t index = 0 ) const {
             extractTo( buffer.data(), buffer.size(), index );
         }
@@ -377,8 +401,8 @@ class BitInputArchive {
         }
 
         template< std::size_t N >
-        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
-        void extract( byte_t (& buffer)[N], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
+        void extract( byte_t (&buffer)[ N ], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
             extractTo( buffer, N, index );
         }
 
@@ -391,11 +415,11 @@ class BitInputArchive {
          * @param index     the index of the file to be extracted.
          */
         template< std::size_t N >
-        void extractTo( byte_t (& outBuffer)[N], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+        void extractTo( byte_t (&outBuffer)[ N ], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
             extractTo( outBuffer, N, index );
         }
 
-        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
         void extract( byte_t* buffer, std::size_t size, std::uint32_t index = 0 ) const {
             extractTo( buffer, size, index );
         }
@@ -410,7 +434,7 @@ class BitInputArchive {
          */
         void extractTo( byte_t* outBuffer, std::size_t size, std::uint32_t index = 0 ) const;
 
-        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
         void extract( std::ostream& outStream, std::uint32_t index = 0 ) const {
             extractTo( outStream, index );
         }
@@ -423,7 +447,7 @@ class BitInputArchive {
          */
         void extractTo( std::ostream& outStream, std::uint32_t index = 0 ) const;
 
-        BIT7Z_DEPRECATED_MSG("Since v4.0; please, use the extractTo method.")
+        BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
         void extract( std::map< tstring, buffer_t >& outMap ) const {
             extractTo( outMap );
         }
@@ -613,9 +637,11 @@ class BitInputArchive {
     protected:
         explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive );
 
-        explicit BitInputArchive( const BitAbstractArchiveHandler& handler,
-                                  const BitInputArchive& parentArchive,
-                                  std::uint32_t index );
+        explicit BitInputArchive(
+            const BitAbstractArchiveHandler& handler,
+            const BitInputArchive& parentArchive,
+            std::uint32_t index
+        );
 
         BIT7Z_NODISCARD
         auto initUpdatableArchive( IOutArchive** newArc ) const -> HRESULT;
@@ -647,7 +673,11 @@ class BitInputArchive {
         explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitArchiveItemOffset& nestedItem );
 
         BIT7Z_NODISCARD
-        auto openArchiveStream( const fs::path& name, IInStream* inStream, ArchiveStartOffset startOffset ) -> IInArchive*;
+        auto openArchiveStream(
+            const fs::path& name,
+            IInStream* inStream,
+            ArchiveStartOffset startOffset
+        ) -> IInArchive*;
 
         void testArchive( BitIndicesView indices ) const;
 
@@ -662,6 +692,6 @@ class BitInputArchive {
         friend class CSynchronizedInStream;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITINPUTARCHIVE_HPP

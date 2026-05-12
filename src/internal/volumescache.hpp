@@ -76,8 +76,8 @@ auto openHandlesThreshold() -> std::size_t {
     }
     const auto availableOpenHandles = static_cast< std::size_t >( systemMaxOpenHandles );
     const auto result = availableOpenHandles > kHandlesReserve
-        ? ( availableOpenHandles - kHandlesReserve ) / kProcessingTasks
-        : 1;
+                            ? ( availableOpenHandles - kHandlesReserve ) / kProcessingTasks
+                            : 1;
     return std::max( result, kMinOpenHandles );
 }
 
@@ -88,65 +88,6 @@ auto openHandlesThreshold() -> std::size_t {
  */
 template< typename T, EvictionPolicy Policy >
 class VolumesCache {
-        std::vector< CachedVolume< T > > mVolumes;
-        std::size_t mOpenCount = 0;
-        std::size_t mNewest = kNoVolume;
-        std::size_t mOldest = kNoVolume;
-
-        // Links a volume as the newest (head of the list).
-        void linkAsNewest( CachedVolume< T >& volume, std::size_t index ) noexcept {
-            if ( mNewest != kNoVolume ) {
-                mVolumes[ mNewest ].newerVolume = index; // NOLINT(*-pro-bounds-*)
-            }
-            if ( mOldest == kNoVolume ) {
-                mOldest = index;
-            }
-            volume.olderVolume = mNewest;
-            volume.newerVolume = kNoVolume;
-            mNewest = index;
-        }
-
-        // Evicts the oldest volume (tail of the list). Releases its stream.
-        template< EvictionPolicy P = Policy >
-        auto evict() noexcept -> typename std::enable_if< P == EvictionPolicy::Oldest >::type {
-            auto& evicted = mVolumes[ mOldest ]; // NOLINT(*-pro-bounds-*)
-            mOldest = evicted.newerVolume;
-            if ( mOldest != kNoVolume ) {
-                mVolumes[ mOldest ].olderVolume = kNoVolume; // NOLINT(*-pro-bounds-*)
-            } else {
-                mNewest = kNoVolume;
-            }
-            evicted.newerVolume = kNoVolume;
-            evicted.olderVolume = kNoVolume;
-            evicted.stream.Release();
-            --mOpenCount;
-        }
-
-        // Evicts the newest volume (head of the list). Releases its stream.
-        template< EvictionPolicy P = Policy >
-        auto evict() noexcept -> typename std::enable_if< P == EvictionPolicy::Newest >::type {
-            auto& evicted = mVolumes[ mNewest ]; // NOLINT(*-pro-bounds-*)
-            mNewest = evicted.olderVolume;
-            if ( mNewest != kNoVolume ) {
-                mVolumes[ mNewest ].newerVolume = kNoVolume; // NOLINT(*-pro-bounds-*)
-            } else {
-                mOldest = kNoVolume;
-            }
-            evicted.newerVolume = kNoVolume;
-            evicted.olderVolume = kNoVolume;
-            evicted.stream.Release();
-            --mOpenCount;
-        }
-
-        // Tracks a newly opened stream and evicts a volume if the open-handles threshold is reached.
-        void trackOpened() noexcept {
-            ++mOpenCount;
-            static const auto threshold = openHandlesThreshold();
-            if ( mOpenCount >= threshold ) {
-                evict();
-            }
-        }
-
     public:
         /** @brief Returns the cached volume at the given index. */
         BIT7Z_NODISCARD
@@ -277,6 +218,66 @@ class VolumesCache {
          */
         void trackClosed() noexcept {
             --mOpenCount;
+        }
+
+    private:
+        std::vector< CachedVolume< T > > mVolumes;
+        std::size_t mOpenCount = 0;
+        std::size_t mNewest = kNoVolume;
+        std::size_t mOldest = kNoVolume;
+
+        // Links a volume as the newest (head of the list).
+        void linkAsNewest( CachedVolume< T >& volume, std::size_t index ) noexcept {
+            if ( mNewest != kNoVolume ) {
+                mVolumes[ mNewest ].newerVolume = index; // NOLINT(*-pro-bounds-*)
+            }
+            if ( mOldest == kNoVolume ) {
+                mOldest = index;
+            }
+            volume.olderVolume = mNewest;
+            volume.newerVolume = kNoVolume;
+            mNewest = index;
+        }
+
+        // Evicts the oldest volume (tail of the list). Releases its stream.
+        template< EvictionPolicy P = Policy >
+        auto evict() noexcept -> typename std::enable_if< P == EvictionPolicy::Oldest >::type {
+            auto& evicted = mVolumes[ mOldest ]; // NOLINT(*-pro-bounds-*)
+            mOldest = evicted.newerVolume;
+            if ( mOldest != kNoVolume ) {
+                mVolumes[ mOldest ].olderVolume = kNoVolume; // NOLINT(*-pro-bounds-*)
+            } else {
+                mNewest = kNoVolume;
+            }
+            evicted.newerVolume = kNoVolume;
+            evicted.olderVolume = kNoVolume;
+            evicted.stream.Release();
+            --mOpenCount;
+        }
+
+        // Evicts the newest volume (head of the list). Releases its stream.
+        template< EvictionPolicy P = Policy >
+        auto evict() noexcept -> typename std::enable_if< P == EvictionPolicy::Newest >::type {
+            auto& evicted = mVolumes[ mNewest ]; // NOLINT(*-pro-bounds-*)
+            mNewest = evicted.olderVolume;
+            if ( mNewest != kNoVolume ) {
+                mVolumes[ mNewest ].newerVolume = kNoVolume; // NOLINT(*-pro-bounds-*)
+            } else {
+                mOldest = kNoVolume;
+            }
+            evicted.newerVolume = kNoVolume;
+            evicted.olderVolume = kNoVolume;
+            evicted.stream.Release();
+            --mOpenCount;
+        }
+
+        // Tracks a newly opened stream and evicts a volume if the open-handles threshold is reached.
+        void trackOpened() noexcept {
+            ++mOpenCount;
+            static const auto threshold = openHandlesThreshold();
+            if ( mOpenCount >= threshold ) {
+                evict();
+            }
         }
 };
 

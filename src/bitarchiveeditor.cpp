@@ -35,11 +35,12 @@
 
 namespace bit7z {
 
-BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
-                                    const tstring& inFile,
-                                    const BitInOutFormat& format,
-                                    const tstring& password )
-    : BitArchiveWriter( lib, inFile, ArchiveStartOffset::FileStart, format, password ) {
+BitArchiveEditor::BitArchiveEditor(
+    const Bit7zLibrary& lib,
+    const tstring& inFile,
+    const BitInOutFormat& format,
+    const tstring& password
+) : BitArchiveWriter( lib, inFile, ArchiveStartOffset::FileStart, format, password ) {
     if ( inputArchive() != nullptr ) {
         return; // Input file was correctly read by base class BitOutputArchive constructor
     }
@@ -53,9 +54,11 @@ BitArchiveEditor::BitArchiveEditor( const Bit7zLibrary& lib,
      *       left a nullptr mInputArchive.
      *       This means that inFile doesn't exist (see BitOutputArchive's constructor).
      *       There's no need to check again for its existence (e.g., using fs::exists). */
-    throw BitException( "Could not open archive",
-                        std::make_error_code( std::errc::no_such_file_or_directory ),
-                        inFile );
+    throw BitException(
+        "Could not open archive",
+        std::make_error_code( std::errc::no_such_file_or_directory ),
+        inFile
+    );
 }
 
 BitArchiveEditor::~BitArchiveEditor() = default;
@@ -102,8 +105,10 @@ void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStre
 
 void BitArchiveEditor::deleteItem( std::uint32_t index, DeletePolicy policy ) {
     if ( index >= inputArchiveItemsCount() ) {
-        throw BitException( "Cannot delete item at index " + std::to_string( index ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot delete item at index " + std::to_string( index ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
 
     markItemAsDeleted( index );
@@ -118,7 +123,7 @@ void BitArchiveEditor::deleteItem( std::uint32_t index, DeletePolicy policy ) {
         return;
     }
 
-    for ( const auto& item: *inputArchive() ) {
+    for ( const auto& item : *inputArchive() ) {
         if ( starts_with( item.nativePath(), deletedPath ) ) {
             markItemAsDeleted( item.index() );
         }
@@ -159,15 +164,18 @@ inline auto isInsidePath( const fs::path& itemPath, bool isDir, const fs::path& 
 void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy ) {
     // The path to be deleted must be relative to the root of the archive.
     if ( itemPath.empty() || isPathSeparator( itemPath.front() ) ) {
-        throw BitException( "Could not mark any path as deleted",
-                            std::make_error_code( std::errc::invalid_argument ), itemPath );
+        throw BitException(
+            "Could not mark any path as deleted",
+            std::make_error_code( std::errc::invalid_argument ),
+            itemPath
+        );
     }
 
     bool deleted = false;
 
     // Normalized form of the path to be deleted inside the archive.
     const auto deletedPath = tstring_to_path( itemPath ).lexically_normal();
-    for ( const auto& item: *inputArchive() ) {
+    for ( const auto& item : *inputArchive() ) {
         const fs::path path = item.nativePath();
 
         // The current item is marked as deleted if either:
@@ -182,8 +190,11 @@ void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy 
     }
 
     if ( !deleted ) {
-        throw BitException( "Could not mark any path as deleted",
-                            std::make_error_code( std::errc::no_such_file_or_directory ), itemPath );
+        throw BitException(
+            "Could not mark any path as deleted",
+            std::make_error_code( std::errc::no_such_file_or_directory ),
+            itemPath
+        );
     }
 }
 
@@ -198,8 +209,10 @@ void BitArchiveEditor::setEditedItem( std::uint32_t index, BitInputItem&& item )
 
 void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
     if ( mode == UpdateMode::None ) {
-        throw BitException( "Cannot set update mode to UpdateMode::None",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException(
+            "Cannot set update mode to UpdateMode::None",
+            std::make_error_code( std::errc::invalid_argument )
+        );
     }
     BitAbstractArchiveCreator::setUpdateMode( mode );
 }
@@ -218,24 +231,34 @@ void BitArchiveEditor::applyChanges() {
 auto BitArchiveEditor::findItem( const tstring& itemPath ) const -> std::uint32_t {
     const auto archiveItem = inputArchive()->find( itemPath );
     if ( archiveItem == inputArchive()->cend() ) {
-        throw BitException( "Could not find the file in the archive",
-                            std::make_error_code( std::errc::no_such_file_or_directory ), itemPath );
+        throw BitException(
+            "Could not find the file in the archive",
+            std::make_error_code( std::errc::no_such_file_or_directory ),
+            itemPath
+        );
     }
     if ( isDeletedIndex( archiveItem->index() ) ) {
-        throw BitException( "Could not find item",
-                            make_error_code( BitError::ItemMarkedAsDeleted ), itemPath );
+        throw BitException(
+            "Could not find item",
+            make_error_code( BitError::ItemMarkedAsDeleted ),
+            itemPath
+        );
     }
     return archiveItem->index();
 }
 
 void BitArchiveEditor::checkIndex( std::uint32_t index ) const {
     if ( index >= inputArchiveItemsCount() ) {
-        throw BitException( "Cannot edit item at the index " + std::to_string( index ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot edit item at the index " + std::to_string( index ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
     if ( isDeletedIndex( index ) ) {
-        throw BitException( "Cannot edit item at the index " + std::to_string( index ),
-                            make_error_code( BitError::ItemMarkedAsDeleted ) );
+        throw BitException(
+            "Cannot edit item at the index " + std::to_string( index ),
+            make_error_code( BitError::ItemMarkedAsDeleted )
+        );
     }
 }
 

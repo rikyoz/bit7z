@@ -172,10 +172,10 @@ template< typename T, typename I = T >
 using is_com_type = bool_constant< std::is_base_of< CMyUnknownImp, T >::value && std::is_base_of< I, T >::value >;
 
 template< typename T, typename I = T, class... Args >
-auto make_com( Args&& ... args ) -> CMyComPtr< std::enable_if_t< is_com_type< T, I >::value, I > > {
+auto make_com( Args&&... args ) -> CMyComPtr< std::enable_if_t< is_com_type< T, I >::value, I > > {
     return CMyComPtr< I >( new T( std::forward< Args >( args )... ) ); //-V2511
 }
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //UTIL_HPP

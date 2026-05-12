@@ -25,10 +25,12 @@ namespace bit7z {
 namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto fileSize( const fs::path& filePath,
-               const FileMetadata& data,
-               SymlinkPolicy policy,
-               fs::file_type fileType ) -> std::uint64_t {
+auto fileSize(
+    const fs::path& filePath,
+    const FileMetadata& data,
+    SymlinkPolicy policy,
+    fs::file_type fileType
+) -> std::uint64_t {
     if ( fileType == fs::file_type::directory ) {
         return 0;
     }

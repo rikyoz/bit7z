@@ -26,16 +26,22 @@ namespace filesystem {
 namespace {
 auto countItemsInPath( const fs::path& path ) -> std::size_t {
     std::error_code error;
-    const auto begin = fs::recursive_directory_iterator{ path, fs::directory_options::skip_permission_denied, error };
+    const auto begin = fs::recursive_directory_iterator{
+        path,
+        fs::directory_options::skip_permission_denied,
+        error
+    };
     return error ? 0 : static_cast< std::size_t >( std::distance( begin, fs::recursive_directory_iterator{} ) );
 }
 } // namespace
 
-void listDirectoryItems( const fs::path& basePath,
-                         const fs::path& inArchivePath,
-                         const tstring& filter,
-                         IndexingOptions options,
-                         BitItemsVector& result ) {
+void listDirectoryItems(
+    const fs::path& basePath,
+    const fs::path& inArchivePath,
+    const tstring& filter,
+    IndexingOptions options,
+    BitItemsVector& result
+) {
     std::error_code error;
     const bool includeRootPath = filter.empty() ||
                                  !basePath.has_parent_path() ||
@@ -43,9 +49,11 @@ void listDirectoryItems( const fs::path& basePath,
     const bool shouldIncludeMatchedItems = options.filterPolicy == FilterPolicy::Include;
 
     result.reserve( result.size() + countItemsInPath( basePath ) );
-    for ( auto it = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
-          it != fs::recursive_directory_iterator{};
-          ++it ) {
+    for (
+        auto it = fs::recursive_directory_iterator{ basePath, fs::directory_options::skip_permission_denied, error };
+        it != fs::recursive_directory_iterator{};
+        ++it
+    ) {
         const auto& currentEntry = *it;
         const auto& itemPath = currentEntry.path();
 
@@ -63,9 +71,11 @@ void listDirectoryItems( const fs::path& basePath,
             const auto searchPath = includeRootPath ? inArchivePath / prefix : prefix;
 #ifdef BIT7Z_AUTO_PREFIX_LONG_PATHS
             if ( fsutil::should_format_long_path( itemPath ) ) {
-                result.emplace_back( searchPath,
-                                     fs::directory_entry{ fsutil::format_long_path( itemPath ), error },
-                                     options.symlinkPolicy );
+                result.emplace_back(
+                    searchPath,
+                    fs::directory_entry{ fsutil::format_long_path( itemPath ), error },
+                    options.symlinkPolicy
+                );
             } else {
                 result.emplace_back( searchPath, currentEntry, options.symlinkPolicy );
             }

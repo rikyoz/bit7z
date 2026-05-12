@@ -101,6 +101,6 @@ class Bit7zLibrary final {
         friend class BitOutputArchive;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BIT7ZLIBRARY_HPP

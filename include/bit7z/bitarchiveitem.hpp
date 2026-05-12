@@ -128,6 +128,6 @@ class BitArchiveItem : public BitGenericItem {
         explicit BitArchiveItem( std::uint32_t itemIndex ) noexcept;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITARCHIVEITEM_HPP

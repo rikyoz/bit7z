@@ -242,7 +242,7 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
     constexpr auto kPeSignature = 0x4D5A000000000000ULL; // MZ
     constexpr auto kFlvSignature = 0x464C560100000000ULL; // FLV 0x01
     constexpr auto kLpSignature = 0x67446C6134000000ULL;
-    constexpr auto kLvmSignature = 0x4C4142454C4F4E45;// LABELONE
+    constexpr auto kLvmSignature = 0x4C4142454C4F4E45; // LABELONE
     constexpr auto kLzmaSignature = 0x5D00000000000000ULL; //
     constexpr auto kLzma86Signature = 0x015D000000000000ULL; //
     constexpr auto kMachoSignature1 = 0xCEFAEDFE00000000ULL; // 0xCE 0xFA 0xED 0xFE
@@ -267,7 +267,7 @@ auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitIn
     constexpr auto kVmdkSignature = 0x4B444D0000000000ULL; // KDMV
     constexpr auto kVdiSignature = 0x3C3C3C2000000000ULL; // Alternatively, 0x7F10DABE at offset 0x40
     constexpr auto kVhdSignature = 0x636F6E6563746978ULL; // conectix
-    constexpr auto kVhdxSignature = 0x7668647866696C65;// vhdxfile
+    constexpr auto kVhdxSignature = 0x7668647866696C65; // vhdxfile
     constexpr auto kXarSignature = 0x78617221001C0000ULL; // xar! 0x00 0x1C
     constexpr auto kZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
     constexpr auto kZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
@@ -394,21 +394,21 @@ struct OffsetSignature { // NOLINT(*-member-init)
 #endif
 #else
 static inline std::uint64_t bswap64( std::uint64_t x ) {
-    return  ((x << 56) & 0xff00000000000000ULL) |
-            ((x << 40) & 0x00ff000000000000ULL) |
-            ((x << 24) & 0x0000ff0000000000ULL) |
-            ((x << 8)  & 0x000000ff00000000ULL) |
-            ((x >> 8)  & 0x00000000ff000000ULL) |
-            ((x >> 24) & 0x0000000000ff0000ULL) |
-            ((x >> 40) & 0x000000000000ff00ULL) |
-            ((x >> 56) & 0x00000000000000ffULL);
+    return ( ( x << 56 ) & 0xff00000000000000ULL ) |
+           ( ( x << 40 ) & 0x00ff000000000000ULL ) |
+           ( ( x << 24 ) & 0x0000ff0000000000ULL ) |
+           ( ( x << 8 ) & 0x000000ff00000000ULL ) |
+           ( ( x >> 8 ) & 0x00000000ff000000ULL ) |
+           ( ( x >> 24 ) & 0x0000000000ff0000ULL ) |
+           ( ( x >> 40 ) & 0x000000000000ff00ULL ) |
+           ( ( x >> 56 ) & 0x00000000000000ffULL );
 }
 #endif
 
 namespace {
 auto read_signature( IInStream* stream, std::uint32_t size ) noexcept -> std::uint64_t {
     std::uint64_t signature = 0;
-    (void) stream->Read( &signature, size, nullptr );
+    ( void )stream->Read( &signature, size, nullptr );
     return bswap64( signature );
 }
 } // namespace
@@ -424,35 +424,35 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     for ( auto i = 0U; i < kSignatureSize - 1; ++i ) {
         const BitInFormat* format = find_format_by_signature( fileSignature );
         if ( format != nullptr ) {
-            (void) stream->Seek( 0, 0, nullptr );
+            ( void )stream->Seek( 0, 0, nullptr );
             return *format;
         }
-        signatureMask <<= kByteShift;    // left shifting the mask of one byte, so that
-        fileSignature &= signatureMask;  // the least significant i bytes are masked (set to 0)
+        signatureMask <<= kByteShift; // left shifting the mask of one byte, so that
+        fileSignature &= signatureMask; // the least significant i bytes are masked (set to 0)
     }
 
-    static const OffsetSignature commonSignaturesWithOffset[] = { // NOLINT(*-avoid-c-arrays)
-        { 0x2D6C680000000000, 0x02,  3, BitFormat::Lzh },    // -lh
-        { 0x4E54465320202020, 0x03,  8, BitFormat::Ntfs },   // NTFS 0x20 0x20 0x20 0x20
-        { 0x4E756C6C736F6674, 0x08,  8, BitFormat::Nsis },   // Nullsoft
-        { 0x436F6D7072657373, 0x10,  8, BitFormat::CramFS }, // Compress
-        { 0x4E58534200000000, 0x20,  4, BitFormat::APFS },   // NXSB
-        { 0x7F10DABE00000000, 0x40,  4, BitFormat::VDI },    // 0x7F 0x10 0xDA 0xBE
-        { 0x7573746172000000, 0x101, 5, BitFormat::Tar },    // ustar
+    static const OffsetSignature commonSignaturesWithOffset[ ] = { // NOLINT(*-avoid-c-arrays)
+        { 0x2D6C680000000000, 0x02, 3, BitFormat::Lzh }, // -lh
+        { 0x4E54465320202020, 0x03, 8, BitFormat::Ntfs }, // NTFS 0x20 0x20 0x20 0x20
+        { 0x4E756C6C736F6674, 0x08, 8, BitFormat::Nsis }, // Nullsoft
+        { 0x436F6D7072657373, 0x10, 8, BitFormat::CramFS }, // Compress
+        { 0x4E58534200000000, 0x20, 4, BitFormat::APFS }, // NXSB
+        { 0x7F10DABE00000000, 0x40, 4, BitFormat::VDI }, // 0x7F 0x10 0xDA 0xBE
+        { 0x7573746172000000, 0x101, 5, BitFormat::Tar }, // ustar
         /* Note: since GPT files contain also the FAT signature, we must check the GPT signature before the FAT one. */
-        { 0x4546492050415254, 0x200, 8, BitFormat::GPT },    // EFI 0x20 PART
-        { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat },    // U 0xAA
-        { 0x4244000000000000, 0x400, 2, BitFormat::Hfs },    // BD
-        { 0x482B000400000000, 0x400, 4, BitFormat::Hfs },    // H+ 0x00 0x04
-        { 0x4858000500000000, 0x400, 4, BitFormat::Hfs },   // HX 0x00 0x05
-        { 0x53EF000000000000, 0x438, 2, BitFormat::Ext }    // S 0xEF
+        { 0x4546492050415254, 0x200, 8, BitFormat::GPT }, // EFI 0x20 PART
+        { 0x55AA000000000000, 0x1FE, 2, BitFormat::Fat }, // U 0xAA
+        { 0x4244000000000000, 0x400, 2, BitFormat::Hfs }, // BD
+        { 0x482B000400000000, 0x400, 4, BitFormat::Hfs }, // H+ 0x00 0x04
+        { 0x4858000500000000, 0x400, 4, BitFormat::Hfs }, // HX 0x00 0x05
+        { 0x53EF000000000000, 0x438, 2, BitFormat::Ext } // S 0xEF
     };
 
     for ( const auto& sig : commonSignaturesWithOffset ) {
-        (void) stream->Seek( sig.offset, 0, nullptr );
+        ( void )stream->Seek( sig.offset, 0, nullptr );
         fileSignature = read_signature( stream, sig.size );
         if ( fileSignature == sig.signature ) {
-            (void) stream->Seek( 0, 0, nullptr );
+            ( void )stream->Seek( 0, 0, nullptr );
             return sig.format;
         }
     }
@@ -464,7 +464,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
     constexpr auto kIsoSignatureOffset = 0x8001;
 
     // Checking for ISO signature
-    (void) stream->Seek( kIsoSignatureOffset, 0, nullptr );
+    ( void )stream->Seek( kIsoSignatureOffset, 0, nullptr );
     fileSignature = read_signature( stream, kIsoSignatureSize );
 
     const bool isIso = fileSignature == kIsoSignature;
@@ -476,24 +476,26 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
         constexpr auto kUdfSignatureSize = 4U;
 
         for ( auto descriptorIndex = 1; descriptorIndex < kMaxVolumeDescriptors; ++descriptorIndex ) {
-            (void) stream->Seek( kIsoSignatureOffset + ( descriptorIndex * kIsoVolumeDescriptorSize ), 0, nullptr );
+            ( void )stream->Seek( kIsoSignatureOffset + ( descriptorIndex * kIsoVolumeDescriptorSize ), 0, nullptr );
             fileSignature = read_signature( stream, kUdfSignatureSize );
 
             if ( fileSignature == kUdfSignature ) { // The file is ISO+UDF or just UDF
-                (void) stream->Seek( 0, 0, nullptr );
+                ( void )stream->Seek( 0, 0, nullptr );
                 return BitFormat::Udf;
             }
         }
 
         if ( isIso ) { // The file is pure ISO (no UDF).
-            (void) stream->Seek( 0, 0, nullptr );
+            ( void )stream->Seek( 0, 0, nullptr );
             return BitFormat::Iso; //No UDF volume signature found, i.e. simple ISO!
         }
     }
 
-    (void) stream->Seek( 0, 0, nullptr );
-    throw BitException( "Failed to detect the format of the file",
-                        make_error_code( BitError::NoMatchingSignature ) );
+    ( void )stream->Seek( 0, 0, nullptr );
+    throw BitException(
+        "Failed to detect the format of the file",
+        make_error_code( BitError::NoMatchingSignature )
+    );
 }
 
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
@@ -538,6 +540,6 @@ auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat
     return BitFormat::Auto;
 }
 #endif
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif

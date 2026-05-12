@@ -17,7 +17,7 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
-template<typename FormatType>
+template< typename FormatType >
 struct TestFormat {
     using Type = FormatType;
 

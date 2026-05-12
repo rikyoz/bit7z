@@ -24,20 +24,20 @@ using namespace NArchive::NExtract;
 namespace bit7z {
 
 enum struct OperationResult {
-    Success = NOperationResult::kOK,
-    UnsupportedMethod = NOperationResult::kUnsupportedMethod,
-    DataError = NOperationResult::kDataError,
-    CRCError = NOperationResult::kCRCError,
-    Unavailable = NOperationResult::kUnavailable,
-    UnexpectedEnd = NOperationResult::kUnexpectedEnd,
-    DataAfterEnd = NOperationResult::kDataAfterEnd,
-    IsNotArc = NOperationResult::kIsNotArc,
-    HeadersError = NOperationResult::kHeadersError,
-    WrongPassword = NOperationResult::kWrongPassword,
+    Success            = NOperationResult::kOK,
+    UnsupportedMethod  = NOperationResult::kUnsupportedMethod,
+    DataError          = NOperationResult::kDataError,
+    CRCError           = NOperationResult::kCRCError,
+    Unavailable        = NOperationResult::kUnavailable,
+    UnexpectedEnd      = NOperationResult::kUnexpectedEnd,
+    DataAfterEnd       = NOperationResult::kDataAfterEnd,
+    IsNotArc           = NOperationResult::kIsNotArc,
+    HeadersError       = NOperationResult::kHeadersError,
+    WrongPassword      = NOperationResult::kWrongPassword,
     DataErrorEncrypted = 2 * NOperationResult::kWrongPassword,
-    CRCErrorEncrypted = ( 2 * NOperationResult::kWrongPassword ) + 1,
+    CRCErrorEncrypted  = ( 2 * NOperationResult::kWrongPassword ) + 1,
     OpenErrorEncrypted = ( 2 * NOperationResult::kWrongPassword ) + 2,
-    EmptyPassword = ( 2 * NOperationResult::kWrongPassword ) + 3,
+    EmptyPassword      = ( 2 * NOperationResult::kWrongPassword ) + 3,
 };
 
 auto make_error_code( OperationResult error ) noexcept -> std::error_code;
@@ -45,7 +45,7 @@ auto make_error_code( OperationResult error ) noexcept -> std::error_code;
 } // namespace bit7z
 
 namespace std {
-template <>
+template<>
 struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::OperationResult > : true_type {};
 } // namespace std
 

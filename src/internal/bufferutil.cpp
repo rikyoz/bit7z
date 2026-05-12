@@ -19,11 +19,13 @@
 
 #include <cstdint>
 
-auto bit7z::seek( const buffer_t& buffer,
-                  const buffer_t::const_iterator& currentPosition,
-                  std::int64_t offset,
-                  std::uint32_t seekOrigin,
-                  std::uint64_t& newPosition ) -> HRESULT {
+auto bit7z::seek(
+    const buffer_t& buffer,
+    const buffer_t::const_iterator& currentPosition,
+    std::int64_t offset,
+    std::uint32_t seekOrigin,
+    std::uint64_t& newPosition
+) -> HRESULT {
     std::uint64_t currentIndex{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {

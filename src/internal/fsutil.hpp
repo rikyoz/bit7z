@@ -124,7 +124,7 @@ struct dot_constant< CharT, typename std::enable_if< std::is_same< CharT, char >
 };
 
 template< typename CharT >
-struct dot_constant< CharT, typename std::enable_if<std::is_same< CharT, wchar_t >::value >::type > {
+struct dot_constant< CharT, typename std::enable_if< std::is_same< CharT, wchar_t >::value >::type > {
     static constexpr wchar_t value = L'.';
 };
 
@@ -137,7 +137,7 @@ auto contains_dot_references( const std::basic_string< CharT >& path ) -> bool {
     do {
         pos = path.find( dot_constant< CharT >::value, pos );
         // Exit the loop if no more dots are found.
-        if ( pos == std::basic_string<CharT>::npos ) {
+        if ( pos == std::basic_string< CharT >::npos ) {
             return false;
         }
 
@@ -145,19 +145,22 @@ auto contains_dot_references( const std::basic_string< CharT >& path ) -> bool {
 
         // Case 1: Single dot "."
         if ( ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) && // Start of string, or preceding char is a separator.
-             ( pos + 1 == length || isPathSeparator( path[ pos + 1 ] ) ) ) { // End of string, or following char is a separator.
+             ( pos + 1 == length || isPathSeparator( path[ pos + 1 ] ) ) ) {
+            // End of string, or following char is a separator.
             return true;
         }
 
         // Case 2: Double dots ".."
         if ( ( pos + 1 < length && path[ pos + 1 ] == dot_constant< CharT >::value && // Two consecutive dots.
-             ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) ) && // Start of string, or preceding char is a separator.
-             ( pos + 2 == length || isPathSeparator( path[ pos + 2 ] ) ) ) { // End of string, or following char is a separator.
+               ( pos == 0 || isPathSeparator( path[ pos - 1 ] ) ) ) &&
+             // Start of string, or preceding char is a separator.
+             ( pos + 2 == length || isPathSeparator( path[ pos + 2 ] ) ) ) {
+            // End of string, or following char is a separator.
             return true;
         }
 
         ++pos;
-    } while( pos != std::basic_string<CharT>::npos );
+    } while ( pos != std::basic_string< CharT >::npos );
 
     return false;
 }
@@ -174,13 +177,13 @@ BIT7Z_ALWAYS_INLINE
 auto get_file_metadata( const fs::path& filePath, SymlinkPolicy policy ) -> FileMetadata {
     FileMetadata fileMetadata;
 #ifdef _WIN32
-    (void)policy;
+    ( void )policy;
     const auto result = ::GetFileAttributesExW( filePath.c_str(), GetFileExInfoStandard, &fileMetadata );
     if ( result == FALSE ) {
 #else
     const auto statRes = policy == SymlinkPolicy::Follow
-        ? os_stat( filePath.c_str(), &fileMetadata )
-        : os_lstat( filePath.c_str(), &fileMetadata );
+                             ? os_stat( filePath.c_str(), &fileMetadata )
+                             : os_lstat( filePath.c_str(), &fileMetadata );
     if ( statRes != 0 ) {
 #endif
         const auto error = last_error_code();
@@ -195,8 +198,10 @@ auto set_file_attributes(
     DWORD attributes
 ) noexcept -> bool;
 
-BIT7Z_NODISCARD auto in_archive_path( const fs::path& filePath,
-                                      const fs::path& searchPath = fs::path{} ) -> fs::path;
+BIT7Z_NODISCARD auto in_archive_path(
+    const fs::path& filePath,
+    const fs::path& searchPath = fs::path{}
+) -> fs::path;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 
@@ -278,6 +283,6 @@ inline auto sevenzip_string_to_path( const sevenzip_string& str ) -> fs::path {
 #endif
 }
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // FSUTIL_HPP

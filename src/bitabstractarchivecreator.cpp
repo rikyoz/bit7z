@@ -55,7 +55,7 @@ auto is_valid_compression_method( const BitInOutFormat& format, BitCompressionMe
 
 auto is_valid_dictionary_size( BitCompressionMethod method, std::uint32_t dictionarySize ) noexcept -> bool {
     constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1ull << 20ull ); // less than 3840 MiB
-    constexpr auto kMaxPpmdDictionarySize = ( 1ull << 30ull );        // less than 1 GiB, i.e., 2^30 bytes
+    constexpr auto kMaxPpmdDictionarySize = ( 1ull << 30ull ); // less than 1 GiB, i.e., 2^30 bytes
     constexpr auto kMaxBzip2DictionarySize = 900 * ( 1ull << 10ull ); // less than 900 KiB
 
     switch ( method ) {
@@ -71,7 +71,11 @@ auto is_valid_dictionary_size( BitCompressionMethod method, std::uint32_t dictio
     }
 }
 
-auto is_valid_word_size( const BitInOutFormat& fmt, BitCompressionMethod method, std::uint32_t wordSize ) noexcept -> bool {
+auto is_valid_word_size(
+    const BitInOutFormat& fmt,
+    BitCompressionMethod method,
+    std::uint32_t wordSize
+) noexcept -> bool {
     constexpr auto kMinLzmaWordSize = 5u;
     constexpr auto kMaxLzmaWordSize = 273u;
     constexpr auto kMinPpmdWordSize = 2u;
@@ -90,9 +94,8 @@ auto is_valid_word_size( const BitInOutFormat& fmt, BitCompressionMethod method,
         case BitCompressionMethod::Lzma2:
             return wordSize >= kMinLzmaWordSize && wordSize <= kMaxLzmaWordSize;
         case BitCompressionMethod::Ppmd:
-            return wordSize >= kMinPpmdWordSize && wordSize <=
-                                                   ( fmt == BitFormat::Zip ? kMaxZipPpmdWordSize
-                                                                           : kMax7zPpmdWordSize );
+            return wordSize >= kMinPpmdWordSize &&
+                   wordSize <= ( fmt == BitFormat::Zip ? kMaxZipPpmdWordSize : kMax7zPpmdWordSize );
         case BitCompressionMethod::Deflate64:
             return wordSize >= kMinDeflateWordSize && wordSize <= kMaxDeflate64WordSize;
         case BitCompressionMethod::Deflate:
@@ -123,22 +126,23 @@ auto method_name( BitCompressionMethod method ) noexcept -> const wchar_t* {
     }
 }
 
-BitAbstractArchiveCreator::BitAbstractArchiveCreator( const Bit7zLibrary& lib,
-                                                      const BitInOutFormat& format,
-                                                      tstring password,
-                                                      UpdateMode updateMode )
-    : BitAbstractArchiveHandler( lib, std::move( password ) ),
-      mFormat( format ),
-      mUpdateMode( updateMode ),
-      mCompressionLevel( BitCompressionLevel::Normal ),
-      mCompressionMethod( format.defaultMethod() ),
-      mDictionarySize( 0 ),
-      mWordSize( 0 ),
-      mCryptHeaders( false ),
-      mSolidMode( false ),
-      mVolumeSize( 0 ),
-      mThreadsCount( 0 ),
-      mStoreSymbolicLinks{ false } {
+BitAbstractArchiveCreator::BitAbstractArchiveCreator(
+    const Bit7zLibrary& lib,
+    const BitInOutFormat& format,
+    tstring password,
+    UpdateMode updateMode
+) : BitAbstractArchiveHandler( lib, std::move( password ) ),
+    mFormat( format ),
+    mUpdateMode( updateMode ),
+    mCompressionLevel( BitCompressionLevel::Normal ),
+    mCompressionMethod( format.defaultMethod() ),
+    mDictionarySize( 0 ),
+    mWordSize( 0 ),
+    mCryptHeaders( false ),
+    mSolidMode( false ),
+    mVolumeSize( 0 ),
+    mThreadsCount( 0 ),
+    mStoreSymbolicLinks{ false } {
     setRetainDirectories( false );
 }
 
@@ -212,12 +216,16 @@ void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
 
 auto is_ascii( const tstring& str ) -> bool {
-    return std::all_of( str.begin(), str.end(), []( tchar character ) -> bool {
-        // Note: 7-zip supports the DEL character (code 127), while bit7z doesn't.
-        constexpr auto kFirstAsciiChar = 32; // Space character
-        constexpr auto kLastAsciiChar = 127;
-        return character >= kFirstAsciiChar && character < kLastAsciiChar;
-    } );
+    return std::all_of(
+        str.begin(),
+        str.end(),
+        [] ( tchar character ) -> bool {
+            // Note: 7-zip supports the DEL character (code 127), while bit7z doesn't.
+            constexpr auto kFirstAsciiChar = 32; // Space character
+            constexpr auto kLastAsciiChar = 127;
+            return character >= kFirstAsciiChar && character < kLastAsciiChar;
+        }
+    );
 }
 
 #endif
@@ -240,8 +248,10 @@ void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level )
 
 void BitAbstractArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
     if ( !is_valid_compression_method( mFormat, method ) ) {
-        throw BitException( "Cannot set the compression method",
-                            make_error_code( BitError::InvalidCompressionMethod ) );
+        throw BitException(
+            "Cannot set the compression method",
+            make_error_code( BitError::InvalidCompressionMethod )
+        );
     }
     if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) ) {
         /* even though the compression method is valid, we set it only if the format supports
@@ -358,8 +368,10 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
         properties.setProperty( L"mt", mThreadsCount );
     }
     if ( mDictionarySize != 0 ) {
-        properties.setProperty( dictionary_property_name( mFormat, mCompressionMethod ),
-                                std::to_wstring( mDictionarySize ) + L"b" );
+        properties.setProperty(
+            dictionary_property_name( mFormat, mCompressionMethod ),
+            std::to_wstring( mDictionarySize ) + L"b"
+        );
     }
     if ( mWordSize != 0 ) {
         properties.setProperty( word_size_property_name( mFormat, mCompressionMethod ), mWordSize );

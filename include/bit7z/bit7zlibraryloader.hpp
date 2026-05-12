@@ -129,6 +129,7 @@ class Bit7zLibraryLoader final {
             byte_t mEmpty;
             Bit7zLibrary mLibrary;
         };
+
         bool mLoaded;
 };
 

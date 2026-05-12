@@ -57,9 +57,11 @@ using namespace NArchive;
 
 namespace bit7z {
 
-auto BitInputArchive::openArchiveStream( const fs::path& name,
-                                         IInStream* inStream,
-                                         ArchiveStartOffset startOffset ) -> IInArchive* {
+auto BitInputArchive::openArchiveStream(
+    const fs::path& name,
+    IInStream* inStream,
+    ArchiveStartOffset startOffset
+) -> IInArchive* {
 #ifdef BIT7Z_AUTO_FORMAT
     bool detectedBySignature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
@@ -137,22 +139,24 @@ inline auto detect_format( const BitInFormat& format, const fs::path& arcPath ) 
 #if defined( BIT7Z_AUTO_FORMAT ) && defined( BIT7Z_DETECT_FROM_EXTENSION )
     return ( ( format == BitFormat::Auto ) ? &detect_format_from_extension( arcPath ) : &format );
 #else
-    (void)arcPath; // unused when auto format detection is enabled!
+    ( void )arcPath; // unused when auto format detection is enabled!
     return &format;
 #endif
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
-                                  const tstring& inFile,
-                                  ArchiveStartOffset startOffset )
-    : BitInputArchive( handler, tstring_to_path( inFile ), startOffset ) {}
+BitInputArchive::BitInputArchive(
+    const BitAbstractArchiveHandler& handler,
+    const tstring& inFile,
+    ArchiveStartOffset startOffset
+) : BitInputArchive( handler, tstring_to_path( inFile ), startOffset ) {}
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
-                                  const fs::path& arcPath,
-                                  ArchiveStartOffset startOffset )
-    : mDetectedFormat{ detect_format( handler.format(), arcPath ) },
-      mArchiveHandler{ handler },
-      mArchivePath{ path_to_tstring( arcPath ) } {
+BitInputArchive::BitInputArchive(
+    const BitAbstractArchiveHandler& handler,
+    const fs::path& arcPath,
+    ArchiveStartOffset startOffset
+) : mDetectedFormat{ detect_format( handler.format(), arcPath ) },
+    mArchiveHandler{ handler },
+    mArchivePath{ path_to_tstring( arcPath ) } {
     CMyComPtr< IInStream > fileStream;
     if ( *mDetectedFormat != BitFormat::Split && arcPath.extension() == ".001" ) {
         fileStream = bit7z::make_com< CMultiVolumeInStream, IInStream >( arcPath );
@@ -162,20 +166,22 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
     mInArchive = openArchiveStream( arcPath, fileStream, startOffset );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
-                                  const buffer_t& inBuffer,
-                                  ArchiveStartOffset startOffset )
-    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
-      mArchiveHandler{ handler } {
+BitInputArchive::BitInputArchive(
+    const BitAbstractArchiveHandler& handler,
+    const buffer_t& inBuffer,
+    ArchiveStartOffset startOffset
+) : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
+    mArchiveHandler{ handler } {
     const auto bufStream = bit7z::make_com< CBufferInStream, IInStream >( inBuffer );
     mInArchive = openArchiveStream( fs::path{}, bufStream, startOffset );
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
-                                  std::istream& inStream,
-                                  ArchiveStartOffset startOffset )
-    : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
-      mArchiveHandler{ handler } {
+BitInputArchive::BitInputArchive(
+    const BitAbstractArchiveHandler& handler,
+    std::istream& inStream,
+    ArchiveStartOffset startOffset
+) : mDetectedFormat{ &handler.format() }, // if auto, detect the format from content, otherwise try the passed format.
+    mArchiveHandler{ handler } {
     const auto stdStream = bit7z::make_com< CStdInStream, IInStream >( inStream );
     mInArchive = openArchiveStream( fs::path{}, stdStream, startOffset );
 }
@@ -191,12 +197,13 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
 BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive )
     : BitInputArchive{ handler, parentArchive, parentArchive.mainSubfileIndex() } {}
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler,
-                                  const BitInputArchive& parentArchive,
-                                  std::uint32_t index )
-    : mDetectedFormat{ &handler.format() },
-      mArchiveHandler{ handler },
-      mArchivePath{ parentArchive.itemAt( index ).path() } {
+BitInputArchive::BitInputArchive(
+    const BitAbstractArchiveHandler& handler,
+    const BitInputArchive& parentArchive,
+    std::uint32_t index
+) : mDetectedFormat{ &handler.format() },
+    mArchiveHandler{ handler },
+    mArchivePath{ parentArchive.itemAt( index ).path() } {
     const CMyComPtr< IInStream > subStream = parentArchive.getSubfileStream( index );
     mInArchive = openArchiveStream( fs::path{}, subStream, ArchiveStartOffset::FileStart );
 }
@@ -214,9 +221,11 @@ auto BitInputArchive::itemProperty( std::uint32_t index, BitProperty property ) 
     BitPropVariant itemProperty;
     const HRESULT res = mInArchive->GetProperty( index, static_cast< PROPID >( property ), &itemProperty );
     if ( res != S_OK ) {
-        throw BitException( "Could not retrieve " + to_string( property ) +
-                            " of the item at the index " + std::to_string( index ),
-                            make_hresult_code( res ) );
+        throw BitException(
+            "Could not retrieve " + to_string( property ) +
+            " of the item at the index " + std::to_string( index ),
+            make_hresult_code( res )
+        );
     }
     if ( property == BitProperty::Path && itemProperty.isEmpty() && itemsCount() == 1 ) {
         if ( mArchivePath.empty() ) {
@@ -293,9 +302,11 @@ void BitInputArchive::useFormatProperty( const wchar_t* name, const BitPropVaria
 
     const auto propertyNames = { name };
     const auto propertyValues = { property };
-    res = setProperties->SetProperties( propertyNames.begin(),
-                                        propertyValues.begin(),
-                                        static_cast< std::uint32_t >( propertyNames.size() ) );
+    res = setProperties->SetProperties(
+        propertyNames.begin(),
+        propertyValues.begin(),
+        static_cast< std::uint32_t >( propertyNames.size() )
+    );
     if ( res != S_OK ) {
         throw BitException( "Cannot use the archive format property", make_hresult_code( res ) );
     }
@@ -305,8 +316,10 @@ void BitInputArchive::extractTo( const tstring& outDir, BitIndicesView indices )
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
     const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {
-        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
 
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this, outDir );
@@ -333,24 +346,33 @@ auto shouldProcessItem( const BitArchiveItem& item, const tregex& itemFilter, bo
 #endif
 } // namespace
 
-void BitInputArchive::extractMatchingTo( const tstring& outDir,
-                                         const tstring& itemFilter,
-                                         FilterPolicy policy ) const {
+void BitInputArchive::extractMatchingTo(
+    const tstring& outDir,
+    const tstring& itemFilter,
+    FilterPolicy policy
+) const {
     if ( itemFilter.empty() ) {
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
 
     const bool extractMatchingItems = policy == FilterPolicy::Include;
-    extractTo( outDir, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::ProcessItem : FilterResult::SkipItem;
-    } );
+    extractTo(
+        outDir,
+        [ & ] ( const BitArchiveItem& item ) -> FilterResult {
+            return shouldProcessItem( item, itemFilter, extractMatchingItems )
+                       ? FilterResult::ProcessItem
+                       : FilterResult::SkipItem;
+        }
+    );
 }
 
 #ifdef BIT7Z_REGEX_MATCHING
 
-void BitInputArchive::extractMatchingRegexTo( const tstring& outDir,
-                                              const tstring& regex,
-                                              FilterPolicy policy ) const {
+void BitInputArchive::extractMatchingRegexTo(
+    const tstring& outDir,
+    const tstring& regex,
+    FilterPolicy policy
+) const {
     if ( regex.empty() ) {
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
@@ -361,11 +383,14 @@ void BitInputArchive::extractMatchingRegexTo( const tstring& outDir,
 
 void BitInputArchive::extractMatchingTo( const tstring& outDir, const tregex& regex, FilterPolicy policy ) const {
     const bool extractMatchingItems = policy == FilterPolicy::Include;
-    extractTo( outDir, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, regex, extractMatchingItems )
-            ? FilterResult::ProcessItem
-            : FilterResult::SkipItem;
-    } );
+    extractTo(
+        outDir,
+        [ & ] ( const BitArchiveItem& item ) -> FilterResult {
+            return shouldProcessItem( item, regex, extractMatchingItems )
+                       ? FilterResult::ProcessItem
+                       : FilterResult::SkipItem;
+        }
+    );
 }
 
 #endif
@@ -399,28 +424,35 @@ BIT7Z_ALWAYS_INLINE
 auto shouldFilterItem( const native_string& path, const BitArchiveItemOffset& item, FolderPathPolicy policy ) -> bool {
     constexpr auto nativeDotDot = BIT7Z_NATIVE_STRING( ".." );
     return ( starts_with( path, nativeDotDot ) ||
-           ( ( path.empty() || path == nativeDot ) && ( policy == FolderPathPolicy::Strip || !item.isDir() ) ) );
+             ( ( path.empty() || path == nativeDot ) && ( policy == FolderPathPolicy::Strip || !item.isDir() ) ) );
 }
 } // namespace
 
-void BitInputArchive::extractFolderTo( const tstring& outDir,
-                                       const tstring& folderPath,
-                                       FolderPathPolicy policy ) const {
+void BitInputArchive::extractFolderTo(
+    const tstring& outDir,
+    const tstring& folderPath,
+    FolderPathPolicy policy
+) const {
     if ( folderPath.empty() || filesystem::fsutil::contains_dot_references( folderPath ) ) {
-        throw BitException( "Invalid folder path to be extracted from the archive",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException(
+            "Invalid folder path to be extracted from the archive",
+            std::make_error_code( std::errc::invalid_argument )
+        );
     }
 
     if ( isPathSeparator( folderPath.front() ) ) {
-        throw BitException( "The folder path must be relative",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException(
+            "The folder path must be relative",
+            std::make_error_code( std::errc::invalid_argument )
+        );
     }
 
     std::uint32_t matchingCount = 0;
     const auto folderFsPath = tstring_to_path( folderPath );
-    const auto folderName = isPathSeparator( folderPath.back() ) ?
-        folderFsPath.parent_path().filename() : folderFsPath.filename();
-    auto renameCallback = [ & ]( std::uint32_t index, const tstring& path ) -> tstring {
+    const auto folderName = isPathSeparator( folderPath.back() )
+                                ? folderFsPath.parent_path().filename()
+                                : folderFsPath.filename();
+    auto renameCallback = [ & ] ( std::uint32_t index, const tstring& path ) -> tstring {
         // Note: we use the native item's path rather than the second parameter of the callback
         // to avoid unnecessary string conversions when creating the filesystem path object.
         const auto item = itemAt( index );
@@ -441,29 +473,37 @@ void BitInputArchive::extractFolderTo( const tstring& outDir,
         }
         return path_to_tstring( folderName / relativePath );
     };
-    const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >( *this,
-                                                                                   outDir,
-                                                                                   FilterCallback{},
-                                                                                   std::move( renameCallback ) );
+    const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >(
+        *this,
+        outDir,
+        FilterCallback{},
+        std::move( renameCallback )
+    );
     extractArchive( callback, NAskMode::kExtract );
     if ( matchingCount == 0 ) {
-        throw BitException( "No item inside the given folder path within the archive",
-                            std::make_error_code( std::errc::invalid_argument ) );
+        throw BitException(
+            "No item inside the given folder path within the archive",
+            std::make_error_code( std::errc::invalid_argument )
+        );
     }
 }
 
 void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) const {
     if ( isInvalidIndex( index ) ) {
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot extract item at the index " + std::to_string( index ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
 
     if ( isItemFolder( index ) ) { // Consider only files, not folders
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
-                            make_error_code( BitError::ItemIsAFolder ) );
+        throw BitException(
+            "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
+            make_error_code( BitError::ItemIsAFolder )
+        );
     }
 
-    auto bufferCallback = [ &outBuffer ]( std::uint32_t, const tstring& ) -> buffer_t& {
+    auto bufferCallback = [ &outBuffer ] ( std::uint32_t, const tstring& ) -> buffer_t& {
         return outBuffer;
     };
     const auto extractCallback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
@@ -484,9 +524,14 @@ void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tstring& ite
     }
 
     const bool extractMatchingItems = policy == FilterPolicy::Include;
-    extractTo(  outBuffer, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, itemFilter, extractMatchingItems ) ? FilterResult::ProcessItem : FilterResult::SkipItem;
-    } );
+    extractTo(
+        outBuffer,
+        [ & ] ( const BitArchiveItem& item ) -> FilterResult {
+            return shouldProcessItem( item, itemFilter, extractMatchingItems )
+                       ? FilterResult::ProcessItem
+                       : FilterResult::SkipItem;
+        }
+    );
 }
 
 #ifdef BIT7Z_REGEX_MATCHING
@@ -502,17 +547,20 @@ void BitInputArchive::extractMatchingRegexTo( buffer_t& outBuffer, const tstring
 
 void BitInputArchive::extractMatchingTo( buffer_t& outBuffer, const tregex& regex, FilterPolicy policy ) const {
     const bool extractMatchingItems = policy == FilterPolicy::Include;
-    extractTo( outBuffer, [ & ]( const BitArchiveItem& item ) -> FilterResult {
-        return shouldProcessItem( item, regex, extractMatchingItems )
-            ? FilterResult::ProcessItem
-            : FilterResult::SkipItem;
-    } );
+    extractTo(
+        outBuffer,
+        [ & ] ( const BitArchiveItem& item ) -> FilterResult {
+            return shouldProcessItem( item, regex, extractMatchingItems )
+                       ? FilterResult::ProcessItem
+                       : FilterResult::SkipItem;
+        }
+    );
 }
 
 #endif
 
 void BitInputArchive::extractTo( buffer_t& outBuffer, FilterCallback filterCallback ) const {
-    auto bufferCallback = [ &outBuffer ]( std::uint32_t, const tstring& ) -> buffer_t& {
+    auto bufferCallback = [ &outBuffer ] ( std::uint32_t, const tstring& ) -> buffer_t& {
         return outBuffer;
     };
     const auto callback = bit7z::make_com< BufferExtractCallback, ExtractCallback >(
@@ -528,13 +576,17 @@ void BitInputArchive::extractTo( buffer_t& outBuffer, FilterCallback filterCallb
 
 void BitInputArchive::extractTo( std::ostream& outStream, std::uint32_t index ) const {
     if ( isInvalidIndex( index ) ) {
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot extract item at the index " + std::to_string( index ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
 
     if ( isItemFolder( index ) ) { // Consider only files, not folders
-        throw BitException( "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
-                            make_error_code( BitError::ItemIsAFolder ) );
+        throw BitException(
+            "Cannot extract item at the index " + std::to_string( index ) + " to the buffer",
+            make_error_code( BitError::ItemIsAFolder )
+        );
     }
 
     const auto extractCallback = bit7z::make_com< StreamExtractCallback, ExtractCallback >( *this, outStream );
@@ -543,27 +595,39 @@ void BitInputArchive::extractTo( std::ostream& outStream, std::uint32_t index ) 
 
 void BitInputArchive::extractTo( byte_t* outBuffer, std::size_t size, std::uint32_t index ) const {
     if ( outBuffer == nullptr ) {
-        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
-                            make_error_code( BitError::NullOutputBuffer ) );
+        throw BitException(
+            "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
+            make_error_code( BitError::NullOutputBuffer )
+        );
     }
 
     if ( isInvalidIndex( index ) ) {
-        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
+            make_error_code( BitError::InvalidIndex )
+        );
     }
 
     if ( isItemFolder( index ) ) { // Consider only files, not folders
-        throw BitException( "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
-                            make_error_code( BitError::ItemIsAFolder ) );
+        throw BitException(
+            "Cannot extract the item at the index " + std::to_string( index ) + " to the buffer",
+            make_error_code( BitError::ItemIsAFolder )
+        );
     }
 
     const auto itemSize = itemProperty( index, BitProperty::Size ).getUInt64();
     if ( size != itemSize ) {
-        throw BitException( "Cannot extract archive to pre-allocated buffer",
-                            make_error_code( BitError::InvalidOutputBufferSize ) );
+        throw BitException(
+            "Cannot extract archive to pre-allocated buffer",
+            make_error_code( BitError::InvalidOutputBufferSize )
+        );
     }
 
-    const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >( *this, outBuffer, size );
+    const auto extractCallback = bit7z::make_com< FixedBufferExtractCallback, ExtractCallback >(
+        *this,
+        outBuffer,
+        size
+    );
     extractArchive( extractCallback, NAskMode::kExtract, index );
 }
 
@@ -576,7 +640,7 @@ void BitInputArchive::extractTo( std::map< tstring, buffer_t >& outMap ) const {
         }
     }
 
-    auto bufferCallback = [&outMap]( std::uint32_t, const tstring& path ) -> buffer_t& {
+    auto bufferCallback = [ &outMap ] ( std::uint32_t, const tstring& path ) -> buffer_t& {
         // Note: the [] operator creates the buffer if it does not already exist.
         return outMap[ path ];
     };
@@ -595,8 +659,10 @@ void BitInputArchive::extractTo( RawDataCallback callback, BitIndicesView indice
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
     const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {
-        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
 
     const auto extractCallback = bit7z::make_com< RawDataExtractCallback, ExtractCallback >(
@@ -610,8 +676,10 @@ void BitInputArchive::test( BitIndicesView indices ) const {
     // Find if any index passed by the user is not in the valid range [0, itemsCount() - 1]
     const auto invalidIndex = findInvalidIndex( indices );
     if ( invalidIndex != indices.cend() ) {
-        throw BitException( "Cannot extract item at the index " + std::to_string( *invalidIndex ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot extract item at the index " + std::to_string( *invalidIndex ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
 
     testArchive( indices );
@@ -670,13 +738,21 @@ auto BitInputArchive::find( const tstring& path ) const noexcept -> BitInputArch
      * and 7-Zip uses this in the item paths, so we only need to compare the path strings. */
 #ifdef _WIN32
     const auto pathToFind = tstring_to_path( path );
-    return std::find_if( begin(), end(), [ &pathToFind ]( const BitArchiveItemOffset& oldItem ) -> bool {
-        return oldItem.nativePath() == pathToFind;
-    } );
+    return std::find_if(
+        begin(),
+        end(),
+        [ &pathToFind ] ( const BitArchiveItemOffset& oldItem ) -> bool {
+            return oldItem.nativePath() == pathToFind;
+        }
+    );
 #else
-    return std::find_if( begin(), end(), [ &path ]( const BitArchiveItemOffset& oldItem ) -> bool {
-        return oldItem.path() == path;
-    } );
+    return std::find_if(
+        begin(),
+        end(),
+        [ &path ] ( const BitArchiveItemOffset& oldItem ) -> bool {
+            return oldItem.path() == path;
+        }
+    );
 #endif
 }
 
@@ -685,9 +761,13 @@ auto BitInputArchive::findByName( const tstring& name ) const noexcept -> BitInp
     // we just take a reference to the name string; in other cases, we get a new string, and the reference variable
     // extends its lifetime.
     const auto& nameToFind = to_native_string( name );
-    return std::find_if( begin(), end(), [ &nameToFind ]( const BitArchiveItemOffset& oldItem ) -> bool {
-        return oldItem.nativeName() == nameToFind;
-    } );
+    return std::find_if(
+        begin(),
+        end(),
+        [ &nameToFind ] ( const BitArchiveItemOffset& oldItem ) -> bool {
+            return oldItem.nativeName() == nameToFind;
+        }
+    );
 }
 
 auto BitInputArchive::contains( const tstring& path ) const noexcept -> bool {
@@ -696,8 +776,10 @@ auto BitInputArchive::contains( const tstring& path ) const noexcept -> bool {
 
 auto BitInputArchive::itemAt( std::uint32_t index ) const -> BitArchiveItemOffset {
     if ( isInvalidIndex( index ) ) {
-        throw BitException( "Cannot get the item at the index " + std::to_string( index ),
-                            make_error_code( BitError::InvalidIndex ) );
+        throw BitException(
+            "Cannot get the item at the index " + std::to_string( index ),
+            make_error_code( BitError::InvalidIndex )
+        );
     }
     return { *this, index };
 }
@@ -710,8 +792,10 @@ auto BitInputArchive::mainSubfileIndex() const -> std::uint32_t {
 
     const std::uint32_t mainSubfileIndex = prop.getUInt32();
     if ( mainSubfileIndex >= itemsCount() ) {
-        throw BitException{ "Could not retrieve the index of the main subfile",
-                            make_error_code( BitError::InvalidIndex ) };
+        throw BitException{
+            "Could not retrieve the index of the main subfile",
+            make_error_code( BitError::InvalidIndex )
+        };
     }
     return mainSubfileIndex;
 }
@@ -722,9 +806,13 @@ auto BitInputArchive::findInvalidIndex( BitIndicesView indices ) const -> BitInd
     }
 
     const auto count = itemsCount();
-    return std::find_if( indices.cbegin(), indices.cend(), [ &count ]( std::uint32_t index ) noexcept -> bool {
-        return index >= count;
-    } );
+    return std::find_if(
+        indices.cbegin(),
+        indices.cend(),
+        [ &count ] ( std::uint32_t index ) noexcept -> bool {
+            return index >= count;
+        }
+    );
 }
 
 auto BitInputArchive::isInvalidIndex( std::uint32_t index ) const -> bool {
@@ -761,8 +849,10 @@ void BitInputArchive::extractArchive( ExtractCallback* callback, std::int32_t mo
 
     const auto& errorException = callback->errorException();
     if ( !errorException ) {
-        throw BitException( mode == NAskMode::kTest ? "Could not test the archive" : "Could not extract the archive",
-                            make_hresult_code( res ) );
+        throw BitException(
+            mode == NAskMode::kTest ? "Could not test the archive" : "Could not extract the archive",
+            make_hresult_code( res )
+        );
     }
     std::rethrow_exception( errorException );
 }

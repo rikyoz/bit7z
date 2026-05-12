@@ -48,6 +48,6 @@ class CStdOutStream final : public IOutStream, public CMyUnknownImp {
         std::ostream& mOutputStream;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CSTDOUTSTREAM_HPP

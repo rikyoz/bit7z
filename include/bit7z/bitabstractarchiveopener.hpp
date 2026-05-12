@@ -44,14 +44,16 @@ class BitAbstractArchiveOpener : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto extractionFormat() const noexcept -> const BitInFormat&;
 
     protected:
-        BitAbstractArchiveOpener( const Bit7zLibrary& lib,
-                                  const BitInFormat& format,
-                                  const tstring& password = {} );
+        BitAbstractArchiveOpener(
+            const Bit7zLibrary& lib,
+            const BitInFormat& format,
+            const tstring& password = {}
+        );
 
     private:
         const BitInFormat& mFormat;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEOPENER_HPP

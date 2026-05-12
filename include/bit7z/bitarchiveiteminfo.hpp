@@ -52,6 +52,6 @@ class BitArchiveItemInfo final : public BitArchiveItem {
         friend class BitNestedArchiveReader;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITARCHIVEITEMINFO_HPP

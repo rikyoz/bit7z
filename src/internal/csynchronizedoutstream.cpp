@@ -40,7 +40,7 @@ STDMETHODIMP CSynchronizedOutStream::Write( const void* data, UInt32 size, UInt3
     try {
         buffer_t extractedData( data_start, data_end );
         mBufferQueue.push( std::move( extractedData ) );
-    } catch (...) {
+    } catch ( ... ) {
         return E_OUTOFMEMORY;
     }
 

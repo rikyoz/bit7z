@@ -33,9 +33,9 @@
 namespace bit7z {
 
 namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
-namespace fsutil {
-auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
-} // namespace fsutil
+    namespace fsutil {
+    auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
+    } // namespace fsutil
 } // namespace filesystem
 
 /**
@@ -102,10 +102,12 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param folderPath    the path of the folder inside the archive to be extracted.
          * @param policy        (optional) the path policy to be used for extracting the folder.
          */
-        void extractFolder( Input inArchive,
-                            const tstring& outDir,
-                            const tstring& folderPath,
-                            FolderPathPolicy policy = FolderPathPolicy::Strip ) const {
+        void extractFolder(
+            Input inArchive,
+            const tstring& outDir,
+            const tstring& folderPath,
+            FolderPathPolicy policy = FolderPathPolicy::Strip
+        ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractFolderTo( outDir, folderPath, policy );
         }
@@ -147,7 +149,7 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param index     the index of the file to be extracted.
          */
         template< std::size_t N >
-        void extract( Input inArchive, byte_t (& outBuffer)[N], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+        void extract( Input inArchive, byte_t (&outBuffer)[ N ], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
         }
@@ -225,10 +227,12 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outDir       the output directory where extracted files will be put.
          * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatching( Input inArchive,
-                              const tstring& itemFilter,
-                              const tstring& outDir = {},
-                              FilterPolicy policy = FilterPolicy::Include ) const {
+        void extractMatching(
+            Input inArchive,
+            const tstring& itemFilter,
+            const tstring& outDir = {},
+            FilterPolicy policy = FilterPolicy::Include
+        ) const {
             const BitInputArchive inputArchive{ *this, inArchive };
             inputArchive.extractMatchingTo( outDir, itemFilter, policy );
         }
@@ -242,10 +246,12 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outBuffer    the output buffer where to extract the file.
          * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatching( Input inArchive,
-                              const tstring& itemFilter,
-                              buffer_t& outBuffer,
-                              FilterPolicy policy = FilterPolicy::Include ) const {
+        void extractMatching(
+            Input inArchive,
+            const tstring& itemFilter,
+            buffer_t& outBuffer,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const {
             const BitInputArchive inputArchive{ *this, inArchive };
             inputArchive.extractMatchingTo( outBuffer, itemFilter, policy );
         }
@@ -257,9 +263,11 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param indices      the indices of the files in the archive that should be extracted.
          * @param outDir       the output directory where the extracted files will be placed.
          */
-        void extractItems( Input inArchive,
-                           BitIndicesView indices,
-                           const tstring& outDir = {} ) const {
+        void extractItems(
+            Input inArchive,
+            BitIndicesView indices,
+            const tstring& outDir = {}
+        ) const {
             if ( indices.empty() ) {
                 throw BitException( "Cannot extract items", make_error_code( BitError::IndicesNotSpecified ) );
             }
@@ -281,10 +289,12 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outDir       the output directory where extracted files will be put.
          * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegex( Input inArchive,
-                                   const tstring& regex,
-                                   const tstring& outDir = {},
-                                   FilterPolicy policy = FilterPolicy::Include ) const {
+        void extractMatchingRegex(
+            Input inArchive,
+            const tstring& regex,
+            const tstring& outDir = {},
+            FilterPolicy policy = FilterPolicy::Include
+        ) const {
             const BitInputArchive inputArchive{ *this, inArchive };
             inputArchive.extractMatchingRegexTo( outDir, regex, policy );
         }
@@ -300,10 +310,12 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outBuffer    the output buffer where the extracted file will be put.
          * @param policy       the filtering policy to be applied to the matched items.
          */
-        void extractMatchingRegex( Input inArchive,
-                                   const tstring& regex,
-                                   buffer_t& outBuffer,
-                                   FilterPolicy policy = FilterPolicy::Include ) const {
+        void extractMatchingRegex(
+            Input inArchive,
+            const tstring& regex,
+            buffer_t& outBuffer,
+            FilterPolicy policy = FilterPolicy::Include
+        ) const {
             const BitInputArchive inputArchive{ *this, inArchive };
             inputArchive.extractMatchingRegexTo( outBuffer, regex, policy );
         }
@@ -348,6 +360,6 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITEXTRACTOR_HPP

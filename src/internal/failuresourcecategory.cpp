@@ -67,19 +67,19 @@ auto FailureSourceCategory::equivalent( const std::error_code& code, int conditi
     switch ( static_cast< BitFailureSource >( condition ) ) {
         case BitFailureSource::CRCError:
             return code == OperationResult::CRCError ||
-                    code == OpenError::CRCError ||
-                    code == OperationResult::CRCErrorEncrypted;
+                   code == OpenError::CRCError ||
+                   code == OperationResult::CRCErrorEncrypted;
         case BitFailureSource::DataAfterEnd:
             return code == OperationResult::DataAfterEnd || code == OpenError::DataAfterEnd;
         case BitFailureSource::DataError:
             return code == OperationResult::DataError ||
-                    code == OpenError::DataError ||
-                    code == OperationResult::DataErrorEncrypted;
+                   code == OpenError::DataError ||
+                   code == OperationResult::DataErrorEncrypted;
         case BitFailureSource::InvalidArchive:
             return code == OperationResult::IsNotArc ||
-                    code == OpenError::IsNotArc ||
-                    code == OpenError::UnconfirmedStart ||
-                    code == BitError::NoMatchingSignature;
+                   code == OpenError::IsNotArc ||
+                   code == OpenError::UnconfirmedStart ||
+                   code == BitError::NoMatchingSignature;
         case BitFailureSource::InvalidArgument:
             return code == std::errc::invalid_argument;
         case BitFailureSource::HeadersError:
@@ -88,15 +88,15 @@ auto FailureSourceCategory::equivalent( const std::error_code& code, int conditi
             return code == BitError::NoMatchingSignature;
         case BitFailureSource::NoSuchItem:
             return code == BitError::NoMatchingItems ||
-                    code == BitError::NoMatchingFile ||
-                    code == std::errc::no_such_file_or_directory;
+                   code == BitError::NoMatchingFile ||
+                   code == std::errc::no_such_file_or_directory;
         case BitFailureSource::OperationNotSupported:
             return code == std::errc::operation_not_supported ||
-                    code == std::errc::not_supported ||
-                    code == std::errc::function_not_supported ||
-                    code == OperationResult::UnsupportedMethod ||
-                    code == OpenError::UnsupportedMethod ||
-                    code == OpenError::UnsupportedFeature;
+                   code == std::errc::not_supported ||
+                   code == std::errc::function_not_supported ||
+                   code == OperationResult::UnsupportedMethod ||
+                   code == OpenError::UnsupportedMethod ||
+                   code == OpenError::UnsupportedFeature;
         case BitFailureSource::OperationNotPermitted:
             return code == std::errc::operation_not_permitted ||
                    code == BitError::ItemPathOutsideOutputDirectory ||
@@ -108,11 +108,11 @@ auto FailureSourceCategory::equivalent( const std::error_code& code, int conditi
             return code == OperationResult::UnexpectedEnd || code == OpenError::UnexpectedEnd;
         case BitFailureSource::WrongPassword:
             return code == OperationResult::WrongPassword ||
-                    code == OperationResult::DataErrorEncrypted ||
-                    code == OperationResult::CRCErrorEncrypted ||
-                    code == OperationResult::OpenErrorEncrypted ||
-                    code == OperationResult::EmptyPassword ||
-                    code == OpenError::EncryptedHeadersError;
+                   code == OperationResult::DataErrorEncrypted ||
+                   code == OperationResult::CRCErrorEncrypted ||
+                   code == OperationResult::OpenErrorEncrypted ||
+                   code == OperationResult::EmptyPassword ||
+                   code == OpenError::EncryptedHeadersError;
         default:
             return false;
     }

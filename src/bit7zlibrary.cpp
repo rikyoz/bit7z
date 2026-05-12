@@ -34,7 +34,7 @@ void Bit7zLibrary::setLargePageMode() {
 }
 
 void Bit7zLibrary::useLargePages() const {
-    using SetLargePageMode = HRESULT ( WINAPI* )();
+    using SetLargePageMode = HRESULT (WINAPI*)();
 
     const auto pSetLargePageMode = mLibrary.getFunction< SetLargePageMode >( "SetLargePageMode" );
     const HRESULT res = pSetLargePageMode();
@@ -43,7 +43,7 @@ void Bit7zLibrary::useLargePages() const {
     }
 }
 
-using CreateObjectFunc = HRESULT ( WINAPI* )( const GUID* clsID, const GUID* interfaceID, void** out );
+using CreateObjectFunc = HRESULT (WINAPI*)( const GUID* clsID, const GUID* interfaceID, void** out );
 
 // Making the code not build when choosing a wrong interface type (only IInArchive and IOutArchive are supported!).
 // Note: use template variables once we drop support to GCC 4.9.

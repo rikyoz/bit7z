@@ -51,6 +51,6 @@ class CFixedBufferOutStream final : public IOutStream, public CMyUnknownImp {
         std::size_t mCurrentPosition;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CFIXEDBUFFEROUTSTREAM_HPP

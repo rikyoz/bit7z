@@ -73,6 +73,6 @@ class OpenCallback final : public IArchiveOpenCallback,
         bool mPasswordWasAsked;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // OPENCALLBACK_HPP

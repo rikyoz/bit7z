@@ -44,9 +44,11 @@ auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutSt
         }
         tmpCandidatePath.replace_extension( BIT7Z_NATIVE_STRING( ".tmp" ) + to_native_string( i ) );
     } while ( true );
-    throw BitException( "Could not allocate a unique temporary file name",
-                        std::make_error_code( std::errc::file_exists ),
-                        path_to_tstring( targetPath ) );
+    throw BitException(
+        "Could not allocate a unique temporary file name",
+        std::make_error_code( std::errc::file_exists ),
+        path_to_tstring( targetPath )
+    );
 }
 } // namespace
 
@@ -72,16 +74,22 @@ void AtomicFileReplacer::commit() {
     /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
      * existing destination file (as it should). So we explicitly remove it before! */
     if ( !fs::remove( mTargetPath, error ) ) {
-        throw BitException( "Failed to delete the old archive file",
-                            error, path_to_tstring( mTargetPath ) );
+        throw BitException(
+            "Failed to delete the old archive file",
+            error,
+            path_to_tstring( mTargetPath )
+        );
     }
 #endif
 
     // Remove the old file and rename the temporary file (move file with overwriting).
     fs::rename( tempPath, mTargetPath, error );
     if ( error ) {
-        throw BitException( "Failed to overwrite the old archive file",
-                            error, path_to_tstring( mTargetPath ) );
+        throw BitException(
+            "Failed to overwrite the old archive file",
+            error,
+            path_to_tstring( mTargetPath )
+        );
     }
 }
 

@@ -25,13 +25,13 @@ namespace {
 // UTF-16 Constants
 constexpr char32_t kHighStart = 0xD800u;
 constexpr char32_t kHighEnd = 0xDBFFu;
-constexpr char32_t kLowStart  = 0xDC00u;
+constexpr char32_t kLowStart = 0xDC00u;
 constexpr char32_t kLowEnd = 0xDFFFu;
 constexpr char32_t kSurrogateShift = 10u;
 constexpr char32_t kSurrogateOffset = 0x35FDC00u;
 
 // Unicode constants
-constexpr char32_t kMaxUnicodeCodepoint = 0x10FFFFu;  // Maximum valid Unicode code-point
+constexpr char32_t kMaxUnicodeCodepoint = 0x10FFFFu; // Maximum valid Unicode code-point
 constexpr char32_t kReplacementChar = 0xFFFDu;
 
 BIT7Z_ALWAYS_INLINE
@@ -53,17 +53,17 @@ constexpr auto isSurrogate( char32_t codepoint ) noexcept -> bool {
 BIT7Z_ALWAYS_INLINE
 void toUtf8( char32_t codepoint, std::string& result ) {
     // Maximum codepoint expressible in N UTF-8 bytes.
-    constexpr char32_t kMaxOneByteUtf8 = 0x007Fu;      // U+0000 ... U+007F
-    constexpr char32_t kMaxTwoBytesUtf8 = 0x07FFu;     // U+0080 ... U+07FF
-    constexpr char32_t kMaxThreeBytesUtf8 = 0xFFFFu;   // U+0800 ... U+FFFF
+    constexpr char32_t kMaxOneByteUtf8 = 0x007Fu; // U+0000 ... U+007F
+    constexpr char32_t kMaxTwoBytesUtf8 = 0x07FFu; // U+0080 ... U+07FF
+    constexpr char32_t kMaxThreeBytesUtf8 = 0xFFFFu; // U+0800 ... U+FFFF
 
     if ( codepoint <= kMaxOneByteUtf8 ) {
         // 1-byte UTF-8: [U+0000, U+007F]
         result.push_back( static_cast< char >( codepoint ) ); // 0xxxxxxx
     } else if ( codepoint <= kMaxTwoBytesUtf8 ) {
         // 2-bytes UTF-8: [U+0080, U+07FF]
-        result.push_back( static_cast< char >( 0xC0u | ( ( codepoint >> 6u ) & 0x1Fu ) ) );  // 110xxxxx
-        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) );           // 10xxxxxx
+        result.push_back( static_cast< char >( 0xC0u | ( ( codepoint >> 6u ) & 0x1Fu ) ) ); // 110xxxxx
+        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) ); // 10xxxxxx
     } else if ( codepoint <= kMaxThreeBytesUtf8 ) {
         // 3-bytes UTF-8: [U+0800, U+FFFF]
         // Note: UTF-16 surrogates are in this range, but we don't need to check for them
@@ -73,14 +73,14 @@ void toUtf8( char32_t codepoint, std::string& result ) {
             return;
         }
         result.push_back( static_cast< char >( 0xE0u | ( ( codepoint >> 12u ) & 0x0Fu ) ) ); // 1110xxxx
-        result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 6u ) & 0x3Fu ) ) );  // 10xxxxxx
-        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) );           // 10xxxxxx
+        result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 6u ) & 0x3Fu ) ) ); // 10xxxxxx
+        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) ); // 10xxxxxx
     } else if ( codepoint <= kMaxUnicodeCodepoint ) {
         // 4-bytes UTF-8: [U+10000, U+10FFFF]
         result.push_back( static_cast< char >( 0xF0u | ( ( codepoint >> 18u ) & 0x07u ) ) ); // 11110xxx
         result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 12u ) & 0x3Fu ) ) ); // 10xxxxxx
-        result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 6u ) & 0x3Fu ) ) );  // 10xxxxxx
-        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) );           // 10xxxxxx
+        result.push_back( static_cast< char >( 0x80u | ( ( codepoint >> 6u ) & 0x3Fu ) ) ); // 10xxxxxx
+        result.push_back( static_cast< char >( 0x80u | ( codepoint & 0x3Fu ) ) ); // 10xxxxxx
     } else if ( !ends_with( result, "\xEF\xBF\xBD" ) ) {
         // TODO: Add option to throw an exception on invalid UTF sequences
         // Invalid code point, use replacement character U+FFFD
@@ -179,7 +179,7 @@ auto decodeCodepoint( std::string::const_iterator& it, const std::string::const_
     // Recreating the codepoint from the UTF-8 byte sequence.
     std::uint32_t codepoint = ( leadingByte & leadMask );
     std::uint8_t index = 1;
-    for (; it != end && index < sequenceSize; ++index ) {
+    for ( ; it != end && index < sequenceSize; ++index ) {
         const auto continuationByte = static_cast< std::uint8_t >( *it++ );
         if ( isInvalidContinuationByte( continuationByte ) ) {
             --it;
@@ -219,27 +219,31 @@ auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string {
         return {};
     }
 #ifdef _WIN32
-    const int narrowStringSize = WideCharToMultiByte( codePage,
-                                                      kCodePageWcFlags,
-                                                      wideString,
-                                                      static_cast< int >( size ),
-                                                      nullptr,
-                                                      0,
-                                                      nullptr,
-                                                      nullptr );
+    const int narrowStringSize = WideCharToMultiByte(
+        codePage,
+        kCodePageWcFlags,
+        wideString,
+        static_cast< int >( size ),
+        nullptr,
+        0,
+        nullptr,
+        nullptr
+    );
     if ( narrowStringSize == 0 ) {
         return "";
     }
 
     std::string result( static_cast< std::string::size_type >( narrowStringSize ), 0 );
-    WideCharToMultiByte( codePage,
-                         kCodePageWcFlags,
-                         wideString,
-                         -1,
-                         &result[ 0 ], // NOLINT(readability-container-data-pointer, *-avoid-unchecked-container-access)
-                         static_cast< int >( narrowStringSize ),
-                         nullptr,
-                         nullptr );
+    WideCharToMultiByte(
+        codePage,
+        kCodePageWcFlags,
+        wideString,
+        -1,
+        &result[ 0 ], // NOLINT(readability-container-data-pointer, *-avoid-unchecked-container-access)
+        static_cast< int >( narrowStringSize ),
+        nullptr,
+        nullptr
+    );
     return result;
 #else
     // Note: this function supports wide strings containing a mix of UTF-16 and UTF-32 code units.
@@ -257,23 +261,27 @@ auto narrow( const wchar_t* wideString, std::size_t size ) -> std::string {
 auto widen( const std::string& narrowString ) -> std::wstring {
 #ifdef _WIN32
     const int narrowStringSize = static_cast< int >( narrowString.size() );
-    const int wideStringSize = MultiByteToWideChar( kDefaultCodePage,
-                                                    0,
-                                                    narrowString.c_str(),
-                                                    narrowStringSize,
-                                                    nullptr,
-                                                    0 );
+    const int wideStringSize = MultiByteToWideChar(
+        kDefaultCodePage,
+        0,
+        narrowString.c_str(),
+        narrowStringSize,
+        nullptr,
+        0
+    );
     if ( wideStringSize == 0 ) {
         return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.
     }
 
     std::wstring result( static_cast< std::wstring::size_type >( wideStringSize ), 0 );
-    MultiByteToWideChar( kDefaultCodePage,
-                         0,
-                         narrowString.c_str(),
-                         narrowStringSize,
-                         &result[ 0 ], // NOLINT(readability-container-data-pointer, *-avoid-unchecked-container-access)
-                         wideStringSize );
+    MultiByteToWideChar(
+        kDefaultCodePage,
+        0,
+        narrowString.c_str(),
+        narrowStringSize,
+        &result[ 0 ], // NOLINT(readability-container-data-pointer, *-avoid-unchecked-container-access)
+        wideStringSize
+    );
     return result;
 #else
     std::wstring result;

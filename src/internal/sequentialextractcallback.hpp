@@ -44,6 +44,6 @@ class SequentialExtractCallback final : public ExtractCallback {
         auto getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // SEQUENTIALEXTRACTCALLBACK_HPP

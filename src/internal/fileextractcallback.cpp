@@ -28,15 +28,16 @@ using namespace NWindows;
 
 namespace bit7z {
 
-FileExtractCallback::FileExtractCallback( const BitInputArchive& inputArchive,
-                                          const tstring& directoryPath,
-                                          FilterCallback filterCallback,
-                                          RenameCallback renameCallback )
-    : ExtractCallback( inputArchive, std::move( filterCallback ) ),
-      mOutPathBuilder( directoryPath ),
-      mRetainDirectories( inputArchive.handler().retainDirectories() ),
-      mRenameCallback{ std::move( renameCallback ) },
-      mExtractionAttempted{ false } {}
+FileExtractCallback::FileExtractCallback(
+    const BitInputArchive& inputArchive,
+    const tstring& directoryPath,
+    FilterCallback filterCallback,
+    RenameCallback renameCallback
+) : ExtractCallback( inputArchive, std::move( filterCallback ) ),
+    mOutPathBuilder( directoryPath ),
+    mRetainDirectories( inputArchive.handler().retainDirectories() ),
+    mRenameCallback{ std::move( renameCallback ) },
+    mExtractionAttempted{ false } {}
 
 auto FileExtractCallback::extractionAttempted() const -> bool {
     return mExtractionAttempted;
@@ -81,7 +82,6 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
     return result;
 }
 
-
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
 auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
@@ -125,9 +125,11 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
 
             switch ( overwriteMode ) {
                 case OverwriteMode::None: {
-                    throw BitException( kCannotDeleteOutput,
-                                        make_hresult_code( E_ABORT ),
-                                        path_to_tstring( mFilePathOnDisk ) );
+                    throw BitException(
+                        kCannotDeleteOutput,
+                        make_hresult_code( E_ABORT ),
+                        path_to_tstring( mFilePathOnDisk )
+                    );
                 }
                 case OverwriteMode::Skip: {
                     return S_OK;

@@ -26,12 +26,13 @@
 
 namespace bit7z {
 
-BufferExtractCallback::BufferExtractCallback( const BitInputArchive& inputArchive,
-                                              BufferCallback callback,
-                                              FilterCallback filterCallback )
-    : ExtractCallback( inputArchive, std::move( filterCallback ) ),
-      mBufferCallback{ std::move( callback ) },
-      mExtractionAttempted{ false } {}
+BufferExtractCallback::BufferExtractCallback(
+    const BitInputArchive& inputArchive,
+    BufferCallback callback,
+    FilterCallback filterCallback
+) : ExtractCallback( inputArchive, std::move( filterCallback ) ),
+    mBufferCallback{ std::move( callback ) },
+    mExtractionAttempted{ false } {}
 
 auto BufferExtractCallback::extractionAttempted() const -> bool {
     return mExtractionAttempted;
@@ -88,7 +89,7 @@ auto BufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStr
     *outStream = outStreamLoc.Detach();
     mExtractionAttempted = true;
     return S_OK;
-} catch( const BitException& ex ) {
+} catch ( const BitException& ex ) {
     return ex.hresultCode();
 }
 

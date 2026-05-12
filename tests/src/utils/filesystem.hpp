@@ -82,7 +82,7 @@ inline auto getenv( const wchar_t* name ) -> std::wstring {
 
     std::wstring result( requiredSize, L'\0' );
     // NOLINTNEXTLINE(*-container-data-pointer, *-pro-bounds-avoid-unchecked-container-access)
-    _wgetenv_s( &requiredSize, &result[0], requiredSize, name );
+    _wgetenv_s( &requiredSize, &result[ 0 ], requiredSize, name );
     return result;
 }
 #endif
@@ -90,17 +90,17 @@ inline auto getenv( const wchar_t* name ) -> std::wstring {
 inline auto user_dir() -> fs::path {
 #ifdef _WIN32
     auto userProfile = getenv( L"USERPROFILE" );
-    if (!userProfile.empty()) {
+    if ( !userProfile.empty() ) {
         return std::move( userProfile );
     }
 
     auto homeDrive = getenv( L"HOMEDRIVE" );
-    if (homeDrive.empty()) {
+    if ( homeDrive.empty() ) {
         return {};
     }
 
     auto homePath = getenv( L"HOMEPATH" );
-    if (homePath.empty()) {
+    if ( homePath.empty() ) {
         return {};
     }
 
@@ -134,18 +134,18 @@ inline auto load_file( fs::path const& inFile ) -> buffer_t {
     auto size = fs::file_size( inFile );
     buffer_t result( size );
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
-    ifs.read( reinterpret_cast<char*>( result.data() ), result.cend() - result.cbegin() );
+    ifs.read( reinterpret_cast< char* >( result.data() ), result.cend() - result.cbegin() );
     //note: using basic_ifstream with istreambuf_iterator<std::byte> would be cleaner, but it is 10x slower.
     return result;
 }
 
 #define REQUIRE_LOAD_FILE( var, in_file ) \
-    const auto (var) = load_file( in_file ); \
-    REQUIRE_FALSE( (var).empty() )
+const auto (var) = load_file( in_file ); \
+REQUIRE_FALSE( (var).empty() )
 
 #define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
-    fs::ifstream (var){ in_file, std::ios::binary }; \
-    REQUIRE( (var).is_open() )
+fs::ifstream (var){ in_file, std::ios::binary }; \
+REQUIRE( (var).is_open() )
 
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder

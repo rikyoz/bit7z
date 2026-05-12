@@ -55,10 +55,11 @@ class BitIndicesView final {
         /* implicit */ constexpr BitIndicesView( element_type (&indices)[ N ] ) noexcept
             : BitIndicesView{ static_cast< const_pointer >( indices ), N } {}
 
-        template< typename U,
-                  std::size_t N,
-                  typename = typename std::enable_if< std::is_convertible<
-                      U(*)[ ], element_type(*)[ ] >::value >::type >
+        template<
+            typename U,
+            std::size_t N,
+            typename = typename std::enable_if< std::is_convertible< U(*)[ ], element_type(*)[ ] >::value >::type
+        >
         /* implicit */ constexpr BitIndicesView( const std::array< U, N >& indices ) noexcept
             : BitIndicesView{ indices.data(), indices.size() } {}
 

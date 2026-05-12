@@ -45,6 +45,6 @@ class CVolumeOutStream final : public CFileOutStream {
         fs::path mVolumePath;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //CVOLUMEOUTSTREAM_HPP

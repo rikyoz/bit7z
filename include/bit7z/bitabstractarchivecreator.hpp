@@ -37,7 +37,7 @@ class ArchiveProperties;
  * @brief Enumeration representing how an archive creator should deal when the output archive already exists.
  */
 enum struct UpdateMode {
-    None, ///< The creator will throw an exception (unless the OverwriteMode is not None).
+    None,   ///< The creator will throw an exception (unless the OverwriteMode is not None).
     Append, ///< The creator will append the new items to the existing archive.
     Update, ///< New items whose path already exists in the archive will overwrite the old ones, other will be appended.
     BIT7Z_DEPRECATED_ENUMERATOR( Overwrite, Update, "Since v4.0. Please use the UpdateMode::Update enumerator." ) ///< @deprecated since v4.0; please use the UpdateMode::Update enumerator.
@@ -296,7 +296,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @param value The value to be used for the property.
          */
         template< std::size_t N, typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
-        void setFormatProperty( const wchar_t (&name)[N], T value ) noexcept { // NOLINT(*-avoid-c-arrays)
+        void setFormatProperty( const wchar_t (&name)[ N ], T value ) noexcept { // NOLINT(*-avoid-c-arrays)
             mExtraProperties[ name ] = value;
         }
 
@@ -313,15 +313,17 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * @param value The value to be used for the property.
          */
         template< std::size_t N, typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
-        void setFormatProperty( const wchar_t (&name)[N], const T& value ) noexcept { // NOLINT(*-avoid-c-arrays)
+        void setFormatProperty( const wchar_t (&name)[ N ], const T& value ) noexcept { // NOLINT(*-avoid-c-arrays)
             mExtraProperties[ name ] = value;
         }
 
     protected:
-        BitAbstractArchiveCreator( const Bit7zLibrary& lib,
-                                   const BitInOutFormat& format,
-                                   tstring password = {},
-                                   UpdateMode updateMode = UpdateMode::None );
+        BitAbstractArchiveCreator(
+            const Bit7zLibrary& lib,
+            const BitInOutFormat& format,
+            tstring password = {},
+            UpdateMode updateMode = UpdateMode::None
+        );
 
         BIT7Z_NODISCARD auto archiveProperties() const -> ArchiveProperties;
 
@@ -343,6 +345,6 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITABSTRACTARCHIVECREATOR_HPP

@@ -23,17 +23,6 @@
 namespace bit7z {
 
 class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
-        std::uint64_t mAbsolutePosition;
-        std::uint64_t mTotalSize;
-        VolumesCache< CFileInStream, EvictionPolicy::Oldest > mVolumes;
-        std::size_t mLastOpenedVolume = kNoVolume;
-
-        auto currentVolume() -> CachedVolume< CFileInStream >&;
-
-        void ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex );
-
-        void addVolume( const fs::path& volumePath );
-
     public:
         explicit CMultiVolumeInStream( const fs::path& firstVolume );
 
@@ -54,6 +43,18 @@ class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
 
         // NOLINTNEXTLINE(modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
+
+    private:
+        std::uint64_t mAbsolutePosition;
+        std::uint64_t mTotalSize;
+        VolumesCache< CFileInStream, EvictionPolicy::Oldest > mVolumes;
+        std::size_t mLastOpenedVolume = kNoVolume;
+
+        auto currentVolume() -> CachedVolume< CFileInStream >&;
+
+        void ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex );
+
+        void addVolume( const fs::path& volumePath );
 };
 
 } // namespace bit7z

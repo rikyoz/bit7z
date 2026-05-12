@@ -34,14 +34,9 @@ using handle_t = int;
  * @brief Enumeration defining the origin of a seek operation.
  */
 enum struct SeekOrigin : std::int8_t {
-    /** Set the file pointer at the given offset from the beginning of the file. */
-    Begin = SEEK_SET,
-
-    /** Set the file pointer at the given offset from the current file pointer position. */
-    CurrentPosition = SEEK_CUR,
-
-    /** Set the file pointer at the given offset from the end of the file. */
-    End = SEEK_END
+    Begin = SEEK_SET,           ///< Set the file pointer at the given offset from the beginning of the file.
+    CurrentPosition = SEEK_CUR, ///< Set the file pointer at the given offset from the current file pointer position.
+    End = SEEK_END              ///< Set the file pointer at the given offset from the end of the file.
 };
 
 #ifdef _WIN32
@@ -53,13 +48,13 @@ enum struct SeekOrigin : std::int8_t {
  *   - ReadWrite → Open a file for both reading and writing.
  */
 enum struct AccessFlag : std::uint32_t {
-    ReadOnly = GENERIC_READ,
+    ReadOnly  = GENERIC_READ,
     WriteOnly = GENERIC_WRITE,
     ReadWrite = GENERIC_READ | GENERIC_WRITE
 };
 #else
 enum struct AccessFlag : std::uint8_t {
-    ReadOnly = O_RDONLY,
+    ReadOnly  = O_RDONLY,
     WriteOnly = O_WRONLY,
     ReadWrite = O_RDWR
 };
@@ -70,39 +65,34 @@ enum struct AccessFlag : std::uint8_t {
  */
 #ifdef _WIN32
 enum struct FileFlag : std::uint8_t {
-    Existing         = OPEN_EXISTING,    ///< Open an existing file; fail if it does not exist.
-    TruncateExisting = TRUNCATE_EXISTING, ///< Truncate an existing file to zero bytes; fail if it does not exist.
-    CreateNew        = CREATE_NEW,        ///< Create a new file; fail if it already exists.
-    OpenAlways       = OPEN_ALWAYS,       ///< Open a file if it exists, or create it if it does not.
-    CreateAlways     = CREATE_ALWAYS      ///< Create a file, truncating it if it already exists.
+    Existing         = OPEN_EXISTING,       ///< Open an existing file; fail if it does not exist.
+    TruncateExisting = TRUNCATE_EXISTING,   ///< Truncate an existing file to zero bytes; fail if it does not exist.
+    CreateNew        = CREATE_NEW,          ///< Create a new file; fail if it already exists.
+    OpenAlways       = OPEN_ALWAYS,         ///< Open a file if it exists, or create it if it does not.
+    CreateAlways     = CREATE_ALWAYS        ///< Create a file, truncating it if it already exists.
 };
 #else
 enum struct FileFlag : std::uint16_t {
-    Existing         = 0,               ///< Open an existing file; fail if it does not exist.
-    TruncateExisting = O_TRUNC,          ///< Truncate an existing file to zero bytes; fail if it does not exist.
-    CreateNew        = O_CREAT | O_EXCL, ///< Create a new file; fail if it already exists.
-    OpenAlways       = O_CREAT,          ///< Open a file if it exists, or create it if it does not.
-    CreateAlways     = O_CREAT | O_TRUNC ///< Create a file, truncating it if it already exists.
+    Existing         = 0,                   ///< Open an existing file; fail if it does not exist.
+    TruncateExisting = O_TRUNC,             ///< Truncate an existing file to zero bytes; fail if it does not exist.
+    CreateNew        = O_CREAT | O_EXCL,    ///< Create a new file; fail if it already exists.
+    OpenAlways       = O_CREAT,             ///< Open a file if it exists, or create it if it does not.
+    CreateAlways     = O_CREAT | O_TRUNC    ///< Create a file, truncating it if it already exists.
 };
 #endif
 
 /**
  * @brief Enumeration of additional open-time flags, designed as a bitmask.
- *
- *   - None → No extra flag.
- *   - NoFollow → Fail the open if the final path component is a symbolic link
- *                (O_NOFOLLOW on Unix; emulated on Windows via FILE_FLAG_OPEN_REPARSE_POINT
- *                plus a post-open reparse-tag check).
  */
 #ifdef _WIN32
 enum struct ExtraFlag : std::uint8_t {
-    None = 0,
-    NoFollow = 0x1 // Semantic bit; translated to Win32 in open_file.
+    None     = 0,   ///< No extra flag.
+    NoFollow = 0x1  ///< Semantic bit; O_NOFOLLOW on Unix; emulated on Windows.
 };
 #else
 enum struct ExtraFlag : std::uint32_t {
-    None = 0,
-    NoFollow = O_NOFOLLOW
+    None     = 0,           ///< No extra flag.
+    NoFollow = O_NOFOLLOW   ///< Fail the open if the final path component is a symbolic link.
 };
 #endif
 
@@ -128,6 +118,7 @@ struct OpenFlags {
     FileFlag fileFlag;
     ExtraFlag extraFlag;
 #else
+
     private:
         std::uint32_t mValue;
 
@@ -164,9 +155,11 @@ class FileHandle {
 };
 
 struct OutputFile final : FileHandle {
-    explicit OutputFile( const native_string& filePath,
-                         FileFlag fileFlag,
-                         ExtraFlag extraFlag = ExtraFlag::NoFollow );
+    explicit OutputFile(
+        const native_string& filePath,
+        FileFlag fileFlag,
+        ExtraFlag extraFlag = ExtraFlag::NoFollow
+    );
 
     auto write( const void* data, std::uint32_t size, std::uint32_t& processedSize ) const noexcept -> HRESULT;
 

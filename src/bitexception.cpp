@@ -35,7 +35,9 @@ auto last_error_code() noexcept -> std::error_code {
 }
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
-    : std::system_error( code, message ), mFailedFiles( std::move( files ) ) { files.clear(); }
+    : std::system_error( code, message ), mFailedFiles( std::move( files ) ) {
+    files.clear();
+}
 
 BitException::BitException( const char* const message, std::error_code code, tstring&& file )
     : std::system_error( code, message ), mFailedFiles{ std::make_pair( std::move( file ), code ) } {}

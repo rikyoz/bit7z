@@ -31,7 +31,7 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( std::uint64_t volSize, fs::path ar
       mAbsolutePosition( 0 ),
       mTotalSize( 0 ) {}
 
-auto CMultiVolumeOutStream::currentVolume() -> CachedVolume<CFileOutStream>& {
+auto CMultiVolumeOutStream::currentVolume() -> CachedVolume< CFileOutStream >& {
     const auto volumeIndex = static_cast< std::size_t >( mAbsolutePosition / mMaxVolumeSize );
 
     for ( auto newVolumeIndex = mVolumes.size(); newVolumeIndex <= volumeIndex; ++newVolumeIndex ) {
@@ -67,7 +67,7 @@ auto CMultiVolumeOutStream::currentVolume() -> CachedVolume<CFileOutStream>& {
 
 void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex ) {
 #ifdef _WIN32
-    (void)volumeIndex;
+    ( void )volumeIndex;
     if ( cachedVolume.stream == nullptr ) {
         cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), FileFlag::CreateNew );
     }

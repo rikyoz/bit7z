@@ -47,6 +47,6 @@ class Callback : protected CMyUnknownImp {
         const BitAbstractArchiveHandler& mHandler;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CALLBACK_HPP

@@ -106,7 +106,8 @@ try {
     return ex.hresultCode();
 } catch ( const std::runtime_error& ) {
     mErrorException = std::make_exception_ptr(
-        BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) ) );
+        BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) )
+    );
     return E_ABORT;
 }
 

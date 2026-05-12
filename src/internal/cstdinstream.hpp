@@ -46,6 +46,6 @@ class CStdInStream final : public IInStream, public CMyUnknownImp {
         std::istream& mInputStream;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CSTDINSTREAM_HPP

@@ -22,4 +22,3 @@
 #include "bitstreamextractor.hpp"
 
 #endif // BIT7Z_HPP
-

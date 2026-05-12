@@ -27,6 +27,6 @@ struct InternalCategory final : std::error_category {
 
 auto internal_category() noexcept -> const std::error_category&;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //INTERNALCATEGORY_HPP

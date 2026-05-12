@@ -151,7 +151,7 @@ enum struct BitPropVariantType : std::uint32_t {
 /**
  * @brief The BitPropVariant struct is a light extension to the WinAPI PROPVARIANT struct providing useful getters.
  */
-struct BitPropVariant final : public PROPVARIANT {
+struct BitPropVariant final : PROPVARIANT {
         /**
          * @brief Constructs an empty BitPropVariant object.
          */
@@ -462,6 +462,6 @@ auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept
 
 auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITPROPVARIANT_HPP

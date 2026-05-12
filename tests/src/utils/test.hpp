@@ -57,9 +57,9 @@ class CasePermutationGenerator : public Catch::Generators::IGenerator< StringTyp
             }
 
             if ( mask & ( 1ULL << i ) ) {
-                out[i] = std::toupper( str[i], classicLocale );
+                out[ i ] = std::toupper( str[ i ], classicLocale );
             } else {
-                out[i] = std::tolower( str[i], classicLocale );
+                out[ i ] = std::tolower( str[ i ], classicLocale );
             }
         }
         return out;

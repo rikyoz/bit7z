@@ -29,7 +29,7 @@ Bit7zLibraryLoader::~Bit7zLibraryLoader() {
 
 void Bit7zLibraryLoader::load( const tstring& libraryPath ) {
     unload();
-    new ( &mLibrary ) Bit7zLibrary{ libraryPath }; // NOLINT(*-pro-type-union-access)
+    new( &mLibrary ) Bit7zLibrary{ libraryPath }; // NOLINT(*-pro-type-union-access)
     mLoaded = true;
 }
 
@@ -38,7 +38,7 @@ void Bit7zLibraryLoader::load( const tstring& libraryPath, std::error_code& ec )
     ec.clear();
 } catch ( const std::system_error& ex ) {
     ec = ex.code();
-} catch (...) {
+} catch ( ... ) {
     ec = make_error_code( BitError::Fail );
 }
 

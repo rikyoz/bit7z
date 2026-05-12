@@ -53,7 +53,7 @@ BitSharedLibrary::~BitSharedLibrary() {
 
 auto BitSharedLibrary::getSymbol( const char* symbolName ) const -> LibrarySymbol {
     auto* const symbol = GetProcAddress( mLibrary, symbolName );
-    if ( symbol  == nullptr ) {
+    if ( symbol == nullptr ) {
         throw BitException( "Failed to get the function symbol", ERROR_CODE( std::errc::invalid_seek ) );
     }
     return symbol;

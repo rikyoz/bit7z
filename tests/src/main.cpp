@@ -21,7 +21,7 @@
 #include "utils/flags.hpp"
 #include "utils/shared_lib.hpp"
 
-auto main( int argc, char* argv[] ) -> int try {
+auto main( int argc, char* argv[ ] ) -> int try {
     using namespace bit7z::test;
 
     std::clog << "[Compiler]\n";
@@ -72,6 +72,6 @@ auto main( int argc, char* argv[] ) -> int try {
     std::clog.flush();
 
     return Catch::Session().run( argc, argv );
-} catch( ... ) {
+} catch ( ... ) {
     return EXIT_FAILURE;
 }

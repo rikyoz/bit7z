@@ -75,7 +75,7 @@ auto AllocStringBuffer( LPCSTR str, std::uint32_t byteLength ) -> BSTR {
 
     // The actual BSTR must point after the byteLength prefix.
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, cppcoreguidelines-pro-type-reinterpret-cast)
-    auto *const result = reinterpret_cast< BSTR >( bstrBuffer + 1 );
+    auto* const result = reinterpret_cast< BSTR >( bstrBuffer + 1 );
     if ( str != nullptr ) {
         // Copying byte-by-byte the input string to the BSTR.
         // Note: flawfinder warns about not checking for buffer overflows; this is a false alarm,

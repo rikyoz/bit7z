@@ -27,6 +27,6 @@ struct OpenCategory final : std::error_category {
 
 auto open_category() noexcept -> const std::error_category&;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //OPENCATEGORY_HPP

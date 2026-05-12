@@ -65,14 +65,16 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param outFile      the path (relative or absolute) to the output archive file.
          * @param inputName    (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input inFile,
-                           const tstring& outFile,
-                           const tstring& inputName = {} ) const {
+        void compressFile(
+            Input inFile,
+            const tstring& outFile,
+            const tstring& inputName = {}
+        ) const {
             /* Note: if inFile is a filesystem path (i.e., its type is const tstring&), we can deduce the archived
              * item filename using the original filename. Otherwise, if the user didn't specify the input file name,
              * we use the filename (without extension) of the output file path. */
             tstring name;
-            BIT7Z_IF_CONSTEXPR( !std::is_same< Input, const tstring& >::value ) {
+            BIT7Z_IF_CONSTEXPR ( !std::is_same< Input, const tstring& >::value ) {
                 name = inputName.empty() ? filesystem::fsutil::stem( outFile ) : inputName;
             }
 
@@ -88,9 +90,11 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param outBuffer  the buffer going to contain the output archive.
          * @param inputName  (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input inFile,
-                           buffer_t& outBuffer,
-                           const tstring& inputName = {} ) const {
+        void compressFile(
+            Input inFile,
+            buffer_t& outBuffer,
+            const tstring& inputName = {}
+        ) const {
             BitOutputArchive outputArchive{ *this, outBuffer };
             outputArchive.addFile( inFile, inputName );
             outputArchive.compressTo( outBuffer );
@@ -103,15 +107,17 @@ class BitCompressor : public BitAbstractArchiveCreator {
          * @param outStream  the output stream.
          * @param inputName  (optional) the name to give to the compressed file inside the output archive.
          */
-        void compressFile( Input inFile,
-                           std::ostream& outStream,
-                           const tstring& inputName = {} ) const {
+        void compressFile(
+            Input inFile,
+            std::ostream& outStream,
+            const tstring& inputName = {}
+        ) const {
             BitOutputArchive outputArchive{ *this };
             outputArchive.addFile( inFile, inputName );
             outputArchive.compressTo( outStream );
         }
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITCOMPRESSOR_HPP

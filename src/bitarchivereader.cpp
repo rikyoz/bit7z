@@ -34,57 +34,65 @@
 
 namespace bit7z {
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const tstring& inArchive,
-                                    ArchiveStartOffset archiveStart,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const tstring& inArchive,
+    ArchiveStartOffset archiveStart,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const tstring& inArchive,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const tstring& inArchive,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const buffer_t& inArchive,
-                                    ArchiveStartOffset archiveStart,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const buffer_t& inArchive,
+    ArchiveStartOffset archiveStart,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const buffer_t& inArchive,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const buffer_t& inArchive,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    std::istream& inArchive,
-                                    ArchiveStartOffset archiveStart,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    std::istream& inArchive,
+    ArchiveStartOffset archiveStart,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive, archiveStart ) {}
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    std::istream& inArchive,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    std::istream& inArchive,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener( lib, format, password ), BitInputArchive( *this, inArchive ) {}
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const BitInputArchive& inArchive,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive } {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& inArchive,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive } {}
 
-BitArchiveReader::BitArchiveReader( const Bit7zLibrary& lib,
-                                    const BitInputArchive& inArchive,
-                                    std::uint32_t subfileIndex,
-                                    const BitInFormat& format,
-                                    const tstring& password )
-    : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive, subfileIndex } {}
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& inArchive,
+    std::uint32_t subfileIndex,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive, subfileIndex } {}
 
 auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPropVariant > {
     std::map< BitProperty, BitPropVariant > result;
@@ -116,7 +124,7 @@ auto BitArchiveReader::itemsMatching( const tstring& pattern ) const -> std::vec
     std::vector< BitArchiveItemInfo > result;
     result.reserve( static_cast< std::size_t >( count ) );
     for ( const auto& item : *this ) {
-        if ( !filesystem::fsutil::wildcard_match( pattern, item.path()) ) {
+        if ( !filesystem::fsutil::wildcard_match( pattern, item.path() ) ) {
             continue;
         }
         result.emplace_back( item );
@@ -125,9 +133,13 @@ auto BitArchiveReader::itemsMatching( const tstring& pattern ) const -> std::vec
 }
 
 auto BitArchiveReader::foldersCount() const -> std::uint32_t {
-    return std::count_if( cbegin(), cend(), []( const BitArchiveItem& item ) -> bool {
-        return item.isDir();
-    } );
+    return std::count_if(
+        cbegin(),
+        cend(),
+        [] ( const BitArchiveItem& item ) -> bool {
+            return item.isDir();
+        }
+    );
 }
 
 auto BitArchiveReader::filesCount() const -> std::uint32_t {
@@ -135,32 +147,50 @@ auto BitArchiveReader::filesCount() const -> std::uint32_t {
 }
 
 auto BitArchiveReader::size() const -> std::uint64_t {
-    return std::accumulate( cbegin(), cend(), 0ull, []( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
-        return item.isDir() ? accumulator : accumulator + item.size();
-    } );
+    return std::accumulate(
+        cbegin(),
+        cend(),
+        0ull,
+        [] ( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
+            return item.isDir() ? accumulator : accumulator + item.size();
+        }
+    );
 }
 
 auto BitArchiveReader::packSize() const -> std::uint64_t {
-    return std::accumulate( cbegin(), cend(), 0ull, []( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
-        return item.isDir() ? accumulator : accumulator + item.packSize();
-    } );
+    return std::accumulate(
+        cbegin(),
+        cend(),
+        0ull,
+        [] ( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
+            return item.isDir() ? accumulator : accumulator + item.packSize();
+        }
+    );
 }
 
 auto BitArchiveReader::hasEncryptedItems() const -> bool {
     /* Note: simple encryption (i.e., not including the archive headers) can be detected only reading
      *       the properties of the files in the archive, so we search for any encrypted file inside the archive. */
-    return std::any_of( cbegin(), cend(), []( const BitArchiveItem& item ) -> bool {
-        return !item.isDir() && item.isEncrypted();
-    } );
+    return std::any_of(
+        cbegin(),
+        cend(),
+        [] ( const BitArchiveItem& item ) -> bool {
+            return !item.isDir() && item.isEncrypted();
+        }
+    );
 }
 
 auto BitArchiveReader::isEncrypted() const -> bool {
     if ( filesCount() == 0 ) {
         return false;
     }
-    return std::all_of( cbegin(), cend(), []( const BitArchiveItem& item ) {
-        return item.isDir() || item.isEncrypted();
-    } );
+    return std::all_of(
+        cbegin(),
+        cend(),
+        [] ( const BitArchiveItem& item ) {
+            return item.isDir() || item.isEncrypted();
+        }
+    );
 }
 
 auto BitArchiveReader::isMultiVolume() const -> bool {

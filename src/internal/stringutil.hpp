@@ -71,7 +71,7 @@ auto ends_with( const std::basic_string< CharT >& str, const std::basic_string< 
 
 template< typename CharT, std::size_t N >
 // NOLINTNEXTLINE(*-avoid-c-arrays)
-auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[N] ) noexcept -> bool {
+auto ends_with( const std::basic_string< CharT >& str, const CharT (&suffix)[ N ] ) noexcept -> bool {
     // Note: the suffix C array has a null termination character.
     constexpr auto suffixSize = N - 1;
     return str.size() >= suffixSize &&

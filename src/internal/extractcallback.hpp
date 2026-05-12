@@ -36,8 +36,8 @@ constexpr auto kEmptyFileWideAlias = L"[Content]";
 
 enum struct ExtractMode {
     Extract = NAskMode::kExtract,
-    Test = NAskMode::kTest,
-    Skip = NAskMode::kSkip
+    Test    = NAskMode::kTest,
+    Skip    = NAskMode::kSkip
 };
 
 class ExtractCallback : public Callback,
@@ -78,7 +78,7 @@ class ExtractCallback : public Callback,
         auto errorException() const -> const std::exception_ptr&;
 
         BIT7Z_NODISCARD
-        virtual auto extractionAttempted() const -> bool ;
+        virtual auto extractionAttempted() const -> bool;
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
         MY_UNKNOWN_IMP3( IArchiveExtractCallback, ICompressProgressInfo, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835 //-V3504
@@ -112,6 +112,6 @@ class ExtractCallback : public Callback,
         FilterCallback mFilterCallback;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // EXTRACTCALLBACK_HPP

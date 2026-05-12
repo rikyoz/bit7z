@@ -25,6 +25,6 @@ enum struct BitCompressionMethod {
     Ppmd
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITCOMPRESSIONMETHOD_HPP

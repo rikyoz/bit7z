@@ -51,10 +51,12 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param format   the input/output archive format.
          * @param password (optional) the password needed to read the input archive.
          */
-        BitArchiveEditor( const Bit7zLibrary& lib,
-                          const tstring& inFile,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveEditor(
+            const Bit7zLibrary& lib,
+            const tstring& inFile,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         BitArchiveEditor( const BitArchiveEditor& ) = delete;
 
@@ -206,6 +208,6 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         void setEditedItem( std::uint32_t index, BitInputItem&& item );
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITARCHIVEEDITOR_HPP

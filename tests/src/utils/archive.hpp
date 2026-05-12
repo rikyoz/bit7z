@@ -31,9 +31,6 @@ using filesystem::ArchiveContent;
 using filesystem::ExpectedItem;
 
 class TestArchiveContent {
-        std::size_t mPackedSize;
-        const ArchiveContent& mContent;
-
     public:
         TestArchiveContent( std::size_t packedSize, const ArchiveContent& content )
             : mPackedSize{ packedSize }, mContent{ content } {}
@@ -47,20 +44,23 @@ class TestArchiveContent {
         auto content() const -> const ArchiveContent& {
             return mContent;
         }
+
+    private:
+        std::size_t mPackedSize;
+        const ArchiveContent& mContent;
 };
 
 template< typename TestFormatType >
 class TestArchive : public TestArchiveContent {
-        TestFormatType mFormat;
-
     public:
         using FormatType = typename TestFormatType::Type;
 
-        TestArchive( std::string extension,
-                     const FormatType& format,
-                     std::size_t packedSize,
-                     const ArchiveContent& content )
-            : TestArchiveContent{ packedSize, content }, mFormat{ std::move( extension ), format } {}
+        TestArchive(
+            std::string extension,
+            const FormatType& format,
+            std::size_t packedSize,
+            const ArchiveContent& content
+        ) : TestArchiveContent{ packedSize, content }, mFormat{ std::move( extension ), format } {}
 
         BIT7Z_NODISCARD
         auto format() const -> const FormatType& {
@@ -71,6 +71,10 @@ class TestArchive : public TestArchiveContent {
         auto extension() const -> const std::string& {
             return mFormat.extension;
         }
+
+    private:
+        TestFormatType mFormat;
+
 };
 
 using TestInputArchive = TestArchive< TestInputFormat >;
@@ -94,20 +98,24 @@ inline void getInputArchive( const fs::path& path, stream_t& archive ) {
 template< typename T >
 using is_filesystem_archive = std::is_same< bit7z::tstring, typename std::decay< T >::type >;
 
-void require_archive_item( const BitInFormat& format,
-                           const BitArchiveItem& item,
-                           const ExpectedItem& expectedItem,
-                           const SourceLocation& location );
+void require_archive_item(
+    const BitInFormat& format,
+    const BitArchiveItem& item,
+    const ExpectedItem& expectedItem,
+    const SourceLocation& location
+);
 
 #define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem ) \
-    require_archive_item( format, item, expectedItem, BIT7Z_CURRENT_LOCATION )
+require_archive_item( format, item, expectedItem, BIT7Z_CURRENT_LOCATION )
 
-void require_archive_content( const BitArchiveReader& info,
-                              const TestArchiveContent& input,
-                              const SourceLocation& location );
+void require_archive_content(
+    const BitArchiveReader& info,
+    const TestArchiveContent& input,
+    const SourceLocation& location
+);
 
 #define REQUIRE_ARCHIVE_CONTENT( info, input ) \
-    require_archive_content( info, input, BIT7Z_CURRENT_LOCATION )
+require_archive_content( info, input, BIT7Z_CURRENT_LOCATION )
 
 void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location );
 

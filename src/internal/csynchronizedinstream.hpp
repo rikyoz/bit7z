@@ -26,9 +26,11 @@ namespace bit7z {
 
 class CSynchronizedInStream final : public ISequentialInStream, public CMyUnknownImp {
     public:
-        explicit CSynchronizedInStream( std::uint64_t maxMemoryUsage,
-                                        const BitInputArchive& parentArchive,
-                                        std::uint32_t index );
+        explicit CSynchronizedInStream(
+            std::uint64_t maxMemoryUsage,
+            const BitInputArchive& parentArchive,
+            std::uint32_t index
+        );
 
         explicit CSynchronizedInStream( const CSynchronizedInStream& ) = delete;
 

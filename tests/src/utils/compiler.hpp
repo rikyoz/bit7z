@@ -25,7 +25,7 @@ namespace compiler {
 // Compiler name and version
 #if defined( __clang__ )
 constexpr auto name = "clang++";
-constexpr auto version = VER_STRING(__clang_major__, __clang_minor__, __clang_patchlevel__);
+constexpr auto version = VER_STRING( __clang_major__, __clang_minor__, __clang_patchlevel__ );
 #elif defined( __GNUC__ )
 #   if !( defined( __MINGW32__ ) || defined( __MINGW64__ ) )
 constexpr auto name = "g++";
@@ -45,7 +45,7 @@ constexpr auto version = "N/A";
 
 #ifdef _LIBCPP_VERSION
 constexpr auto standard_library = "libc++";
-const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
+const auto standard_library_version = [] ( std::ostream& out ) -> std::ostream& {
     constexpr auto libcpp_major = _LIBCPP_VERSION / 1000;
     constexpr auto libcpp_minor = ( _LIBCPP_VERSION % 1000 ) / 100;
     return out << libcpp_major << "." << libcpp_minor;
@@ -63,7 +63,7 @@ constexpr auto standard_library_version = __GNUC__;
 #   endif
 #elif defined( _MSC_VER )
 constexpr auto standard_library = "Microsoft STL";
-static const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
+static const auto standard_library_version = [] ( std::ostream& out ) -> std::ostream& {
 #   if _MSC_VER >= 1900
     constexpr auto msvc_major = ( _MSC_VER / 100 ) - 5;
 #   else

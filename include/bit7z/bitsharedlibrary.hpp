@@ -34,7 +34,7 @@ struct remove_stdcall {
 
 template< typename Ret, typename... Args >
 struct remove_stdcall< Ret __stdcall( Args... ) > {
-    using type = Ret(Args...);
+    using type = Ret( Args... );
 };
 
 template< typename T >
@@ -48,12 +48,11 @@ template< typename T >
 struct is_function_pointer {
     static const bool value =
 #ifdef _WIN32
-        std::is_pointer< T >::value && std::is_function< remove_stdcall_pointer_t< T > >::value;
+            std::is_pointer< T >::value && std::is_function< remove_stdcall_pointer_t< T > >::value;
 #else
-        std::is_pointer< T >::value && std::is_function< typename std::remove_pointer< T >::type >::value;
+            std::is_pointer< T >::value && std::is_function< typename std::remove_pointer< T >::type >::value;
 #endif
 };
-
 
 class BitSharedLibrary {
     public:
@@ -72,8 +71,10 @@ class BitSharedLibrary {
         BIT7Z_NODISCARD
         auto getSymbol( const char* symbolName ) const -> LibrarySymbol;
 
-        template< typename Function,
-                  typename = typename std::enable_if< is_function_pointer< Function >::value >::type >
+        template<
+            typename Function,
+            typename = typename std::enable_if< is_function_pointer< Function >::value >::type
+        >
         BIT7Z_NODISCARD
         auto getFunction( const char* symbolName ) const -> Function {
             // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)

@@ -99,10 +99,12 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param recursive    (optional) if true, it searches files inside the subfolders of inDir.
          * @param filter       (optional) the filter to use when searching files inside inDir.
          */
-        void compressFiles( const tstring& inDir,
-                            const tstring& outFile,
-                            bool recursive = true,
-                            const tstring& filter = BIT7Z_STRING( "*" ) ) const;
+        void compressFiles(
+            const tstring& inDir,
+            const tstring& outFile,
+            bool recursive = true,
+            const tstring& filter = BIT7Z_STRING( "*" )
+        ) const;
 
         /**
          * @brief Compresses an entire directory.
@@ -124,10 +126,12 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param recursive    (optional) if true, it searches the contents inside the sub-folders of inDir.
          * @param filter       (optional) the filter to use when searching the contents inside inDir.
          */
-        void compressDirectoryContents( const tstring& inDir,
-                                        const tstring& outFile,
-                                        bool recursive = true,
-                                        const tstring& filter = BIT7Z_STRING( "*" ) ) const;
+        void compressDirectoryContents(
+            const tstring& inDir,
+            const tstring& outFile,
+            bool recursive = true,
+            const tstring& filter = BIT7Z_STRING( "*" )
+        ) const;
 
         /* Compression from the file system to standard streams. */
 
@@ -156,5 +160,5 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
         void compress( const std::map< tstring, tstring >& inPaths, std::ostream& outStream ) const;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 #endif // BITFILECOMPRESSOR_HPP

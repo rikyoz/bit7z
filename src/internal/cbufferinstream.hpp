@@ -39,13 +39,13 @@ class CBufferInStream final : public IInStream, public CMyUnknownImp {
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP1( IInStream )  //-V2507 //-V2511 //-V835 //-V3504
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
 
     private:
         const buffer_t& mBuffer;
         buffer_t::const_iterator mCurrentPosition;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CBUFFERINSTREAM_HPP

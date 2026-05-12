@@ -45,6 +45,6 @@ class CRawOutStream final : public ISequentialOutStream, public CMyUnknownImp {
         RawDataCallback mOutputCallback;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CRAWOUTSTREAM_HPP

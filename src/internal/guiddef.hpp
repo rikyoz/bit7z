@@ -44,7 +44,9 @@ inline auto operator==( REFGUID guid1, REFGUID guid2 ) -> bool {
     return std::memcmp( &guid1, &guid2, sizeof( GUID ) ) == 0;
 }
 
-inline auto operator!=( REFGUID guid1, REFGUID guid2 ) -> bool { return !( guid1 == guid2 ); }
+inline auto operator!=( REFGUID guid1, REFGUID guid2 ) -> bool {
+    return !( guid1 == guid2 );
+}
 
 #ifndef STDMETHODCALLTYPE
 #define STDMETHODCALLTYPE
@@ -71,7 +73,7 @@ inline auto operator!=( REFGUID guid1, REFGUID guid2 ) -> bool { return !( guid1
 #endif
 
 struct IUnknown {
-    STDMETHOD ( QueryInterface )( REFIID iid, void** outObject ) PURE;
+    STDMETHOD( QueryInterface )( REFIID iid, void** outObject ) PURE;
 
     STDMETHOD_( ULONG, AddRef )() PURE;
 

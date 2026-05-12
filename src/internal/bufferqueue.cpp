@@ -20,7 +20,12 @@ BufferQueue::BufferQueue( std::uint64_t maxMemoryUsage ) : mMemoryUsage{ 0 }, mM
 
 auto BufferQueue::pop() -> buffer_t {
     std::unique_lock< std::mutex > lock( mMutex );
-    mEmptyCondition.wait( lock, [ this ] () -> bool { return !mQueue.empty() || mFinished; } );
+    mEmptyCondition.wait(
+        lock,
+        [ this ]() -> bool {
+            return !mQueue.empty() || mFinished;
+        }
+    );
     if ( mQueue.empty() && mFinished ) {
         return {};
     }
@@ -33,7 +38,12 @@ auto BufferQueue::pop() -> buffer_t {
 
 void BufferQueue::push( buffer_t&& item ) {
     std::unique_lock< std::mutex > lock( mMutex );
-    mFullCondition.wait( lock, [ this, &item ] () -> bool { return mMemoryUsage + item.size() < mMaxMemoryUsage; } );
+    mFullCondition.wait(
+        lock,
+        [ this, &item ]() -> bool {
+            return mMemoryUsage + item.size() < mMaxMemoryUsage;
+        }
+    );
     mMemoryUsage += item.size();
     mQueue.push( std::move( item ) );
     mEmptyCondition.notify_one();

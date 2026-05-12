@@ -47,7 +47,7 @@ auto make_open_error_code( std::uint32_t errorFlags ) -> std::error_code {
 } // namespace bit7z
 
 namespace std {
-template <>
+template<>
 struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::OpenError > : true_type {};
 } // namespace std
 

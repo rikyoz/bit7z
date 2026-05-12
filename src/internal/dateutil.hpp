@@ -34,6 +34,6 @@ auto time_type_to_FILETIME( time_type timePoint ) -> FILETIME;
 
 auto current_file_time() -> FILETIME;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //DATEUTIL_HPP
