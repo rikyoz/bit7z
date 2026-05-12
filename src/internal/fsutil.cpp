@@ -595,9 +595,9 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
 
     // Reading the path stored in the link file.
     std::string targetPath;
-    targetPath.resize( MAX_PATH_SIZE );
+    targetPath.resize( MAX_PATH_LENGTH );
     // NOLINTNEXTLINE(readability-container-data-pointer, *-pro-bounds-avoid-unchecked-container-access)
-    ifs.read( &targetPath[ 0 ], MAX_PATH_SIZE );
+    ifs.read( &targetPath[ 0 ], MAX_PATH_LENGTH );
 
     if ( ifs.bad() ) { // Error while reading the path, exiting.
         return false;
