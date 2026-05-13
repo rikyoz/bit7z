@@ -33,7 +33,7 @@ jobs:
         bit7z_auto_prefix_long_paths: [OFF, ON]
         bit7z_use_system_codepage: [OFF, ON]
         bit7z_path_sanitization: [OFF, ON]
-        bit7z_7zip_version: [24.09, '26.00']
+        bit7z_7zip_version: [24.09, '26.01']
         exclude:
           - bit7z_auto_format: OFF
             bit7z_detect_from_extension: ON
