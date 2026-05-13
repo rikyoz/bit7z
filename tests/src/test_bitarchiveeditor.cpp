@@ -22,7 +22,6 @@
 #include <bit7z/bittypes.hpp>
 
 #include <internal/fs.hpp>
-#include <internal/stringutil.hpp>
 
 #include <chrono>
 #include <cstdint>
@@ -64,7 +63,7 @@ class ScopedTestDir {
         BIT7Z_NODISCARD
         auto path() const -> const fs::path& { return mDirectory; }
 
-        operator tstring() const { return path_to_tstring( mDirectory ); } // NOLINT(*-explicit-constructor, *-explicit-conversions)
+        operator tstring() const { return to_tstring( mDirectory.native() ); } // NOLINT(*-explicit-constructor, *-explicit-conversions)
 
     private:
         fs::path mDirectory;
@@ -103,7 +102,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
     const ScopedTestDir scoped{ "test_bitarchiveeditor" };
 
     const fs::path archivePath = scoped.path() / BIT7Z_NATIVE_STRING( "archive.7z" );
-    const tstring archivePathStr = path_to_tstring( archivePath );
+    const tstring archivePathStr = to_tstring( archivePath.native() );
     const tstring itemName = BIT7Z_STRING( "data.txt" );
 
     const buffer_t originalBytes = as_bytes( "Hello, World!" );
@@ -303,7 +302,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges refuses in-place multi-volume updates
     const ScopedTestDir scoped{ "test_bitarchiveeditor" };
 
     const fs::path archivePath = scoped.path() / BIT7Z_NATIVE_STRING( "archive.7z" );
-    const tstring archivePathStr = path_to_tstring( archivePath );
+    const tstring archivePathStr = to_tstring( archivePath.native() );
     const tstring itemName = BIT7Z_STRING( "data.txt" );
 
     const buffer_t originalBytes = as_bytes( "Hello, World!" );
