@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cctype> // For std::toupper
 #include <cstddef>
+#include <iterator>
 #include <string>
 
 #ifdef _WIN32
