@@ -14,6 +14,7 @@
 #include "bitexception.hpp"
 #include "bitoutputarchive.hpp"
 #include "internal/archiveproperties.hpp"
+#include "internal/atomicfilereplacer.hpp"
 #include "internal/cbufferoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
 #include "internal/genericinputitem.hpp"
@@ -167,18 +168,11 @@ auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
     return newArc;
 }
 
-auto BitOutputArchive::initOutFileStream( const fs::path& outArchive,
-                                          bool updatingArchive ) const -> CMyComPtr< IOutStream > {
+auto BitOutputArchive::initOutFileStream( const fs::path& outArchive ) const -> CMyComPtr< IOutStream > {
     if ( mArchiveCreator.volumeSize() > 0 ) {
         return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), outArchive );
     }
-
-    fs::path outPath = outArchive;
-    if ( updatingArchive ) {
-        outPath += ".tmp";
-    }
-
-    return bit7z::make_com< CFileOutStream, IOutStream >( outPath, updatingArchive );
+    return bit7z::make_com< CFileOutStream, IOutStream >( outArchive );
 }
 
 void BitOutputArchive::compressOut( IOutArchive* outArc,
@@ -211,42 +205,36 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
     // (see initUpdatableArchive function of BitInputArchive)!
     const bool updatingArchive = mInputArchive != nullptr && tstring_to_path( mInputArchive->archivePath() ) == outFile;
     const CMyComPtr< IOutArchive > newArc = initOutArchive();
-    CMyComPtr< IOutStream > outStream = initOutFileStream( outFile, updatingArchive );
-    compressOut( newArc, outStream, updateCallback );
 
-    if ( updatingArchive ) { //we updated the input archive
-        auto closeResult = mInputArchive->close();
+    if ( updatingArchive ) {
+        if ( mArchiveCreator.volumeSize() > 0 ) {
+            throw BitException( "Cannot update a multi-volume archive in place",
+                                make_error_code( BitError::UnsupportedOperation ) );
+        }
+        AtomicFileReplacer replacer{ outFile };
+        compressOut( newArc, replacer.stream(), updateCallback );
+
+        const auto closeResult = mInputArchive->close();
         if ( closeResult != S_OK ) {
             throw BitException( "Failed to close the archive", make_hresult_code( closeResult ),
                                 mInputArchive->archivePath() );
         }
-        /* NOTE: In the following instruction, we use the (dot) operator, not the -> (arrow) operator:
-         *       in fact, both CMyComPtr and IOutStream have a Release() method, and we need to call only
-         *       the one of CMyComPtr (which in turns calls the one of IOutStream)! */
-        outStream.Release(); //Releasing the output stream so that we can rename it as the original file.
-
-        std::error_code error;
-#if defined( __MINGW32__ ) && defined( BIT7Z_USE_STANDARD_FILESYSTEM )
-        /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
-         * existing destination file (as it should). So we explicitly remove it before! */
-        if ( !fs::remove( outFile, error ) ) {
-            throw BitException( "Failed to delete the old archive file", error, path_to_tstring( outFile ) );
-        }
-#endif
-
-        //remove the old file and rename the temporary file (move file with overwriting)
-        fs::path tmpFile = outFile;
-        tmpFile += ".tmp";
-        fs::rename( tmpFile, outFile, error );
-        if ( error ) {
-            throw BitException( "Failed to overwrite the old archive file", error, path_to_tstring( outFile ) );
-        }
+        replacer.commit();
+    } else {
+        const CMyComPtr< IOutStream > outStream = initOutFileStream( outFile );
+        compressOut( newArc, outStream, updateCallback );
     }
 }
 
 void BitOutputArchive::compressTo( const tstring& outFile ) {
     using namespace bit7z::filesystem;
     const fs::path outPath = tstring_to_path( outFile );
+    if ( !outPath.has_filename() ) {
+        throw BitException( "Invalid output archive path",
+                            make_error_code( BitError::InvalidArchivePath ),
+                            outFile );
+    }
+
     std::error_code error;
     if ( fs::exists( outPath, error ) ) {
         const OverwriteMode overwriteMode = mArchiveCreator.overwriteMode();

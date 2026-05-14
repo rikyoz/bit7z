@@ -81,20 +81,15 @@ constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 auto FileExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
     mCurrentItem.loadItemInfo( inputArchive(), index );
 
-    auto filePath = getCurrentItemPath();
-    if ( filePath.empty() || ( isItemFolder( index ) && filePath == L"/" ) ) {
+    const bool itemIsFolder = isItemFolder( index );
+    const auto filePath = getCurrentItemPath();
+    if ( filePath.empty() || ( itemIsFolder && filePath == L"/" ) ) {
         return S_OK;
     }
 
     mFilePathOnDisk = mOutPathBuilder.buildPath( filePath );
 
-#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( filesystem::fsutil::should_format_long_path( mFilePathOnDisk ) ) {
-        mFilePathOnDisk = filesystem::fsutil::format_long_path( mFilePathOnDisk );
-    }
-#endif
-
-    if ( !isItemFolder( index ) ) { // File
+    if ( !itemIsFolder ) { // File
         if ( mHandler.fileCallback() ) {
             // Here we don't use the path_to_tstring function to avoid allocating a string object
             // when using BIT7Z_USE_NATIVE_STRING.

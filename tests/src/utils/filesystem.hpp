@@ -22,6 +22,9 @@
 #include <windows.h>
 #elif defined( __APPLE__ )
 #include <array>
+// Workaround for building with latest macOS SDK
+#define _MACH_MESSAGE_H_ // NOLINT(*-reserved-identifier)
+struct audit_token_t;
 #include <libproc.h> // for proc_pidpath and PROC_PIDPATHINFO_MAXSIZE
 #include <unistd.h> // for getpid
 #endif
@@ -186,6 +189,29 @@ class TestDirectory {
         auto operator=( TestDirectory&& ) -> TestDirectory& = delete;
 
         ~TestDirectory();
+};
+
+class TempDirectory {
+    public:
+        explicit TempDirectory( const std::string& dirName );
+
+        explicit TempDirectory( const TempDirectory& ) = delete;
+
+        explicit TempDirectory( TempDirectory&& ) = delete;
+
+        auto operator=( const TempDirectory& ) -> TempDirectory& = delete;
+
+        auto operator=( TempDirectory&& ) -> TempDirectory& = delete;
+
+        ~TempDirectory();
+
+        BIT7Z_NODISCARD
+        auto path() const -> const fs::path&;
+
+        operator tstring() const; // NOLINT(*-explicit-constructor, *-explicit-conversions)
+
+    private:
+        fs::path mDirectory;
 };
 
 #endif

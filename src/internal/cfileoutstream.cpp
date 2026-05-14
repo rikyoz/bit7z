@@ -21,7 +21,8 @@ namespace bit7z {
 CFileOutStream::CFileOutStream( fs::path filePath, bool createAlways )
     : CStdOutStream( mFileStream ), mFilePath{ std::move( filePath ) } {
     std::error_code error;
-    if ( !createAlways && fs::exists( mFilePath, error ) ) {
+    const auto fileStatus = fs::symlink_status( mFilePath, error );
+    if ( !createAlways && fs::exists( fileStatus ) ) {
         if ( !error ) {
             // The call to fs::exists succeeded, but the filePath exists, and this is an error.
             error = std::make_error_code( std::errc::file_exists );
@@ -59,8 +60,12 @@ STDMETHODIMP CFileOutStream::SetSize( UInt64 newSize ) noexcept {
     return error ? E_FAIL : S_OK;
 }
 
-auto CFileOutStream::path() const -> const fs::path& {
+auto CFileOutStream::path() const & -> const fs::path& {
     return mFilePath;
+}
+
+auto CFileOutStream::path() && -> fs::path {
+    return std::move( mFilePath );
 }
 
 } // namespace bit7z

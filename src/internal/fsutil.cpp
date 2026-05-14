@@ -57,7 +57,8 @@ auto fsutil::extension( const fs::path& path ) -> tstring {
 
 inline auto contains_dot_references( const fs::path& path ) -> bool {
     return std::find_if( path.begin(), path.end(), [] ( const fs::path& component ) -> bool {
-        return component == BIT7Z_NATIVE_STRING( "." ) || component == BIT7Z_NATIVE_STRING( ".." );
+        const auto& nativeComponent = component.native();
+        return nativeComponent == BIT7Z_NATIVE_STRING( "." ) || nativeComponent == BIT7Z_NATIVE_STRING( ".." );
     }) != path.end();
 }
 
@@ -420,8 +421,11 @@ auto is_drive_relative( const fs::path& path ) -> bool {
     // NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 }
 } // namespace
+#endif
 
+#ifdef BIT7Z_PATH_SANITIZATION
 auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
+#ifdef _WIN32
     if ( path == L"/" ) {
         return L"_";
     }
@@ -436,6 +440,11 @@ auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
     // Relative paths:   /abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
     //                    abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
     return sanitize_path_components( path );
+#else
+    auto result = path.native();
+    std::replace( result.begin(), result.end(), '\0', '_' );
+    return fs::path{ std::move( result ) };
+#endif
 }
 #endif
 
@@ -443,12 +452,30 @@ namespace {
 #if !defined( _WIN32 ) || !defined( BIT7Z_PATH_SANITIZATION )
 BIT7Z_NODISCARD
 auto is_absolute( const fs::path& path ) -> bool {
-#if defined( _WIN32 ) && defined( GHC_FILESYSTEM_VERSION )
-    // For ghc::filesystem, \\server is not absolute (bug?), but we want a consistent behavior on Windows.
+#ifdef GHC_FILESYSTEM_VERSION
+#   ifdef _WIN32
+    // On Windows, ghc::filesystem considers \\server as not absolute (bug?), but we want a consistent behavior.
     return path.is_absolute() || ( starts_with( path.native(), L"\\\\" ) && !path.has_root_directory() );
+#   else
+    // ghc::filesystem considers //foo as not absolute (not a bug), but we want a consistent behavior.
+    const auto& nativePath = path.native();
+    return !nativePath.empty() && isPathSeparator( nativePath.front() );
+#   endif
 #else
     return path.is_absolute();
 #endif
+}
+#endif
+
+#if defined( BIT7Z_PATH_SANITIZATION ) && !defined( _WIN32 )
+// On POSIX, sanitize_path only replaces NUL bytes; if there are none,
+// skip the intermediate fs::path allocation and join the input directly.
+BIT7Z_NODISCARD
+auto join_with_sanitization( const fs::path& base, const fs::path& path ) -> fs::path {
+    if ( path.native().find( fs::path::value_type{} ) == fs::path::string_type::npos ) {
+        return base / path;
+    }
+    return base / fsutil::sanitize_path( path );
 }
 #endif
 
@@ -457,9 +484,29 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
     return base / fsutil::sanitize_path( path );
 #else
+#ifndef BIT7Z_PATH_SANITIZATION
+    // Null bytes would cause a mismatch between the validated path and the OS-interpreted path,
+    // which truncates at the first null on both POSIX (char*) and Win32 (LPWSTR) APIs.
+    if ( path.native().find( fs::path::value_type{} ) != fs::path::string_type::npos ) {
+        throw BitException(
+            "Invalid item path",
+            make_error_code( BitError::InvalidItemPath ),
+            path_to_tstring( path )
+        );
+    }
+#endif
+
     if ( is_absolute( path ) ) {
 #ifdef BIT7Z_PATH_SANITIZATION
-        return base / path.relative_path();
+        // POSIX-only: strip leading slashes from the native string directly; relative_path()
+        // is unreliable here because ghc::filesystem returns empty for //foo (consumed as
+        // root_name) and returns //foo for ///foo (another root_name).
+        const auto& native = path.native();
+        const auto firstNonSlash = native.find_first_not_of( '/' );
+        const auto strippedPath = firstNonSlash != fs::path::string_type::npos
+            ? fs::path{ native.substr( firstNonSlash ) }
+            : fs::path{};
+        return join_with_sanitization( base, strippedPath );
 #else
         throw BitException(
             "Invalid item path",
@@ -486,7 +533,12 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
     }
 #endif
 
+#ifdef BIT7Z_PATH_SANITIZATION
+    // POSIX-only
+    return join_with_sanitization( base, path );
+#else
     return base / path;
+#endif
 #endif
 }
 
@@ -584,11 +636,18 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
         return mBasePath;
     }
 
-    const auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
+    // TODO: Avoid normalization if not needed.
+    auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
     if ( filesystem::path_is_outside_base( builtPath, mBasePath ) ) {
         throw BitException{ "Cannot extract the item '" + path.string() + "'",
                     BitError::ItemPathOutsideOutputDirectory };
     }
+
+#if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
+    if ( filesystem::fsutil::should_format_long_path( builtPath ) ) {
+        return filesystem::fsutil::format_long_path( builtPath );
+    }
+#endif
 
     return builtPath;
 }
@@ -604,11 +663,11 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
 
     // Reading the path stored in the link file.
     std::string targetPath;
-    targetPath.resize( MAX_PATHNAME_LEN );
+    targetPath.resize( MAX_PATH_LENGTH );
     // NOLINTNEXTLINE(readability-container-data-pointer, *-pro-bounds-avoid-unchecked-container-access)
-    ifs.getline( &targetPath[ 0 ], MAX_PATHNAME_LEN );
+    ifs.read( &targetPath[ 0 ], MAX_PATH_LENGTH );
 
-    if ( !ifs ) { // Error while reading the path, exiting.
+    if ( ifs.bad() ) { // Error while reading the path, exiting.
         return false;
     }
 
@@ -626,13 +685,26 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
         return false;
     }
 
-    const auto safeTargetPath = filesystem::sanitize_path_join( mBasePath, targetPath ).lexically_normal();
-    if ( filesystem::path_is_outside_base( safeTargetPath, mBasePath ) ) {
+    const auto symlinkParent = symlinkFilePath.parent_path();
+
+    // TODO: Avoid normalization if not needed.
+    const auto resolvedTargetPath = filesystem::sanitize_path_join( symlinkParent, targetPath ).lexically_normal();
+    if ( filesystem::path_is_outside_base( resolvedTargetPath, mBasePath ) ) {
         return false;
     }
 
+    // We determined that the resolved symlink target path is inside the base path.
+    // So it is safe to create the symbolic link using the target path stored in the archive.
+
+    // sanitize_path_join may have rewritten targetPath; derive target from validated result.
+    const auto symlinkTarget = resolvedTargetPath.lexically_relative( symlinkParent );
+    if ( symlinkTarget.empty() ) {
+        return false; // Defensive, should not happen.
+    }
+
     // Restoring the symbolic link to the target file.
-    fs::create_symlink( safeTargetPath, symlinkFilePath, error );
+    // Note: when the OS will resolve this symbolic link target, it will resolve it against the symlink's parent path.
+    fs::create_symlink( symlinkTarget, symlinkFilePath, error );
     return !error;
 }
 #endif
