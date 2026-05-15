@@ -32,7 +32,8 @@
 
 namespace bit7z {
 
-auto is_valid_compression_method( const BitInOutFormat& format, BitCompressionMethod method ) noexcept -> bool {
+namespace {
+auto isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMethod method ) noexcept -> bool {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return format == BitFormat::SevenZip || format == BitFormat::Zip || format == BitFormat::Tar ||
@@ -53,7 +54,7 @@ auto is_valid_compression_method( const BitInOutFormat& format, BitCompressionMe
     }
 }
 
-auto is_valid_dictionary_size( BitCompressionMethod method, std::uint32_t dictionarySize ) noexcept -> bool {
+auto isValidDictionarySize( BitCompressionMethod method, std::uint32_t dictionarySize ) noexcept -> bool {
     constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1ull << 20ull ); // less than 3840 MiB
     constexpr auto kMaxPpmdDictionarySize = ( 1ull << 30ull ); // less than 1 GiB, i.e., 2^30 bytes
     constexpr auto kMaxBzip2DictionarySize = 900 * ( 1ull << 10ull ); // less than 900 KiB
@@ -71,7 +72,7 @@ auto is_valid_dictionary_size( BitCompressionMethod method, std::uint32_t dictio
     }
 }
 
-auto is_valid_word_size(
+auto isValidWordSize(
     const BitInOutFormat& fmt,
     BitCompressionMethod method,
     std::uint32_t wordSize
@@ -105,7 +106,7 @@ auto is_valid_word_size(
     }
 }
 
-auto method_name( BitCompressionMethod method ) noexcept -> const wchar_t* {
+auto methodName( BitCompressionMethod method ) noexcept -> const wchar_t* {
     switch ( method ) {
         case BitCompressionMethod::Copy:
             return L"Copy";
@@ -125,6 +126,7 @@ auto method_name( BitCompressionMethod method ) noexcept -> const wchar_t* {
             return L"Unknown"; // This should not happen.
     }
 }
+} // namespace
 
 BitAbstractArchiveCreator::BitAbstractArchiveCreator(
     const Bit7zLibrary& lib,
@@ -214,8 +216,8 @@ void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
 }
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
-
-auto is_ascii( const tstring& str ) -> bool {
+namespace {
+auto isAscii( const tstring& str ) -> bool {
     return std::all_of(
         str.begin(),
         str.end(),
@@ -227,12 +229,12 @@ auto is_ascii( const tstring& str ) -> bool {
         }
     );
 }
-
+} // namespace
 #endif
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password, bool cryptHeaders ) {
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
-    if ( mFormat == BitFormat::Zip && !is_ascii( password ) ) {
+    if ( mFormat == BitFormat::Zip && !isAscii( password ) ) {
         throw BitException( "Invalid password", make_error_code( BitError::InvalidZipPassword ) );
     }
 #endif
@@ -247,7 +249,7 @@ void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level )
 }
 
 void BitAbstractArchiveCreator::setCompressionMethod( BitCompressionMethod method ) {
-    if ( !is_valid_compression_method( mFormat, method ) ) {
+    if ( !isValidCompressionMethod( mFormat, method ) ) {
         throw BitException(
             "Cannot set the compression method",
             make_error_code( BitError::InvalidCompressionMethod )
@@ -270,7 +272,7 @@ void BitAbstractArchiveCreator::setDictionarySize( std::uint32_t dictionarySize 
         //ignoring setting dictionary size for copy method and for methods having fixed dictionary size (deflate family)
         return;
     }
-    if ( !is_valid_dictionary_size( mCompressionMethod, dictionarySize ) ) {
+    if ( !isValidDictionarySize( mCompressionMethod, dictionarySize ) ) {
         throw BitException( "Cannot set the dictionary size", make_error_code( BitError::InvalidDictionarySize ) );
     }
     mDictionarySize = dictionarySize;
@@ -280,7 +282,7 @@ void BitAbstractArchiveCreator::setWordSize( std::uint32_t wordSize ) {
     if ( mCompressionMethod == BitCompressionMethod::Copy || mCompressionMethod == BitCompressionMethod::BZip2 ) {
         return;
     }
-    if ( !is_valid_word_size( mFormat, mCompressionMethod, wordSize ) ) {
+    if ( !isValidWordSize( mFormat, mCompressionMethod, wordSize ) ) {
         throw BitException( "Cannot set the word size", make_error_code( BitError::InvalidWordSize ) );
     }
     mWordSize = wordSize;
@@ -325,19 +327,21 @@ void BitAbstractArchiveCreator::setStoreLastAccessTime( bool storeLastAccessTime
     setFormatProperty( L"ta", storeLastAccessTime );
 }
 
-auto dictionary_property_name( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {
+namespace {
+auto dictionaryPropertyName( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {
     if ( format == BitFormat::SevenZip ) {
         return ( method == BitCompressionMethod::Ppmd ? L"0mem" : L"0d" );
     }
     return ( method == BitCompressionMethod::Ppmd ? L"mem" : L"d" );
 }
 
-auto word_size_property_name( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {
+auto wordSizePropertyName( const BitInOutFormat& format, BitCompressionMethod method ) -> const wchar_t* {
     if ( format == BitFormat::SevenZip ) {
         return ( method == BitCompressionMethod::Ppmd ? L"0o" : L"0fb" );
     }
     return ( method == BitCompressionMethod::Ppmd ? L"o" : L"fb" );
 }
+} // namespace
 
 auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
     ArchiveProperties properties = {};
@@ -348,8 +352,8 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
         properties.setProperty( L"x", static_cast< std::uint32_t >( mCompressionLevel ) );
 
         if ( mFormat.hasFeature( FormatFeatures::MultipleMethods ) && mCompressionMethod != mFormat.defaultMethod() ) {
-            const auto* propertyName = ( mFormat == BitFormat::SevenZip ) ? L"0" : L"m";
-            properties.setProperty( propertyName, method_name( mCompressionMethod ) );
+            const auto* propertyName = mFormat == BitFormat::SevenZip ? L"0" : L"m";
+            properties.setProperty( propertyName, methodName( mCompressionMethod ) );
         }
     }
     if ( mFormat.hasFeature( FormatFeatures::SolidArchive ) ) {
@@ -357,8 +361,8 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
 #ifndef _WIN32
         if ( mSolidMode ) {
             /* NOTE: Apparently, p7zip requires the filters to be set off for the solid compression to work.
-               The strangest thing is... in our tests this happens only inside the WSL.
-               We have tested the same code on a Linux VM, and it works without disabling the filters. */
+             * The strangest thing is... in our tests this happens only inside the WSL.
+             * We have tested the same code on a Linux VM, and it works without disabling the filters. */
             // TODO: So, for now I disable them, but this will need further investigation!
             properties.setProperty( L"f", false );
         }
@@ -369,12 +373,12 @@ auto BitAbstractArchiveCreator::archiveProperties() const -> ArchiveProperties {
     }
     if ( mDictionarySize != 0 ) {
         properties.setProperty(
-            dictionary_property_name( mFormat, mCompressionMethod ),
+            dictionaryPropertyName( mFormat, mCompressionMethod ),
             std::to_wstring( mDictionarySize ) + L"b"
         );
     }
     if ( mWordSize != 0 ) {
-        properties.setProperty( word_size_property_name( mFormat, mCompressionMethod ), mWordSize );
+        properties.setProperty( wordSizePropertyName( mFormat, mCompressionMethod ), mWordSize );
     }
     properties.addProperties( mExtraProperties );
     return properties;

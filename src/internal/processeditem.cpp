@@ -61,7 +61,7 @@ void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, std::uint
 
     mFilePath = prop.getNativeString();
     if ( mFilePath.empty() ) {
-        const auto archivePath = tstring_to_path( inputArchive.archivePath() );
+        const auto archivePath = tstringToPath( inputArchive.archivePath() );
         mFilePath = !archivePath.empty() ? archivePath.stem() : fs::path{ kEmptyFileAlias };
     } else if ( !inputArchive.handler().retainDirectories() ) {
         mFilePath = mFilePath.filename();

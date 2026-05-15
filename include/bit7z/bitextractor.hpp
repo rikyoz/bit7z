@@ -34,7 +34,7 @@ namespace bit7z {
 
 namespace filesystem { // NOLINT(modernize-concat-nested-namespaces)
     namespace fsutil {
-    auto wildcard_match( const tstring& pattern, const tstring& str ) -> bool;
+    auto wildcardMatch( const tstring& pattern, const tstring& str ) -> bool;
     } // namespace fsutil
 } // namespace filesystem
 

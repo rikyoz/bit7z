@@ -42,7 +42,7 @@ namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto filename( const fs::path& path ) -> tstring {
-    return path_to_tstring( path.filename() );
+    return pathToTstring( path.filename() );
 }
 
 BIT7Z_NODISCARD
@@ -146,7 +146,7 @@ auto BitArchiveItem::crc() const -> std::uint32_t {
 }
 
 // On MSVC, these macros are not defined, so we define them here.
-#if !defined(S_ISLNK)
+#ifndef S_ISLNK
 #ifndef S_IFLNK
 static constexpr auto S_IFLNK = 0xA000u;
 #endif

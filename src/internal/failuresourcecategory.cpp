@@ -29,17 +29,17 @@ auto FailureSourceCategory::name() const noexcept -> const char* {
 auto FailureSourceCategory::message( int errorValue ) const -> std::string {
     switch ( static_cast< BitFailureSource >( errorValue ) ) {
         case BitFailureSource::CRCError:
-            return operation_category().message( NOperationResult::kCRCError );
+            return operationCategory().message( NOperationResult::kCRCError );
         case BitFailureSource::DataAfterEnd:
-            return operation_category().message( NOperationResult::kDataAfterEnd );
+            return operationCategory().message( NOperationResult::kDataAfterEnd );
         case BitFailureSource::DataError:
-            return operation_category().message( NOperationResult::kDataError );
+            return operationCategory().message( NOperationResult::kDataError );
         case BitFailureSource::FormatDetectionError:
             return "Format detection error.";
         case BitFailureSource::HeadersError:
-            return operation_category().message( NOperationResult::kHeadersError );
+            return operationCategory().message( NOperationResult::kHeadersError );
         case BitFailureSource::InvalidArchive:
-            return operation_category().message( NOperationResult::kIsNotArc );
+            return operationCategory().message( NOperationResult::kIsNotArc );
         case BitFailureSource::InvalidArgument:
             return "Invalid argument.";
         case BitFailureSource::NoSuchItem:
@@ -49,9 +49,9 @@ auto FailureSourceCategory::message( int errorValue ) const -> std::string {
         case BitFailureSource::OperationNotSupported:
             return "Operation not supported.";
         case BitFailureSource::UnavailableData:
-            return operation_category().message( NOperationResult::kUnavailable );
+            return operationCategory().message( NOperationResult::kUnavailable );
         case BitFailureSource::UnexpectedEnd:
-            return operation_category().message( NOperationResult::kUnexpectedEnd );
+            return operationCategory().message( NOperationResult::kUnexpectedEnd );
         case BitFailureSource::WrongPassword:
             return "Wrong password.";
         default:
@@ -118,7 +118,7 @@ auto FailureSourceCategory::equivalent( const std::error_code& code, int conditi
     }
 }
 
-auto source_category() noexcept -> const std::error_category& {
+auto sourceCategory() noexcept -> const std::error_category& {
     static const FailureSourceCategory instance{};
     return instance;
 }

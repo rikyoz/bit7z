@@ -59,7 +59,7 @@ BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto getFileTime( const BitInputArchive& inputArchive, std::uint32_t index, BitProperty property ) -> FILETIME {
     const BitPropVariant creationTime = inputArchive.itemProperty( index, property );
-    return creationTime.isFileTime() ? creationTime.getFileTime() : current_file_time();
+    return creationTime.isFileTime() ? creationTime.getFileTime() : currentFileTime();
 }
 
 #define HAS_FLAG( attributes, x ) \
@@ -88,7 +88,7 @@ auto fileType( const FileMetadata& fileMetadata ) noexcept -> fs::file_type {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputItemProperties {
-    const FileMetadata fileMetadata = filesystem::fsutil::get_file_metadata( itemPath, policy );
+    const FileMetadata fileMetadata = filesystem::fsutil::getFileMetadata( itemPath, policy );
     const auto type = fileType( fileMetadata );
 #ifdef _WIN32
     return {
@@ -112,9 +112,9 @@ auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputIt
     fileAttributes |= FILE_ATTRIBUTE_UNIX_EXTENSION + unixAttributes;
     return {
         fileSize( itemPath, fileMetadata, policy, type ),
-        time_to_FILETIME( fileMetadata.st_mtime ),
-        time_to_FILETIME( fileMetadata.st_atime ),
-        time_to_FILETIME( fileMetadata.st_ctime ),
+        toFILETIME( fileMetadata.st_mtime ),
+        toFILETIME( fileMetadata.st_atime ),
+        toFILETIME( fileMetadata.st_ctime ),
         fileAttributes,
         InputItemType::Filesystem
     };
@@ -124,7 +124,7 @@ auto fileProperties( const fs::path& itemPath, SymlinkPolicy policy ) -> InputIt
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto bufferProperties( const buffer_t& buffer ) -> InputItemProperties {
-    const auto currentTime = current_file_time();
+    const auto currentTime = currentFileTime();
     return {
         sizeof( byte_t ) * static_cast< std::uint64_t >( buffer.size() ),
         currentTime,
@@ -138,7 +138,7 @@ auto bufferProperties( const buffer_t& buffer ) -> InputItemProperties {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto streamProperties( std::istream& stream ) -> InputItemProperties {
-    const auto currentTime = current_file_time();
+    const auto currentTime = currentFileTime();
     return {
         streamSize( stream ),
         currentTime,
@@ -163,7 +163,7 @@ auto renamedItemProperties( const BitInputArchive& inputArchive, std::uint32_t i
 }
 } // namespace
 
-using filesystem::fsutil::in_archive_path;
+namespace fsutil = filesystem::fsutil;
 
 BitInputItem::BitInputItem( const fs::path& itemPath, SymlinkPolicy symlinkPolicy )
     : BitInputItem{ itemPath, fs::path{}, symlinkPolicy } {}
@@ -171,13 +171,13 @@ BitInputItem::BitInputItem( const fs::path& itemPath, SymlinkPolicy symlinkPolic
 BitInputItem::BitInputItem( const fs::path& itemPath, const fs::path& inArchivePath, SymlinkPolicy symlinkPolicy )
     : mProperties{ fileProperties( itemPath, symlinkPolicy ) },
       mPath{ itemPath.native() },
-      mInArchivePath{ path_to_sevenzip_string( !inArchivePath.empty() ? inArchivePath : in_archive_path( itemPath ) ) },
+      mInArchivePath{ pathToSevenzipString( !inArchivePath.empty() ? inArchivePath : fsutil::inArchivePath( itemPath ) ) },
       mFilesystemItem{ symlinkPolicy } {}
 
 BitInputItem::BitInputItem( const fs::path& searchPath, const fs::directory_entry& entry, SymlinkPolicy symlinkPolicy )
     : mProperties{ fileProperties( entry.path(), symlinkPolicy ) },
       mPath{ entry.path().native() },
-      mInArchivePath{ path_to_sevenzip_string( in_archive_path( entry.path(), searchPath ) ) },
+      mInArchivePath{ pathToSevenzipString( fsutil::inArchivePath( entry.path(), searchPath ) ) },
       mFilesystemItem{ symlinkPolicy } {}
 
 BitInputItem::BitInputItem( const buffer_t& buffer, const tstring& path )
@@ -283,15 +283,15 @@ auto BitInputItem::hasNewData() const noexcept -> bool {
 }
 
 void BitInputItem::setCreationTime( time_type creationTime ) noexcept {
-    mProperties.creationTime = time_type_to_FILETIME( creationTime );
+    mProperties.creationTime = toFILETIME( creationTime );
 }
 
 void BitInputItem::setLastWriteTime( time_type lastWriteTime ) noexcept {
-    mProperties.lastWriteTime = time_type_to_FILETIME( lastWriteTime );
+    mProperties.lastWriteTime = toFILETIME( lastWriteTime );
 }
 
 void BitInputItem::setLastAccessTime( time_type lastAccessTime ) noexcept {
-    mProperties.lastAccessTime = time_type_to_FILETIME( lastAccessTime );
+    mProperties.lastAccessTime = toFILETIME( lastAccessTime );
 }
 
 } // namespace bit7z

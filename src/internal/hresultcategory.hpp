@@ -30,7 +30,7 @@ struct HRESULTCategory final : std::error_category {
     BIT7Z_NODISCARD auto default_error_condition( int errorValue ) const noexcept -> std::error_condition override;
 };
 
-auto hresult_category() noexcept -> const std::error_category&;
+auto hresultCategory() noexcept -> const std::error_category&;
 
 } // namespace bit7z
 

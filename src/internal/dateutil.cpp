@@ -36,7 +36,7 @@ constexpr std::chrono::seconds libstdcpp_file_clock_epoch{ -6437664000 };
 #endif
 
 #ifndef _WIN32
-auto FILETIME_to_file_time_type( FILETIME fileTime ) -> fs::file_time_type {
+auto toFileTimeType( FILETIME fileTime ) -> fs::file_time_type {
     const FileTimeDuration fileTimeDuration{
         ( static_cast< std::uint64_t >( fileTime.dwHighDateTime ) << 32ull ) + fileTime.dwLowDateTime
     };
@@ -50,7 +50,7 @@ auto FILETIME_to_file_time_type( FILETIME fileTime ) -> fs::file_time_type {
 #endif
 }
 
-auto time_to_FILETIME( std::time_t value ) -> FILETIME {
+auto toFILETIME( std::time_t value ) -> FILETIME {
     // NOLINTNEXTLINE(*-magic-numbers)
     const std::uint64_t timeInSeconds = ( static_cast< std::uint64_t >( value ) * 10000000ull ) + 116444736000000000ull;
     FILETIME fileTime{};
@@ -87,7 +87,7 @@ auto filetimeCast( const FileTimeDuration unixEpoch ) -> time_type {
 }
 } // namespace
 
-auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
+auto toTimeType( FILETIME fileTime ) -> time_type {
     const FileTimeDuration fileTimeDuration{
         ( static_cast< std::uint64_t >( fileTime.dwHighDateTime ) << 32ull ) + fileTime.dwLowDateTime
     };
@@ -95,7 +95,7 @@ auto FILETIME_to_time_type( FILETIME fileTime ) -> time_type {
     return filetimeCast< time_type::duration >( unixEpoch );
 }
 
-auto time_type_to_FILETIME( time_type timePoint ) -> FILETIME {
+auto toFILETIME( time_type timePoint ) -> FILETIME {
     const auto unixEpoch = std::chrono::duration_cast< FileTimeDuration >( timePoint.time_since_epoch() );
     const auto ntEpoch = unixEpoch - nt_to_unix_epoch;
     const auto ticks = static_cast< std::uint64_t >( ntEpoch.count() );
@@ -105,7 +105,7 @@ auto time_type_to_FILETIME( time_type timePoint ) -> FILETIME {
     return fileTime;
 }
 
-auto current_file_time() -> FILETIME {
+auto currentFileTime() -> FILETIME {
 #ifdef _WIN32
     FILETIME fileTime{};
     SYSTEMTIME systemTime{};
@@ -116,7 +116,7 @@ auto current_file_time() -> FILETIME {
 #else
     const auto currentTime = std::chrono::system_clock::now();
     const std::time_t timeValue = std::chrono::system_clock::to_time_t( currentTime );
-    return time_to_FILETIME( timeValue );
+    return toFILETIME( timeValue );
 #endif
 }
 } // namespace bit7z

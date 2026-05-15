@@ -33,7 +33,7 @@ void listDirectoryItems(
     IndexingOptions options,
     BitItemsVector& result
 ) {
-    const fs::path inArchivePath = sevenzip_string_to_path( inArchivePathStr );
+    const fs::path inArchivePath = sevenzipStringToPath( inArchivePathStr );
     listDirectoryItems( basePath, inArchivePath, filter, options, result );
 }
 

@@ -26,10 +26,10 @@
 namespace bit7z {
 
 auto make_hresult_code( HRESULT res ) noexcept -> std::error_code {
-    return std::error_code{ static_cast< int >( res ), bit7z::hresult_category() };
+    return std::error_code{ static_cast< int >( res ), bit7z::hresultCategory() };
 }
 
-auto last_error_code() noexcept -> std::error_code {
+auto lastErrorCode() noexcept -> std::error_code {
     const auto error = static_cast< int >( GetLastError() );
     return std::error_code{ error, std::system_category() };
 }
@@ -62,7 +62,7 @@ auto BitException::nativeCode() const noexcept -> BitException::native_code_type
 
 auto BitException::hresultCode() const noexcept -> HRESULT {
     const std::error_code& error = code();
-    if ( error.category() == bit7z::hresult_category() ) { // Already a HRESULT value
+    if ( error.category() == bit7z::hresultCategory() ) { // Already a HRESULT value
         return error.value();
     }
 #ifdef _MSC_VER
@@ -110,20 +110,22 @@ auto BitException::hresultCode() const noexcept -> HRESULT {
     return E_FAIL;
 }
 
-inline auto is_not_posix_category( const std::error_category& category ) -> bool {
+namespace {
+auto isNotPosixCategory( const std::error_category& category ) -> bool {
 #ifdef _MSC_VER
     if ( category == std::system_category() ) {
         return true;
     }
 #endif
-    return category == bit7z::hresult_category() ||
-           category == bit7z::internal_category() ||
-           category == bit7z::operation_category();
+    return category == bit7z::hresultCategory() ||
+           category == bit7z::internalCategory() ||
+           category == bit7z::operationCategory();
 }
+} // namespace
 
 auto BitException::posixCode() const noexcept -> int {
     const auto& error = code();
-    if ( is_not_posix_category( error.category() ) ) {
+    if ( isNotPosixCategory( error.category() ) ) {
         return error.default_error_condition().value();
     }
     return error.value(); // On POSIX systems, std::system_category == std::generic_category

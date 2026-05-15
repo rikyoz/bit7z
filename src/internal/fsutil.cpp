@@ -41,7 +41,7 @@ namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
 auto fsutil::stem( const tstring& path ) -> tstring {
-    return path_to_tstring( tstring_to_path( path ).stem() );
+    return pathToTstring( tstringToPath( path ).stem() );
 }
 
 auto fsutil::extension( const fs::path& path ) -> tstring {
@@ -51,29 +51,29 @@ auto fsutil::extension( const fs::path& path ) -> tstring {
     }
 
     // Removing the leading dot of the extension.
-    const tstring result = path_to_tstring( ext );
+    const tstring result = pathToTstring( ext );
     return result.substr( 1 );
 }
 
 namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto path_real_filename( const fs::path& filePath ) -> fs::path {
+auto pathRealFilename( const fs::path& filePath ) -> fs::path {
     const auto normalPath = filePath.lexically_normal();
     return normalPath.has_filename() ? normalPath.filename() : normalPath.parent_path().filename();
 }
 } // namespace
 
-auto fsutil::in_archive_path( const fs::path& filePath, const fs::path& searchPath ) -> fs::path {
+auto fsutil::inArchivePath( const fs::path& filePath, const fs::path& searchPath ) -> fs::path {
     /* Note: the following algorithm tries to emulate the behavior of 7-zip when dealing with
              paths of items in archives. */
 
-    const bool pathNeedsNormalization = contains_dot_references( filePath.native() );
+    const bool pathNeedsNormalization = containsDotReferences( filePath.native() );
     // Note: path normalization is computationally expensive,
     // so to obtain the filename of the given path we try to avoid it when possible.
     auto filename = !pathNeedsNormalization
                         ? ( filePath.has_filename() ? filePath.filename() : filePath.parent_path().filename() )
-                        : path_real_filename( filePath );
+                        : pathRealFilename( filePath );
 
     if ( filename.native() == BIT7Z_NATIVE_STRING( "." ) || filename.native() == BIT7Z_NATIVE_STRING( ".." ) ) {
         return {};
@@ -95,8 +95,9 @@ auto fsutil::in_archive_path( const fs::path& filePath, const fs::path& searchPa
     return filePath;
 }
 
+namespace {
 // A modified version of the code found here: https://stackoverflow.com/a/3300547
-auto w_match( // NOLINT(misc-no-recursion)
+auto wildcardPatternMatch( // NOLINT(misc-no-recursion)
     tstring::const_iterator patternIt,
     const tstring::const_iterator& patternEnd,
     tstring::const_iterator strIt,
@@ -118,7 +119,7 @@ auto w_match( // NOLINT(misc-no-recursion)
                     return true;
                 }
                 for ( auto i = strIt; i != strEnd; ++i ) {
-                    if ( w_match( patternIt + 1, patternEnd, i, strEnd ) ) {
+                    if ( wildcardPatternMatch( patternIt + 1, patternEnd, i, strEnd ) ) {
                         return true;
                     }
                 }
@@ -133,12 +134,13 @@ auto w_match( // NOLINT(misc-no-recursion)
     }
     return strIt == strEnd;
 }
+} // namespace
 
-auto fsutil::wildcard_match( const tstring& pattern, const tstring& str ) -> bool { // NOLINT(misc-no-recursion)
+auto fsutil::wildcardMatch( const tstring& pattern, const tstring& str ) -> bool { // NOLINT(misc-no-recursion)
     if ( pattern.empty() ) {
-        return wildcard_match( BIT7Z_STRING( "*" ), str );
+        return wildcardMatch( BIT7Z_STRING( "*" ), str );
     }
-    return w_match( pattern.cbegin(), pattern.cend(), str.begin(), str.end() );
+    return wildcardPatternMatch( pattern.cbegin(), pattern.cend(), str.begin(), str.end() );
 }
 
 #ifndef _WIN32
@@ -157,7 +159,7 @@ static const mode_t global_umask = []() noexcept -> mode_t {
 
 #endif
 
-auto fsutil::set_file_attributes(
+auto fsutil::setFileAttributes(
     const SafeOutPathBuilder& pathBuilder,
     const fs::path& filePath,
     DWORD attributes
@@ -209,12 +211,12 @@ auto fsutil::set_file_attributes(
 }
 
 #ifndef _WIN32
-auto fsutil::set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool {
+auto fsutil::setFileModifiedTime( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool {
     if ( filePath.empty() ) {
         return false;
     }
 
-    const auto fileTime = FILETIME_to_file_time_type( ftModified );
+    const auto fileTime = toFileTimeType( ftModified );
     std::error_code error;
     fs::last_write_time( filePath, fileTime, error );
     return !error;
@@ -227,7 +229,7 @@ namespace {
 constexpr auto kLongPathPrefix = BIT7Z_NATIVE_STRING( R"(\\?\)" );
 } // namespace
 
-auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
+auto fsutil::shouldFormatLongPath( const fs::path& path ) -> bool {
     constexpr auto kMaxDosFilenameSize = 12;
 
     if ( !path.is_absolute() ) {
@@ -240,7 +242,7 @@ auto fsutil::should_format_long_path( const fs::path& path ) -> bool {
     return !starts_with( pathStr, kLongPathPrefix );
 }
 
-auto fsutil::format_long_path( const fs::path& path ) -> fs::path {
+auto fsutil::formatLongPath( const fs::path& path ) -> fs::path {
     fs::path longPath = kLongPathPrefix;
     // Note: we call this function after checking if we should format the given path as a long path.
     // This means that if the path starts with the \\ prefix,
@@ -256,8 +258,8 @@ auto fsutil::format_long_path( const fs::path& path ) -> fs::path {
 
 #endif
 
-void fsutil::increase_opened_files_limit() {
-#if defined( _MSC_VER )
+void fsutil::increaseOpenedFilesLimit() {
+#ifdef _MSC_VER
     // http://msdn.microsoft.com/en-us/library/6e3b887c.aspx
     _setmaxstdio( 8192 );
 #elif defined( __MINGW32__ )
@@ -279,7 +281,7 @@ void fsutil::increase_opened_files_limit() {
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 namespace {
 BIT7Z_NODISCARD
-auto is_windows_reserved_name( const std::wstring& component, std::size_t offset ) -> bool {
+auto isWindowsReservedName( const std::wstring& component, std::size_t offset ) -> bool {
     const auto upperComponent = to_uppercase( component, offset );
 
     // Reserved file names that can't be used on Windows: CON, PRN, AUX, NUL, CONIN$, CONOUT$.
@@ -297,7 +299,7 @@ auto is_windows_reserved_name( const std::wstring& component, std::size_t offset
 }
 
 BIT7Z_NODISCARD
-auto sanitize_path_component( std::wstring component ) -> std::wstring {
+auto sanitizePathComponent( std::wstring component ) -> std::wstring {
     if ( component.empty() ) {
         return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.
     }
@@ -316,7 +318,7 @@ auto sanitize_path_component( std::wstring component ) -> std::wstring {
     }
 
     // If the component is a reserved name on Windows, we prepend it with a '_' character.
-    if ( is_windows_reserved_name( component, firstNonSpace ) ) {
+    if ( isWindowsReservedName( component, firstNonSpace ) ) {
         component.insert( firstNonSpace, 1, L'_' );
         return component;
     }
@@ -337,18 +339,18 @@ auto sanitize_path_component( std::wstring component ) -> std::wstring {
 }
 
 BIT7Z_NODISCARD
-auto sanitize_path_components( const fs::path& path ) -> fs::path {
+auto sanitizePathComponents( const fs::path& path ) -> fs::path {
     fs::path sanitizedPath;
     for ( const auto& pathComponent : path ) {
         // cppcheck-suppress useStlAlgorithm
-        sanitizedPath /= sanitize_path_component( pathComponent.wstring() );
+        sanitizedPath /= sanitizePathComponent( pathComponent.wstring() );
     }
     return sanitizedPath;
 }
 
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto is_drive_relative( const fs::path& path ) -> bool {
+auto isDriveRelative( const fs::path& path ) -> bool {
     // NOLINTBEGIN(*-pro-bounds-avoid-unchecked-container-access)
     const auto& nativePath = path.native();
     return nativePath.size() > 2 &&
@@ -361,22 +363,22 @@ auto is_drive_relative( const fs::path& path ) -> bool {
 #endif
 
 #ifdef BIT7Z_PATH_SANITIZATION
-auto fsutil::sanitize_path( const fs::path& path ) -> fs::path {
+auto fsutil::sanitizePath( const fs::path& path ) -> fs::path {
 #ifdef _WIN32
     if ( path == L"/" ) {
         return L"_";
     }
 
-    if ( is_drive_relative( path ) ) {
+    if ( isDriveRelative( path ) ) {
         // Drive-relative paths are sanitized as C_<rest of the path> (e.g., C:file.txt -> C_file.txt).
-        const auto sanitizedRoot = sanitize_path_component( path.root_path().native() );
-        return sanitizedRoot + sanitize_path_components( path.relative_path() ).native();
+        const auto sanitizedRoot = sanitizePathComponent( path.root_path().native() );
+        return sanitizedRoot + sanitizePathComponents( path.relative_path() ).native();
     }
 
     // Absolute paths: C:/abc/COM0/?invalid:filename.txt -> C_/abc/_COM0/_invalid_filename.txt
     // Relative paths:   /abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
     //                    abc/COM0/?invalid:filename.txt -> abc/_COM0/_invalid_filename.txt
-    return sanitize_path_components( path );
+    return sanitizePathComponents( path );
 #else
     auto result = path.native();
     std::replace( result.begin(), result.end(), '\0', '_' );
@@ -389,7 +391,7 @@ namespace {
 #if !defined( _WIN32 ) || !defined( BIT7Z_PATH_SANITIZATION )
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto is_absolute( const fs::path& path ) -> bool {
+auto isAbsolute( const fs::path& path ) -> bool {
 #ifdef GHC_FILESYSTEM_VERSION
 #   ifdef _WIN32
     // On Windows, ghc::filesystem considers \\server as not absolute (bug?), but we want a consistent behavior.
@@ -409,18 +411,18 @@ auto is_absolute( const fs::path& path ) -> bool {
 // On POSIX, sanitize_path only replaces NUL bytes; if there are none,
 // skip the intermediate fs::path allocation and join the input directly.
 BIT7Z_NODISCARD
-auto join_with_sanitization( const fs::path& base, const fs::path& path ) -> fs::path {
+auto joinWithSanitization( const fs::path& base, const fs::path& path ) -> fs::path {
     if ( path.native().find( fs::path::value_type{} ) == fs::path::string_type::npos ) {
         return base / path;
     }
-    return base / fsutil::sanitize_path( path );
+    return base / fsutil::sanitizePath( path );
 }
 #endif
 
 BIT7Z_NODISCARD
-auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::path {
+auto sanitizePathJoin( const fs::path& base, const fs::path& path ) -> fs::path {
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
-    return base / fsutil::sanitize_path( path );
+    return base / fsutil::sanitizePath( path );
 #else
 #ifndef BIT7Z_PATH_SANITIZATION
     // Null bytes would cause a mismatch between the validated path and the OS-interpreted path,
@@ -429,12 +431,12 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
         throw BitException(
             "Invalid item path",
             make_error_code( BitError::InvalidItemPath ),
-            path_to_tstring( path )
+            pathToTstring( path )
         );
     }
 #endif
 
-    if ( is_absolute( path ) ) {
+    if ( isAbsolute( path ) ) {
 #ifdef BIT7Z_PATH_SANITIZATION
         // POSIX-only: strip leading slashes from the native string directly; relative_path()
         // is unreliable here because ghc::filesystem returns empty for //foo (consumed as
@@ -444,12 +446,12 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
         const auto strippedPath = firstNonSlash != fs::path::string_type::npos
                                       ? fs::path{ native.substr( firstNonSlash ) }
                                       : fs::path{};
-        return join_with_sanitization( base, strippedPath );
+        return joinWithSanitization( base, strippedPath );
 #else
         throw BitException(
             "Invalid item path",
             make_error_code( BitError::ItemHasAbsolutePath ),
-            path_to_tstring( path )
+            pathToTstring( path )
         );
 #endif
     }
@@ -473,7 +475,7 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
 
 #ifdef BIT7Z_PATH_SANITIZATION
     // POSIX-only
-    return join_with_sanitization( base, path );
+    return joinWithSanitization( base, path );
 #else
     return base / path;
 #endif
@@ -481,7 +483,7 @@ auto sanitize_path_join( const fs::path& base, const fs::path& path ) -> fs::pat
 }
 
 BIT7Z_NODISCARD
-auto path_is_outside_base( const fs::path& path, const fs::path& basePath ) noexcept -> bool {
+auto pathIsOutsideBase( const fs::path& path, const fs::path& basePath ) noexcept -> bool {
     const auto& nativePath = path.native();
     const auto& nativeBase = basePath.native();
 
@@ -548,11 +550,11 @@ auto path_is_outside_base( const fs::path& path, const fs::path& basePath ) noex
 
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto sanitize_base_path( const tstring& basePath ) -> fs::path {
+auto sanitizeBasePath( const tstring& basePath ) -> fs::path {
     if ( basePath.empty() || basePath == BIT7Z_STRING( "." ) ) {
         return fs::current_path();
     }
-    auto result = tstring_to_path( basePath );
+    auto result = tstringToPath( basePath );
     if ( !result.is_absolute() ) {
         result = fs::absolute( result );
     }
@@ -562,7 +564,7 @@ auto sanitize_base_path( const tstring& basePath ) -> fs::path {
 } // namespace filesystem
 
 SafeOutPathBuilder::SafeOutPathBuilder( const tstring& basePath )
-    : mBasePath{ filesystem::sanitize_base_path( basePath ) } {
+    : mBasePath{ filesystem::sanitizeBasePath( basePath ) } {
 #ifdef _WIN32
     if ( mBasePath == BIT7Z_NATIVE_STRING( "//" ) || mBasePath == BIT7Z_NATIVE_STRING( "\\\\" ) ) {
         throw BitException{ "Invalid output base path", BitError::InvalidDirectoryPath };
@@ -576,8 +578,8 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
     }
 
     // TODO: Avoid normalization if not needed.
-    auto builtPath = filesystem::sanitize_path_join( mBasePath, path ).lexically_normal();
-    if ( filesystem::path_is_outside_base( builtPath, mBasePath ) ) {
+    auto builtPath = filesystem::sanitizePathJoin( mBasePath, path ).lexically_normal();
+    if ( filesystem::pathIsOutsideBase( builtPath, mBasePath ) ) {
         throw BitException{
             "Cannot extract the item '" + path.string() + "'",
             BitError::ItemPathOutsideOutputDirectory
@@ -585,8 +587,8 @@ auto SafeOutPathBuilder::buildPath( const fs::path& path ) const -> fs::path {
     }
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
-    if ( filesystem::fsutil::should_format_long_path( builtPath ) ) {
-        return filesystem::fsutil::format_long_path( builtPath );
+    if ( filesystem::fsutil::shouldFormatLongPath( builtPath ) ) {
+        return filesystem::fsutil::formatLongPath( builtPath );
     }
 #endif
 
@@ -629,8 +631,8 @@ auto SafeOutPathBuilder::restoreSymlink( const fs::path& symlinkFilePath ) const
     const auto symlinkParent = symlinkFilePath.parent_path();
 
     // TODO: Avoid normalization if not needed.
-    const auto resolvedTargetPath = filesystem::sanitize_path_join( symlinkParent, targetPath ).lexically_normal();
-    if ( filesystem::path_is_outside_base( resolvedTargetPath, mBasePath ) ) {
+    const auto resolvedTargetPath = filesystem::sanitizePathJoin( symlinkParent, targetPath ).lexically_normal();
+    if ( filesystem::pathIsOutsideBase( resolvedTargetPath, mBasePath ) ) {
         return false;
     }
 

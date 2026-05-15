@@ -47,9 +47,9 @@ namespace {
  *
  * @return The hash integer.
  */
-auto constexpr str_hash( bit7z::tchar const* input ) -> std::uint64_t { // NOLINT(misc-no-recursion)
+constexpr auto strHash( const bit7z::tchar* input ) -> std::uint64_t { // NOLINT(misc-no-recursion)
     // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic, *-magic-numbers)
-    return *input != 0 ? static_cast< std::uint64_t >( *input ) + 33 * str_hash( input + 1 ) : 5381; //-V2563
+    return *input != 0 ? static_cast< std::uint64_t >( *input ) + 33 * strHash( input + 1 ) : 5381; //-V2563
 }
 } // namespace
 #endif
@@ -59,156 +59,156 @@ namespace {
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
 /* NOTE: Until v3, a std::unordered_map was used for mapping the extensions and the corresponding
  *       format, but the ifs are faster and have less memory footprint. */
-auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* {
-    switch ( str_hash( extension.c_str() ) ) {
-        case str_hash( BIT7Z_STRING( "7z" ) ):
+auto findFormatByExtension( const tstring& extension ) -> const BitInFormat* {
+    switch ( strHash( extension.c_str() ) ) {
+        case strHash( BIT7Z_STRING( "7z" ) ):
             return &BitFormat::SevenZip;
-        case str_hash( BIT7Z_STRING( "bzip2" ) ):
-        case str_hash( BIT7Z_STRING( "bz2" ) ):
-        case str_hash( BIT7Z_STRING( "tbz2" ) ):
-        case str_hash( BIT7Z_STRING( "tbz" ) ):
+        case strHash( BIT7Z_STRING( "bzip2" ) ):
+        case strHash( BIT7Z_STRING( "bz2" ) ):
+        case strHash( BIT7Z_STRING( "tbz2" ) ):
+        case strHash( BIT7Z_STRING( "tbz" ) ):
             return &BitFormat::BZip2;
-        case str_hash( BIT7Z_STRING( "gz" ) ):
-        case str_hash( BIT7Z_STRING( "gzip" ) ):
-        case str_hash( BIT7Z_STRING( "tgz" ) ):
+        case strHash( BIT7Z_STRING( "gz" ) ):
+        case strHash( BIT7Z_STRING( "gzip" ) ):
+        case strHash( BIT7Z_STRING( "tgz" ) ):
             return &BitFormat::GZip;
-        case str_hash( BIT7Z_STRING( "tar" ) ):
-        case str_hash( BIT7Z_STRING( "ova" ) ):
+        case strHash( BIT7Z_STRING( "tar" ) ):
+        case strHash( BIT7Z_STRING( "ova" ) ):
             return &BitFormat::Tar;
-        case str_hash( BIT7Z_STRING( "wim" ) ):
-        case str_hash( BIT7Z_STRING( "swm" ) ):
+        case strHash( BIT7Z_STRING( "wim" ) ):
+        case strHash( BIT7Z_STRING( "swm" ) ):
             return &BitFormat::Wim;
-        case str_hash( BIT7Z_STRING( "xz" ) ):
-        case str_hash( BIT7Z_STRING( "txz" ) ):
+        case strHash( BIT7Z_STRING( "xz" ) ):
+        case strHash( BIT7Z_STRING( "txz" ) ):
             return &BitFormat::Xz;
-        case str_hash( BIT7Z_STRING( "zip" ) ):
-        case str_hash( BIT7Z_STRING( "zipx" ) ):
-        case str_hash( BIT7Z_STRING( "jar" ) ):
-        case str_hash( BIT7Z_STRING( "xpi" ) ):
-        case str_hash( BIT7Z_STRING( "odt" ) ):
-        case str_hash( BIT7Z_STRING( "ods" ) ):
-        case str_hash( BIT7Z_STRING( "odp" ) ):
-        case str_hash( BIT7Z_STRING( "docx" ) ):
-        case str_hash( BIT7Z_STRING( "xlsx" ) ):
-        case str_hash( BIT7Z_STRING( "pptx" ) ):
-        case str_hash( BIT7Z_STRING( "epub" ) ):
+        case strHash( BIT7Z_STRING( "zip" ) ):
+        case strHash( BIT7Z_STRING( "zipx" ) ):
+        case strHash( BIT7Z_STRING( "jar" ) ):
+        case strHash( BIT7Z_STRING( "xpi" ) ):
+        case strHash( BIT7Z_STRING( "odt" ) ):
+        case strHash( BIT7Z_STRING( "ods" ) ):
+        case strHash( BIT7Z_STRING( "odp" ) ):
+        case strHash( BIT7Z_STRING( "docx" ) ):
+        case strHash( BIT7Z_STRING( "xlsx" ) ):
+        case strHash( BIT7Z_STRING( "pptx" ) ):
+        case strHash( BIT7Z_STRING( "epub" ) ):
             return &BitFormat::Zip;
-        case str_hash( BIT7Z_STRING( "001" ) ):
+        case strHash( BIT7Z_STRING( "001" ) ):
             return &BitFormat::Split;
-        case str_hash( BIT7Z_STRING( "ar" ) ):
-        case str_hash( BIT7Z_STRING( "deb" ) ):
+        case strHash( BIT7Z_STRING( "ar" ) ):
+        case strHash( BIT7Z_STRING( "deb" ) ):
             return &BitFormat::Deb;
-        case str_hash( BIT7Z_STRING( "apfs" ) ):
+        case strHash( BIT7Z_STRING( "apfs" ) ):
             return &BitFormat::APFS;
-        case str_hash( BIT7Z_STRING( "avb" ) ):
+        case strHash( BIT7Z_STRING( "avb" ) ):
             return &BitFormat::AVB;
-        case str_hash( BIT7Z_STRING( "apm" ) ):
+        case strHash( BIT7Z_STRING( "apm" ) ):
             return &BitFormat::APM;
-        case str_hash( BIT7Z_STRING( "arj" ) ):
+        case strHash( BIT7Z_STRING( "arj" ) ):
             return &BitFormat::Arj;
-        case str_hash( BIT7Z_STRING( "cab" ) ):
+        case strHash( BIT7Z_STRING( "cab" ) ):
             return &BitFormat::Cab;
-        case str_hash( BIT7Z_STRING( "chm" ) ):
-        case str_hash( BIT7Z_STRING( "chi" ) ):
+        case strHash( BIT7Z_STRING( "chm" ) ):
+        case strHash( BIT7Z_STRING( "chi" ) ):
             return &BitFormat::Chm;
-        case str_hash( BIT7Z_STRING( "msi" ) ):
-        case str_hash( BIT7Z_STRING( "doc" ) ):
-        case str_hash( BIT7Z_STRING( "xls" ) ):
-        case str_hash( BIT7Z_STRING( "ppt" ) ):
-        case str_hash( BIT7Z_STRING( "msg" ) ):
+        case strHash( BIT7Z_STRING( "msi" ) ):
+        case strHash( BIT7Z_STRING( "doc" ) ):
+        case strHash( BIT7Z_STRING( "xls" ) ):
+        case strHash( BIT7Z_STRING( "ppt" ) ):
+        case strHash( BIT7Z_STRING( "msg" ) ):
             return &BitFormat::Compound;
-        case str_hash( BIT7Z_STRING( "obj" ) ):
+        case strHash( BIT7Z_STRING( "obj" ) ):
             return &BitFormat::COFF;
-        case str_hash( BIT7Z_STRING( "cpio" ) ):
+        case strHash( BIT7Z_STRING( "cpio" ) ):
             return &BitFormat::Cpio;
-        case str_hash( BIT7Z_STRING( "cramfs" ) ):
+        case strHash( BIT7Z_STRING( "cramfs" ) ):
             return &BitFormat::CramFS;
-        case str_hash( BIT7Z_STRING( "dmg" ) ):
+        case strHash( BIT7Z_STRING( "dmg" ) ):
             return &BitFormat::Dmg;
-        case str_hash( BIT7Z_STRING( "dll" ) ):
-        case str_hash( BIT7Z_STRING( "exe" ) ):
+        case strHash( BIT7Z_STRING( "dll" ) ):
+        case strHash( BIT7Z_STRING( "exe" ) ):
             //note: at least for now, we do not distinguish 7z SFX executables.
             return &BitFormat::Pe;
-        case str_hash( BIT7Z_STRING( "dylib" ) ):
+        case strHash( BIT7Z_STRING( "dylib" ) ):
             return &BitFormat::Macho;
-        case str_hash( BIT7Z_STRING( "ext" ) ):
-        case str_hash( BIT7Z_STRING( "ext2" ) ):
-        case str_hash( BIT7Z_STRING( "ext3" ) ):
-        case str_hash( BIT7Z_STRING( "ext4" ) ):
+        case strHash( BIT7Z_STRING( "ext" ) ):
+        case strHash( BIT7Z_STRING( "ext2" ) ):
+        case strHash( BIT7Z_STRING( "ext3" ) ):
+        case strHash( BIT7Z_STRING( "ext4" ) ):
             return &BitFormat::Ext;
-        case str_hash( BIT7Z_STRING( "fat" ) ):
+        case strHash( BIT7Z_STRING( "fat" ) ):
             return &BitFormat::Fat;
-        case str_hash( BIT7Z_STRING( "flv" ) ):
+        case strHash( BIT7Z_STRING( "flv" ) ):
             return &BitFormat::Flv;
-        case str_hash( BIT7Z_STRING( "gpt" ) ):
+        case strHash( BIT7Z_STRING( "gpt" ) ):
             return &BitFormat::GPT;
-        case str_hash( BIT7Z_STRING( "hfs" ) ):
-        case str_hash( BIT7Z_STRING( "hfsx" ) ):
+        case strHash( BIT7Z_STRING( "hfs" ) ):
+        case strHash( BIT7Z_STRING( "hfsx" ) ):
             return &BitFormat::Hfs;
-        case str_hash( BIT7Z_STRING( "hxs" ) ):
+        case strHash( BIT7Z_STRING( "hxs" ) ):
             return &BitFormat::Hxs;
-        case str_hash( BIT7Z_STRING( "ihex" ) ):
+        case strHash( BIT7Z_STRING( "ihex" ) ):
             return &BitFormat::IHex;
-        case str_hash( BIT7Z_STRING( "lzh" ) ):
-        case str_hash( BIT7Z_STRING( "lha" ) ):
+        case strHash( BIT7Z_STRING( "lzh" ) ):
+        case strHash( BIT7Z_STRING( "lha" ) ):
             return &BitFormat::Lzh;
-        case str_hash( BIT7Z_STRING( "lpimg" ) ):
+        case strHash( BIT7Z_STRING( "lpimg" ) ):
             return &BitFormat::LP;
-        case str_hash( BIT7Z_STRING( "lvm" ) ):
+        case strHash( BIT7Z_STRING( "lvm" ) ):
             return &BitFormat::LVM;
-        case str_hash( BIT7Z_STRING( "lzma" ) ):
+        case strHash( BIT7Z_STRING( "lzma" ) ):
             return &BitFormat::Lzma;
-        case str_hash( BIT7Z_STRING( "lzma86" ) ):
+        case strHash( BIT7Z_STRING( "lzma86" ) ):
             return &BitFormat::Lzma86;
-        case str_hash( BIT7Z_STRING( "mbr" ) ):
+        case strHash( BIT7Z_STRING( "mbr" ) ):
             return &BitFormat::Mbr;
-        case str_hash( BIT7Z_STRING( "mslz" ) ):
+        case strHash( BIT7Z_STRING( "mslz" ) ):
             return &BitFormat::Mslz;
-        case str_hash( BIT7Z_STRING( "mub" ) ):
+        case strHash( BIT7Z_STRING( "mub" ) ):
             return &BitFormat::Mub;
-        case str_hash( BIT7Z_STRING( "nsis" ) ):
+        case strHash( BIT7Z_STRING( "nsis" ) ):
             return &BitFormat::Nsis;
-        case str_hash( BIT7Z_STRING( "ntfs" ) ):
+        case strHash( BIT7Z_STRING( "ntfs" ) ):
             return &BitFormat::Ntfs;
-        case str_hash( BIT7Z_STRING( "pmd" ) ):
-        case str_hash( BIT7Z_STRING( "ppmd" ) ):
+        case strHash( BIT7Z_STRING( "pmd" ) ):
+        case strHash( BIT7Z_STRING( "ppmd" ) ):
             return &BitFormat::Ppmd;
-        case str_hash( BIT7Z_STRING( "qcow" ) ):
-        case str_hash( BIT7Z_STRING( "qcow2" ) ):
-        case str_hash( BIT7Z_STRING( "qcow2c" ) ):
+        case strHash( BIT7Z_STRING( "qcow" ) ):
+        case strHash( BIT7Z_STRING( "qcow2" ) ):
+        case strHash( BIT7Z_STRING( "qcow2c" ) ):
             return &BitFormat::QCow;
-        case str_hash( BIT7Z_STRING( "rpm" ) ):
+        case strHash( BIT7Z_STRING( "rpm" ) ):
             return &BitFormat::Rpm;
-        case str_hash( BIT7Z_STRING( "simg" ) ):
+        case strHash( BIT7Z_STRING( "simg" ) ):
             return &BitFormat::Sparse;
-        case str_hash( BIT7Z_STRING( "squashfs" ) ):
+        case strHash( BIT7Z_STRING( "squashfs" ) ):
             return &BitFormat::SquashFS;
-        case str_hash( BIT7Z_STRING( "swf" ) ):
+        case strHash( BIT7Z_STRING( "swf" ) ):
             return &BitFormat::Swf;
-        case str_hash( BIT7Z_STRING( "te" ) ):
+        case strHash( BIT7Z_STRING( "te" ) ):
             return &BitFormat::TE;
-        case str_hash( BIT7Z_STRING( "udf" ) ):
+        case strHash( BIT7Z_STRING( "udf" ) ):
             return &BitFormat::Udf;
-        case str_hash( BIT7Z_STRING( "scap" ) ):
+        case strHash( BIT7Z_STRING( "scap" ) ):
             return &BitFormat::UEFIc;
-        case str_hash( BIT7Z_STRING( "uefif" ) ):
+        case strHash( BIT7Z_STRING( "uefif" ) ):
             return &BitFormat::UEFIs;
-        case str_hash( BIT7Z_STRING( "vmdk" ) ):
+        case strHash( BIT7Z_STRING( "vmdk" ) ):
             return &BitFormat::VMDK;
-        case str_hash( BIT7Z_STRING( "vdi" ) ):
+        case strHash( BIT7Z_STRING( "vdi" ) ):
             return &BitFormat::VDI;
-        case str_hash( BIT7Z_STRING( "vhd" ) ):
+        case strHash( BIT7Z_STRING( "vhd" ) ):
             return &BitFormat::Vhd;
-        case str_hash( BIT7Z_STRING( "vhdx" ) ):
-        case str_hash( BIT7Z_STRING( "avhdx" ) ):
+        case strHash( BIT7Z_STRING( "vhdx" ) ):
+        case strHash( BIT7Z_STRING( "avhdx" ) ):
             return &BitFormat::Vhdx;
-        case str_hash( BIT7Z_STRING( "xar" ) ):
-        case str_hash( BIT7Z_STRING( "pkg" ) ):
+        case strHash( BIT7Z_STRING( "xar" ) ):
+        case strHash( BIT7Z_STRING( "pkg" ) ):
             return &BitFormat::Xar;
-        case str_hash( BIT7Z_STRING( "z" ) ):
-        case str_hash( BIT7Z_STRING( "taz" ) ):
+        case strHash( BIT7Z_STRING( "z" ) ):
+        case strHash( BIT7Z_STRING( "taz" ) ):
             return &BitFormat::Z;
-        case str_hash( BIT7Z_STRING( "zst" ) ):
+        case strHash( BIT7Z_STRING( "zst" ) ):
             return &BitFormat::Zstd;
         default:
             return nullptr;
@@ -219,7 +219,7 @@ auto find_format_by_extension( const tstring& extension ) -> const BitInFormat* 
 /* NOTE 1: For signatures with less than 8 bytes (size of std::uint64_t), remaining bytes are set to 0
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
  *         format. However, the switch case is faster and has less memory footprint. */
-auto find_format_by_signature( std::uint64_t signature ) noexcept -> const BitInFormat* {
+auto findFormatBySignature( std::uint64_t signature ) noexcept -> const BitInFormat* {
     constexpr auto kRarSignature = 0x526172211A070000ULL; // Rar! 0x1A 0x07 0x00
     constexpr auto kRar5Signature = 0x526172211A070100ULL; // Rar! 0x1A 0x07 0x01 0x00
     constexpr auto kSevenzipSignature = 0x377ABCAF271C0000ULL; // 7z 0xBC 0xAF 0x27 0x1C
@@ -384,7 +384,7 @@ struct OffsetSignature { // NOLINT(*-member-init)
     std::reference_wrapper< const BitInFormat > format;
 };
 
-#if defined(_WIN32)
+#ifdef _WIN32
 #define bswap64 _byteswap_uint64
 #elif defined(__GNUC__) || defined(__clang__)
 //Note: the versions of gcc and clang that can compile bit7z should also have this builtin, hence there is no need
@@ -406,7 +406,7 @@ static inline std::uint64_t bswap64( std::uint64_t x ) {
 #endif
 
 namespace {
-auto read_signature( IInStream* stream, std::uint32_t size ) noexcept -> std::uint64_t {
+auto readSignature( IInStream* stream, std::uint32_t size ) noexcept -> std::uint64_t {
     std::uint64_t signature = 0;
     ( void )stream->Read( &signature, size, nullptr );
     return bswap64( signature );
@@ -414,15 +414,15 @@ auto read_signature( IInStream* stream, std::uint32_t size ) noexcept -> std::ui
 } // namespace
 
 // Note: the left shifting of the signature mask might overflow, but it is intentional, so we suppress the sanitizer.
-auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
+auto detectFormatFromSignature( IInStream* stream ) -> const BitInFormat& {
     constexpr auto kSignatureSize = 8U;
     constexpr auto kBaseSignatureMask = 0xFFFFFFFFFFFFFFFFULL;
     constexpr auto kByteShift = 8ULL;
 
-    std::uint64_t fileSignature = read_signature( stream, kSignatureSize );
+    std::uint64_t fileSignature = readSignature( stream, kSignatureSize );
     std::uint64_t signatureMask = kBaseSignatureMask;
     for ( auto i = 0U; i < kSignatureSize - 1; ++i ) {
-        const BitInFormat* format = find_format_by_signature( fileSignature );
+        const BitInFormat* format = findFormatBySignature( fileSignature );
         if ( format != nullptr ) {
             ( void )stream->Seek( 0, 0, nullptr );
             return *format;
@@ -450,7 +450,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
 
     for ( const auto& sig : commonSignaturesWithOffset ) {
         ( void )stream->Seek( sig.offset, 0, nullptr );
-        fileSignature = read_signature( stream, sig.size );
+        fileSignature = readSignature( stream, sig.size );
         if ( fileSignature == sig.signature ) {
             ( void )stream->Seek( 0, 0, nullptr );
             return sig.format;
@@ -465,7 +465,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
 
     // Checking for ISO signature
     ( void )stream->Seek( kIsoSignatureOffset, 0, nullptr );
-    fileSignature = read_signature( stream, kIsoSignatureSize );
+    fileSignature = readSignature( stream, kIsoSignatureSize );
 
     const bool isIso = fileSignature == kIsoSignature;
     if ( isIso || fileSignature == kBeaSignature ) {
@@ -477,7 +477,7 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
 
         for ( auto descriptorIndex = 1; descriptorIndex < kMaxVolumeDescriptors; ++descriptorIndex ) {
             ( void )stream->Seek( kIsoSignatureOffset + ( descriptorIndex * kIsoVolumeDescriptorSize ), 0, nullptr );
-            fileSignature = read_signature( stream, kUdfSignatureSize );
+            fileSignature = readSignature( stream, kUdfSignatureSize );
 
             if ( fileSignature == kUdfSignature ) { // The file is ISO+UDF or just UDF
                 ( void )stream->Seek( 0, 0, nullptr );
@@ -501,35 +501,35 @@ auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat& {
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
 #   define is_digit(ch) std::iswdigit(ch) != 0
-const auto to_lower = std::towlower;
+const auto toLower = std::towlower;
 #else
 namespace {
-auto is_digit( char character ) -> bool {
+auto isDigit( char character ) -> bool {
     return std::isdigit( character ) != 0;
 }
 
-auto to_lower( unsigned char character ) -> char {
+auto toLower( unsigned char character ) -> char {
     return static_cast< char >( std::tolower( character ) );
 }
 } // namespace
 #endif
 
-auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat& {
+auto detectFormatFromExtension( const fs::path& inFile ) -> const BitInFormat& {
     tstring ext = filesystem::fsutil::extension( inFile );
     if ( ext.empty() ) {
         return BitFormat::Auto;
     }
-    std::transform( ext.cbegin(), ext.cend(), ext.begin(), to_lower );
+    std::transform( ext.cbegin(), ext.cend(), ext.begin(), toLower );
 
     // Detecting archives with common file extensions
-    const BitInFormat* format = find_format_by_extension( ext );
+    const BitInFormat* format = findFormatByExtension( ext );
     if ( format != nullptr ) { //extension found in the map
         return *format;
     }
 
     // Detecting multi-volume archives extensions
     if ( ( ext[ 0 ] == BIT7Z_STRING( 'r' ) || ext[ 0 ] == BIT7Z_STRING( 'z' ) ) &&
-         ( ext.size() == 3 && is_digit( ext[ 1 ] ) && is_digit( ext[ 2 ] ) ) ) {
+         ( ext.size() == 3 && isDigit( ext[ 1 ] ) && isDigit( ext[ 2 ] ) ) ) {
         // Extension follows the format zXX or rXX, where X is a number in range [0-9]
         return ext[ 0 ] == BIT7Z_STRING( 'r' ) ? BitFormat::Rar : BitFormat::Zip;
     }

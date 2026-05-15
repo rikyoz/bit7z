@@ -45,7 +45,7 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP OpenCallback::GetProperty( PROPID property, PROPVARIANT* value ) noexcept try {
     BitPropVariant prop;
     if ( property == kpidName ) {
-        prop = mSubArchiveMode ? mSubArchiveName : path_to_sevenzip_string( mArchivePath.filename() );
+        prop = mSubArchiveMode ? mSubArchiveName : pathToSevenzipString( mArchivePath.filename() );
     }
     *value = prop;
     prop.bstrVal = nullptr; // NOLINT(*-pro-type-union-access)

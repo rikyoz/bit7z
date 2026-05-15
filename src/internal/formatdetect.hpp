@@ -24,11 +24,11 @@ class BitInFormat;
 
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
 
-auto detect_format_from_extension( const fs::path& inFile ) -> const BitInFormat&;
+auto detectFormatFromExtension( const fs::path& inFile ) -> const BitInFormat&;
 
 #endif
 
-auto detect_format_from_signature( IInStream* stream ) -> const BitInFormat&;
+auto detectFormatFromSignature( IInStream* stream ) -> const BitInFormat&;
 
 } // namespace bit7z
 

@@ -25,7 +25,7 @@ struct OpenCategory final : std::error_category {
     BIT7Z_NODISCARD auto default_error_condition( int errorValue ) const noexcept -> std::error_condition override;
 };
 
-auto open_category() noexcept -> const std::error_category&;
+auto openCategory() noexcept -> const std::error_category&;
 
 } // namespace bit7z
 

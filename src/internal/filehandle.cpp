@@ -34,7 +34,7 @@ namespace bit7z {
 namespace {
 
 BIT7Z_ALWAYS_INLINE
-auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t {
+auto openFile( const native_string& filePath, OpenFlags openFlags ) -> handle_t {
 #ifdef _WIN32
     DWORD flagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
     if ( hasFlag( openFlags.extraFlag, ExtraFlag::NoFollow ) ) {
@@ -54,8 +54,8 @@ auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t
     const handle_t handle = open( filePath.c_str(), openFlags.value(), S_IRUSR | S_IWUSR );
     if ( handle < 0 ) {
 #endif
-        const std::error_code error = last_error_code();
-        throw BitException( "Could not open the file", error, path_to_tstring( filePath ) );
+        const std::error_code error = lastErrorCode();
+        throw BitException( "Could not open the file", error, pathToTstring( filePath ) );
     }
 #ifdef _WIN32
     // Emulate the strict POSIX O_NOFOLLOW semantics: fail only on symlinks, not on other
@@ -67,15 +67,15 @@ auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t
                                                              &tagInfo,
                                                              sizeof( tagInfo ) );
         if ( queryOk == FALSE ) {
-            const std::error_code error = last_error_code();
+            const std::error_code error = lastErrorCode();
             CloseHandle( handle );
-            throw BitException( "Could not query file reparse tag", error, path_to_tstring( filePath ) );
+            throw BitException( "Could not query file reparse tag", error, pathToTstring( filePath ) );
         }
         if ( tagInfo.ReparseTag == IO_REPARSE_TAG_SYMLINK ) {
             CloseHandle( handle );
             throw BitException( "Refusing to open a symbolic link",
                                 std::make_error_code( std::errc::too_many_symbolic_link_levels ),
-                                path_to_tstring( filePath ) );
+                                pathToTstring( filePath ) );
         }
     }
 #endif
@@ -85,7 +85,7 @@ auto open_file( const native_string& filePath, OpenFlags openFlags ) -> handle_t
 } // namespace
 
 FileHandle::FileHandle( const native_string& filePath, OpenFlags openFlags )
-    : mHandle{ open_file( filePath, openFlags ) } {}
+    : mHandle{ openFile( filePath, openFlags ) } {}
 
 FileHandle::~FileHandle() {
 #ifdef _WIN32

@@ -24,7 +24,7 @@ auto to_tstring( const native_string& str ) -> tstring {
 }
 #endif
 
-#if !defined( _WIN32 )
+#ifndef _WIN32
 auto to_native_string( const sevenzip_string& str ) -> native_string {
     return narrow( str.data(), str.size() );
 }

@@ -76,7 +76,7 @@ void BitArchiveEditor::renameItem( const tstring& oldPath, const tstring& newPat
 void BitArchiveEditor::updateItem( std::uint32_t index, const tstring& inFile ) {
     checkIndex( index );
     const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
-    setEditedItem( index, BitInputItem{ tstring_to_path( inFile ), itemName.getNativeString() } ); //-V108
+    setEditedItem( index, BitInputItem{ tstringToPath( inFile ), itemName.getNativeString() } ); //-V108
 }
 
 void BitArchiveEditor::updateItem( std::uint32_t index, const buffer_t& inBuffer ) {
@@ -92,7 +92,7 @@ void BitArchiveEditor::updateItem( std::uint32_t index, std::istream& inStream )
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const tstring& inFile ) {
-    setEditedItem( findItem( itemPath ), BitInputItem{ tstring_to_path( inFile ), tstring_to_path( itemPath ) } );
+    setEditedItem( findItem( itemPath ), BitInputItem{ tstringToPath( inFile ), tstringToPath( itemPath ) } );
 }
 
 void BitArchiveEditor::updateItem( const tstring& itemPath, const buffer_t& inBuffer ) {
@@ -130,6 +130,7 @@ void BitArchiveEditor::deleteItem( std::uint32_t index, DeletePolicy policy ) {
     }
 }
 
+namespace {
 /**
  * Determines if the given itemPath is within the specified base directory.
  *
@@ -139,7 +140,7 @@ void BitArchiveEditor::deleteItem( std::uint32_t index, DeletePolicy policy ) {
  *
  * @return true if the itemPath is located within the base directory, false otherwise.
  */
-inline auto isInsidePath( const fs::path& itemPath, bool isDir, const fs::path& base ) -> bool {
+auto isInsidePath( const fs::path& itemPath, bool isDir, const fs::path& base ) -> bool {
     const auto relativePath = itemPath.lexically_relative( base ).native();
     /* The relative path of the item with respect to the base directory can be:
      * 1) A single dot component;
@@ -160,6 +161,7 @@ inline auto isInsidePath( const fs::path& itemPath, bool isDir, const fs::path& 
            ( !starts_with( relativePath, BIT7Z_NATIVE_STRING( ".." ) ) ||
              ( relativePath.size() > 2 && !isPathSeparator( relativePath[ 2 ] ) ) );
 }
+} // namespace
 
 void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy ) {
     // The path to be deleted must be relative to the root of the archive.
@@ -174,7 +176,7 @@ void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy 
     bool deleted = false;
 
     // Normalized form of the path to be deleted inside the archive.
-    const auto deletedPath = tstring_to_path( itemPath ).lexically_normal();
+    const auto deletedPath = tstringToPath( itemPath ).lexically_normal();
     for ( const auto& item : *inputArchive() ) {
         const fs::path path = item.nativePath();
 

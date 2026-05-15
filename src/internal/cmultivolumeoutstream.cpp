@@ -145,7 +145,7 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
             return STG_E_INVALIDFUNCTION;
     }
 
-    RINOK( seek_to_offset( seekPosition, offset ) ) //-V3504
+    RINOK( seekToOffset( seekPosition, offset ) ) //-V3504
     mAbsolutePosition = seekPosition;
     if ( newPosition != nullptr ) {
         *newPosition = mAbsolutePosition;
@@ -158,7 +158,7 @@ namespace {
 // Computes ceil( a / b ) for unsigned integers using ( ( a - 1 ) / b ) + 1 instead of the naive
 // ( a + b - 1 ) / b to avoid overflow, with an explicit check for a == 0 to prevent underflow.
 template< typename T, typename = typename std::enable_if< std::is_unsigned< T >::value >::type >
-constexpr auto ceil_div( T dividend, T divisor ) -> T {
+constexpr auto ceilDiv( T dividend, T divisor ) -> T {
     return dividend == 0 ? 0 : ( ( dividend - 1 ) / divisor ) + 1;
 }
 } // namespace
@@ -171,7 +171,7 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
 
     // The new size would produce a number of volumes above the maximum allowed.
     // Note: mMaxVolumeSize is non-zero by construction.
-    if ( ceil_div( static_cast< std::uint64_t >( newSize ), mMaxVolumeSize ) > maxVolumes ) {
+    if ( ceilDiv( static_cast< std::uint64_t >( newSize ), mMaxVolumeSize ) > maxVolumes ) {
         return E_INVALIDARG;
     }
 

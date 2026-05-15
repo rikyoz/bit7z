@@ -34,7 +34,7 @@ using FailedFiles = std::vector< FailedFile >;
 
 auto make_hresult_code( HRESULT res ) noexcept -> std::error_code;
 
-auto last_error_code() noexcept -> std::error_code;
+auto lastErrorCode() noexcept -> std::error_code;
 
 /**
  * @brief The BitException class represents a generic exception thrown from the bit7z classes.

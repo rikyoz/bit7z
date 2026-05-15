@@ -17,7 +17,7 @@
 #include "internal/stringutil.hpp"
 
 #ifdef _WIN32
-#   define ERROR_CODE( errc ) bit7z::last_error_code()
+#   define ERROR_CODE( errc ) bit7z::lastErrorCode()
 #else
 #   include <dlfcn.h>
 
@@ -32,7 +32,7 @@ namespace bit7z {
 
 namespace {
 BIT7Z_ALWAYS_INLINE
-auto load_library( const tstring& libraryPath ) -> LibraryHandle {
+auto loadLibrary( const tstring& libraryPath ) -> LibraryHandle {
     auto* const handle = LoadLibraryW( NATIVE( libraryPath ).c_str() );
     if ( handle == nullptr ) {
         // Note: MSVC 2015 doesn't correctly get the last error
@@ -45,7 +45,7 @@ auto load_library( const tstring& libraryPath ) -> LibraryHandle {
 }
 } // namespace
 
-BitSharedLibrary::BitSharedLibrary( const tstring& libraryPath ) : mLibrary{ load_library( libraryPath ) } {}
+BitSharedLibrary::BitSharedLibrary( const tstring& libraryPath ) : mLibrary{ loadLibrary( libraryPath ) } {}
 
 BitSharedLibrary::~BitSharedLibrary() {
     FreeLibrary( mLibrary );

@@ -164,7 +164,7 @@ auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -
     }
 }
 
-auto hresult_category() noexcept -> const std::error_category& {
+auto hresultCategory() noexcept -> const std::error_category& {
     static const bit7z::HRESULTCategory instance{};
     return instance;
 }

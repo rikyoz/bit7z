@@ -117,7 +117,7 @@ auto InternalCategory::default_error_condition( int errorValue ) const noexcept 
     }
 }
 
-auto internal_category() noexcept -> const std::error_category& {
+auto internalCategory() noexcept -> const std::error_category& {
     static const InternalCategory instance{};
     return instance;
 }

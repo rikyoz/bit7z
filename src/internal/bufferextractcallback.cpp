@@ -55,7 +55,7 @@ auto BufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStr
         fullPath = kEmptyFileAlias;
     } else if ( prop.isString() ) {
         if ( !mHandler.retainDirectories() ) {
-            fullPath = path_to_tstring( fs::path{ prop.getNativeString() }.filename() );
+            fullPath = pathToTstring( fs::path{ prop.getNativeString() }.filename() );
         } else {
             fullPath = prop.getString();
         }

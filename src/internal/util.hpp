@@ -19,12 +19,12 @@
 
 namespace bit7z {
 
-constexpr auto check_overflow( std::int64_t position, std::int64_t offset ) noexcept -> bool {
+constexpr auto checkOverflow( std::int64_t position, std::int64_t offset ) noexcept -> bool {
     return ( ( offset > 0 ) && ( position > ( ( std::numeric_limits< std::int64_t >::max )() - offset ) ) ) ||
            ( ( offset < 0 ) && ( position < ( ( std::numeric_limits< std::int64_t >::min )() - offset ) ) );
 }
 
-inline auto seek_to_offset( std::uint64_t& position, std::int64_t offset ) noexcept -> HRESULT {
+inline auto seekToOffset( std::uint64_t& position, std::int64_t offset ) noexcept -> HRESULT {
     // Checking if adding the offset would result in the unsigned wrap around of the current position.
     if ( offset < 0 ) {
         if ( offset == std::numeric_limits< std::int64_t >::min() ) {

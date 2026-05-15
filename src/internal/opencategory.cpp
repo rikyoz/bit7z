@@ -73,7 +73,7 @@ auto OpenCategory::default_error_condition( int errorValue ) const noexcept -> s
     }
 }
 
-auto open_category() noexcept -> const std::error_category& {
+auto openCategory() noexcept -> const std::error_category& {
     static const OpenCategory instance{};
     return instance;
 }

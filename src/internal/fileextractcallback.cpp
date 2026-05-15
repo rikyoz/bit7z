@@ -72,12 +72,12 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
 
 #ifndef _WIN32
     if ( mCurrentItem->hasTimeAttributes() ) {
-        filesystem::fsutil::set_file_modified_time( mFilePathOnDisk, mCurrentItem->modifiedTime() );
+        filesystem::fsutil::setFileModifiedTime( mFilePathOnDisk, mCurrentItem->modifiedTime() );
     }
 #endif
 
     if ( mCurrentItem->areAttributesDefined() ) {
-        filesystem::fsutil::set_file_attributes( mOutPathBuilder, mFilePathOnDisk, mCurrentItem->attributes() );
+        filesystem::fsutil::setFileAttributes( mOutPathBuilder, mFilePathOnDisk, mCurrentItem->attributes() );
     }
     return result;
 }
@@ -94,9 +94,9 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
         // Here we don't use the path_to_tstring function to avoid allocating a new string object.
         const auto& filePathString = filePath.native();
 #else
-        const auto filePathString = path_to_tstring( filePath );
+        const auto filePathString = pathToTstring( filePath );
 #endif
-        filePath = tstring_to_path( mRenameCallback( index, filePathString ) );
+        filePath = tstringToPath( mRenameCallback( index, filePathString ) );
     }
 
     const auto itemIsFolder = isItemFolder( index );
@@ -113,7 +113,7 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
             // Here we don't use the path_to_tstring function to avoid allocating a new string object.
             const auto& filePathString = filePath.native();
 #else
-            const auto filePathString = path_to_tstring( filePath );
+            const auto filePathString = pathToTstring( filePath );
 #endif
             mHandler.fileCallback()( filePathString );
         }
@@ -128,7 +128,7 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
                     throw BitException(
                         kCannotDeleteOutput,
                         make_hresult_code( E_ABORT ),
-                        path_to_tstring( mFilePathOnDisk )
+                        pathToTstring( mFilePathOnDisk )
                     );
                 }
                 case OverwriteMode::Skip: {
@@ -137,7 +137,7 @@ auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStrea
                 case OverwriteMode::Overwrite:
                 default: {
                     if ( !fs::remove( mFilePathOnDisk, error ) ) {
-                        throw BitException( kCannotDeleteOutput, error, path_to_tstring( mFilePathOnDisk ) );
+                        throw BitException( kCannotDeleteOutput, error, pathToTstring( mFilePathOnDisk ) );
                     }
                     break;
                 }

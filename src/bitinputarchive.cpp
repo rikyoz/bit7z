@@ -66,7 +66,7 @@ auto BitInputArchive::openArchiveStream(
     bool detectedBySignature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
         // Detecting the format of the input file
-        mDetectedFormat = &( detect_format_from_signature( inStream ) );
+        mDetectedFormat = &( detectFormatFromSignature( inStream ) );
         detectedBySignature = true;
     }
     CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
@@ -107,7 +107,7 @@ auto BitInputArchive::openArchiveStream(
         /* Opening the file might have changed the current file pointer, so we reset it to the beginning of the file
          * to correctly read the file signature. */
         inStream->Seek( 0, STREAM_SEEK_SET, nullptr );
-        mDetectedFormat = &( detect_format_from_signature( inStream ) );
+        mDetectedFormat = &( detectFormatFromSignature( inStream ) );
         inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
         res = inArchive->Open( inStream, nullptr, openCallback );
         if ( res == S_OK ) {
@@ -132,31 +132,33 @@ auto BitInputArchive::openArchiveStream(
         }
         return make_open_error_code( errorFlags );
     }();
-    throw BitException( "Could not open the archive", error, path_to_tstring( name ) );
+    throw BitException( "Could not open the archive", error, pathToTstring( name ) );
 }
 
-inline auto detect_format( const BitInFormat& format, const fs::path& arcPath ) -> const BitInFormat* {
+namespace {
+auto detectFormat( const BitInFormat& format, const fs::path& arcPath ) -> const BitInFormat* {
 #if defined( BIT7Z_AUTO_FORMAT ) && defined( BIT7Z_DETECT_FROM_EXTENSION )
-    return ( ( format == BitFormat::Auto ) ? &detect_format_from_extension( arcPath ) : &format );
+    return ( format == BitFormat::Auto ? &detectFormatFromExtension( arcPath ) : &format );
 #else
     ( void )arcPath; // unused when auto format detection is enabled!
     return &format;
 #endif
 }
+} // namespace
 
 BitInputArchive::BitInputArchive(
     const BitAbstractArchiveHandler& handler,
     const tstring& inFile,
     ArchiveStartOffset startOffset
-) : BitInputArchive( handler, tstring_to_path( inFile ), startOffset ) {}
+) : BitInputArchive( handler, tstringToPath( inFile ), startOffset ) {}
 
 BitInputArchive::BitInputArchive(
     const BitAbstractArchiveHandler& handler,
     const fs::path& arcPath,
     ArchiveStartOffset startOffset
-) : mDetectedFormat{ detect_format( handler.format(), arcPath ) },
+) : mDetectedFormat{ detectFormat( handler.format(), arcPath ) },
     mArchiveHandler{ handler },
-    mArchivePath{ path_to_tstring( arcPath ) } {
+    mArchivePath{ pathToTstring( arcPath ) } {
     CMyComPtr< IInStream > fileStream;
     if ( *mDetectedFormat != BitFormat::Split && arcPath.extension() == ".001" ) {
         fileStream = bit7z::make_com< CMultiVolumeInStream, IInStream >( arcPath );
@@ -231,11 +233,11 @@ auto BitInputArchive::itemProperty( std::uint32_t index, BitProperty property ) 
         if ( mArchivePath.empty() ) {
             itemProperty = kEmptyFileWideAlias;
         } else {
-            auto itemPath = tstring_to_path( mArchivePath );
+            auto itemPath = tstringToPath( mArchivePath );
             if ( *mDetectedFormat != BitFormat::Split && itemPath.extension() == ".001" ) {
                 itemPath = itemPath.stem();
             }
-            itemProperty = path_to_sevenzip_string( itemPath.stem() );
+            itemProperty = pathToSevenzipString( itemPath.stem() );
         }
     }
     return itemProperty;
@@ -332,7 +334,7 @@ auto shouldProcessItem( const BitArchiveItem& item, const tstring& itemFilter, b
     /* This condition is true only if the current item either:
      *  - matches the wildcard pattern, and we must include any matching item; or
      *  - doesn't match the wildcard pattern, and we must exclude those that match. */
-    return filesystem::fsutil::wildcard_match( itemFilter, item.path() ) == extractMatchingItems;
+    return filesystem::fsutil::wildcardMatch( itemFilter, item.path() ) == extractMatchingItems;
 }
 
 #ifdef BIT7Z_REGEX_MATCHING
@@ -433,7 +435,7 @@ void BitInputArchive::extractFolderTo(
     const tstring& folderPath,
     FolderPathPolicy policy
 ) const {
-    if ( folderPath.empty() || filesystem::fsutil::contains_dot_references( folderPath ) ) {
+    if ( folderPath.empty() || filesystem::fsutil::containsDotReferences( folderPath ) ) {
         throw BitException(
             "Invalid folder path to be extracted from the archive",
             std::make_error_code( std::errc::invalid_argument )
@@ -448,7 +450,7 @@ void BitInputArchive::extractFolderTo(
     }
 
     std::uint32_t matchingCount = 0;
-    const auto folderFsPath = tstring_to_path( folderPath );
+    const auto folderFsPath = tstringToPath( folderPath );
     const auto folderName = isPathSeparator( folderPath.back() )
                                 ? folderFsPath.parent_path().filename()
                                 : folderFsPath.filename();
@@ -466,12 +468,12 @@ void BitInputArchive::extractFolderTo(
             return path;
         }
         if ( policy == FolderPathPolicy::Strip ) {
-            return path_to_tstring( relativePath );
+            return pathToTstring( relativePath );
         }
         if ( relativePath.native() == nativeDot ) {
-            path_to_tstring( folderName );
+            pathToTstring( folderName );
         }
-        return path_to_tstring( folderName / relativePath );
+        return pathToTstring( folderName / relativePath );
     };
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >(
         *this,
@@ -737,7 +739,7 @@ auto BitInputArchive::find( const tstring& path ) const noexcept -> BitInputArch
      * Other operating systems usually only support the '/' path separator,
      * and 7-Zip uses this in the item paths, so we only need to compare the path strings. */
 #ifdef _WIN32
-    const auto pathToFind = tstring_to_path( path );
+    const auto pathToFind = tstringToPath( path );
     return std::find_if(
         begin(),
         end(),

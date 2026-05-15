@@ -39,7 +39,8 @@ namespace bit7z {
 // Minimum value for the maximum memory usage allowed for the BufferQueue.
 constexpr std::uint64_t kMinMaxMemoryUsage = 4ULL * 1024 * 1024; // 4 MiB //-V112
 
-auto get_free_ram() -> std::uint64_t {
+namespace {
+auto getFreeRam() -> std::uint64_t {
 #if defined( _WIN64 ) || defined( _WIN32 )
     MEMORYSTATUSEX memStatus{};
     memStatus.dwLength = sizeof( memStatus );
@@ -56,8 +57,8 @@ auto get_free_ram() -> std::uint64_t {
     }
     return 0;
 #elif defined( _SC_AVPHYS_PAGES ) && defined( _SC_PAGE_SIZE )
-    long pages = sysconf( _SC_AVPHYS_PAGES );
-    long page_size = sysconf( _SC_PAGE_SIZE );
+    const long pages = sysconf( _SC_AVPHYS_PAGES );
+    const long page_size = sysconf( _SC_PAGE_SIZE );
     if ( pages < 0 || page_size < 0 ) {
         return 0;
     }
@@ -70,7 +71,9 @@ auto get_free_ram() -> std::uint64_t {
 }
 
 #ifdef BIT7Z_AUTO_FORMAT
-inline auto validateFormat( const BitInFormat& format ) -> const BitInFormat& {
+auto validateFormat( BitInFormat&& format ) -> const BitInFormat&  = delete;
+
+auto validateFormat( const BitInFormat& format ) -> const BitInFormat& {
     if ( format == BitFormat::Auto ) {
         throw BitException{
             "Automatic format detection not supported in nested archives",
@@ -84,6 +87,7 @@ inline auto validateFormat( const BitInFormat& format ) -> const BitInFormat& {
 #else
 #define VALIDATE_FORMAT(x) x
 #endif
+} // namespace
 
 BitNestedArchiveReader::BitNestedArchiveReader(
     const Bit7zLibrary& lib,
@@ -102,7 +106,7 @@ BitNestedArchiveReader::BitNestedArchiveReader(
     mNestedArchive{ *this, parentArchive.itemAt( index ) },
     mParentArchive{ parentArchive },
     mIndexInParent{ index },
-    mMaxMemoryUsage{ std::max( get_free_ram() / 4, kMinMaxMemoryUsage ) },
+    mMaxMemoryUsage{ std::max( getFreeRam() / 4, kMinMaxMemoryUsage ) },
     mCachedItemsCount{ 0 },
     mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
     mOpenCount{ 0 } {}

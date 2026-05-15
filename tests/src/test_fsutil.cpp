@@ -32,155 +32,155 @@ using namespace bit7z::filesystem::fsutil;
 //-V::2008 (Suppressing warnings for cyclomatic complexity in PVS-Studio)
 
 TEST_CASE( "fsutil: Wildcard matching without special characters", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "?" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "b" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "acb" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a42b" ), BIT7Z_STRING( "a42b42" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "****a****b****c****" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "*a*b*c*" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc*def" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc def" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abcdef" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abc def" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLah" ), BIT7Z_STRING( "bLah" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLaH" ), BIT7Z_STRING( "bLah" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem " ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem-ipsum" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem " ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( " lorem" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "?" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "b" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "acb" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a42b" ), BIT7Z_STRING( "a42b42" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "****a****b****c****" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "*a*b*c*" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc*def" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc def" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abcdef" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abc def" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLah" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLaH" ), BIT7Z_STRING( "bLah" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem " ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem-ipsum" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem " ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( " lorem" ) ) == true );
 }
 
 TEST_CASE( "fsutil: Wildcard matching with question mark special character", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "?" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "aa" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?a?b" ), BIT7Z_STRING( "caaab" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "z" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?Lah" ), BIT7Z_STRING( "bLaH" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?LaH" ), BIT7Z_STRING( "bLaH" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "?" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "aa" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?a?b" ), BIT7Z_STRING( "caaab" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "z" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?Lah" ), BIT7Z_STRING( "bLaH" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?LaH" ), BIT7Z_STRING( "bLaH" ) ) == true );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc?" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc?" ), BIT7Z_STRING( "abc" ) ) == false );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bL?h" ), BIT7Z_STRING( "bLah" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLaaa" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bL?h" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLaaa" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLah" ) ) == true );
 }
 
 TEST_CASE( "fsutil: Wildcard matching with star special character", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a*r" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*aar" ), BIT7Z_STRING( "a*ar" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "a*abab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aAazz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "acb" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acb" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acbd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acdb" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ac" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "bc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aaazz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "ab*d" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*abc*abc*abc" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*abc*abc*abcd" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc**" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem-ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*Ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxx*yzz*a" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*a" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*z*xyz" ), BIT7Z_STRING( "xyxyxyzyxyz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "XY*Z*XYz" ), BIT7Z_STRING( "XYXYXYZYXYz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a*r" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*aar" ), BIT7Z_STRING( "a*ar" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "a*abab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aAazz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "acb" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acb" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acbd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acdb" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ac" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "bc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aaazz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "ab*d" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*abc*abc*abc" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*abc*abc*abcd" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc**" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem-ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*Ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxx*yzz*a" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*a" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*z*xyz" ), BIT7Z_STRING( "xyxyxyzyxyz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "XY*Z*XYz" ), BIT7Z_STRING( "XYXYXYZYXYz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "***a*b*c***" ), BIT7Z_STRING( "*abc*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "********a********b********c********" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "********a********b********b********" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**a**b**c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**a**b**c**" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**b**c" ), BIT7Z_STRING( "bc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "b" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a**b***c****" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaaaaaaa" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaa" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*b*c*" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*aabbaa*a*" ), BIT7Z_STRING( "aaabbaabbaab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*abc*" ), BIT7Z_STRING( "aBc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*aBc*" ), BIT7Z_STRING( "aBc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ba" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "db" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ccd" ), BIT7Z_STRING( "abcccd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ipsum*ips*" ), BIT7Z_STRING( "lorem ipsum ipsu" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*orem*IPS*" ), BIT7Z_STRING( "lorem IPSUM" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*orem*IPS" ), BIT7Z_STRING( "lorem IPSUM" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ORE*" ), BIT7Z_STRING( "lOREm" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*21" ), BIT7Z_STRING( "a42b42" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42b42" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*23" ), BIT7Z_STRING( "A42b42" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42B42" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "***a*b*c***" ), BIT7Z_STRING( "*abc*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "********a********b********c********" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "********a********b********b********" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**a**b**c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**a**b**c**" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**b**c" ), BIT7Z_STRING( "bc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "b" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a**b***c****" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaaaaaaa" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaa" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*b*c*" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*aabbaa*a*" ), BIT7Z_STRING( "aaabbaabbaab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abc*" ), BIT7Z_STRING( "aBc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*aBc*" ), BIT7Z_STRING( "aBc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ba" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "db" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ccd" ), BIT7Z_STRING( "abcccd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ipsum*ips*" ), BIT7Z_STRING( "lorem ipsum ipsu" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*orem*IPS*" ), BIT7Z_STRING( "lorem IPSUM" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*orem*IPS" ), BIT7Z_STRING( "lorem IPSUM" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ORE*" ), BIT7Z_STRING( "lOREm" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*21" ), BIT7Z_STRING( "a42b42" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42b42" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*23" ), BIT7Z_STRING( "A42b42" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42B42" ) ) == true );
 }
 
 TEST_CASE( "fsutil: Wildcard matching with both question mark and star", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?*?*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?*?*" ), BIT7Z_STRING( "ab" ) ) == true );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?*?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?*?" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?*&?" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?b*??" ), BIT7Z_STRING( "abcd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?a*??" ), BIT7Z_STRING( "abcd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?c?" ), BIT7Z_STRING( "abcd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?*?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?*?" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?*&?" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?b*??" ), BIT7Z_STRING( "abcd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?a*??" ), BIT7Z_STRING( "abcd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?c?" ), BIT7Z_STRING( "abcd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
 }
 
 #ifdef BIT7Z_TESTS_FILESYSTEM
@@ -239,7 +239,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
 
     for ( const auto& testItem : testItems ) {
         DYNAMIC_SECTION( "Path: " << testItem.path ) {
-            REQUIRE( in_archive_path( testItem.path ) == testItem.inArchivePath );
+            REQUIRE( inArchivePath( testItem.path ) == testItem.inArchivePath );
         }
     }
 
@@ -251,9 +251,9 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
     SECTION( "Short paths should not be formatted" ) {
-        REQUIRE_FALSE( should_format_long_path( L"short_path\\file.txt" ) );
-        REQUIRE_FALSE( should_format_long_path( L"C:\\short_path\\file.txt" ) );
-        REQUIRE_FALSE( should_format_long_path( L"\\\\server\\share\\file.txt" ) );
+        REQUIRE_FALSE( shouldFormatLongPath( L"short_path\\file.txt" ) );
+        REQUIRE_FALSE( shouldFormatLongPath( L"C:\\short_path\\file.txt" ) );
+        REQUIRE_FALSE( shouldFormatLongPath( L"\\\\server\\share\\file.txt" ) );
     }
 
     constexpr auto kLongPathPrefix = LR"(\\?\)";
@@ -266,7 +266,7 @@ TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
 
     // Note: the paths passed to the long path formatting functions are absolute.
     SECTION( "Long relative paths should not be formatted" ) {
-        REQUIRE_FALSE( should_format_long_path( kVeryLongPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kVeryLongPath ) );
     }
 
     SECTION( "Long absolute paths should be formatted" ) {
@@ -275,14 +275,14 @@ TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
         // \\?\C:\<long path>
         const auto kPrefixedVeryLongPath = kLongPathPrefix + kVeryLongAbsolutePath;
 
-        REQUIRE_FALSE( should_format_long_path( kPrefixedVeryLongPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kPrefixedVeryLongPath ) );
 
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-        REQUIRE( should_format_long_path( kVeryLongAbsolutePath ) );
-        REQUIRE( format_long_path( kVeryLongAbsolutePath ).native() == kPrefixedVeryLongPath );
+        REQUIRE( shouldFormatLongPath( kVeryLongAbsolutePath ) );
+        REQUIRE( formatLongPath( kVeryLongAbsolutePath ).native() == kPrefixedVeryLongPath );
 #else
         // The GHC library already formats long paths!
-        REQUIRE_FALSE( should_format_long_path( kVeryLongAbsolutePath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kVeryLongAbsolutePath ) );
 #endif
     }
 
@@ -292,13 +292,13 @@ TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
         // \\?\UNC\server\share
         const auto kPrefixedVeryLongUncPath = std::wstring{ kLongPathPrefix } + L"UNC\\" + kVeryLongPath;
 
-        REQUIRE_FALSE( should_format_long_path( kPrefixedVeryLongUncPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kPrefixedVeryLongUncPath ) );
 
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-        REQUIRE( should_format_long_path( kVeryLongUncPath ) );
-        REQUIRE( format_long_path( kVeryLongUncPath ).native() == kPrefixedVeryLongUncPath );
+        REQUIRE( shouldFormatLongPath( kVeryLongUncPath ) );
+        REQUIRE( formatLongPath( kVeryLongUncPath ).native() == kPrefixedVeryLongUncPath );
 #else
-        REQUIRE_FALSE( should_format_long_path( kVeryLongUncPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kVeryLongUncPath ) );
 #endif
     }
 }
@@ -332,7 +332,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
@@ -344,7 +344,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         input += L"file.txt";
 
         INFO( "Control char: " << controlChar );
-        const auto result = sanitize_path( input );
+        const auto result = sanitizePath( input );
         REQUIRE( result == L"test_file.txt" );
     }
 
@@ -361,7 +361,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
@@ -374,7 +374,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         const auto expected = L"_" + input;
 
         DYNAMIC_SECTION( quoted( input ) << " -> " << quoted( expected ) ) {
-            REQUIRE( sanitize_path( input ) == expected );
+            REQUIRE( sanitizePath( input ) == expected );
         }
     }
 
@@ -387,7 +387,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         const auto expected = L"_" + input;
 
         DYNAMIC_SECTION( quoted( input ) << " -> " << quoted( expected ) ) {
-            REQUIRE( sanitize_path( input ) == expected );
+            REQUIRE( sanitizePath( input ) == expected );
         }
     }
 
@@ -405,9 +405,9 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         const auto expected = L"_" + caseVariation;
 
         DYNAMIC_SECTION( quoted( caseVariation ) << " -> " << quoted( expected ) ) {
-            REQUIRE( sanitize_path( caseVariation ) == expected );
-            REQUIRE( sanitize_path( L" " + caseVariation ) == L" " + expected );
-            REQUIRE( sanitize_path( L"      " + caseVariation ) == L"      " + expected );
+            REQUIRE( sanitizePath( caseVariation ) == expected );
+            REQUIRE( sanitizePath( L" " + caseVariation ) == L" " + expected );
+            REQUIRE( sanitizePath( L"      " + caseVariation ) == L"      " + expected );
         }
     }
 
@@ -443,7 +443,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( "The path " << quoted( testPath ) << " should NOT be treated as reserved" ) {
-            REQUIRE( sanitize_path( testPath ) == testPath );
+            REQUIRE( sanitizePath( testPath ) == testPath );
         }
     }
 
@@ -470,16 +470,16 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         DYNAMIC_SECTION( "Basic slash pattern " << quoted( slashPattern ) ) {
             SECTION( "With no spaces" ) {
                 // Component with only slashes becomes "_" (prevents creating empty paths).
-                REQUIRE( sanitize_path( slashPattern ) == L"_" );
+                REQUIRE( sanitizePath( slashPattern ) == L"_" );
 
                 // Leading slashes are stripped.
-                REQUIRE( sanitize_path( slashPattern + L"abc" ) == L"abc" );
+                REQUIRE( sanitizePath( slashPattern + L"abc" ) == L"abc" );
 
                 // Trailing slashes create an empty component (e.g., "/abc" -> components: ["abc", ""] -> "abc\".
-                REQUIRE( sanitize_path( L"abc" + slashPattern ) == L"abc\\" );
+                REQUIRE( sanitizePath( L"abc" + slashPattern ) == L"abc\\" );
 
                 // Leading slashes are stripped, trailing ones create an empty component -> ["abc", ""] -> "abc\".
-                REQUIRE( sanitize_path( slashPattern + L"abc" + slashPattern ) == L"abc\\" );
+                REQUIRE( sanitizePath( slashPattern + L"abc" + slashPattern ) == L"abc\\" );
             }
 
             SECTION( "With spaces" ) {
@@ -489,28 +489,28 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
                 const auto spaces = makeSpaces( spaceCount );
 
                 // Leading spaces + slashes -> components: [spaces, ""] -> "_\".
-                REQUIRE( sanitize_path( spaces + slashPattern ) == L"_\\" );
+                REQUIRE( sanitizePath( spaces + slashPattern ) == L"_\\" );
 
                 // Two spaces-only components, both become "_".
-                REQUIRE( sanitize_path( spaces + slashPattern + spaces ) == L"_\\_" );
+                REQUIRE( sanitizePath( spaces + slashPattern + spaces ) == L"_\\_" );
 
                 // Leading spaces in filenames are preserved (Windows allows this).
-                REQUIRE( sanitize_path( spaces + L"abc" ) == spaces + L"abc" );
+                REQUIRE( sanitizePath( spaces + L"abc" ) == spaces + L"abc" );
 
                 // One spaces-only component -> "_", separator(s), filename with leading spaces (kept).
-                REQUIRE( sanitize_path( spaces + slashPattern + spaces + L"abc" ) == L"_\\" + spaces + L"abc" );
+                REQUIRE( sanitizePath( spaces + slashPattern + spaces + L"abc" ) == L"_\\" + spaces + L"abc" );
 
                 // Leading slash(es) stripped, filename with leading spaces preserved.
-                REQUIRE( sanitize_path( slashPattern + spaces + L"abc" ) == spaces + L"abc" );
+                REQUIRE( sanitizePath( slashPattern + spaces + L"abc" ) == spaces + L"abc" );
 
                 // Leading slash(es) stripped, space-only component becomes "_".
-                REQUIRE( sanitize_path( slashPattern + spaces ) == L"_" );
+                REQUIRE( sanitizePath( slashPattern + spaces ) == L"_" );
 
                 // Trailing spaces in component are preserved (OS will ignore them).
-                REQUIRE( sanitize_path( slashPattern + L"abc" + spaces ) == L"abc"  + spaces );
+                REQUIRE( sanitizePath( slashPattern + L"abc" + spaces ) == L"abc"  + spaces );
 
                 // Trailing spaces-only component becomes "_".
-                REQUIRE( sanitize_path( slashPattern + L"abc" + slashPattern + spaces ) == L"abc\\_" );
+                REQUIRE( sanitizePath( slashPattern + L"abc" + slashPattern + spaces ) == L"abc\\_" );
 
                 if ( slashPattern.size() > 1 ) {
                     const auto midpoint = slashPattern.size() / 2;
@@ -521,22 +521,22 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
                     // All slashes and spaces combinations turn into "_\"
                     const auto spacedSlashes = left + spaces + right;
 
-                    REQUIRE( sanitize_path( spacedSlashes ) == L"_\\" );
-                    REQUIRE( sanitize_path( spacedSlashes + L"abc" ) == L"_\\abc" );
-                    REQUIRE( sanitize_path( spacedSlashes + L"abc" + spacedSlashes ) == L"_\\abc\\_\\" );
-                    REQUIRE( sanitize_path( spacedSlashes + spaces ) == L"_\\_" );
+                    REQUIRE( sanitizePath( spacedSlashes ) == L"_\\" );
+                    REQUIRE( sanitizePath( spacedSlashes + L"abc" ) == L"_\\abc" );
+                    REQUIRE( sanitizePath( spacedSlashes + L"abc" + spacedSlashes ) == L"_\\abc\\_\\" );
+                    REQUIRE( sanitizePath( spacedSlashes + spaces ) == L"_\\_" );
 
                     // Leading slashes (without spaces) are stripped.
-                    REQUIRE( sanitize_path( slashPattern + L"abc" + spacedSlashes ) == L"abc\\_\\" );
+                    REQUIRE( sanitizePath( slashPattern + L"abc" + spacedSlashes ) == L"abc\\_\\" );
 
                     // Spaces-only components turn into "_", combinations of slashes and spaces turn into "_\".
-                    REQUIRE( sanitize_path( spaces + spacedSlashes ) == L"_\\_\\" );
-                    REQUIRE( sanitize_path( spaces + spacedSlashes + L"abc" ) == L"_\\_\\abc" );
-                    REQUIRE( sanitize_path( spaces + spacedSlashes + spaces ) == L"_\\_\\_" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes ) == L"_\\_\\" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes + L"abc" ) == L"_\\_\\abc" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes + spaces ) == L"_\\_\\_" );
 
                     // Leading spaces preserved in filename component
-                    REQUIRE( sanitize_path( spaces + L"abc" + spacedSlashes ) == spaces + L"abc\\_\\" );
-                    REQUIRE( sanitize_path( spaces + spacedSlashes + spaces + L"abc" ) == L"_\\_\\" + spaces + L"abc" );
+                    REQUIRE( sanitizePath( spaces + L"abc" + spacedSlashes ) == spaces + L"abc\\_\\" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes + spaces + L"abc" ) == L"_\\_\\" + spaces + L"abc" );
                 }
             }
         }
@@ -577,7 +577,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
@@ -599,12 +599,12 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
             // Test forward slash version
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
 
             // Test backslash version
             std::wstring backslash{ test.path };
             std::replace( backslash.begin(), backslash.end(), L'/', L'\\' );
-            REQUIRE( sanitize_path( backslash ) == test.expectedPath );
+            REQUIRE( sanitizePath( backslash ) == test.expectedPath );
         }
     }
 
@@ -618,7 +618,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( testPath ) ) {
-            REQUIRE( sanitize_path( testPath ) == testPath );
+            REQUIRE( sanitizePath( testPath ) == testPath );
         }
     }
 
@@ -638,7 +638,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( testPath ) ) {
-            REQUIRE( sanitize_path( testPath ) == testPath );
+            REQUIRE( sanitizePath( testPath ) == testPath );
         }
     }
 
@@ -651,7 +651,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
@@ -664,7 +664,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 }
@@ -851,7 +851,7 @@ TEST_CASE( "fsutil: Path building with invalid Windows item paths", "[fsutil][Sa
     DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
         const SafeOutPathBuilder builder{ testBasePath };
         INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
-        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitize_path( testItemPath ) );
+        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitizePath( testItemPath ) );
     }
 }
 #   else
@@ -1379,7 +1379,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
             const SafeOutPathBuilder builder{ testBasePath };
             INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
 #ifdef _WIN32
-            REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitize_path( testItemPath ) );
+            REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitizePath( testItemPath ) );
 #else
             REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.relative_path() );
 #endif

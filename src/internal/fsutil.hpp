@@ -63,7 +63,7 @@ constexpr auto isPathSeparator( const wchar_t character ) noexcept -> bool {
 }
 #endif
 
-inline auto path_to_tstring( const fs::path& path ) -> tstring {
+inline auto pathToTstring( const fs::path& path ) -> tstring {
     /* In an ideal world, we should only use fs::path's string< tchar >() function for converting a path to a tstring.
      * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
      * which is the default encoding of bit7z. */
@@ -79,8 +79,8 @@ inline auto path_to_tstring( const fs::path& path ) -> tstring {
 #endif
 }
 
-inline auto path_to_sevenzip_string( const fs::path& path ) -> std::wstring {
-#if defined( _WIN32 )
+inline auto pathToSevenzipString( const fs::path& path ) -> std::wstring {
+#ifdef _WIN32
     return path.native();
 #else
     /* On some compilers and platforms (e.g., GCC before v12.3),
@@ -129,7 +129,7 @@ struct dot_constant< CharT, typename std::enable_if< std::is_same< CharT, wchar_
 };
 
 template< typename CharT >
-auto contains_dot_references( const std::basic_string< CharT >& path ) -> bool {
+auto containsDotReferences( const std::basic_string< CharT >& path ) -> bool {
     const std::size_t length = path.length();
     std::size_t pos = 0;
 
@@ -166,15 +166,15 @@ auto contains_dot_references( const std::basic_string< CharT >& path ) -> bool {
 }
 
 // Note: wildcard_match is "semi-public", so we cannot pass the path as fs::path.
-BIT7Z_NODISCARD auto wildcard_match( const tstring& pattern, const tstring& path ) -> bool;
+BIT7Z_NODISCARD auto wildcardMatch( const tstring& pattern, const tstring& path ) -> bool;
 
 #ifndef _WIN32
-auto set_file_modified_time( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
+auto setFileModifiedTime( const fs::path& filePath, FILETIME ftModified ) noexcept -> bool;
 #endif
 
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
-auto get_file_metadata( const fs::path& filePath, SymlinkPolicy policy ) -> FileMetadata {
+auto getFileMetadata( const fs::path& filePath, SymlinkPolicy policy ) -> FileMetadata {
     FileMetadata fileMetadata;
 #ifdef _WIN32
     ( void )policy;
@@ -186,31 +186,31 @@ auto get_file_metadata( const fs::path& filePath, SymlinkPolicy policy ) -> File
                              : os_lstat( filePath.c_str(), &fileMetadata );
     if ( statRes != 0 ) {
 #endif
-        const auto error = last_error_code();
-        throw BitException( "Could not read filesystem item properties", error, path_to_tstring( filePath ) );
+        const auto error = lastErrorCode();
+        throw BitException( "Could not read filesystem item properties", error, pathToTstring( filePath ) );
     }
     return fileMetadata;
 }
 
-auto set_file_attributes(
+auto setFileAttributes(
     const SafeOutPathBuilder& pathBuilder,
     const fs::path& filePath,
     DWORD attributes
 ) noexcept -> bool;
 
-BIT7Z_NODISCARD auto in_archive_path(
+BIT7Z_NODISCARD auto inArchivePath(
     const fs::path& filePath,
     const fs::path& searchPath = fs::path{}
 ) -> fs::path;
 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 
-BIT7Z_NODISCARD auto should_format_long_path( const fs::path& path ) -> bool;
+BIT7Z_NODISCARD auto shouldFormatLongPath( const fs::path& path ) -> bool;
 
-BIT7Z_NODISCARD auto format_long_path( const fs::path& path ) -> fs::path;
+BIT7Z_NODISCARD auto formatLongPath( const fs::path& path ) -> fs::path;
 
 #   define FORMAT_LONG_PATH( path ) \
-        filesystem::fsutil::should_format_long_path( path ) ? filesystem::fsutil::format_long_path( path ) : path
+        filesystem::fsutil::shouldFormatLongPath( path ) ? filesystem::fsutil::formatLongPath( path ) : path
 
 #else
 #   define FORMAT_LONG_PATH( path ) path
@@ -221,7 +221,7 @@ BIT7Z_NODISCARD auto format_long_path( const fs::path& path ) -> fs::path;
  * This is less than ideal, and there's a limit in the number of open file descriptors/handles.
  * This function is a temporary workaround, where we increase such a limit to the maximum value allowed by the OS.
  */
-void increase_opened_files_limit();
+void increaseOpenedFilesLimit();
 
 #ifdef BIT7Z_PATH_SANITIZATION
 /**
@@ -236,7 +236,7 @@ void increase_opened_files_limit();
  * @return the sanitized path, where illegal characters are replaced with the '_' character.
  */
 BIT7Z_NODISCARD
-auto sanitize_path( const fs::path& path ) -> fs::path;
+auto sanitizePath( const fs::path& path ) -> fs::path;
 #endif
 
 } // namespace fsutil
@@ -248,7 +248,7 @@ auto sanitize_path( const fs::path& path ) -> fs::path;
 #define PATH_FROM_TSTRING( str ) fs::path{ str }
 #endif
 
-inline auto tstring_to_path( const tstring& str ) -> fs::path {
+inline auto tstringToPath( const tstring& str ) -> fs::path {
 #ifdef _MSC_VER
     // fs::u8path() has been deprecated in C++20, so we disable the warning to keep using it.
 #pragma warning(push)
@@ -256,8 +256,8 @@ inline auto tstring_to_path( const tstring& str ) -> fs::path {
 #endif
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
     auto result = PATH_FROM_TSTRING( str );
-    if ( filesystem::fsutil::should_format_long_path( result ) ) {
-        result = filesystem::fsutil::format_long_path( result );
+    if ( filesystem::fsutil::shouldFormatLongPath( result ) ) {
+        result = filesystem::fsutil::formatLongPath( result );
     }
     return result;
 #else
@@ -269,11 +269,11 @@ inline auto tstring_to_path( const tstring& str ) -> fs::path {
 #endif
 }
 
-inline auto sevenzip_string_to_path( const sevenzip_string& str ) -> fs::path {
+inline auto sevenzipStringToPath( const sevenzip_string& str ) -> fs::path {
 #if BIT7Z_AUTO_PREFIX_LONG_PATHS
     fs::path result{ str };
-    if ( filesystem::fsutil::should_format_long_path( result ) ) {
-        result = filesystem::fsutil::format_long_path( result );
+    if ( filesystem::fsutil::shouldFormatLongPath( result ) ) {
+        result = filesystem::fsutil::formatLongPath( result );
     }
     return result;
 #elif defined( _WIN32 )

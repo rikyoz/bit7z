@@ -31,7 +31,7 @@ struct FailureSourceCategory : std::error_category {
     auto equivalent( const std::error_code& code, int condition ) const noexcept -> bool override;
 };
 
-auto source_category() noexcept -> const std::error_category&;
+auto sourceCategory() noexcept -> const std::error_category&;
 
 } // namespace bit7z
 

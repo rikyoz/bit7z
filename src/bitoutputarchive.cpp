@@ -51,7 +51,7 @@ BitOutputArchive::BitOutputArchive(
     const BitAbstractArchiveCreator& creator,
     const tstring& inFile,
     ArchiveStartOffset startOffset
-) : BitOutputArchive( creator, tstring_to_path( inFile ), startOffset ) {}
+) : BitOutputArchive( creator, tstringToPath( inFile ), startOffset ) {}
 
 BitOutputArchive::BitOutputArchive(
     const BitAbstractArchiveCreator& creator,
@@ -229,7 +229,7 @@ void BitOutputArchive::compressOut(
 ) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Update ) {
         for ( const auto& newItem : mNewItems ) {
-            auto newItemPath = path_to_tstring( newItem.inArchivePath() );
+            auto newItemPath = pathToTstring( newItem.inArchivePath() );
             auto updatedItem = mInputArchive->find( newItemPath );
             if ( updatedItem != mInputArchive->cend() ) {
                 setDeletedIndex( updatedItem->index() );
@@ -252,7 +252,7 @@ void BitOutputArchive::compressOut(
 void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* updateCallback ) {
     // Note: if mInputArchive is not nullptr, newArc will actually point to the same IInArchive object
     // used by the old_arc (see initUpdatableArchive function of BitInputArchive).
-    const bool updatingArchive = mInputArchive != nullptr && tstring_to_path( mInputArchive->archivePath() ) == outFile;
+    const bool updatingArchive = mInputArchive != nullptr && tstringToPath( mInputArchive->archivePath() ) == outFile;
     const CMyComPtr< IOutArchive > newArc = initOutArchive();
 
     if ( updatingArchive ) {
@@ -281,7 +281,7 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
 }
 
 void BitOutputArchive::compressTo( const tstring& outFile ) {
-    const fs::path outPath = tstring_to_path( outFile );
+    const fs::path outPath = tstringToPath( outFile );
     if ( !outPath.has_filename() ) {
         throw BitException(
             "Invalid output archive path",

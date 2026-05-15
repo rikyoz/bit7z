@@ -127,7 +127,7 @@ TEST_CASE( "formatdetect: Format detection by extension", "[formatdetect]" ) {
                           TestInputFormat{ "zipx", BitFormat::Zip } );
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
-        REQUIRE( detect_format_from_extension( "valid." + test.extension ) == test.format );
+        REQUIRE( detectFormatFromExtension( "valid." + test.extension ) == test.format );
     }
 }
 #endif
@@ -285,7 +285,7 @@ TEST_CASE( "formatdetect: Format detection of an archive file without an extensi
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
-    REQUIRE( detect_format_from_extension( "noextension" ) == BitFormat::Auto );
+    REQUIRE( detectFormatFromExtension( "noextension" ) == BitFormat::Auto );
 #endif
 
     const BitArchiveReader reader{ test::sevenzip_lib(), BIT7Z_STRING( "noextension" ) };

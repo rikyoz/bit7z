@@ -58,22 +58,22 @@ void listDirectoryItems(
         const auto& itemPath = currentEntry.path();
 
         const auto itemIsDir = currentEntry.is_directory( error );
-        const auto itemName = path_to_tstring( itemPath.filename() );
+        const auto itemName = pathToTstring( itemPath.filename() );
 
         /* An item matches if:
          *  - Its name matches the wildcard pattern, and
          *  - Either is a file, or we are interested also to include folders in the index.
          *
          * Note: The boolean expression uses short-circuiting to optimize the evaluation. */
-        const bool itemMatches = ( !options.onlyFiles || !itemIsDir ) && fsutil::wildcard_match( filter, itemName );
+        const bool itemMatches = ( !options.onlyFiles || !itemIsDir ) && fsutil::wildcardMatch( filter, itemName );
         if ( itemMatches == shouldIncludeMatchedItems ) {
             const auto prefix = itemPath.lexically_relative( basePath ).remove_filename();
             const auto searchPath = includeRootPath ? inArchivePath / prefix : prefix;
 #ifdef BIT7Z_AUTO_PREFIX_LONG_PATHS
-            if ( fsutil::should_format_long_path( itemPath ) ) {
+            if ( fsutil::shouldFormatLongPath( itemPath ) ) {
                 result.emplace_back(
                     searchPath,
-                    fs::directory_entry{ fsutil::format_long_path( itemPath ), error },
+                    fs::directory_entry{ fsutil::formatLongPath( itemPath ), error },
                     options.symlinkPolicy
                 );
             } else {

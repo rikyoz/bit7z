@@ -79,7 +79,7 @@ auto OperationCategory::default_error_condition( int errorValue ) const noexcept
     }
 }
 
-auto operation_category() noexcept -> const std::error_category& {
+auto operationCategory() noexcept -> const std::error_category& {
     static const OperationCategory instance{};
     return instance;
 }

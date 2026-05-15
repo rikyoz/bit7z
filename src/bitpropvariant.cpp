@@ -37,7 +37,8 @@ constexpr auto kCannotAllocateString = "Could not allocate memory for BitPropVar
 
 namespace bit7z {
 
-auto lookup_type( VARTYPE type ) -> BitPropVariantType {
+namespace {
+auto lookupType( VARTYPE type ) -> BitPropVariantType {
     switch ( type ) {
         case VT_EMPTY:
             return BitPropVariantType::Empty;
@@ -71,6 +72,7 @@ auto lookup_type( VARTYPE type ) -> BitPropVariantType {
             throw BitException( "Property type is not supported", std::make_error_code( std::errc::invalid_argument ) );
     }
 }
+} // namespace
 
 BitPropVariant::BitPropVariant() : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
@@ -419,7 +421,7 @@ auto BitPropVariant::getFileTime() const -> FILETIME {
 
 auto BitPropVariant::getTimePoint() const -> bit7z::time_type {
     const FILETIME fileTime = getFileTime();
-    return FILETIME_to_time_type( fileTime );
+    return toTimeType( fileTime );
 }
 
 auto BitPropVariant::toString() const -> tstring {
@@ -509,7 +511,7 @@ auto BitPropVariant::isFileTime() const noexcept -> bool {
 }
 
 auto BitPropVariant::type() const -> BitPropVariantType {
-    return lookup_type( vt );
+    return lookupType( vt );
 }
 
 void BitPropVariant::clear() noexcept {

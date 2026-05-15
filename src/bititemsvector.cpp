@@ -30,7 +30,7 @@ void indexDirectory(
     const tstring& filter,
     IndexingOptions options
 ) {
-    const auto inDirPath = tstring_to_path( inDir );
+    const auto inDirPath = tstringToPath( inDir );
     // Note: if inDir is an invalid path, FilesystemItem constructor throws a BitException.
     const BitInputItem item{ inDirPath, options.retainFolderStructure ? inDirPath : fs::path{}, options.symlinkPolicy };
     if ( filter.empty() && !item.inArchivePath().empty() ) {
@@ -49,7 +49,7 @@ void indexDirectoryContent(
         throw BitException( "Could not index directory", make_error_code( BitError::InvalidDirectoryPath ), inDir );
     }
     std::error_code error;
-    const auto inDirPath = fs::absolute( tstring_to_path( inDir ), error );
+    const auto inDirPath = fs::absolute( tstringToPath( inDir ), error );
     if ( error ) {
         throw BitException( "Could not index directory", error, inDir );
     }
@@ -88,7 +88,7 @@ void indexItem(
 
 void indexPaths( BitItemsVector& outVector, const std::vector< tstring >& inPaths, IndexingOptions options ) {
     for ( const auto& inputPath : inPaths ) {
-        const auto filePath = tstring_to_path( inputPath );
+        const auto filePath = tstringToPath( inputPath );
         indexItem( outVector, filePath, options.retainFolderStructure ? filePath : fs::path{}, options );
     }
 }
@@ -99,18 +99,18 @@ void indexPaths(
     IndexingOptions options
 ) {
     for ( const auto& entry : inPaths ) {
-        indexItem( outVector, tstring_to_path( entry.first ), tstring_to_path( entry.second ), options );
+        indexItem( outVector, tstringToPath( entry.first ), tstringToPath( entry.second ), options );
     }
 }
 
 void indexPathsMap( BitItemsVector& outVector, const std::map< tstring, tstring >& inPaths, IndexingOptions options ) {
     for ( const auto& filePair : inPaths ) {
-        indexItem( outVector, tstring_to_path( filePair.first ), tstring_to_path( filePair.second ), options );
+        indexItem( outVector, tstringToPath( filePair.first ), tstringToPath( filePair.second ), options );
     }
 }
 
 void indexFile( BitItemsVector& outVector, const tstring& inFile, const tstring& name, SymlinkPolicy symlinkPolicy ) {
-    const fs::path filePath = tstring_to_path( inFile );
+    const fs::path filePath = tstringToPath( inFile );
     if ( fs::is_directory( filePath ) ) {
         throw BitException(
             "Input path points to a directory, not a file",
@@ -118,7 +118,7 @@ void indexFile( BitItemsVector& outVector, const tstring& inFile, const tstring&
             inFile
         );
     }
-    outVector.emplace_back( filePath, tstring_to_path( name ), symlinkPolicy );
+    outVector.emplace_back( filePath, tstringToPath( name ), symlinkPolicy );
 }
 
 void indexBuffer( BitItemsVector& outVector, const buffer_t& inBuffer, const tstring& name ) {

@@ -124,7 +124,7 @@ auto BitArchiveReader::itemsMatching( const tstring& pattern ) const -> std::vec
     std::vector< BitArchiveItemInfo > result;
     result.reserve( static_cast< std::size_t >( count ) );
     for ( const auto& item : *this ) {
-        if ( !filesystem::fsutil::wildcard_match( pattern, item.path() ) ) {
+        if ( !filesystem::fsutil::wildcardMatch( pattern, item.path() ) ) {
             continue;
         }
         result.emplace_back( item );
@@ -211,7 +211,7 @@ auto BitArchiveReader::volumesCount() const -> std::uint32_t {
         constexpr size_t kVolumeDigits = 3u;
 
         std::uint32_t result = 2u;
-        fs::path volumePath = tstring_to_path( archivePath() );
+        fs::path volumePath = tstringToPath( archivePath() );
         do {
             tstring volumeExt = to_tstring( result++ );
             if ( volumeExt.length() < kVolumeDigits ) {

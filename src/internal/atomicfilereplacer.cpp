@@ -47,7 +47,7 @@ auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutSt
     throw BitException(
         "Could not allocate a unique temporary file name",
         std::make_error_code( std::errc::file_exists ),
-        path_to_tstring( targetPath )
+        pathToTstring( targetPath )
     );
 }
 } // namespace
@@ -77,7 +77,7 @@ void AtomicFileReplacer::commit() {
         throw BitException(
             "Failed to delete the old archive file",
             error,
-            path_to_tstring( mTargetPath )
+            pathToTstring( mTargetPath )
         );
     }
 #endif
@@ -88,7 +88,7 @@ void AtomicFileReplacer::commit() {
         throw BitException(
             "Failed to overwrite the old archive file",
             error,
-            path_to_tstring( mTargetPath )
+            pathToTstring( mTargetPath )
         );
     }
 }
