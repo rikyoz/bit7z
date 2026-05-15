@@ -72,6 +72,9 @@ set( HEADERS
      src/internal/cmultivolumeinstream.hpp
      src/internal/cmultivolumeoutstream.hpp
      src/internal/com.hpp
+     src/internal/cpp17.hpp
+     src/internal/cpp20.hpp
+     src/internal/cpp26.hpp
      src/internal/crawoutstream.hpp
      src/internal/cstdinstream.hpp
      src/internal/cstdoutstream.hpp

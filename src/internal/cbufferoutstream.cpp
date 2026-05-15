@@ -14,10 +14,9 @@
 
 #include "bittypes.hpp"
 #include "internal/bufferutil.hpp"
-#include "internal/util.hpp"
+#include "internal/cpp26.hpp"
 
 #include <algorithm> //for std::copy_n
-#include <cstddef>
 #include <cstdint>
 #include <iterator>
 
@@ -84,7 +83,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         return E_OUTOFMEMORY;
     }
 
-    std::advance( mCurrentPosition, clamp_cast< std::ptrdiff_t >( size ) );
+    std::advance( mCurrentPosition, cpp26::saturating_cast< std::ptrdiff_t >( size ) );
 
     if ( processedSize != nullptr ) {
         *processedSize = size;

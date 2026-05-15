@@ -11,7 +11,9 @@
  */
 
 #include "internal/csynchronizedoutstream.hpp"
-#include "util.hpp"
+
+#include "internal/cpp20.hpp"
+#include "internal/cpp26.hpp"
 
 namespace bit7z {
 
@@ -29,11 +31,11 @@ STDMETHODIMP CSynchronizedOutStream::Write( const void* data, UInt32 size, UInt3
 
     // size is uin32_t, but std::next expects a signed integer of at least 32 bits (on x64, 64 bits),
     // so if size is greater than the std::numeric_limits<std::ptrdiff_t>::max(), it is invalid.
-    if ( cmp_greater( size, std::numeric_limits< buffer_t::difference_type >::max() ) ) {
+    if ( cpp20::cmp_greater( size, std::numeric_limits< buffer_t::difference_type >::max() ) ) {
         return E_FAIL;
     }
 
-    const auto data_size = clamp_cast< buffer_t::difference_type >( size );
+    const auto data_size = cpp26::saturating_cast< buffer_t::difference_type >( size );
     const auto* data_start = static_cast< const byte_t* >( data ); //-V2571
     const auto* data_end = std::next( data_start, data_size );
 

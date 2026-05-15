@@ -20,7 +20,7 @@
 
 #include "bittypes.hpp"
 #include "internal/bufferutil.hpp"
-#include "internal/util.hpp"
+#include "internal/cpp20.hpp"
 
 #include <algorithm> //for std::copy_n
 #include <cstddef>
@@ -45,7 +45,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     /* Note: thanks to CBufferInStream::Seek, we can safely assume mCurrentPosition to always be a valid iterator;
      * so "remaining" will always be > 0 (and casts to unsigned types are safe) */
     std::ptrdiff_t remaining = mBuffer.cend() - mCurrentPosition;
-    if ( cmp_greater( remaining, size ) ) {
+    if ( cpp20::cmp_greater( remaining, size ) ) {
         /* The remaining buffer still to read is bigger than the read size requested by the user,
          * so we need to read just a "size" number of bytes. */
         remaining = static_cast< std::ptrdiff_t >( size );

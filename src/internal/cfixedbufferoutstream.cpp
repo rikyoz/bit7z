@@ -19,6 +19,7 @@
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bittypes.hpp"
+#include "internal/cpp26.hpp"
 #include "internal/util.hpp"
 
 #include <algorithm> // for std::copy_n
@@ -68,7 +69,7 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
         return E_INVALIDARG;
     }
 
-    mCurrentPosition = clamp_cast< std::size_t >( seekIndex );
+    mCurrentPosition = cpp26::saturating_cast< std::size_t >( seekIndex );
 
     if ( newPosition != nullptr ) {
         *newPosition = seekIndex;

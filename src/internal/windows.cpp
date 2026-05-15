@@ -14,6 +14,7 @@
 #include "internal/windows.hpp"
 
 #include "bittypes.hpp"
+#include "internal/cpp26.hpp"
 #include "internal/util.hpp"
 
 #include <cstdint>
@@ -91,7 +92,7 @@ auto SysAllocStringLen( const OLECHAR* str, UINT length ) -> BSTR {
     const auto byteLength = length * sizeof( OLECHAR );
 
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), clamp_cast< std::uint32_t >( byteLength ) );
+    return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), cpp26::saturating_cast< std::uint32_t >( byteLength ) );
 }
 
 auto SysAllocStringByteLen( LPCSTR str, UINT length ) -> BSTR {

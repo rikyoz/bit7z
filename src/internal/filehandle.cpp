@@ -13,6 +13,7 @@
 #include "filehandle.hpp"
 
 #include "bitexception.hpp"
+#include "internal/cpp26.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
@@ -163,7 +164,7 @@ auto OutputFile::write( const void* data, std::uint32_t size, std::uint32_t& pro
         }
         processedSize += bytesWritten;
         size -= bytesWritten;
-        data = std::next( static_cast< const bit7z::byte_t* >( data ), clamp_cast< std::ptrdiff_t >( bytesWritten ) );
+        data = std::next( static_cast< const bit7z::byte_t* >( data ), cpp26::saturating_cast< std::ptrdiff_t >( bytesWritten ) );
     } while ( size > 0 );
     return S_OK;
 }
@@ -233,7 +234,7 @@ auto InputFile::read( void* data, std::uint32_t size, std::uint32_t& processedSi
         }
         processedSize += bytesRead;
         size -= bytesRead;
-        data = std::next( static_cast< bit7z::byte_t* >( data ), clamp_cast< std::ptrdiff_t >( bytesRead ) );
+        data = std::next( static_cast< bit7z::byte_t* >( data ), cpp26::saturating_cast< std::ptrdiff_t >( bytesRead ) );
     } while ( size > 0 );
     return S_OK;
 }
