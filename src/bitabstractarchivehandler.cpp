@@ -32,7 +32,7 @@ auto BitAbstractArchiveHandler::library() const noexcept -> const Bit7zLibrary& 
     return mLibrary;
 }
 
-auto BitAbstractArchiveHandler::password() const -> tstring {
+auto BitAbstractArchiveHandler::password() const -> const tstring& {
     return mPassword;
 }
 

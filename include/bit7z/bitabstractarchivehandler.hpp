@@ -130,7 +130,7 @@ class BitAbstractArchiveHandler {
         /**
          * @return the password used to open, extract, or encrypt the archive.
          */
-        BIT7Z_NODISCARD auto password() const -> tstring;
+        BIT7Z_NODISCARD auto password() const -> const tstring&;
 
         /**
          * @return a boolean value indicating whether the directory structure must be preserved while extracting

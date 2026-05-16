@@ -37,10 +37,10 @@ BitArchiveItemInfo::BitArchiveItemInfo( const BitArchiveItemOffset& item )
 
 auto BitArchiveItemInfo::itemProperty( BitProperty property ) const -> BitPropVariant {
     const auto propIt = mItemProperties.find( property );
-    return ( propIt != mItemProperties.end() ? ( *propIt ).second : BitPropVariant() );
+    return ( propIt != mItemProperties.end() ? propIt->second : BitPropVariant() );
 }
 
-auto BitArchiveItemInfo::itemProperties() const -> std::map< BitProperty, BitPropVariant > {
+auto BitArchiveItemInfo::itemProperties() const -> const std::map<BitProperty, BitPropVariant>& {
     return mItemProperties;
 }
 

@@ -40,7 +40,7 @@ class BitArchiveItemInfo final : public BitArchiveItem {
         /**
          * @return a map of all the available (i.e., non-empty) item properties and their respective values.
          */
-        BIT7Z_NODISCARD auto itemProperties() const -> std::map< BitProperty, BitPropVariant >;
+        BIT7Z_NODISCARD auto itemProperties() const -> const std::map< BitProperty, BitPropVariant >&;
 
     private:
         std::map< BitProperty, BitPropVariant > mItemProperties;
