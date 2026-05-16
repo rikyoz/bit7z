@@ -97,7 +97,7 @@ TEST_CASE( "BitArchiveWriter: addFile returns a reference to the added item", "[
     }
 
     SECTION( "Stream" ) {
-        std::ifstream stream{ loremIpsum.name, std::ios::binary };
+        fs::ifstream stream{ loremIpsum.name, std::ios::binary };
         BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
         const BitInputItem& item = writer.addFile( stream, loremIpsum.name );
         REQUIRE( !item.isDir() );
