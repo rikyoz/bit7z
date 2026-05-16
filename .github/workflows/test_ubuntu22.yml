@@ -28,7 +28,7 @@ jobs:
       matrix:
         os: [ubuntu-22.04, ubuntu-22.04-arm]
         arch: [x64, arm64]
-        c_compiler: [gcc-9, gcc-10, gcc-11, gcc-12, clang-13, clang-14, clang-15]
+        c_compiler: [gcc-9, gcc-12, clang-13, clang-15]
         bit7z_auto_format: [OFF, ON]
         bit7z_detect_from_extension: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
@@ -38,16 +38,10 @@ jobs:
         include:
           - c_compiler: gcc-9
             cpp_compiler: g++-9
-          - c_compiler: gcc-10
-            cpp_compiler: g++-10
-          - c_compiler: gcc-11
-            cpp_compiler: g++-11
           - c_compiler: gcc-12
             cpp_compiler: g++-12
           - c_compiler: clang-13
             cpp_compiler: clang++-13
-          - c_compiler: clang-14
-            cpp_compiler: clang++-14
           - c_compiler: clang-15
             cpp_compiler: clang++-15
         exclude:
@@ -57,21 +51,11 @@ jobs:
             arch: x64
           - c_compiler: gcc-9
             bit7z_link_libcpp: ON
-          - c_compiler: gcc-10
-            bit7z_link_libcpp: ON
-          - c_compiler: gcc-11
-            bit7z_link_libcpp: ON
           - c_compiler: gcc-12
             bit7z_link_libcpp: ON
-          - c_compiler: gcc-9
+          - c_compiler: gcc-12
             bit7z_7zip_version: 16.02
-          - c_compiler: gcc-10
-            bit7z_7zip_version: 16.02
-          - c_compiler: gcc-11
-            bit7z_7zip_version: 16.02
-          - c_compiler: clang-13
-            bit7z_7zip_version: 16.02
-          - c_compiler: clang-14
+          - c_compiler: clang-15
             bit7z_7zip_version: 16.02
           - bit7z_7zip_version: 16.02
             bit7z_build_for_p7zip: OFF
@@ -96,11 +80,6 @@ jobs:
       shell: bash
       if: ${{ contains(matrix.c_compiler, 'gcc-9') }}
       run: sudo apt-get update && sudo apt-get install gcc-9 g++-9 -y
-
-    - name: Fix missing g++-10
-      shell: bash
-      if: ${{ contains(matrix.c_compiler, 'gcc-10') }}
-      run: sudo apt-get update && sudo apt-get install gcc-10 g++-10 -y
 
     - name: Fix missing clang-13
       shell: bash

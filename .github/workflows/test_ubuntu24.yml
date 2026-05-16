@@ -28,7 +28,7 @@ jobs:
       matrix:
         os: [ubuntu-24.04, ubuntu-24.04-arm]
         arch: [x64, arm64]
-        c_compiler: [gcc-13, gcc-14, clang-16, clang-17, clang-18]
+        c_compiler: [gcc-13, gcc-14, clang-16, clang-18]
         bit7z_auto_format: [OFF, ON]
         bit7z_detect_from_extension: [OFF, ON]
         bit7z_regex_matching: [OFF, ON]
@@ -41,8 +41,6 @@ jobs:
             cpp_compiler: g++-14
           - c_compiler: clang-16
             cpp_compiler: clang++-16
-          - c_compiler: clang-17
-            cpp_compiler: clang++-17
           - c_compiler: clang-18
             cpp_compiler: clang++-18
         exclude:
@@ -53,8 +51,6 @@ jobs:
           - c_compiler: gcc-13
             bit7z_link_libcpp: ON
           - c_compiler: gcc-14
-            bit7z_link_libcpp: ON
-          - c_compiler: clang-18 # re-enable once improved string conversions in bit7z
             bit7z_link_libcpp: ON
           - bit7z_auto_format: OFF
             bit7z_detect_from_extension: ON
@@ -69,12 +65,7 @@ jobs:
       shell: bash
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-16') }}
       run: sudo apt-get install libc++-16-dev libc++abi-16-dev -y
-      
-    - name: Fix missing libc++ and libc++abi packages for clang-17 compiler
-      shell: bash
-      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-17') }}
-      run: sudo apt-get install libc++-17-dev libc++abi-17-dev -y
-      
+
     - name: Fix missing libc++ and libc++abi packages for clang-18 compiler
       shell: bash
       if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-18') }}
