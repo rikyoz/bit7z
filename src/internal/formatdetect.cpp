@@ -499,20 +499,24 @@ auto detectFormatFromSignature( IInStream* stream ) -> const BitInFormat& {
 }
 
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
-#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
-#   define is_digit(ch) std::iswdigit(ch) != 0
-const auto toLower = std::towlower;
-#else
 namespace {
-auto isDigit( char character ) -> bool {
+BIT7Z_ALWAYS_INLINE
+auto isDigit( tchar character ) -> bool {
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
+    return std::iswdigit( character ) != 0;
+#else
     return std::isdigit( character ) != 0;
+#endif
 }
 
+#if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
+const auto toLower = std::towlower;
+#else
 auto toLower( unsigned char character ) -> char {
     return static_cast< char >( std::tolower( character ) );
 }
-} // namespace
 #endif
+} // namespace
 
 auto detectFormatFromExtension( const fs::path& inFile ) -> const BitInFormat& {
     tstring ext = filesystem::fsutil::extension( inFile );
