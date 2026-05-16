@@ -44,23 +44,23 @@ auto BitAbstractArchiveHandler::isPasswordDefined() const noexcept -> bool {
     return !mPassword.empty();
 }
 
-auto BitAbstractArchiveHandler::totalCallback() const -> TotalCallback {
+auto BitAbstractArchiveHandler::totalCallback() const -> const TotalCallback& {
     return mTotalCallback;
 }
 
-auto BitAbstractArchiveHandler::progressCallback() const -> ProgressCallback {
+auto BitAbstractArchiveHandler::progressCallback() const -> const ProgressCallback& {
     return mProgressCallback;
 }
 
-auto BitAbstractArchiveHandler::ratioCallback() const -> RatioCallback {
+auto BitAbstractArchiveHandler::ratioCallback() const -> const RatioCallback& {
     return mRatioCallback;
 }
 
-auto BitAbstractArchiveHandler::fileCallback() const -> FileCallback {
+auto BitAbstractArchiveHandler::fileCallback() const -> const FileCallback& {
     return mFileCallback;
 }
 
-auto BitAbstractArchiveHandler::passwordCallback() const -> PasswordCallback {
+auto BitAbstractArchiveHandler::passwordCallback() const -> const PasswordCallback& {
     return mPasswordCallback;
 }
 

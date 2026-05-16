@@ -146,27 +146,27 @@ class BitAbstractArchiveHandler {
         /**
          * @return the current total callback.
          */
-        BIT7Z_NODISCARD auto totalCallback() const -> TotalCallback;
+        BIT7Z_NODISCARD auto totalCallback() const -> const TotalCallback&;
 
         /**
          * @return the current progress callback.
          */
-        BIT7Z_NODISCARD auto progressCallback() const -> ProgressCallback;
+        BIT7Z_NODISCARD auto progressCallback() const -> const ProgressCallback&;
 
         /**
          * @return the current ratio callback.
          */
-        BIT7Z_NODISCARD auto ratioCallback() const -> RatioCallback;
+        BIT7Z_NODISCARD auto ratioCallback() const -> const RatioCallback&;
 
         /**
          * @return the current file callback.
          */
-        BIT7Z_NODISCARD auto fileCallback() const -> FileCallback;
+        BIT7Z_NODISCARD auto fileCallback() const -> const FileCallback&;
 
         /**
          * @return the current password callback.
          */
-        BIT7Z_NODISCARD auto passwordCallback() const -> PasswordCallback;
+        BIT7Z_NODISCARD auto passwordCallback() const -> const PasswordCallback&;
 
         /**
          * @return the current OverwriteMode.
