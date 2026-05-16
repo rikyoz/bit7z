@@ -134,7 +134,7 @@ namespace {
 BIT7Z_ALWAYS_INLINE
 auto writeData( handle_t handle, const void* data, std::uint32_t size, DWORD& bytesWritten ) noexcept -> bool {
 #if SIZE_MAX == 0xFFFFFFFF // 32-bit architecture
-    if ( cmp_greater( size, std::numeric_limits< std::ptrdiff_t >::max() ) ) {
+    if ( cpp20::cmp_greater( size, std::numeric_limits< std::ptrdiff_t >::max() ) ) {
         size = static_cast< std::uint32_t >( std::numeric_limits< std::ptrdiff_t >::max() );
     }
 #endif
@@ -204,7 +204,7 @@ namespace {
 BIT7Z_ALWAYS_INLINE
 auto readData( handle_t handle, void* data, std::uint32_t size, DWORD& bytesRead ) noexcept -> bool {
 #if SIZE_MAX == 0xFFFFFFFF // 32-bit architecture
-    if ( cmp_greater( size, std::numeric_limits< std::ptrdiff_t >::max() ) ) {
+    if ( cpp20::cmp_greater( size, std::numeric_limits< std::ptrdiff_t >::max() ) ) {
         size = static_cast< std::uint32_t >( std::numeric_limits< std::ptrdiff_t >::max() );
     }
 #endif
