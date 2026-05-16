@@ -119,6 +119,7 @@ runs:
         build_dir: ${{ steps.strings.outputs.build-output-dir }}
         build_type: Debug
         shell: ${{ inputs.shell }}
+        run_tests: ${{ inputs.enable_sanitizers }}
 
     - name: Build and test bit7z (Release)
       uses: ./.github/actions/build_test_action

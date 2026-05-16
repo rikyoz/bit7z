@@ -15,6 +15,10 @@ inputs:
     description: 'The shell to be used for executing the steps'
     required: false
     default: bash
+  run_tests:
+    description: 'Run the tests'
+    required: false
+    default: ON
 
 runs:
   using: "composite"
@@ -32,7 +36,7 @@ runs:
       run: cmake --build '${{ inputs.build_dir }}' --config ${{ inputs.build_type }} --parallel
 
     - name: Test bit7z (Ubuntu and macOS)
-      if: runner.os != 'Windows'
+      if: ${{ runner.os != 'Windows' && inputs.run_tests == 'ON' }}
       shell: ${{ inputs.shell }}
       working-directory: ${{ github.workspace }}
       # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
@@ -42,7 +46,7 @@ runs:
         ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests && ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests-public && [ -f ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests-public-cpp20 ] && ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests-public-cpp20
 
     - name: Test bit7z (Windows)
-      if: runner.os == 'Windows'
+      if: ${{ runner.os == 'Windows' && inputs.run_tests == 'ON' }}
       shell: cmd
       working-directory: ${{ github.workspace }}
       # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
