@@ -39,7 +39,7 @@ if( BIT7Z_ENABLE_SANITIZERS )
     elseif( NOT WIN32 ) # GCC/Clang on Linux/macOS (i.e., not MinGW)
         target_compile_options( ${LIB_TARGET} PUBLIC $<$<CONFIG:Debug>:-fno-omit-frame-pointer> )
 
-        if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "6.0.0" )
+        if( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "6.0.0" AND NOT APPLE )
             target_link_options( ${LIB_TARGET} PUBLIC $<$<CONFIG:Debug>:-static-libsan> )
         endif()
 
