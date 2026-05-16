@@ -404,6 +404,10 @@ However, if you need to handle non-ASCII/Unicode characters, as it is likely, yo
 
 </details>
 
+## SAST Tools
+
+[PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
+
 ## ☕️ Donate
 
 If you have found this project helpful, please consider supporting me with a small donation so that I can keep improving it!
