@@ -30,8 +30,15 @@ auto make_hresult_code( HRESULT res ) noexcept -> std::error_code {
 }
 
 auto lastErrorCode() noexcept -> std::error_code {
+#ifdef __MINGW32__
+    /* MinGW's std::system_category uses POSIX errno semantics rather than Win32 error codes,
+     * so storing a raw Win32 value under it breaks std::errc comparisons (e.g., ERROR_FILE_EXISTS = 80 != 17 = EEXIST).
+     * hresult_category::default_error_condition already has the correct MinGW Win32 -> POSIX mapping. */
+    return make_hresult_code( HRESULT_FROM_WIN32( GetLastError() ) );
+#else
     const auto error = static_cast< int >( GetLastError() );
     return std::error_code{ error, std::system_category() };
+#endif
 }
 
 BitException::BitException( const char* const message, std::error_code code, FailedFiles&& files )
