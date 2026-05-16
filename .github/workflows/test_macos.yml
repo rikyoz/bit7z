@@ -27,12 +27,13 @@ jobs:
 
       matrix:
         os: [macos-14, macos-15, macos-26]
-        c_compiler: [gcc-12, gcc-13, gcc-14, gcc-15, clang]
+        c_compiler: [gcc-12, gcc-15, clang]
         bit7z_7zip_version: [23.01, '26.01']
         bit7z_auto_format: [OFF, ON]
         bit7z_detect_from_extension: [OFF, ON]
-        bit7z_regex_matching: [OFF, ON]
         bit7z_link_libcpp: [OFF, ON]
+        bit7z_path_sanitization: [OFF, ON]
+        bit7z_regex_matching: [OFF, ON]
         include:
           - os: macos-14
             os_version: 14
@@ -43,12 +44,6 @@ jobs:
           - c_compiler: gcc-12
             cpp_compiler: g++-12
             enable_sanitizers: OFF
-          - c_compiler: gcc-13
-            cpp_compiler: g++-13
-            enable_sanitizers: OFF
-          - c_compiler: gcc-14
-            cpp_compiler: g++-14
-            enable_sanitizers: OFF
           - c_compiler: gcc-15
             cpp_compiler: g++-15
             enable_sanitizers: OFF
@@ -58,20 +53,12 @@ jobs:
         exclude:
           - c_compiler: gcc-12
             bit7z_link_libcpp: ON
-          - c_compiler: gcc-13
-            bit7z_link_libcpp: ON
-          - c_compiler: gcc-14
-            bit7z_link_libcpp: ON
           - c_compiler: gcc-15
             bit7z_link_libcpp: ON
           - os: macos-15
             c_compiler: gcc-12
-          - os: macos-15
-            c_compiler: gcc-13
           - os: macos-26
             c_compiler: gcc-12
-          - os: macos-26
-            c_compiler: gcc-13
           - os: macos-15
             bit7z_7zip_version: 23.01
           - os: macos-26
@@ -80,7 +67,7 @@ jobs:
             bit7z_detect_from_extension: ON
 
     name: |
-      macOS ${{ matrix.os_version }}, ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}
+      macOS ${{ matrix.os_version }}, ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_path_sanitization == 'ON') && ', PATH_SANITIZATION' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}
 
     steps:
     - uses: actions/checkout@v6
@@ -103,18 +90,6 @@ jobs:
       run:
         brew reinstall gcc@12
 
-    - name: Reinstall GCC 14 on macOS 15
-      if: ${{ contains(matrix.os, 'macos-15') && contains(matrix.c_compiler, 'gcc-14') }}
-      shell: bash
-      run:
-        brew reinstall gcc@14
-
-    - name: Reinstall GCC 14 on macOS 26
-      if: ${{ contains(matrix.os, 'macos-26') && contains(matrix.c_compiler, 'gcc-14') }}
-      shell: bash
-      run:
-        brew reinstall gcc@14
-
     - name: Reinstall GCC 15 on macOS 26
       if: ${{ contains(matrix.os, 'macos-26') && contains(matrix.c_compiler, 'gcc-15') }}
       shell: bash
@@ -130,4 +105,4 @@ jobs:
         sevenzip_version: ${{ matrix.bit7z_7zip_version }}
         enable_sanitizers: ${{ matrix.enable_sanitizers }}
         build_flags: |-
-            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}
