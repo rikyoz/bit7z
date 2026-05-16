@@ -17,7 +17,11 @@
 #include "internal/internalcategory.hpp"
 #include "internal/hresultcategory.hpp"
 #include "internal/operationcategory.hpp"
+#ifdef __MINGW32__
+#include "internal/win32category.hpp"
+#elif !defined( _WIN32 )
 #include "internal/windows.hpp"
+#endif
 
 #include <string>
 #include <utility>
@@ -30,13 +34,13 @@ auto make_hresult_code( HRESULT res ) noexcept -> std::error_code {
 }
 
 auto lastErrorCode() noexcept -> std::error_code {
+    const auto error = static_cast< int >( GetLastError() );
 #ifdef __MINGW32__
     /* MinGW's std::system_category uses POSIX errno semantics rather than Win32 error codes,
-     * so storing a raw Win32 value under it breaks std::errc comparisons (e.g., ERROR_FILE_EXISTS = 80 != 17 = EEXIST).
-     * hresult_category::default_error_condition already has the correct MinGW Win32 -> POSIX mapping. */
-    return make_hresult_code( HRESULT_FROM_WIN32( GetLastError() ) );
+     * so storing a raw Win32 value under it would break std::errc comparisons.
+     * win32Category provides a dedicated category with the correct Win32 -> std::errc mapping for MinGW. */
+    return std::error_code{ error, bit7z::win32Category() };
 #else
-    const auto error = static_cast< int >( GetLastError() );
     return std::error_code{ error, std::system_category() };
 #endif
 }
@@ -75,6 +79,10 @@ auto BitException::hresultCode() const noexcept -> HRESULT {
 #ifdef _MSC_VER
     // Note: MinGW considers POSIX error codes in std::system_category, so this code is valid only for MSVC
     if ( error.category() == std::system_category() ) { // Win32 error code
+        return HRESULT_FROM_WIN32( static_cast< DWORD >( error.value() ) );
+    }
+#elif defined( __MINGW32__ )
+    if ( error.category() == bit7z::win32Category() ) { // Win32 error code (MinGW)
         return HRESULT_FROM_WIN32( static_cast< DWORD >( error.value() ) );
     }
 #endif
@@ -121,6 +129,10 @@ namespace {
 auto isNotPosixCategory( const std::error_category& category ) -> bool {
 #ifdef _MSC_VER
     if ( category == std::system_category() ) {
+        return true;
+    }
+#elif defined( __MINGW32__ )
+    if ( category == bit7z::win32Category() ) {
         return true;
     }
 #endif

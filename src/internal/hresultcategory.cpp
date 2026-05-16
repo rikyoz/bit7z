@@ -12,6 +12,9 @@
 
 #include "internal/hresultcategory.hpp"
 
+#ifdef __MINGW32__
+#include "internal/win32category.hpp"
+#endif
 #include "internal/windows.hpp"
 
 #include <string>
@@ -35,8 +38,7 @@ auto HRESULTCategory::message( int errorValue ) const -> std::string {
         nullptr,
         static_cast< DWORD >( errorValue ),
         0,
-        reinterpret_cast< LPSTR >( &messageBuffer ),
-        // NOLINT(*-pro-type-reinterpret-cast)
+        reinterpret_cast< LPSTR >( &messageBuffer ), // NOLINT(*-pro-type-reinterpret-cast)
         0,
         nullptr
     );
@@ -120,42 +122,20 @@ auto HRESULTCategory::default_error_condition( int errorValue ) const noexcept -
         default:
             if ( HRESULT_FACILITY( errorValue ) == FACILITY_CODE ) {
 #ifndef __MINGW32__
-                /* MinGW compilers use POSIX error codes for std::system_category instead of Win32 error codes.
-                 * However, on Windows errorValue is a Win32 error wrapped into a HRESULT
-                 * (e.g., through HRESULT_FROM_WIN32).
-                 * Hence, to avoid returning a wrong error_condition, this check is not performed on MinGW,
-                 * and instead we rely on specific cases for most common Win32 error codes (see 'else' branch).
+                /* MinGW's std::system_category expects POSIX error codes, but on Windows errorValue is a Win32
+                 * error wrapped in an HRESULT (e.g., via HRESULT_FROM_WIN32). Using system_category here would
+                 * return a wrong error_condition, so MinGW delegates to win32Category instead (see else branch).
                  *
-                 * Note 2: on Windows (MSVC compilers) the resulting error_condition's category is
-                 *         - std::generic_category() for Win32 errors that can be mapped to a POSIX error;
-                 *         - std::system_category() otherwise.
+                 * On MSVC, the resulting error_condition's category is std::generic_category() for Win32 errors
+                 * that map to a POSIX equivalent, or std::system_category() otherwise.
                  *
-                 * Note 3: on Linux, most errorValue values returned by p7zip are POSIX error codes wrapped
-                 * into a HRESULT value, hence the following line will return the correct error_condition.
-                 * Some error codes returned by p7zip are, however, equal to the Windows code: such cases are
-                 * taken into account in the specific cases above.
+                 * On Linux, p7zip/7-Zip wraps most error codes as POSIX values inside HRESULTs, so this line returns
+                 * the correct error_condition.
+                 * The few p7zip/7-Zip codes that match Windows error codes are handled in the other switch cases.
                  */
                 return std::system_category().default_error_condition( HRESULT_CODE( errorValue ) );
 #else
-                switch ( HRESULT_CODE( errorValue ) ) {
-                    case ERROR_ACCESS_DENIED:
-                        return std::make_error_condition( std::errc::permission_denied );
-                    case ERROR_OPEN_FAILED:
-                    case ERROR_SEEK:
-                    case ERROR_READ_FAULT:
-                    case ERROR_WRITE_FAULT:
-                        return std::make_error_condition( std::errc::io_error );
-                    case ERROR_FILE_NOT_FOUND:
-                    case ERROR_PATH_NOT_FOUND:
-                        return std::make_error_condition( std::errc::no_such_file_or_directory );
-                    case ERROR_ALREADY_EXISTS:
-                    case ERROR_FILE_EXISTS:
-                        return std::make_error_condition( std::errc::file_exists );
-                    case ERROR_DISK_FULL:
-                        return std::make_error_condition( std::errc::no_space_on_device );
-                    default: // do nothing;
-                        break;
-                }
+                return bit7z::win32Category().default_error_condition( HRESULT_CODE( errorValue ) );
 #endif
             }
             /* E.g., E_FAIL

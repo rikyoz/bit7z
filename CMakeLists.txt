@@ -111,6 +111,7 @@ set( HEADERS
      src/internal/stringutil.hpp
      src/internal/updatecallback.hpp
      src/internal/util.hpp
+     src/internal/win32category.hpp
      src/internal/windows.hpp )
 
 # source files
@@ -180,6 +181,7 @@ set( SOURCES
      src/internal/streamextractcallback.cpp
      src/internal/stringutil.cpp
      src/internal/updatecallback.cpp
+     src/internal/win32category.cpp
      src/internal/windows.cpp )
 
 # library output file name options
