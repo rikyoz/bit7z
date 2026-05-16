@@ -23,7 +23,7 @@ namespace cpp26 {
 #if defined( __cpp_constexpr ) && __cpp_constexpr >= 201304L
 #   define CPP14_CONSTEXPR constexpr
 #else
-#   define CONSTEXPR
+#   define CPP14_CONSTEXPR /*constexpr*/
 #endif
 
 // TODO: Use a variable template like are_both_integral_v; supported from GCC 5+, MSVC 2015 Update 2
