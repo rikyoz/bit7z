@@ -16,13 +16,12 @@
 #include "biterror.hpp"
 #include "bitexception.hpp"
 #include "bittypes.hpp"
+#include "internal/cpp17.hpp"
 
 namespace bit7z {
 template< typename T >
-using is_movable = std::integral_constant<
-    bool,
-    std::is_move_constructible< T >::value && std::is_nothrow_move_constructible< T >::value
->;
+using is_movable = cpp17::bool_constant< std::is_move_constructible< T >::value &&
+                                         std::is_nothrow_move_constructible< T >::value >;
 
 struct nullopt_t {
     constexpr explicit nullopt_t( int /*unused*/ ) noexcept {}
