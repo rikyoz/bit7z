@@ -20,8 +20,6 @@
 #ifndef _WIN32
 #include "internal/dateutil.hpp"
 
-#include <sys/resource.h> // for rlimit, getrlimit, and setrlimit
-
 // For some reason, GCC on macOS requires including <climits> for defining OPEN_MAX.
 #if defined( __APPLE__ ) && !defined( __clang__ )
 #include <climits>
@@ -257,26 +255,6 @@ auto fsutil::formatLongPath( const fs::path& path ) -> fs::path {
 }
 
 #endif
-
-void fsutil::increaseOpenedFilesLimit() {
-#ifdef _MSC_VER
-    // http://msdn.microsoft.com/en-us/library/6e3b887c.aspx
-    _setmaxstdio( 8192 );
-#elif defined( __MINGW32__ )
-    // MinGW uses an older max value for this function
-    _setmaxstdio( 2048 );
-#else
-    rlimit limits{ 0, 0 };
-    if ( getrlimit( RLIMIT_NOFILE, &limits ) == 0 ) {
-#ifdef __APPLE__
-        limits.rlim_cur = std::min( static_cast< rlim_t >( OPEN_MAX ), limits.rlim_max );
-#else
-        limits.rlim_cur = limits.rlim_max;
-#endif
-        setrlimit( RLIMIT_NOFILE, &limits );
-    }
-#endif
-}
 
 #if defined( _WIN32 ) && defined( BIT7Z_PATH_SANITIZATION )
 namespace {
