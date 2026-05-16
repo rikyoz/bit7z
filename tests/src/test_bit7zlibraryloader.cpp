@@ -73,7 +73,7 @@ TEST_CASE( "Bit7zLibraryLoader: Immediate loading", "[bit7zlibraryloader]" ) {
 
 const auto isNonExistingLibraryErrorCode = []( const std::error_code code ) -> bool {
 #ifdef _WIN32
-    return code.value() == ERROR_MOD_NOT_FOUND;
+    return code.value() == HRESULT_FROM_WIN32( ERROR_MOD_NOT_FOUND );
 #else
     return code.value() == EBADF;
 #endif

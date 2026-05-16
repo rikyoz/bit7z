@@ -34,7 +34,7 @@ TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bi
     REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
                             BitException,
                             Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& ex ) -> bool {
-                                return std::strncmp( ex.code().category().name(), "HRESULT", 8 );
+                                return ex.hresultCode() == HRESULT_FROM_WIN32( ERROR_MOD_NOT_FOUND );
                             }, "Error code should be E_FAIL" ) );
 #else
     REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.so" ) ),
