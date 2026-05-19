@@ -230,18 +230,12 @@ class Optional final : OptionalBase< T > {
         template< typename... Args >
         auto emplace( Args&&... args ) -> T& {
             reset();
-            new( raw_data() ) T( std::forward< Args >( args )... );
+            new( data() ) T( std::forward< Args >( args )... );
             mEngaged = true;
             return stored_value();
         }
 
     private:
-        BIT7Z_NODISCARD
-        BIT7Z_CPP14_CONSTEXPR auto raw_data() noexcept -> void* {
-            // Note: this is not UB only when used after reset(), as the storage is then uninitialized.
-            return const_cast< void* >( static_cast< const void* >( data() ) ); // NOLINT(*-pro-type-const-cast)
-        }
-
         BIT7Z_NODISCARD
         BIT7Z_CPP14_CONSTEXPR auto data() & noexcept -> T* {
             return &mStorage.mValue;
