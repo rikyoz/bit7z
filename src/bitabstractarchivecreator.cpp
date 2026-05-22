@@ -212,7 +212,7 @@ auto BitAbstractArchiveCreator::storeLastAccessTime() const noexcept -> bool {
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
-    setPassword( password, mCryptHeaders );
+    setPassword( password, mCryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
 }
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
@@ -232,14 +232,18 @@ auto isAscii( const tstring& str ) -> bool {
 } // namespace
 #endif
 
-void BitAbstractArchiveCreator::setPassword( const tstring& password, bool cryptHeaders ) {
+void BitAbstractArchiveCreator::setPassword( const tstring& password, EncryptionScope scope ) {
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
     if ( mFormat == BitFormat::Zip && !isAscii( password ) ) {
         throw BitException( "Invalid password", make_error_code( BitError::InvalidZipPassword ) );
     }
 #endif
     BitAbstractArchiveHandler::setPassword( password );
-    mCryptHeaders = !password.empty() && cryptHeaders;
+    mCryptHeaders = !password.empty() && scope == EncryptionScope::DataAndHeaders;
+}
+
+void BitAbstractArchiveCreator::setPassword( const tstring& password, bool cryptHeaders ) {
+    setPassword( password, cryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
 }
 
 void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level ) noexcept {

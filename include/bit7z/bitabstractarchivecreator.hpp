@@ -44,6 +44,14 @@ enum struct UpdateMode {
 };
 
 /**
+ * @brief The EncryptionScope enum represents the scope of encryption applied when setting a password on an archive.
+ */
+enum struct EncryptionScope : std::uint8_t {
+    DataOnly,      ///< Only the archive's file data is encrypted.
+    DataAndHeaders ///< Both the archive's file data and headers are encrypted (valid only for the 7z format).
+};
+
+/**
  * @brief Abstract class representing a generic archive creator.
  */
 class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
@@ -155,6 +163,30 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         void setPassword( const tstring& password ) override;
 
         /**
+         * @brief Sets up a password for the output archive, specifying the encryption scope.
+         *
+         * When setting a password, the produced archive will be encrypted using the default
+         * cryptographic method of the output format. If the format is 7z and the scope is
+         * EncryptionScope::DataAndHeaders, the archive headers will also be encrypted,
+         * resulting in a password request every time the output file will be opened.
+         *
+         * @note Calling setPassword when the output format doesn't support archive encryption
+         * (e.g., GZip, BZip2, etc...) does not have any effects (in other words, it doesn't
+         * throw exceptions, and it has no effects on compression operations).
+         *
+         * @note Using EncryptionScope::DataAndHeaders does not have effects on formats other than 7z.
+         *
+         * @note After a password has been set, it will be used for every subsequent operation.
+         * To disable the use of the password, you need to call the clearPassword method
+         * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
+         *
+         * @param password  the password to be used when creating/updating archives.
+         * @param scope     the scope of encryption; use EncryptionScope::DataAndHeaders to also
+         *                  encrypt the archive headers (valid only for the 7z format).
+         */
+        void setPassword( const tstring& password, EncryptionScope scope );
+
+        /**
          * @brief Sets up a password for the output archive.
          *
          * When setting a password, the produced archive will be encrypted using the default
@@ -173,10 +205,13 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
          * To disable the use of the password, you need to call the clearPassword method
          * (inherited from BitAbstractArchiveHandler), which is equivalent to setPassword(L"").
          *
-         * @param password          the password to be used when creating/updating archives.
-         * @param cryptHeaders     if true, the headers of the output archives will be encrypted
-         *                          (valid only when using the 7z format).
+         * @param password      the password to be used when creating/updating archives.
+         * @param cryptHeaders  if true, the headers of the output archives will be encrypted
+         *                      (valid only when using the 7z format).
+         *
+         * @deprecated Since v4.1. Please use the overloaded function that takes an EncryptionScope enumerator.
          */
+        BIT7Z_DEPRECATED_MSG( "Since v4.1. Please use the setPassword overload taking an EncryptionScope enumerator." )
         void setPassword( const tstring& password, bool cryptHeaders );
 
         /**
