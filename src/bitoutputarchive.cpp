@@ -135,18 +135,18 @@ void BitOutputArchive::addItems( const std::map< tstring, tstring >& inPaths ) {
     indexPathsMap( mNewItems, inPaths, options );
 }
 
-BitInputItem& BitOutputArchive::addFile( const tstring& inFile, const tstring& name ) {
+auto BitOutputArchive::addFile( const tstring& inFile, const tstring& name ) -> BitInputItem& {
     const auto policy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     indexFile( mNewItems, inFile, mArchiveCreator.retainDirectories() ? inFile : name, policy );
     return mNewItems.back();
 }
 
-BitInputItem& BitOutputArchive::addFile( const buffer_t& inBuffer, const tstring& name ) {
+auto BitOutputArchive::addFile( const buffer_t& inBuffer, const tstring& name ) -> BitInputItem& {
     indexBuffer( mNewItems, inBuffer, name );
     return mNewItems.back();
 }
 
-BitInputItem& BitOutputArchive::addFile( std::istream& inStream, const tstring& name ) {
+auto BitOutputArchive::addFile( std::istream& inStream, const tstring& name ) -> BitInputItem& {
     indexStream( mNewItems, inStream, name );
     return mNewItems.back();
 }

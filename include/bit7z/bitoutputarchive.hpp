@@ -165,7 +165,7 @@ class BitOutputArchive {
          *
          * @return a reference to the input item just added, valid until the next call that adds items to the archive.
          */
-        BitInputItem& addFile( const tstring& inFile, const tstring& name = {} );
+        auto addFile( const tstring& inFile, const tstring& name = {} ) -> BitInputItem&;
 
         /**
          * @brief Adds the given buffer file, using the given name as a path when compressed in the output archive.
@@ -175,7 +175,7 @@ class BitOutputArchive {
          *
          * @return a reference to the input item just added, valid until the next call that adds items to the archive.
          */
-        BitInputItem& addFile( const buffer_t& inBuffer, const tstring& name );
+        auto addFile( const buffer_t& inBuffer, const tstring& name ) -> BitInputItem&;
 
         /**
          * @brief Adds the given standard input stream, using the given name as a path when compressed
@@ -186,7 +186,7 @@ class BitOutputArchive {
          *
          * @return a reference to the input item just added, valid until the next call that adds items to the archive.
          */
-        BitInputItem& addFile( std::istream& inStream, const tstring& name );
+        auto addFile( std::istream& inStream, const tstring& name ) -> BitInputItem&;
 
         /**
          * @brief Adds all the files in the given vector of filesystem paths.
