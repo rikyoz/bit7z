@@ -43,7 +43,7 @@ auto openFile( const native_string& filePath, OpenFlags openFlags ) -> handle_t 
     }
     const handle_t handle = ::CreateFileW( filePath.c_str(),
                                            to_underlying( openFlags.accessFlag ),
-                                           FILE_SHARE_READ,
+                                           to_underlying( openFlags.shareFlag ),
                                            nullptr,
                                            to_underlying( openFlags.fileFlag ),
                                            flagsAndAttributes,
@@ -128,7 +128,7 @@ auto FileHandle::seek( SeekOrigin origin,
 }
 
 OutputFile::OutputFile( const native_string& filePath, FileFlag fileFlag, ExtraFlag extraFlag )
-    : FileHandle{ filePath, OpenFlags{ AccessFlag::WriteOnly, fileFlag, extraFlag } } {}
+    : FileHandle{ filePath, OpenFlags{ AccessFlag::WriteOnly, fileFlag, ShareFlag::Read, extraFlag } } {}
 
 namespace {
 BIT7Z_ALWAYS_INLINE
@@ -191,14 +191,23 @@ auto OutputFile::setFileTime( FILETIME creation, FILETIME access, FILETIME modif
 }
 #endif
 
-// Guaranteeing that the input file open flags are calculated at compile time.
-static constexpr OpenFlags openInputFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ExtraFlag::None };
+namespace {
+constexpr auto inputOpenFlags( BIT7Z_MAYBE_UNUSED bool storeOpenFiles ) noexcept -> OpenFlags {
+#ifdef _WIN32
+    return storeOpenFiles
+        ? OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::ReadWrite }
+        : OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing };
+#else
+    return { AccessFlag::ReadOnly, FileFlag::Existing, ExtraFlag::None };
+#endif
+}
+} // namespace
 
-InputFile::InputFile( const native_string& filePath )
-    : FileHandle{ filePath, openInputFlags } {}
+InputFile::InputFile( const native_string& filePath, bool storeOpenFiles )
+    : FileHandle{ filePath, inputOpenFlags( storeOpenFiles ) } {}
 
 InputFile::InputFile( const native_string& filePath, ExtraFlag extraFlag )
-    : FileHandle{ filePath, OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, extraFlag } } {}
+    : FileHandle{ filePath, OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::Read, extraFlag } } {}
 
 namespace {
 BIT7Z_ALWAYS_INLINE

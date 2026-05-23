@@ -144,7 +144,8 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator(
     mSolidMode( false ),
     mVolumeSize( 0 ),
     mThreadsCount( 0 ),
-    mStoreSymbolicLinks{ false } {
+    mStoreSymbolicLinks{ false },
+    mStoreOpenFiles{ false } {
     setRetainDirectories( false );
 }
 
@@ -209,6 +210,10 @@ auto BitAbstractArchiveCreator::storeCreationTime() const noexcept -> bool {
 auto BitAbstractArchiveCreator::storeLastAccessTime() const noexcept -> bool {
     const auto propertyIt = mExtraProperties.find( L"ta" );
     return propertyIt != mExtraProperties.cend() && propertyIt->second.isBool() && propertyIt->second.getBool();
+}
+
+auto BitAbstractArchiveCreator::storeOpenFiles() const noexcept -> bool {
+    return mStoreOpenFiles;
 }
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
@@ -329,6 +334,10 @@ void BitAbstractArchiveCreator::setStoreCreationTime( bool storeCreationTime ) n
 
 void BitAbstractArchiveCreator::setStoreLastAccessTime( bool storeLastAccessTime ) noexcept {
     setFormatProperty( L"ta", storeLastAccessTime );
+}
+
+void BitAbstractArchiveCreator::setStoreOpenFiles( bool storeOpenFiles ) noexcept {
+    mStoreOpenFiles = storeOpenFiles;
 }
 
 namespace {

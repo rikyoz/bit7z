@@ -144,6 +144,11 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         BIT7Z_NODISCARD auto storeLastAccessTime() const noexcept -> bool;
 
         /**
+         * @return whether the creator will attempt to compress files that are locked by other processes.
+         */
+        BIT7Z_NODISCARD auto storeOpenFiles() const noexcept -> bool;
+
+        /**
          * @brief Sets up a password for the output archives.
          *
          * When setting a password, the produced archives will be encrypted using the default
@@ -322,6 +327,21 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         void setStoreLastAccessTime( bool storeLastAccessTime ) noexcept;
 
         /**
+         * @brief Sets whether the creator will attempt to compress files that are locked by other processes.
+         *
+         * When enabled, the creator opens files with shared read/write access on Windows, which is equivalent
+         * to 7-zip's -ssw switch. This allows compressing files that another process has open for writing.
+         *
+         * @warning Compressing a file that is actively being written by another process may produce
+         *          an incomplete or inconsistent archive entry.
+         *
+         * @note On non-Windows platforms this setting has no effect.
+         *
+         * @param storeOpenFiles if true, the creator will attempt to compress files open by other processes.
+         */
+        void setStoreOpenFiles( bool storeOpenFiles ) noexcept;
+
+        /**
          * @brief Sets a property for the output archive format as described by the 7-zip documentation
          * (e.g., https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm).
          *
@@ -377,6 +397,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         std::uint64_t mVolumeSize;
         std::uint32_t mThreadsCount;
         bool mStoreSymbolicLinks;
+        bool mStoreOpenFiles;
         std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
 

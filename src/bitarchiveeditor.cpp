@@ -281,7 +281,7 @@ auto BitArchiveEditor::itemStream( InputIndex index, ISequentialInStream** inStr
     if ( mappedIndex < inputArchiveItemsCount() ) { //old item in the archive
         const auto res = mEditedItems.find( mappedIndex );
         if ( res != mEditedItems.end() ) { //user wants to update the old item in the archive
-            return res->second.getStream( inStream );
+            return res->second.getStream( inStream, creator().storeOpenFiles() );
         }
         return S_OK;
     }

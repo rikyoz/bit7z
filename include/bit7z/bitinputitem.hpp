@@ -127,12 +127,14 @@ class BitInputItem final {
          *
          * @note For internal use; not meant to be used by the user.
          *
-         * @param inStream output parameter set to the item's input stream.
+         * @param inStream          output parameter set to the item's input stream.
+         * @param storeOpenFiles    if true, request shared read/write access when opening the file on Windows,
+         *                          allowing compression of files locked by other processes.
          *
          * @return S_OK on success, or an error HRESULT if the stream could not be opened.
          */
         BIT7Z_NODISCARD
-        auto getStream( ISequentialInStream** inStream ) const -> HRESULT;
+        auto getStream( ISequentialInStream** inStream, bool storeOpenFiles = false ) const -> HRESULT;
 
         /**
          * @return true if the item contributes new data to the archive

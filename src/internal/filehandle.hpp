@@ -81,6 +81,16 @@ enum struct FileFlag : std::uint16_t {
 };
 #endif
 
+#ifdef _WIN32
+/**
+ * @brief Enumeration defining the file-sharing mode when opening a file handle on Windows.
+ */
+enum struct ShareFlag : std::uint32_t {
+    Read      = FILE_SHARE_READ,                     ///< Allow other processes to open the file for reading.
+    ReadWrite = FILE_SHARE_READ | FILE_SHARE_WRITE   ///< Allow other processes to open the file for reading or writing.
+};
+#endif
+
 /**
  * @brief Enumeration of additional open-time flags, designed as a bitmask.
  */
@@ -116,7 +126,8 @@ struct OpenFlags {
 #ifdef _WIN32
     AccessFlag accessFlag;
     FileFlag fileFlag;
-    ExtraFlag extraFlag;
+    ShareFlag shareFlag = ShareFlag::Read;
+    ExtraFlag extraFlag = ExtraFlag::None;
 #else
 
     private:
@@ -173,7 +184,7 @@ struct OutputFile final : FileHandle {
 };
 
 struct InputFile final : FileHandle {
-    explicit InputFile( const native_string& filePath );
+    explicit InputFile( const native_string& filePath, bool storeOpenFiles = false );
 
     explicit InputFile( const native_string& filePath, ExtraFlag extraFlag );
 
