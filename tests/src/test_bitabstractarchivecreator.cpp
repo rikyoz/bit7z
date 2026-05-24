@@ -359,6 +359,18 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setStoreSymbolicLinks(...) 
     REQUIRE_FALSE( compressor.solidMode() );
 }
 
+TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setStoreOpenFiles(...) / storeOpenFiles()",
+                         "[bitabstractarchivecreator]", CreatorTypes ) {
+    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+    REQUIRE_FALSE( compressor.storeOpenFiles() );
+
+    compressor.setStoreOpenFiles( true );
+    REQUIRE( compressor.storeOpenFiles() );
+
+    compressor.setStoreOpenFiles( false );
+    REQUIRE_FALSE( compressor.storeOpenFiles() );
+}
+
 TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setThreadCount(...) / threadCount()",
                          "[bitabstractarchivecreator]", CreatorTypes ) {
     TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );

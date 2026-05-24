@@ -243,3 +243,42 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
         }
     }
 }
+
+#if defined( _WIN32 ) && defined( BIT7Z_TESTS_DATA_DIR )
+
+TEST_CASE( "BitArchiveWriter: setStoreOpenFiles allows compressing a file locked for writing by another process",
+           "[bitarchivewriter]" ) {
+    const TempTestDirectory testDir{ "test_bitarchivewriter" };
+    const fs::path lockedFilePath = testDir.path() / "locked.txt";
+
+    // Keep ofs open for the duration of the test: on Windows, any open write handle blocks a new
+    // opener whose share mode doesn't include FILE_SHARE_WRITE (the new opener must cover the
+    // existing handle's access, regardless of what share mode the existing handle itself uses).
+    // This is exactly the condition that the storeOpenFiles feature is designed to work around.
+    fs::ofstream ofs{ lockedFilePath, std::ios::binary };
+    ofs << "hello world";
+    ofs.flush(); // ensure content is on disk before bit7z reads it
+    REQUIRE( ofs.is_open() );
+
+    SECTION( "Compressing a locked file fails without storeOpenFiles" ) {
+        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        REQUIRE_FALSE( writer.storeOpenFiles() );
+        REQUIRE_NOTHROW( writer.addFile( to_tstring( lockedFilePath.native() ) ) );
+        buffer_t buffer;
+        REQUIRE_THROWS( writer.compressTo( buffer ) );
+    }
+
+    SECTION( "Compressing a locked file succeeds with storeOpenFiles" ) {
+        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        writer.setStoreOpenFiles( true );
+        REQUIRE_NOTHROW( writer.addFile( to_tstring( lockedFilePath.native() ) ) );
+        buffer_t buffer;
+        REQUIRE_NOTHROW( writer.compressTo( buffer ) );
+
+        const BitArchiveReader reader{ test::sevenzip_lib(), buffer, BitFormat::SevenZip };
+        REQUIRE( reader.itemsCount() == 1 );
+        REQUIRE( reader.itemAt( 0 ).size() == 11 ); // "hello world" is 11 bytes
+    }
+}
+
+#endif
