@@ -471,7 +471,7 @@ void BitInputArchive::extractFolderTo(
             return pathToTstring( relativePath );
         }
         if ( relativePath.native() == nativeDot ) {
-            pathToTstring( folderName );
+            return pathToTstring( folderName );
         }
         return pathToTstring( folderName / relativePath );
     };
