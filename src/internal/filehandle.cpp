@@ -41,13 +41,15 @@ auto openFile( const native_string& filePath, OpenFlags openFlags ) -> handle_t 
         // Open the reparse point itself so CreateFileW doesn't traverse it.
         flagsAndAttributes |= FILE_FLAG_OPEN_REPARSE_POINT;
     }
-    const handle_t handle = ::CreateFileW( filePath.c_str(),
-                                           to_underlying( openFlags.accessFlag ),
-                                           to_underlying( openFlags.shareFlag ),
-                                           nullptr,
-                                           to_underlying( openFlags.fileFlag ),
-                                           flagsAndAttributes,
-                                           nullptr );
+    const handle_t handle = ::CreateFileW(
+        filePath.c_str(),
+        to_underlying( openFlags.accessFlag ),
+        to_underlying( openFlags.shareFlag ),
+        nullptr,
+        to_underlying( openFlags.fileFlag ),
+        flagsAndAttributes,
+        nullptr
+    );
     if ( handle == INVALID_HANDLE_VALUE ) { // NOLINT(*-pro-type-cstyle-cast, *-no-int-to-ptr)
 #else
     // NOLINTNEXTLINE(*-vararg)
@@ -62,10 +64,12 @@ auto openFile( const native_string& filePath, OpenFlags openFlags ) -> handle_t 
     // reparse-point kinds (junctions, mount points, etc.), matching S_IFLNK on Unix.
     if ( hasFlag( openFlags.extraFlag, ExtraFlag::NoFollow ) ) {
         FILE_ATTRIBUTE_TAG_INFO tagInfo{};
-        const BOOL queryOk = ::GetFileInformationByHandleEx( handle,
-                                                             FileAttributeTagInfo,
-                                                             &tagInfo,
-                                                             sizeof( tagInfo ) );
+        const BOOL queryOk = ::GetFileInformationByHandleEx(
+            handle,
+            FileAttributeTagInfo,
+            &tagInfo,
+            sizeof( tagInfo )
+        );
         if ( queryOk == FALSE ) {
             const std::error_code error = lastErrorCode();
             CloseHandle( handle );
@@ -73,9 +77,11 @@ auto openFile( const native_string& filePath, OpenFlags openFlags ) -> handle_t 
         }
         if ( tagInfo.ReparseTag == IO_REPARSE_TAG_SYMLINK ) {
             CloseHandle( handle );
-            throw BitException( "Refusing to open a symbolic link",
-                                std::make_error_code( std::errc::too_many_symbolic_link_levels ),
-                                pathToTstring( filePath ) );
+            throw BitException(
+                "Refusing to open a symbolic link",
+                std::make_error_code( std::errc::too_many_symbolic_link_levels ),
+                pathToTstring( filePath )
+            );
         }
     }
 #endif
@@ -95,25 +101,29 @@ FileHandle::~FileHandle() {
 #endif
 }
 
-auto FileHandle::seek( SeekOrigin origin,
-                       const std::int64_t distance,
-                       std::uint64_t& newPosition ) const noexcept -> HRESULT {
+auto FileHandle::seek(
+    SeekOrigin origin,
+    const std::int64_t distance,
+    std::uint64_t& newPosition
+) const noexcept -> HRESULT {
 #ifdef _WIN32
     LARGE_INTEGER distanceToMove;
     distanceToMove.QuadPart = distance;
 
     LARGE_INTEGER finalPosition;
-    const auto result = ::SetFilePointerEx( mHandle,
-                                            distanceToMove,
-                                            &finalPosition,
-                                            static_cast< DWORD >( origin ) );
+    const auto result = ::SetFilePointerEx(
+        mHandle,
+        distanceToMove,
+        &finalPosition,
+        static_cast< DWORD >( origin )
+    );
     if ( result == FALSE ) {
         return HRESULT_FROM_WIN32( GetLastError() );
     }
 
     newPosition = static_cast< std::uint64_t >( finalPosition.QuadPart );
 #else
-#if defined( NO_LSEEK64 )
+#ifdef NO_LSEEK64
     const auto result = lseek( mHandle, distance, static_cast< int >( origin ) );
 #else
     const auto result = lseek64( mHandle, distance, static_cast< int >( origin ) );
@@ -174,7 +184,10 @@ auto OutputFile::write( const void* data, std::uint32_t size, std::uint32_t& pro
         }
         processedSize += bytesWritten;
         size -= bytesWritten;
-        data = std::next( static_cast< const bit7z::byte_t* >( data ), cpp26::saturating_cast< std::ptrdiff_t >( bytesWritten ) );
+        data = std::next(
+            static_cast< const bit7z::byte_t* >( data ),
+            cpp26::saturating_cast< std::ptrdiff_t >( bytesWritten )
+        );
     } while ( size > 0 );
     return S_OK;
 }
@@ -253,7 +266,10 @@ auto InputFile::read( void* data, std::uint32_t size, std::uint32_t& processedSi
         }
         processedSize += bytesRead;
         size -= bytesRead;
-        data = std::next( static_cast< bit7z::byte_t* >( data ), cpp26::saturating_cast< std::ptrdiff_t >( bytesRead ) );
+        data = std::next(
+            static_cast< bit7z::byte_t* >( data ),
+            cpp26::saturating_cast< std::ptrdiff_t >( bytesRead )
+        );
     } while ( size > 0 );
     return S_OK;
 }
