@@ -48,7 +48,7 @@ enum struct ArchiveStartOffset : std::uint8_t {
     FileStart ///< Check only the file start for the archive's start.
 };
 
-enum class FolderPathPolicy : std::uint8_t {
+enum struct FolderPathPolicy : std::uint8_t {
     Strip,      ///< Remove the folder path from the extracted path.
     KeepName,   ///< Preserve the folder name in the extracted path.
     KeepPath,   ///< Preserve the full folder path in the extracted path.

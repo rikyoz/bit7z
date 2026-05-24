@@ -23,7 +23,7 @@ using namespace NArchive::NExtract;
 
 namespace bit7z {
 
-enum struct OperationResult {
+enum struct OperationResult : std::uint8_t {
     Success            = NOperationResult::kOK,
     UnsupportedMethod  = NOperationResult::kUnsupportedMethod,
     DataError          = NOperationResult::kDataError,

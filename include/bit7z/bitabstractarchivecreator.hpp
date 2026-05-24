@@ -36,7 +36,7 @@ class ArchiveProperties;
 /**
  * @brief Enumeration representing how an archive creator should deal when the output archive already exists.
  */
-enum struct UpdateMode {
+enum struct UpdateMode : std::uint8_t {
     None,   ///< The creator will throw an exception (unless the OverwriteMode is not None).
     Append, ///< The creator will append the new items to the existing archive.
     Update, ///< New items whose path already exists in the archive will overwrite the old ones, other will be appended.

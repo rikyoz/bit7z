@@ -74,7 +74,6 @@ class TestArchive : public TestArchiveContent {
 
     private:
         TestFormatType mFormat;
-
 };
 
 using TestInputArchive = TestArchive< TestInputFormat >;

@@ -34,7 +34,7 @@ class BitInputArchive;
 constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 constexpr auto kEmptyFileWideAlias = L"[Content]";
 
-enum struct ExtractMode {
+enum struct ExtractMode : std::uint8_t {
     Extract = NAskMode::kExtract,
     Test    = NAskMode::kTest,
     Skip    = NAskMode::kSkip

@@ -20,7 +20,7 @@ namespace bit7z {
 /**
  * @brief The BitError enum struct values represent bit7z specific errors.
  */
-enum struct BitError {
+enum struct BitError : std::uint8_t {
     Fail = 1,
     FilterNotSpecified,
     FormatFeatureNotSupported,
@@ -56,7 +56,7 @@ auto make_error_code( BitError error ) noexcept -> std::error_code;
  * They can be used for performing queries on bit7z's `error_code`s, for the purpose
  * of grouping, classification, or error translation.
  */
-enum struct BitFailureSource {
+enum struct BitFailureSource : std::uint8_t {
     CRCError,
     DataAfterEnd,
     DataError,

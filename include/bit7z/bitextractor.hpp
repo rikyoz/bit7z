@@ -148,8 +148,8 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outBuffer the pre-allocated output buffer.
          * @param index     the index of the file to be extracted.
          */
-        template< std::size_t N >
-        void extract( Input inArchive, byte_t (&outBuffer)[ N ], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+        template< std::size_t N > // NOLINTNEXTLINE(*-avoid-c-arrays)
+        void extract( Input inArchive, byte_t (&outBuffer)[ N ], std::uint32_t index = 0 ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
         }

@@ -220,6 +220,7 @@ auto findFormatByExtension( const tstring& extension ) -> const BitInFormat* {
  * NOTE 2: Until v3, a std::unordered_map was used for mapping the signatures and the corresponding
  *         format. However, the switch case is faster and has less memory footprint. */
 auto findFormatBySignature( std::uint64_t signature ) noexcept -> const BitInFormat* {
+    // cppcheck-suppress-begin unreadVariable
     constexpr auto kRarSignature = 0x526172211A070000ULL; // Rar! 0x1A 0x07 0x00
     constexpr auto kRar5Signature = 0x526172211A070100ULL; // Rar! 0x1A 0x07 0x01 0x00
     constexpr auto kSevenzipSignature = 0x377ABCAF271C0000ULL; // 7z 0xBC 0xAF 0x27 0x1C
@@ -272,6 +273,7 @@ auto findFormatBySignature( std::uint64_t signature ) noexcept -> const BitInFor
     constexpr auto kZSignature1 = 0x1F9D000000000000ULL; // 0x1F 0x9D
     constexpr auto kZSignature2 = 0x1FA0000000000000ULL; // 0x1F 0xA0
     constexpr auto kZstdSignature = 0x28B52FFD00000000ULL;
+    // cppcheck-suppress-end unreadVariable
 
     switch ( signature ) {
         case kRarSignature:

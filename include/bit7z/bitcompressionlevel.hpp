@@ -10,13 +10,15 @@
 #ifndef BITCOMPRESSIONLEVEL_HPP
 #define BITCOMPRESSIONLEVEL_HPP
 
+#include <cstdint>
+
 namespace bit7z {
 
 /**
  * @brief The BitCompressionLevel enum represents the compression level used by 7z when creating archives.
  * @note It uses the same values used by [7-zip](https://sevenzip.osdn.jp/chm/cmdline/switches/method.htm#ZipX).
  */
-enum struct BitCompressionLevel {
+enum struct BitCompressionLevel : std::uint8_t {
     None    = 0, ///< Copy mode (no compression)
     Fastest = 1, ///< Fastest compressing
     Fast    = 3, ///< Fast compressing

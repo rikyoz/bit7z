@@ -55,9 +55,9 @@ auto isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
 }
 
 auto isValidDictionarySize( BitCompressionMethod method, std::uint32_t dictionarySize ) noexcept -> bool {
-    constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1ull << 20ull ); // less than 3840 MiB
-    constexpr auto kMaxPpmdDictionarySize = ( 1ull << 30ull ); // less than 1 GiB, i.e., 2^30 bytes
-    constexpr auto kMaxBzip2DictionarySize = 900 * ( 1ull << 10ull ); // less than 900 KiB
+    constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1uLL << 20uLL ); // less than 3840 MiB
+    constexpr auto kMaxPpmdDictionarySize = ( 1uLL << 30uLL ); // less than 1 GiB, i.e., 2^30 bytes
+    constexpr auto kMaxBzip2DictionarySize = 900 * ( 1uLL << 10uLL ); // less than 900 KiB
 
     switch ( method ) {
         case BitCompressionMethod::Lzma:

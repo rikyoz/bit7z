@@ -45,8 +45,8 @@ class ArchiveProperties final {
         }
 
     private:
-        std::vector< const wchar_t* > mNames{};
-        std::vector< BitPropVariant > mValues{};
+        std::vector< const wchar_t* > mNames;
+        std::vector< BitPropVariant > mValues;
 
         template< typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
         void setProperty( const wchar_t* name, T value ) {

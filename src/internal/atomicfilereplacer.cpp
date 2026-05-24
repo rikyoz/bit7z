@@ -30,7 +30,7 @@ auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutSt
     constexpr auto kMaxTempPathRetries = std::numeric_limits< std::uint16_t >::max();
     fs::path tmpCandidatePath = targetPath;
     tmpCandidatePath += BIT7Z_NATIVE_STRING( ".tmp" );
-    std::uint32_t i = 0u; // Note: wider than kMaxTempPathRetries so that we can detect when we pass the limit.
+    std::uint32_t tempIndex = 0u; // Note: wider than kMaxTempPathRetries so that we can detect when we pass the limit.
     do {
         try {
             return make_com< CFileOutStream >( tmpCandidatePath );
@@ -39,10 +39,10 @@ auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutSt
                 throw;
             }
         }
-        if ( ++i > kMaxTempPathRetries ) {
+        if ( ++tempIndex > kMaxTempPathRetries ) {
             break;
         }
-        tmpCandidatePath.replace_extension( BIT7Z_NATIVE_STRING( ".tmp" ) + to_native_string( i ) );
+        tmpCandidatePath.replace_extension( BIT7Z_NATIVE_STRING( ".tmp" ) + to_native_string( tempIndex ) );
     } while ( true );
     throw BitException(
         "Could not allocate a unique temporary file name",

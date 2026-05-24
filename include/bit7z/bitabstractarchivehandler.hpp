@@ -85,7 +85,7 @@ using FilterCallback = std::function< FilterResult( const BitArchiveItem& ) >;
 /**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
  */
-enum struct OverwriteMode {
+enum struct OverwriteMode : std::uint8_t {
     None = 0,  ///< The handler will throw an exception if the output file or buffer already exists.
     Overwrite, ///< The handler will overwrite the old file or buffer with the new one.
     Skip,      ///< The handler will skip writing to the output file or buffer.

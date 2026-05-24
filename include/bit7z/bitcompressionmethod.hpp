@@ -10,12 +10,14 @@
 #ifndef BITCOMPRESSIONMETHOD_HPP
 #define BITCOMPRESSIONMETHOD_HPP
 
+#include <cstdint>
+
 namespace bit7z {
 
 /**
  * @brief The BitCompressionMethod enum represents the compression methods used by 7z when creating archives.
  */
-enum struct BitCompressionMethod {
+enum struct BitCompressionMethod : std::uint8_t {
     Copy,
     Deflate,
     Deflate64,

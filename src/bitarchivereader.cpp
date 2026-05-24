@@ -150,7 +150,7 @@ auto BitArchiveReader::size() const -> std::uint64_t {
     return std::accumulate(
         cbegin(),
         cend(),
-        0ull,
+        0uLL,
         [] ( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
             return item.isDir() ? accumulator : accumulator + item.size();
         }
@@ -161,7 +161,7 @@ auto BitArchiveReader::packSize() const -> std::uint64_t {
     return std::accumulate(
         cbegin(),
         cend(),
-        0ull,
+        0uLL,
         [] ( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
             return item.isDir() ? accumulator : accumulator + item.packSize();
         }
@@ -187,7 +187,7 @@ auto BitArchiveReader::isEncrypted() const -> bool {
     return std::all_of(
         cbegin(),
         cend(),
-        [] ( const BitArchiveItem& item ) {
+        [] ( const BitArchiveItem& item ) -> bool {
             return item.isDir() || item.isEncrypted();
         }
     );
