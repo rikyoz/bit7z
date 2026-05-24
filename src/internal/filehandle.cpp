@@ -127,8 +127,18 @@ auto FileHandle::seek( SeekOrigin origin,
     return S_OK;
 }
 
+namespace {
+constexpr auto makeOpenFlags( AccessFlag access, FileFlag fileFlag, ExtraFlag extraFlag ) noexcept -> OpenFlags {
+#ifdef _WIN32
+    return { access, fileFlag, ShareFlag::Read, extraFlag };
+#else
+    return { access, fileFlag, extraFlag };
+#endif
+}
+} // namespace
+
 OutputFile::OutputFile( const native_string& filePath, FileFlag fileFlag, ExtraFlag extraFlag )
-    : FileHandle{ filePath, OpenFlags{ AccessFlag::WriteOnly, fileFlag, ShareFlag::Read, extraFlag } } {}
+    : FileHandle{ filePath, makeOpenFlags( AccessFlag::WriteOnly, fileFlag, extraFlag ) } {}
 
 namespace {
 BIT7Z_ALWAYS_INLINE
@@ -207,7 +217,7 @@ InputFile::InputFile( const native_string& filePath, bool storeOpenFiles )
     : FileHandle{ filePath, inputOpenFlags( storeOpenFiles ) } {}
 
 InputFile::InputFile( const native_string& filePath, ExtraFlag extraFlag )
-    : FileHandle{ filePath, OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::Read, extraFlag } } {}
+    : FileHandle{ filePath, makeOpenFlags( AccessFlag::ReadOnly, FileFlag::Existing, extraFlag ) } {}
 
 namespace {
 BIT7Z_ALWAYS_INLINE
