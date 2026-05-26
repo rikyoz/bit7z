@@ -266,26 +266,31 @@ void BitArchiveEditor::checkIndex( std::uint32_t index ) const {
 
 auto BitArchiveEditor::itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant {
     const auto mappedIndex = static_cast< std::uint32_t >( index );
-    if ( mappedIndex < inputArchiveItemsCount() ) {
-        const auto res = mEditedItems.find( mappedIndex );
-        if ( res != mEditedItems.end() ) {
-            return res->second.itemProperty( property );
-        }
+    if ( mappedIndex >= inputArchiveItemsCount() ) {
+        return BitOutputArchive::itemProperty( index, property );
+    }
+
+    const auto res = mEditedItems.find( mappedIndex );
+    if ( res == mEditedItems.end() ) {
         return inputArchive()->itemProperty( mappedIndex, property );
     }
-    return BitOutputArchive::itemProperty( index, property );
+    return res->second.itemProperty( property );
 }
 
 auto BitArchiveEditor::itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT {
     const auto mappedIndex = static_cast< std::uint32_t >( index );
-    if ( mappedIndex < inputArchiveItemsCount() ) { //old item in the archive
-        const auto res = mEditedItems.find( mappedIndex );
-        if ( res != mEditedItems.end() ) { //user wants to update the old item in the archive
-            return res->second.getStream( inStream, creator().storeOpenFiles() );
-        }
+    if ( mappedIndex >= inputArchiveItemsCount() ) {
+        return BitOutputArchive::itemStream( index, inStream );
+    }
+
+    // Old item in the archive.
+    const auto res = mEditedItems.find( mappedIndex );
+    if ( res == mEditedItems.end() ) {
         return S_OK;
     }
-    return BitOutputArchive::itemStream( index, inStream );
+
+    // The user wants to update the old item in the archive.
+    return res->second.getStream( inStream, creator().storeOpenFiles() );
 }
 
 auto BitArchiveEditor::hasNewData( std::uint32_t index ) const noexcept -> bool {
@@ -295,10 +300,11 @@ auto BitArchiveEditor::hasNewData( std::uint32_t index ) const noexcept -> bool 
     }
 
     const auto editedItem = mEditedItems.find( mappedIndex );
-    if ( editedItem != mEditedItems.end() ) {
-        return editedItem->second.hasNewData(); //renamed item -> false (no new data), updated item -> true
+    if ( editedItem == mEditedItems.end() ) {
+        return false;
     }
-    return false;
+
+    return editedItem->second.hasNewData(); //renamed item -> false (no new data), updated item -> true
 }
 
 auto BitArchiveEditor::hasNewProperties( std::uint32_t index ) const noexcept -> bool {
