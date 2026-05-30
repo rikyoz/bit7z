@@ -218,8 +218,8 @@ namespace {
 constexpr auto inputOpenFlags( BIT7Z_MAYBE_UNUSED bool storeOpenFiles ) noexcept -> OpenFlags {
 #ifdef _WIN32
     return storeOpenFiles
-        ? OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::ReadWrite }
-        : OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing };
+        ? OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::ReadWrite, ExtraFlag::None }
+        : OpenFlags{ AccessFlag::ReadOnly, FileFlag::Existing, ShareFlag::Read, ExtraFlag::None };
 #else
     return { AccessFlag::ReadOnly, FileFlag::Existing, ExtraFlag::None };
 #endif

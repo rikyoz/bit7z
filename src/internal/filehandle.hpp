@@ -126,10 +126,9 @@ struct OpenFlags {
 #ifdef _WIN32
     AccessFlag accessFlag;
     FileFlag fileFlag;
-    ShareFlag shareFlag = ShareFlag::Read;
-    ExtraFlag extraFlag = ExtraFlag::None;
+    ShareFlag shareFlag;
+    ExtraFlag extraFlag;
 #else
-
     private:
         std::uint32_t mValue;
 
