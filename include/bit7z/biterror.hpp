@@ -12,6 +12,7 @@
 
 #include "bitdefines.hpp"
 
+#include <cstdint>
 #include <system_error>
 #include <type_traits>
 
