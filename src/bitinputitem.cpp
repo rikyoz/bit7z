@@ -274,8 +274,8 @@ auto BitInputItem::getStream( ISequentialInStream** inStream, bool storeOpenFile
     }
     *inStream = inStreamLoc.Detach();
     return S_OK;
-} catch ( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 }
 
 auto BitInputItem::hasNewData() const noexcept -> bool {

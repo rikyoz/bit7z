@@ -89,8 +89,8 @@ auto BufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStr
     *outStream = outStreamLoc.Detach();
     mExtractionAttempted = true;
     return S_OK;
-} catch ( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 }
 
 } // namespace bit7z

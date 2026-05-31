@@ -34,8 +34,8 @@ auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutSt
     do {
         try {
             return make_com< CFileOutStream >( tmpCandidatePath );
-        } catch ( const BitException& ex ) {
-            if ( ex.code() != std::errc::file_exists ) {
+        } catch ( const BitException& exception ) {
+            if ( exception.code() != std::errc::file_exists ) {
                 throw;
             }
         }

@@ -79,8 +79,8 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propId, PROPVARIA
     *value = prop;
     prop.bstrVal = nullptr;
     return S_OK;
-} catch ( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 }
 
 COM_DECLSPEC_NOTHROW
@@ -115,8 +115,8 @@ STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream
     try {
         auto stream = bit7z::make_com< CFileOutStream >( fileName );
         *volumeStream = stream.Detach();
-    } catch ( const BitException& ex ) {
-        return ex.nativeCode();
+    } catch ( const BitException& exception ) {
+        return exception.nativeCode();
     }
     return S_OK;
 }

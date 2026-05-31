@@ -304,8 +304,8 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
             try {
                 const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
                 return false;
-            } catch ( const BitException& ex ) {
-                return isOpenEncryptedError( ex.code() );
+            } catch ( const BitException& exception ) {
+                return isOpenEncryptedError( exception.code() );
             }
         }
 
@@ -335,8 +335,8 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
             try {
                 const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
                 return reader.isEncrypted();
-            } catch ( const BitException& ex ) {
-                return isOpenEncryptedError( ex.code() );
+            } catch ( const BitException& exception ) {
+                return isOpenEncryptedError( exception.code() );
             }
         }
 

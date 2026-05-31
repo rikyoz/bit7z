@@ -101,9 +101,9 @@ try {
     }
 
     return getOutStream( index, outStream );
-} catch ( const BitException& ex ) {
-    mErrorException = std::make_exception_ptr( ex );
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    mErrorException = std::make_exception_ptr( exception );
+    return exception.hresultCode();
 } catch ( const std::runtime_error& ) {
     mErrorException = std::make_exception_ptr(
         BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) )
