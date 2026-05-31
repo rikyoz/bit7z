@@ -1407,6 +1407,49 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE( "BitInputArchive: Aborting the extraction via the progress callback",
+                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+    const auto testArchive = GENERATE( as< TestInputFormat >(),
+                                       TestInputFormat{ "7z", BitFormat::SevenZip },
+                                       TestInputFormat{ "iso", BitFormat::Iso },
+                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
+                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+                                       TestInputFormat{ "tar", BitFormat::Tar },
+                                       TestInputFormat{ "wim", BitFormat::Wim },
+                                       TestInputFormat{ "zip", BitFormat::Zip } );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
+
+        // Returning false from the progress callback must abort the ongoing operation.
+        bool progressCalled = false;
+        info.setProgressCallback( [ &progressCalled ]( std::uint64_t ) -> bool {
+            progressCalled = true;
+            return false;
+        } );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir )
+
+        REQUIRE_THROWS_MATCHES( info.extractTo( testOutDir ),
+                                BitException,
+                                Catch::Matchers::Predicate< BitException >( []( const BitException& ex ) -> bool {
+                                    return ex.code() == std::errc::operation_canceled;
+                                }, "Error code should be operation_canceled" ) );
+
+        // The operation must have been aborted from within the progress callback,
+        // and not have failed for some other reason.
+        REQUIRE( progressCalled );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE( "BitInputArchive: Finding files in an archive", "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
