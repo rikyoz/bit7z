@@ -83,7 +83,7 @@ using stream_t = fs::ifstream;
 
 // Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
 inline void getInputArchive( const fs::path& path, tstring& archive ) {
-    archive = to_tstring( path );
+    archive = to_tstring( path.native() );
 }
 
 inline void getInputArchive( const fs::path& path, buffer_t& archive ) {

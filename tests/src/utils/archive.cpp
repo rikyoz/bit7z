@@ -72,7 +72,11 @@ void require_archive_content(
     const auto& format = info.format();
     if ( format_has_size_metadata( format ) ) {
         REQUIRE( info.size() == expectedArchiveContent.size );
-        REQUIRE( info.packSize() == input.packedSize() );
+        // A packed size of 0 means "do not check it": the packed size of a freshly created archive
+        // is not deterministic, as it depends on the 7-Zip version and the compression settings.
+        if ( input.packedSize() != 0 ) {
+            REQUIRE( info.packSize() == input.packedSize() );
+        }
     }
 
     REQUIRE_FALSE( info.isMultiVolume() );
