@@ -17,9 +17,16 @@
 #include "utils/shared_lib.hpp"
 
 #include <bit7z/bitarchivereader.hpp>
+#include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bitinputitem.hpp>
 #include <bit7z/bitarchivewriter.hpp>
+
+#include <algorithm>
+#include <cstdint>
+#include <functional>
+#include <system_error>
+#include <vector>
 
 using namespace bit7z;
 using namespace bit7z::test;
@@ -282,3 +289,128 @@ TEST_CASE( "BitArchiveWriter: setStoreOpenFiles allows compressing a file locked
 }
 
 #endif
+
+using FilesystemItemInfoRef = std::reference_wrapper< const FilesystemItemInfo >;
+
+TEST_CASE( "BitArchiveWriter: Using compression callbacks", "[bitarchivewriter]" ) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+                                      TestOutputFormat{ "7z", BitFormat::SevenZip },
+                                      TestOutputFormat{ "tar", BitFormat::Tar },
+                                      TestOutputFormat{ "wim", BitFormat::Wim },
+                                      TestOutputFormat{ "zip", BitFormat::Zip },
+                                      TestOutputFormat{ "gz", BitFormat::GZip },
+                                      TestOutputFormat{ "bz2", BitFormat::BZip2 },
+                                      TestOutputFormat{ "xz", BitFormat::Xz } );
+
+    DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+        const auto inputItems = testFormat.format.hasFeature( FormatFeatures::MultipleFiles )
+            ? std::vector< FilesystemItemInfoRef >{ std::cref( italy ), std::cref( loremIpsum ) }
+            : std::vector< FilesystemItemInfoRef >{ std::cref( loremIpsum ) };
+
+        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        for ( const auto& itemRef : inputItems ) {
+            REQUIRE_NOTHROW( writer.addFile( itemRef.get().name ) );
+        }
+
+        const auto totalInputSize = [ &inputItems ]() -> uint64_t {
+            uint64_t result = 0;
+            for ( const auto& itemRef : inputItems ) {
+                result += itemRef.get().size;
+            }
+            return result;
+        }();
+
+        uint64_t totalSize = 0;
+        writer.setTotalCallback( [ &totalSize ]( uint64_t total ) -> void {
+            totalSize = total;
+        } );
+
+        std::vector< uint64_t > progressValues;
+        writer.setProgressCallback( [ &progressValues ]( uint64_t progress ) -> bool {
+            progressValues.push_back( progress );
+            return true;
+        } );
+
+        bool ratioCalled = false;
+        writer.setRatioCallback( [ &ratioCalled ]( uint64_t /* input */, uint64_t /* output */ ) -> void {
+            ratioCalled = true;
+        } );
+
+        std::vector< tstring > visitedFiles;
+        writer.setFileCallback( [ &visitedFiles ]( const tstring& file ) -> void {
+            visitedFiles.push_back( file );
+        } );
+
+        buffer_t outBuffer;
+        REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
+
+        // The total callback should have reported a total that covers the input being compressed
+        // (7-Zip includes some per-item/header overhead on top of the raw file sizes).
+        REQUIRE( totalSize >= totalInputSize );
+
+        // The progress callback should have been called at least once, with non-decreasing values
+        // that never exceed the total size.
+        REQUIRE( !progressValues.empty() );
+        REQUIRE( std::is_sorted( progressValues.begin(), progressValues.end() ) );
+        REQUIRE( progressValues.back() <= totalSize );
+
+        // The ratio callback is only invoked for formats that actually compress the data.
+        if ( format_compresses_files( writer.format() ) ) {
+            REQUIRE( ratioCalled );
+        }
+
+        const auto expectedVisitedFiles = [ &inputItems ]() -> std::vector< tstring > {
+            std::vector< tstring > result;
+            result.reserve( inputItems.size() );
+            for ( const auto& itemRef : inputItems ) {
+                result.emplace_back( itemRef.get().name );
+            }
+            return result;
+        }();
+
+        // The file callback should have reported each compressed file.
+        using namespace Catch::Matchers;
+        REQUIRE_THAT( visitedFiles, Catch::UnorderedEquals( expectedVisitedFiles ) );
+    }
+}
+
+TEST_CASE( "BitArchiveWriter: Aborting the compression via the progress callback", "[bitarchivewriter]" ) {
+    static const TestDirectory testDir{ test_filesystem_dir };
+
+    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+                                      TestOutputFormat{ "7z", BitFormat::SevenZip },
+                                      TestOutputFormat{ "tar", BitFormat::Tar },
+                                      TestOutputFormat{ "wim", BitFormat::Wim },
+                                      TestOutputFormat{ "zip", BitFormat::Zip },
+                                      TestOutputFormat{ "gz", BitFormat::GZip },
+                                      TestOutputFormat{ "bz2", BitFormat::BZip2 },
+                                      TestOutputFormat{ "xz", BitFormat::Xz } );
+
+    DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        REQUIRE_NOTHROW( writer.addFile( italy.name ) );
+        if ( testFormat.format.hasFeature( FormatFeatures::MultipleFiles ) ) {
+            REQUIRE_NOTHROW( writer.addFile( loremIpsum.name ) );
+        }
+
+        // Returning false from the progress callback must abort the ongoing operation.
+        bool progressCalled = false;
+        writer.setProgressCallback( [ &progressCalled ]( std::uint64_t ) -> bool {
+            progressCalled = true;
+            return false;
+        } );
+
+        buffer_t outBuffer;
+        REQUIRE_THROWS_MATCHES( writer.compressTo( outBuffer ),
+                                BitException,
+                                Catch::Matchers::Predicate< BitException >( []( const BitException& ex ) -> bool {
+                                    return ex.code() == std::errc::operation_canceled;
+                                }, "Error code should be operation_canceled" ) );
+
+        // The operation must have been aborted from within the progress callback,
+        // and not have failed for some other reason.
+        REQUIRE( progressCalled );
+    }
+}
