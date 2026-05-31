@@ -18,39 +18,45 @@
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bittypes.hpp>
 
-#ifdef _WIN32
-#include <cstring> // For std::strncmp
-#endif
 #include <system_error>
 
 namespace bit7z {
 namespace test {
 
 TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bit7zlibrary]" ) {
-    REQUIRE_THROWS_WITH( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
-                         Catch::Matchers::StartsWith( "Failed to load the library" ) );
+    REQUIRE_THROWS_WITH(
+        Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
+        Catch::Matchers::StartsWith( "Failed to load the library" )
+    );
 
 #ifdef _WIN32
-    REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
-                            BitException,
-                            Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& ex ) -> bool {
-                                return ex.code().value() == ERROR_MOD_NOT_FOUND;
-                            }, "Error code should be ERROR_MOD_NOT_FOUND" ) );
+    REQUIRE_THROWS_MATCHES(
+        Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.dll" ) ),
+        BitException,
+        Catch::Matchers::Predicate< BitException >(
+            [ & ]( const BitException& exception ) -> bool {
+            return exception.code().value() == ERROR_MOD_NOT_FOUND;
+            },
+            "Error code should be ERROR_MOD_NOT_FOUND"
+        )
+    );
 #else
-    REQUIRE_THROWS_MATCHES( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.so" ) ),
-                            BitException,
-                            Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& ex ) -> bool {
-                                return ex.code() == std::errc::bad_file_descriptor;
-                            }, "Error code should be bad file descriptor" ) );
+    REQUIRE_THROWS_MATCHES(
+        Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.so" ) ),
+        BitException,
+        Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& exception ) -> bool {
+            return exception.code() == std::errc::bad_file_descriptor;
+            }, "Error code should be bad file descriptor" )
+    );
 #endif
 }
 
 TEST_CASE( "Bit7zLibrary: Normal construction", "[bit7zlibrary]" ) {
-    const auto& libPath = sevenzip_lib_path();
-    INFO( "Library path: " << fs::path{ libPath }.string() )
+    const fs::path libPath = sevenzip_lib_path();
+    INFO( "Library path: " << libPath.string() )
 
     REQUIRE( fs::exists( libPath ) );
-    REQUIRE_NOTHROW( Bit7zLibrary{ libPath } );
+    REQUIRE_NOTHROW( Bit7zLibrary{ to_tstring( libPath.native() ) } );
 }
 
 // Note: we are assuming that the 7-zip shared library was built with support to large pages.

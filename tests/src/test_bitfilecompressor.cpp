@@ -132,7 +132,12 @@ TEST_CASE( "BitFileCompressor: Compressing a vector of filesystem paths", "[bitf
         // test_filesystem also holds a top-level Unicode file, intentionally not listed here, as
         // multiple_items_content() does not include it.
         const std::vector< tstring > inPaths{
-            italy.name, loremIpsum.name, noext.name, dotFolder.name, emptyFolder.name, folder.name
+            italy.name,
+            loremIpsum.name,
+            noext.name,
+            dotFolder.name,
+            emptyFolder.name,
+            folder.name
         };
         REQUIRE_NOTHROW( compressor.compress( inPaths, outArchiveStr ) );
 
@@ -506,10 +511,12 @@ TEST_CASE( "BitFileCompressor: single-file-only output formats", "[bitfilecompre
     DYNAMIC_SECTION( testFormat.extension << ": compressing multiple files is unsupported" ) {
         const std::vector< tstring > paths{ italy.name, loremIpsum.name };
         const std::vector< std::pair< tstring, tstring > > pathPairs{
-            { italy.name, BIT7Z_STRING( "a.svg" ) }, { loremIpsum.name, BIT7Z_STRING( "b.pdf" ) }
+            { italy.name, BIT7Z_STRING( "a.svg" ) },
+            { loremIpsum.name, BIT7Z_STRING( "b.pdf" ) }
         };
         const std::map< tstring, tstring > pathsMap{
-            { italy.name, BIT7Z_STRING( "a.svg" ) }, { loremIpsum.name, BIT7Z_STRING( "b.pdf" ) }
+            { italy.name, BIT7Z_STRING( "a.svg" ) },
+            { loremIpsum.name, BIT7Z_STRING( "b.pdf" ) }
         };
 
         // Every overload that accepts more than one input must reject it for single-file formats.

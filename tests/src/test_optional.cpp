@@ -16,6 +16,7 @@
 
 using bit7z::Optional;
 
+namespace {
 // Trait for parameterized testing of built-in and std::string types
 template< typename T >
 struct TestTraits;
@@ -65,6 +66,7 @@ struct TestTraits< std::string > {
         opt.emplace( std::char_traits< char >::length( init_value() ), 'x' );
     }
 };
+} // namespace
 
 using TestTypes = std::tuple< int, std::string >;
 
@@ -167,10 +169,12 @@ TEST_CASE( "Optional: in-place constructor", "[optional]" ) {
 TEMPLATE_LIST_TEST_CASE( "Optional: nullopt assignment", "[optional]", TestTypes ) {
     using Traits = TestTraits< TestType >;
 
-    auto assignOpt = GENERATE( as< Optional< TestType > >(),
-                               Optional< TestType >{},
-                               bit7z::nullopt,
-                               Traits::init_value() );
+    auto assignOpt = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::init_value()
+    );
     assignOpt = bit7z::nullopt;
     REQUIRE_FALSE( assignOpt );
     REQUIRE_FALSE( assignOpt.has_value() );
@@ -181,10 +185,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: copy assignment using an empty Optional", "[
     using Traits = TestTraits< TestType >;
 
     const Optional< TestType > emptyOpt;
-    auto copyAssigned = GENERATE( as< Optional< TestType > >(),
-                                  Optional< TestType >{},
-                                  bit7z::nullopt,
-                                  Traits::init_value() );
+    auto copyAssigned = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::init_value()
+    );
     copyAssigned = emptyOpt;
     REQUIRE_FALSE( copyAssigned );
     REQUIRE_FALSE( copyAssigned.has_value() );
@@ -195,10 +201,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: copy assignment", "[optional]", TestTypes ) 
     using Traits = TestTraits< TestType >;
 
     const Optional< TestType > original{ Traits::init_value() };
-    auto copyAssigned = GENERATE( as< Optional< TestType > >(),
-                                  Optional< TestType >{},
-                                  bit7z::nullopt,
-                                  Traits::other_value() );
+    auto copyAssigned = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::other_value()
+    );
     copyAssigned = original;
     REQUIRE( copyAssigned );
     REQUIRE( copyAssigned.has_value() );
@@ -209,10 +217,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: copy assignment", "[optional]", TestTypes ) 
 TEMPLATE_LIST_TEST_CASE( "Optional: move assignment using an empty Optional", "[optional]", TestTypes ) {
     using Traits = TestTraits< TestType >;
 
-    auto moveAssigned = GENERATE( as< Optional< TestType > >(),
-                                  Optional< TestType >{},
-                                  bit7z::nullopt,
-                                  Traits::init_value() );
+    auto moveAssigned = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::init_value()
+    );
     moveAssigned = Optional< TestType >{};
     REQUIRE_FALSE( moveAssigned );
     REQUIRE_FALSE( moveAssigned.has_value() );
@@ -223,10 +233,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: move assignment", "[optional]", TestTypes ) 
     using Traits = TestTraits< TestType >;
 
     Optional< TestType > original{ Traits::init_value() };
-    auto moveAssigned = GENERATE( as< Optional< TestType > >(),
-                                  Optional< TestType >{},
-                                  bit7z::nullopt,
-                                  Traits::other_value() );
+    auto moveAssigned = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::other_value()
+    );
     moveAssigned = std::move( original );
     REQUIRE( moveAssigned );
     REQUIRE( moveAssigned.has_value() );
@@ -238,10 +250,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: value assignment (copy)", "[optional]", Test
     using Traits = TestTraits< TestType >;
 
     const TestType original{ Traits::init_value() };
-    auto moveAssigned = GENERATE( as< Optional< TestType > >(),
-                                  Optional< TestType >{},
-                                  bit7z::nullopt,
-                                  Traits::other_value() );
+    auto moveAssigned = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::other_value()
+    );
     moveAssigned = original;
     REQUIRE( moveAssigned );
     REQUIRE( moveAssigned.has_value() );
@@ -252,10 +266,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: value assignment (copy)", "[optional]", Test
 TEMPLATE_LIST_TEST_CASE( "Optional: value assignment (move)", "[optional]", TestTypes ) {
     using Traits = TestTraits< TestType >;
 
-    auto moveAssigned = GENERATE( as< Optional< TestType > >(),
-                                  Optional< TestType >{},
-                                  bit7z::nullopt,
-                                  Traits::other_value() );
+    auto moveAssigned = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::other_value()
+    );
     moveAssigned = Traits::init_value();
     REQUIRE( moveAssigned );
     REQUIRE( moveAssigned.has_value() );
@@ -284,10 +300,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: self copy/move assignment", "[optional]", Te
 TEMPLATE_LIST_TEST_CASE( "Optional: reset", "[optional]", TestTypes ) {
     using Traits = TestTraits< TestType >;
 
-    auto opt = GENERATE( as< Optional< TestType > >(),
-                         Optional< TestType >{},
-                         bit7z::nullopt,
-                         Traits::init_value() );
+    auto opt = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::init_value()
+    );
     opt.reset();
     REQUIRE_FALSE( opt );
     REQUIRE_FALSE( opt.has_value() );
@@ -297,10 +315,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: reset", "[optional]", TestTypes ) {
 TEMPLATE_LIST_TEST_CASE( "Optional: emplace", "[optional]", TestTypes ) {
     using Traits = TestTraits< TestType >;
 
-    auto opt = GENERATE( as< Optional< TestType > >(),
-                         Optional< TestType >{},
-                         bit7z::nullopt,
-                         Traits::init_value() );
+    auto opt = GENERATE(
+        as< Optional< TestType > >(),
+        Optional< TestType >{},
+        bit7z::nullopt,
+        Traits::init_value()
+    );
     Traits::emplace( opt );
     REQUIRE( opt );
     REQUIRE( opt.has_value() );
@@ -328,11 +348,12 @@ TEMPLATE_LIST_TEST_CASE( "Optional: constant Optional should be readable", "[opt
     REQUIRE( valueOpt.value() == Traits::init_value() );
 }
 
+namespace {
 struct throwing_tag_t {
     constexpr explicit throwing_tag_t( int /*unused*/ ) noexcept {}
 };
 
-static constexpr throwing_tag_t throwing_tag{0};
+constexpr throwing_tag_t throwing_tag{ 0 };
 
 class CustomType final {
     public:
@@ -389,6 +410,7 @@ class CustomType final {
     private:
         int mValue;
 };
+} // namespace
 
 int CustomType::constructionCount = 0;
 int CustomType::destructionCount = 0;
@@ -625,13 +647,31 @@ TEST_CASE( "Optional: assigning nullopt must destroy the previous value", "[opti
     REQUIRE( CustomType::destructionCount == 1 );
 }
 
-TEMPLATE_TEST_CASE( "Optional: compile time checks", "[optional]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t,
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t,
-                    bool, short, int, long,
-                    char, unsigned char, signed char, wchar_t,
-                    void*, int*,
-                    std::string, std::wstring, CustomType ) {
+TEMPLATE_TEST_CASE(
+    "Optional: compile time checks",
+    "[optional]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t,
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t,
+    bool,
+    short,
+    int,
+    long,
+    char,
+    unsigned char,
+    signed char,
+    wchar_t,
+    void*,
+    int*,
+    std::string,
+    std::wstring,
+    CustomType
+) {
     using OptionalType = Optional< TestType >;
     constexpr auto expectedAlignment = alignof( TestType );
     // Optional<T> must be aligned as T.
@@ -642,6 +682,8 @@ TEMPLATE_TEST_CASE( "Optional: compile time checks", "[optional]",
     STATIC_REQUIRE( sizeof( OptionalType ) == expectedSize );
 
     // Optional<T> must respect T's trivially destructible property.
-    STATIC_REQUIRE( std::is_trivially_destructible< OptionalType >::value ==
-                    std::is_trivially_destructible< TestType >::value );
+    STATIC_REQUIRE(
+        std::is_trivially_destructible< OptionalType >::value ==
+        std::is_trivially_destructible< TestType >::value
+    );
 }

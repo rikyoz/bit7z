@@ -19,7 +19,7 @@
 
 using namespace bit7z;
 
-TEST_CASE( "BitMemExtractor: TODO", "[bitmemxtractor]" ) {
+TEST_CASE( "BitMemExtractor: TODO", "[bitmemextractor]" ) {
     const BitMemExtractor memExtractor{ test::sevenzip_lib(), BitFormat::SevenZip };
     REQUIRE( memExtractor.extractionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }

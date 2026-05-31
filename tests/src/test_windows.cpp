@@ -86,13 +86,14 @@ TEST_CASE( "winapi: Handling nullptr BSTR strings", "[winapi][nullptr BSTR]" ) {
 }
 
 TEST_CASE( "winapi: Allocating from wide strings", "[winapi][string allocation]" ) {
-    const auto* testStr = GENERATE( as< const wchar_t* >(),
-                                    L"",
-                                    L"h",
-                                    L"hello world!",
-                                    L"supercalifragilistichespiralidoso",
-                                    L"perché",
-                                    L"\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
+    const auto* testStr = GENERATE(
+        as< const wchar_t* >(),
+        L"",
+        L"h",
+        L"hello world!",
+        L"supercalifragilistichespiralidoso",
+        L"perché",
+        L"\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
     );
 
     DYNAMIC_SECTION( "Testing L" << Catch::StringMaker< std::wstring >::convert( testStr ) << " wide string" ) {
@@ -131,13 +132,14 @@ TEST_CASE( "winapi: Allocating from wide strings", "[winapi][string allocation]"
 }
 
 TEST_CASE( "winapi: Allocating from narrow strings", "[winapi][string allocation]" ) {
-    const auto* testStr = GENERATE( as< const char* >(),
-                                     "",
-                                     "h",
-                                     "hello world!",
-                                     "supercalifragilistichespiralidoso",
-                                     "perché",
-                                     "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
+    const auto* testStr = GENERATE(
+        as< const char* >(),
+        "",
+        "h",
+        "hello world!",
+        "supercalifragilistichespiralidoso",
+        "perché",
+        "\u30e1\u30bf\u30eb\u30ac\u30eb\u30eb\u30e2\u30f3" // メタルガルルモン
     );
 
     DYNAMIC_SECTION( "Testing " << Catch::StringMaker< std::string >::convert( testStr ) << " string" ) {

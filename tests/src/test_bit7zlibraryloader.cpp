@@ -21,7 +21,7 @@
 namespace bit7z {
 namespace test {
 
-const auto implicitConversion = []( const Bit7zLibrary& loader ) -> void {
+const auto implicitConversion = [] ( const Bit7zLibrary& loader ) -> void {
     loader.useLargePages();
 };
 
@@ -71,7 +71,7 @@ TEST_CASE( "Bit7zLibraryLoader: Immediate loading", "[bit7zlibraryloader]" ) {
     REQUIRE_THROWS_WITH( loader->useLargePages(), Catch::Matchers::StartsWith( "Library not loaded" ) );
 }
 
-const auto isNonExistingLibraryErrorCode = []( const std::error_code code ) -> bool {
+const auto isNonExistingLibraryErrorCode = [] ( const std::error_code code ) -> bool {
 #ifdef _WIN32
     return code.value() == ERROR_MOD_NOT_FOUND;
 #else
@@ -79,8 +79,8 @@ const auto isNonExistingLibraryErrorCode = []( const std::error_code code ) -> b
 #endif
 };
 
-const auto isNonExistingLibraryException = []( const BitException& ex ) -> bool {
-    return isNonExistingLibraryErrorCode( ex.code() );
+const auto isNonExistingLibraryException = [] ( const BitException& exception ) -> bool {
+    return isNonExistingLibraryErrorCode( exception.code() );
 };
 
 TEST_CASE( "Bit7zLibraryLoader: Constructing from a non-existing shared library", "[bit7zlibraryloader]" ) {

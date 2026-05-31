@@ -36,26 +36,32 @@ auto to_string( FilterPolicy policy ) -> std::string {
 }
 } // namespace
 
-TEST_CASE( "BitFileExtractor: using an empty wildcard pattern should throw (filesystem output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: using an empty wildcard pattern should throw (filesystem output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
@@ -75,21 +81,25 @@ TEST_CASE( "BitFileExtractor: using an empty wildcard pattern should throw (buff
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
@@ -105,30 +115,36 @@ TEST_CASE( "BitFileExtractor: using an empty wildcard pattern should throw (buff
     }
 }
 
-TEST_CASE( "BitFileExtractor: non-matching wildcard pattern (filesystem output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: non-matching wildcard pattern (filesystem output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
-        const auto *const pattern = BIT7Z_STRING( "non-matching" );
+        const auto* const pattern = BIT7Z_STRING( "non-matching" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
@@ -157,30 +173,36 @@ TEST_CASE( "BitFileExtractor: non-matching wildcard pattern (filesystem output)"
     }
 }
 
-TEST_CASE( "BitFileExtractor: non-matching wildcard pattern (buffer output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: non-matching wildcard pattern (buffer output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
-        const auto *const pattern = BIT7Z_STRING( "non-matching" );
+        const auto* const pattern = BIT7Z_STRING( "non-matching" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
@@ -195,26 +217,32 @@ TEST_CASE( "BitFileExtractor: non-matching wildcard pattern (buffer output)",
     }
 }
 
-TEST_CASE( "BitFileExtractor: extracting only pdf files using a wildcard pattern (filesystem output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: extracting only pdf files using a wildcard pattern (filesystem output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
@@ -266,33 +294,39 @@ TEST_CASE( "BitFileExtractor: extracting only pdf files using a wildcard pattern
     }
 }
 
-TEST_CASE( "BitFileExtractor: extracting only pdf files using a wildcard pattern (buffer output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: extracting only pdf files using a wildcard pattern (buffer output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
-        const auto wildcardPattern = BIT7Z_STRING( "*.pdf" );
+        constexpr auto wildcardPattern = BIT7Z_STRING( "*.pdf" );
 
         const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
 
@@ -321,21 +355,25 @@ TEST_CASE( "BitFileExtractor: using an empty regex pattern should throw (filesys
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
@@ -355,21 +393,25 @@ TEST_CASE( "BitFileExtractor: using an empty regex pattern should throw (buffer 
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
@@ -385,30 +427,36 @@ TEST_CASE( "BitFileExtractor: using an empty regex pattern should throw (buffer 
     }
 }
 
-TEST_CASE( "BitFileExtractor: non-matching regex pattern (filesystem output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: non-matching regex pattern (filesystem output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
-        const auto *const pattern = BIT7Z_STRING( "^[0-9]+$" );
+        const auto* const pattern = BIT7Z_STRING( "^[0-9]+$" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
@@ -436,30 +484,36 @@ TEST_CASE( "BitFileExtractor: non-matching regex pattern (filesystem output)",
     }
 }
 
-TEST_CASE( "BitFileExtractor: non-matching regex pattern (buffer output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: non-matching regex pattern (buffer output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
-        const auto *const pattern = BIT7Z_STRING( "^[0-9]+$" );
+        const auto* const pattern = BIT7Z_STRING( "^[0-9]+$" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
@@ -474,26 +528,32 @@ TEST_CASE( "BitFileExtractor: non-matching regex pattern (buffer output)",
     }
 }
 
-TEST_CASE( "BitFileExtractor: extracting only pdf files using a regex pattern (filesystem output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: extracting only pdf files using a regex pattern (filesystem output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
@@ -545,26 +605,32 @@ TEST_CASE( "BitFileExtractor: extracting only pdf files using a regex pattern (f
     }
 }
 
-TEST_CASE( "BitFileExtractor: extracting only pdf files using a regex pattern (buffer output)",
-           "[bitfileextractor]" ) {
+TEST_CASE(
+    "BitFileExtractor: extracting only pdf files using a regex pattern (buffer output)",
+    "[bitfileextractor]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );

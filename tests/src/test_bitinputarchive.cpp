@@ -30,7 +30,6 @@
 #include <internal/fs.hpp>
 
 #include <algorithm>
-#include <cstddef>
 #include <cstdint>
 #include <numeric>
 #include <random>
@@ -40,15 +39,22 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
-inline auto archive_item( const BitArchiveReader& archive,
-                          const ExpectedItem& expectedItem ) -> BitArchiveReader::ConstIterator {
+namespace {
+auto archive_item(
+    const BitArchiveReader& archive,
+    const ExpectedItem& expectedItem
+) -> BitArchiveReader::ConstIterator {
     if ( archive.retainDirectories() ) {
         return archive.find( to_tstring( expectedItem.inArchivePath ) );
     }
 
-    return std::find_if( archive.cbegin(), archive.cend(), [ &expectedItem ]( const BitArchiveItem& item ) -> bool {
-        return item.name() == expectedItem.fileInfo.name;
-    } );
+    return std::find_if(
+        archive.cbegin(),
+        archive.cend(),
+        [ &expectedItem ] ( const BitArchiveItem& item ) -> bool {
+            return item.name() == expectedItem.fileInfo.name;
+        }
+    );
 }
 
 void require_extracts_to_filesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
@@ -161,7 +167,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
     REQUIRE_NOTHROW( info.extractTo( bufferMap ) );
     REQUIRE( bufferMap.size() == info.filesCount() );
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
+        INFO( "Failed while checking expected item '" << to_utf8string( expectedItem.inArchivePath ) << "'" )
         const auto& extractedItem = bufferMap.find( to_tstring( expectedItem.inArchivePath ) );
         if ( expectedItem.fileInfo.type != fs::file_type::directory ) {
             REQUIRE( extractedItem != bufferMap.end() );
@@ -175,7 +181,7 @@ void require_extracts_to_buffers_map( const BitArchiveReader& info, const Expect
 void require_extracts_to_buffers( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
+        INFO( "Failed while checking expected item '" << to_utf8string( expectedItem.inArchivePath ) << "'" )
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
         if ( archiveItem->isDir() ) {
@@ -205,7 +211,7 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
     buffer_t invalidBuffer( invalidBufferSize, static_cast< byte_t >( '\0' ) );
     buffer_t outputBuffer;
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
+        INFO( "Failed while checking expected item '" << to_utf8string( expectedItem.inArchivePath ) << "'" )
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
 
@@ -243,32 +249,42 @@ void require_extracts_to_fixed_buffers( const BitArchiveReader& info, const Expe
     REQUIRE_THROWS( info.extractTo( nullptr, invalidBufferSize, std::numeric_limits< std::uint32_t >::max() ) );
     REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), info.itemsCount() ) );
     REQUIRE_THROWS( info.extractTo( nullptr, std::numeric_limits< std::size_t >::max(), info.itemsCount() + 1 ) );
-    REQUIRE_THROWS( info.extractTo( nullptr,
-                                    std::numeric_limits< std::size_t >::max(),
-                                    std::numeric_limits< std::uint32_t >::max() ) );
+    REQUIRE_THROWS(
+        info.extractTo( nullptr,
+            std::numeric_limits< std::size_t >::max(),
+            std::numeric_limits< std::uint32_t >::max() )
+    );
 
     REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), 0, info.itemsCount() ) );
     REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), 0, info.itemsCount() + 1 ) );
     REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), 0, std::numeric_limits< std::uint32_t >::max() ) );
     REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), invalidBufferSize, info.itemsCount() ) );
     REQUIRE_THROWS( info.extractTo( invalidBuffer.data(), invalidBufferSize, info.itemsCount() + 1 ) );
-    REQUIRE_THROWS( info.extractTo( invalidBuffer.data(),
-                                    invalidBufferSize,
-                                    std::numeric_limits< std::uint32_t >::max() ) );
-    REQUIRE_THROWS( info.extractTo( invalidBuffer.data(),
-                                    std::numeric_limits< std::size_t >::max(),
-                                    info.itemsCount() ) );
-    REQUIRE_THROWS( info.extractTo( invalidBuffer.data(),
-                                    std::numeric_limits< std::size_t >::max(),
-                                    info.itemsCount() + 1 ) );
-    REQUIRE_THROWS( info.extractTo( invalidBuffer.data(),
-                                    std::numeric_limits< std::size_t >::max(),
-                                    std::numeric_limits< std::uint32_t >::max() ) );
+    REQUIRE_THROWS(
+        info.extractTo( invalidBuffer.data(),
+            invalidBufferSize,
+            std::numeric_limits< std::uint32_t >::max() )
+    );
+    REQUIRE_THROWS(
+        info.extractTo( invalidBuffer.data(),
+            std::numeric_limits< std::size_t >::max(),
+            info.itemsCount() )
+    );
+    REQUIRE_THROWS(
+        info.extractTo( invalidBuffer.data(),
+            std::numeric_limits< std::size_t >::max(),
+            info.itemsCount() + 1 )
+    );
+    REQUIRE_THROWS(
+        info.extractTo( invalidBuffer.data(),
+            std::numeric_limits< std::size_t >::max(),
+            std::numeric_limits< std::uint32_t >::max() )
+    );
 }
 
 void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     for ( const auto& expectedItem : expectedItems ) {
-        INFO( "Failed while checking expected item '" <<  to_utf8string( expectedItem.inArchivePath ) << "'" )
+        INFO( "Failed while checking expected item '" << to_utf8string( expectedItem.inArchivePath ) << "'" )
 
         const auto archiveItem = archive_item( info, expectedItem );
         REQUIRE( archiveItem != info.cend() );
@@ -295,11 +311,13 @@ void require_extracts_to_streams( const BitArchiveReader& info, const ExpectedIt
     REQUIRE( outputStream.str().empty() );
 }
 
-void require_archive_extracts( const BitArchiveReader& info,
-                               const ExpectedItems& expectedItems,
-                               const SourceLocation& location ) {
+void require_archive_extracts(
+    const BitArchiveReader& info,
+    const ExpectedItems& expectedItems,
+    const SourceLocation& location
+) {
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto& detectedFormat = (info).detectedFormat();
+    const auto& detectedFormat = ( info ).detectedFormat();
     if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
         return;
     }
@@ -337,12 +355,9 @@ void require_archive_extracts( const BitArchiveReader& info,
     }
 }
 
-#define REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems ) \
-    require_archive_extracts( info, expectedItems, BIT7Z_CURRENT_LOCATION )
-
 void require_archive_extract_fails( const BitArchiveReader& info, const SourceLocation& location ) {
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto& detectedFormat = (info).detectedFormat();
+    const auto& detectedFormat = ( info ).detectedFormat();
     if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
         return;
     }
@@ -374,14 +389,11 @@ void require_archive_extract_fails( const BitArchiveReader& info, const SourceLo
     }
 }
 
-#define REQUIRE_ARCHIVE_EXTRACT_FAILS( info ) \
-    require_archive_extract_fails( info, BIT7Z_CURRENT_LOCATION )
-
 void require_archive_tests( const BitArchiveReader& info, const SourceLocation& location ) {
     INFO( "From " << location.file_name() << ":" << location.line() )
     INFO( "Failed while testing the archive" )
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto& detectedFormat = (info).detectedFormat();
+    const auto& detectedFormat = ( info ).detectedFormat();
     if ( detectedFormat == BitFormat::Rar || detectedFormat == BitFormat::Rar5 ) {
         return;
     }
@@ -392,6 +404,13 @@ void require_archive_tests( const BitArchiveReader& info, const SourceLocation& 
     }
     REQUIRE_THROWS_AS( info.testItem( info.itemsCount() ), BitException );
 }
+} // namespace
+
+#define REQUIRE_ARCHIVE_EXTRACTS( info, expectedItems ) \
+    require_archive_extracts( info, expectedItems, BIT7Z_CURRENT_LOCATION )
+
+#define REQUIRE_ARCHIVE_EXTRACT_FAILS( info ) \
+    require_archive_extract_fails( info, BIT7Z_CURRENT_LOCATION )
 
 #define REQUIRE_ARCHIVE_TESTS( info ) \
     require_archive_tests( info, BIT7Z_CURRENT_LOCATION )
@@ -407,23 +426,30 @@ TEST_CASE( "BitInputArchive: Opening a non-existing archive should throw an exce
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing only a single file",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting archives containing only a single file",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                      TestInputFormat{ "gz", BitFormat::GZip },
-                                      TestInputFormat{ "iso", BitFormat::Iso },
-                                      TestInputFormat{ "lzh", BitFormat::Lzh },
-                                      TestInputFormat{ "lzma", BitFormat::Lzma },
-                                      TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                      TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "xz", BitFormat::Xz },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const auto arcFileName = fs::path{ clouds.name }.concat( "." + testFormat.extension );
@@ -441,17 +467,24 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing multiple files",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting archives containing multiple files",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
 
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "iso", BitFormat::Iso },
-                                      TestInputFormat{ "rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "multiple_files." + testFormat.extension;
@@ -465,18 +498,25 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing multiple items (files and folders)",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting archives containing multiple items (files and folders)",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
@@ -490,20 +530,26 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing encrypted items",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting archives containing encrypted items",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
 
-    const auto* const password = BIT7Z_STRING( "helloworld" );
-
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                      TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "aes256.zip", BitFormat::Zip },
-                                      TestInputFormat{ "zipcrypto.zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "aes256.zip", BitFormat::Zip },
+        TestInputFormat{ "zipcrypto.zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+        constexpr auto password = BIT7Z_STRING( "helloworld" );
         const fs::path arcFileName = "encrypted." + testFormat.extension;
 
         TestType inputArchive{};
@@ -523,9 +569,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
             REQUIRE_THROWS( info.test() );
             REQUIRE_ARCHIVE_EXTRACT_FAILS( info );
 
-            info.setPasswordCallback( [ &password ]() -> tstring {
-                return password;
-            } );
+            info.setPasswordCallback(
+                [ &password ]() -> tstring {
+                    return password;
+                }
+            );
             REQUIRE_ARCHIVE_TESTS( info );
             REQUIRE_ARCHIVE_EXTRACTS( info, encrypted_content().items );
         }
@@ -539,16 +587,21 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting archives containing
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting header-encrypted archives",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting header-encrypted archives",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
 
-    const auto* const password = BIT7Z_STRING( "helloworld" );
-
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                      TestInputFormat{ "rar5.rar", BitFormat::Rar5 } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "header_encrypted." + testFormat.extension;
@@ -561,11 +614,14 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting header-encrypted ar
         }
 
         SECTION( "Opening the archive with a wrong password should throw an exception" ) {
-            REQUIRE_THROWS( BitArchiveReader( test::sevenzip_lib(), inputArchive, testFormat.format,
-                                              BIT7Z_STRING( "wrong_password" ) ) );
+            REQUIRE_THROWS(
+                BitArchiveReader( test::sevenzip_lib(), inputArchive, testFormat.format,
+                    BIT7Z_STRING( "wrong_password" ) )
+            );
         }
 
         SECTION( "Opening the archive with the correct password should pass the tests" ) {
+            constexpr auto password = BIT7Z_STRING( "helloworld" );
             const BitArchiveReader info( test::sevenzip_lib(), inputArchive, testFormat.format, password );
             REQUIRE_ARCHIVE_TESTS( info );
             REQUIRE_ARCHIVE_EXTRACTS( info, encrypted_content().items );
@@ -577,14 +633,16 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
 
     SECTION( "Split archive (non-RAR)" ) {
-        const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                          TestInputFormat{ "7z", BitFormat::SevenZip },
-                                          TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                          TestInputFormat{ "gz", BitFormat::GZip },
-                                          TestInputFormat{ "tar", BitFormat::Tar },
-                                          TestInputFormat{ "wim", BitFormat::Wim },
-                                          TestInputFormat{ "xz", BitFormat::Xz },
-                                          TestInputFormat{ "zip", BitFormat::Zip } );
+        const auto testFormat = GENERATE(
+            as< TestInputFormat >(),
+            TestInputFormat{ "7z", BitFormat::SevenZip },
+            TestInputFormat{ "bz2", BitFormat::BZip2 },
+            TestInputFormat{ "gz", BitFormat::GZip },
+            TestInputFormat{ "tar", BitFormat::Tar },
+            TestInputFormat{ "wim", BitFormat::Wim },
+            TestInputFormat{ "xz", BitFormat::Xz },
+            TestInputFormat{ "zip", BitFormat::Zip }
+        );
 
         DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
             const auto wholeArcFileName = std::string{ "clouds.jpg." } + testFormat.extension;
@@ -593,9 +651,11 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
             INFO( "Archive file: " << splitArcFileName )
 
             SECTION( "Opening as a split archive" ) {
-                const BitArchiveReader info( test::sevenzip_lib(),
-                                             splitArcFileName.string< tchar >(),
-                                             BitFormat::Split );
+                const BitArchiveReader info(
+                    test::sevenzip_lib(),
+                    splitArcFileName.string< tchar >(),
+                    BitFormat::Split
+                );
                 REQUIRE_ARCHIVE_TESTS( info );
 
                 TempTestDirectory extractionTestDir{ "test_bitinputarchive" };
@@ -605,9 +665,11 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
             }
 
             SECTION( "Opening as a whole archive" ) {
-                const BitArchiveReader info( test::sevenzip_lib(),
-                                             splitArcFileName.string< tchar >(),
-                                             testFormat.format );
+                const BitArchiveReader info(
+                    test::sevenzip_lib(),
+                    splitArcFileName.string< tchar >(),
+                    testFormat.format
+                );
                 REQUIRE_ARCHIVE_TESTS( info );
                 REQUIRE_ARCHIVE_EXTRACTS( info, single_file_content().items );
             }
@@ -630,15 +692,22 @@ TEST_CASE( "BitInputArchive: Testing and extracting multi-volume archives", "[bi
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an empty archive",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting an empty archive",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
 
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-    // TestInputFormat{ "tar", BitFormat::Tar, 0 }, // TODO: Check why it fails opening
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        // TestInputFormat{ "tar", BitFormat::Tar, 0 }, // TODO: Check why it fails opening
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "empty." + testFormat.extension;
@@ -679,6 +748,7 @@ TEST_CASE( "BitInputArchive: Testing and extracting solid archives", "[bitinputa
     }
 }
 
+namespace {
 /**
  * Tests opening an archive file using the RAR format
  * (or throws a BitException if it is not a RAR archive at all).
@@ -695,6 +765,7 @@ auto test_open_rar_archive( const Bit7zLibrary& lib, const tstring& inFile ) -> 
         return BitFormat::Rar5;
     }
 }
+} // namespace
 
 TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format version", "[bitarchivereader]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
@@ -710,22 +781,29 @@ TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format 
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives should throw",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting invalid archives should throw",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
 
     // The italy.svg file in the ko_test archives is different from the one used for filesystem tests
     static constexpr auto italy_ko_crc32 = 0x2ADFB3AF;
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "rar", BitFormat::Rar5 },
-    //TestInputFormat{"tar", BitFormat::Tar},
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        //TestInputFormat{"tar", BitFormat::Tar},
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "ko_test." + testArchive.extension;
@@ -769,37 +847,46 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting invalid archives sh
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading archives using the wrong format should throw",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Reading archives using the wrong format should throw",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
-    const auto correctFormat = GENERATE( as< TestInputFormat >(),
-                                         TestInputFormat{ "7z", BitFormat::SevenZip },
-                                         TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                         TestInputFormat{ "gz", BitFormat::GZip },
-                                         TestInputFormat{ "iso", BitFormat::Iso },
-                                         TestInputFormat{ "lzh", BitFormat::Lzh },
-                                         TestInputFormat{ "lzma", BitFormat::Lzma },
-                                         TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                         TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                         TestInputFormat{ "tar", BitFormat::Tar },
-                                         TestInputFormat{ "wim", BitFormat::Wim },
-                                         TestInputFormat{ "xz", BitFormat::Xz },
-                                         TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto correctFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
-    const auto wrongFormat = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto wrongFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << correctFormat.extension ) {
         const auto arcFileName = fs::path{ clouds.name }.concat( "." + correctFormat.extension );
@@ -848,19 +935,26 @@ auto formatSupportsUnixPermissions( const BitInFormat& format ) -> bool {
 } // namespace
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Correctly keeping file attributes after extraction",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Correctly keeping file attributes after extraction",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
 
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     const TempDirectory outDir{ "test_bitarchivereader" };
-    const auto filterCallback = [&testFormat]( const BitArchiveItem& item ) -> FilterResult {
+    const auto filterCallback = [ &testFormat ] ( const BitArchiveItem& item ) -> FilterResult {
         const auto isAltStream = item.itemProperty( BitProperty::IsAltStream );
         if ( isAltStream.isBool() && isAltStream.getBool() ) {
             return FilterResult::SkipItem; // Ignoring alternate stream in WIM archives.
@@ -877,7 +971,10 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Correctly keeping file attributes after ex
             // TODO: Fix extraction of Windows reparse points (symlinks) from Wim archives on Linux.
             return FilterResult::SkipItem;
         }
-        if ( !formatSupportsUnixPermissions( testFormat.format ) && item.nativePath() == BIT7Z_NATIVE_STRING( "read_only" ) ) {
+        if (
+            !formatSupportsUnixPermissions( testFormat.format ) &&
+            item.nativePath() == BIT7Z_NATIVE_STRING( "read_only" )
+        ) {
             return FilterResult::SkipItem;
         }
         return isHiddenFile( item ) ? FilterResult::SkipItem : FilterResult::ProcessItem;
@@ -950,16 +1047,23 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Correctly keeping file attributes after ex
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Unicode items",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting an archive with Unicode items",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "unicode." + testFormat.extension;
@@ -973,8 +1077,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with Uni
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Testing and extracting an archive with a Unicode file name",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
@@ -986,8 +1095,10 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Testing and extracting an archive with a U
     REQUIRE_ARCHIVE_EXTRACTS( info, unicode_content().items );
 }
 
-TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode file name (bzip2)",
-           "[bitinputarchive]" ) {
+TEST_CASE(
+    "BitInputArchive: Testing and extracting an archive with a Unicode file name (bzip2)",
+    "[bitinputarchive]"
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
@@ -1000,18 +1111,25 @@ TEST_CASE( "BitInputArchive: Testing and extracting an archive with a Unicode fi
 #endif
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive without retaining directories",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting an archive without retaining directories",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
@@ -1024,45 +1142,56 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive without retaining di
     }
 }
 
+namespace {
 template< typename TestType >
-inline auto overwritten_file_path( const BitInFormat& format ) -> fs::path {
+auto overwritten_file_path( const BitInFormat& format ) -> fs::path {
     if ( is_filesystem_archive< TestType >::value || format_has_path_metadata( format ) ) {
         return clouds.name;
     }
     return "[Content]";
 }
+} // namespace
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various OverwriteMode settings",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting an archive using various OverwriteMode settings",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                      TestInputFormat{ "gz", BitFormat::GZip },
-                                      TestInputFormat{ "iso", BitFormat::Iso },
-                                      TestInputFormat{ "lzh", BitFormat::Lzh },
-                                      TestInputFormat{ "lzma", BitFormat::Lzma },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "xz", BitFormat::Xz },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                      TestInputFormat{ "gz", BitFormat::GZip },
-                                      TestInputFormat{ "iso", BitFormat::Iso },
-                                      TestInputFormat{ "lzh", BitFormat::Lzh },
-                                      TestInputFormat{ "lzma", BitFormat::Lzma },
-                                      TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                      TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "xz", BitFormat::Xz },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
@@ -1121,14 +1250,18 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive using various Overwr
 }
 
 #ifdef _WIN32
+namespace {
 auto get_file_time( const fs::path& filePath, FILETIME& creation, FILETIME& access, FILETIME& modified ) -> bool {
-    const HANDLE hFile = ::CreateFileW( filePath.c_str(),
-                                        GENERIC_READ | FILE_READ_ATTRIBUTES, // NOLINT(*-signed-bitwise)
-                                        FILE_SHARE_READ,
-                                        nullptr,
-                                        OPEN_EXISTING,
-                                        0,
-                                        nullptr );
+    const HANDLE hFile = ::CreateFileW(
+        filePath.c_str(),
+        GENERIC_READ | FILE_READ_ATTRIBUTES,
+        // NOLINT(*-signed-bitwise)
+        FILE_SHARE_READ,
+        nullptr,
+        OPEN_EXISTING,
+        0,
+        nullptr
+    );
     if ( hFile == INVALID_HANDLE_VALUE ) { // NOLINT(cppcoreguidelines-pro-type-cstyle-cast,performance-no-int-to-ptr)
         return false;
     }
@@ -1136,11 +1269,17 @@ auto get_file_time( const fs::path& filePath, FILETIME& creation, FILETIME& acce
     CloseHandle( hFile );
     return result != FALSE;
 }
+} // namespace
 #endif
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem should preserve time metadata",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting an archive to the filesystem should preserve time metadata",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
@@ -1206,8 +1345,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive to the filesystem sh
 
 #ifdef _WIN32
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive not having time metadata should use current time",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting an archive not having time metadata should use current time",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     // Note: the clouds.jpg.zip file was created without storing access/creation time metadata.
@@ -1266,8 +1410,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an archive not having time meta
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a file with a comment should preserve it",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting a file with a comment should preserve it",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_comment" };
 
     TestType inputArchive{};
@@ -1283,10 +1432,12 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a file with a comment should pr
     REQUIRE( fs::exists( expectedFile ) );
 
     std::wstring comment = get_file_comment( expectedFile );
-    REQUIRE( comment == LR"({"data":{"pictureId":"738298be446d47f4b3933a4cc68ab6a2","appversion":"8.0.0",)"
-                        LR"("stickerId":"","filterId":"","infoStickerId":"","imageEffectId":"",)"
-                        LR"("playId":"","activityName":"","os":"android","product":"retouch"},)"
-                        LR"("source_type":"douyin_beauty_me"})" );
+    REQUIRE(
+        comment == LR"({"data":{"pictureId":"738298be446d47f4b3933a4cc68ab6a2","appversion":"8.0.0",)"
+        LR"("stickerId":"","filterId":"","infoStickerId":"","imageEffectId":"",)"
+        LR"("playId":"","activityName":"","os":"android","product":"retouch"},)"
+        LR"("source_type":"douyin_beauty_me"})"
+    );
     REQUIRE( fs::remove( expectedFile ) );
 }
 #endif
@@ -1296,21 +1447,25 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
@@ -1321,28 +1476,36 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
         BitArchiveReader info( test::sevenzip_lib(), inputArchive, testArchive.format );
 
         std::uint64_t totalSize = 0;
-        info.setTotalCallback( [ &totalSize ]( std::uint64_t total ) {
-            totalSize = total;
-        } );
+        info.setTotalCallback(
+            [ &totalSize ] ( std::uint64_t total ) -> void {
+                totalSize = total;
+            }
+        );
 
         std::vector< std::uint64_t > progressValues;
-        info.setProgressCallback( [ &progressValues ]( std::uint64_t progress ) -> bool {
-            progressValues.push_back( progress );
-            return true;
-        } );
+        info.setProgressCallback(
+            [ &progressValues ] ( std::uint64_t progress ) -> bool {
+                progressValues.push_back( progress );
+                return true;
+            }
+        );
 
         double finalRatio = 0.0;
-        info.setRatioCallback( [ &finalRatio ]( std::uint64_t processedInput, std::uint64_t processedOutput ) {
-            if ( processedOutput == 0 ) {
-                return;
+        info.setRatioCallback(
+            [ &finalRatio ] ( std::uint64_t processedInput, std::uint64_t processedOutput ) -> void {
+                if ( processedOutput == 0 ) {
+                    return;
+                }
+                finalRatio = static_cast< double >( processedInput ) / static_cast< double >( processedOutput );
             }
-            finalRatio = static_cast< double >( processedInput ) / static_cast< double >( processedOutput );
-        } );
+        );
 
         std::vector< tstring > visitedFiles;
-        info.setFileCallback( [ &visitedFiles ]( const tstring& file ) {
-            visitedFiles.push_back( file );
-        } );
+        info.setFileCallback(
+            [ &visitedFiles ] ( const tstring& file ) -> void {
+                visitedFiles.push_back( file );
+            }
+        );
 
         const auto& expectedItems = multiple_items_content().items;
 
@@ -1407,18 +1570,25 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Using extraction callbacks", "[bitinputarc
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Aborting the extraction via the progress callback",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Aborting the extraction via the progress callback",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
@@ -1429,19 +1599,26 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Aborting the extraction via the progress c
 
         // Returning false from the progress callback must abort the ongoing operation.
         bool progressCalled = false;
-        info.setProgressCallback( [ &progressCalled ]( std::uint64_t ) -> bool {
-            progressCalled = true;
-            return false;
-        } );
+        info.setProgressCallback(
+            [ &progressCalled ] ( std::uint64_t ) -> bool {
+                progressCalled = true;
+                return false;
+            }
+        );
 
         const TempTestDirectory testOutDir{ "test_bitinputarchive" };
         INFO( "Output directory: " << testOutDir )
 
-        REQUIRE_THROWS_MATCHES( info.extractTo( testOutDir ),
-                                BitException,
-                                Catch::Matchers::Predicate< BitException >( []( const BitException& ex ) -> bool {
-                                    return ex.code() == std::errc::operation_canceled;
-                                }, "Error code should be operation_canceled" ) );
+        REQUIRE_THROWS_MATCHES(
+            info.extractTo( testOutDir ),
+            BitException,
+            Catch::Matchers::Predicate< BitException >(
+                []( const BitException& exception ) -> bool {
+                    return exception.code() == std::errc::operation_canceled;
+                },
+                "Error code should be operation_canceled"
+            )
+        );
 
         // The operation must have been aborted from within the progress callback,
         // and not have failed for some other reason.
@@ -1453,14 +1630,16 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Aborting the extraction via the progress c
 TEMPLATE_TEST_CASE( "BitInputArchive: Finding files in an archive", "[bitinputarchive]", tstring, buffer_t, stream_t ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
@@ -1491,36 +1670,45 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Finding files in an archive", "[bitinputar
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extract to raw data callback",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extract to raw data callback",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
@@ -1534,47 +1722,58 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extract to raw data callback",
         std::size_t totalSize = 0;
         std::uint32_t crcValue = 0;
 
-        info.extractTo( [ &totalSize, &crcValue ]( const byte_t* data, std::size_t length ) {
-            totalSize += length;
-            crcValue = crc32( data, length, crcValue );
-            return true;
-        } );
+        info.extractTo(
+            [ &totalSize, &crcValue ] ( const byte_t* data, std::size_t length ) -> bool {
+                totalSize += length;
+                crcValue = crc32( data, length, crcValue );
+                return true;
+            }
+        );
         REQUIRE( totalSize == clouds.size );
         REQUIRE( crcValue == clouds.crc32 );
     }
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading the archive from the start of the input file",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Reading the archive from the start of the input file",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
@@ -1588,8 +1787,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading the archive from the start of the 
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Scanning a file for the archive start",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Scanning a file for the archive start",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const fs::path arcFileName = "multiple_nested2.tar";
@@ -1605,25 +1809,36 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Scanning a file for the archive start",
     }
 #endif
 
-    SECTION( "Opening the archive with the Zip format succeeds, "
-             "as 7-Zip will scan the input Tar archive and find the nested Zip archive" ) {
+    SECTION(
+        "Opening the archive with the Zip format succeeds, "
+        "as 7-Zip will scan the input Tar archive and find the nested Zip archive"
+    ) {
         REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip ) );
     }
 
-    SECTION( "Opening the archive with the 7z format succeeds, "
-             "as 7-Zip will scan the input Tar archive and find the nested 7z archive" ) {
+    SECTION(
+        "Opening the archive with the 7z format succeeds, "
+        "as 7-Zip will scan the input Tar archive and find the nested 7z archive"
+    ) {
         REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::SevenZip ) );
     }
 
-    SECTION( "The BZip2 format doesn't support scanning the input file for the archive start,"
-             "so the opening must fail even though the Tar archive contains a BZip2 file") {
+    SECTION(
+        "The BZip2 format doesn't support scanning the input file for the archive start,"
+        "so the opening must fail even though the Tar archive contains a BZip2 file"
+    ) {
         REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::BZip2 ) );
     }
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Checking only the file start for the archive start",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Checking only the file start for the archive start",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const fs::path arcFileName = "multiple_nested2.tar";
@@ -1653,8 +1868,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Checking only the file start for the archi
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extension",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Reading a nested archive with wrong extension",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
     const fs::path arcFileName = "nested_wrong_extension.zip"; // 7z file with zip extension
@@ -1663,7 +1883,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extens
     getInputArchive( arcFileName, inputArchive );
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-    SECTION( "Checking archive start at input file start" ){
+    SECTION( "Checking archive start at input file start" ) {
 #ifdef BIT7Z_AUTO_FORMAT
         const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
         REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
@@ -1673,7 +1893,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extens
 #endif
     }
 
-    SECTION( "Checking archive start by scanning through the input file" ){
+    SECTION( "Checking archive start by scanning through the input file" ) {
 #ifdef BIT7Z_AUTO_FORMAT
         const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
 #ifdef BIT7Z_DETECT_FROM_EXTENSION
@@ -1696,8 +1916,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extens
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested zip archive",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Reading a nested zip archive",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const fs::path arcFileName = "nested_zip.zip";
@@ -1706,7 +1931,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested zip archive",
     getInputArchive( arcFileName, inputArchive );
     const Bit7zLibrary lib{ test::sevenzip_lib_path() };
 
-    SECTION( "Checking archive start at input file start" ){
+    SECTION( "Checking archive start at input file start" ) {
 #ifdef BIT7Z_AUTO_FORMAT
         const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
         REQUIRE( reader.detectedFormat() == BitFormat::Zip );
@@ -1717,7 +1942,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested zip archive",
         REQUIRE( reader.contains( italy.name ) );
     }
 
-    SECTION( "Checking archive start by scanning through the input file" ){
+    SECTION( "Checking archive start by scanning through the input file" ) {
 #ifdef BIT7Z_AUTO_FORMAT
         const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
         REQUIRE( reader.detectedFormat() == BitFormat::Zip );
@@ -1730,8 +1955,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested zip archive",
 }
 
 #ifdef _WIN32
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading a zip archive using a different encoding",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Reading a zip archive using a different encoding",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
     const fs::path arcFileName = "codepage.zip";
@@ -1777,38 +2007,49 @@ auto to_string( FolderPathPolicy policy ) -> const char* {
 } // namespace
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bitinputarchive]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting a folder from an archive",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( as< tstring >(),
-                                      BIT7Z_STRING( "folder\\subfolder2" ),
-                                      BIT7Z_STRING( "folder\\subfolder2\\" ),
-                                      BIT7Z_STRING( "folder/subfolder2" ),
-                                      BIT7Z_STRING( "folder/subfolder2/" ),
-                                      BIT7Z_STRING( "folder/subfolder2\\" ),
-                                      BIT7Z_STRING( "folder\\subfolder2/" ) );
+    const auto folderPath = GENERATE(
+        as< tstring >(),
+        BIT7Z_STRING( "folder\\subfolder2" ),
+        BIT7Z_STRING( "folder\\subfolder2\\" ),
+        BIT7Z_STRING( "folder/subfolder2" ),
+        BIT7Z_STRING( "folder/subfolder2/" ),
+        BIT7Z_STRING( "folder/subfolder2\\" ),
+        BIT7Z_STRING( "folder\\subfolder2/" )
+    );
 #else
     const auto folderPath = GENERATE( as< tstring >(), "folder/subfolder2", "folder/subfolder2/" );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
@@ -1831,9 +2072,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bi
         ExpectedItem{ frequency, expectedRoot / frequency.name, false }
     };
 
-    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
-                     "Archive format: " << testArchive.extension << ", "
-                     "Policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION(
+        "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+        "Archive format: " << testArchive.extension << ", "
+        "Policy: " << to_string( policy )
+    ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         TestType inputArchive{};
@@ -1844,7 +2087,7 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bi
         INFO( "Output directory: " << testOutDir )
 
         REQUIRE_NOTHROW( info.extractFolderTo( testOutDir, folderPath, policy ) );
-        for( const auto& expected : expectedItems ) {
+        for ( const auto& expected : expectedItems ) {
             REQUIRE_FILESYSTEM_ITEM( expected );
         }
         if ( policy != FolderPathPolicy::Strip ) {
@@ -1859,41 +2102,52 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive", "[bi
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an empty folder from an archive", "[bitinputarchive]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting an empty folder from an archive",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( as< tstring >(),
-                                      BIT7Z_STRING( "empty" ),
-                                      BIT7Z_STRING( "empty/" ),
-                                      BIT7Z_STRING( "empty\\" ),
-                                      BIT7Z_STRING( "folder\\subfolder" ),
-                                      BIT7Z_STRING( "folder\\subfolder\\" ),
-                                      BIT7Z_STRING( "folder/subfolder" ),
-                                      BIT7Z_STRING( "folder/subfolder/" ),
-                                      BIT7Z_STRING( "folder/subfolder\\" ),
-                                      BIT7Z_STRING( "folder\\subfolder/" ) );
+    const auto folderPath = GENERATE(
+        as< tstring >(),
+        BIT7Z_STRING( "empty" ),
+        BIT7Z_STRING( "empty/" ),
+        BIT7Z_STRING( "empty\\" ),
+        BIT7Z_STRING( "folder\\subfolder" ),
+        BIT7Z_STRING( "folder\\subfolder\\" ),
+        BIT7Z_STRING( "folder/subfolder" ),
+        BIT7Z_STRING( "folder/subfolder/" ),
+        BIT7Z_STRING( "folder/subfolder\\" ),
+        BIT7Z_STRING( "folder\\subfolder/" )
+    );
 #else
     const auto folderPath = GENERATE( as< tstring >(), "empty", "empty/", "folder/subfolder", "folder/subfolder/" );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
@@ -1910,9 +2164,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an empty folder from an archive
         }
     }();
 
-    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
-                     "Archive format: " << testArchive.extension << ", "
-                     "Policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION(
+        "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+        "Archive format: " << testArchive.extension << ", "
+        "Policy: " << to_string( policy )
+    ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         TestType inputArchive{};
@@ -1930,46 +2186,57 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting an empty folder from an archive
             REQUIRE( fs::is_empty( testOutDir.path() / expectedRoot ) );
             REQUIRE( fs::remove( testOutDir.path() / expectedRoot ) );
             if ( policy == FolderPathPolicy::KeepPath ) {
-                const auto parentPath = expectedRoot.has_filename() ?
-                    expectedRoot.parent_path() : expectedRoot.parent_path().parent_path();
+                const auto parentPath = expectedRoot.has_filename()
+                    ? expectedRoot.parent_path()
+                    : expectedRoot.parent_path().parent_path();
                 if ( !parentPath.empty() ) {
                     REQUIRE( fs::is_empty( testOutDir.path() / parentPath ) );
                     REQUIRE( fs::remove( testOutDir.path() / parentPath ) );
                 }
             }
-
         }
         REQUIRE( fs::is_empty( testOutDir.path() ) );
     }
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (duplicate items)", "[bitinputarchive]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting a folder from an archive (duplicate items)",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "duplicate" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( as< tstring >(),
-                                      BIT7Z_STRING( "duplicate" ),
-                                      BIT7Z_STRING( "duplicate\\" ),
-                                      BIT7Z_STRING( "duplicate/" ) );
+    const auto folderPath = GENERATE(
+        as< tstring >(),
+        BIT7Z_STRING( "duplicate" ),
+        BIT7Z_STRING( "duplicate\\" ),
+        BIT7Z_STRING( "duplicate/" )
+    );
 #else
     const auto folderPath = GENERATE( as< tstring >(), "duplicate", "duplicate/" );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
@@ -1987,9 +2254,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
 
     const ExpectedItem expectedItem{ italy, expectedRoot / italy.name, false };
 
-    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
-                     "Archive format: " << testArchive.extension << ", "
-                     "Policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION(
+        "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+        "Archive format: " << testArchive.extension << ", "
+        "Policy: " << to_string( policy )
+    ) {
         const fs::path arcFileName = "duplicate." + testArchive.extension;
 
         TestType inputArchive{};
@@ -2010,32 +2279,43 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (duplicate items, fake extension)",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting a folder from an archive (duplicate items, fake extension)",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "duplicate" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( as< tstring >(),
-                                      BIT7Z_STRING( "clouds.jpg" ),
-                                      BIT7Z_STRING( "clouds.jpg\\" ),
-                                      BIT7Z_STRING( "clouds.jpg/" ) );
+    const auto folderPath = GENERATE(
+        as< tstring >(),
+        BIT7Z_STRING( "clouds.jpg" ),
+        BIT7Z_STRING( "clouds.jpg\\" ),
+        BIT7Z_STRING( "clouds.jpg/" )
+    );
 #else
     const auto folderPath = GENERATE( as< tstring >(), "clouds.jpg", "clouds.jpg/" );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
@@ -2053,9 +2333,11 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
 
     const ExpectedItem expectedItem{ frequency, expectedRoot / frequency.name, false };
 
-    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
-                     "Archive format: " << testArchive.extension << ", "
-                     "Policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION(
+        "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+        "Archive format: " << testArchive.extension << ", "
+        "Policy: " << to_string( policy )
+    ) {
         const fs::path arcFileName = "duplicate." + testArchive.extension;
 
         TestType inputArchive{};
@@ -2075,89 +2357,104 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a folder from an archive (dupli
     }
 }
 
-TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an archive should throw an exception",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Extracting a non-existing folder from an archive should throw an exception",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef _WIN32
-    const auto folderPath = GENERATE( as< tstring >(), 
-                                      BIT7Z_STRING( "" ),
-                                      BIT7Z_STRING( "/" ),
-                                      BIT7Z_STRING( "\\" ),
-                                      BIT7Z_STRING( "." ),
-                                      BIT7Z_STRING( "./" ),
-                                      BIT7Z_STRING( ".\\" ),
-                                      BIT7Z_STRING( "/./" ),
-                                      BIT7Z_STRING( ".\\" ),
-                                      BIT7Z_STRING( "\\.\\" ),
-                                      BIT7Z_STRING( ".." ),
-                                      BIT7Z_STRING( "../" ),
-                                      BIT7Z_STRING( "..\\" ),
-                                      BIT7Z_STRING( "/../" ),
-                                      BIT7Z_STRING( "\\..\\" ),
-                                      BIT7Z_STRING( "/folder" ),
-                                      BIT7Z_STRING( "/folder/" ),
-                                      BIT7Z_STRING( "\\folder/" ),
-                                      BIT7Z_STRING( "\\folder\\" ),
-                                      BIT7Z_STRING( "../folder" ),
-                                      BIT7Z_STRING( "..\\folder" ),
-                                      BIT7Z_STRING( "../folder/subfolder2" ),
-                                      BIT7Z_STRING( "..\\folder\\subfolder2" ),
-                                      BIT7Z_STRING( "../folder/./subfolder2" ),
-                                      BIT7Z_STRING( "..\\folder\\..\\subfolder2" ),
-                                      BIT7Z_STRING( "./folder/subfolder2" ),
-                                      BIT7Z_STRING( ".\\folder\\subfolder2" ),
-                                      BIT7Z_STRING( "./folder/../subfolder2" ),
-                                      BIT7Z_STRING( ".\\folder\\..\\subfolder2" ),
-                                      BIT7Z_STRING( "folder/../subfolder2" ),
-                                      BIT7Z_STRING( "folder\\..\\subfolder2" ),
-                                      BIT7Z_STRING( "non-existing" ),
-                                      BIT7Z_STRING( "non/existing" ),
-                                      BIT7Z_STRING( "non\\existing" ),
-                                      BIT7Z_STRING( "folder/sub" ) ,
-                                      BIT7Z_STRING( "folder\\sub" ) );
+    const auto folderPath = GENERATE(
+        as< tstring >(),
+        BIT7Z_STRING( "" ),
+        BIT7Z_STRING( "/" ),
+        BIT7Z_STRING( "\\" ),
+        BIT7Z_STRING( "." ),
+        BIT7Z_STRING( "./" ),
+        BIT7Z_STRING( ".\\" ),
+        BIT7Z_STRING( "/./" ),
+        BIT7Z_STRING( ".\\" ),
+        BIT7Z_STRING( "\\.\\" ),
+        BIT7Z_STRING( ".." ),
+        BIT7Z_STRING( "../" ),
+        BIT7Z_STRING( "..\\" ),
+        BIT7Z_STRING( "/../" ),
+        BIT7Z_STRING( "\\..\\" ),
+        BIT7Z_STRING( "/folder" ),
+        BIT7Z_STRING( "/folder/" ),
+        BIT7Z_STRING( "\\folder/" ),
+        BIT7Z_STRING( "\\folder\\" ),
+        BIT7Z_STRING( "../folder" ),
+        BIT7Z_STRING( "..\\folder" ),
+        BIT7Z_STRING( "../folder/subfolder2" ),
+        BIT7Z_STRING( "..\\folder\\subfolder2" ),
+        BIT7Z_STRING( "../folder/./subfolder2" ),
+        BIT7Z_STRING( "..\\folder\\..\\subfolder2" ),
+        BIT7Z_STRING( "./folder/subfolder2" ),
+        BIT7Z_STRING( ".\\folder\\subfolder2" ),
+        BIT7Z_STRING( "./folder/../subfolder2" ),
+        BIT7Z_STRING( ".\\folder\\..\\subfolder2" ),
+        BIT7Z_STRING( "folder/../subfolder2" ),
+        BIT7Z_STRING( "folder\\..\\subfolder2" ),
+        BIT7Z_STRING( "non-existing" ),
+        BIT7Z_STRING( "non/existing" ),
+        BIT7Z_STRING( "non\\existing" ),
+        BIT7Z_STRING( "folder/sub" ),
+        BIT7Z_STRING( "folder\\sub" )
+    );
 #else
-    const auto folderPath = GENERATE( as< tstring >(), 
-                                      "",
-                                      "/",
-                                      ".",
-                                      "./",
-                                      "/./",
-                                      "/folder",
-                                      "/folder/",
-                                      "../folder",
-                                      "../folder/subfolder2",
-                                      "./folder/subfolder2",
-                                      "./folder/../subfolder2",
-                                      "folder/../subfolder2",
-                                      "non-existing",
-                                      "non/existing",
-                                      "folder/sub" );
+    const auto folderPath = GENERATE(
+        as< tstring >(),
+        "",
+        "/",
+        ".",
+        "./",
+        "/./",
+        "/folder",
+        "/folder/",
+        "../folder",
+        "../folder/subfolder2",
+        "./folder/subfolder2",
+        "./folder/../subfolder2",
+        "folder/../subfolder2",
+        "non-existing",
+        "non/existing",
+        "folder/sub"
+    );
 #endif
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
 
-    DYNAMIC_SECTION( "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
-                     "Archive format: " << testArchive.extension << ", "
-                     "Policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION(
+        "Folder path: " << Catch::StringMaker< tstring >::convert( folderPath ) << ", "
+        "Archive format: " << testArchive.extension << ", "
+        "Policy: " << to_string( policy )
+    ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         TestType inputArchive{};
@@ -2172,11 +2469,17 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Extracting a non-existing folder from an a
     }
 }
 
-TEMPLATE_TEST_CASE( "BitInputArchive: Zip slip attacks",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Zip slip attacks",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "zip_slip" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
         TestInputFormat{ "7z", BitFormat::SevenZip },
         TestInputFormat{ "tar", BitFormat::Tar },
         TestInputFormat{ "zip", BitFormat::Zip }
@@ -2191,11 +2494,13 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Zip slip attacks",
 
         const TempTestDirectory testOutDir{ "test_bitinputarchive" };
         REQUIRE_THROWS( reader.extractTo( testOutDir ) );
-        REQUIRE_NOTHROW( reader.extractTo( testOutDir, []( const BitArchiveItem& item ) -> FilterResult {
-            return fs::path{ item.nativePath() }.filename() == BIT7Z_NATIVE_STRING( "evil.txt" )
-                ? FilterResult::SkipItem
-                : FilterResult::ProcessItem;
-        } ) );
+        REQUIRE_NOTHROW(
+            reader.extractTo( testOutDir, []( const BitArchiveItem& item ) -> FilterResult {
+                return fs::path{ item.nativePath() }.filename() == BIT7Z_NATIVE_STRING( "evil.txt" )
+                    ? FilterResult::SkipItem
+                    : FilterResult::ProcessItem;
+                } )
+        );
         REQUIRE( fs::exists( "good.txt" ) );
         REQUIRE( fs::remove( "good.txt" ) );
         REQUIRE( fs::exists( "folder/clouds.jpg" ) );
@@ -2206,11 +2511,17 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Zip slip attacks",
 }
 
 #ifdef _WIN32
-TEMPLATE_TEST_CASE( "BitInputArchive: Path sanitization",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Path sanitization",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "path_sanitization" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
         TestInputFormat{ "7z", BitFormat::SevenZip },
         TestInputFormat{ "tar", BitFormat::Tar },
         TestInputFormat{ "wim", BitFormat::Wim },

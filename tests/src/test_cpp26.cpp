@@ -20,8 +20,14 @@ using bit7z::cpp20::cmp_greater_equal;
 using bit7z::cpp26::saturating_cast;
 
 /* unsigned -> unsigned */
-TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint8_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any unsigned type to std::uint8_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::uint8_t >( TestType{ 0u } ) == std::uint8_t{ 0u } );
     REQUIRE( saturating_cast< std::uint8_t >( TestType{ 1u } ) == std::uint8_t{ 1u } );
     REQUIRE( saturating_cast< std::uint8_t >( TestType{ 42u } ) == std::uint8_t{ 42u } );
@@ -35,8 +41,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint8_t", "
     REQUIRE( saturating_cast< std::uint8_t >( maxValue ) == std::numeric_limits< std::uint8_t >::max() );
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint16_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any unsigned type to std::uint16_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::uint16_t >( TestType{ 0u } ) == std::uint16_t{ 0u } );
     REQUIRE( saturating_cast< std::uint16_t >( TestType{ 1u } ) == std::uint16_t{ 1u } );
     REQUIRE( saturating_cast< std::uint16_t >( TestType{ 42u } ) == std::uint16_t{ 42u } );
@@ -45,14 +57,22 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint16_t", 
     constexpr std::uint16_t maxDestinationValue{ std::numeric_limits< std::uint16_t >::max() };
     if ( maxValue >= maxDestinationValue ) {
         REQUIRE( saturating_cast< std::uint16_t >( maxValue ) == maxDestinationValue );
-        REQUIRE( saturating_cast< std::uint16_t >( static_cast< TestType >( maxDestinationValue ) ) == maxDestinationValue );
+        REQUIRE(
+            saturating_cast< std::uint16_t >( static_cast< TestType >( maxDestinationValue ) ) == maxDestinationValue
+        );
     } else { // widening
         REQUIRE( saturating_cast< std::uint16_t >( maxValue ) == maxValue );
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint32_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any unsigned type to std::uint32_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::uint32_t >( TestType{ 0u } ) == std::uint32_t{ 0u } );
     REQUIRE( saturating_cast< std::uint32_t >( TestType{ 1u } ) == std::uint32_t{ 1u } );
     REQUIRE( saturating_cast< std::uint32_t >( TestType{ 42u } ) == std::uint32_t{ 42u } );
@@ -61,14 +81,22 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::uint32_t", 
     constexpr std::uint32_t maxDestinationValue{ std::numeric_limits< std::uint32_t >::max() };
     if ( maxValue >= maxDestinationValue ) {
         REQUIRE( saturating_cast< std::uint32_t >( maxValue ) == maxDestinationValue );
-        REQUIRE( saturating_cast< std::uint32_t >( static_cast< TestType >( maxDestinationValue ) ) == maxDestinationValue );
+        REQUIRE(
+            saturating_cast< std::uint32_t >( static_cast< TestType >( maxDestinationValue ) ) == maxDestinationValue
+        );
     } else { // widening
         REQUIRE( saturating_cast< std::uint32_t >( maxValue ) == maxValue );
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from std::uint64_t to std::uint64_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from std::uint64_t to std::uint64_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::uint64_t >( std::uint64_t{ 0u } ) == std::uint64_t{ 0u } );
     REQUIRE( saturating_cast< std::uint64_t >( std::uint64_t{ 1u } ) == std::uint64_t{ 1u } );
     REQUIRE( saturating_cast< std::uint64_t >( std::uint64_t{ 42u } ) == std::uint64_t{ 42u } );
@@ -78,8 +106,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from std::uint64_t to std::uint64_t", "[ut
 }
 
 /* signed -> unsigned */
-TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint8_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any signed type to std::uint8_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::uint8_t >( TestType{ 0 } ) == std::uint8_t{ 0u } );
     REQUIRE( saturating_cast< std::uint8_t >( TestType{ 1 } ) == std::uint8_t{ 1u } );
     REQUIRE( saturating_cast< std::uint8_t >( TestType{ 42 } ) == std::uint8_t{ 42u } );
@@ -99,8 +133,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint8_t", "[u
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint16_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any signed type to std::uint16_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::uint16_t >( TestType{ 0 } ) == std::uint16_t{ 0u } );
     REQUIRE( saturating_cast< std::uint16_t >( TestType{ 1 } ) == std::uint16_t{ 1u } );
     REQUIRE( saturating_cast< std::uint16_t >( TestType{ 42 } ) == std::uint16_t{ 42u } );
@@ -120,8 +160,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint16_t", "[
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint32_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any signed type to std::uint32_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::uint32_t >( TestType{ 0 } ) == std::uint32_t{ 0u } );
     REQUIRE( saturating_cast< std::uint32_t >( TestType{ 1 } ) == std::uint32_t{ 1u } );
     REQUIRE( saturating_cast< std::uint32_t >( TestType{ 42 } ) == std::uint32_t{ 42u } );
@@ -141,8 +187,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint32_t", "[
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint64_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any signed type to std::uint64_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::uint64_t >( TestType{ 0 } ) == std::uint64_t{ 0u } );
     REQUIRE( saturating_cast< std::uint64_t >( TestType{ 1 } ) == std::uint64_t{ 1u } );
     REQUIRE( saturating_cast< std::uint64_t >( TestType{ 42 } ) == std::uint64_t{ 42u } );
@@ -158,8 +210,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::uint64_t", "[
 }
 
 /* unsigned -> signed */
-TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int8_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any unsigned type to std::int8_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::int8_t >( TestType{ 0u } ) == std::int8_t{ 0 } );
     REQUIRE( saturating_cast< std::int8_t >( TestType{ 1u } ) == std::int8_t{ 1 } );
     REQUIRE( saturating_cast< std::int8_t >( TestType{ 42u } ) == std::int8_t{ 42 } );
@@ -168,8 +226,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int8_t", "[
     REQUIRE( saturating_cast< std::int8_t >( maxValue ) == std::numeric_limits< std::int8_t >::max() );
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int16_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any unsigned type to std::int16_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::int16_t >( TestType{ 0u } ) == std::int16_t{ 0 } );
     REQUIRE( saturating_cast< std::int16_t >( TestType{ 1u } ) == std::int16_t{ 1 } );
     REQUIRE( saturating_cast< std::int16_t >( TestType{ 42u } ) == std::int16_t{ 42 } );
@@ -183,8 +247,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int16_t", "
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int32_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any unsigned type to std::int32_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::int32_t >( TestType{ 0u } ) == std::int32_t{ 0 } );
     REQUIRE( saturating_cast< std::int32_t >( TestType{ 1u } ) == std::int32_t{ 1 } );
     REQUIRE( saturating_cast< std::int32_t >( TestType{ 42u } ) == std::int32_t{ 42 } );
@@ -198,8 +268,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int32_t", "
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int64_t", "[util][saturating_cast]",
-                    std::uint8_t, std::uint16_t, std::uint32_t, std::uint64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any unsigned type to std::int64_t",
+    "[util][saturating_cast]",
+    std::uint8_t,
+    std::uint16_t,
+    std::uint32_t,
+    std::uint64_t
+) {
     REQUIRE( saturating_cast< std::int64_t >( TestType{ 0u } ) == std::int64_t{ 0 } );
     REQUIRE( saturating_cast< std::int64_t >( TestType{ 1u } ) == std::int64_t{ 1 } );
     REQUIRE( saturating_cast< std::int64_t >( TestType{ 42u } ) == std::int64_t{ 42 } );
@@ -214,8 +290,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any unsigned type to std::int64_t", "
 }
 
 /* signed -> signed */
-TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int8_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any signed type to std::int8_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::int8_t >( TestType{ 0 } ) == std::int8_t{ 0 } );
     REQUIRE( saturating_cast< std::int8_t >( TestType{ 1 } ) == std::int8_t{ 1 } );
     REQUIRE( saturating_cast< std::int8_t >( TestType{ 42 } ) == std::int8_t{ 42 } );
@@ -230,8 +312,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int8_t", "[ut
     REQUIRE( saturating_cast< std::int8_t >( maxValue ) == std::numeric_limits< std::int8_t >::max() );
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int16_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any signed type to std::int16_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::int16_t >( TestType{ 0 } ) == std::int16_t{ 0 } );
     REQUIRE( saturating_cast< std::int16_t >( TestType{ 1 } ) == std::int16_t{ 1 } );
     REQUIRE( saturating_cast< std::int16_t >( TestType{ 42 } ) == std::int16_t{ 42 } );
@@ -256,8 +344,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int16_t", "[u
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int32_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from any signed type to std::int32_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::int32_t >( TestType{ 0 } ) == std::int32_t{ 0 } );
     REQUIRE( saturating_cast< std::int32_t >( TestType{ 1 } ) == std::int32_t{ 1 } );
     REQUIRE( saturating_cast< std::int32_t >( TestType{ 42 } ) == std::int32_t{ 42 } );
@@ -282,8 +376,14 @@ TEMPLATE_TEST_CASE( "util: Clamp cast from any signed type to std::int32_t", "[u
     }
 }
 
-TEMPLATE_TEST_CASE( "util: Clamp cast from std::int64_t to std::int64_t", "[util][saturating_cast]",
-                    std::int8_t, std::int16_t, std::int32_t, std::int64_t ) {
+TEMPLATE_TEST_CASE(
+    "util: Clamp cast from std::int64_t to std::int64_t",
+    "[util][saturating_cast]",
+    std::int8_t,
+    std::int16_t,
+    std::int32_t,
+    std::int64_t
+) {
     REQUIRE( saturating_cast< std::int64_t >( TestType{ 0 } ) == std::int64_t{ 0 } );
     REQUIRE( saturating_cast< std::int64_t >( TestType{ 1 } ) == std::int64_t{ 1 } );
     REQUIRE( saturating_cast< std::int64_t >( TestType{ 42 } ) == std::int64_t{ 42 } );

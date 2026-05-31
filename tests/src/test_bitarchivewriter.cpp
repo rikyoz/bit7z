@@ -33,7 +33,6 @@ using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 using bit7z::BitArchiveWriter;
 
-
 TEST_CASE( "BitArchiveWriter: TODO", "[bitarchivewriter]" ) {
     const BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
     REQUIRE( writer.compressionFormat() == BitFormat::SevenZip );
@@ -44,21 +43,22 @@ TEST_CASE( "BitArchiveWriter: TODO", "[bitarchivewriter]" ) {
 TEST_CASE( "BitArchiveWriter: Creating an archive containing files with Unicode names", "[bitarchivewriter]" ) {
     static const TestDirectory testDir{ test_filesystem_dir };
 
-
 #if defined( BIT7Z_7ZIP_VERSION_MAJOR ) && BIT7Z_7ZIP_VERSION_MAJOR >= 24
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
-                                      TestOutputFormat{ "7z", BitFormat::SevenZip },
-                                      TestOutputFormat{ "tar", BitFormat::Tar },
-                                      TestOutputFormat{ "wim", BitFormat::Wim },
-                                      TestOutputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "wim", BitFormat::Wim },
+        TestOutputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
-                                      TestOutputFormat{ "7z", BitFormat::SevenZip },
-                                      TestOutputFormat{ "tar", BitFormat::Tar },
-                                      TestOutputFormat{ "wim", BitFormat::Wim } );
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "wim", BitFormat::Wim }
+    );
 #endif
-
-
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         constexpr auto renamedName = BIT7Z_STRING( "𤭢.svg" );
@@ -117,7 +117,8 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing the last write time", "
     // 2020-01-20 17:00:00 UTC
     const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
         TestOutputFormat{ "7z", BitFormat::SevenZip },
         TestOutputFormat{ "tar", BitFormat::Tar },
         TestOutputFormat{ "wim", BitFormat::Wim },
@@ -138,8 +139,10 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing the last write time", "
 }
 
 // Only 7z completely omits MTime when tm=false; see the next test for other formats.
-TEST_CASE( "BitArchiveWriter: setStoreLastWriteTime(false) suppresses MTime in the output archive",
-           "[bitarchivewriter]" ) {
+TEST_CASE(
+    "BitArchiveWriter: setStoreLastWriteTime(false) suppresses MTime in the output archive",
+    "[bitarchivewriter]"
+) {
     static const TestDirectory testDir{ test_filesystem_dir };
 
     // 2020-01-20 17:00:00 UTC
@@ -163,21 +166,25 @@ TEST_CASE( "BitArchiveWriter: setStoreLastWriteTime(false) suppresses MTime in t
 // so whatever ends up in the archive is a zero/epoch-derived value, not knownTime.
 // Note: WIM's SetProperties did not recognize tm/tc/ta until 7-Zip 23.01; passing them on older versions
 // returns E_INVALIDARG ("The parameter is incorrect.").
-TEST_CASE( "BitArchiveWriter: setStoreLastWriteTime(false) does not persist the item's MTime",
-           "[bitarchivewriter]" ) {
+TEST_CASE(
+    "BitArchiveWriter: setStoreLastWriteTime(false) does not persist the item's MTime",
+    "[bitarchivewriter]"
+) {
     static const TestDirectory testDir{ test_filesystem_dir };
 
     // 2020-01-20 17:00:00 UTC
     const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
 #if BIT7Z_7ZIP_VERSION_MAJOR >= 23
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
         TestOutputFormat{ "tar", BitFormat::Tar },
         TestOutputFormat{ "wim", BitFormat::Wim },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
 #elif BIT7Z_7ZIP_VERSION_MAJOR > 16
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
         TestOutputFormat{ "tar", BitFormat::Tar },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
@@ -208,13 +215,15 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
     const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
 #if BIT7Z_7ZIP_VERSION_MAJOR >= 24
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
         TestOutputFormat{ "7z", BitFormat::SevenZip },
         TestOutputFormat{ "wim", BitFormat::Wim },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
 #elif BIT7Z_7ZIP_VERSION_MAJOR > 16
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
         TestOutputFormat{ "7z", BitFormat::SevenZip },
         TestOutputFormat{ "zip", BitFormat::Zip }
     );
@@ -253,8 +262,10 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
 
 #if defined( _WIN32 ) && defined( BIT7Z_TESTS_DATA_DIR )
 
-TEST_CASE( "BitArchiveWriter: setStoreOpenFiles allows compressing a file locked for writing by another process",
-           "[bitarchivewriter]" ) {
+TEST_CASE(
+    "BitArchiveWriter: setStoreOpenFiles allows compressing a file locked for writing by another process",
+    "[bitarchivewriter]"
+) {
     const TempTestDirectory testDir{ "test_bitarchivewriter" };
     const fs::path lockedFilePath = testDir.path() / "locked.txt";
 
@@ -295,14 +306,16 @@ using FilesystemItemInfoRef = std::reference_wrapper< const FilesystemItemInfo >
 TEST_CASE( "BitArchiveWriter: Using compression callbacks", "[bitarchivewriter]" ) {
     static const TestDirectory testDir{ test_filesystem_dir };
 
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
-                                      TestOutputFormat{ "7z", BitFormat::SevenZip },
-                                      TestOutputFormat{ "tar", BitFormat::Tar },
-                                      TestOutputFormat{ "wim", BitFormat::Wim },
-                                      TestOutputFormat{ "zip", BitFormat::Zip },
-                                      TestOutputFormat{ "gz", BitFormat::GZip },
-                                      TestOutputFormat{ "bz2", BitFormat::BZip2 },
-                                      TestOutputFormat{ "xz", BitFormat::Xz } );
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "wim", BitFormat::Wim },
+        TestOutputFormat{ "zip", BitFormat::Zip },
+        TestOutputFormat{ "gz", BitFormat::GZip },
+        TestOutputFormat{ "bz2", BitFormat::BZip2 },
+        TestOutputFormat{ "xz", BitFormat::Xz }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const auto inputItems = testFormat.format.hasFeature( FormatFeatures::MultipleFiles )
@@ -323,25 +336,33 @@ TEST_CASE( "BitArchiveWriter: Using compression callbacks", "[bitarchivewriter]"
         }();
 
         uint64_t totalSize = 0;
-        writer.setTotalCallback( [ &totalSize ]( uint64_t total ) -> void {
-            totalSize = total;
-        } );
+        writer.setTotalCallback(
+            [ &totalSize ] ( uint64_t total ) -> void {
+                totalSize = total;
+            }
+        );
 
         std::vector< uint64_t > progressValues;
-        writer.setProgressCallback( [ &progressValues ]( uint64_t progress ) -> bool {
-            progressValues.push_back( progress );
-            return true;
-        } );
+        writer.setProgressCallback(
+            [ &progressValues ] ( uint64_t progress ) -> bool {
+                progressValues.push_back( progress );
+                return true;
+            }
+        );
 
         bool ratioCalled = false;
-        writer.setRatioCallback( [ &ratioCalled ]( uint64_t /* input */, uint64_t /* output */ ) -> void {
-            ratioCalled = true;
-        } );
+        writer.setRatioCallback(
+            [ &ratioCalled ] ( uint64_t /* input */, uint64_t /* output */ ) -> void {
+                ratioCalled = true;
+            }
+        );
 
         std::vector< tstring > visitedFiles;
-        writer.setFileCallback( [ &visitedFiles ]( const tstring& file ) -> void {
-            visitedFiles.push_back( file );
-        } );
+        writer.setFileCallback(
+            [ &visitedFiles ] ( const tstring& file ) -> void {
+                visitedFiles.push_back( file );
+            }
+        );
 
         buffer_t outBuffer;
         REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
@@ -379,14 +400,16 @@ TEST_CASE( "BitArchiveWriter: Using compression callbacks", "[bitarchivewriter]"
 TEST_CASE( "BitArchiveWriter: Aborting the compression via the progress callback", "[bitarchivewriter]" ) {
     static const TestDirectory testDir{ test_filesystem_dir };
 
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
-                                      TestOutputFormat{ "7z", BitFormat::SevenZip },
-                                      TestOutputFormat{ "tar", BitFormat::Tar },
-                                      TestOutputFormat{ "wim", BitFormat::Wim },
-                                      TestOutputFormat{ "zip", BitFormat::Zip },
-                                      TestOutputFormat{ "gz", BitFormat::GZip },
-                                      TestOutputFormat{ "bz2", BitFormat::BZip2 },
-                                      TestOutputFormat{ "xz", BitFormat::Xz } );
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "wim", BitFormat::Wim },
+        TestOutputFormat{ "zip", BitFormat::Zip },
+        TestOutputFormat{ "gz", BitFormat::GZip },
+        TestOutputFormat{ "bz2", BitFormat::BZip2 },
+        TestOutputFormat{ "xz", BitFormat::Xz }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
@@ -397,17 +420,21 @@ TEST_CASE( "BitArchiveWriter: Aborting the compression via the progress callback
 
         // Returning false from the progress callback must abort the ongoing operation.
         bool progressCalled = false;
-        writer.setProgressCallback( [ &progressCalled ]( std::uint64_t ) -> bool {
-            progressCalled = true;
-            return false;
-        } );
+        writer.setProgressCallback(
+            [ &progressCalled ] ( std::uint64_t ) -> bool {
+                progressCalled = true;
+                return false;
+            }
+        );
 
         buffer_t outBuffer;
-        REQUIRE_THROWS_MATCHES( writer.compressTo( outBuffer ),
-                                BitException,
-                                Catch::Matchers::Predicate< BitException >( []( const BitException& ex ) -> bool {
-                                    return ex.code() == std::errc::operation_canceled;
-                                }, "Error code should be operation_canceled" ) );
+        REQUIRE_THROWS_MATCHES(
+            writer.compressTo( outBuffer ),
+            BitException,
+            Catch::Matchers::Predicate< BitException >( []( const BitException& exception ) -> bool {
+                return exception.code() == std::errc::operation_canceled;
+                }, "Error code should be operation_canceled" )
+        );
 
         // The operation must have been aborted from within the progress callback,
         // and not have failed for some other reason.

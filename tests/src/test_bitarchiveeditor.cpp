@@ -31,26 +31,32 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+namespace {
 struct EditedArchive : TestOutputArchive {
     EditedArchive( std::string extension, const BitInOutFormat& format, std::size_t packedSize )
         : TestOutputArchive{ std::move( extension ), format, packedSize, multiple_items_content() } {}
 };
+} // namespace
 
 TEST_CASE( "BitArchiveEditor: Opening a non-existing archive should throw", "[bitarchiveeditor]" ) {
     REQUIRE_THROWS( BitArchiveEditor{ test::sevenzip_lib(), BIT7Z_STRING( "non_existent.7z" ), BitFormat::SevenZip } );
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting an item using an invalid index should throw and leave the archive unchanged",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting an item using an invalid index should throw and leave the archive unchanged",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-                                       EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
@@ -76,22 +82,26 @@ TEST_CASE( "BitArchiveEditor: Deleting an item using an invalid index should thr
     }
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting the only item in a single-item archive should leave the archive empty",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting the only item in a single-item archive should leave the archive empty",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "single_file";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     // For some reason, applying this change to the TAR archive fails on the GitHub Action's Ubuntu Runner
     // when testing Release builds with 7-Zip 22.01; it works locally and on VMs, so we disable it for now.
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 478025 },
-                                       //EditedArchive{ "bz2", BitFormat::BZip2, 0 },
-                                       //EditedArchive{ "gz", BitFormat::GZip, 476404 },
-                                       //EditedArchive{ "tar", BitFormat::Tar, 479232 },
-                                       EditedArchive{ "wim", BitFormat::Wim, 478883 },
-                                       //EditedArchive{ "xz", BitFormat::Xz, 478080 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 476398 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 478025 },
+        //EditedArchive{ "bz2", BitFormat::BZip2, 0 },
+        //EditedArchive{ "gz", BitFormat::GZip, 476404 },
+        //EditedArchive{ "tar", BitFormat::Tar, 479232 },
+        EditedArchive{ "wim", BitFormat::Wim, 478883 },
+        //EditedArchive{ "xz", BitFormat::Xz, 478080 },
+        EditedArchive{ "zip", BitFormat::Zip, 476398 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "clouds.jpg." + testArchive.extension() );
@@ -118,17 +128,21 @@ TEST_CASE( "BitArchiveEditor: Deleting the only item in a single-item archive sh
     }
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting a single file in an archive with multiple files (index-based)",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting a single file in an archive with multiple files (index-based)",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_files";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-                                       EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_files." + testArchive.extension() );
@@ -160,18 +174,22 @@ TEST_CASE( "BitArchiveEditor: Deleting a single file in an archive with multiple
     }
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a single folder in an archive (index-based)",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting (non-recursively) a single folder in an archive (index-based)",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     // TODO: Check why we can't remove a folder when using the WIM format.
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-                                       //EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        //EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
@@ -200,17 +218,21 @@ TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a single folder in an a
     }
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archive (index-based)",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting (recursively) a single folder in an archive (index-based)",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-                                       EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
@@ -240,17 +262,21 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
     }
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting a single file in an archive with multiple files (path-based)",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting a single file in an archive with multiple files (path-based)",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_files";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-                                       EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_files." + testArchive.extension() );
@@ -278,18 +304,22 @@ TEST_CASE( "BitArchiveEditor: Deleting a single file in an archive with multiple
     }
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a single folder in an archive (path-based)",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting (non-recursively) a single folder in an archive (path-based)",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     // TODO: Check why we can't remove a folder when using the WIM format.
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-    //EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        //EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
@@ -318,18 +348,22 @@ TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a single folder in an a
     }
 }
 
-TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a path with a trailing separator should fail",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting (non-recursively) a path with a trailing separator should fail",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     // TODO: Check why we can't remove a folder when using the WIM format.
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-    //EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        //EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
@@ -354,18 +388,21 @@ TEST_CASE( "BitArchiveEditor: Deleting (non-recursively) a path with a trailing 
     }
 }
 
-
-TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archive (path-based)",
-           "[bitarchiveeditor]" ) {
+TEST_CASE(
+    "BitArchiveEditor: Deleting (recursively) a single folder in an archive (path-based)",
+    "[bitarchiveeditor]"
+) {
     const auto arcDir = fs::path{ test_archives_dir } / "extraction" / "multiple_items";
 
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
-    const auto testArchive = GENERATE( as< EditedArchive >(),
-                                       EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                       EditedArchive{ "tar", BitFormat::Tar, 617472 },
-                                       EditedArchive{ "wim", BitFormat::Wim, 615351 },
-                                       EditedArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< EditedArchive >(),
+        EditedArchive{ "7z", BitFormat::SevenZip, 563797 },
+        EditedArchive{ "tar", BitFormat::Tar, 617472 },
+        EditedArchive{ "wim", BitFormat::Wim, 615351 },
+        EditedArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path originalArcPath = arcDir / ( "multiple_items." + testArchive.extension() );
@@ -373,9 +410,11 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
 
         const tstring editedArcPath = to_tstring( editedArcFileName );
 
-        auto deletedPath = GENERATE( as< fs::path >(),
-                                     folder.name,
-                                     fs::path{ folder.name } / "" );
+        auto deletedPath = GENERATE(
+            as< fs::path >(),
+            folder.name,
+            fs::path{ folder.name } / ""
+        );
         DYNAMIC_SECTION( "Path " << deletedPath ) {
             REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
@@ -399,7 +438,7 @@ TEST_CASE( "BitArchiveEditor: Deleting (recursively) a single folder in an archi
 
 namespace {
 template< std::size_t N >
-auto as_bytes( const char ( &text )[ N ] ) -> buffer_t {
+auto as_bytes( const char (&text)[ N ] ) -> buffer_t {
     /* N includes the trailing null terminator, which we exclude from the buffer
      * so the bytes match the string literal's content. */
     const auto* const begin = reinterpret_cast< const byte_t* >( text ); // NOLINT(*-pro-type-reinterpret-cast)
@@ -510,6 +549,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
             struct PermsRestorer {
                 const fs::path& target;
                 fs::perms perms;
+
                 ~PermsRestorer() {
                     std::error_code ignored;
                     fs::permissions( target, perms, fs::perm_options::replace, ignored );
@@ -517,10 +557,12 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
             } const restorer{ testDir.path(), originalPerms };
 
             std::error_code permError;
-            fs::permissions( testDir.path(),
-                             fs::perms::owner_read | fs::perms::owner_exec,
-                             fs::perm_options::replace,
-                             permError );
+            fs::permissions(
+                testDir.path(),
+                fs::perms::owner_read | fs::perms::owner_exec,
+                fs::perm_options::replace,
+                permError
+            );
             if ( permError ) {
                 SUCCEED( "Skipping: cannot restrict directory permissions" );
             } else {
@@ -565,7 +607,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
         REQUIRE( read_file_text( archiveTmpPath ) == sentinelText );
 
         // The archive must now hold the updated content.
-        BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+        const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
         REQUIRE( reader.itemsCount() == 1u );
         buffer_t content;
         reader.extractTo( content );
@@ -608,7 +650,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
             REQUIRE( fs::is_symlink( status ) );
 
             // The archive must now hold the updated content.
-            BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+            const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
             REQUIRE( reader.itemsCount() == 1u );
             buffer_t content;
             reader.extractTo( content );
@@ -650,7 +692,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges refuses in-place multi-volume updates
         REQUIRE_THROWS( editor.applyChanges() );
     }
 
-    BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+    const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
     REQUIRE( reader.itemsCount() == 1u );
     buffer_t content;
     reader.extractTo( content );

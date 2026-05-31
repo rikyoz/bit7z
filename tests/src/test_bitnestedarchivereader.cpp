@@ -22,8 +22,9 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
+namespace {
 void require_extracts_to_filesystem( const BitNestedArchiveReader& info, const ExpectedItems& expectedItems ) {
-    TempTestDirectory testDir{ "test_bitinputarchive" };
+    const TempTestDirectory testDir{ "test_bitinputarchive" };
     INFO( "Test directory: " << testDir )
 
     REQUIRE_NOTHROW( info.extractTo( testDir ) );
@@ -31,19 +32,27 @@ void require_extracts_to_filesystem( const BitNestedArchiveReader& info, const E
         REQUIRE_FILESYSTEM_ITEM( expectedItem );
     }
 }
+} // namespace
 
 #ifdef BIT7Z_AUTO_FORMAT
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Automatic format detection is not supported", "[bitnestedarchivereader]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Automatic format detection is not supported",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -58,16 +67,23 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Automatic format detection is not s
 #endif
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Reading nested archives", "[bitnestedarchivereader]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Reading nested archives",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -82,16 +98,23 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Reading nested archives", "[bitnest
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Testing nested archives", "[bitnestedarchivereader]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Testing nested archives",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -106,16 +129,23 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Testing nested archives", "[bitnest
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting nested archives", "[bitnestedarchivereader]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting nested archives",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -132,16 +162,23 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting nested archives", "[bitn
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Reading items of nested archives", "[bitnestedarchivereader]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Reading items of nested archives",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -168,16 +205,23 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Reading items of nested archives", 
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Multiple operations on nested archives", "[bitnestedarchivereader]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Multiple operations on nested archives",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -199,8 +243,13 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Multiple operations on nested archi
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting multiple nested archives inside an archive",
-                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting multiple nested archives inside an archive",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const fs::path arcFileName = "multiple_nested.7z";
@@ -228,8 +277,13 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting multiple nested archives
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting compressed archives inside an uncompressed tarball",
-                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting compressed archives inside an uncompressed tarball",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const fs::path arcFileName = "reversed_tarball.tar";
@@ -260,16 +314,23 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting compressed archives insi
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Usually, max memory limit should be above 4MB",
-                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Usually, max memory limit should be above 4MB",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
         const fs::path arcFileName = "nested.tar." + testArchive.extension;
@@ -283,8 +344,13 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Usually, max memory limit should be
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting a deeply-nested archive",
-                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting a deeply-nested archive",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const fs::path arcFileName = "deeply_nested.tar";
@@ -316,8 +382,13 @@ TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting a deeply-nested archive"
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitNestedArchiveReader: Extracting a multi-layered deeply-nested archive",
-                    "[bitnestedarchivereader]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitNestedArchiveReader: Extracting a multi-layered deeply-nested archive",
+    "[bitnestedarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
 
     const fs::path arcFileName = "deeply_nested.vdi";

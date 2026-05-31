@@ -38,20 +38,24 @@ using namespace bit7z::test::filesystem;
  * We do not expect the conversion function to check whether the input is correct,
  * so we don't perform tests with wrong inputs. */
 
+namespace {
 struct DateConversionTest {
     const char* name;
     std::int64_t dateTime; // Using std::int64_t instead of std::time_t to use 64-bit time on x86
     FILETIME fileTime;
 };
+} // namespace
 
 TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
     using namespace std::chrono;
     using std::chrono::seconds;
 
-    auto testDate = GENERATE( as< DateConversionTest >(),
-                              DateConversionTest{ "13 February 2023, 20:54:25", 1676321665, { 1526060672, 31014893 } },
-                              DateConversionTest{ "21 December 2012, 12:00:00", 1356091200, { 3017121792, 30269298 } },
-                              DateConversionTest{ "1 January 1970, 00:00:00", 0, { 3577643008, 27111902 } } );
+    auto testDate = GENERATE(
+        as< DateConversionTest >(),
+        DateConversionTest{ "13 February 2023, 20:54:25", 1676321665, { 1526060672, 31014893 } },
+        DateConversionTest{ "21 December 2012, 12:00:00", 1356091200, { 3017121792, 30269298 } },
+        DateConversionTest{ "1 January 1970, 00:00:00", 0, { 3577643008, 27111902 } }
+    );
 
     DYNAMIC_SECTION( "Date: " << testDate.name ) {
 #ifndef _WIN32
@@ -106,8 +110,10 @@ TEST_CASE( "fsutil: FILETIME_to_time_type clamps out-of-range FILETIMEs", "[fsut
 }
 
 #ifndef _WIN32
-TEST_CASE( "fsutil: Date conversion of current time should preserve information up to seconds",
-           "[fsutil][date functions]" ) {
+TEST_CASE(
+    "fsutil: Date conversion of current time should preserve information up to seconds",
+    "[fsutil][date functions]"
+) {
     const auto currentTime = std::chrono::system_clock::now();
     const auto unixTimestamp = as_unix_timestamp( currentTime );
     INFO( "Current time: " << unixTimestamp )
@@ -127,8 +133,13 @@ TEST_CASE( "fsutil: Date conversion of current time should preserve information 
     }
 }
 
-TEMPLATE_TEST_CASE( "fsutil: Date conversion of last write time", "[fsutil][date functions]",
-                    tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "fsutil: Date conversion of last write time",
+    "[fsutil][date functions]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
     const auto arcFileName = fs::path{ clouds.name }.concat( ".7z" );
@@ -140,7 +151,7 @@ TEMPLATE_TEST_CASE( "fsutil: Date conversion of last write time", "[fsutil][date
     const auto item = info.itemAt( 0 );
 
     const auto lastWriteTime = item.itemProperty( BitProperty::MTime ).getFileTime();
-    INFO( "Last write time FILETIME: {" << lastWriteTime.dwHighDateTime << ", " << lastWriteTime.dwLowDateTime << "}")
+    INFO( "Last write time FILETIME: {" << lastWriteTime.dwHighDateTime << ", " << lastWriteTime.dwLowDateTime << "}" )
     const auto result = toFileTimeType( lastWriteTime );
 
     const auto result_as_timestamp = as_unix_timestamp( result );

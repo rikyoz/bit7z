@@ -34,7 +34,8 @@ TEST_CASE( "BitOutputArchive: TODO", "[bitoutputarchive]" ) {
 TEST_CASE( "BitOutputArchive: Creating a multi-volume archive", "[bitoutputarchive]" ) {
     const auto inputFile = fs::path{ test_filesystem_dir } / "folder" / "clouds.jpg";
 
-    const auto testFormat = GENERATE( as< TestOutputFormat >(),
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
         TestOutputFormat{ "bz2", BitFormat::BZip2 },
         TestOutputFormat{ "gz", BitFormat::GZip },
         TestOutputFormat{ "7z", BitFormat::SevenZip },
@@ -83,7 +84,7 @@ TEST_CASE( "BitOutputArchive: Compressing a commented file should preserve the c
     BitArchiveWriter writer( test::sevenzip_lib(), BitFormat::SevenZip );
     REQUIRE_NOTHROW( writer.addFile( to_tstring( commentedFile ) ) );
 
-    TempTestDirectory testOutDir{ "test_bitinputarchive" };
+    const TempTestDirectory testOutDir{ "test_bitinputarchive" };
     INFO( "Output directory: " << testOutDir )
 
     const auto* const outputArchive = BIT7Z_STRING( "commented.7z" );
@@ -91,18 +92,20 @@ TEST_CASE( "BitOutputArchive: Compressing a commented file should preserve the c
 
     REQUIRE( fs::exists( outputArchive ) );
 
-    BitArchiveReader info( test::sevenzip_lib(), outputArchive, BitFormat::SevenZip );
+    const BitArchiveReader info( test::sevenzip_lib(), outputArchive, BitFormat::SevenZip );
     REQUIRE_NOTHROW( info.test() );
     REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
 
     const auto expectedFile = testOutDir.path() / "commented.jpg";
     REQUIRE( fs::exists( expectedFile ) );
 
-    std::wstring comment = get_file_comment( expectedFile );
-    REQUIRE( comment == LR"({"data":{"pictureId":"738298be446d47f4b3933a4cc68ab6a2","appversion":"8.0.0",)"
-                        LR"("stickerId":"","filterId":"","infoStickerId":"","imageEffectId":"",)"
-                        LR"("playId":"","activityName":"","os":"android","product":"retouch"},)"
-                        LR"("source_type":"douyin_beauty_me"})" );
+    const std::wstring comment = get_file_comment( expectedFile );
+    REQUIRE(
+        comment == LR"({"data":{"pictureId":"738298be446d47f4b3933a4cc68ab6a2","appversion":"8.0.0",)"
+        LR"("stickerId":"","filterId":"","infoStickerId":"","imageEffectId":"",)"
+        LR"("playId":"","activityName":"","os":"android","product":"retouch"},)"
+        LR"("source_type":"douyin_beauty_me"})"
+    );
     REQUIRE( fs::remove( expectedFile ) );
 }
 #endif
