@@ -20,6 +20,6 @@
 using namespace bit7z;
 
 TEST_CASE( "BitStreamCompressor: TODO", "[bitstreamcompressor]" ) {
-    const BitStreamCompressor streamCompressor{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitStreamCompressor streamCompressor{ test::sevenzipLib(), BitFormat::SevenZip };
     REQUIRE( streamCompressor.compressionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }

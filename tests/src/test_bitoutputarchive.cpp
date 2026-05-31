@@ -27,7 +27,7 @@ using namespace bit7z::test::filesystem;
 // Note: in the following tests, we use BitArchiveReader for checking BitArchiveWriter's output archives.
 
 TEST_CASE( "BitOutputArchive: TODO", "[bitoutputarchive]" ) {
-    const BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
     REQUIRE( writer.compressionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }
 
@@ -46,7 +46,7 @@ TEST_CASE( "BitOutputArchive: Creating a multi-volume archive", "[bitoutputarchi
     );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
-        BitArchiveWriter writer( test::sevenzip_lib(), testFormat.format );
+        BitArchiveWriter writer( test::sevenzipLib(), testFormat.format );
         REQUIRE_NOTHROW( writer.addFile( to_tstring( inputFile ) ) );
 
         const TempTestDirectory testOutDir{ "test_bitoutputarchive" };
@@ -62,7 +62,7 @@ TEST_CASE( "BitOutputArchive: Creating a multi-volume archive", "[bitoutputarchi
         REQUIRE( fs::exists( outputArchive + BIT7Z_STRING( ".001" ) ) );
 
         {
-            const BitArchiveReader info{ test::sevenzip_lib(), firstVolume, testFormat.format };
+            const BitArchiveReader info{ test::sevenzipLib(), firstVolume, testFormat.format };
             REQUIRE_NOTHROW( info.test() );
 
             buffer_t fileBuffer;
@@ -81,7 +81,7 @@ TEST_CASE( "BitOutputArchive: Creating a multi-volume archive", "[bitoutputarchi
 TEST_CASE( "BitOutputArchive: Compressing a commented file should preserve the comment", "[bitoutputarchive]" ) {
     const auto commentedFile = fs::path{ test_archives_dir } / "metadata" / "file_comment" / "commented.jpg";
 
-    BitArchiveWriter writer( test::sevenzip_lib(), BitFormat::SevenZip );
+    BitArchiveWriter writer( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE_NOTHROW( writer.addFile( to_tstring( commentedFile ) ) );
 
     const TempTestDirectory testOutDir{ "test_bitinputarchive" };
@@ -92,14 +92,14 @@ TEST_CASE( "BitOutputArchive: Compressing a commented file should preserve the c
 
     REQUIRE( fs::exists( outputArchive ) );
 
-    const BitArchiveReader info( test::sevenzip_lib(), outputArchive, BitFormat::SevenZip );
+    const BitArchiveReader info( test::sevenzipLib(), outputArchive, BitFormat::SevenZip );
     REQUIRE_NOTHROW( info.test() );
     REQUIRE_NOTHROW( info.extractTo( testOutDir ) );
 
     const auto expectedFile = testOutDir.path() / "commented.jpg";
     REQUIRE( fs::exists( expectedFile ) );
 
-    const std::wstring comment = get_file_comment( expectedFile );
+    const std::wstring comment = getFileComment( expectedFile );
     REQUIRE(
         comment == LR"({"data":{"pictureId":"738298be446d47f4b3933a4cc68ab6a2","appversion":"8.0.0",)"
         LR"("stickerId":"","filterId":"","infoStickerId":"","imageEffectId":"",)"

@@ -34,12 +34,12 @@ using namespace bit7z::test::filesystem;
 namespace {
 struct EditedArchive : TestOutputArchive {
     EditedArchive( std::string extension, const BitInOutFormat& format, std::size_t packedSize )
-        : TestOutputArchive{ std::move( extension ), format, packedSize, multiple_items_content() } {}
+        : TestOutputArchive{ std::move( extension ), format, packedSize, multipleItemsContent() } {}
 };
 } // namespace
 
 TEST_CASE( "BitArchiveEditor: Opening a non-existing archive should throw", "[bitarchiveeditor]" ) {
-    REQUIRE_THROWS( BitArchiveEditor{ test::sevenzip_lib(), BIT7Z_STRING( "non_existent.7z" ), BitFormat::SevenZip } );
+    REQUIRE_THROWS( BitArchiveEditor{ test::sevenzipLib(), BIT7Z_STRING( "non_existent.7z" ), BitFormat::SevenZip } );
 }
 
 TEST_CASE(
@@ -67,14 +67,14 @@ TEST_CASE(
         const tstring editedArcPath = to_tstring( editedArcFileName );
 
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_THROWS( editor.deleteItem( std::numeric_limits< std::uint32_t >::max() ) );
             REQUIRE_THROWS( editor.deleteItem( editor.itemsCount() ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_ARCHIVE_CONTENT( reader, testArchive );
         }
 
@@ -112,13 +112,13 @@ TEST_CASE(
         const tstring editedArcPath = to_tstring( editedArcFileName );
 
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( 0 ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.itemsCount() == 0 );
             REQUIRE( reader.size() == 0 );
             REQUIRE( reader.packSize() == 0 );
@@ -150,19 +150,23 @@ TEST_CASE(
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        BitArchiveReader originalReader( test::sevenzip_lib(), to_tstring( originalArcPath ), testArchive.format() );
+        const BitArchiveReader originalReader(
+            test::sevenzipLib(),
+            to_tstring( originalArcPath ),
+            testArchive.format()
+        );
         const auto deletedItem = originalReader.find( loremIpsum.name );
         REQUIRE( deletedItem != originalReader.cend() );
 
         const tstring editedArcPath = to_tstring( editedArcFileName );
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( deletedItem->index() ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.filesCount() == ( originalReader.filesCount() - 1 ) );
             REQUIRE( reader.find( deletedItem->path() ) == reader.cend() );
 
@@ -197,19 +201,23 @@ TEST_CASE(
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        BitArchiveReader originalReader( test::sevenzip_lib(), to_tstring( originalArcPath ), testArchive.format() );
+        const BitArchiveReader originalReader(
+            test::sevenzipLib(),
+            to_tstring( originalArcPath ),
+            testArchive.format()
+        );
         const auto deletedItem = originalReader.find( folder.name );
         REQUIRE( deletedItem != originalReader.cend() );
 
         const tstring editedArcPath = to_tstring( editedArcFileName );
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( deletedItem->index() ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.itemsCount() == ( originalReader.itemsCount() - 1 ) );
             REQUIRE( reader.find( deletedItem->path() ) == reader.cend() );
         }
@@ -240,19 +248,23 @@ TEST_CASE(
 
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
-        BitArchiveReader originalReader( test::sevenzip_lib(), to_tstring( originalArcPath ), testArchive.format() );
+        const BitArchiveReader originalReader(
+            test::sevenzipLib(),
+            to_tstring( originalArcPath ),
+            testArchive.format()
+        );
         const auto deletedItem = originalReader.find( folder.name );
         REQUIRE( deletedItem != originalReader.cend() );
 
         const tstring editedArcPath = to_tstring( editedArcFileName );
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( deletedItem->index(), DeletePolicy::RecurseDirs ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.itemsCount() == 6 );
             REQUIRE( reader.find( deletedItem->path() ) == reader.cend() );
             REQUIRE( reader.find( to_tstring( fs::path{ "folder" } / clouds.name ) ) == reader.cend() );
@@ -286,13 +298,13 @@ TEST_CASE(
 
         const tstring editedArcPath = to_tstring( editedArcFileName );
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_NOTHROW( editor.deleteItem( italy.name ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.filesCount() == 1 );
             REQUIRE( reader.find( italy.name ) == reader.cend() );
 
@@ -331,14 +343,14 @@ TEST_CASE(
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             originalItemsCount = editor.itemsCount();
             REQUIRE_NOTHROW( editor.deleteItem( folder.name ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE( reader.itemsCount() == ( originalItemsCount - 1 ) );
             REQUIRE( reader.find( folder.name ) == reader.cend() );
             REQUIRE( reader.find( to_tstring( fs::path{ "folder" } / clouds.name ) ) != reader.cend() );
@@ -374,13 +386,13 @@ TEST_CASE(
         REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
         {
-            BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_THROWS( editor.deleteItem( to_tstring( fs::path{ folder.name } / "" ) ) );
             REQUIRE_NOTHROW( editor.applyChanges() );
         }
 
         {
-            BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+            const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
             REQUIRE_ARCHIVE_CONTENT( reader, testArchive );
         }
 
@@ -419,13 +431,13 @@ TEST_CASE(
             REQUIRE_NOTHROW( fs::copy_file( originalArcPath, editedArcFileName ) );
 
             {
-                BitArchiveEditor editor( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+                BitArchiveEditor editor( test::sevenzipLib(), editedArcPath, testArchive.format() );
                 REQUIRE_NOTHROW( editor.deleteItem( to_tstring( deletedPath ), DeletePolicy::RecurseDirs ) );
                 REQUIRE_NOTHROW( editor.applyChanges() );
             }
 
             {
-                BitArchiveReader reader( test::sevenzip_lib(), editedArcPath, testArchive.format() );
+                const BitArchiveReader reader( test::sevenzipLib(), editedArcPath, testArchive.format() );
                 REQUIRE( reader.itemsCount() == 6 );
                 REQUIRE( reader.find( folder.name ) == reader.cend() );
                 REQUIRE( reader.find( to_tstring( fs::path{ "folder" } / clouds.name ) ) == reader.cend() );
@@ -438,7 +450,7 @@ TEST_CASE(
 
 namespace {
 template< std::size_t N >
-auto as_bytes( const char (&text)[ N ] ) -> buffer_t {
+auto as_bytes( const char (&text)[ N ] ) -> buffer_t { // NOLINT(*-avoid-c-arrays)
     /* N includes the trailing null terminator, which we exclude from the buffer
      * so the bytes match the string literal's content. */
     const auto* const begin = reinterpret_cast< const byte_t* >( text ); // NOLINT(*-pro-type-reinterpret-cast)
@@ -465,7 +477,7 @@ auto read_file_text( const fs::path& file ) -> std::string {
  * file, symlink, junction, ...) is already present at that path.
  */
 TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive>.tmp", "[bitarchiveeditor]" ) {
-    const Bit7zLibrary lib{ sevenzip_lib_path() };
+    const Bit7zLibrary lib{ sevenzipLibPath() };
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const fs::path archivePath = testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" );
@@ -505,7 +517,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
         REQUIRE( fs::exists( archiveTmpPath ) );
         REQUIRE( read_file_text( archiveTmpPath ) == sentinelText );
 
-        BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+        const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
         REQUIRE( reader.itemsCount() == 1u );
     }
 
@@ -576,7 +588,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
                  * TempTestDirectory's destructor can clean up afterward. */
                 fs::permissions( testDir.path(), originalPerms, fs::perm_options::replace );
 
-                BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
+                const BitArchiveReader reader{ lib, archivePathStr, BitFormat::SevenZip };
                 REQUIRE( reader.itemsCount() == 1u );
                 buffer_t content;
                 reader.extractTo( content );
@@ -668,7 +680,7 @@ TEST_CASE( "BitArchiveEditor: applyChanges does not follow a pre-placed <archive
  * transformed into a single-file archive.
  */
 TEST_CASE( "BitArchiveEditor: applyChanges refuses in-place multi-volume updates", "[bitarchiveeditor]" ) {
-    const Bit7zLibrary lib{ sevenzip_lib_path() };
+    const Bit7zLibrary lib{ sevenzipLibPath() };
     const TempTestDirectory testDir{ "bitarchiveeditor" };
 
     const fs::path archivePath = testDir.path() / BIT7Z_NATIVE_STRING( "archive.7z" );

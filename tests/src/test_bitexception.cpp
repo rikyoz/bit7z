@@ -34,7 +34,7 @@ struct PortableErrorTest { //-V802
 #define ERROR_TEST( code ) #code, code
 #define HRESULT_WIN32_TEST( code ) #code, __HRESULT_FROM_WIN32( code )
 
-constexpr PortableErrorTest hresult_tests[ ] = { // NOLINT(*-avoid-c-arrays)
+constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( E_ABORT ), "Operation aborted", std::errc::operation_canceled },
     { ERROR_TEST( E_NOTIMPL ), "Not implemented", std::errc::function_not_supported },
     { ERROR_TEST( E_NOINTERFACE ), "No such interface supported", std::errc::not_supported },
@@ -172,7 +172,7 @@ constexpr PortableErrorTest hresult_tests[ ] = { // NOLINT(*-avoid-c-arrays)
 };
 
 TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][HRESULT]" ) {
-    for ( const auto& test : hresult_tests ) {
+    for ( const auto& test : hresultTests ) {
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto code = bit7z::make_hresult_code( test.error );
 
@@ -199,13 +199,13 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
 #ifndef __MINGW32__
 
 namespace {
-struct win32_error_test {
+struct Win32ErrorTest {
     const char* name;
     DWORD error;
 };
 } // namespace
 
-constexpr win32_error_test win32_tests[ ] = { // NOLINT(*-avoid-c-arrays)
+constexpr Win32ErrorTest win32Tests[ ] = { // NOLINT(*-avoid-c-arrays)
 #ifdef _WIN32
     { ERROR_TEST( ERROR_FILE_NOT_FOUND ) },
     { ERROR_TEST( ERROR_NOT_SUPPORTED ) },
@@ -230,7 +230,7 @@ constexpr win32_error_test win32_tests[ ] = { // NOLINT(*-avoid-c-arrays)
  * However, MinGW uses the std::system_category() for POSIX error codes on Windows, so we don't test it. */
 
 TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitException][win32-posix]" ) {
-    for ( const auto& test : win32_tests ) {
+    for ( const auto& test : win32Tests ) {
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto sys_error = std::error_code{ static_cast< int >( test.error ), std::system_category() };
 

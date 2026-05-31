@@ -28,7 +28,7 @@ template<
     class Clock,
     class Duration = typename Clock::duration
 >
-auto as_unix_timestamp( const std::chrono::time_point< Clock, Duration > timePoint ) -> std::uint64_t {
+auto asUnixTimestamp( const std::chrono::time_point< Clock, Duration > timePoint ) -> std::uint64_t {
     const auto asSeconds = std::chrono::duration_cast< std::chrono::seconds >( timePoint.time_since_epoch() );
     return static_cast< std::uint64_t >( asSeconds.count() );
 }
@@ -36,7 +36,7 @@ auto as_unix_timestamp( const std::chrono::time_point< Clock, Duration > timePoi
 #if defined( BIT7Z_USE_STANDARD_FILESYSTEM ) && defined( __GLIBCXX__ )
 
 template<>
-inline auto as_unix_timestamp( const fs::file_time_type timePoint ) -> std::uint64_t {
+inline auto asUnixTimestamp( const fs::file_time_type timePoint ) -> std::uint64_t {
     const auto sinceEpoch = timePoint.time_since_epoch();
     const auto asSeconds = std::chrono::duration_cast< std::chrono::seconds >( sinceEpoch );
     const auto sinceUnixEpoch = libstdcpp_file_clock_epoch + asSeconds;

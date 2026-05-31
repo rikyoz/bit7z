@@ -25,7 +25,7 @@ using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
 namespace {
-auto to_string( FilterPolicy policy ) -> std::string {
+auto toString( FilterPolicy policy ) -> std::string {
     switch ( policy ) {
         case FilterPolicy::Exclude:
             return "FilterPolicy::Exclude";
@@ -66,10 +66,10 @@ TEST_CASE(
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const TempTestDirectory testOutDir{ "test_bitfileextractor" };
         REQUIRE_THROWS( extractor.extractMatching( to_tstring( arcFileName ), tstring{}, testOutDir, policy ) );
@@ -104,10 +104,10 @@ TEST_CASE( "BitFileExtractor: using an empty wildcard pattern should throw (buff
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         buffer_t outBuffer;
         REQUIRE_THROWS( extractor.extractMatching( to_tstring( arcFileName ), tstring{}, outBuffer, policy ) );
@@ -147,7 +147,7 @@ TEST_CASE(
         const auto* const pattern = BIT7Z_STRING( "non-matching" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const auto arcFileNameStr = to_tstring( arcFileName );
         const TempDirectory outDir{ "test_bitfileextractor" };
@@ -157,12 +157,12 @@ TEST_CASE(
         REQUIRE_NOTHROW( extractor.extractMatching( arcFileNameStr, pattern, outDir, FilterPolicy::Exclude ) );
         REQUIRE_FALSE( fs::is_empty( outDir.path() ) );
 
-        for ( const auto& item : multiple_items_content().items ) {
+        for ( const auto& item : multipleItemsContent().items ) {
             const auto expected = outDir.path() / item.inArchivePath;
             REQUIRE( fs::exists( expected ) );
             if ( item.fileInfo.type != fs::file_type::directory ) {
                 REQUIRE( fs::is_regular_file( expected ) );
-                REQUIRE( crc32( load_file( expected ) ) == item.fileInfo.crc32 );
+                REQUIRE( crc32( loadFile( expected ) ) == item.fileInfo.crc32 );
             } else {
                 REQUIRE( fs::is_directory( expected ) );
             }
@@ -205,7 +205,7 @@ TEST_CASE(
         const auto* const pattern = BIT7Z_STRING( "non-matching" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const auto arcFileNameStr = to_tstring( arcFileName );
         buffer_t outBuffer;
@@ -247,10 +247,10 @@ TEST_CASE(
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const auto arcFileNameStr = to_tstring( arcFileName );
         const TempDirectory outDir{ "test_bitfileextractor" };
@@ -261,11 +261,11 @@ TEST_CASE(
         const auto expected2 = outDir.path() / folder.name / subfolder2.name / quickBrown.name;
         if ( policy == FilterPolicy::Include ) {
             REQUIRE( fs::exists( expected1 ) );
-            REQUIRE( crc32( load_file( expected1 ) ) == loremIpsum.crc32 );
+            REQUIRE( crc32( loadFile( expected1 ) ) == loremIpsum.crc32 );
             REQUIRE( fs::remove( expected1 ) );
 
             REQUIRE( fs::exists( expected2 ) );
-            REQUIRE( crc32( load_file( expected2 ) ) == quickBrown.crc32 );
+            REQUIRE( crc32( loadFile( expected2 ) ) == quickBrown.crc32 );
             REQUIRE( fs::remove( expected2 ) );
             REQUIRE( fs::remove( expected2.parent_path() ) );
             REQUIRE( fs::remove( expected2.parent_path().parent_path() ) );
@@ -273,7 +273,7 @@ TEST_CASE(
             REQUIRE_FALSE( fs::exists( expected1 ) );
             REQUIRE_FALSE( fs::exists( expected2 ) );
 
-            for ( const auto& item : multiple_items_content().items ) {
+            for ( const auto& item : multipleItemsContent().items ) {
                 if ( item.fileInfo.name == loremIpsum.name || item.fileInfo.name == quickBrown.name ) {
                     continue;
                 }
@@ -282,7 +282,7 @@ TEST_CASE(
                 REQUIRE( fs::exists( expected ) );
                 if ( item.fileInfo.type != fs::file_type::directory ) {
                     REQUIRE( fs::is_regular_file( expected ) );
-                    REQUIRE( crc32( load_file( expected ) ) == item.fileInfo.crc32 );
+                    REQUIRE( crc32( loadFile( expected ) ) == item.fileInfo.crc32 );
                 } else {
                     REQUIRE( fs::is_directory( expected ) );
                 }
@@ -324,11 +324,11 @@ TEST_CASE(
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
         constexpr auto wildcardPattern = BIT7Z_STRING( "*.pdf" );
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         buffer_t outBuffer;
         REQUIRE_NOTHROW( extractor.extractMatching( to_tstring( arcFileName ), wildcardPattern, outBuffer, policy ) );
@@ -378,10 +378,10 @@ TEST_CASE( "BitFileExtractor: using an empty regex pattern should throw (filesys
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const TempTestDirectory testOutDir{ "test_bitfileextractor" };
         REQUIRE_THROWS( extractor.extractMatchingRegex( to_tstring( arcFileName ), tstring{}, testOutDir, policy ) );
@@ -416,10 +416,10 @@ TEST_CASE( "BitFileExtractor: using an empty regex pattern should throw (buffer 
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         buffer_t outBuffer;
         REQUIRE_THROWS( extractor.extractMatchingRegex( to_tstring( arcFileName ), tstring{}, outBuffer, policy ) );
@@ -459,7 +459,7 @@ TEST_CASE(
         const auto* const pattern = BIT7Z_STRING( "^[0-9]+$" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const auto arcFileNameStr = to_tstring( arcFileName );
         const TempDirectory outDir{ "test_bitfileextractor" };
@@ -469,11 +469,11 @@ TEST_CASE(
         REQUIRE_NOTHROW( extractor.extractMatchingRegex( arcFileNameStr, pattern, outDir, FilterPolicy::Exclude ) );
         REQUIRE_FALSE( fs::is_empty( outDir.path() ) );
 
-        for ( const auto& item : multiple_items_content().items ) {
+        for ( const auto& item : multipleItemsContent().items ) {
             const auto expected = outDir.path() / item.inArchivePath;
             REQUIRE( fs::exists( expected ) );
             if ( item.fileInfo.type != fs::file_type::directory ) {
-                REQUIRE( crc32( load_file( expected ) ) == item.fileInfo.crc32 );
+                REQUIRE( crc32( loadFile( expected ) ) == item.fileInfo.crc32 );
             } else {
                 REQUIRE( fs::is_directory( expected ) );
             }
@@ -516,7 +516,7 @@ TEST_CASE(
         const auto* const pattern = BIT7Z_STRING( "^[0-9]+$" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const auto arcFileNameStr = to_tstring( arcFileName );
         buffer_t outBuffer;
@@ -558,11 +558,11 @@ TEST_CASE(
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const tstring pattern = BIT7Z_STRING( R"(^(.*)\.pdf$)" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         const TempDirectory outDir{ "test_bitfileextractor" };
         REQUIRE_NOTHROW( extractor.extractMatchingRegex( to_tstring( arcFileName ), pattern, outDir, policy ) );
@@ -572,11 +572,11 @@ TEST_CASE(
         const auto expected2 = outDir.path() / folder.name / subfolder2.name / quickBrown.name;
         if ( policy == FilterPolicy::Include ) {
             REQUIRE( fs::exists( expected1 ) );
-            REQUIRE( crc32( load_file( expected1 ) ) == loremIpsum.crc32 );
+            REQUIRE( crc32( loadFile( expected1 ) ) == loremIpsum.crc32 );
             REQUIRE( fs::remove( expected1 ) );
 
             REQUIRE( fs::exists( expected2 ) );
-            REQUIRE( crc32( load_file( expected2 ) ) == quickBrown.crc32 );
+            REQUIRE( crc32( loadFile( expected2 ) ) == quickBrown.crc32 );
             REQUIRE( fs::remove( expected2 ) );
             REQUIRE( fs::remove( expected2.parent_path() ) );
             REQUIRE( fs::remove( expected2.parent_path().parent_path() ) );
@@ -584,7 +584,7 @@ TEST_CASE(
             REQUIRE_FALSE( fs::exists( expected1 ) );
             REQUIRE_FALSE( fs::exists( expected2 ) );
 
-            for ( const auto& item : multiple_items_content().items ) {
+            for ( const auto& item : multipleItemsContent().items ) {
                 if ( item.fileInfo.name == loremIpsum.name || item.fileInfo.name == quickBrown.name ) {
                     continue;
                 }
@@ -593,7 +593,7 @@ TEST_CASE(
                 REQUIRE( fs::exists( expected ) );
                 if ( item.fileInfo.type != fs::file_type::directory ) {
                     REQUIRE( fs::is_regular_file( expected ) );
-                    REQUIRE( crc32( load_file( expected ) ) == item.fileInfo.crc32 );
+                    REQUIRE( crc32( loadFile( expected ) ) == item.fileInfo.crc32 );
                 } else {
                     REQUIRE( fs::is_directory( expected ) );
                 }
@@ -635,11 +635,11 @@ TEST_CASE(
 
     const auto policy = GENERATE( as< FilterPolicy >(), FilterPolicy::Include, FilterPolicy::Exclude );
 
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << to_string( policy ) ) {
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension << ", policy: " << toString( policy ) ) {
         const tstring pattern = BIT7Z_STRING( R"(^(.*)\.pdf$)" );
         const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-        const BitFileExtractor extractor( test::sevenzip_lib(), testArchive.format );
+        const BitFileExtractor extractor( test::sevenzipLib(), testArchive.format );
 
         buffer_t outBuffer;
         REQUIRE_NOTHROW( extractor.extractMatchingRegex( to_tstring( arcFileName ), pattern, outBuffer, policy ) );

@@ -3721,12 +3721,12 @@ TEST_CASE( "BitItemsVector: Indexing a single file", "[bititemsvector]" ) {
     );
 #endif
 
-    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput.inputFile ) ) {
+    DYNAMIC_SECTION( "Indexing file " << toUtf8String( testInput.inputFile ) ) {
         BitItemsVector itemsVector;
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE_NOTHROW( indexFile( itemsVector, testInput.inputFile.string< bit7z::tchar >() ) );
 #else
-        REQUIRE_NOTHROW( indexFile( itemsVector, to_utf8string( testInput.inputFile ) ) );
+        REQUIRE_NOTHROW( indexFile( itemsVector, toUtf8String( testInput.inputFile ) ) );
 #endif
 
         REQUIRE( itemsVector.size() == 1 );
@@ -3758,7 +3758,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
         "dot.folder/hello.json"
     );
 
-    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) ) {
+    DYNAMIC_SECTION( "Indexing file " << toUtf8String( testInput ) ) {
         BitItemsVector itemsVector;
 #if defined( BIT7Z_USE_NATIVE_STRING ) || defined( BIT7Z_USE_SYSTEM_CODEPAGE )
         REQUIRE_NOTHROW(
@@ -3766,7 +3766,7 @@ TEST_CASE( "BitItemsVector: Indexing a single file with a custom name", "[bitite
                 BIT7Z_STRING( "custom_name.ext" ) )
         );
 #else
-        REQUIRE_NOTHROW( indexFile( itemsVector, to_utf8string( testInput ), BIT7Z_STRING( "custom_name.ext" ) ) );
+        REQUIRE_NOTHROW( indexFile( itemsVector, toUtf8String( testInput ), BIT7Z_STRING( "custom_name.ext" ) ) );
 #endif
 
         REQUIRE( itemsVector.size() == 1 );
@@ -3792,7 +3792,7 @@ TEST_CASE( "BitItemsVector: Indexing a single stream", "[bititemsvector]" ) {
         BIT7Z_STRING( "dot.folder/hello.json" )
     );
 
-    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) << " as a stream" ) {
+    DYNAMIC_SECTION( "Indexing file " << toUtf8String( testInput ) << " as a stream" ) {
         REQUIRE_OPEN_IFSTREAM( input_stream, testInput );
 
         BitItemsVector itemsVector;
@@ -3820,7 +3820,7 @@ TEST_CASE( "BitItemsVector: Indexing a single buffer", "[bititemsvector]" ) {
         BIT7Z_STRING( "dot.folder/hello.json" )
     );
 
-    DYNAMIC_SECTION( "Indexing file " << to_utf8string( testInput ) << " as a buffer" ) {
+    DYNAMIC_SECTION( "Indexing file " << toUtf8String( testInput ) << " as a buffer" ) {
         REQUIRE_LOAD_FILE( inputBuffer, testInput );
 
         BitItemsVector itemsVector;

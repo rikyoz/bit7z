@@ -23,7 +23,7 @@ namespace test {
 namespace compiler {
 
 // Compiler name and version
-#if defined( __clang__ )
+#ifdef __clang__
 constexpr auto name = "clang++";
 constexpr auto version = VER_STRING( __clang_major__, __clang_minor__, __clang_patchlevel__ );
 #elif defined( __GNUC__ )

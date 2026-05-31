@@ -38,15 +38,15 @@ namespace {
 
 // Builds a FilesystemItemInfo describing an aliased (renamed) item: it carries the alias' name and
 // extension, but the contents (type, size, CRC) of the original source file. This lets the shared
-// require_archive_content check verify renamed items just like any other item.
-auto aliased_info( const FilesystemItemInfo& source, const tchar* name, const tchar* ext ) -> FilesystemItemInfo {
+// requireArchiveContent check verify renamed items just like any other item.
+auto aliasedInfo( const FilesystemItemInfo& source, const tchar* name, const tchar* ext ) -> FilesystemItemInfo {
     return { name, ext, source.type, source.size, source.crc32, source.crc16 };
 }
 
 // Expected content of the archive produced by the "renamed.svg" / "document.pdf" aliases.
-auto renamed_pair_content() -> const ArchiveContent& {
-    static const auto renamedItaly = aliased_info( italy, BIT7Z_STRING( "renamed.svg" ), BIT7Z_STRING( "svg" ) );
-    static const auto renamedLorem = aliased_info( loremIpsum, BIT7Z_STRING( "document.pdf" ), BIT7Z_STRING( "pdf" ) );
+auto renamedPairContent() -> const ArchiveContent& {
+    static const auto renamedItaly = aliasedInfo( italy, BIT7Z_STRING( "renamed.svg" ), BIT7Z_STRING( "svg" ) );
+    static const auto renamedLorem = aliasedInfo( loremIpsum, BIT7Z_STRING( "document.pdf" ), BIT7Z_STRING( "pdf" ) );
     static const ArchiveContent instance{
         2,
         italy.size + loremIpsum.size,
@@ -56,9 +56,9 @@ auto renamed_pair_content() -> const ArchiveContent& {
 }
 
 // Expected content of the archive produced by the "alias_italy.svg" / "alias_lorem.pdf" aliases.
-auto aliased_map_content() -> const ArchiveContent& {
-    static const auto aliasItaly = aliased_info( italy, BIT7Z_STRING( "alias_italy.svg" ), BIT7Z_STRING( "svg" ) );
-    static const auto aliasLorem = aliased_info( loremIpsum, BIT7Z_STRING( "alias_lorem.pdf" ), BIT7Z_STRING( "pdf" ) );
+auto aliasedMapContent() -> const ArchiveContent& {
+    static const auto aliasItaly = aliasedInfo( italy, BIT7Z_STRING( "alias_italy.svg" ), BIT7Z_STRING( "svg" ) );
+    static const auto aliasLorem = aliasedInfo( loremIpsum, BIT7Z_STRING( "alias_lorem.pdf" ), BIT7Z_STRING( "pdf" ) );
     static const ArchiveContent instance{
         2,
         italy.size + loremIpsum.size,
@@ -73,7 +73,7 @@ auto aliased_map_content() -> const ArchiveContent& {
 // The packed size is passed as 0, so that REQUIRE_ARCHIVE_CONTENT skips the (non-deterministic)
 // packed-size check; everything else (item set, names, paths, sizes, CRCs, counts) is verified.
 #define REQUIRE_NEW_ARCHIVE( reader, content ) \
-    require_archive_content( reader, TestArchiveContent{ 0, content }, BIT7Z_CURRENT_LOCATION )
+    requireArchiveContent( reader, TestArchiveContent{ 0, content }, BIT7Z_CURRENT_LOCATION )
 
 TEST_CASE( "BitFileCompressor: Compressing a vector of filesystem paths", "[bitfilecompressor]" ) {
     static const TestDirectory testDir{ test_filesystem_dir };
@@ -90,15 +90,15 @@ TEST_CASE( "BitFileCompressor: Compressing a vector of filesystem paths", "[bitf
     const auto outArchive = outDir.path() / ( "output." + testFormat.extension );
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), testFormat.format };
+    const BitFileCompressor compressor{ test::sevenzipLib(), testFormat.format };
 
     DYNAMIC_SECTION( testFormat.extension << ": only files" ) {
         const std::vector< tstring > inPaths{ italy.name, loremIpsum.name };
         REQUIRE_NOTHROW( compressor.compress( inPaths, outArchiveStr ) );
 
         // The reader is scoped so that it releases the archive file before it is removed below.
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
-        REQUIRE_NEW_ARCHIVE( reader, multiple_files_content() );
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
+        REQUIRE_NEW_ARCHIVE( reader, multipleFilesContent() );
     }
 
     DYNAMIC_SECTION( testFormat.extension << ": files and a directory (contents recursively included)" ) {
@@ -122,7 +122,7 @@ TEST_CASE( "BitFileCompressor: Compressing a vector of filesystem paths", "[bitf
             content.items.push_back( { folder, "folder", false } );
         }
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -141,8 +141,8 @@ TEST_CASE( "BitFileCompressor: Compressing a vector of filesystem paths", "[bitf
         };
         REQUIRE_NOTHROW( compressor.compress( inPaths, outArchiveStr ) );
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
-        REQUIRE_NEW_ARCHIVE( reader, multiple_items_content() );
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
+        REQUIRE_NEW_ARCHIVE( reader, multipleItemsContent() );
     }
 
     fs::remove( outArchive );
@@ -164,7 +164,7 @@ TEST_CASE( "BitFileCompressor: Compressing filesystem paths using aliases (vecto
     const auto outArchiveStr = to_tstring( outArchive );
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
-        const BitFileCompressor compressor{ test::sevenzip_lib(), testFormat.format };
+        const BitFileCompressor compressor{ test::sevenzipLib(), testFormat.format };
 
         const std::vector< std::pair< tstring, tstring > > inPaths{
             { italy.name, BIT7Z_STRING( "renamed.svg" ) },
@@ -172,8 +172,8 @@ TEST_CASE( "BitFileCompressor: Compressing filesystem paths using aliases (vecto
         };
         REQUIRE_NOTHROW( compressor.compress( inPaths, outArchiveStr ) );
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
-        REQUIRE_NEW_ARCHIVE( reader, renamed_pair_content() );
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
+        REQUIRE_NEW_ARCHIVE( reader, renamedPairContent() );
     }
 
     fs::remove( outArchive );
@@ -185,7 +185,7 @@ TEST_CASE( "BitFileCompressor: Compressing filesystem paths using aliases (map)"
     const auto outArchive = outDir.path() / "output.7z";
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::SevenZip };
 
     const std::map< tstring, tstring > inPaths{
         { italy.name, BIT7Z_STRING( "alias_italy.svg" ) },
@@ -194,8 +194,8 @@ TEST_CASE( "BitFileCompressor: Compressing filesystem paths using aliases (map)"
     REQUIRE_NOTHROW( compressor.compress( inPaths, outArchiveStr ) );
 
     {
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
-        REQUIRE_NEW_ARCHIVE( reader, aliased_map_content() );
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
+        REQUIRE_NEW_ARCHIVE( reader, aliasedMapContent() );
     }
 
     fs::remove( outArchive );
@@ -207,15 +207,15 @@ TEST_CASE( "BitFileCompressor: compressFiles ignores directories in the input ve
     const auto outArchive = outDir.path() / "output.7z";
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::SevenZip };
 
     // "folder" is a directory, so compressFiles must ignore it and compress only the two files.
     const std::vector< tstring > inFiles{ italy.name, loremIpsum.name, BIT7Z_STRING( "folder" ) };
     REQUIRE_NOTHROW( compressor.compressFiles( inFiles, outArchiveStr ) );
 
     {
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
-        REQUIRE_NEW_ARCHIVE( reader, multiple_files_content() );
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
+        REQUIRE_NEW_ARCHIVE( reader, multipleFilesContent() );
     }
 
     fs::remove( outArchive );
@@ -227,7 +227,7 @@ TEST_CASE( "BitFileCompressor: compressFiles from a directory (filtered)", "[bit
     const auto outArchive = outDir.path() / "output.7z";
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::SevenZip };
 
     SECTION( "All files (recursive, default filter)" ) {
         // compressFiles flattens to files only: the directory entry itself is not stored.
@@ -243,7 +243,7 @@ TEST_CASE( "BitFileCompressor: compressFiles from a directory (filtered)", "[bit
             }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -263,7 +263,7 @@ TEST_CASE( "BitFileCompressor: compressFiles from a directory (filtered)", "[bit
             { { homework, "folder/subfolder2/homework.doc", false } }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -276,7 +276,7 @@ TEST_CASE( "BitFileCompressor: compressDirectory stores the directory and its co
     const auto outArchive = outDir.path() / "output.7z";
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::SevenZip };
 
     // Unlike compressFiles, compressDirectory keeps the folder structure, including the root folder entry.
     REQUIRE_NOTHROW( compressor.compressDirectory( BIT7Z_STRING( "folder/subfolder2" ), outArchiveStr ) );
@@ -293,7 +293,7 @@ TEST_CASE( "BitFileCompressor: compressDirectory stores the directory and its co
             }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -309,7 +309,7 @@ TEST_CASE(
     const auto outArchive = outDir.path() / "output.7z";
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::SevenZip };
 
     // The contents are stored relative to inDir: the "folder/subfolder2" prefix is stripped.
     REQUIRE_NOTHROW( compressor.compressDirectoryContents( BIT7Z_STRING( "folder/subfolder2" ), outArchiveStr ) );
@@ -325,7 +325,7 @@ TEST_CASE(
             }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -354,7 +354,7 @@ TEST_CASE(
     const auto outArchive = outDir.path() / ( "output." + testFormat.extension );
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), testFormat.format };
+    const BitFileCompressor compressor{ test::sevenzipLib(), testFormat.format };
 
     DYNAMIC_SECTION( testFormat.extension << ": compressFiles stores only files, flattening folder entries" ) {
         REQUIRE_NOTHROW( compressor.compressFiles( BIT7Z_STRING( "folder" ), outArchiveStr ) );
@@ -370,7 +370,7 @@ TEST_CASE(
             }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -391,7 +391,7 @@ TEST_CASE(
             }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -412,7 +412,7 @@ TEST_CASE(
             }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -432,7 +432,7 @@ TEST_CASE(
             { { clouds, "clouds.jpg", false } }
         };
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
         REQUIRE_NEW_ARCHIVE( reader, content );
     }
 
@@ -445,7 +445,7 @@ TEST_CASE( "BitFileCompressor: Compressing filesystem paths to a standard output
     const auto outArchive = outDir.path() / "output.7z";
     const auto outArchiveStr = to_tstring( outArchive );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitFileCompressor compressor{ test::sevenzipLib(), BitFormat::SevenZip };
 
     SECTION( "Vector of paths" ) {
         {
@@ -454,8 +454,8 @@ TEST_CASE( "BitFileCompressor: Compressing filesystem paths to a standard output
             REQUIRE_NOTHROW( compressor.compress( inPaths, outStream ) );
         }
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
-        REQUIRE_NEW_ARCHIVE( reader, multiple_files_content() );
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
+        REQUIRE_NEW_ARCHIVE( reader, multipleFilesContent() );
     }
 
     SECTION( "Map of paths with aliases" ) {
@@ -468,8 +468,8 @@ TEST_CASE( "BitFileCompressor: Compressing filesystem paths to a standard output
             REQUIRE_NOTHROW( compressor.compress( inPaths, outStream ) );
         }
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, BitFormat::SevenZip };
-        REQUIRE_NEW_ARCHIVE( reader, aliased_map_content() );
+        const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, BitFormat::SevenZip };
+        REQUIRE_NEW_ARCHIVE( reader, aliasedMapContent() );
     }
 
     fs::remove( outArchive );
@@ -488,7 +488,7 @@ TEST_CASE( "BitFileCompressor: single-file-only output formats", "[bitfilecompre
         TestOutputFormat{ "xz", BitFormat::Xz }
     );
 
-    const BitFileCompressor compressor{ test::sevenzip_lib(), testFormat.format };
+    const BitFileCompressor compressor{ test::sevenzipLib(), testFormat.format };
 
     // A top-level file is used as the single input. Naming the archive <file>.<ext> lets the path-less
     // formats (bz2/xz) recover the original item name from the filename when the archive is read back.
@@ -502,7 +502,7 @@ TEST_CASE( "BitFileCompressor: single-file-only output formats", "[bitfilecompre
 
         {
             const ArchiveContent content{ 1, clouds.size, { { clouds, "clouds.jpg", false } } };
-            const BitArchiveReader reader{ test::sevenzip_lib(), outArchiveStr, testFormat.format };
+            const BitArchiveReader reader{ test::sevenzipLib(), outArchiveStr, testFormat.format };
             REQUIRE_NEW_ARCHIVE( reader, content );
         }
         fs::remove( outArchive );

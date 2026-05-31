@@ -225,7 +225,7 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
         // Hence, we use BitArchiveReader for reading the file from a buffer (to avoid detection via file extensions).
 
         REQUIRE_LOAD_FILE( fileBuffer, "valid." + test.extension );
-        const BitArchiveReader reader{ test::sevenzip_lib(), fileBuffer };
+        const BitArchiveReader reader{ test::sevenzipLib(), fileBuffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
 }
@@ -234,9 +234,9 @@ TEST_CASE( "formatdetect: Format detection by signature", "[formatdetect]" ) {
 
 // For some reason, 7-zip fails to open UDF files on Linux, so we test them only on Windows.
 TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatdetect]" ) {
-    const fs::path oldCurrentDir = current_dir();
+    const fs::path oldCurrentDir = currentDir();
     const auto testDir = fs::path{ test_archives_dir } / "detection" / "valid";
-    REQUIRE( set_current_dir( testDir ) );
+    REQUIRE( setCurrentDir( testDir ) );
 
     auto test = GENERATE(
         TestInputFormat{ "udf", BitFormat::Udf },
@@ -246,11 +246,11 @@ TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatde
 
     DYNAMIC_SECTION( "Extension: " << test.extension ) {
         REQUIRE_LOAD_FILE( fileBuffer, "valid." + test.extension );
-        const BitArchiveReader reader{ test::sevenzip_lib(), fileBuffer };
+        const BitArchiveReader reader{ test::sevenzipLib(), fileBuffer };
         REQUIRE( reader.detectedFormat() == test.format );
     }
 
-    REQUIRE( set_current_dir( oldCurrentDir ) );
+    REQUIRE( setCurrentDir( oldCurrentDir ) );
 }
 
 #endif
@@ -258,7 +258,7 @@ TEST_CASE( "formatdetect: Format detection by signature (UDF files)", "[formatde
 TEST_CASE( "formatdetect: Format detection of invalid archives", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+    const Bit7zLibrary lib{ test::sevenzipLibPath() };
 
     REQUIRE_THROWS_AS( BitArchiveReader( lib, BIT7Z_STRING( "small" ) ), BitException );
     REQUIRE_THROWS_AS( BitArchiveReader( lib, BIT7Z_STRING( "invalid" ) ), BitException );
@@ -267,7 +267,7 @@ TEST_CASE( "formatdetect: Format detection of invalid archives", "[formatdetect]
 TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Issue #134)", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+    const Bit7zLibrary lib{ test::sevenzipLibPath() };
 
     auto testFile = GENERATE(
         as< tstring >(),
@@ -282,7 +282,7 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
         REQUIRE_NOTHROW( BitArchiveReader( lib, testFile ) );
 
         // From buffer
-        auto fileBuffer = load_file( testFile );
+        auto fileBuffer = loadFile( testFile );
         REQUIRE_THROWS( BitArchiveReader( lib, fileBuffer, BitFormat::Rar ) );
         REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer, BitFormat::SevenZip ) );
         REQUIRE_NOTHROW( BitArchiveReader( lib, fileBuffer ) );
@@ -296,7 +296,7 @@ TEST_CASE( "formatdetect: Format detection of an archive file without an extensi
     REQUIRE( detectFormatFromExtension( "noextension" ) == BitFormat::Auto );
 #endif
 
-    const BitArchiveReader reader{ test::sevenzip_lib(), BIT7Z_STRING( "noextension" ) };
+    const BitArchiveReader reader{ test::sevenzipLib(), BIT7Z_STRING( "noextension" ) };
     REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
     REQUIRE_NOTHROW( reader.test() );
 }

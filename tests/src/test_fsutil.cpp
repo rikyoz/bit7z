@@ -195,8 +195,8 @@ struct TestItem {
 TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) {
     using namespace test::filesystem;
 
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE( set_current_dir( test_filesystem_dir ) );
+    const fs::path oldCurrentDir = currentDir();
+    REQUIRE( setCurrentDir( test_filesystem_dir ) );
 
     // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
     //       directory, hence we must declare the vector inside the test case and not outside.
@@ -247,7 +247,7 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
         }
     }
 
-    REQUIRE( set_current_dir( oldCurrentDir ) );
+    REQUIRE( setCurrentDir( oldCurrentDir ) );
 }
 
 #endif
@@ -1281,7 +1281,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         );
 
         const auto oldCurrentPath = fs::current_path();
-        fs::current_path( test::filesystem::user_dir() );
+        fs::current_path( test::filesystem::userDir() );
 
         DYNAMIC_SECTION(
             "Building output path for " << quoted( slipPath ) << " "
@@ -1323,7 +1323,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         );
 
         const auto oldCurrentPath = fs::current_path();
-        fs::current_path( test::filesystem::user_dir() );
+        fs::current_path( test::filesystem::userDir() );
 
         const SafeOutPathBuilder builder{ testBasePath };
         INFO( "Sanitized base path: " << quoted( builder.basePath() ) )

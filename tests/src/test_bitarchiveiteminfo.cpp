@@ -43,7 +43,7 @@ TEMPLATE_TEST_CASE(
 
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
-    const BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
 
     // Making sure we can sort BitArchiveItemInfo objects in a vector.
     auto items = info.items();

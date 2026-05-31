@@ -150,7 +150,7 @@ TEST_CASE(
 ) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const BitArchiveReader reader{ test::sevenzip_lib(), BIT7Z_STRING( "multiple_items.7z" ), BitFormat::SevenZip };
+    const BitArchiveReader reader{ test::sevenzipLib(), BIT7Z_STRING( "multiple_items.7z" ), BitFormat::SevenZip };
     const auto originalItem = reader.find( loremIpsum.name );
 
     const fs::path newItemPath = BIT7Z_NATIVE_STRING( "New Name.pdf" );

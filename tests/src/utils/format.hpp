@@ -28,30 +28,30 @@ struct TestFormat {
 using TestInputFormat = TestFormat< BitInFormat >;
 using TestOutputFormat = TestFormat< BitInOutFormat >;
 
-inline auto format_has_path_metadata( const BitInFormat& format ) noexcept -> bool {
-    return ( format != BitFormat::BZip2 ) && ( format != BitFormat::Lzma ) && ( format != BitFormat::Xz );
+inline auto formatHasPathMetadata( const BitInFormat& format ) noexcept -> bool {
+    return format != BitFormat::BZip2 && format != BitFormat::Lzma && format != BitFormat::Xz ;
 }
 
-inline auto format_has_size_metadata( const BitInFormat& format ) noexcept -> bool {
-    return ( format != BitFormat::BZip2 ) && ( format != BitFormat::Lzma );
+inline auto formatHasSizeMetadata( const BitInFormat& format ) noexcept -> bool {
+    return format != BitFormat::BZip2 && format != BitFormat::Lzma ;
 }
 
-inline auto format_has_crc32( const BitInFormat& format ) noexcept -> bool {
-    return ( format != BitFormat::BZip2 ) &&
-           ( format != BitFormat::Iso ) &&
-           ( format != BitFormat::Lzh ) && // Actually, Lzh provides a CRC, but it uses the CRC16/ARC algorithm.
-           ( format != BitFormat::Lzma ) &&
-           ( format != BitFormat::Tar ) &&
-           ( format != BitFormat::Wim ) &&
-           ( format != BitFormat::Xz );
+inline auto formatHasCrc32( const BitInFormat& format ) noexcept -> bool {
+    return format != BitFormat::BZip2 &&
+           format != BitFormat::Iso &&
+           format != BitFormat::Lzh && // Actually, Lzh provides a CRC, but it uses the CRC16/ARC algorithm.
+           format != BitFormat::Lzma &&
+           format != BitFormat::Tar &&
+           format != BitFormat::Wim &&
+           format != BitFormat::Xz ;
 }
 
-inline auto format_has_crc16( const BitInFormat& format ) noexcept -> bool {
+inline auto formatHasCrc16( const BitInFormat& format ) noexcept -> bool {
     return format == BitFormat::Lzh;
 }
 
-inline auto format_compresses_files( const BitInFormat& format ) noexcept -> bool {
-    return ( format != BitFormat::Iso ) && ( format != BitFormat::Tar ) && ( format != BitFormat::Wim );
+inline auto formatCompressesFiles( const BitInFormat& format ) noexcept -> bool {
+    return format != BitFormat::Iso && format != BitFormat::Tar && format != BitFormat::Wim ;
 }
 
 } // namespace test

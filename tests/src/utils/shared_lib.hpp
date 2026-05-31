@@ -20,7 +20,7 @@
 namespace bit7z {
 namespace test {
 
-inline auto sevenzip_lib_path() -> tstring {
+inline auto sevenzipLibPath() -> tstring {
 #ifdef BIT7Z_TESTS_7Z_LIBRARY_PATH
     static const tstring lib_path = BIT7Z_STRING( BIT7Z_TESTS_7Z_LIBRARY_PATH );
 #elif defined( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
@@ -38,15 +38,15 @@ inline auto sevenzip_lib_path() -> tstring {
     static const tstring lib_path = "./7z.so";
 #endif
 #elif defined(_WIN32)
-    static const auto lib_path = ( filesystem::exe_path().parent_path() / "7z.dll" ).string< tchar >();
+    static const auto lib_path = ( filesystem::exePath().parent_path() / "7z.dll" ).string< tchar >();
 #else
-    static const auto lib_path = ( filesystem::exe_path().parent_path() / "7z.so" ).string();
+    static const auto lib_path = ( filesystem::exePath().parent_path() / "7z.so" ).string();
 #endif
     return lib_path;
 }
 
-inline auto sevenzip_lib() -> const Bit7zLibrary& {
-    static const Bit7zLibrary lib{ sevenzip_lib_path() };
+inline auto sevenzipLib() -> const Bit7zLibrary& {
+    static const Bit7zLibrary lib{ sevenzipLibPath() };
     return lib;
 }
 

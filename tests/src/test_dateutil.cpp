@@ -69,7 +69,7 @@ TEST_CASE( "fsutil: Date conversions", "[fsutil][date functions]" ) {
 #ifndef _WIN32
         SECTION( "From FILETIME to std::filesystem::file_time_type" ) {
             auto result = toFileTimeType( testDate.fileTime );
-            REQUIRE( as_unix_timestamp( result ) == testDate.dateTime );
+            REQUIRE( asUnixTimestamp( result ) == testDate.dateTime );
         }
 #endif
 
@@ -115,7 +115,7 @@ TEST_CASE(
     "[fsutil][date functions]"
 ) {
     const auto currentTime = std::chrono::system_clock::now();
-    const auto unixTimestamp = as_unix_timestamp( currentTime );
+    const auto unixTimestamp = asUnixTimestamp( currentTime );
     INFO( "Current time: " << unixTimestamp )
 
     // Converting the current time to FILETIME
@@ -124,12 +124,12 @@ TEST_CASE(
 
     SECTION( "Converting current FILETIME to a system_clock's time_point" ) {
         const auto asSystemTimePoint = toTimeType( asFileTime );
-        REQUIRE( unixTimestamp == as_unix_timestamp( asSystemTimePoint ) );
+        REQUIRE( unixTimestamp == asUnixTimestamp( asSystemTimePoint ) );
     }
 
     SECTION( "Converting current FILETIME to a file_clock's time_point" ) {
         const auto asFileTimePoint = toFileTimeType( asFileTime );
-        REQUIRE( unixTimestamp == as_unix_timestamp( asFileTimePoint ) );
+        REQUIRE( unixTimestamp == asUnixTimestamp( asFileTimePoint ) );
     }
 }
 
@@ -146,7 +146,7 @@ TEMPLATE_TEST_CASE(
 
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
-    BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
 
     const auto item = info.itemAt( 0 );
 
@@ -154,11 +154,11 @@ TEMPLATE_TEST_CASE(
     INFO( "Last write time FILETIME: {" << lastWriteTime.dwHighDateTime << ", " << lastWriteTime.dwLowDateTime << "}" )
     const auto result = toFileTimeType( lastWriteTime );
 
-    const auto result_as_timestamp = as_unix_timestamp( result );
+    const auto result_as_timestamp = asUnixTimestamp( result );
     INFO( "Last write file time_point: " << result_as_timestamp )
 
     const auto result2 = item.lastWriteTime();
-    const auto result2_as_timestamp = as_unix_timestamp( result2 );
+    const auto result2_as_timestamp = asUnixTimestamp( result2 );
     INFO( "Last write system time_point: " << result2_as_timestamp )
     REQUIRE( result_as_timestamp == result2_as_timestamp );
 }

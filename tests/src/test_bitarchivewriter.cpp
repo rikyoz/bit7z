@@ -34,7 +34,7 @@ using namespace bit7z::test::filesystem;
 using bit7z::BitArchiveWriter;
 
 TEST_CASE( "BitArchiveWriter: TODO", "[bitarchivewriter]" ) {
-    const BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+    const BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
     REQUIRE( writer.compressionFormat() == BitFormat::SevenZip );
 }
 
@@ -63,14 +63,14 @@ TEST_CASE( "BitArchiveWriter: Creating an archive containing files with Unicode 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         constexpr auto renamedName = BIT7Z_STRING( "𤭢.svg" );
 
-        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
         REQUIRE_NOTHROW( writer.addFile( greek.name ) );
         REQUIRE_NOTHROW( writer.addFile( italy.name, renamedName ) ); // U+24B62
 
         buffer_t outBuffer;
         REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outBuffer, testFormat.format };
         const auto greekItem = reader.find( greek.name );
         REQUIRE( greekItem != reader.cend() );
         REQUIRE( greekItem->name() == greek.name );
@@ -89,15 +89,15 @@ TEST_CASE( "BitArchiveWriter: addFile returns a reference to the added item", "[
     static const TestDirectory testDir{ test_filesystem_dir };
 
     SECTION( "Filesystem file" ) {
-        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
         const BitInputItem& item = writer.addFile( loremIpsum.name );
         REQUIRE( !item.isDir() );
         REQUIRE( item.size() == static_cast< std::uint64_t >( loremIpsum.size ) );
     }
 
     SECTION( "Buffer" ) {
-        const auto buffer = load_file( loremIpsum.name );
-        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        const auto buffer = loadFile( loremIpsum.name );
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
         const BitInputItem& item = writer.addFile( buffer, loremIpsum.name );
         REQUIRE( !item.isDir() );
         REQUIRE( item.size() == static_cast< std::uint64_t >( loremIpsum.size ) );
@@ -105,7 +105,7 @@ TEST_CASE( "BitArchiveWriter: addFile returns a reference to the added item", "[
 
     SECTION( "Stream" ) {
         fs::ifstream stream{ loremIpsum.name, std::ios::binary };
-        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
         const BitInputItem& item = writer.addFile( stream, loremIpsum.name );
         REQUIRE( !item.isDir() );
     }
@@ -126,14 +126,14 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing the last write time", "
     );
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
-        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
         auto& item = writer.addFile( italy.name );
         item.setLastWriteTime( knownTime );
 
         buffer_t outBuffer;
         REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outBuffer, testFormat.format };
         REQUIRE( reader.itemAt( 0 ).lastWriteTime() == knownTime );
     }
 }
@@ -148,7 +148,7 @@ TEST_CASE(
     // 2020-01-20 17:00:00 UTC
     const auto knownTime = time_type::clock::from_time_t( 1579539600 );
 
-    BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
     writer.setStoreLastWriteTime( false );
     auto& item = writer.addFile( italy.name );
     item.setLastWriteTime( knownTime );
@@ -156,7 +156,7 @@ TEST_CASE(
     buffer_t outBuffer;
     REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
 
-    const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, BitFormat::SevenZip };
+    const BitArchiveReader reader{ test::sevenzipLib(), outBuffer, BitFormat::SevenZip };
     REQUIRE_FALSE( reader.itemAt( 0 ).itemProperty( BitProperty::MTime ).isFileTime() );
 }
 
@@ -193,7 +193,7 @@ TEST_CASE(
 #endif
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
-        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
         writer.setStoreLastWriteTime( false );
         auto& item = writer.addFile( italy.name );
         item.setLastWriteTime( knownTime );
@@ -201,7 +201,7 @@ TEST_CASE(
         buffer_t outBuffer;
         REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+        const BitArchiveReader reader{ test::sevenzipLib(), outBuffer, testFormat.format };
         REQUIRE_FALSE( reader.itemAt( 0 ).lastWriteTime() == knownTime );
     }
 }
@@ -233,7 +233,7 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
 
     DYNAMIC_SECTION( "Format " << testFormat.extension ) {
         SECTION( "Setting the creation time" ) {
-            BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+            BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
             writer.setStoreCreationTime( true );
             auto& item = writer.addFile( italy.name );
             item.setCreationTime( knownTime );
@@ -241,12 +241,12 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
             buffer_t outBuffer;
             REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
 
-            const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+            const BitArchiveReader reader{ test::sevenzipLib(), outBuffer, testFormat.format };
             REQUIRE( reader.itemAt( 0 ).creationTime() == knownTime );
         }
 
         SECTION( "Setting the last access time" ) {
-            BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+            BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
             writer.setStoreLastAccessTime( true );
             auto& item = writer.addFile( italy.name );
             item.setLastAccessTime( knownTime );
@@ -254,7 +254,7 @@ TEST_CASE( "BitArchiveWriter: addFile allows customizing creation and last acces
             buffer_t outBuffer;
             REQUIRE_NOTHROW( writer.compressTo( outBuffer ) );
 
-            const BitArchiveReader reader{ test::sevenzip_lib(), outBuffer, testFormat.format };
+            const BitArchiveReader reader{ test::sevenzipLib(), outBuffer, testFormat.format };
             REQUIRE( reader.itemAt( 0 ).lastAccessTime() == knownTime );
         }
     }
@@ -279,7 +279,7 @@ TEST_CASE(
     REQUIRE( ofs.is_open() );
 
     SECTION( "Compressing a locked file fails without storeOpenFiles" ) {
-        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
         REQUIRE_FALSE( writer.storeOpenFiles() );
         REQUIRE_NOTHROW( writer.addFile( to_tstring( lockedFilePath.native() ) ) );
         buffer_t buffer;
@@ -287,13 +287,13 @@ TEST_CASE(
     }
 
     SECTION( "Compressing a locked file succeeds with storeOpenFiles" ) {
-        BitArchiveWriter writer{ test::sevenzip_lib(), BitFormat::SevenZip };
+        BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
         writer.setStoreOpenFiles( true );
         REQUIRE_NOTHROW( writer.addFile( to_tstring( lockedFilePath.native() ) ) );
         buffer_t buffer;
         REQUIRE_NOTHROW( writer.compressTo( buffer ) );
 
-        const BitArchiveReader reader{ test::sevenzip_lib(), buffer, BitFormat::SevenZip };
+        const BitArchiveReader reader{ test::sevenzipLib(), buffer, BitFormat::SevenZip };
         REQUIRE( reader.itemsCount() == 1 );
         REQUIRE( reader.itemAt( 0 ).size() == 11 ); // "hello world" is 11 bytes
     }
@@ -322,7 +322,7 @@ TEST_CASE( "BitArchiveWriter: Using compression callbacks", "[bitarchivewriter]"
             ? std::vector< FilesystemItemInfoRef >{ std::cref( italy ), std::cref( loremIpsum ) }
             : std::vector< FilesystemItemInfoRef >{ std::cref( loremIpsum ) };
 
-        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
         for ( const auto& itemRef : inputItems ) {
             REQUIRE_NOTHROW( writer.addFile( itemRef.get().name ) );
         }
@@ -378,7 +378,7 @@ TEST_CASE( "BitArchiveWriter: Using compression callbacks", "[bitarchivewriter]"
         REQUIRE( progressValues.back() <= totalSize );
 
         // The ratio callback is only invoked for formats that actually compress the data.
-        if ( format_compresses_files( writer.format() ) ) {
+        if ( formatCompressesFiles( writer.format() ) ) {
             REQUIRE( ratioCalled );
         }
 
@@ -412,7 +412,7 @@ TEST_CASE( "BitArchiveWriter: Aborting the compression via the progress callback
     );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
-        BitArchiveWriter writer{ test::sevenzip_lib(), testFormat.format };
+        BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
         REQUIRE_NOTHROW( writer.addFile( italy.name ) );
         if ( testFormat.format.hasFeature( FormatFeatures::MultipleFiles ) ) {
             REQUIRE_NOTHROW( writer.addFile( loremIpsum.name ) );
