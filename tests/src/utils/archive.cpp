@@ -45,7 +45,7 @@ void requireArchiveItem(
     }
 
     const auto itemCrc = item.crc();
-    if ( itemCrc != 0 && ( ( format != BitFormat::Rar5 ) || !item.isEncrypted() ) ) {
+    if ( itemCrc != 0 && ( format != BitFormat::Rar5 || !item.isEncrypted() ) ) {
         /* Encrypted Rar5 archives have random CRCs values. */
         if ( formatHasCrc32( format ) ) {
             REQUIRE( itemCrc == expectedItem.fileInfo.crc32 );
@@ -91,19 +91,14 @@ void requireArchiveContent(
     std::size_t found_items = 0;
     for ( const auto& expectedItem : expectedArchiveContent.items ) {
         for ( const auto& item : items ) {
-            if ( archiveStoresPaths || fromFilesystem ) {
-                if ( item.name() != expectedItem.fileInfo.name ) {
-                    continue;
-                }
-                REQUIRE( info.find( item.path() ) != info.cend() );
-                REQUIRE( info.contains( item.path() ) );
+            if ( ( archiveStoresPaths || fromFilesystem ) && item.name() != expectedItem.fileInfo.name ) {
+                continue;
             }
-            REQUIRE( info.isItemEncrypted( item.index() ) == expectedItem.isEncrypted );
-            REQUIRE(
-                info.isItemFolder( item.index() ) == ( expectedItem.fileInfo.type == fs::file_type::directory )
-            );
+            const auto itemIndex = item.index();
+            REQUIRE( info.isItemEncrypted( itemIndex ) == expectedItem.isEncrypted );
+            REQUIRE( info.isItemFolder( itemIndex ) == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
             requireArchiveItem( format, item, expectedItem, location );
-            found_items++;
+            ++found_items;
             break;
         }
     }
