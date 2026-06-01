@@ -58,6 +58,17 @@ auto archiveItem(
     );
 }
 
+// Every item must be locatable by its own full path, and both find() and contains() must agree
+// with iteration. This is the round-trip property that path-storing formats are expected to satisfy.
+void requireItemsFindableByPath( const BitArchiveReader& info ) {
+    for ( const auto& item : info ) {
+        const auto found = info.find( item.path() );
+        REQUIRE( found != info.cend() );
+        REQUIRE( found->index() == item.index() );
+        REQUIRE( info.contains( item.path() ) );
+    }
+}
+
 void requireExtractsToFilesystem( const BitArchiveReader& info, const ExpectedItems& expectedItems ) {
     const TempTestDirectory testDir{ "test_bitinputarchive" };
     INFO( "Test directory: " << testDir )
@@ -1670,8 +1681,53 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Finding files in an archive", "[bitinputar
         REQUIRE( info.findByName( BIT7Z_STRING( "non_existing_item" ) ) == info.cend() );
         // Conversely, a full path is not matched by name.
         REQUIRE( info.findByName( BIT7Z_STRING( "folder/clouds.jpg" ) ) == info.cend() );
+
+        // Every item in the archive is locatable by its own full path.
+        requireItemsFindableByPath( info );
     }
 }
+
+#ifndef BIT7Z_USE_SYSTEM_CODEPAGE
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Finding files with Unicode names in an archive",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "unicode." + testArchive.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format );
+
+        REQUIRE( info.find( BIT7Z_STRING( "σύννεφα.jpg" ) ) != info.cend() );
+        REQUIRE( info.contains( BIT7Z_STRING( "σύννεφα.jpg" ) ) );
+        REQUIRE( info.find( BIT7Z_STRING( "𤭢.txt" ) ) != info.cend() );
+        REQUIRE( info.contains( BIT7Z_STRING( "𤭢.txt" ) ) );
+        REQUIRE( info.find( BIT7Z_STRING( "non_existing_item" ) ) == info.cend() );
+        REQUIRE_FALSE( info.contains( BIT7Z_STRING( "non_existing_item" ) ) );
+
+        // Every item is locatable by its (Unicode) full path.
+        requireItemsFindableByPath( info );
+    }
+}
+
+#endif
 
 // NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
