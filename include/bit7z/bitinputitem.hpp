@@ -27,6 +27,9 @@ enum struct SymlinkPolicy : std::uint8_t {
 };
 /** @endcond **/
 
+/** @cond **/
+namespace detail {
+
 struct FilesystemInputItem final {
     SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow;
 #if defined( _MSC_VER ) && _MSC_VER <= 1900
@@ -56,6 +59,9 @@ struct InputItemProperties final {
     std::uint32_t attributes;
     InputItemType inputType;
 };
+
+} // namespace detail
+/** @endcond **/
 
 /**
  * A generic input item for compression operations.
@@ -123,20 +129,6 @@ class BitInputItem final {
         auto itemProperty( BitProperty property ) const -> BitPropVariant;
 
         /**
-         * @brief Provides the input stream for this item to be used during compression.
-         *
-         * @note For internal use; not meant to be used by the user.
-         *
-         * @param inStream          output parameter set to the item's input stream.
-         * @param storeOpenFiles    if true, request shared read/write access when opening the file on Windows,
-         *                          allowing compression of files locked by other processes.
-         *
-         * @return S_OK on success, or an error HRESULT if the stream could not be opened.
-         */
-        BIT7Z_NODISCARD
-        auto getStream( ISequentialInStream** inStream, bool storeOpenFiles = false ) const -> HRESULT;
-
-        /**
          * @return true if the item contributes new data to the archive
          *         (i.e., it is not merely a renamed entry from an existing archive).
          */
@@ -165,17 +157,26 @@ class BitInputItem final {
         void setLastAccessTime( time_type lastAccessTime ) noexcept;
 
     private:
-        InputItemProperties mProperties;
+        friend class BitOutputArchive;
+        friend class BitArchiveEditor;
+
+        // For internal use only: provides the input stream for this item to be used during compression.
+        // On Windows, storeOpenFiles requests shared read/write access, allowing the compression of files
+        // locked by other processes. Returns S_OK on success, or an error HRESULT otherwise.
+        BIT7Z_NODISCARD
+        auto getStream( ISequentialInStream** inStream, bool storeOpenFiles ) const -> HRESULT;
+
+        detail::InputItemProperties mProperties;
         // Note: we need to store paths as strings rather than fs::path as the public API is in C++14.
         native_string mPath; // std::wstring on Windows, std::string elsewhere.
         sevenzip_string mInArchivePath; // std::wstring on every OS, used by 7-Zip.
 
         // Unfortunately, we cannot use std::variant as we need to support C++11/C++14 in the public API.
         union {
-            FilesystemInputItem mFilesystemItem;
-            BufferInputItem mBufferItem;
-            StdInputItem mStdItem;
-            RenamedInputItem mRenamedItem;
+            detail::FilesystemInputItem mFilesystemItem;
+            detail::BufferInputItem mBufferItem;
+            detail::StdInputItem mStdItem;
+            detail::RenamedInputItem mRenamedItem;
         };
 };
 

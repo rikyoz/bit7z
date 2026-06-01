@@ -22,6 +22,11 @@
 #include "internal/util.hpp"
 
 namespace bit7z {
+
+using detail::InputItemProperties;
+using detail::InputItemType;
+using detail::RenamedInputItemInitTag;
+
 namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
