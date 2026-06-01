@@ -25,6 +25,7 @@
 *.txt.user
 *.vcxproj
 *.vcxproj.user
+*.gcov
 
 *-cppcheck-*/
 .idea/
