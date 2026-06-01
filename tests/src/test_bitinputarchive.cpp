@@ -1666,6 +1666,18 @@ TEMPLATE_TEST_CASE( "BitInputArchive: Finding files in an archive", "[bitinputar
         REQUIRE( info.find( BIT7Z_STRING( "folder\\clouds.jpg" ) ) == info.cend() );
         REQUIRE_FALSE( info.contains( BIT7Z_STRING( "folder\\clouds.jpg" ) ) );
 #endif
+
+        // findByName matches the item's name rather than its full path, so it locates a nested item
+        // by its bare name, where find (which matches the path) would not.
+        const auto byName = info.findByName( BIT7Z_STRING( "clouds.jpg" ) );
+        REQUIRE( byName != info.cend() );
+        REQUIRE( byName->name() == BIT7Z_STRING( "clouds.jpg" ) );
+        REQUIRE( byName == info.find( BIT7Z_STRING( "folder/clouds.jpg" ) ) );
+        REQUIRE( info.find( BIT7Z_STRING( "clouds.jpg" ) ) == info.cend() );
+
+        REQUIRE( info.findByName( BIT7Z_STRING( "non_existing_item" ) ) == info.cend() );
+        // Conversely, a full path is not matched by name.
+        REQUIRE( info.findByName( BIT7Z_STRING( "folder/clouds.jpg" ) ) == info.cend() );
     }
 }
 
