@@ -20,12 +20,13 @@ struct ISequentialInStream;
 
 namespace bit7z {
 
-/** @cond **/
+/**
+ * @brief Enumeration representing how an input item should deal with symbolic links.
+ */
 enum struct SymlinkPolicy : std::uint8_t {
-    Follow,
-    DoNotFollow
+    Follow,      ///< Follow symbolic links, storing the content of the pointed-to file.
+    DoNotFollow  ///< Do not follow symbolic links, storing the link itself.
 };
-/** @endcond **/
 
 /** @cond **/
 namespace detail {
