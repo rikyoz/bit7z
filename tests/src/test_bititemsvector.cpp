@@ -3860,7 +3860,7 @@ TEST_CASE( "BitItemsVector: Indexing long paths", "[bititemsvector]" ) {
 #else
     REQUIRE( fs::create_directories( fs::path{ LR"(\\?\)" } += ( testDir.path() / longPath ) ) );
 #endif
-    REQUIRE( set_current_dir( longPath ) );
+    REQUIRE( setCurrentDir( longPath ) );
 
     const auto currentPath = fs::current_path();
     REQUIRE( currentPath.native().size() < maxPath );
