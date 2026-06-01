@@ -460,6 +460,7 @@ TEMPLATE_TEST_CASE(
         const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
 
         const auto archiveItems = info.items();
+        REQUIRE( archiveItems.size() == info.itemsCount() );
 
         REQUIRE( info.begin() == info.cbegin() );
         REQUIRE( info.end() == info.cend() );
@@ -471,14 +472,35 @@ TEMPLATE_TEST_CASE(
             const auto& archivedItem = archiveItems[ iteratedItem.index() ];
             REQUIRE( archivedItem.index() == iteratedItem.index() );
             REQUIRE( archivedItem.name() == iteratedItem.name() );
+            REQUIRE( archivedItem.nativeName() == iteratedItem.nativeName() );
             REQUIRE( archivedItem.path() == iteratedItem.path() );
+            REQUIRE( archivedItem.nativePath() == iteratedItem.nativePath() );
+            REQUIRE( archivedItem.rawPath() == iteratedItem.rawPath() );
             REQUIRE( archivedItem.isDir() == iteratedItem.isDir() );
+            REQUIRE( archivedItem.isSymLink() == iteratedItem.isSymLink() );
             REQUIRE( archivedItem.crc() == iteratedItem.crc() );
             REQUIRE( archivedItem.extension() == iteratedItem.extension() );
             REQUIRE( archivedItem.isEncrypted() == iteratedItem.isEncrypted() );
             REQUIRE( archivedItem.size() == iteratedItem.size() );
             REQUIRE( archivedItem.packSize() == iteratedItem.packSize() );
             REQUIRE( archivedItem.attributes() == iteratedItem.attributes() );
+            // Note: the typed creationTime()/lastAccessTime()/lastWriteTime() accessors are intentionally not
+            // compared here: when an item has no stored timestamp, they fall back to clock::now(), so two
+            // independent calls would differ. The stored timestamps are covered by the itemProperty() loop below
+            // (BitProperty::CTime/ATime/MTime).
+
+            // The generic itemProperty() accessor is cached in a map by BitArchiveItemInfo, but it is
+            // queried live from the archive by BitArchiveItemOffset; check that they agree for every property.
+            using property_t = std::underlying_type< BitProperty >::type;
+            for (
+                auto prop = static_cast< property_t >( BitProperty::NoProperty );
+                prop <= static_cast< property_t >( BitProperty::CopyLink );
+                ++prop
+            ) {
+                const auto property = static_cast< BitProperty >( prop );
+                REQUIRE( archivedItem.itemProperty( property ) == iteratedItem.itemProperty( property ) );
+            }
+
             REQUIRE( info.itemAt( archivedItem.index() ) == iteratedItem );
         }
 
