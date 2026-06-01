@@ -183,12 +183,13 @@ struct ExpectedItem {
     bool isEncrypted;
 };
 
+using ExpectedItemRef = std::reference_wrapper< const ExpectedItem >;
 using ExpectedItems = std::vector< ExpectedItem >;
 
 struct ArchiveContent {
     std::size_t fileCount;
     std::size_t size;
-    std::vector< ExpectedItem > items;
+    ExpectedItems items;
 };
 
 auto singleFileContent() -> const ArchiveContent&;

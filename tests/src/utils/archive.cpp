@@ -16,6 +16,8 @@
 
 #include <catch2/catch.hpp>
 
+#include <unordered_map>
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
@@ -88,21 +90,38 @@ void requireArchiveContent(
 
     const bool archiveStoresPaths = formatHasPathMetadata( format );
     const bool fromFilesystem = !info.archivePath().empty();
-    std::size_t found_items = 0;
-    for ( const auto& expectedItem : expectedArchiveContent.items ) {
-        for ( const auto& item : items ) {
-            if ( ( archiveStoresPaths || fromFilesystem ) && item.name() != expectedItem.fileInfo.name ) {
-                continue;
-            }
-            const auto itemIndex = item.index();
-            REQUIRE( info.isItemEncrypted( itemIndex ) == expectedItem.isEncrypted );
-            REQUIRE( info.isItemFolder( itemIndex ) == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
-            requireArchiveItem( format, item, expectedItem, location );
-            ++found_items;
-            break;
+    const bool matchByName = archiveStoresPaths || fromFilesystem;
+
+    // Index the expected items by name so each archive item can be matched in a single pass.
+    // Names are unique within the test archives that store paths; matched entries are erased so
+    // that the archive items and the expected items are checked to form a one-to-one correspondence.
+    std::unordered_map< tstring, filesystem::ExpectedItemRef > expectedByName;
+    if ( matchByName ) {
+        expectedByName.reserve( expectedArchiveContent.items.size() );
+        for ( const auto& expectedItem : expectedArchiveContent.items ) {
+            expectedByName.emplace( expectedItem.fileInfo.name, std::cref( expectedItem ) );
         }
     }
-    REQUIRE( items.size() == found_items );
+
+    for ( const auto& item : items ) {
+        const auto itemIndex = item.index();
+        const auto& expectedItem = [&] () -> filesystem::ExpectedItemRef {
+            if ( matchByName ) {
+                const auto match = expectedByName.find( item.name() );
+                REQUIRE( match != expectedByName.end() );
+                const auto result = match->second;
+                expectedByName.erase( match ); // Enforce one-to-one matching.
+                return result;
+            }
+
+            REQUIRE( itemIndex < expectedArchiveContent.items.size() );
+            return std::cref( expectedArchiveContent.items[ itemIndex ] );
+        }().get();
+        REQUIRE( info.isItemEncrypted( itemIndex ) == expectedItem.isEncrypted );
+        REQUIRE( info.isItemFolder( itemIndex ) == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
+        requireArchiveItem( format, item, expectedItem, location );
+    }
+    REQUIRE( expectedByName.empty() );
 }
 
 void requireFilesystemItem( const ExpectedItem& expectedItem, const SourceLocation& location ) {
