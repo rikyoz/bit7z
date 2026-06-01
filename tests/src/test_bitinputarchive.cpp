@@ -14,6 +14,7 @@
 
 #include "utils/archive.hpp"
 #include "utils/crc.hpp"
+#include "utils/exception.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
@@ -1609,16 +1610,7 @@ TEMPLATE_TEST_CASE(
         const TempTestDirectory testOutDir{ "test_bitinputarchive" };
         INFO( "Output directory: " << testOutDir )
 
-        REQUIRE_THROWS_MATCHES(
-            info.extractTo( testOutDir ),
-            BitException,
-            Catch::Matchers::Predicate< BitException >(
-                []( const BitException& exception ) -> bool {
-                    return exception.code() == std::errc::operation_canceled;
-                },
-                "Error code should be operation_canceled"
-            )
-        );
+        REQUIRE_THROWS_CODE( info.extractTo( testOutDir ), std::errc::operation_canceled );
 
         // The operation must have been aborted from within the progress callback,
         // and not have failed for some other reason.

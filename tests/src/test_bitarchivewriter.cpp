@@ -12,6 +12,7 @@
 
 #include <catch2/catch.hpp>
 
+#include "utils/exception.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
@@ -456,13 +457,7 @@ TEST_CASE( "BitArchiveWriter: Aborting the compression via the progress callback
         );
 
         buffer_t outBuffer;
-        REQUIRE_THROWS_MATCHES(
-            writer.compressTo( outBuffer ),
-            BitException,
-            Catch::Matchers::Predicate< BitException >( []( const BitException& exception ) -> bool {
-                return exception.code() == std::errc::operation_canceled;
-                }, "Error code should be operation_canceled" )
-        );
+        REQUIRE_THROWS_CODE( writer.compressTo( outBuffer ), std::errc::operation_canceled );
 
         // The operation must have been aborted from within the progress callback,
         // and not have failed for some other reason.

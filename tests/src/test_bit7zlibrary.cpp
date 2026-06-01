@@ -14,6 +14,10 @@
 
 #include "utils/shared_lib.hpp"
 
+#ifndef _WIN32
+#include "utils/exception.hpp"
+#endif
+
 #include <bit7z/bit7zlibrary.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bittypes.hpp>
@@ -41,13 +45,7 @@ TEST_CASE( "Bit7zLibrary: Constructing from a non-existing shared library", "[bi
         )
     );
 #else
-    REQUIRE_THROWS_MATCHES(
-        Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.so" ) ),
-        BitException,
-        Catch::Matchers::Predicate< BitException >( [ & ]( const BitException& exception ) -> bool {
-            return exception.code() == std::errc::bad_file_descriptor;
-            }, "Error code should be bad file descriptor" )
-    );
+    REQUIRE_THROWS_CODE( Bit7zLibrary( BIT7Z_STRING( "NonExisting7z.so" ) ), std::errc::bad_file_descriptor );
 #endif
 }
 
