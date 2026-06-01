@@ -187,8 +187,11 @@ TEST_CASE(
     REQUIRE_NOTHROW( fs::copy_file( contentFile, fs::path{ outputArchive } ) );
     const auto originalContent = loadFile( fs::path{ outputArchive } );
 
+    // The buffer must outlive the writer, as addFile only keeps a reference to it.
+    const auto fileContent = loadFile( contentFile );
+
     BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
-    writer.addFile( loadFile( contentFile ), BIT7Z_STRING( "clouds.jpg" ) );
+    writer.addFile( fileContent, BIT7Z_STRING( "clouds.jpg" ) );
     writer.setOverwriteMode( OverwriteMode::Skip );
     REQUIRE_NOTHROW( writer.compressTo( outputArchive ) );
 
@@ -201,8 +204,11 @@ TEST_CASE(
 TEST_CASE( "BitOutputArchive: Compressing to a non-empty buffer respects the overwrite mode", "[bitoutputarchive]" ) {
     const auto contentFile = fs::path{ test_filesystem_dir } / "folder" / "clouds.jpg";
 
+    // The buffer must outlive the writer, as addFile only keeps a reference to it.
+    const auto fileContent = loadFile( contentFile );
+
     BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
-    writer.addFile( loadFile( contentFile ), BIT7Z_STRING( "clouds.jpg" ) );
+    writer.addFile( fileContent, BIT7Z_STRING( "clouds.jpg" ) );
 
     SECTION( "OverwriteMode::None (default) throws" ) {
         buffer_t outputBuffer( 8 );

@@ -109,6 +109,18 @@ class BitOutputArchive {
         );
 
         /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The input archive's bytes are read lazily while compressing (to copy retained items),
+         * so the buffer must outlive the BitOutputArchive; a temporary would dangle.
+         */
+        BitOutputArchive(
+            const BitAbstractArchiveCreator& creator,
+            buffer_t&& inBuffer,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        ) = delete;
+
+        /**
          * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
          *
          * @param creator   the reference to the BitAbstractArchiveCreator object containing all the settings to
@@ -176,6 +188,14 @@ class BitOutputArchive {
          * @return a reference to the input item just added, valid until the next call that adds items to the archive.
          */
         auto addFile( const buffer_t& inBuffer, const tstring& name ) -> BitInputItem&;
+
+        /**
+         * @brief Deleted overload preventing the addition of a temporary buffer.
+         *
+         * The added item only keeps a reference to the buffer, which is read later when compressing;
+         * a temporary would dangle, so passing one is rejected at compile time.
+         */
+        auto addFile( buffer_t&& inBuffer, const tstring& name ) -> BitInputItem& = delete;
 
         /**
          * @brief Adds the given standard input stream, using the given name as a path when compressed

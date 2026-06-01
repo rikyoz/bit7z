@@ -104,6 +104,20 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         );
 
         /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The reader keeps the archive open and reads the buffer on later extraction,
+         * so the buffer must outlive the BitArchiveReader; a temporary would dangle.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            ArchiveStartOffset archiveStart,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        ) = delete;
+
+        /**
          * @brief Constructs a BitArchiveReader object, opening the archive in the input buffer.
          *
          * @note When bit7z is compiled using the `BIT7Z_AUTO_FORMAT` option, the format
@@ -122,6 +136,19 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
             const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
             const tstring& password = {}
         );
+
+        /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The reader keeps the archive open and reads the buffer on later extraction,
+         * so the buffer must outlive the BitArchiveReader; a temporary would dangle.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        ) = delete;
 
         /**
          * @brief Constructs a BitArchiveReader object, opening the archive from the standard input stream.

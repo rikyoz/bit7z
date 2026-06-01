@@ -85,6 +85,20 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
         );
 
         /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The input archive's bytes are read lazily while compressing (to copy retained items),
+         * so the buffer must outlive the BitArchiveWriter; a temporary would dangle.
+         */
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        ) = delete;
+
+        /**
          * @brief Constructs a BitArchiveWriter object, reading the archive in the given buffer.
          *
          * @param lib           the 7z library to use.
@@ -98,6 +112,19 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
             const BitInOutFormat& format,
             const tstring& password = {}
         );
+
+        /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The input archive's bytes are read lazily while compressing (to copy retained items),
+         * so the buffer must outlive the BitArchiveWriter; a temporary would dangle.
+         */
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        ) = delete;
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive from the given standard input stream.

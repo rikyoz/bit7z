@@ -431,7 +431,9 @@ void require_archive_tests( const BitArchiveReader& info, const SourceLocation& 
 
 TEST_CASE( "BitInputArchive: Opening a non-existing archive should throw an exception" ) {
     REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), BIT7Z_STRING( "non-existing.7z" ), BitFormat::SevenZip } );
-    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), buffer_t{}, BitFormat::SevenZip } );
+
+    const buffer_t emptyBuffer{};
+    REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), emptyBuffer, BitFormat::SevenZip } );
 
     fs::ifstream nonExistingStream{ "non-existing.7z" };
     REQUIRE_THROWS( BitArchiveReader{ test::sevenzipLib(), nonExistingStream, BitFormat::SevenZip } );
