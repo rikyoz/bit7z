@@ -327,7 +327,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 REQUIRE( info.isMultiVolume() );
                 REQUIRE( info.volumesCount() == 3 );
                 REQUIRE( info.itemsCount() == 1 );
-                REQUIRE( info.items()[ 0 ].name() == arcFileName.stem().string< tchar >() );
+                REQUIRE( info.itemAt( 0 ).name() == arcFileName.stem().string< tchar >() );
             }
 
             SECTION( "Opening as a whole archive" ) {
@@ -338,7 +338,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
                 );
                 REQUIRE( info.isMultiVolume() );
                 REQUIRE( info.volumesCount() == 3 );
-                REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
+                REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.itemAt( 0 ), testArchive.content().items[ 0 ] );
             }
         }
     }
@@ -351,7 +351,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         REQUIRE( info.itemsCount() == 1 );
 
         const ExpectedItem expectedItem{ clouds, clouds.name };
-        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.items()[ 0 ], expectedItem );
+        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.itemAt( 0 ), expectedItem );
     }
 
     SECTION( "Multi-volume RAR4" ) {
@@ -362,7 +362,7 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
         REQUIRE( info.itemsCount() == 1 );
 
         const ExpectedItem expectedItem{ clouds, clouds.name };
-        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.items()[ 0 ], expectedItem );
+        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.itemAt( 0 ), expectedItem );
     }
 }
 
