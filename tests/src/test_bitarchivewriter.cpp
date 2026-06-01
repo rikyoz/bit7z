@@ -371,11 +371,14 @@ TEST_CASE( "BitArchiveWriter: Using compression callbacks", "[bitarchivewriter]"
         // (7-Zip includes some per-item/header overhead on top of the raw file sizes).
         REQUIRE( totalSize >= totalInputSize );
 
-        // The progress callback should have been called at least once, with non-decreasing values
-        // that never exceed the total size.
+        // The progress callback should have been called at least once, with non-decreasing values.
         REQUIRE( !progressValues.empty() );
         REQUIRE( std::is_sorted( progressValues.begin(), progressValues.end() ) );
+#ifndef BIT7Z_BUILD_FOR_P7ZIP
+        // The progress values should never exceed the reported total size.
+        // NOTE: p7zip can report a final progress value slightly above the total.
         REQUIRE( progressValues.back() <= totalSize );
+#endif
 
         // The ratio callback is only invoked for formats that actually compress the data.
         if ( formatCompressesFiles( writer.format() ) ) {
