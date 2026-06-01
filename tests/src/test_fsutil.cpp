@@ -1209,7 +1209,7 @@ TEST_CASE(
 #if !defined( BIT7Z_PATH_SANITIZATION ) && !defined( _WIN32 )
             REQUIRE_THROWS_AS( builder.buildPath( testItemPath ), BitException );
 #else
-            const fs::path sanitizedTestPath = [ &testItemPath ]() -> const fs::path {
+            const auto sanitizedTestPath = [ &testItemPath ]() -> fs::path {
                 const auto firstNonSeparator = testItemPath.native().find_first_not_of( BIT7Z_NATIVE_STRING( "/\\" ) );
                 return testItemPath.native().substr( firstNonSeparator );
             }();

@@ -59,7 +59,7 @@ TEMPLATE_TEST_CASE(
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
 
         REQUIRE_THROWS( BitNestedArchiveReader{ test::sevenzipLib(), outerArchive, BitFormat::Auto } );
     }
@@ -90,8 +90,8 @@ TEMPLATE_TEST_CASE(
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
         REQUIRE( innerArchive.itemsCount() == multipleFilesContent().fileCount );
         REQUIRE( innerArchive.openCount() == 1 );
     }
@@ -121,8 +121,8 @@ TEMPLATE_TEST_CASE(
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
         REQUIRE_NOTHROW( innerArchive.test() );
         REQUIRE( innerArchive.openCount() == 1 );
     }
@@ -152,8 +152,8 @@ TEMPLATE_TEST_CASE(
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
 
         // TODO: Test all kind of extraction targets (buffers, streams, etc.)
         require_extracts_to_filesystem( innerArchive, multipleFilesContent().items );
@@ -185,8 +185,8 @@ TEMPLATE_TEST_CASE(
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
 
         // TODO: Test all kind of extraction targets (buffers, streams, etc.)
         const auto items = innerArchive.items();
@@ -228,8 +228,8 @@ TEMPLATE_TEST_CASE(
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
 
         REQUIRE_NOTHROW( innerArchive.test() );
         REQUIRE( innerArchive.openCount() == 1 );
@@ -256,10 +256,10 @@ TEMPLATE_TEST_CASE(
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
 
-    BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
 
     for ( const auto& item : outerArchive ) {
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, item.index(), BitFormat::Tar );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, item.index(), BitFormat::Tar );
 
         REQUIRE_NOTHROW( innerArchive.test() );
         REQUIRE( innerArchive.openCount() == 1 );
@@ -290,7 +290,7 @@ TEMPLATE_TEST_CASE(
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
 
-    BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::Tar );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::Tar );
 
     for ( const auto& item : outerArchive ) {
         const auto& format = [&item]() -> const BitInFormat& {
@@ -303,7 +303,7 @@ TEMPLATE_TEST_CASE(
             }
             return BitFormat::Xz;
         }();
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, item.index(), format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, item.index(), format );
 
         REQUIRE_NOTHROW( innerArchive.test() );
         REQUIRE( innerArchive.openCount() == 1 );
@@ -337,8 +337,8 @@ TEMPLATE_TEST_CASE(
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
+        const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, testArchive.format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), outerArchive, BitFormat::Tar );
         REQUIRE( innerArchive.maxMemoryUsage() > ( 4ULL * 1024 * 1024 ) );
     }
 }
@@ -357,7 +357,7 @@ TEMPLATE_TEST_CASE(
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
 
-    BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::Tar );
+    const BitArchiveReader outerArchive( test::sevenzipLib(), inputArchive, BitFormat::Tar );
 
     for ( const auto& item : outerArchive ) {
         const auto& format = [&item]() -> const BitInFormat& {
@@ -370,8 +370,8 @@ TEMPLATE_TEST_CASE(
             }
             return BitFormat::Xz;
         }();
-        BitArchiveReader tarballArchive( test::sevenzipLib(), outerArchive, item.index(), format );
-        BitNestedArchiveReader innerArchive( test::sevenzipLib(), tarballArchive, BitFormat::Tar );
+        const BitArchiveReader tarballArchive( test::sevenzipLib(), outerArchive, item.index(), format );
+        const BitNestedArchiveReader innerArchive( test::sevenzipLib(), tarballArchive, BitFormat::Tar );
 
         REQUIRE_NOTHROW( innerArchive.test() );
         REQUIRE( innerArchive.openCount() == 1 );
@@ -395,11 +395,11 @@ TEMPLATE_TEST_CASE(
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
 
-    BitArchiveReader layer0( test::sevenzipLib(), inputArchive, BitFormat::VDI );
-    BitArchiveReader layer1( test::sevenzipLib(), layer0, BitFormat::Mbr );
-    BitArchiveReader layer2( test::sevenzipLib(), layer1, 0, BitFormat::Ext );
-    BitArchiveReader layer3( test::sevenzipLib(), layer2, 1, BitFormat::Xz );
-    BitNestedArchiveReader layer4( test::sevenzipLib(), layer3, BitFormat::Tar );
+    const BitArchiveReader layer0( test::sevenzipLib(), inputArchive, BitFormat::VDI );
+    const BitArchiveReader layer1( test::sevenzipLib(), layer0, BitFormat::Mbr );
+    const BitArchiveReader layer2( test::sevenzipLib(), layer1, 0, BitFormat::Ext );
+    const BitArchiveReader layer3( test::sevenzipLib(), layer2, 1, BitFormat::Xz );
+    const BitNestedArchiveReader layer4( test::sevenzipLib(), layer3, BitFormat::Tar );
 
     REQUIRE_NOTHROW( layer4.test() );
     REQUIRE( layer4.openCount() == 1 );

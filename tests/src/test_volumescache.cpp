@@ -30,32 +30,52 @@ namespace {
 // MockStream must live inside namespace bit7z so that MY_UNKNOWN_IMP1's unqualified reference
 // to IID_IInStream finds bit7z::IID_IInStream before the homonymous symbol in 7-Zip's global
 // namespace, avoiding an ambiguous lookup on platforms where IStream.h declares it at global scope.
-struct MockStream final : public IInStream, public CMyUnknownImp {
-    bool seekWasCalled = false;
-    Int64 lastSeekOffset = 0;
-    HRESULT nextSeekResult = S_OK;
+// ReSharper disable once CppPolymorphicClassWithNonVirtualPublicDestructor
+class MockStream final : public IInStream, public CMyUnknownImp {
+    public:
+        // NOLINTNEXTLINE(*-const-correctness, *-use-noexcept, *-use-trailing-return-type)
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
 
-    MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
+        BIT7Z_STDMETHOD( Read, void* /*data*/, UInt32 /*size*/, UInt32* processedSize ) {
+            if ( processedSize != nullptr ) {
+                *processedSize = 0;
+            }
+            return S_OK;
+        }
 
-    BIT7Z_STDMETHOD( Read, void* /*data*/, UInt32 /*size*/, UInt32* processedSize ) {
-        if ( processedSize != nullptr ) {
-            *processedSize = 0;
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 /*seekOrigin*/, UInt64* newPosition ) {
+            mSeekWasCalled = true;
+            mLastSeekOffset = offset;
+            if ( mNextSeekResult != S_OK ) {
+                return mNextSeekResult;
+            }
+            if ( newPosition != nullptr ) {
+                *newPosition = static_cast< UInt64 >( offset );
+            }
+            return S_OK;
         }
-        return S_OK;
-    }
 
-    BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 /*seekOrigin*/, UInt64* newPosition ) {
-        seekWasCalled = true;
-        lastSeekOffset = offset;
-        if ( nextSeekResult != S_OK ) {
-            return nextSeekResult;
+        BIT7Z_NODISCARD
+        auto seekWasCalled() const -> bool {
+            return mSeekWasCalled;
         }
-        if ( newPosition != nullptr ) {
-            *newPosition = static_cast< UInt64 >( offset );
+
+        BIT7Z_NODISCARD
+        auto lastSeekOffset() const -> Int64 {
+            return mLastSeekOffset;
         }
-        return S_OK;
-    }
+
+        void setNextSeekResult( HRESULT value ) {
+            mNextSeekResult = value;
+        }
+
+    private:
+        bool mSeekWasCalled = false;
+        Int64 mLastSeekOffset = 0;
+        HRESULT mNextSeekResult = S_OK;
 };
+
+// NOLINTBEGIN(*-pro-bounds-avoid-unchecked-container-access)
 
 template< EvictionPolicy Policy >
 void addOpenVolume( VolumesCache< MockStream, Policy >& cache ) {
@@ -82,9 +102,9 @@ auto lruOrder( VolumesCache< MockStream, Policy >& cache ) -> std::vector< std::
 // Container operations
 
 TEST_CASE( "VolumesCache: Empty cache", "[volumescache]" ) {
-    VolumesCache< MockStream, EvictionPolicy::Oldest > cache;
+    const VolumesCache< MockStream, EvictionPolicy::Oldest > cache;
     REQUIRE( cache.empty() );
-    REQUIRE( cache.size() == 0 );
+    REQUIRE( cache.size() == 0 ); // NOLINT(*-container-size-empty)
     REQUIRE( cache.newest() == kNoVolume );
 }
 
@@ -414,8 +434,8 @@ TEST_CASE( "VolumesCache: trackReopen restores seek position", "[volumescache][s
 
         cache.trackReopen( volume, 0 );
 
-        REQUIRE( volume.stream->seekWasCalled );
-        REQUIRE( volume.stream->lastSeekOffset == 42 );
+        REQUIRE( volume.stream->seekWasCalled() );
+        REQUIRE( volume.stream->lastSeekOffset() == 42 );
         REQUIRE( volume.seekPosition == 42 );
     }
 
@@ -427,7 +447,7 @@ TEST_CASE( "VolumesCache: trackReopen restores seek position", "[volumescache][s
 
         cache.trackReopen( volume, 0 );
 
-        REQUIRE_FALSE( volume.stream->seekWasCalled );
+        REQUIRE_FALSE( volume.stream->seekWasCalled() );
     }
 
     SECTION( "Seek failure resets seekPosition to zero" ) {
@@ -435,11 +455,11 @@ TEST_CASE( "VolumesCache: trackReopen restores seek position", "[volumescache][s
         auto& volume = cache[ 0 ];
         volume.seekPosition = 42;
         volume.stream = make_com< MockStream >();
-        volume.stream->nextSeekResult = E_FAIL;
+        volume.stream->setNextSeekResult( E_FAIL );
 
         cache.trackReopen( volume, 0 );
 
-        REQUIRE( volume.stream->seekWasCalled );
+        REQUIRE( volume.stream->seekWasCalled() );
         REQUIRE( volume.seekPosition == 0 );
     }
 }
@@ -468,12 +488,14 @@ TEST_CASE( "VolumesCache: trackReopen restores seek after eviction", "[volumesca
     cache[ 0 ].stream = make_com< MockStream >();
     cache.trackReopen( cache[ 0 ], 0 );
 
-    REQUIRE( cache[ 0 ].stream->seekWasCalled );
-    REQUIRE( cache[ 0 ].stream->lastSeekOffset == 100 );
+    REQUIRE( cache[ 0 ].stream->seekWasCalled() );
+    REQUIRE( cache[ 0 ].stream->lastSeekOffset() == 100 );
     REQUIRE( cache[ 0 ].seekPosition == 100 );
     REQUIRE( cache.newest() == 0 );
 }
 
 } // namespace bit7z
+
+// NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 
 #endif // !_WIN32

@@ -39,7 +39,7 @@ auto BitArchiveItemOffset::operator==( const BitArchiveItemOffset& other ) const
 }
 
 auto BitArchiveItemOffset::operator!=( const BitArchiveItemOffset& other ) const noexcept -> bool {
-    return !( *this == other );
+    return !( *this == other ); // NOLINT(*-redundant-parentheses)
 }
 
 auto BitArchiveItemOffset::itemProperty( BitProperty property ) const -> BitPropVariant {
