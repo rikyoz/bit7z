@@ -33,9 +33,34 @@ using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 using bit7z::BitArchiveWriter;
 
-TEST_CASE( "BitArchiveWriter: TODO", "[bitarchivewriter]" ) {
-    const BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
-    REQUIRE( writer.compressionFormat() == BitFormat::SevenZip );
+TEST_CASE(
+    "BitArchiveWriter: Constructing from a buffer or stream with an explicit start offset reads the input archive",
+    "[bitarchivewriter]"
+) {
+    const auto inputArchive = fs::path{ test_archives_dir } / "extraction" / "multiple_items" / "multiple_items.7z";
+
+    std::uint32_t expectedItemsCount = 0;
+    {
+        const BitArchiveReader reader{ test::sevenzipLib(), to_tstring( inputArchive ), BitFormat::SevenZip };
+        expectedItemsCount = reader.itemsCount();
+    }
+
+    SECTION( "From a buffer" ) {
+        const auto inputBuffer = loadFile( inputArchive );
+        const BitArchiveWriter writer{
+            test::sevenzipLib(), inputBuffer, ArchiveStartOffset::FileStart, BitFormat::SevenZip
+        };
+        // A non-zero item count proves the constructor actually parsed the input archive from the buffer.
+        REQUIRE( writer.itemsCount() == expectedItemsCount );
+    }
+
+    SECTION( "From a stream" ) {
+        fs::ifstream inputStream{ inputArchive, std::ios::binary };
+        const BitArchiveWriter writer{
+            test::sevenzipLib(), inputStream, ArchiveStartOffset::FileStart, BitFormat::SevenZip
+        };
+        REQUIRE( writer.itemsCount() == expectedItemsCount );
+    }
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
