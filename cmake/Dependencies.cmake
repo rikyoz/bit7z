@@ -64,14 +64,20 @@ if( NOT USE_STANDARD_FILESYSTEM OR BIT7Z_BUILD_TESTS )
     endif()
 endif()
 
+# Filesystem usage requirements for the bit7z target:
+#  - modern standard libraries need no extra library;
+#  - older libstdc++/libc++ require the consumer to also link the stdc++fs/c++fs support library.
+#    This is a genuine consumer requirement, so it is linked directly to the bit7z target as a plain
+#    library name (PUBLIC) so that it propagates to consumers and survives installation/export;
+#  - libraries without a usable std::filesystem fall back to ghc::filesystem, which is only needed
+#    while compiling bit7z's own sources (the public API merely forward-declares its types). It is
+#    exposed through the build-only filesystem_lib target, which the test targets also consume.
 add_library( filesystem_lib INTERFACE IMPORTED )
 if( USE_STANDARD_FILESYSTEM )
-    if( STANDARD_FILESYSTEM_LINKS )
-        # No extra library to link.
-    elseif( STANDARD_FILESYSTEM_NEEDS_LIBSTDC++FS )
-        target_link_libraries( filesystem_lib INTERFACE stdc++fs )
+    if( STANDARD_FILESYSTEM_NEEDS_LIBSTDC++FS )
+        target_link_libraries( ${LIB_TARGET} PUBLIC stdc++fs )
     elseif( STANDARD_FILESYSTEM_NEEDS_LIBC++FS )
-        target_link_libraries( filesystem_lib INTERFACE c++fs )
+        target_link_libraries( ${LIB_TARGET} PUBLIC c++fs )
     endif()
 else()
     target_link_libraries( filesystem_lib INTERFACE ghc_filesystem )

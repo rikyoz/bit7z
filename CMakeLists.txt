@@ -15,7 +15,7 @@ if( POLICY CMP0076 )
     cmake_policy( SET CMP0076 NEW )
 endif()
 
-# public headers
+# Public headers
 set( PUBLIC_HEADERS
      include/bit7z/bit7z.hpp
      include/bit7z/bit7zlibrary.hpp
@@ -56,7 +56,7 @@ set( PUBLIC_HEADERS
      include/bit7z/bittypes.hpp
      include/bit7z/bitwindows.hpp )
 
-# header files
+# Header files
 set( HEADERS
      src/internal/archiveproperties.hpp
      src/internal/atomicfilereplacer.hpp
@@ -114,7 +114,7 @@ set( HEADERS
      src/internal/win32category.hpp
      src/internal/windows.hpp )
 
-# source files
+# Source files
 set( SOURCES
      src/bit7zlibrary.cpp
      src/bit7zlibraryloader.cpp
@@ -184,13 +184,13 @@ set( SOURCES
      src/internal/win32category.cpp
      src/internal/windows.cpp )
 
-# library output file name options
+# Library output file name options
 include( cmake/OutputOptions.cmake )
 
-# detecting if the std::filesystem is available and usable
+# Detecting if the std::filesystem is available and usable
 include( cmake/FilesystemDetect.cmake )
 
-# printing library and compiler information (useful for debugging)
+# Printing library and compiler information (useful for debugging)
 message( STATUS "Target Version: ${CMAKE_PROJECT_VERSION}" )
 message( STATUS "Compiler ID: ${CMAKE_CXX_COMPILER_ID}" )
 message( STATUS "Compiler Version: ${CMAKE_CXX_COMPILER_VERSION}" )
@@ -198,25 +198,36 @@ message( STATUS "Architecture: ${BIT7Z_TARGET_ARCH_NAME}" )
 message( STATUS "Build Type: ${CMAKE_BUILD_TYPE}" )
 message( STATUS "Language Standard for bit7z: C++${CMAKE_CXX_STANDARD}" )
 
-# library target options
-set( LIB_TARGET bit7z${ARCH_POSTFIX} )
+# Library target options
+# The CMake target name is always "bit7z", independent of the architecture and the generator, so
+# that consumers can always link to "bit7z" (and to "bit7z::bit7z" once the library is installed).
+set( LIB_TARGET bit7z )
 add_library( ${LIB_TARGET} STATIC )
+# Note: the public headers are listed as PRIVATE sources (not PUBLIC) so they are not added to the
+# target's INTERFACE_SOURCES, which would leak source-tree paths into the installed/exported target.
+# Their installation is instead handled via the PUBLIC_HEADER target property (see cmake/Install.cmake).
 target_sources( ${LIB_TARGET}
-                PUBLIC ${PUBLIC_HEADERS}
-                PRIVATE ${HEADERS} ${SOURCES} )
+                PRIVATE ${PUBLIC_HEADERS} ${HEADERS} ${SOURCES} )
 
-# additional target without the architecture suffix in the name
-if( NOT "${ARCH_POSTFIX}" STREQUAL "" )
-    add_library( bit7z ALIAS ${LIB_TARGET} )
+# The output library file keeps the architecture suffix for backward compatibility (e.g., bit7z64.lib).
+set_target_properties( ${LIB_TARGET} PROPERTIES OUTPUT_NAME bit7z${ARCH_POSTFIX} )
+
+# Backward-compatible architecture-suffixed target (e.g., bit7z64 on 64-bit builds).
+# It is based on the target architecture (not on the generator-dependent ARCH_POSTFIX), so that the
+# name is available consistently across all generators. An INTERFACE library (rather than an ALIAS)
+# is used so that it can be added to the install export set.
+if( BIT7Z_TARGET_ARCH_IS_64_BIT )
+    add_library( bit7z64 INTERFACE )
+    target_link_libraries( bit7z64 INTERFACE ${LIB_TARGET} )
 endif()
 
-# bit7z build options
+# Bit7z build options
 include( cmake/BuildOptions.cmake )
 
-# compiler-specific options
+# Compiler-specific options
 include( cmake/CompilerOptions.cmake )
 
-# dependencies
+# Dependencies
 include( cmake/Dependencies.cmake )
 
 if( BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
@@ -243,22 +254,26 @@ if( BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
 endif()
 
 # 7-zip source code
-target_link_libraries( ${LIB_TARGET} PRIVATE 7-zip )
+# The 7-zip target only provides include directories used while compiling bit7z's own sources (which
+# are baked into the static library), so it is a build-only requirement: $<BUILD_INTERFACE:...> keeps
+# it out of the installed/exported usage requirements.
+target_link_libraries( ${LIB_TARGET} PRIVATE $<BUILD_INTERFACE:7-zip> )
 
-# filesystem library
-#  - empty library for modern compilers (no extra linking required).
-#  - libstdc++fs/libc++fs for older versions of libstdc++/libc++.
-#  - ghc::filesystem for even older libraries supporting only C++11/C++14 standards.
-target_link_libraries( ${LIB_TARGET} PRIVATE filesystem_lib )
+# Filesystem library (build-only): provides ghc::filesystem's include directories while compiling
+# bit7z's own sources. The public API only forward-declares the ghc::filesystem types and the bundled
+# sources are baked into the static library, so $<BUILD_INTERFACE:...> keeps it out of the installed
+# and exported usage requirements. The consumer-facing stdc++fs/c++fs requirement (needed by older
+# standard libraries) is instead linked directly to the target in cmake/Dependencies.cmake.
+target_link_libraries( ${LIB_TARGET} PRIVATE $<BUILD_INTERFACE:filesystem_lib> )
 if( NOT ghc_filesystem_ADDED AND BIT7Z_USE_PCH AND CMAKE_VERSION VERSION_GREATER_EQUAL "3.16.0" )
     target_precompile_headers( ${LIB_TARGET} PRIVATE <filesystem> )
 endif()
 
-# public includes
+# Public includes
 target_include_directories( ${LIB_TARGET} PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>"
                                                  "$<INSTALL_INTERFACE:include>" )
 
-# private includes
+# Private includes
 target_include_directories( ${LIB_TARGET} PRIVATE "${PROJECT_SOURCE_DIR}/include/bit7z"
                                                   "${PROJECT_SOURCE_DIR}/src" )
 
@@ -283,16 +298,19 @@ if( UNIX )
     target_link_libraries( ${LIB_TARGET} PUBLIC ${CMAKE_DL_LIBS} )
 endif()
 
-# sanitizers
+# Sanitizers
 include( cmake/Sanitizers.cmake )
 
-# tests
+# Install rules and CMake package configuration files
+include( cmake/Install.cmake )
+
+# Tests
 if( BIT7Z_BUILD_TESTS )
     enable_testing()
     add_subdirectory( tests )
 endif()
 
-# docs
+# Docs
 if( BIT7Z_BUILD_DOCS )
     add_subdirectory( docs )
 endif()
