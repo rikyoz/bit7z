@@ -4,6 +4,13 @@
 
 # compiler-specific options
 
+# Treating warnings as errors defaults to the value of BIT7Z_BUILD_TESTS: it is enabled for bit7z's
+# own development (building the tests is a good proxy for "this is a contributor's build") and CI, but
+# disabled for plain consumers and package managers (which may use newer or different compilers that
+# emit new warnings and would otherwise be broken by it). It can always be overridden explicitly.
+option( BIT7Z_WARNINGS_AS_ERRORS "Treat compiler warnings as errors (/WX or -Werror)" ${BIT7Z_BUILD_TESTS} )
+message( STATUS "Warnings as errors: ${BIT7Z_WARNINGS_AS_ERRORS}" )
+
 if( MSVC )
     target_compile_definitions( ${LIB_TARGET} PRIVATE _CRT_DECLARE_NONSTDC_NAMES=0 )
 
@@ -54,8 +61,10 @@ if( MSVC )
         target_compile_options( ${LIB_TARGET} PRIVATE /Zc:__cplusplus )
     endif()
     if( MSVC_VERSION GREATER_EQUAL 1910 ) # MSVC >= 15.0 (VS 2017)
-        # treating warnings as errors
-        target_compile_options( ${LIB_TARGET} PRIVATE /WX )
+        if( BIT7Z_WARNINGS_AS_ERRORS )
+            # treating warnings as errors
+            target_compile_options( ${LIB_TARGET} PRIVATE /WX )
+        endif()
     else() # MSVC < 15.0 (i.e., <= VS 2015)
         # ignoring C4127 warning
         target_compile_options( ${LIB_TARGET} PRIVATE /wd4127 )
@@ -77,7 +86,10 @@ if( MSVC )
         endforeach()
     endif()
 else()
-    target_compile_options( ${LIB_TARGET} PRIVATE -Wall -Wextra -Werror -Wconversion -Wsign-conversion )
+    target_compile_options( ${LIB_TARGET} PRIVATE -Wall -Wextra -Wconversion -Wsign-conversion )
+    if( BIT7Z_WARNINGS_AS_ERRORS )
+        target_compile_options( ${LIB_TARGET} PRIVATE -Werror )
+    endif()
 endif()
 
 # Extra warning flags for Clang
