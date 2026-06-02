@@ -14,7 +14,7 @@
 
 #ifdef BIT7Z_AUTO_FORMAT
 
-#include "bitfs.hpp"
+#include "internal/fs.hpp"
 
 struct IInStream;
 

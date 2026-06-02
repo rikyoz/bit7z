@@ -85,7 +85,7 @@ class BitInputArchive {
          */
         BitInputArchive(
             const BitAbstractArchiveHandler& handler,
-            const fs::path& arcPath,
+            const bit7zfs::path& arcPath,
             ArchiveStartOffset startOffset = ArchiveStartOffset::None
         );
 
@@ -674,7 +674,7 @@ class BitInputArchive {
 
         BIT7Z_NODISCARD
         auto openArchiveStream(
-            const fs::path& name,
+            const bit7zfs::path& name,
             IInStream* inStream,
             ArchiveStartOffset startOffset
         ) -> IInArchive*;

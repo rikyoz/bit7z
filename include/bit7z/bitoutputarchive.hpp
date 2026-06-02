@@ -401,15 +401,15 @@ class BitOutputArchive {
 
         auto initOutArchive() const -> CMyComPtr< IOutArchive >;
 
-        auto initOutFileStream( const fs::path& outArchive ) const -> CMyComPtr< IOutStream >;
+        auto initOutFileStream( const bit7zfs::path& outArchive ) const -> CMyComPtr< IOutStream >;
 
         BitOutputArchive(
             const BitAbstractArchiveCreator& creator,
-            const fs::path& inArc,
+            const bit7zfs::path& inArc,
             ArchiveStartOffset archiveStart
         );
 
-        void compressToFile( const fs::path& outFile, UpdateCallback* updateCallback );
+        void compressToFile( const bit7zfs::path& outFile, UpdateCallback* updateCallback );
 
         void compressOut( IOutArchive* outArc, IOutStream* outStream, UpdateCallback* updateCallback );
 

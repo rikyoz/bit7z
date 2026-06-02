@@ -69,15 +69,15 @@ struct InputItemProperties final {
  */
 class BitInputItem final {
     public:
-        explicit BitInputItem( const fs::path& itemPath, SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
+        explicit BitInputItem( const bit7zfs::path& itemPath, SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
 
         BitInputItem(
-            const fs::path& itemPath,
-            const fs::path& inArchivePath,
+            const bit7zfs::path& itemPath,
+            const bit7zfs::path& inArchivePath,
             SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow
         );
 
-        BitInputItem( const fs::path& searchPath, const fs::directory_entry& entry, SymlinkPolicy symlinkPolicy );
+        BitInputItem( const bit7zfs::path& searchPath, const bit7zfs::directory_entry& entry, SymlinkPolicy symlinkPolicy );
 
         BitInputItem( const buffer_t& buffer, const tstring& path );
 
@@ -168,7 +168,7 @@ class BitInputItem final {
         auto getStream( ISequentialInStream** inStream, bool storeOpenFiles ) const -> HRESULT;
 
         detail::InputItemProperties mProperties;
-        // Note: we need to store paths as strings rather than fs::path as the public API is in C++14.
+        // Note: we need to store paths as strings rather than bit7zfs::path as the public API is in C++14.
         native_string mPath; // std::wstring on Windows, std::string elsewhere.
         sevenzip_string mInArchivePath; // std::wstring on every OS, used by 7-Zip.
 
