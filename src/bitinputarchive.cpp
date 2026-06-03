@@ -290,6 +290,60 @@ auto BitInputArchive::archiveHasPath() const noexcept -> bool {
     return !mArchivePath.empty();
 }
 
+namespace {
+BIT7Z_NODISCARD
+auto itemRootFolder( native_string path, const bool isDir ) -> native_string {
+#ifdef _WIN32
+    const auto firstSeparator = path.find_first_of( L"/\\" );
+#else
+    const auto firstSeparator = path.find_first_of( '/' );
+#endif
+    if ( firstSeparator == native_string::npos ) {
+        // The path has no components: if it's a folder itself, it is the root element;
+        // otherwise, it doesn't have a root folder component.
+        if ( isDir ) {
+            return path; // `path` is implicitly moved on return.
+        }
+        return native_string{};
+    }
+
+    if ( firstSeparator == 0 ) {
+        return {}; // The path starts with a separator (should not happen in well-formed archives).
+    }
+
+    return path.substr( 0, firstSeparator );
+}
+} // namespace
+
+auto BitInputArchive::rootFolder() const -> tstring {
+    auto currentItem = cbegin();
+    const auto archiveEnd = cend();
+
+    if ( currentItem == archiveEnd ) {
+        return {}; // Archive is empty (no items).
+    }
+
+    native_string rootFolder;
+    do { // NOLINT(*-avoid-do-while)
+        auto currentRoot = itemRootFolder( currentItem->nativePath(), currentItem->isDir() );
+        if ( currentRoot.empty() ) {
+            return {};
+        }
+
+        if ( rootFolder.empty() ) {
+            rootFolder = std::move( currentRoot );
+        } else if ( rootFolder != currentRoot ) {
+            return {};
+        }
+
+        ++currentItem;
+    } while ( currentItem != archiveEnd );
+
+    // If we exit the loop, it means that all the items have the same root folder;
+    // otherwise, we would have already exited the function.
+    return to_tstring( rootFolder );
+}
+
 auto BitInputArchive::handler() const noexcept -> const BitAbstractArchiveHandler& {
     return mArchiveHandler;
 }

@@ -25,6 +25,7 @@
 #endif
 
 #include <bit7z/bitarchivereader.hpp>
+#include <bit7z/bitarchivewriter.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
@@ -731,6 +732,165 @@ TEMPLATE_TEST_CASE(
         const BitArchiveReader info( test::sevenzipLib(), inputArchive, testFormat.format );
         REQUIRE_ARCHIVE_TESTS( info );
         REQUIRE_ARCHIVE_EXTRACTS( info, {} );
+    }
+}
+
+namespace {
+// Builds an in-memory archive from the given writer configuration and returns the root folder
+// reported by a reader opened on the resulting archive.
+template< typename Configure >
+auto archiveRootFolder( Configure&& configure, const BitInOutFormat& format = BitFormat::SevenZip ) -> tstring {
+    BitArchiveWriter writer{ test::sevenzipLib(), format };
+    configure( writer );
+
+    buffer_t archiveBuffer;
+    writer.compressTo( archiveBuffer );
+
+    const BitArchiveReader reader{ test::sevenzipLib(), archiveBuffer, format };
+    return reader.rootFolder();
+}
+} // namespace
+
+TEST_CASE( "BitInputArchive: Retrieving the archive's root folder", "[bitinputarchive]" ) {
+    // A small dummy content for the in-memory files added to the test archives.
+    const buffer_t fileContent( 8, static_cast< byte_t >( 0x7A ) );
+
+    SECTION( "An empty archive has no root folder" ) {
+        const auto rootFolder = archiveRootFolder( []( BitArchiveWriter& ) {} );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "A single top-level file has no root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ & ]( BitArchiveWriter& writer ) {
+            writer.addFile( fileContent, BIT7Z_STRING( "file.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "Multiple top-level files have no common root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ & ]( BitArchiveWriter& writer ) {
+            writer.addFile( fileContent, BIT7Z_STRING( "a.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "b.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "Files sharing a single top-level folder share that root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ & ]( BitArchiveWriter& writer ) {
+            writer.addFile( fileContent, BIT7Z_STRING( "root/a.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "root/b.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "root/sub/c.txt" ) );
+        } );
+        REQUIRE( rootFolder == BIT7Z_STRING( "root" ) );
+    }
+
+    SECTION( "Files under different top-level folders have no common root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ & ]( BitArchiveWriter& writer ) {
+            writer.addFile( fileContent, BIT7Z_STRING( "x/a.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "y/b.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+
+    SECTION( "A top-level file alongside a folder has no common root folder" ) {
+        const auto rootFolder = archiveRootFolder( [ & ]( BitArchiveWriter& writer ) {
+            writer.addFile( fileContent, BIT7Z_STRING( "readme.txt" ) );
+            writer.addFile( fileContent, BIT7Z_STRING( "folder/a.txt" ) );
+        } );
+        REQUIRE( rootFolder.empty() );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE( "BitInputArchive: An explicit directory entry is recognized as the root folder", "[bitinputarchive]" ) {
+    // Compressing a real directory makes 7-Zip store an explicit directory entry ("folder")
+    // alongside its children ("folder/..."), which the reader surfaces as the separator-less
+    // path "folder". We exploit this to test a separator-less directory entry as a root folder:
+    // the children alone would yield "folder" through the substring branch under both the old
+    // and the new code, so only the "folder" entry discriminates the fix.
+    const TestDirectory testDir{ test_filesystem_dir };
+
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "zip", BitFormat::Zip },
+        TestOutputFormat{ "tar", BitFormat::Tar },
+        TestOutputFormat{ "wim", BitFormat::Wim }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+        BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
+        writer.addDirectory( folder.name );
+
+        buffer_t archiveBuffer;
+        writer.compressTo( archiveBuffer );
+
+        const BitArchiveReader reader{ test::sevenzipLib(), archiveBuffer, testFormat.format };
+
+        // Guard against a vacuous test: the assertion below only discriminates the fix if the
+        // archive actually contains the separator-less directory entry for "folder".
+        const auto hasRootDirEntry = std::any_of(
+            reader.cbegin(), reader.cend(),
+            []( const BitArchiveItem& item ) {
+                return item.isDir() && item.nativePath() == BIT7Z_NATIVE_STRING( "folder" );
+            }
+        );
+        REQUIRE( hasRootDirEntry );
+
+        REQUIRE( reader.rootFolder() == folder.name );
+    }
+}
+
+TEST_CASE( "BitInputArchive: Multiple top-level directory entries have no common root folder", "[bitinputarchive]" ) {
+    // Two separate top-level directories produce two separator-less directory entries ("folder"
+    // and "dot.folder"). Unlike the multiple_items archives, there is no top-level file that would
+    // make rootFolder() bail out early, so this is the case that exercises the new directory-entry
+    // branch feeding the root-folder mismatch detection: each entry yields a different, non-empty
+    // root, which must be rejected.
+    const TestDirectory testDir{ test_filesystem_dir };
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    writer.addDirectory( folder.name );
+    writer.addDirectory( dotFolder.name );
+
+    buffer_t archiveBuffer;
+    writer.compressTo( archiveBuffer );
+
+    const BitArchiveReader reader{ test::sevenzipLib(), archiveBuffer, BitFormat::SevenZip };
+
+    // Guard against a vacuous test: both top-level directories must be present as separator-less
+    // directory entries, otherwise we wouldn't actually be exercising the mismatch detection.
+    const auto hasDirEntry = [ &reader ]( const native_string& path ) {
+        return std::any_of(
+            reader.cbegin(), reader.cend(),
+            [ &path ]( const BitArchiveItem& item ) {
+                return item.isDir() && item.nativePath() == path;
+            }
+        );
+    };
+    REQUIRE( hasDirEntry( BIT7Z_NATIVE_STRING( "folder" ) ) );
+    REQUIRE( hasDirEntry( BIT7Z_NATIVE_STRING( "dot.folder" ) ) );
+
+    REQUIRE( reader.rootFolder().empty() );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE( "BitInputArchive: Archives with multiple top-level items have no root folder", "[bitinputarchive]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
+        const BitArchiveReader info( test::sevenzipLib(), arcFileName.string< tchar >(), testArchive.format );
+        REQUIRE( info.rootFolder().empty() );
     }
 }
 

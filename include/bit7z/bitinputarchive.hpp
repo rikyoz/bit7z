@@ -194,6 +194,21 @@ class BitInputArchive {
         BIT7Z_NODISCARD auto archiveHasPath() const noexcept -> bool;
 
         /**
+         * @brief Returns the single top-level folder that contains all of the archive's items.
+         *
+         * The archive is considered to have a root folder only when every item is contained
+         * within the same top-level folder. There is no common root folder if the items belong
+         * to different top-level folders, if the archive contains a file at its root, or if the
+         * archive is empty.
+         *
+         * @note The returned value is the folder's name, without any trailing path separator.
+         *
+         * @return the name of the archive's root folder, or an empty string if the archive does
+         *         not have a single common root folder.
+         */
+        BIT7Z_NODISCARD auto rootFolder() const -> tstring;
+
+        /**
          * @return the BitAbstractArchiveHandler object containing the settings for reading the archive.
          */
         BIT7Z_NODISCARD auto handler() const noexcept -> const BitAbstractArchiveHandler&;
