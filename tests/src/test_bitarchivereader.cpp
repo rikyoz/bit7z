@@ -92,8 +92,10 @@ TEMPLATE_TEST_CASE(
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
         if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -136,8 +138,10 @@ TEMPLATE_TEST_CASE(
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
         if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -181,8 +185,10 @@ TEMPLATE_TEST_CASE(
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
         if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
@@ -398,8 +404,10 @@ TEMPLATE_TEST_CASE(
         getInputArchive( arcFileName, inputArchive );
         const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
         if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.isEncrypted() );
