@@ -330,6 +330,20 @@ class BitInputArchive {
             FolderPathPolicy policy = FolderPathPolicy::Strip
         ) const;
 
+        /**
+         * @brief Extracts the content of the archive's root folder to the chosen directory.
+         *
+         * The archive's root folder is the single top-level folder shared by all the items
+         * in the archive; its name is stripped from the extracted items' paths.
+         *
+         * @note If the archive does not have a single root folder, a BitException is thrown.
+         *
+         * @param outDir    the output directory where the root folder's content will be put.
+         */
+        void extractRootFolderContentTo(
+            const tstring& outDir
+        ) const;
+
         BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
         void extract( buffer_t& outBuffer, std::uint32_t index = 0 ) const {
             extractTo( outBuffer, index );

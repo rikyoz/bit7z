@@ -113,6 +113,25 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         }
 
         /**
+         * @brief Extracts the content of the archive's root folder to the chosen directory.
+         *
+         * The archive's root folder is the single top-level folder shared by all the items
+         * in the archive; its name is stripped from the extracted items' paths.
+         *
+         * @note If the archive does not have a single root folder, a BitException is thrown.
+         *
+         * @param inArchive     the input archive to extract from.
+         * @param outDir        the output directory where the root folder's content will be put.
+         */
+        void extractRootFolderContent(
+            Input inArchive,
+            const tstring& outDir
+        ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractRootFolderContentTo( outDir );
+        }
+
+        /**
          * @brief Extracts a file from the given archive to the output buffer.
          *
          * @param inArchive   the input archive to extract from.

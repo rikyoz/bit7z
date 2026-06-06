@@ -544,6 +544,17 @@ void BitInputArchive::extractFolderTo(
     }
 }
 
+void BitInputArchive::extractRootFolderContentTo( const tstring& outDir ) const {
+    const auto folderPath = rootFolder();
+    if ( folderPath.empty() ) {
+        throw BitException(
+            "The archive does not have a single root folder",
+            make_error_code( BitError::NoMatchingItems )
+        );
+    }
+    extractFolderTo( outDir, folderPath, FolderPathPolicy::Strip );
+}
+
 void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) const {
     if ( isInvalidIndex( index ) ) {
         throw BitException(
