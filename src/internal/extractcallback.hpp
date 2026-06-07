@@ -90,19 +90,13 @@ class ExtractCallback : public Callback,
         auto extractMode() const noexcept -> ExtractMode;
 
         BIT7Z_NODISCARD
-        auto isItemFolder( std::uint32_t index ) const -> bool;
-
-        BIT7Z_NODISCARD
-        auto itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant;
-
-        BIT7Z_NODISCARD
         auto inputArchive() const -> const BitInputArchive&;
 
         virtual auto finishOperation( OperationResult operationResult ) -> HRESULT;
 
         virtual void releaseStream() = 0;
 
-        virtual auto getOutStream( UInt32 index, ISequentialOutStream** outStream ) -> HRESULT = 0;
+        virtual auto getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT = 0;
 
     private:
         const BitInputArchive& mInputArchive;

@@ -79,10 +79,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @brief Extracts the given archive to the chosen directory,
          * renaming the extracted items using the provided RenameCallback.
          *
-         * @note The callback provides in input the index, and the path (within the archive)
-         * of the item to be extracted, and must return the new path that the extracted item
-         * must have on the filesystem.
-         * If the path of the item must not change, simply return the input path in the callback.
+         * @note The callback receives the archive item being extracted and must return the path
+         * that the extracted item must have on the filesystem.
+         * If the path of the item must not change, simply return the item's path in the callback.
          * If the item must not be extracted, return an empty string in the callback.
          *
          * @param inArchive    the input archive to be extracted.
@@ -92,6 +91,20 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         void extract( Input inArchive, const tstring& outDir, RenameCallback callback ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outDir, std::move( callback ) );
+        }
+
+        BIT7Z_DEPRECATED_MSG(
+            "Since v4.1; the RenameCallback now receives the BitArchiveItem being extracted. "
+            "The (index, path) form will be removed in v4.2."
+        )
+        void extract( Input inArchive, const tstring& outDir, LegacyRenameCallback callback ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo(
+                outDir,
+                [ legacyCallback = std::move( callback ) ]( const BitArchiveItem& item ) -> tstring {
+                    return legacyCallback( item.index(), item.path() );
+                }
+            );
         }
 
         /**

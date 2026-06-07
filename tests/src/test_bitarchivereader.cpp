@@ -879,7 +879,8 @@ TEMPLATE_TEST_CASE(
         const TempTestDirectory testOutDir{ "test_bitarchivereader" };
         info.extractTo(
             testOutDir,
-            [] ( std::uint32_t, const tstring& originalName ) -> tstring {
+            [] ( const BitArchiveItem& item ) -> tstring {
+                const auto originalName = item.name();
                 if ( originalName == italy.name ) {
                     return BIT7Z_STRING( "flag.svg" ); // Rename.
                 }
@@ -887,7 +888,7 @@ TEMPLATE_TEST_CASE(
                     return BIT7Z_STRING( "document.pdf" ); // Rename.
                 }
                 if ( originalName == noext.name ) {
-                    return originalName; // Keep the original name.
+                    return item.path(); // Keep the original path.
                 }
                 return {}; // Skipping extraction of all other files.
             }

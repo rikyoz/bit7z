@@ -57,8 +57,20 @@ using RawDataCallback = std::function< bool( const byte_t*, std::size_t ) >;
 
 /**
  * @brief A function returning a new name for the item currently being extracted.
+ *
+ * @note The callback receives the archive item being extracted and must return the path that
+ * the extracted item must have on the filesystem. Returning the item's own path leaves it
+ * unchanged; returning an empty string skips the item.
  */
-using RenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
+using RenameCallback = std::function< tstring( const BitArchiveItem& ) >;
+
+/**
+ * @brief The (index, path) form of RenameCallback.
+ *
+ * @deprecated Since v4.1; it will be removed in v4.2. Use RenameCallback, which receives the
+ * BitArchiveItem being extracted (its index and path are available via the item).
+ */
+using LegacyRenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
 
 /**
  * @brief A function returning a reference to the buffer where to extract the item at the given index/path.

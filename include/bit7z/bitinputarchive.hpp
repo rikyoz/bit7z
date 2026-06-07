@@ -306,16 +306,21 @@ class BitInputArchive {
          * @brief Extracts the archive to the chosen directory,
          * specifying the names of the extracted items via a RenameCallback.
          *
-         * @note The callback provides in input the index, and the path (within the archive)
-         * of the item to be extracted, and must return the new path that the extracted item
-         * must have on the filesystem.
-         * If the path of the item must not change, simply return the input path in the callback.
+         * @note The callback receives the archive item being extracted and must return the path
+         * that the extracted item must have on the filesystem.
+         * If the path of the item must not change, simply return the item's path in the callback.
          * If the item must not be extracted, return an empty string in the callback.
          *
          * @param outDir            the output directory where the extracted files will be put.
          * @param renameCallback    the callback that returns the names for the extracted files.
          */
         void extractTo( const tstring& outDir, RenameCallback renameCallback ) const;
+
+        BIT7Z_DEPRECATED_MSG(
+            "Since v4.1; the RenameCallback now receives the BitArchiveItem being extracted. "
+            "The (index, path) form will be removed in v4.2."
+        )
+        void extractTo( const tstring& outDir, LegacyRenameCallback renameCallback ) const;
 
         /**
          * @brief Extracts a folder from the archive to the chosen directory.
@@ -709,6 +714,21 @@ class BitInputArchive {
         ) -> IInArchive*;
 
         void testArchive( BitIndicesView indices ) const;
+
+        /**
+         * @brief Retrieves the item at the given index, without validating the index.
+         *
+         * For internal use during extraction, where the index is provided by 7-Zip and is therefore
+         * guaranteed to be valid: it skips the index-validity check (and the archive item-count query
+         * it performs) done by itemAt.
+         *
+         * @param index the (trusted) index of the item to be retrieved.
+         *
+         * @return the item at the given index within the archive.
+         */
+        BIT7Z_NODISCARD auto itemAtUnchecked( std::uint32_t index ) const -> BitArchiveItemOffset;
+
+        friend class ExtractCallback;
 
         friend class BitAbstractArchiveOpener;
 

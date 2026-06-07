@@ -42,13 +42,13 @@ void BufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-auto BufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT try {
-    if ( isItemFolder( index ) ) {
+auto BufferExtractCallback::getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT try {
+    if ( item.isDir() ) {
         return S_OK;
     }
 
     // Get Name
-    const BitPropVariant prop = itemProperty( index, BitProperty::Path );
+    const BitPropVariant prop = item.itemProperty( BitProperty::Path );
     tstring fullPath;
 
     if ( prop.isEmpty() ) {
@@ -67,7 +67,7 @@ auto BufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStr
         mHandler.fileCallback()( fullPath );
     }
 
-    auto& outBuffer = mBufferCallback( index, fullPath );
+    auto& outBuffer = mBufferCallback( item.index(), fullPath );
     if ( !outBuffer.empty() ) {
         switch ( mHandler.overwriteMode() ) {
             case OverwriteMode::None: {

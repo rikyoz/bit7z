@@ -31,14 +31,14 @@ void SequentialExtractCallback::releaseStream() {
     mSeqOutStream.Release();
 }
 
-auto SequentialExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
-    if ( isItemFolder( index ) ) {
+auto SequentialExtractCallback::getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT {
+    if ( item.isDir() ) {
         return S_OK;
     }
 
     if ( mHandler.fileCallback() ) {
         // Get Name
-        const BitPropVariant prop = itemProperty( index, BitProperty::Path );
+        const BitPropVariant prop = item.itemProperty( BitProperty::Path );
         tstring fullPath;
 
         if ( prop.isEmpty() ) {

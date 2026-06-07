@@ -473,14 +473,53 @@ void BitInputArchive::extractTo( const tstring& outDir, RenameCallback renameCal
     extractArchive( callback, NAskMode::kExtract );
 }
 
+void BitInputArchive::extractTo( const tstring& outDir, LegacyRenameCallback renameCallback ) const {
+    // Adapt the deprecated (index, path) callback to the item-based RenameCallback.
+    extractTo( outDir, [ legacyCallback = std::move( renameCallback ) ] ( const BitArchiveItem& item ) -> tstring {
+        return legacyCallback( item.index(), item.path() );
+    } );
+}
+
 namespace {
 constexpr auto nativeDot = BIT7Z_NATIVE_STRING( "." );
 
 BIT7Z_ALWAYS_INLINE
-auto shouldFilterItem( const native_string& path, const BitArchiveItemOffset& item, FolderPathPolicy policy ) -> bool {
+auto shouldFilterItem( const native_string& path, const BitArchiveItem& item, FolderPathPolicy policy ) -> bool {
     constexpr auto nativeDotDot = BIT7Z_NATIVE_STRING( ".." );
     return ( starts_with( path, nativeDotDot ) ||
              ( ( path.empty() || path == nativeDot ) && ( policy == FolderPathPolicy::Strip || !item.isDir() ) ) );
+}
+
+// Computes the destination path (relative to the output directory) for an item being extracted
+// from the folder at folderFsPath, or an empty path if the item must be skipped.
+// The FolderPathPolicy shapes the prefix (the selected folder's own path).
+auto folderItemDestination(
+    const BitArchiveItem& item,
+    const fs::path& folderFsPath,
+    const fs::path& folderName,
+    FolderPathPolicy policy,
+    bool retainDirs
+) -> fs::path {
+    fs::path itemPath{ item.nativePath() };
+    fs::path relativePath = itemPath.lexically_relative( folderFsPath );
+    if ( shouldFilterItem( relativePath.native(), item, policy ) ) {
+        return {}; // Skipping the item.
+    }
+
+    switch ( policy ) {
+        case FolderPathPolicy::KeepPath:
+            // KeepPath mirrors the extracted item's path, which is flattened to its filename
+            // when directories are not retained; Strip and KeepName ignore retainDirectories.
+            if ( retainDirs ) {
+                return itemPath; // Not using the ternary operator to allow automatic move.
+            }
+            return itemPath.filename();
+        case FolderPathPolicy::KeepName:
+            return relativePath.native() == nativeDot ? folderName : folderName / relativePath;
+        case FolderPathPolicy::Strip:
+        default:
+            return relativePath;
+    }
 }
 } // namespace
 
@@ -503,31 +542,21 @@ void BitInputArchive::extractFolderTo(
         );
     }
 
-    std::uint32_t matchingCount = 0;
     const auto folderFsPath = tstringToPath( folderPath );
     const auto folderName = isPathSeparator( folderPath.back() )
                                 ? folderFsPath.parent_path().filename()
                                 : folderFsPath.filename();
-    auto renameCallback = [ & ] ( std::uint32_t index, const tstring& path ) -> tstring {
-        // Note: we use the native item's path rather than the second parameter of the callback
-        // to avoid unnecessary string conversions when creating the filesystem path object.
-        const auto item = itemAt( index );
-        const fs::path relativePath = fs::path{ item.nativePath() }.lexically_relative( folderFsPath );
-        if ( shouldFilterItem( relativePath.native(), item, policy ) ) {
+    const bool retainDirs = handler().retainDirectories();
+
+    std::uint32_t matchingCount = 0;
+    auto renameCallback =
+        [ &folderFsPath, &folderName, &policy, &retainDirs, &matchingCount ] ( const BitArchiveItem& item ) -> tstring {
+        const auto destination = folderItemDestination( item, folderFsPath, folderName, policy, retainDirs );
+        if ( destination.empty() ) {
             return {}; // Skipping the item.
         }
-
         ++matchingCount;
-        if ( policy == FolderPathPolicy::KeepPath ) {
-            return path;
-        }
-        if ( policy == FolderPathPolicy::Strip ) {
-            return pathToTstring( relativePath );
-        }
-        if ( relativePath.native() == nativeDot ) {
-            return pathToTstring( folderName );
-        }
-        return pathToTstring( folderName / relativePath );
+        return pathToTstring( destination );
     };
     const auto callback = bit7z::make_com< FileExtractCallback, ExtractCallback >(
         *this,
@@ -848,6 +877,10 @@ auto BitInputArchive::itemAt( std::uint32_t index ) const -> BitArchiveItemOffse
             make_error_code( BitError::InvalidIndex )
         );
     }
+    return { *this, index };
+}
+
+auto BitInputArchive::itemAtUnchecked( std::uint32_t index ) const -> BitArchiveItemOffset {
     return { *this, index };
 }
 
