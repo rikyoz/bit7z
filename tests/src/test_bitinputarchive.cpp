@@ -950,6 +950,45 @@ TEST_CASE( "BitInputArchive: Extracting the content of the archive's root folder
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitInputArchive: Extracting the root folder's content honors retainDirectories",
+    "[bitinputarchive]"
+) {
+    // With retainDirectories() false, the root folder is stripped and its content is flattened:
+    // root/a/b/foo.txt becomes foo.txt, and root/bar.txt becomes bar.txt.
+    const buffer_t contentFoo( 8, static_cast< byte_t >( 0xE1 ) );
+    const buffer_t contentBar( 16, static_cast< byte_t >( 0xE2 ) );
+
+    BitArchiveWriter writer{ test::sevenzipLib(), BitFormat::SevenZip };
+    writer.addFile( contentFoo, BIT7Z_STRING( "root/a/b/foo.txt" ) );
+    writer.addFile( contentBar, BIT7Z_STRING( "root/bar.txt" ) );
+
+    buffer_t archiveBuffer;
+    writer.compressTo( archiveBuffer );
+
+    BitArchiveReader reader{ test::sevenzipLib(), archiveBuffer, BitFormat::SevenZip };
+    reader.setRetainDirectories( false );
+
+    const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+    INFO( "Output directory: " << testOutDir )
+
+    REQUIRE_NOTHROW( reader.extractRootFolderContentTo( testOutDir ) );
+
+    const auto outFoo = testOutDir.path() / "foo.txt";
+    const auto outBar = testOutDir.path() / "bar.txt";
+    REQUIRE( fs::exists( outFoo ) );
+    REQUIRE( fs::exists( outBar ) );
+    // The nested structure is flattened away, not recreated.
+    REQUIRE_FALSE( fs::exists( testOutDir.path() / "a" ) );
+    REQUIRE( loadFile( outFoo ) == contentFoo );
+    REQUIRE( loadFile( outBar ) == contentBar );
+
+    REQUIRE( fs::remove( outFoo ) );
+    REQUIRE( fs::remove( outBar ) );
+    REQUIRE( fs::is_empty( testOutDir.path() ) );
+}
+
 namespace {
 // Builds an in-memory archive from the given writer configuration, then requires that extracting
 // its root folder's content throws and that nothing is written to the output directory.
@@ -2434,6 +2473,78 @@ TEMPLATE_TEST_CASE(
             if ( policy == FolderPathPolicy::KeepPath ) {
                 REQUIRE( fs::remove( testOutDir.path() / folder.name ) );
             }
+        }
+        REQUIRE( fs::is_empty( testOutDir.path() ) );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitInputArchive: Extracting a folder honors retainDirectories on the remainder",
+    "[bitinputarchive]"
+) {
+    // The folder "base/x" contains a nested file (base/x/deep/file1.txt) and a file directly
+    // inside it (base/x/file2.txt). The FolderPathPolicy shapes the prefix (up to "x"); when
+    // retainDirectories() is false, the remainder below the folder is flattened to its filename.
+    const buffer_t content1( 8, static_cast< byte_t >( 0xD1 ) );
+    const buffer_t content2( 16, static_cast< byte_t >( 0xD2 ) );
+
+    const auto testFormat = GENERATE(
+        as< TestOutputFormat >(),
+        TestOutputFormat{ "7z", BitFormat::SevenZip },
+        TestOutputFormat{ "zip", BitFormat::Zip }
+    );
+    const auto policy = GENERATE( FolderPathPolicy::Strip, FolderPathPolicy::KeepName, FolderPathPolicy::KeepPath );
+    const auto retain = GENERATE( true, false );
+
+    const fs::path prefix = [ & ]() -> fs::path {
+        switch ( policy ) {
+            case FolderPathPolicy::KeepName:
+                return fs::path{ "x" };
+            case FolderPathPolicy::KeepPath:
+                return fs::path{ "base" } / "x";
+            case FolderPathPolicy::Strip:
+            default:
+                return fs::path{};
+        }
+    }();
+
+    DYNAMIC_SECTION(
+        "Archive format: " << testFormat.extension << ", "
+        "Policy: " << to_string( policy ) << ", "
+        "retainDirectories: " << ( retain ? "true" : "false" )
+    ) {
+        BitArchiveWriter writer{ test::sevenzipLib(), testFormat.format };
+        writer.addFile( content1, BIT7Z_STRING( "base/x/deep/file1.txt" ) );
+        writer.addFile( content2, BIT7Z_STRING( "base/x/file2.txt" ) );
+
+        buffer_t archiveBuffer;
+        writer.compressTo( archiveBuffer );
+
+        BitArchiveReader reader{ test::sevenzipLib(), archiveBuffer, testFormat.format };
+        reader.setRetainDirectories( retain );
+
+        const TempTestDirectory testOutDir{ "test_bitinputarchive" };
+        INFO( "Output directory: " << testOutDir )
+
+        REQUIRE_NOTHROW( reader.extractFolderTo( testOutDir, BIT7Z_STRING( "base/x" ), policy ) );
+
+        // file1 is nested: retained → prefix/deep/file1.txt, flattened → prefix/file1.txt.
+        const auto file1Nested = testOutDir.path() / prefix / "deep" / "file1.txt";
+        const auto file1Flat = testOutDir.path() / prefix / "file1.txt";
+        const auto expectedFile1 = retain ? file1Nested : file1Flat;
+        const auto unexpectedFile1 = retain ? file1Flat : file1Nested;
+        // file2 is directly inside the folder, so flattening it is a no-op.
+        const auto file2 = testOutDir.path() / prefix / "file2.txt";
+
+        REQUIRE( fs::exists( expectedFile1 ) );
+        REQUIRE_FALSE( fs::exists( unexpectedFile1 ) );
+        REQUIRE( fs::exists( file2 ) );
+        REQUIRE( loadFile( expectedFile1 ) == content1 );
+        REQUIRE( loadFile( file2 ) == content2 );
+
+        for ( const auto& entry : fs::directory_iterator( testOutDir.path() ) ) {
+            fs::remove_all( entry );
         }
         REQUIRE( fs::is_empty( testOutDir.path() ) );
     }

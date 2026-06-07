@@ -492,7 +492,8 @@ auto shouldFilterItem( const native_string& path, const BitArchiveItem& item, Fo
 
 // Computes the destination path (relative to the output directory) for an item being extracted
 // from the folder at folderFsPath, or an empty path if the item must be skipped.
-// The FolderPathPolicy shapes the prefix (the selected folder's own path).
+// The FolderPathPolicy shapes the prefix (the selected folder's own path); when directories must
+// not be retained, the remainder (the part below the folder) is flattened to its filename.
 auto folderItemDestination(
     const BitArchiveItem& item,
     const fs::path& folderFsPath,
@@ -501,24 +502,24 @@ auto folderItemDestination(
     bool retainDirs
 ) -> fs::path {
     fs::path itemPath{ item.nativePath() };
-    fs::path relativePath = itemPath.lexically_relative( folderFsPath );
+    const fs::path relativePath = itemPath.lexically_relative( folderFsPath );
     if ( shouldFilterItem( relativePath.native(), item, policy ) ) {
         return {}; // Skipping the item.
     }
 
+    const bool flattenRemainder = !retainDirs && relativePath.native() != nativeDot;
+    fs::path remainder = flattenRemainder ? relativePath.filename() : relativePath;
     switch ( policy ) {
         case FolderPathPolicy::KeepPath:
-            // KeepPath mirrors the extracted item's path, which is flattened to its filename
-            // when directories are not retained; Strip and KeepName ignore retainDirectories.
-            if ( retainDirs ) {
-                return itemPath; // Not using the ternary operator to allow automatic move.
+            if ( flattenRemainder ) {
+                return folderFsPath / remainder;
             }
-            return itemPath.filename();
+            return itemPath; // Separate return (not a ternary) to allow moving itemPath.
         case FolderPathPolicy::KeepName:
-            return relativePath.native() == nativeDot ? folderName : folderName / relativePath;
+            return relativePath.native() == nativeDot ? folderName : folderName / remainder;
         case FolderPathPolicy::Strip:
         default:
-            return relativePath;
+            return remainder;
     }
 }
 } // namespace
