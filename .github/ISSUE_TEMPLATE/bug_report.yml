@@ -15,6 +15,7 @@ body:
       label: bit7z version
       multiple: true
       options:
+        - 4.1.x
         - 4.0.x
         - 3.2.x
         - 3.1.x
@@ -58,6 +59,10 @@ body:
       label: 7-zip version
       multiple: true
       options:
+        - v26.01
+        - v26.00
+        - v25.01
+        - v25.00
         - v24.09
         - v24.08
         - v24.07
@@ -111,7 +116,7 @@ body:
     attributes:
       label: Compiler versions
       description: What compiler versions are you using?
-      placeholder: ex. GCC 7, MSVC 2022, Clang 12, ...
+      placeholder: ex. GCC 13, MSVC 2026, Clang 22, ...
     validations:
       required: false
   - type: dropdown
@@ -143,7 +148,7 @@ body:
     attributes:
       label: Operating system versions
       description: Which operating system versions are you targeting?
-      placeholder: ex. Windows 11, Ubuntu 22.04, macOS Monterey, ...
+      placeholder: ex. Windows 11, Ubuntu 24.04, macOS Tahoe, ...
     validations:
       required: false
   - type: textarea
