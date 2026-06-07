@@ -21,16 +21,20 @@ if( BIT7Z_INSTALL )
         list( APPEND BIT7Z_EXPORT_TARGETS bit7z64 )
     endif()
 
-    install( TARGETS ${BIT7Z_EXPORT_TARGETS}
-             EXPORT bit7zTargets
-             RUNTIME       DESTINATION ${CMAKE_INSTALL_BINDIR}
-             LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-             ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
-             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/bit7z )
+    install(
+        TARGETS ${BIT7Z_EXPORT_TARGETS}
+        EXPORT bit7zTargets
+        RUNTIME       DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE       DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/bit7z
+    )
 
-    install( EXPORT bit7zTargets
-             NAMESPACE bit7z::
-             DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bit7z )
+    install(
+        EXPORT bit7zTargets
+        NAMESPACE bit7z::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bit7z
+    )
 
     configure_package_config_file(
         "${PROJECT_SOURCE_DIR}/cmake/bit7zConfig.cmake.in"
@@ -42,7 +46,10 @@ if( BIT7Z_INSTALL )
         VERSION ${PROJECT_VERSION}
         COMPATIBILITY SameMajorVersion )
 
-    install( FILES "${PROJECT_BINARY_DIR}/bit7zConfig.cmake"
-                   "${PROJECT_BINARY_DIR}/bit7zConfigVersion.cmake"
-             DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/bit7z" )
+    install(
+        FILES
+            "${PROJECT_BINARY_DIR}/bit7zConfig.cmake"
+            "${PROJECT_BINARY_DIR}/bit7zConfigVersion.cmake"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/bit7z"
+    )
 endif()
