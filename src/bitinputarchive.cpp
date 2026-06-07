@@ -582,7 +582,36 @@ void BitInputArchive::extractRootFolderContentTo( const tstring& outDir ) const 
             make_error_code( BitError::NoMatchingItems )
         );
     }
-    extractFolderTo( outDir, folderPath, FolderPathPolicy::Strip );
+
+    // Note: if we are here, it means that all the items in the archive have the same root folder prefix.
+    // So we can simply strip it from the path to obtain the path of the item within the root folder.
+    const auto stripDirs = !handler().retainDirectories();
+    const auto rootPrefixLength = folderPath.length();
+    auto renameCallback = [ stripDirs, rootPrefixLength ]( const BitArchiveItem& item ) -> tstring {
+        auto originalItemPath = item.path();
+        if ( originalItemPath.length() <= rootPrefixLength ) {
+            // Should not happen, but better be safe.
+            return {};
+        }
+
+        // The returned string starts just after the root prefix and any separators following it.
+        auto startPos = originalItemPath.find_first_not_of( kSeparators, rootPrefixLength );
+        if ( startPos == tstring::npos ) {
+            // No non-separator character after the root prefix (should not happen).
+            return {};
+        }
+
+        if ( stripDirs ) {
+            // Flatten: the basename begins right after the last separator.
+            const auto lastSeparator = originalItemPath.find_last_of( kSeparators );
+            if ( lastSeparator != tstring::npos ) {
+                startPos = lastSeparator + 1;
+            }
+        }
+        originalItemPath.erase( 0, startPos );
+        return originalItemPath;
+    };
+    extractTo( outDir, std::move( renameCallback ) );
 }
 
 void BitInputArchive::extractTo( buffer_t& outBuffer, std::uint32_t index ) const {

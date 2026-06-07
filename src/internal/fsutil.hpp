@@ -63,6 +63,14 @@ constexpr auto isPathSeparator( const wchar_t character ) noexcept -> bool {
 }
 #endif
 
+#ifdef _WIN32
+constexpr auto kSeparators = BIT7Z_STRING( "/\\" );
+constexpr auto kNativeSeparators = BIT7Z_NATIVE_STRING( "/\\" );
+#else
+constexpr auto kSeparators = BIT7Z_STRING( "/" );
+constexpr auto kNativeSeparators = BIT7Z_NATIVE_STRING( "/" );
+#endif
+
 inline auto pathToTstring( const fs::path& path ) -> tstring {
     /* In an ideal world, we should only use fs::path's string< tchar >() function for converting a path to a tstring.
      * However, MSVC converts paths to std::string using the system codepage instead of UTF-8,
