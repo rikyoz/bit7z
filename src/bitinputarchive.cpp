@@ -196,18 +196,16 @@ BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, cons
     mInArchive = arc.Detach();
 }
 
-BitInputArchive::BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive )
-    : BitInputArchive{ handler, parentArchive, parentArchive.mainSubfileIndex() } {}
-
 BitInputArchive::BitInputArchive(
     const BitAbstractArchiveHandler& handler,
     const BitInputArchive& parentArchive,
-    std::uint32_t index
+    std::uint32_t subfileIndex,
+    ArchiveStartOffset archiveStart
 ) : mDetectedFormat{ &handler.format() },
     mArchiveHandler{ handler },
-    mArchivePath{ parentArchive.itemAt( index ).path() } {
-    const CMyComPtr< IInStream > subStream = parentArchive.getSubfileStream( index );
-    mInArchive = openArchiveStream( fs::path{}, subStream, ArchiveStartOffset::FileStart );
+    mArchivePath{ parentArchive.itemAt( subfileIndex ).path() } {
+    const CMyComPtr< IInStream > subStream = parentArchive.getSubfileStream( subfileIndex );
+    mInArchive = openArchiveStream( fs::path{}, subStream, archiveStart );
 }
 
 auto BitInputArchive::archiveProperty( BitProperty property ) const -> BitPropVariant {

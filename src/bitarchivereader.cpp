@@ -84,7 +84,15 @@ BitArchiveReader::BitArchiveReader(
     const BitInputArchive& inArchive,
     const BitInFormat& format,
     const tstring& password
-) : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive } {}
+) : BitArchiveReader{ lib, inArchive, ArchiveStartOffset::FileStart, format, password } {}
+
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& inArchive,
+    ArchiveStartOffset archiveStart,
+    const BitInFormat& format,
+    const tstring& password
+) : BitArchiveReader{ lib, inArchive, inArchive.mainSubfileIndex(), archiveStart, format, password } {}
 
 BitArchiveReader::BitArchiveReader(
     const Bit7zLibrary& lib,
@@ -92,7 +100,17 @@ BitArchiveReader::BitArchiveReader(
     std::uint32_t subfileIndex,
     const BitInFormat& format,
     const tstring& password
-) : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive, subfileIndex } {}
+) : BitArchiveReader{ lib, inArchive, subfileIndex, ArchiveStartOffset::FileStart, format, password } {}
+
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& inArchive,
+    std::uint32_t subfileIndex,
+    ArchiveStartOffset archiveStart,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener{ lib, format, password },
+    BitInputArchive{ *this, inArchive, subfileIndex, archiveStart } {}
 
 auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPropVariant > {
     std::map< BitProperty, BitPropVariant > result;

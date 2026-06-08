@@ -669,12 +669,11 @@ class BitInputArchive {
         BIT7Z_NODISCARD auto mainSubfileIndex() const -> std::uint32_t;
 
     protected:
-        explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive );
-
         explicit BitInputArchive(
             const BitAbstractArchiveHandler& handler,
             const BitInputArchive& parentArchive,
-            std::uint32_t index
+            std::uint32_t subfileIndex,
+            ArchiveStartOffset archiveStart
         );
 
         BIT7Z_NODISCARD

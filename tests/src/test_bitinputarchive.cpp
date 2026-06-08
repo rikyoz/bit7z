@@ -2245,6 +2245,92 @@ TEMPLATE_TEST_CASE(
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitInputArchive: Reading the main subfile of an archive with a specified archive start offset",
+    "[bitinputarchive]"
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
+
+    // A split archive exposes its reassembled content as the main subfile; here that content is a 7z
+    // archive located at the start of the subfile stream, so it can be opened both by checking only
+    // the file start and by scanning the whole subfile stream.
+    const fs::path splitArcFileName = "clouds.jpg.7z.001";
+    const BitArchiveReader splitArchive( test::sevenzipLib(), splitArcFileName.string< tchar >(), BitFormat::Split );
+
+    const auto archiveStart = GENERATE( ArchiveStartOffset::FileStart, ArchiveStartOffset::None );
+
+    const BitArchiveReader innerArchive( test::sevenzipLib(), splitArchive, archiveStart, BitFormat::SevenZip );
+    REQUIRE( innerArchive.itemsCount() == singleFileContent().fileCount );
+    REQUIRE_ARCHIVE_TESTS( innerArchive );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitInputArchive: Reading a subfile by index of an archive with a specified archive start offset",
+    "[bitinputarchive]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "multiple_nested2.tar";
+
+    TestType inputArchive{};
+    getInputArchive( arcFileName, inputArchive );
+    const Bit7zLibrary lib{ test::sevenzipLibPath() };
+
+    // The outer Tar archive stores nested archives as its items; Tar supports retrieving each item's
+    // stream, which can then be opened as a nested archive at the specified archive start offset.
+    const BitArchiveReader outerArchive( lib, inputArchive, BitFormat::Tar );
+
+    const auto archiveStart = GENERATE( ArchiveStartOffset::FileStart, ArchiveStartOffset::None );
+
+    SECTION( "Opening the nested 7z subfile" ) {
+        const BitArchiveReader innerArchive( lib, outerArchive, 1U, archiveStart, BitFormat::SevenZip );
+        REQUIRE_NOTHROW( innerArchive.test() );
+    }
+
+    SECTION( "Opening the nested zip subfile" ) {
+        const BitArchiveReader innerArchive( lib, outerArchive, 2U, archiveStart, BitFormat::Zip );
+        REQUIRE_NOTHROW( innerArchive.test() );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitInputArchive: Reading a subfile whose archive data does not start at the subfile stream start",
+    "[bitinputarchive]"
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+
+    const fs::path arcFileName = "multiple_nested2.tar";
+
+    const Bit7zLibrary lib{ test::sevenzipLibPath() };
+
+    // TODO: Add some fixture archives with an embedded archive at a non-zero offset *within* a subfile stream.
+    // Until then, build one at runtime: an outer Tar whose only item is multiple_nested2.tar (itself a Tar
+    // holding a nested 7z). The Tar handler returns that item's bytes verbatim, so within the subfile stream
+    // the nested 7z starts well after offset 0 (which is just a Tar header).
+    // This way we can test a case where the two ArchiveStartOffset values behave differently, proving that
+    // FileStart restricts the scan.
+    buffer_t outerArchiveBuffer;
+    BitArchiveWriter writer{ lib, BitFormat::Tar };
+    writer.addFile( arcFileName.string< tchar >() );
+    writer.compressTo( outerArchiveBuffer );
+
+    const BitArchiveReader outerArchive( lib, outerArchiveBuffer, BitFormat::Tar );
+
+    // Scanning the whole subfile stream (None) finds the nested 7z archive, so the opening succeeds...
+    const BitArchiveReader innerArchive( lib, outerArchive, 0U, ArchiveStartOffset::None, BitFormat::SevenZip );
+    REQUIRE_NOTHROW( innerArchive.test() );
+
+    // ...while checking only the file start of the same subfile stream (FileStart) sees a Tar header
+    // instead of a 7z signature, so the opening must fail.
+    REQUIRE_THROWS( BitArchiveReader( lib, outerArchive, 0U, ArchiveStartOffset::FileStart, BitFormat::SevenZip ) );
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
 TEMPLATE_TEST_CASE(
     "BitInputArchive: Reading a nested archive with wrong extension",
     "[bitinputarchive]",
