@@ -123,14 +123,20 @@ auto BitInputArchive::openArchiveStream(
 
         BitPropVariant errorFlagsProp;
         inArchive->GetArchiveProperty( static_cast< PROPID >( BitProperty::ErrorFlags ), &errorFlagsProp );
-        if ( !errorFlagsProp.isUInt32() ) {
-            return make_hresult_code( res );
+        if ( errorFlagsProp.isUInt32() ) {
+            const auto errorFlags = errorFlagsProp.getUInt32();
+            if ( errorFlags != 0 ) {
+                return make_open_error_code( errorFlags );
+            }
         }
-        const auto errorFlags = errorFlagsProp.getUInt32();
-        if ( errorFlags == 0 ) {
-            return make_hresult_code( res );
+        if ( res == S_FALSE ) {
+            // 7-Zip reported no specific error flags. A S_FALSE result means the handler couldn't
+            // open the stream as the requested format (wrong format, or corrupted/truncated data)
+            // but set no flag (e.g., the Pe handler rejecting trailing data). We report it as IsNotArc
+            // instead of the opaque raw HRESULT (S_FALSE == 1).
+            return make_error_code( OpenError::IsNotArc );
         }
-        return make_open_error_code( errorFlags );
+        return make_hresult_code( res );
     }();
     throw BitException( "Could not open the archive", error, pathToTstring( name ) );
 }

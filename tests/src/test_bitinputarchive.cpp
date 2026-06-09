@@ -1234,6 +1234,32 @@ TEMPLATE_TEST_CASE(
     }
 }
 
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitInputArchive: Opening a PE with trailing data as Pe should report a clear error",
+    "[bitinputarchive]"
+) {
+    // TODO: Add fixture SFX archives.
+    // The 7-Zip Pe handler rejects executables with data appended after the PE image
+    // (e.g., SFX archives) by returning S_FALSE without setting any error flag.
+    // bit7z should surface this as a clear "invalid archive, or wrong format" error,
+    // not the opaque raw HRESULT (S_FALSE == 1).
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
+
+    auto sfxBuffer = loadFile( "valid.exe" );
+    REQUIRE_FALSE( sfxBuffer.empty() );
+
+    // Appending an archive to the PE image simulates a self-extracting executable.
+    const auto appendedArchive = loadFile( "valid.7z" );
+    REQUIRE_FALSE( appendedArchive.empty() );
+    sfxBuffer.insert( sfxBuffer.cend(), appendedArchive.cbegin(), appendedArchive.cend() );
+
+    REQUIRE_THROWS_WITH(
+        BitArchiveReader( test::sevenzipLib(), sfxBuffer, BitFormat::Pe ),
+        Catch::Matchers::EndsWith( "Invalid archive, or wrong format used." )
+    );
+}
+
 namespace {
 BIT7Z_ALWAYS_INLINE
 auto isHiddenFile( const BitArchiveItem& item ) -> bool {
