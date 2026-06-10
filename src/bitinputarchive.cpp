@@ -76,6 +76,19 @@ auto BitInputArchive::openArchiveStream(
     // NOTE: CMyComPtr is still needed: if an error occurs, and an exception is thrown,
     // the IInArchive object is deleted automatically.
 
+#ifdef BIT7Z_AUTO_FORMAT
+    if ( mArchiveHandler.format() != BitFormat::Auto )
+#endif
+    {
+        /* The user explicitly requested the format, so executable formats (PE, TE, ELF, Mach-O) must accept
+         * files with data appended after the executable image (e.g., SFX archives), like 7-Zip does. */
+        CMyComPtr< IArchiveAllowTail > allowTail;
+        inArchive->QueryInterface( bit7z::IID_IArchiveAllowTail, reinterpret_cast< void** >( &allowTail ) );
+        if ( allowTail != nullptr ) {
+            allowTail->AllowTail( 1 );
+        }
+    }
+
     // Creating open callback for the file
     const auto openCallback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
 

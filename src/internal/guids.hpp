@@ -40,6 +40,7 @@ extern const GUID IID_ISetProperties;
 extern const GUID IID_IInArchive;
 extern const GUID IID_IInArchiveGetStream;
 extern const GUID IID_IOutArchive;
+extern const GUID IID_IArchiveAllowTail;
 extern const GUID IID_IArchiveExtractCallback;
 extern const GUID IID_IArchiveOpenSeq;
 extern const GUID IID_IArchiveOpenSetSubArchiveName;
