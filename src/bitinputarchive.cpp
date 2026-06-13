@@ -66,7 +66,7 @@ auto BitInputArchive::openArchiveStream(
     bool detectedBySignature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
         // Detecting the format of the input file
-        mDetectedFormat = &( detectFormatFromSignature( inStream ) );
+        mDetectedFormat = &detectFormatFromSignature( inStream );
         detectedBySignature = true;
     }
     CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
@@ -83,9 +83,9 @@ auto BitInputArchive::openArchiveStream(
         /* The user explicitly requested the format, so executable formats (PE, TE, ELF, Mach-O) must accept
          * files with data appended after the executable image (e.g., SFX archives), like 7-Zip does. */
         CMyComPtr< IArchiveAllowTail > allowTail;
-        inArchive->QueryInterface( bit7z::IID_IArchiveAllowTail, reinterpret_cast< void** >( &allowTail ) );
+        ( void )inArchive->QueryInterface( bit7z::IID_IArchiveAllowTail, reinterpret_cast< void** >( &allowTail ) );
         if ( allowTail != nullptr ) {
-            allowTail->AllowTail( 1 );
+            ( void )allowTail->AllowTail( 1 );
         }
     }
 
@@ -98,7 +98,7 @@ auto BitInputArchive::openArchiveStream(
 #endif
     HRESULT res = [&]() -> HRESULT {
         if ( startOffset == ArchiveStartOffset::FileStart ) {
-            const UInt64 maxCheckStartPosition = 0;
+            constexpr UInt64 maxCheckStartPosition = 0;
             return inArchive->Open( inStream, &maxCheckStartPosition, openCallback );
         }
         return inArchive->Open( inStream, nullptr, openCallback );
@@ -120,7 +120,7 @@ auto BitInputArchive::openArchiveStream(
         /* Opening the file might have changed the current file pointer, so we reset it to the beginning of the file
          * to correctly read the file signature. */
         inStream->Seek( 0, STREAM_SEEK_SET, nullptr );
-        mDetectedFormat = &( detectFormatFromSignature( inStream ) );
+        mDetectedFormat = &detectFormatFromSignature( inStream );
         inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
         res = inArchive->Open( inStream, nullptr, openCallback );
         if ( res == S_OK ) {
