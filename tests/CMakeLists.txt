@@ -8,63 +8,73 @@ option( BIT7Z_TESTS_FILESYSTEM "Enable or disable testing filesystem-related cla
 message( STATUS "Testing filesystem-related classes: ${BIT7Z_TESTS_FILESYSTEM}" )
 
 # base source files
-set( BASE_FILES
-     src/utils/archive.cpp
-     src/utils/filesystem.cpp
-     src/utils/crc.cpp )
+set(
+    BASE_FILES
+        src/utils/archive.cpp
+        src/utils/filesystem.cpp
+        src/utils/crc.cpp
+)
 
 # public API test sources
-set( PUBLIC_API_SOURCE_FILES
-     src/test_bit7zlibrary.cpp
-     src/test_bit7zlibraryloader.cpp
-     src/test_bitabstractarchivecreator.cpp
-     src/test_bitarchiveeditor.cpp
-     src/test_bitarchiveiteminfo.cpp
-     src/test_bitarchivereader.cpp
-     src/test_bitarchivewriter.cpp
-     src/test_biterror.cpp
-     src/test_bitexception.cpp
-     src/test_bitfilecompressor.cpp
-     src/test_bitfileextractor.cpp
-     src/test_bitindicesview.cpp
-     src/test_bitinputitem.cpp
-     src/test_bitinputarchive.cpp
-     src/test_bitmemcompressor.cpp
-     src/test_bitmemextractor.cpp
-     src/test_bitnestedarchivereader.cpp
-     src/test_bitoutputarchive.cpp
-     src/test_bitpropvariant.cpp
-     src/test_bitstreamcompressor.cpp
-     src/test_bitstreamextractor.cpp )
+set(
+    PUBLIC_API_SOURCE_FILES
+        src/test_bit7zlibrary.cpp
+        src/test_bit7zlibraryloader.cpp
+        src/test_bitabstractarchivecreator.cpp
+        src/test_bitarchiveeditor.cpp
+        src/test_bitarchiveiteminfo.cpp
+        src/test_bitarchivereader.cpp
+        src/test_bitarchivewriter.cpp
+        src/test_biterror.cpp
+        src/test_bitexception.cpp
+        src/test_bitfilecompressor.cpp
+        src/test_bitfileextractor.cpp
+        src/test_bitindicesview.cpp
+        src/test_bitinputitem.cpp
+        src/test_bitinputarchive.cpp
+        src/test_bitmemcompressor.cpp
+        src/test_bitmemextractor.cpp
+        src/test_bitnestedarchivereader.cpp
+        src/test_bitoutputarchive.cpp
+        src/test_bitpropvariant.cpp
+        src/test_bitstreamcompressor.cpp
+        src/test_bitstreamextractor.cpp
+)
 
 # internal API sources
-set( INTERNAL_API_SOURCE_FILES
-     src/test_bititemsvector.cpp # BitItemsVector is not meant to be used by the user
-     src/test_cbufferinstream.cpp
-     src/test_cpp26.cpp
-     src/test_dateutil.cpp
-     src/test_formatdetect.cpp
-     src/test_fsutil.cpp
-     src/test_util.cpp
-     src/test_stringutil.cpp
-     src/test_volumescache.cpp
-     src/test_windows.cpp
-     src/test_optional.cpp )
+set(
+    INTERNAL_API_SOURCE_FILES
+        src/test_bititemsvector.cpp # BitItemsVector is not meant to be used by the user
+        src/test_cbufferinstream.cpp
+        src/test_cpp26.cpp
+        src/test_dateutil.cpp
+        src/test_formatdetect.cpp
+        src/test_fsutil.cpp
+        src/test_util.cpp
+        src/test_stringutil.cpp
+        src/test_volumescache.cpp
+        src/test_windows.cpp
+        src/test_optional.cpp
+)
 
 set( TESTS_BASE_TARGET bit7z-tests-base )
 add_library( ${TESTS_BASE_TARGET} INTERFACE )
 target_sources( ${TESTS_BASE_TARGET} INTERFACE ${BASE_FILES} )
-target_include_directories( ${TESTS_BASE_TARGET} INTERFACE
-                            "${PROJECT_SOURCE_DIR}/include/bit7z"
-                            "${PROJECT_SOURCE_DIR}/src" )
+target_include_directories(
+    ${TESTS_BASE_TARGET} INTERFACE
+        "${PROJECT_SOURCE_DIR}/include/bit7z"
+        "${PROJECT_SOURCE_DIR}/src"
+)
 
 if( BIT7Z_TESTS_FILESYSTEM )
     if( NOT BIT7Z_TESTS_DATA_DIR )
-        CPMAddPackage( NAME bit7z_test_data
-                       GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
-                       VERSION 1.18
-                       DOWNLOAD_ONLY YES
-                       GIT_PROGRESS ON )
+        CPMAddPackage(
+            NAME bit7z_test_data
+            GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
+            VERSION 1.18
+            DOWNLOAD_ONLY YES
+            GIT_PROGRESS ON
+        )
         if( bit7z_test_data_ADDED )
             set( BIT7Z_TESTS_DATA_DIR ${bit7z_test_data_SOURCE_DIR} )
             message( STATUS "Tests data directory: ${BIT7Z_TESTS_DATA_DIR}" )
@@ -76,9 +86,9 @@ if( BIT7Z_TESTS_FILESYSTEM )
         message( STATUS "Custom test data dir: ${BIT7Z_TESTS_DATA_DIR}" )
     endif()
 
-    target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE
-                                BIT7Z_TESTS_FILESYSTEM
-                                BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}" )
+    target_compile_definitions(
+        ${TESTS_BASE_TARGET} INTERFACE BIT7Z_TESTS_FILESYSTEM BIT7Z_TESTS_DATA_DIR="${BIT7Z_TESTS_DATA_DIR}"
+    )
 
     if( NOT EXISTS ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
         file( MAKE_DIRECTORY ${BIT7Z_TESTS_DATA_DIR}/test_filesystem/empty )
@@ -92,16 +102,22 @@ endif()
 string( REPLACE "." ";" VERSION_LIST ${BIT7Z_7ZIP_VERSION} )
 list( GET VERSION_LIST 0 BIT7Z_7ZIP_VERSION_MAJOR )
 list( GET VERSION_LIST 1 BIT7Z_7ZIP_VERSION_MINOR )
-target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE
-                            BIT7Z_7ZIP_VERSION_MAJOR=${BIT7Z_7ZIP_VERSION_MAJOR}
-                            BIT7Z_7ZIP_VERSION_MINOR=${BIT7Z_7ZIP_VERSION_MINOR} )
+target_compile_definitions(
+    ${TESTS_BASE_TARGET} INTERFACE
+        BIT7Z_7ZIP_VERSION_MAJOR=${BIT7Z_7ZIP_VERSION_MAJOR}
+        BIT7Z_7ZIP_VERSION_MINOR=${BIT7Z_7ZIP_VERSION_MINOR}
+)
 
 set( BIT7Z_TESTS_7Z_LIBRARY_PATH "" CACHE STRING "The path of the 7-Zip library to be used for running the tests" )
 if( NOT BIT7Z_TESTS_7Z_LIBRARY_PATH STREQUAL "" )
     message( STATUS "Use custom 7-zip library for tests: ${BIT7Z_TESTS_7Z_LIBRARY_PATH}" )
-    target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE BIT7Z_TESTS_7Z_LIBRARY_PATH="${BIT7Z_TESTS_7Z_LIBRARY_PATH}" )
+    target_compile_definitions(
+            ${TESTS_BASE_TARGET} INTERFACE BIT7Z_TESTS_7Z_LIBRARY_PATH="${BIT7Z_TESTS_7Z_LIBRARY_PATH}"
+    )
 else()
-    option( BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON )
+    option(
+        BIT7Z_TESTS_USE_SYSTEM_7ZIP "Enable or disable using system's 7-zip shared library when executing tests" ON
+    )
     message( STATUS "Use system 7-zip for tests: ${BIT7Z_TESTS_USE_SYSTEM_7ZIP}" )
     if( BIT7Z_TESTS_USE_SYSTEM_7ZIP )
         target_compile_definitions( ${TESTS_BASE_TARGET} INTERFACE BIT7Z_TESTS_USE_SYSTEM_7ZIP )
@@ -114,7 +130,10 @@ set( CMAKE_CXX_STANDARD_LIBRARIES "" )
 
 target_link_libraries( ${TESTS_BASE_TARGET} INTERFACE ${LIB_TARGET} 7-zip )
 
-if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT CMAKE_CXX_SIMULATE_ID MATCHES "MSVC" ) )
+if(
+    CMAKE_CXX_COMPILER_ID MATCHES "GNU" OR
+    ( CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND NOT CMAKE_CXX_SIMULATE_ID MATCHES "MSVC" )
+)
     target_link_libraries( ${TESTS_BASE_TARGET} INTERFACE pthread )
 endif()
 
@@ -160,11 +179,13 @@ if ( APPLE AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64" )
 endif()
 
 # Catch2
-CPMAddPackage( NAME Catch2
-               GIT_TAG 27d8db1770dd5cd3688656095f242474431584a1
-               OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
-               GITHUB_REPOSITORY "rikyoz/Catch2"
-               GIT_PROGRESS ON )
+CPMAddPackage(
+    NAME Catch2
+    GIT_TAG 27d8db1770dd5cd3688656095f242474431584a1
+    OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
+    GITHUB_REPOSITORY "rikyoz/Catch2"
+    GIT_PROGRESS ON
+)
 list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/contrib" )
 
 include( CTest )
