@@ -38,6 +38,7 @@ namespace bit7z {
 
 class BufferQueue;
 class ExtractCallback;
+class OpenCallback;
 
 /**
  * @brief Offset from where the archive starts within the input file.
@@ -711,6 +712,15 @@ class BitInputArchive {
             IInStream* inStream,
             ArchiveStartOffset startOffset
         ) -> IInArchive*;
+
+#ifdef BIT7Z_AUTO_FORMAT
+        BIT7Z_NODISCARD
+        auto tryOpenSfxArchive(
+            IInStream* inStream,
+            OpenCallback* openCallback,
+            const bit7zfs::path& name
+        ) -> IInArchive*;
+#endif
 
         void testArchive( BitIndicesView indices ) const;
 

@@ -67,6 +67,13 @@ void allowTailData( IInArchive* inArchive ) {
     }
 }
 
+#ifdef BIT7Z_AUTO_FORMAT
+// Executable formats that 7-Zip opens strictly (no appended data) unless IArchiveAllowTail is enabled.
+auto isExecutableFormat( const BitInFormat& format ) noexcept -> bool {
+    return format == BitFormat::Pe || format == BitFormat::Elf || format == BitFormat::Macho || format == BitFormat::TE;
+}
+#endif
+
 BIT7Z_NODISCARD
 auto openInputArchive(
     IInArchive* inArchive,
@@ -110,6 +117,47 @@ auto makeOpenError( const OpenCallback* openCallback, IInArchive* inArchive, HRE
 }
 } // namespace
 
+#ifdef BIT7Z_AUTO_FORMAT
+/* Tries opening the stream as one of the archive formats commonly embedded in SFX executables.
+ * On success, sets mDetectedFormat and returns the opened archive; returns nullptr otherwise. */
+auto BitInputArchive::tryOpenSfxArchive(
+    IInStream* inStream,
+    OpenCallback* openCallback,
+    const fs::path& name
+) -> IInArchive* {
+    // Note: Zip must be the last candidate, as its handler matches any PK record within the search limit.
+    static constexpr std::initializer_list< const BitInFormat* > kSfxFormats = {
+        &BitFormat::SevenZip, &BitFormat::Rar5, &BitFormat::Rar, &BitFormat::Cab, &BitFormat::Zip
+    };
+    // Limit within which the handlers search for the start of the embedded archive (like 7-Zip's scan limit).
+    static constexpr UInt64 kSfxSearchLimit = 1ULL << 23ULL; // 8 MiB
+
+    for ( const auto* sfxFormat : kSfxFormats ) {
+        CMyComPtr< IInArchive > sfxArchive;
+        try {
+            sfxArchive = mArchiveHandler.library().initInArchive( *sfxFormat );
+        } catch ( const BitException& ) {
+            continue; // The loaded 7-Zip library doesn't provide this format's handler.
+        }
+        inStream->Seek( 0, STREAM_SEEK_SET, nullptr );
+        if ( sfxArchive->Open( inStream, &kSfxSearchLimit, openCallback ) == S_OK ) {
+            mDetectedFormat = sfxFormat;
+            return sfxArchive.Detach();
+        }
+        if ( openCallback->passwordWasAsked() ) {
+            // The handler found an embedded archive but needs a password to open it: stop searching.
+            throw BitException(
+                "Could not open the archive",
+                make_error_code( OperationResult::OpenErrorEncrypted ),
+                pathToTstring( name )
+            );
+        }
+    }
+    inStream->Seek( 0, STREAM_SEEK_SET, nullptr );
+    return nullptr;
+}
+#endif
+
 auto BitInputArchive::openArchiveStream(
     const fs::path& name,
     IInStream* inStream,
@@ -122,6 +170,22 @@ auto BitInputArchive::openArchiveStream(
     if ( *mDetectedFormat == BitFormat::Auto ) {
         mDetectedFormat = &detectFormatFromSignature( inStream );
         detectedBySignature = true;
+    }
+
+    if (
+        mArchiveHandler.format() == BitFormat::Auto &&
+        startOffset == ArchiveStartOffset::None &&
+        isExecutableFormat( *mDetectedFormat )
+    ) {
+        /* Executable formats are what 7-Zip calls "pre-arc" formats: an embedded archive, if present,
+         * takes precedence over the executable containing it (e.g., SFX archives, installers).
+         * Note: appended data can't be detected by checking whether the executable format handler
+         * rejects the file: for Authenticode-signed SFX archives, the certificate directory at the
+         * end of the file covers the appended archive, so, e.g., the Pe handler accepts the whole file. */
+        IInArchive* sfxArchive = tryOpenSfxArchive( inStream, openCallback, name );
+        if ( sfxArchive != nullptr ) {
+            return sfxArchive;
+        }
     }
 
     // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
@@ -144,6 +208,12 @@ auto BitInputArchive::openArchiveStream(
          * to correctly read the file signature. */
         inStream->Seek( 0, STREAM_SEEK_SET, nullptr );
         mDetectedFormat = &detectFormatFromSignature( inStream );
+        if ( startOffset == ArchiveStartOffset::None && isExecutableFormat( *mDetectedFormat ) ) {
+            IInArchive* sfxArchive = tryOpenSfxArchive( inStream, openCallback, name );
+            if ( sfxArchive != nullptr ) {
+                return sfxArchive;
+            }
+        }
         inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
         res = openInputArchive( inArchive, inStream, ArchiveStartOffset::None, openCallback );
         if ( res == S_OK ) {

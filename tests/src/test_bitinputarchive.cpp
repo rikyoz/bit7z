@@ -30,6 +30,7 @@
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
 #include <internal/fs.hpp>
+#include <internal/operationresult.hpp>
 
 #include <algorithm>
 #include <cstdint>
@@ -1257,6 +1258,40 @@ TEST_CASE(
     DYNAMIC_SECTION( Catch::StringMaker< tstring >::convert( filename ) ) {
         const BitArchiveReader reader{ test::sevenzipLib(), filename, BitFormat::Pe };
         REQUIRE( reader.itemsCount() > 0 );
+    }
+}
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEST_CASE(
+    "BitInputArchive: Opening an encrypted PE SFX archive",
+    "[bitinputarchive]"
+) {
+    // SFX archives embedding a header-encrypted archive. The encryption lives in the embedded payload,
+    // not in the executable wrapper, so opening behavior depends on the requested format.
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "sfx" / "exe" };
+
+    const auto filename = GENERATE(
+        as< tstring >(),
+        BIT7Z_STRING( "encrypted_sfx.7z.exe" ),
+        BIT7Z_STRING( "encrypted_sfx.rar.exe" )
+    );
+
+    DYNAMIC_SECTION( Catch::StringMaker< tstring >::convert( filename ) ) {
+        SECTION( "Requesting Pe opens the (unencrypted) executable wrapper without a password" ) {
+            // The explicit format skips the SFX scan, so the embedded archive's encryption is irrelevant.
+            const BitArchiveReader reader{ test::sevenzipLib(), filename, BitFormat::Pe };
+            REQUIRE( reader.itemsCount() > 0 );
+        }
+
+#ifdef BIT7Z_AUTO_FORMAT
+        SECTION( "Auto-detecting without a password fails with an encrypted-archive error" ) {
+            // The SFX scan finds the embedded archive, whose handler asks for a password during opening.
+            REQUIRE_THROWS_CODE(
+                BitArchiveReader( test::sevenzipLib(), filename ),
+                make_error_code( OperationResult::OpenErrorEncrypted )
+            );
+        }
+#endif
     }
 }
 

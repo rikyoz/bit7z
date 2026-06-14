@@ -14,6 +14,7 @@
 
 #include <catch2/catch.hpp>
 
+#include "utils/exception.hpp"
 #include "utils/format.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/shared_lib.hpp"
@@ -22,6 +23,7 @@
 #include <bitexception.hpp>
 #include <bitformat.hpp>
 #include <internal/formatdetect.hpp>
+#include <internal/operationresult.hpp>
 
 using bit7z::BitInFormat;
 using namespace bit7z;
@@ -289,6 +291,30 @@ TEST_CASE( "formatdetect: Format detection of archive with a wrong extension (Is
     }
 }
 
+#ifdef BIT7Z_DETECT_FROM_EXTENSION
+TEST_CASE( "formatdetect: Format detection of an executable with a wrong extension", "[formatdetect]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
+
+    // PE executables given a wrong, concrete (non-executable) extension. Extension-based detection
+    // guesses the wrong format and fails to open, so bit7z falls back to signature detection and the
+    // SFX scan: an SFX resolves to its embedded archive, a plain executable to the PE wrapper.
+    struct WrongExtensionExe {
+        tstring filename;
+        const BitInFormat& format;
+    };
+    const auto test = GENERATE(
+        WrongExtensionExe{ BIT7Z_STRING( "wrong_extension_sfx.gz" ), BitFormat::SevenZip }, // embedded archive
+        WrongExtensionExe{ BIT7Z_STRING( "wrong_extension.7z" ), BitFormat::Pe }            // no archive -> wrapper
+    );
+
+    DYNAMIC_SECTION( Catch::StringMaker< tstring >::convert( test.filename ) ) {
+        const BitArchiveReader reader{ test::sevenzipLib(), test.filename };
+        REQUIRE( reader.detectedFormat() == test.format );
+        REQUIRE( reader.itemsCount() > 0 );
+    }
+}
+#endif
+
 TEST_CASE( "formatdetect: Format detection of an archive file without an extension", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
 
@@ -304,6 +330,58 @@ TEST_CASE( "formatdetect: Format detection of an archive file without an extensi
 TEST_CASE( "formatdetect: Format detection of PE SFX archives", "[formatdetect]" ) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "sfx" / "exe" };
 
+    const auto test = GENERATE(
+        TestInputFormat{ "7z.exe",  BitFormat::SevenZip },
+        TestInputFormat{ "rar.exe", BitFormat::Rar5 },
+        TestInputFormat{ "cab.exe", BitFormat::Cab },
+        TestInputFormat{ "zip.exe", BitFormat::Zip },
+        TestInputFormat{ "rar.zip.exe", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( test.extension ) {
+        REQUIRE_LOAD_FILE( sfxBuffer, "sfx." + test.extension );
+        const BitArchiveReader reader{ test::sevenzipLib(), sfxBuffer };
+        REQUIRE( reader.detectedFormat() == test.format );
+        REQUIRE( reader.itemsCount() > 0 );
+    }
+}
+
+TEST_CASE( "formatdetect: Format detection of encrypted SFX archives", "[formatdetect]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "sfx" / "exe" };
+
+    const auto test = GENERATE(
+        TestInputFormat{ "7z.exe",  BitFormat::SevenZip },
+        TestInputFormat{ "rar.exe", BitFormat::Rar5 }
+    );
+
+    DYNAMIC_SECTION( test.extension ) {
+        REQUIRE_LOAD_FILE( sfxBuffer, "encrypted_sfx." + test.extension );
+
+        SECTION( "Without a password, opening reports an encrypted-archive error" ) {
+            // The SFX scan finds the embedded header-encrypted archive; its handler asks for a password
+            // during Open, so tryOpenSfxArchive stops and surfaces an encrypted-open error.
+            REQUIRE_THROWS_CODE(
+                BitArchiveReader( test::sevenzipLib(), sfxBuffer ),
+                make_error_code( OperationResult::OpenErrorEncrypted )
+            );
+        }
+
+        SECTION( "With the correct password, the embedded archive is detected" ) {
+            const BitArchiveReader reader{
+                test::sevenzipLib(),
+                sfxBuffer,
+                BitFormat::Auto,
+                BIT7Z_STRING( "password" )
+            };
+            REQUIRE( reader.detectedFormat() == test.format );
+            REQUIRE( reader.itemsCount() > 0 );
+        }
+    }
+}
+
+TEST_CASE( "formatdetect: SFX detection is suppressed with the FileStart offset", "[formatdetect]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "sfx" / "exe" };
+
     const auto filename = GENERATE(
         as< std::string >(),
         "sfx.7z.exe",
@@ -315,7 +393,9 @@ TEST_CASE( "formatdetect: Format detection of PE SFX archives", "[formatdetect]"
 
     DYNAMIC_SECTION( filename ) {
         REQUIRE_LOAD_FILE( sfxBuffer, filename );
-        const BitArchiveReader reader{ test::sevenzipLib(), sfxBuffer };
+        // With the FileStart offset, bit7z must not scan for an embedded archive, so the executable
+        // wrapper is detected instead of the SFX payload (the opposite of the default None behavior).
+        const BitArchiveReader reader{ test::sevenzipLib(), sfxBuffer, ArchiveStartOffset::FileStart };
         REQUIRE( reader.detectedFormat() == BitFormat::Pe );
         REQUIRE( reader.itemsCount() > 0 );
     }
@@ -334,7 +414,7 @@ TEST_CASE( "formatdetect: Format detection of ELF SFX archives", "[formatdetect]
     DYNAMIC_SECTION( filename ) {
         REQUIRE_LOAD_FILE( sfxBuffer, filename );
         const BitArchiveReader reader{ test::sevenzipLib(), sfxBuffer };
-        REQUIRE( reader.detectedFormat() == BitFormat::Elf );
+        REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
         REQUIRE( reader.itemsCount() > 0 );
     }
 }
