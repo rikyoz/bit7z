@@ -108,7 +108,7 @@ auto makeOpenError( const OpenCallback* openCallback, IInArchive* inArchive, HRE
         }
     }
     if ( res == S_FALSE ) {
-        // 7-Zip reported no specific error flags. A S_FALSE result means the handler couldn't
+        // 7-Zip reported no specific error flags. An S_FALSE result means the handler couldn't
         // open the stream as the requested format (wrong format, or corrupted/truncated data)
         // but set no flag (e.g., the Pe handler rejecting trailing data). We report it as IsNotArc
         // instead of the opaque raw HRESULT (S_FALSE == 1).
@@ -171,27 +171,30 @@ auto BitInputArchive::openArchiveStream(
 #ifdef BIT7Z_AUTO_FORMAT
     bool detectedBySignature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
+        // Format detection from file extension didn't run, or it didn't find a match.
+        // Hence, we detect the format from the file signature.
         mDetectedFormat = &detectFormatFromSignature( inStream );
         detectedBySignature = true;
     }
 
+    // Here, a format was detected, either from the file extension, or from the file signature.
+    // If no format was detected from either, an exception would have been thrown after failing to detect
+    // the format from the signature.
     if (
         mArchiveHandler.format() == BitFormat::Auto &&
         startOffset == ArchiveStartOffset::None &&
         isExecutableFormat( *mDetectedFormat )
     ) {
-        /* Executable formats are what 7-Zip calls "pre-arc" formats: an embedded archive, if present,
-         * takes precedence over the executable containing it (e.g., SFX archives, installers).
-         * Note: appended data can't be detected by checking whether the executable format handler
-         * rejects the file: for Authenticode-signed SFX archives, the certificate directory at the
-         * end of the file covers the appended archive, so, e.g., the Pe handler accepts the whole file. */
+        // Executable formats are what 7-Zip calls "pre-arc" formats: an embedded archive, if present,
+        // takes precedence over the executable containing it (e.g., SFX archives, installers).
         IInArchive* sfxArchive = tryOpenSfxArchive( inStream, openCallback, name );
         if ( sfxArchive != nullptr ) {
+            // Detected an embedded archive, i.e., the file is an SFX archive.
             return sfxArchive;
         }
     }
 
-    // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
+    // Note: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically.
     CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
     HRESULT res = openInputArchive( inArchive, inStream, startOffset, openCallback );
@@ -202,16 +205,20 @@ auto BitInputArchive::openArchiveStream(
     if ( mArchiveHandler.format() == BitFormat::Auto && !detectedBySignature ) {
         /* User wanted auto-detection of the format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
-         * NOTE: If user specified explicitly a format (i.e., not BitFormat::Auto), this check is not performed,
-         *       and an exception is thrown.
-         * NOTE 2: If signature detection was already performed (detectedBySignature == false), it detected
-         *         a wrong format, no further check can be done, and an exception must be thrown. */
+         * Note: if the user explicitly specified a format (i.e., not BitFormat::Auto), this check is not performed,
+         * and an exception is thrown.
+         * Note 2: if signature detection was already performed (detectedBySignature == true), it detected
+         * a wrong format (since the open failed), so no further check can be done, and an exception must be thrown. */
 
-        /* Opening the file might have changed the current file pointer, so we reset it to the beginning of the file
-         * to correctly read the file signature. */
+        // Opening the file might have changed the current file pointer, so we reset it to the beginning of the file
+        // to correctly read the file signature.
         inStream->Seek( 0, STREAM_SEEK_SET, nullptr );
         mDetectedFormat = &detectFormatFromSignature( inStream );
         if ( startOffset == ArchiveStartOffset::None && isExecutableFormat( *mDetectedFormat ) ) {
+            // The extension pointed to a non-executable format, so the first SFX scan above was skipped.
+            // Now that the signature reveals an executable, we must scan here too: otherwise, an SFX archive
+            // with a misleading extension would be opened as its executable wrapper (e.g., Pe), losing access
+            // to the embedded archive.
             IInArchive* sfxArchive = tryOpenSfxArchive( inStream, openCallback, name );
             if ( sfxArchive != nullptr ) {
                 return sfxArchive;
