@@ -95,6 +95,9 @@ constexpr auto ERROR_WRITE_FAULT = EIO;
 // Win32 error codes (defined by p7zip with the same values as in Windows API).
 constexpr auto ERROR_NO_MORE_FILES = 0x100018;
 constexpr auto ERROR_DIRECTORY = 267;
+
+// Win32 error code not produced by p7zip/7-Zip, but used by bit7z to map "no matching item" errors.
+constexpr auto ERROR_NOT_FOUND = 1168;
 #endif
 
 #ifndef CP_UTF8

@@ -12,6 +12,7 @@
 
 #include <catch2/catch.hpp>
 
+#include <bit7z/biterror.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitwindows.hpp>
 #include <internal/windows.hpp>
@@ -289,6 +290,30 @@ TEST_CASE( "BitException: Constructing std::error_code from unmapped HRESULT val
             }
         }
     }
+}
+
+TEST_CASE( "BitException: 'No matching item' errors map to ERROR_NOT_FOUND", "[BitException][biterror]" ) {
+    const auto bitError = GENERATE( bit7z::BitError::NoMatchingItems, bit7z::BitError::NoMatchingFile );
+
+    const auto code = make_error_code( bitError );
+    const BitException exception{ "No match", code };
+
+    // A "no matching item/file" result is a lookup miss, mapped to ERROR_NOT_FOUND ("Element not found."),
+    // avoiding the misleading "path not found" semantics of the generic ENOENT-based mapping.
+    REQUIRE( exception.hresultCode() == HRESULT_FROM_WIN32( ERROR_NOT_FOUND ) );
+
+    // The std::errc / POSIX view is intentionally kept as ENOENT for backward compatibility.
+    REQUIRE( code == std::errc::no_such_file_or_directory );
+    REQUIRE( exception.posixCode() == static_cast< int >( std::errc::no_such_file_or_directory ) );
+}
+
+TEST_CASE( "BitException: no_such_file_or_directory maps to ERROR_FILE_NOT_FOUND", "[BitException][biterror]" ) {
+    const auto code = std::make_error_code( std::errc::no_such_file_or_directory );
+    const BitException exception{ "Not found", code };
+
+    // ENOENT is ambiguous on Windows; bit7z maps it to the generic "named item not found" code,
+    // rather than ERROR_PATH_NOT_FOUND, which specifically means a missing intermediate directory.
+    REQUIRE( exception.hresultCode() == HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) );
 }
 
 TEST_CASE( "BitException: Checking if failed files are moved to the exception constructor", "[bitexception]" ) {
