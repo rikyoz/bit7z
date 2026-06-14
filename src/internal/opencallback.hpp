@@ -45,7 +45,7 @@ class OpenCallback final : public IArchiveOpenCallback,
         ~OpenCallback() override = default;
 
         BIT7Z_NODISCARD
-        auto passwordWasAsked() const -> bool;
+        auto passwordWasAsked() const noexcept -> bool;
 
         // IArchiveOpenCallback
         BIT7Z_STDMETHOD( SetTotal, const UInt64* files, const UInt64* bytes );

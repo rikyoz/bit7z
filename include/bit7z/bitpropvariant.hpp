@@ -155,7 +155,7 @@ struct BitPropVariant final : PROPVARIANT {
         /**
          * @brief Constructs an empty BitPropVariant object.
          */
-        BitPropVariant();
+        BitPropVariant() noexcept;
 
         /**
          * @brief Copy constructs this BitPropVariant from another one.

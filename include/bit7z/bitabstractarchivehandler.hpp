@@ -137,7 +137,7 @@ class BitAbstractArchiveHandler {
         /**
          * @return the format used by the handler for extracting or compressing.
          */
-        BIT7Z_NODISCARD virtual auto format() const -> const BitInFormat& = 0;
+        BIT7Z_NODISCARD virtual auto format() const noexcept -> const BitInFormat& = 0;
 
         /**
          * @return the password used to open, extract, or encrypt the archive.

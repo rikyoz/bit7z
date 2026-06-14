@@ -74,7 +74,7 @@ auto lookupType( VARTYPE type ) -> BitPropVariantType {
 }
 } // namespace
 
-BitPropVariant::BitPropVariant() : PROPVARIANT() {
+BitPropVariant::BitPropVariant() noexcept : PROPVARIANT() {
     /* As in CPropVariant default constructor (Note: it seems that the default vt value is VT_NULL)*/
     vt = VT_EMPTY;
     wReserved1 = 0;

@@ -115,7 +115,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     return StringToBstr( pass.c_str(), password );
 }
 
-auto OpenCallback::passwordWasAsked() const -> bool {
+auto OpenCallback::passwordWasAsked() const noexcept -> bool {
     return mPasswordWasAsked;
 }
 

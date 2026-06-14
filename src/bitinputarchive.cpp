@@ -58,7 +58,7 @@ using namespace NArchive;
 namespace bit7z {
 
 namespace {
-void allowTailData( IInArchive* inArchive ) {
+void allowTailData( IInArchive* inArchive ) noexcept {
     CMyComPtr< IArchiveAllowTail > allowTail;
     // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
     ( void )inArchive->QueryInterface( bit7z::IID_IArchiveAllowTail, reinterpret_cast< void** >( &allowTail ) );
@@ -69,6 +69,7 @@ void allowTailData( IInArchive* inArchive ) {
 
 #ifdef BIT7Z_AUTO_FORMAT
 // Executable formats that 7-Zip opens strictly (no appended data) unless IArchiveAllowTail is enabled.
+BIT7Z_NODISCARD
 auto isExecutableFormat( const BitInFormat& format ) noexcept -> bool {
     return format == BitFormat::Pe || format == BitFormat::Elf || format == BitFormat::Macho || format == BitFormat::TE;
 }
@@ -80,7 +81,7 @@ auto openInputArchive(
     IInStream* inStream,
     ArchiveStartOffset startOffset,
     OpenCallback* openCallback
-) -> HRESULT {
+) noexcept -> HRESULT {
     // Making the executable format handlers (PE, TE, ELF, Mach-O) accept files
     // with data appended after the executable image (e.g., SFX archives), like 7-Zip does.
     allowTailData( inArchive );
