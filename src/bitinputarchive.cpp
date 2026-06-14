@@ -127,7 +127,9 @@ auto BitInputArchive::tryOpenSfxArchive(
     const fs::path& name
 ) -> IInArchive* {
     // Note: Zip must be the last candidate, as its handler matches any PK record within the search limit.
-    static constexpr std::initializer_list< const BitInFormat* > kSfxFormats = {
+    // Note 2: Cannot be constexpr on MSVC 2015.
+    // ReSharper disable once CppVariableCanBeMadeConstexpr
+    static const std::initializer_list< const BitInFormat* > kSfxFormats = {
         &BitFormat::SevenZip, &BitFormat::Rar5, &BitFormat::Rar, &BitFormat::Cab, &BitFormat::Zip
     };
     // Limit within which the handlers search for the start of the embedded archive (like 7-Zip's scan limit).
