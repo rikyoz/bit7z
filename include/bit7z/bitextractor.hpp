@@ -101,8 +101,14 @@ class BitExtractor final : public BitAbstractArchiveOpener {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo(
                 outDir,
-                [ legacyCallback = std::move( callback ) ]( const BitArchiveItem& item ) -> tstring {
-                    return legacyCallback( item.index(), item.path() );
+                // Init-capture (to move the callback into the lambda) requires C++14;
+                // under C++11 we fall back to capturing the (copyable) std::function by copy.
+#if BIT7Z_CPP_STANDARD >= 14
+                [ callback = std::move( callback ) ]( const BitArchiveItem& item ) -> tstring {
+#else
+                [ callback ]( const BitArchiveItem& item ) -> tstring {
+#endif
+                    return callback( item.index(), item.path() );
                 }
             );
         }
