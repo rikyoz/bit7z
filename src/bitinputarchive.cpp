@@ -57,58 +57,81 @@ using namespace NArchive;
 
 namespace bit7z {
 
+namespace {
+void allowTailData( IInArchive* inArchive ) {
+    CMyComPtr< IArchiveAllowTail > allowTail;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    ( void )inArchive->QueryInterface( bit7z::IID_IArchiveAllowTail, reinterpret_cast< void** >( &allowTail ) );
+    if ( allowTail != nullptr ) {
+        ( void )allowTail->AllowTail( 1 );
+    }
+}
+
+BIT7Z_NODISCARD
+auto openInputArchive(
+    IInArchive* inArchive,
+    IInStream* inStream,
+    ArchiveStartOffset startOffset,
+    OpenCallback* openCallback
+) -> HRESULT {
+    // Making the executable format handlers (PE, TE, ELF, Mach-O) accept files
+    // with data appended after the executable image (e.g., SFX archives), like 7-Zip does.
+    allowTailData( inArchive );
+
+    if ( startOffset == ArchiveStartOffset::FileStart ) {
+        static constexpr UInt64 maxCheckStartPosition = 0;
+        return inArchive->Open( inStream, &maxCheckStartPosition, openCallback );
+    }
+    return inArchive->Open( inStream, nullptr, openCallback );
+}
+
+BIT7Z_NODISCARD
+auto makeOpenError( const OpenCallback* openCallback, IInArchive* inArchive, HRESULT res ) -> std::error_code {
+    if ( openCallback->passwordWasAsked() ) {
+        return make_error_code( OperationResult::OpenErrorEncrypted );
+    }
+
+    BitPropVariant errorFlagsProp;
+    ( void )inArchive->GetArchiveProperty( static_cast< PROPID >( BitProperty::ErrorFlags ), &errorFlagsProp );
+    if ( errorFlagsProp.isUInt32() ) {
+        const auto errorFlags = errorFlagsProp.getUInt32();
+        if ( errorFlags != 0 ) {
+            return make_open_error_code( errorFlags );
+        }
+    }
+    if ( res == S_FALSE ) {
+        // 7-Zip reported no specific error flags. A S_FALSE result means the handler couldn't
+        // open the stream as the requested format (wrong format, or corrupted/truncated data)
+        // but set no flag (e.g., the Pe handler rejecting trailing data). We report it as IsNotArc
+        // instead of the opaque raw HRESULT (S_FALSE == 1).
+        return make_error_code( OpenError::IsNotArc );
+    }
+    return make_hresult_code( res );
+}
+} // namespace
+
 auto BitInputArchive::openArchiveStream(
     const fs::path& name,
     IInStream* inStream,
     ArchiveStartOffset startOffset
 ) -> IInArchive* {
+    const auto openCallback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
+
 #ifdef BIT7Z_AUTO_FORMAT
     bool detectedBySignature = false;
     if ( *mDetectedFormat == BitFormat::Auto ) {
-        // Detecting the format of the input file
         mDetectedFormat = &detectFormatFromSignature( inStream );
         detectedBySignature = true;
     }
-    CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
-#else
-    CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( mArchiveHandler.format() );
-#endif
-    // NOTE: CMyComPtr is still needed: if an error occurs, and an exception is thrown,
+
+    // NOTE: CMyComPtr is still needed: if an error occurs and an exception is thrown,
     // the IInArchive object is deleted automatically.
-
-#ifdef BIT7Z_AUTO_FORMAT
-    if ( mArchiveHandler.format() != BitFormat::Auto )
-#endif
-    {
-        /* The user explicitly requested the format, so executable formats (PE, TE, ELF, Mach-O) must accept
-         * files with data appended after the executable image (e.g., SFX archives), like 7-Zip does. */
-        CMyComPtr< IArchiveAllowTail > allowTail;
-        ( void )inArchive->QueryInterface( bit7z::IID_IArchiveAllowTail, reinterpret_cast< void** >( &allowTail ) );
-        if ( allowTail != nullptr ) {
-            ( void )allowTail->AllowTail( 1 );
-        }
-    }
-
-    // Creating open callback for the file
-    const auto openCallback = bit7z::make_com< OpenCallback >( mArchiveHandler, name );
-
-    // Trying to open the file with the detected format
-#ifndef BIT7Z_AUTO_FORMAT
-    const
-#endif
-    HRESULT res = [&]() -> HRESULT {
-        if ( startOffset == ArchiveStartOffset::FileStart ) {
-            constexpr UInt64 maxCheckStartPosition = 0;
-            return inArchive->Open( inStream, &maxCheckStartPosition, openCallback );
-        }
-        return inArchive->Open( inStream, nullptr, openCallback );
-    }();
-
+    CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
+    HRESULT res = openInputArchive( inArchive, inStream, startOffset, openCallback );
     if ( res == S_OK ) {
         return inArchive.Detach();
     }
 
-#ifdef BIT7Z_AUTO_FORMAT
     if ( mArchiveHandler.format() == BitFormat::Auto && !detectedBySignature ) {
         /* User wanted auto-detection of the format, an extension was detected but opening failed, so we try a more
          * precise detection by checking the signature.
@@ -122,36 +145,25 @@ auto BitInputArchive::openArchiveStream(
         inStream->Seek( 0, STREAM_SEEK_SET, nullptr );
         mDetectedFormat = &detectFormatFromSignature( inStream );
         inArchive = mArchiveHandler.library().initInArchive( *mDetectedFormat );
-        res = inArchive->Open( inStream, nullptr, openCallback );
+        res = openInputArchive( inArchive, inStream, ArchiveStartOffset::None, openCallback );
         if ( res == S_OK ) {
             return inArchive.Detach();
         }
     }
+#else
+    // NOTE: CMyComPtr ensures the IInArchive is released if an exception is thrown.
+    CMyComPtr< IInArchive > inArchive = mArchiveHandler.library().initInArchive( mArchiveHandler.format() );
+    const HRESULT res = openInputArchive( inArchive, inStream, startOffset, openCallback );
+    if ( res == S_OK ) {
+        return inArchive.Detach();
+    }
 #endif
 
-    const auto error = [&]() -> std::error_code {
-        if ( openCallback->passwordWasAsked() ) {
-            return make_error_code( OperationResult::OpenErrorEncrypted );
-        }
-
-        BitPropVariant errorFlagsProp;
-        inArchive->GetArchiveProperty( static_cast< PROPID >( BitProperty::ErrorFlags ), &errorFlagsProp );
-        if ( errorFlagsProp.isUInt32() ) {
-            const auto errorFlags = errorFlagsProp.getUInt32();
-            if ( errorFlags != 0 ) {
-                return make_open_error_code( errorFlags );
-            }
-        }
-        if ( res == S_FALSE ) {
-            // 7-Zip reported no specific error flags. A S_FALSE result means the handler couldn't
-            // open the stream as the requested format (wrong format, or corrupted/truncated data)
-            // but set no flag (e.g., the Pe handler rejecting trailing data). We report it as IsNotArc
-            // instead of the opaque raw HRESULT (S_FALSE == 1).
-            return make_error_code( OpenError::IsNotArc );
-        }
-        return make_hresult_code( res );
-    }();
-    throw BitException( "Could not open the archive", error, pathToTstring( name ) );
+    throw BitException(
+        "Could not open the archive",
+        makeOpenError( openCallback, inArchive, res ),
+        pathToTstring( name )
+    );
 }
 
 namespace {

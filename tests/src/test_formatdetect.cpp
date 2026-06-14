@@ -301,4 +301,42 @@ TEST_CASE( "formatdetect: Format detection of an archive file without an extensi
     REQUIRE_NOTHROW( reader.test() );
 }
 
+TEST_CASE( "formatdetect: Format detection of PE SFX archives", "[formatdetect]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "sfx" / "exe" };
+
+    const auto filename = GENERATE(
+        as< std::string >(),
+        "sfx.7z.exe",
+        "sfx.rar.exe",
+        "sfx.cab.exe",
+        "sfx.zip.exe",
+        "sfx.rar.zip.exe"
+    );
+
+    DYNAMIC_SECTION( filename ) {
+        REQUIRE_LOAD_FILE( sfxBuffer, filename );
+        const BitArchiveReader reader{ test::sevenzipLib(), sfxBuffer };
+        REQUIRE( reader.detectedFormat() == BitFormat::Pe );
+        REQUIRE( reader.itemsCount() > 0 );
+    }
+}
+
+TEST_CASE( "formatdetect: Format detection of ELF SFX archives", "[formatdetect]" ) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "sfx" / "elf" };
+
+    const auto filename = GENERATE(
+        as< std::string >(),
+        "sfx.7z.elf",
+        "sfx.p7zip.7z.elf",
+        "sfx.peazip.7z.elf"
+    );
+
+    DYNAMIC_SECTION( filename ) {
+        REQUIRE_LOAD_FILE( sfxBuffer, filename );
+        const BitArchiveReader reader{ test::sevenzipLib(), sfxBuffer };
+        REQUIRE( reader.detectedFormat() == BitFormat::Elf );
+        REQUIRE( reader.itemsCount() > 0 );
+    }
+}
+
 #endif // BIT7Z_AUTO_FORMAT
