@@ -40,10 +40,16 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Compression and extraction _to and from_ memory** and **C++ standard streams**.
 + Compression using **custom path aliases** for the items in the output archives.
 + **Selective extraction** of only specified files/folders **using wildcards** and **regular expressions**.
++ **Selective extraction of folders**, and **extraction of an archive's root folder content**.
++ **Renaming** the extracted items **via a callback**.
++ **Reading raw extracted data** through a callback.
++ **Reading and extracting nested archives**, and **opening subfiles** within archives, without writing the intermediate files.
 + Creation of **encrypted archives** (strong AES-256 encryption; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
 + Possibility to choose the **compression level** (if supported by the archive format), the **compression method** ([supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size**, and the **word size**.
 + **Automatic input archive format detection**.
++ Opening **self-extracting (SFX) archives** and executables with appended data.
++ **Deferred loading** of the 7-Zip shared library.
 + **Solid archives** (only for 7z).
 + **Multi-volume archives**.
 + **Operation callbacks** for obtaining real-time information about ongoing operations.
