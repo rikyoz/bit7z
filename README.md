@@ -43,7 +43,7 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Selective extraction of folders**, and **extraction of an archive's root folder content**.
 + **Renaming** the extracted items **via a callback**.
 + **Reading raw extracted data** through a callback.
-+ **Reading and extracting nested archives**, and **opening subfiles** within archives, without writing the intermediate files.
++ **Reading and extracting nested and sub-archives** without writing the intermediate files.
 + Creation of **encrypted archives** (strong AES-256 encryption; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
 + Possibility to choose the **compression level** (if supported by the archive format), the **compression method** ([supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size**, and the **word size**.
