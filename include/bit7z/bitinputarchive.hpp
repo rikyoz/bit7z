@@ -38,6 +38,7 @@ namespace bit7z {
 
 class BufferQueue;
 class ExtractCallback;
+class OpenCallback;
 
 /**
  * @brief Offset from where the archive starts within the input file.
@@ -48,7 +49,7 @@ enum struct ArchiveStartOffset : std::uint8_t {
     FileStart ///< Check only the file start for the archive's start.
 };
 
-enum class FolderPathPolicy : std::uint8_t {
+enum struct FolderPathPolicy : std::uint8_t {
     Strip,      ///< Remove the folder path from the extracted path.
     KeepName,   ///< Preserve the folder name in the extracted path.
     KeepPath,   ///< Preserve the full folder path in the extracted path.
@@ -85,7 +86,7 @@ class BitInputArchive {
          */
         BitInputArchive(
             const BitAbstractArchiveHandler& handler,
-            const fs::path& arcPath,
+            const bit7zfs::path& arcPath,
             ArchiveStartOffset startOffset = ArchiveStartOffset::None
         );
 
@@ -194,6 +195,21 @@ class BitInputArchive {
         BIT7Z_NODISCARD auto archiveHasPath() const noexcept -> bool;
 
         /**
+         * @brief Returns the single top-level folder that contains all of the archive's items.
+         *
+         * The archive is considered to have a root folder only when every item is contained
+         * within the same top-level folder. There is no common root folder if the items belong
+         * to different top-level folders, if the archive contains a file at its root, or if the
+         * archive is empty.
+         *
+         * @note The returned value is the folder's name, without any trailing path separator.
+         *
+         * @return the name of the archive's root folder, or an empty string if the archive does
+         *         not have a single common root folder.
+         */
+        BIT7Z_NODISCARD auto rootFolder() const -> tstring;
+
+        /**
          * @return the BitAbstractArchiveHandler object containing the settings for reading the archive.
          */
         BIT7Z_NODISCARD auto handler() const noexcept -> const BitAbstractArchiveHandler&;
@@ -291,16 +307,21 @@ class BitInputArchive {
          * @brief Extracts the archive to the chosen directory,
          * specifying the names of the extracted items via a RenameCallback.
          *
-         * @note The callback provides in input the index, and the path (within the archive)
-         * of the item to be extracted, and must return the new path that the extracted item
-         * must have on the filesystem.
-         * If the path of the item must not change, simply return the input path in the callback.
+         * @note The callback receives the archive item being extracted and must return the path
+         * that the extracted item must have on the filesystem.
+         * If the path of the item must not change, simply return the item's path in the callback.
          * If the item must not be extracted, return an empty string in the callback.
          *
          * @param outDir            the output directory where the extracted files will be put.
          * @param renameCallback    the callback that returns the names for the extracted files.
          */
         void extractTo( const tstring& outDir, RenameCallback renameCallback ) const;
+
+        BIT7Z_DEPRECATED_MSG(
+            "Since v4.1; the RenameCallback now receives the BitArchiveItem being extracted. "
+            "The (index, path) form will be removed in v4.2."
+        )
+        void extractTo( const tstring& outDir, LegacyRenameCallback renameCallback ) const;
 
         /**
          * @brief Extracts a folder from the archive to the chosen directory.
@@ -313,6 +334,20 @@ class BitInputArchive {
             const tstring& outDir,
             const tstring& folderPath,
             FolderPathPolicy policy = FolderPathPolicy::Strip
+        ) const;
+
+        /**
+         * @brief Extracts the content of the archive's root folder to the chosen directory.
+         *
+         * The archive's root folder is the single top-level folder shared by all the items
+         * in the archive; its name is stripped from the extracted items' paths.
+         *
+         * @note If the archive does not have a single root folder, a BitException is thrown.
+         *
+         * @param outDir    the output directory where the root folder's content will be put.
+         */
+        void extractRootFolderContentTo(
+            const tstring& outDir
         ) const;
 
         BIT7Z_DEPRECATED_MSG( "Since v4.0; please, use the extractTo method." )
@@ -635,12 +670,11 @@ class BitInputArchive {
         BIT7Z_NODISCARD auto mainSubfileIndex() const -> std::uint32_t;
 
     protected:
-        explicit BitInputArchive( const BitAbstractArchiveHandler& handler, const BitInputArchive& parentArchive );
-
         explicit BitInputArchive(
             const BitAbstractArchiveHandler& handler,
             const BitInputArchive& parentArchive,
-            std::uint32_t index
+            std::uint32_t subfileIndex,
+            ArchiveStartOffset archiveStart
         );
 
         BIT7Z_NODISCARD
@@ -674,12 +708,36 @@ class BitInputArchive {
 
         BIT7Z_NODISCARD
         auto openArchiveStream(
-            const fs::path& name,
+            const bit7zfs::path& name,
             IInStream* inStream,
             ArchiveStartOffset startOffset
         ) -> IInArchive*;
 
+#ifdef BIT7Z_AUTO_FORMAT
+        BIT7Z_NODISCARD
+        auto tryOpenSfxArchive(
+            IInStream* inStream,
+            OpenCallback* openCallback,
+            const bit7zfs::path& name
+        ) -> IInArchive*;
+#endif
+
         void testArchive( BitIndicesView indices ) const;
+
+        /**
+         * @brief Retrieves the item at the given index, without validating the index.
+         *
+         * For internal use during extraction, where the index is provided by 7-Zip and is therefore
+         * guaranteed to be valid: it skips the index-validity check (and the archive item-count query
+         * it performs) done by itemAt.
+         *
+         * @param index the (trusted) index of the item to be retrieved.
+         *
+         * @return the item at the given index within the archive.
+         */
+        BIT7Z_NODISCARD auto itemAtUnchecked( std::uint32_t index ) const -> BitArchiveItemOffset;
+
+        friend class ExtractCallback;
 
         friend class BitAbstractArchiveOpener;
 

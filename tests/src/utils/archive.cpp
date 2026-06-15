@@ -16,10 +16,12 @@
 
 #include <catch2/catch.hpp>
 
+#include <unordered_map>
+
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
-void require_archive_item(
+void requireArchiveItem(
     const BitInFormat& format,
     const BitArchiveItem& item,
     const ExpectedItem& expectedItem,
@@ -33,29 +35,29 @@ void require_archive_item(
         REQUIRE( item.isEncrypted() == expectedItem.isEncrypted );
     }
 
-    if ( format_has_path_metadata( format ) ) {
+    if ( formatHasPathMetadata( format ) ) {
         REQUIRE( item.extension() == expectedItem.fileInfo.ext );
         REQUIRE( item.name() == expectedItem.fileInfo.name );
         REQUIRE( item.path() == expectedItem.inArchivePath );
     }
 
-    if ( format_has_size_metadata( format ) ) {
+    if ( formatHasSizeMetadata( format ) ) {
         /* Note: some archive formats (e.g. BZip2) do not provide the size metadata! */
         REQUIRE( item.size() == expectedItem.fileInfo.size );
     }
 
     const auto itemCrc = item.crc();
-    if ( itemCrc != 0 && ( ( format != BitFormat::Rar5 ) || !item.isEncrypted() ) ) {
+    if ( itemCrc != 0 && ( format != BitFormat::Rar5 || !item.isEncrypted() ) ) {
         /* Encrypted Rar5 archives have random CRCs values. */
-        if ( format_has_crc32( format ) ) {
+        if ( formatHasCrc32( format ) ) {
             REQUIRE( itemCrc == expectedItem.fileInfo.crc32 );
-        } else if ( format_has_crc16( format ) ) {
+        } else if ( formatHasCrc16( format ) ) {
             REQUIRE( itemCrc == expectedItem.fileInfo.crc16 );
         }
     }
 }
 
-void require_archive_content(
+void requireArchiveContent(
     const BitArchiveReader& info,
     const TestArchiveContent& input,
     const SourceLocation& location
@@ -70,9 +72,13 @@ void require_archive_content(
     REQUIRE( info.foldersCount() == ( expectedArchiveContent.items.size() - expectedArchiveContent.fileCount ) );
 
     const auto& format = info.format();
-    if ( format_has_size_metadata( format ) ) {
+    if ( formatHasSizeMetadata( format ) ) {
         REQUIRE( info.size() == expectedArchiveContent.size );
-        REQUIRE( info.packSize() == input.packedSize() );
+        // A packed size of 0 means "do not check it": the packed size of a freshly created archive
+        // is not deterministic, as it depends on the 7-Zip version and the compression settings.
+        if ( input.packedSize() != 0 ) {
+            REQUIRE( info.packSize() == input.packedSize() );
+        }
     }
 
     REQUIRE_FALSE( info.isMultiVolume() );
@@ -82,39 +88,51 @@ void require_archive_content(
     REQUIRE_NOTHROW( items = info.items() );
     REQUIRE( items.size() == info.itemsCount() );
 
-    const bool archiveStoresPaths = format_has_path_metadata( format );
+    const bool archiveStoresPaths = formatHasPathMetadata( format );
     const bool fromFilesystem = !info.archivePath().empty();
-    std::size_t found_items = 0;
-    for ( const auto& expectedItem : expectedArchiveContent.items ) {
-        for ( const auto& item : items ) {
-            if ( archiveStoresPaths || fromFilesystem ) {
-                if ( item.name() != expectedItem.fileInfo.name ) {
-                    continue;
-                }
-                REQUIRE( info.find( item.path() ) != info.cend() );
-                REQUIRE( info.contains( item.path() ) );
-            }
-            REQUIRE( info.isItemEncrypted( item.index() ) == expectedItem.isEncrypted );
-            REQUIRE(
-                info.isItemFolder( item.index() ) == ( expectedItem.fileInfo.type == fs::file_type::directory )
-            );
-            require_archive_item( format, item, expectedItem, location );
-            found_items++;
-            break;
+    const bool matchByName = archiveStoresPaths || fromFilesystem;
+
+    // Index the expected items by name so each archive item can be matched in a single pass.
+    // Names are unique within the test archives that store paths; matched entries are erased so
+    // that the archive items and the expected items are checked to form a one-to-one correspondence.
+    std::unordered_map< tstring, filesystem::ExpectedItemRef > expectedByName;
+    if ( matchByName ) {
+        expectedByName.reserve( expectedArchiveContent.items.size() );
+        for ( const auto& expectedItem : expectedArchiveContent.items ) {
+            expectedByName.emplace( expectedItem.fileInfo.name, std::cref( expectedItem ) );
         }
     }
-    REQUIRE( items.size() == found_items );
+
+    for ( const auto& item : items ) {
+        const auto itemIndex = item.index();
+        const auto& expectedItem = [&] () -> filesystem::ExpectedItemRef {
+            if ( matchByName ) {
+                const auto match = expectedByName.find( item.name() );
+                REQUIRE( match != expectedByName.end() );
+                const auto result = match->second;
+                expectedByName.erase( match ); // Enforce one-to-one matching.
+                return result;
+            }
+
+            REQUIRE( itemIndex < expectedArchiveContent.items.size() );
+            return std::cref( expectedArchiveContent.items[ itemIndex ] );
+        }().get();
+        REQUIRE( info.isItemEncrypted( itemIndex ) == expectedItem.isEncrypted );
+        REQUIRE( info.isItemFolder( itemIndex ) == ( expectedItem.fileInfo.type == fs::file_type::directory ) );
+        requireArchiveItem( format, item, expectedItem, location );
+    }
+    REQUIRE( expectedByName.empty() );
 }
 
-void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location ) {
+void requireFilesystemItem( const ExpectedItem& expectedItem, const SourceLocation& location ) {
     INFO( "From " << location.file_name() << ":" << location.line() )
-    INFO( "Failed while checking expected item: " << filesystem::to_utf8string( expectedItem.inArchivePath ) )
+    INFO( "Failed while checking expected item: " << filesystem::toUtf8String( expectedItem.inArchivePath ) )
 
     const auto fileStatus = fs::symlink_status( expectedItem.inArchivePath );
     REQUIRE( fs::exists( fileStatus ) );
     REQUIRE( fileStatus.type() == expectedItem.fileInfo.type );
     if ( fs::is_regular_file( fileStatus ) ) {
-        REQUIRE( crc32( filesystem::load_file( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
+        REQUIRE( crc32( filesystem::loadFile( expectedItem.inArchivePath ) ) == expectedItem.fileInfo.crc32 );
     }
 #ifndef _WIN32
     if ( fs::is_symlink( fileStatus ) ) {

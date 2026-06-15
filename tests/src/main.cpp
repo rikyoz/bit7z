@@ -37,12 +37,12 @@ auto main( int argc, char* argv[ ] ) -> int try {
     std::clog << "Version: " << compiler::standard_library_version << "\n\n";
 
     std::clog << "[Runtime]\n";
-    std::clog << "Executable path: " << filesystem::exe_path().string() << '\n';
+    std::clog << "Executable path: " << filesystem::exePath().string() << '\n';
     std::clog << "7-zip shared library: ";
 #if defined( BIT7Z_USE_NATIVE_STRING ) && defined( _WIN32 )
-    std::wclog << sevenzip_lib_path() << "\n";
+    std::wclog << sevenzipLibPath() << "\n";
 #else
-    std::clog << sevenzip_lib_path() << '\n';
+    std::clog << sevenzipLibPath() << '\n';
 #endif
 #ifdef BIT7Z_TESTS_FILESYSTEM
     std::clog << "Test data path: " << filesystem::test_data_dir << '\n';

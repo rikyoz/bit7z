@@ -79,10 +79,9 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @brief Extracts the given archive to the chosen directory,
          * renaming the extracted items using the provided RenameCallback.
          *
-         * @note The callback provides in input the index, and the path (within the archive)
-         * of the item to be extracted, and must return the new path that the extracted item
-         * must have on the filesystem.
-         * If the path of the item must not change, simply return the input path in the callback.
+         * @note The callback receives the archive item being extracted and must return the path
+         * that the extracted item must have on the filesystem.
+         * If the path of the item must not change, simply return the item's path in the callback.
          * If the item must not be extracted, return an empty string in the callback.
          *
          * @param inArchive    the input archive to be extracted.
@@ -92,6 +91,26 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         void extract( Input inArchive, const tstring& outDir, RenameCallback callback ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outDir, std::move( callback ) );
+        }
+
+        BIT7Z_DEPRECATED_MSG(
+            "Since v4.1; the RenameCallback now receives the BitArchiveItem being extracted. "
+            "The (index, path) form will be removed in v4.2."
+        )
+        void extract( Input inArchive, const tstring& outDir, LegacyRenameCallback callback ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractTo(
+                outDir,
+                // Init-capture (to move the callback into the lambda) requires C++14;
+                // under C++11 we fall back to capturing the (copyable) std::function by copy.
+#if BIT7Z_CPP_STANDARD >= 14
+                [ callback = std::move( callback ) ]( const BitArchiveItem& item ) -> tstring {
+#else
+                [ callback ]( const BitArchiveItem& item ) -> tstring {
+#endif
+                    return callback( item.index(), item.path() );
+                }
+            );
         }
 
         /**
@@ -110,6 +129,25 @@ class BitExtractor final : public BitAbstractArchiveOpener {
         ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractFolderTo( outDir, folderPath, policy );
+        }
+
+        /**
+         * @brief Extracts the content of the archive's root folder to the chosen directory.
+         *
+         * The archive's root folder is the single top-level folder shared by all the items
+         * in the archive; its name is stripped from the extracted items' paths.
+         *
+         * @note If the archive does not have a single root folder, a BitException is thrown.
+         *
+         * @param inArchive     the input archive to extract from.
+         * @param outDir        the output directory where the root folder's content will be put.
+         */
+        void extractRootFolderContent(
+            Input inArchive,
+            const tstring& outDir
+        ) const {
+            const BitInputArchive inputArchive( *this, inArchive );
+            inputArchive.extractRootFolderContentTo( outDir );
         }
 
         /**
@@ -148,8 +186,8 @@ class BitExtractor final : public BitAbstractArchiveOpener {
          * @param outBuffer the pre-allocated output buffer.
          * @param index     the index of the file to be extracted.
          */
-        template< std::size_t N >
-        void extract( Input inArchive, byte_t (&outBuffer)[ N ], std::uint32_t index = 0 ) const { // NOLINT(*-avoid-c-arrays)
+        template< std::size_t N > // NOLINTNEXTLINE(*-avoid-c-arrays)
+        void extract( Input inArchive, byte_t (&outBuffer)[ N ], std::uint32_t index = 0 ) const {
             const BitInputArchive inputArchive( *this, inArchive );
             inputArchive.extractTo( outBuffer, index );
         }

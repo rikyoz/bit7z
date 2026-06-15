@@ -126,8 +126,8 @@ STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* proces
         *processedSize += bytesRead;
     }
     return result;
-} catch ( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 } catch ( ... ) {
     return E_FAIL;
 }

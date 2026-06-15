@@ -74,7 +74,6 @@ class TestArchive : public TestArchiveContent {
 
     private:
         TestFormatType mFormat;
-
 };
 
 using TestInputArchive = TestArchive< TestInputFormat >;
@@ -84,11 +83,11 @@ using stream_t = fs::ifstream;
 
 // Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
 inline void getInputArchive( const fs::path& path, tstring& archive ) {
-    archive = to_tstring( path );
+    archive = to_tstring( path.native() );
 }
 
 inline void getInputArchive( const fs::path& path, buffer_t& archive ) {
-    archive = filesystem::load_file( path );
+    archive = filesystem::loadFile( path );
 }
 
 inline void getInputArchive( const fs::path& path, stream_t& archive ) {
@@ -98,7 +97,7 @@ inline void getInputArchive( const fs::path& path, stream_t& archive ) {
 template< typename T >
 using is_filesystem_archive = std::is_same< bit7z::tstring, typename std::decay< T >::type >;
 
-void require_archive_item(
+void requireArchiveItem(
     const BitInFormat& format,
     const BitArchiveItem& item,
     const ExpectedItem& expectedItem,
@@ -106,20 +105,20 @@ void require_archive_item(
 );
 
 #define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem ) \
-require_archive_item( format, item, expectedItem, BIT7Z_CURRENT_LOCATION )
+    requireArchiveItem( format, item, expectedItem, BIT7Z_CURRENT_LOCATION )
 
-void require_archive_content(
+void requireArchiveContent(
     const BitArchiveReader& info,
     const TestArchiveContent& input,
     const SourceLocation& location
 );
 
 #define REQUIRE_ARCHIVE_CONTENT( info, input ) \
-require_archive_content( info, input, BIT7Z_CURRENT_LOCATION )
+    requireArchiveContent( info, input, BIT7Z_CURRENT_LOCATION )
 
-void require_filesystem_item( const ExpectedItem& expectedItem, const SourceLocation& location );
+void requireFilesystemItem( const ExpectedItem& expectedItem, const SourceLocation& location );
 
-#define REQUIRE_FILESYSTEM_ITEM( expectedItem ) require_filesystem_item( expectedItem, BIT7Z_CURRENT_LOCATION )
+#define REQUIRE_FILESYSTEM_ITEM( expectedItem ) requireFilesystemItem( expectedItem, BIT7Z_CURRENT_LOCATION )
 
 } // namespace test
 } // namespace bit7z

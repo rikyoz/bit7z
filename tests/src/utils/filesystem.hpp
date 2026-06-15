@@ -41,7 +41,7 @@ namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 namespace filesystem {
 
-inline auto to_utf8string( const fs::path& path ) -> std::string {
+inline auto toUtf8String( const fs::path& path ) -> std::string {
 #ifdef __cpp_lib_char8_t
     const auto u8str = path.u8string();
     return std::string{ u8str.cbegin(), u8str.cend() };
@@ -50,7 +50,7 @@ inline auto to_utf8string( const fs::path& path ) -> std::string {
 #endif
 }
 
-inline auto exe_path() -> fs::path {
+inline auto exePath() -> fs::path {
 #ifdef _WIN32
     std::array< wchar_t, MAX_PATH > path{ 0 };
     GetModuleFileNameW( nullptr, path.data(), MAX_PATH );
@@ -87,7 +87,7 @@ inline auto getenv( const wchar_t* name ) -> std::wstring {
 }
 #endif
 
-inline auto user_dir() -> fs::path {
+inline auto userDir() -> fs::path {
 #ifdef _WIN32
     auto userProfile = getenv( L"USERPROFILE" );
     if ( !userProfile.empty() ) {
@@ -110,28 +110,28 @@ inline auto user_dir() -> fs::path {
 #endif
 }
 
-inline auto current_dir() -> fs::path {
+inline auto currentDir() -> fs::path {
     std::error_code error;
     return fs::current_path( error );
 }
 
-inline auto set_current_dir( const fs::path& dir ) -> bool {
+inline auto setCurrentDir( const fs::path& dir ) -> bool {
     std::error_code error;
     fs::current_path( dir, error );
     return !error;
 }
 
 #ifdef _WIN32
-BIT7Z_NODISCARD auto get_file_comment( const fs::path& filePath ) -> std::wstring;
+BIT7Z_NODISCARD auto getFileComment( const fs::path& filePath ) -> std::wstring;
 #endif
 
-inline auto load_file( fs::path const& inFile ) -> buffer_t {
+inline auto loadFile( const fs::path& inFile ) -> buffer_t {
     fs::ifstream ifs{ inFile, fs::ifstream::binary };
     if ( !ifs.is_open() ) {
         return {};
     }
     noskipws( ifs ); //no skip spaces!
-    auto size = fs::file_size( inFile );
+    const auto size = fs::file_size( inFile );
     buffer_t result( size );
     // NOLINTNEXTLINE(*-pro-type-reinterpret-cast)
     ifs.read( reinterpret_cast< char* >( result.data() ), result.cend() - result.cbegin() );
@@ -140,12 +140,12 @@ inline auto load_file( fs::path const& inFile ) -> buffer_t {
 }
 
 #define REQUIRE_LOAD_FILE( var, in_file ) \
-const auto (var) = load_file( in_file ); \
-REQUIRE_FALSE( (var).empty() )
+    const auto (var) = loadFile( in_file ); \
+    REQUIRE_FALSE( (var).empty() )
 
 #define REQUIRE_OPEN_IFSTREAM( var, in_file ) \
-fs::ifstream (var){ in_file, std::ios::binary }; \
-REQUIRE( (var).is_open() )
+    fs::ifstream (var){ in_file, std::ios::binary }; \
+    REQUIRE( (var).is_open() )
 
 struct FilesystemItemInfo {
     const tchar* name; // path inside the test_filesystem folder
@@ -183,31 +183,32 @@ struct ExpectedItem {
     bool isEncrypted;
 };
 
+using ExpectedItemRef = std::reference_wrapper< const ExpectedItem >;
 using ExpectedItems = std::vector< ExpectedItem >;
 
 struct ArchiveContent {
     std::size_t fileCount;
     std::size_t size;
-    std::vector< ExpectedItem > items;
+    ExpectedItems items;
 };
 
-auto single_file_content() -> const ArchiveContent&;
+auto singleFileContent() -> const ArchiveContent&;
 
-auto multiple_files_content() -> const ArchiveContent&;
+auto multipleFilesContent() -> const ArchiveContent&;
 
-auto multiple_items_content() -> const ArchiveContent&;
+auto multipleItemsContent() -> const ArchiveContent&;
 
-auto encrypted_content() -> const ArchiveContent&;
+auto encryptedContent() -> const ArchiveContent&;
 
-auto empty_content() -> const ArchiveContent&;
+auto emptyContent() -> const ArchiveContent&;
 
-auto unicode_content() -> const ArchiveContent&;
+auto unicodeContent() -> const ArchiveContent&;
 
-auto file_type_content() -> const ArchiveContent&;
+auto fileTypeContent() -> const ArchiveContent&;
 
-auto no_path_content() -> const ArchiveContent&;
+auto noPathContent() -> const ArchiveContent&;
 
-auto flat_items_content() -> const ArchiveContent&;
+auto flatItemsContent() -> const ArchiveContent&;
 
 class TestDirectory {
     public:
@@ -251,7 +252,7 @@ class TempDirectory {
 };
 
 inline auto operator<<( std::ostream& stream, const TempDirectory& dir ) -> std::ostream& {
-    return stream << to_utf8string( dir.path() );
+    return stream << toUtf8String( dir.path() );
 }
 
 struct TempTestDirectory : TempDirectory, TestDirectory {

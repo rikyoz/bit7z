@@ -123,8 +123,8 @@ STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32
         *processedSize += bytesWritten;
     }
     return S_OK;
-} catch ( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 } catch ( ... ) {
     return E_FAIL;
 }
@@ -211,8 +211,8 @@ STDMETHODIMP CMultiVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
                 try {
                     // Volume was evicted, we need to reopen it.
                     ensureVolumeOpen( lastVolume, mVolumes.size() - 1 );
-                } catch ( const BitException& ex ) {
-                    return ex.hresultCode();
+                } catch ( const BitException& exception ) {
+                    return exception.hresultCode();
                 } catch ( ... ) {
                     return E_FAIL;
                 }

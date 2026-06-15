@@ -18,6 +18,7 @@
 #include "bitfileextractor.hpp"
 #include "bitmemcompressor.hpp"
 #include "bitmemextractor.hpp"
+#include "bitnestedarchivereader.hpp"
 #include "bitstreamcompressor.hpp"
 #include "bitstreamextractor.hpp"
 

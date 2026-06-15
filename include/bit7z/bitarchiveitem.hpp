@@ -123,9 +123,12 @@ class BitArchiveItem : public BitGenericItem {
         BIT7Z_NODISCARD auto isEncrypted() const -> bool;
 
     protected:
-        std::uint32_t mItemIndex; // Note: it is not const since the subclass BitArchiveItemOffset can increment it.
-
         explicit BitArchiveItem( std::uint32_t itemIndex ) noexcept;
+
+    private:
+        std::uint32_t mItemIndex;
+
+        friend class BitArchiveItemOffset;
 };
 
 } // namespace bit7z

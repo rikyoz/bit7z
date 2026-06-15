@@ -1,0 +1,8 @@
+@PACKAGE_INIT@
+
+# bit7z bundles its build-time dependencies (7-zip sources and ghc::filesystem) into the static
+# library, and its public API does not expose them, so no find_dependency() calls are required here.
+
+include( "${CMAKE_CURRENT_LIST_DIR}/bit7zTargets.cmake" )
+
+check_required_components( bit7z )

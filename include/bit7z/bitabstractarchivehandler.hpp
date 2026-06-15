@@ -57,8 +57,20 @@ using RawDataCallback = std::function< bool( const byte_t*, std::size_t ) >;
 
 /**
  * @brief A function returning a new name for the item currently being extracted.
+ *
+ * @note The callback receives the archive item being extracted and must return the path that
+ * the extracted item must have on the filesystem. Returning the item's own path leaves it
+ * unchanged; returning an empty string skips the item.
  */
-using RenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
+using RenameCallback = std::function< tstring( const BitArchiveItem& ) >;
+
+/**
+ * @brief The (index, path) form of RenameCallback.
+ *
+ * @deprecated Since v4.1; it will be removed in v4.2. Use RenameCallback, which receives the
+ * BitArchiveItem being extracted (its index and path are available via the item).
+ */
+using LegacyRenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
 
 /**
  * @brief A function returning a reference to the buffer where to extract the item at the given index/path.
@@ -85,7 +97,7 @@ using FilterCallback = std::function< FilterResult( const BitArchiveItem& ) >;
 /**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
  */
-enum struct OverwriteMode {
+enum struct OverwriteMode : std::uint8_t {
     None = 0,  ///< The handler will throw an exception if the output file or buffer already exists.
     Overwrite, ///< The handler will overwrite the old file or buffer with the new one.
     Skip,      ///< The handler will skip writing to the output file or buffer.
@@ -125,7 +137,7 @@ class BitAbstractArchiveHandler {
         /**
          * @return the format used by the handler for extracting or compressing.
          */
-        BIT7Z_NODISCARD virtual auto format() const -> const BitInFormat& = 0;
+        BIT7Z_NODISCARD virtual auto format() const noexcept -> const BitInFormat& = 0;
 
         /**
          * @return the password used to open, extract, or encrypt the archive.

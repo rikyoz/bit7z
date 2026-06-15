@@ -12,6 +12,7 @@
 
 #include "bitexception.hpp"
 
+#include "biterror.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
 #include "internal/internalcategory.hpp"
@@ -86,6 +87,17 @@ auto BitException::hresultCode() const noexcept -> HRESULT {
         return HRESULT_FROM_WIN32( static_cast< DWORD >( error.value() ) );
     }
 #endif
+    if ( error.category() == bit7z::internalCategory() ) {
+        /* Some bit7z internal errors have no faithful std::errc equivalent, so they are mapped to a specific
+         * HRESULT here, before the generic std::errc-based mapping below (which would otherwise route them
+         * through their default_error_condition, e.g. NoMatchingItems -> ENOENT -> ERROR_PATH_NOT_FOUND). */
+        const auto bitError = static_cast< BitError >( error.value() );
+        if ( bitError == BitError::NoMatchingItems || bitError == BitError::NoMatchingFile ) {
+            /* A "no matching item/file" result is a lookup miss, not a missing path: ERROR_NOT_FOUND
+             * ("Element not found.") is the closest Win32 code, without the misleading "path not found" semantics. */
+            return HRESULT_FROM_WIN32( ERROR_NOT_FOUND );
+        }
+    }
     // POSIX error code (generic_category) or BitError code (internal_category)
     if ( error == std::errc::bad_file_descriptor ) {
         return HRESULT_FROM_WIN32( ERROR_INVALID_HANDLE );
@@ -103,7 +115,11 @@ auto BitException::hresultCode() const noexcept -> HRESULT {
         return HRESULT_FROM_WIN32( ERROR_DISK_FULL );
     }
     if ( error == std::errc::no_such_file_or_directory ) {
-        return HRESULT_FROM_WIN32( ERROR_PATH_NOT_FOUND );
+        /* ENOENT is ambiguous on Windows (both ERROR_FILE_NOT_FOUND and ERROR_PATH_NOT_FOUND map back to it),
+         * so we pick the generic "the named item wasn't found" code. ERROR_PATH_NOT_FOUND specifically means an
+         * intermediate directory is missing, which genuine filesystem failures already report via their own
+         * Win32 error code (i.e., without reaching this fallback). */
+        return HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND );
     }
     if ( error == std::errc::not_enough_memory ) {
         return E_OUTOFMEMORY;

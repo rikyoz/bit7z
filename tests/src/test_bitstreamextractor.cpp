@@ -19,7 +19,7 @@
 
 using namespace bit7z;
 
-TEST_CASE( "BitStreamExtractor: TODO", "[bitstreamxtractor]" ) {
-    const BitStreamExtractor streamExtractor{ test::sevenzip_lib(), BitFormat::SevenZip };
+TEST_CASE( "BitStreamExtractor: TODO", "[bitstreamextractor]" ) {
+    const BitStreamExtractor streamExtractor{ test::sevenzipLib(), BitFormat::SevenZip };
     REQUIRE( streamExtractor.extractionFormat() == BitFormat::SevenZip ); // Just a placeholder test.
 }

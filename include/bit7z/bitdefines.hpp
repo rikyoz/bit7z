@@ -40,7 +40,7 @@
 #endif
 
 #ifndef BIT7Z_DISABLE_USE_STD_FILESYSTEM
-#   if defined( __cpp_lib_filesystem )
+#   ifdef __cpp_lib_filesystem
 #       define BIT7Z_USE_STANDARD_FILESYSTEM
 #   elif BIT7Z_CPP_STANDARD >= 17 && defined( __has_include )
 #       if __has_include( <filesystem> )
@@ -50,7 +50,7 @@
 #endif
 
 /* Macro defines for [[nodiscard]] and [[maybe_unused]] attributes. */
-#if defined( __has_cpp_attribute )
+#ifdef __has_cpp_attribute
 #   if __has_cpp_attribute( nodiscard )
 #       define BIT7Z_NODISCARD [[nodiscard]]
 #   endif
@@ -130,7 +130,7 @@
 #   endif
 #endif
 
-#if defined( __GNUC__ )
+#ifdef __GNUC__
 #   define BIT7Z_ALWAYS_INLINE [[gnu::always_inline]] inline
 #elif defined( _WIN32 )
 #   define BIT7Z_ALWAYS_INLINE __forceinline

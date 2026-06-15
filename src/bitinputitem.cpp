@@ -22,6 +22,11 @@
 #include "internal/util.hpp"
 
 namespace bit7z {
+
+using detail::InputItemProperties;
+using detail::InputItemType;
+using detail::RenamedInputItemInitTag;
+
 namespace {
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
@@ -252,7 +257,7 @@ auto BitInputItem::itemProperty( BitProperty property ) const -> BitPropVariant 
     return prop;
 }
 
-auto BitInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT try {
+auto BitInputItem::getStream( ISequentialInStream** inStream, bool storeOpenFiles ) const -> HRESULT try {
     if ( isDir() ) {
         return S_OK;
     }
@@ -263,7 +268,7 @@ auto BitInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT 
         if ( mFilesystemItem.symlinkPolicy == SymlinkPolicy::DoNotFollow && isSymLink() ) {
             inStreamLoc = bit7z::make_com< CSymlinkInStream >( mPath );
         } else {
-            inStreamLoc = bit7z::make_com< CFileInStream >( mPath );
+            inStreamLoc = bit7z::make_com< CFileInStream >( mPath, storeOpenFiles );
         }
     } else if ( mProperties.inputType == InputItemType::Buffer ) {
         // NOLINTNEXTLINE(*-pro-type-union-access)
@@ -274,8 +279,8 @@ auto BitInputItem::getStream( ISequentialInStream** inStream ) const -> HRESULT 
     }
     *inStream = inStreamLoc.Detach();
     return S_OK;
-} catch ( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 }
 
 auto BitInputItem::hasNewData() const noexcept -> bool {

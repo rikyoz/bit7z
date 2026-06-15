@@ -12,6 +12,7 @@
 
 #include <catch2/catch.hpp>
 
+#include <bit7z/biterror.hpp>
 #include <bit7z/bitexception.hpp>
 #include <bit7z/bitwindows.hpp>
 #include <internal/windows.hpp>
@@ -22,123 +23,157 @@
 
 using bit7z::BitException;
 
+namespace {
 struct PortableErrorTest { //-V802
     const char* name;
     HRESULT error;
     const char* message;
     std::errc portableError;
 };
+} // namespace
 
 #define ERROR_TEST( code ) #code, code
 #define HRESULT_WIN32_TEST( code ) #code, __HRESULT_FROM_WIN32( code )
 
-constexpr PortableErrorTest hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
+constexpr PortableErrorTest hresultTests[ ] = { // NOLINT(*-avoid-c-arrays)
     { ERROR_TEST( E_ABORT ), "Operation aborted", std::errc::operation_canceled },
     { ERROR_TEST( E_NOTIMPL ), "Not implemented", std::errc::function_not_supported },
     { ERROR_TEST( E_NOINTERFACE ), "No such interface supported", std::errc::not_supported },
     { ERROR_TEST( E_INVALIDARG ), "The parameter is incorrect.", std::errc::invalid_argument },
     { ERROR_TEST( STG_E_INVALIDFUNCTION ), "Unable to perform requested operation.", std::errc::invalid_argument },
-    { ERROR_TEST( E_OUTOFMEMORY ),
-      "Not enough memory resources are available to complete this operation.",
-      std::errc::not_enough_memory },
+    {
+        ERROR_TEST( E_OUTOFMEMORY ),
+        "Not enough memory resources are available to complete this operation.",
+        std::errc::not_enough_memory
+    },
 #ifdef _WIN32
-    { ERROR_TEST( E_PENDING ),
-      "The data necessary to complete this operation is not yet available.",
-      std::errc::resource_unavailable_try_again },
+    {
+        ERROR_TEST( E_PENDING ),
+        "The data necessary to complete this operation is not yet available.",
+        std::errc::resource_unavailable_try_again
+    },
     { ERROR_TEST( E_POINTER ), "Invalid pointer", std::errc::invalid_argument },
 #endif
-    { HRESULT_WIN32_TEST( ERROR_OPEN_FAILED ),
+    {
+        HRESULT_WIN32_TEST( ERROR_OPEN_FAILED ),
 #ifdef _WIN32
-      "The system cannot open the device or file specified.",
+        "The system cannot open the device or file specified.",
 #elif defined( __linux__ ) && !defined ( __GLIBC__ )
-      "I/O error",
+        "I/O error",
 #else
         "Input/output error",
 #endif
-      std::errc::io_error },
+        std::errc::io_error
+    },
 #ifdef _WIN32
-    { HRESULT_WIN32_TEST( ERROR_FILE_NOT_FOUND ),
-      "The system cannot find the file specified.",
-      std::errc::no_such_file_or_directory },
-    { HRESULT_WIN32_TEST( ERROR_ACCESS_DENIED ),
-      "Access is denied.",
-      std::errc::permission_denied },
-    { HRESULT_WIN32_TEST( ERROR_NOT_SUPPORTED ),
-      "The request is not supported.",
-      std::errc::not_supported },
+    {
+        HRESULT_WIN32_TEST( ERROR_FILE_NOT_FOUND ),
+        "The system cannot find the file specified.",
+        std::errc::no_such_file_or_directory
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_ACCESS_DENIED ),
+        "Access is denied.",
+        std::errc::permission_denied
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_NOT_SUPPORTED ),
+        "The request is not supported.",
+        std::errc::not_supported
+    },
 #endif
-    { HRESULT_WIN32_TEST( ERROR_SEEK ),
+    {
+        HRESULT_WIN32_TEST( ERROR_SEEK ),
 #ifdef _WIN32
-      "The drive cannot locate a specific area or track on the disk.",
+        "The drive cannot locate a specific area or track on the disk.",
 #elif defined( __linux__ ) && !defined ( __GLIBC__ )
-      "I/O error",
+        "I/O error",
 #else
         "Input/output error",
 #endif
-      std::errc::io_error },
-    { HRESULT_WIN32_TEST( ERROR_READ_FAULT ),
+        std::errc::io_error
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_READ_FAULT ),
 #ifdef _WIN32
-      "The system cannot read from the specified device.",
+        "The system cannot read from the specified device.",
 #elif defined( __linux__ ) && !defined ( __GLIBC__ )
-      "I/O error",
+        "I/O error",
 #else
         "Input/output error",
 #endif
-      std::errc::io_error },
-    { HRESULT_WIN32_TEST( ERROR_WRITE_FAULT ),
+        std::errc::io_error
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_WRITE_FAULT ),
 #ifdef _WIN32
-      "The system cannot write to the specified device.",
+        "The system cannot write to the specified device.",
 #elif defined( __linux__ ) && !defined ( __GLIBC__ )
-      "I/O error",
+        "I/O error",
 #else
         "Input/output error",
 #endif
-      std::errc::io_error },
-    { HRESULT_WIN32_TEST( ERROR_ALREADY_EXISTS ),
+        std::errc::io_error
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_ALREADY_EXISTS ),
 #ifdef _WIN32
-      "Cannot create a file when that file already exists.",
+        "Cannot create a file when that file already exists.",
 #else
         "File exists",
 #endif
-      std::errc::file_exists },
-    { HRESULT_WIN32_TEST( ERROR_FILE_EXISTS ),
+        std::errc::file_exists
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_FILE_EXISTS ),
 #ifdef _WIN32
-      "The file exists.",
+        "The file exists.",
 #else
         "File exists",
 #endif
-      std::errc::file_exists },
-    { HRESULT_WIN32_TEST( ERROR_INVALID_HANDLE ),
+        std::errc::file_exists
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_INVALID_HANDLE ),
 #ifdef _WIN32
-      "The handle is invalid.", std::errc::invalid_argument
+        "The handle is invalid.",
+        std::errc::invalid_argument
 #else
         "Bad file descriptor", std::errc::bad_file_descriptor
 #endif
     },
-    { HRESULT_WIN32_TEST( ERROR_PATH_NOT_FOUND ),
+    {
+        HRESULT_WIN32_TEST( ERROR_PATH_NOT_FOUND ),
 #ifdef _WIN32
-      "The system cannot find the path specified.",
+        "The system cannot find the path specified.",
 #else
         "No such file or directory",
 #endif
-      std::errc::no_such_file_or_directory },
-    { HRESULT_WIN32_TEST( ERROR_DISK_FULL ),
+        std::errc::no_such_file_or_directory
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_DISK_FULL ),
 #ifdef _WIN32
-      "There is not enough space on the disk.",
+        "There is not enough space on the disk.",
 #else
         "No space left on device",
 #endif
-      std::errc::no_space_on_device },
-    { HRESULT_WIN32_TEST( ERROR_DIRECTORY ),
-      "The directory name is invalid.",
-      std::errc::not_a_directory },
-    { ERROR_TEST( HRESULT_WIN32_ERROR_NEGATIVE_SEEK ),
-      "An attempt was made to move the file pointer before the beginning of the file.",
-      std::errc::invalid_argument }
+        std::errc::no_space_on_device
+    },
+    {
+        HRESULT_WIN32_TEST( ERROR_DIRECTORY ),
+        "The directory name is invalid.",
+        std::errc::not_a_directory
+    },
+    {
+        ERROR_TEST( HRESULT_WIN32_ERROR_NEGATIVE_SEEK ),
+        "An attempt was made to move the file pointer before the beginning of the file.",
+        std::errc::invalid_argument
+    }
 };
 
 TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][HRESULT]" ) {
-    for ( const auto& test : hresult_tests ) {
+    for ( const auto& test : hresultTests ) {
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
             auto code = bit7z::make_hresult_code( test.error );
 
@@ -164,12 +199,14 @@ TEST_CASE( "BitException: Constructing from an HRESULT error", "[BitException][H
 
 #ifndef __MINGW32__
 
-struct win32_error_test {
+namespace {
+struct Win32ErrorTest {
     const char* name;
     DWORD error;
 };
+} // namespace
 
-constexpr win32_error_test win32_tests[] = { // NOLINT(*-avoid-c-arrays)
+constexpr Win32ErrorTest win32Tests[ ] = { // NOLINT(*-avoid-c-arrays)
 #ifdef _WIN32
     { ERROR_TEST( ERROR_FILE_NOT_FOUND ) },
     { ERROR_TEST( ERROR_NOT_SUPPORTED ) },
@@ -194,9 +231,9 @@ constexpr win32_error_test win32_tests[] = { // NOLINT(*-avoid-c-arrays)
  * However, MinGW uses the std::system_category() for POSIX error codes on Windows, so we don't test it. */
 
 TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitException][win32-posix]" ) {
-    for ( const auto& test : win32_tests ) {
+    for ( const auto& test : win32Tests ) {
         DYNAMIC_SECTION( "Testing " << test.name << " (value 0x" << std::hex << test.error << std::dec << ")" ) {
-            auto sys_error = std::error_code{ static_cast<int>( test.error ), std::system_category() };
+            auto sys_error = std::error_code{ static_cast< int >( test.error ), std::system_category() };
 
 #if defined(_MSC_VER) && _MSC_VER > 1900
             auto hresult_error = bit7z::make_hresult_code( HRESULT_FROM_WIN32( test.error ) );
@@ -221,13 +258,15 @@ TEST_CASE( "BitException: Constructing from Win32/POSIX error codes", "[BitExcep
 
 #endif
 
+namespace {
 struct HRESULTErrorTest {
     const char* name;
     HRESULT error;
     const char* message;
 };
+} // namespace
 
-constexpr HRESULTErrorTest unmapped_hresult_tests[] = { // NOLINT(*-avoid-c-arrays)
+constexpr HRESULTErrorTest unmapped_hresult_tests[ ] = { // NOLINT(*-avoid-c-arrays)
     // Tests for HRESULT values without a POSIX error counterpart
     { ERROR_TEST( E_FAIL ), "Unspecified error" },
 #ifdef _WIN32
@@ -253,11 +292,42 @@ TEST_CASE( "BitException: Constructing std::error_code from unmapped HRESULT val
     }
 }
 
+TEST_CASE( "BitException: 'No matching item' errors map to ERROR_NOT_FOUND", "[BitException][biterror]" ) {
+    const auto bitError = GENERATE( bit7z::BitError::NoMatchingItems, bit7z::BitError::NoMatchingFile );
+
+    const auto code = make_error_code( bitError );
+    const BitException exception{ "No match", code };
+
+    // A "no matching item/file" result is a lookup miss, mapped to ERROR_NOT_FOUND ("Element not found."),
+    // avoiding the misleading "path not found" semantics of the generic ENOENT-based mapping.
+    REQUIRE( exception.hresultCode() == HRESULT_FROM_WIN32( ERROR_NOT_FOUND ) );
+
+    // The std::errc / POSIX view is intentionally kept as ENOENT for backward compatibility.
+    REQUIRE( code == std::errc::no_such_file_or_directory );
+    REQUIRE( exception.posixCode() == static_cast< int >( std::errc::no_such_file_or_directory ) );
+}
+
+TEST_CASE( "BitException: no_such_file_or_directory maps to ERROR_FILE_NOT_FOUND", "[BitException][biterror]" ) {
+    const auto code = std::make_error_code( std::errc::no_such_file_or_directory );
+    const BitException exception{ "Not found", code };
+
+    // ENOENT is ambiguous on Windows; bit7z maps it to the generic "named item not found" code,
+    // rather than ERROR_PATH_NOT_FOUND, which specifically means a missing intermediate directory.
+    REQUIRE( exception.hresultCode() == HRESULT_FROM_WIN32( ERROR_FILE_NOT_FOUND ) );
+}
+
 TEST_CASE( "BitException: Checking if failed files are moved to the exception constructor", "[bitexception]" ) {
-    bit7z::FailedFiles failedFiles = { { BIT7Z_STRING( "hello.txt" ),
-                                         std::make_error_code( std::errc::bad_file_descriptor ) } };
-    const BitException exception{ "Error Message",
-                                  std::make_error_code( std::errc::io_error ), std::move( failedFiles ) };
+    bit7z::FailedFiles failedFiles = {
+        {
+            BIT7Z_STRING( "hello.txt" ),
+            std::make_error_code( std::errc::bad_file_descriptor )
+        }
+    };
+    const BitException exception{
+        "Error Message",
+        std::make_error_code( std::errc::io_error ),
+        std::move( failedFiles )
+    };
     REQUIRE( exception.code() == std::errc::io_error );
     const auto& exceptionFailedFiles = exception.failedFiles();
     REQUIRE( exceptionFailedFiles.size() == 1 );

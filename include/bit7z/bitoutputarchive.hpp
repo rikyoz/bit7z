@@ -109,6 +109,18 @@ class BitOutputArchive {
         );
 
         /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The input archive's bytes are read lazily while compressing (to copy retained items),
+         * so the buffer must outlive the BitOutputArchive; a temporary would dangle.
+         */
+        BitOutputArchive(
+            const BitAbstractArchiveCreator& creator,
+            buffer_t&& inBuffer,
+            ArchiveStartOffset startOffset = ArchiveStartOffset::None
+        ) = delete;
+
+        /**
          * @brief Constructs a BitOutputArchive object, reading an input file archive from the given std::istream.
          *
          * @param creator   the reference to the BitAbstractArchiveCreator object containing all the settings to
@@ -165,7 +177,7 @@ class BitOutputArchive {
          *
          * @return a reference to the input item just added, valid until the next call that adds items to the archive.
          */
-        BitInputItem& addFile( const tstring& inFile, const tstring& name = {} );
+        auto addFile( const tstring& inFile, const tstring& name = {} ) -> BitInputItem&;
 
         /**
          * @brief Adds the given buffer file, using the given name as a path when compressed in the output archive.
@@ -175,7 +187,15 @@ class BitOutputArchive {
          *
          * @return a reference to the input item just added, valid until the next call that adds items to the archive.
          */
-        BitInputItem& addFile( const buffer_t& inBuffer, const tstring& name );
+        auto addFile( const buffer_t& inBuffer, const tstring& name ) -> BitInputItem&;
+
+        /**
+         * @brief Deleted overload preventing the addition of a temporary buffer.
+         *
+         * The added item only keeps a reference to the buffer, which is read later when compressing;
+         * a temporary would dangle, so passing one is rejected at compile time.
+         */
+        auto addFile( buffer_t&& inBuffer, const tstring& name ) -> BitInputItem& = delete;
 
         /**
          * @brief Adds the given standard input stream, using the given name as a path when compressed
@@ -186,7 +206,7 @@ class BitOutputArchive {
          *
          * @return a reference to the input item just added, valid until the next call that adds items to the archive.
          */
-        BitInputItem& addFile( std::istream& inStream, const tstring& name );
+        auto addFile( std::istream& inStream, const tstring& name ) -> BitInputItem&;
 
         /**
          * @brief Adds all the files in the given vector of filesystem paths.
@@ -381,15 +401,15 @@ class BitOutputArchive {
 
         auto initOutArchive() const -> CMyComPtr< IOutArchive >;
 
-        auto initOutFileStream( const fs::path& outArchive ) const -> CMyComPtr< IOutStream >;
+        auto initOutFileStream( const bit7zfs::path& outArchive ) const -> CMyComPtr< IOutStream >;
 
         BitOutputArchive(
             const BitAbstractArchiveCreator& creator,
-            const fs::path& inArc,
+            const bit7zfs::path& inArc,
             ArchiveStartOffset archiveStart
         );
 
-        void compressToFile( const fs::path& outFile, UpdateCallback* updateCallback );
+        void compressToFile( const bit7zfs::path& outFile, UpdateCallback* updateCallback );
 
         void compressOut( IOutArchive* outArc, IOutStream* outStream, UpdateCallback* updateCallback );
 

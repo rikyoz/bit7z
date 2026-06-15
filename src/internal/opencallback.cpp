@@ -50,8 +50,8 @@ STDMETHODIMP OpenCallback::GetProperty( PROPID property, PROPVARIANT* value ) no
     *value = prop;
     prop.bstrVal = nullptr; // NOLINT(*-pro-type-union-access)
     return S_OK;
-} catch ( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 }
 
 COM_DECLSPEC_NOTHROW
@@ -75,8 +75,8 @@ STDMETHODIMP OpenCallback::GetStream( const wchar_t* name, IInStream** inStream 
         try {
             auto inStreamTemp = bit7z::make_com< CFileInStream >( streamPath.native() );
             *inStream = inStreamTemp.Detach();
-        } catch ( const BitException& ex ) {
-            return ex.nativeCode();
+        } catch ( const BitException& exception ) {
+            return exception.nativeCode();
         }
         return S_OK;
     } catch ( ... ) {
@@ -115,7 +115,7 @@ STDMETHODIMP OpenCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     return StringToBstr( pass.c_str(), password );
 }
 
-auto OpenCallback::passwordWasAsked() const -> bool {
+auto OpenCallback::passwordWasAsked() const noexcept -> bool {
     return mPasswordWasAsked;
 }
 

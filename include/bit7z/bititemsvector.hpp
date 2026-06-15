@@ -42,10 +42,12 @@ using BitItemsVector = std::vector< BitInputItem >;
  * @param options   (optional) the settings to be used while indexing the given directory
  *                  and all of its subdirectories.
  */
-void indexDirectory( BitItemsVector& outVector,
-                     const tstring& inDir,
-                     const tstring& filter = {},
-                     IndexingOptions options = {} );
+void indexDirectory(
+    BitItemsVector& outVector,
+    const tstring& inDir,
+    const tstring& filter = {},
+    IndexingOptions options = {}
+);
 
 /**
  * @brief Indexes the content of the given directory, adding to the vector all the files that match the wildcard filter.
@@ -57,10 +59,12 @@ void indexDirectory( BitItemsVector& outVector,
  * @param options   (optional) the settings to be used while indexing the given directory
  *                  and all of its subdirectories.
  */
-void indexDirectoryContent( BitItemsVector& outVector,
-                            const tstring& inDir,
-                            const tstring& filter = {},
-                            IndexingOptions options = {} );
+void indexDirectoryContent(
+    BitItemsVector& outVector,
+    const tstring& inDir,
+    const tstring& filter = {},
+    IndexingOptions options = {}
+);
 
 /**
  * @brief Indexes the given vector of filesystem paths, adding to the item vector all the files.
@@ -83,9 +87,12 @@ void indexPaths( BitItemsVector& outVector, const std::vector< tstring >& inPath
  * @param options   (optional) the settings to be used while indexing the given directory
  *                  and all of its subdirectories.
  */
-void indexPaths( BitItemsVector& outVector,
-                 const std::vector< std::pair< tstring, tstring > >& inPaths,
-                 IndexingOptions options = {} );
+void indexPaths(
+    BitItemsVector& outVector,
+    const std::vector< std::pair< tstring, tstring > >& inPaths,
+    IndexingOptions options = {}
+);
+
 /**
  * @brief Indexes the given map of filesystem paths, adding to the vector all the files.
  *
@@ -98,9 +105,11 @@ void indexPaths( BitItemsVector& outVector,
  * @param options   (optional) the settings to be used while indexing the given directory
  *                  and all of its subdirectories.
  */
-void indexPathsMap( BitItemsVector& outVector,
-                    const std::map< tstring, tstring >& inPaths,
-                    IndexingOptions options = {} );
+void indexPathsMap(
+    BitItemsVector& outVector,
+    const std::map< tstring, tstring >& inPaths,
+    IndexingOptions options = {}
+);
 
 /**
  * @brief Indexes the given file path, with an optional user-defined path to be used in output archives.
@@ -112,10 +121,12 @@ void indexPathsMap( BitItemsVector& outVector,
  * @param name            (optional) user-defined path to be used inside archives.
  * @param symlinkPolicy   (optional) whether to follow symbolic links or not.
  */
-void indexFile( BitItemsVector& outVector,
-                const tstring& inFile,
-                const tstring& name = {},
-                SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
+void indexFile(
+    BitItemsVector& outVector,
+    const tstring& inFile,
+    const tstring& name = {},
+    SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow
+);
 
 /**
  * @brief Indexes the given buffer, using the given name as a path when compressed in archives.
@@ -135,6 +146,6 @@ void indexBuffer( BitItemsVector& outVector, const buffer_t& inBuffer, const tst
  */
 void indexStream( BitItemsVector& outVector, std::istream& inStream, const tstring& name );
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITITEMSVECTOR_HPP

@@ -30,19 +30,24 @@ TEST_CASE( "BitArchiveItemInfo: Ensuring that item objects are copyable and mova
 }
 
 // NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitArchiveItemInfo: Ensuring that objects in the items() vector can be sorted",
-                    "[bitarchiveiteminfo]", tstring, buffer_t, stream_t ) {
+TEMPLATE_TEST_CASE(
+    "BitArchiveItemInfo: Ensuring that objects in the items() vector can be sorted",
+    "[bitarchiveiteminfo]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
     const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
     const fs::path arcFileName = "multiple_items.7z";
 
     TestType inputArchive{};
     getInputArchive( arcFileName, inputArchive );
-    const BitArchiveReader info( test::sevenzip_lib(), inputArchive, BitFormat::SevenZip );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
 
     // Making sure we can sort BitArchiveItemInfo objects in a vector.
     auto items = info.items();
-    auto sort_comparator = []( const BitArchiveItem& first, const BitArchiveItem& second ) {
+    auto sort_comparator = [] ( const BitArchiveItem& first, const BitArchiveItem& second ) -> bool {
         return first.name() < second.name();
     };
     REQUIRE_NOTHROW( std::sort( items.begin(), items.end(), sort_comparator ) );

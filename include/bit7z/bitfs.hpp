@@ -31,14 +31,15 @@ class directory_entry;
 } // namespace ghc
 #endif
 
-namespace bit7z {
-namespace fs {
+/* Note: bit7zfs is a top-level namespace alias, deliberately NOT nested inside bit7z.
+ *       If it were a member of bit7z (e.g., bit7z::fs), a `using namespace bit7z;` directive
+ *       would introduce it into the user's scope, clashing with any `fs`/filesystem namespace
+ *       the user already has (e.g., `namespace fs = std::filesystem;`). As a sibling namespace,
+ *       it is never pulled in by `using namespace bit7z;`, so no such ambiguity can arise. */
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-using namespace std::filesystem;
+namespace bit7zfs = std::filesystem;
 #else
-using namespace ghc::filesystem;
+namespace bit7zfs = ghc::filesystem;
 #endif
-} // namespace fs
-} // namespace bit7z
 
 #endif //BITFS_HPP

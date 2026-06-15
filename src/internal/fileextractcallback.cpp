@@ -84,22 +84,18 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";
 
-auto FileExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
-    const auto& item = mCurrentItem.emplace( inputArchive(), index );
+auto FileExtractCallback::getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT {
+    const auto& processedItem = mCurrentItem.emplace( inputArchive(), item.index() );
 
-    auto filePath = item.path();
+    auto filePath = processedItem.path();
 
     if ( mRenameCallback ) {
-#if !defined( _WIN32 ) || defined( BIT7Z_USE_NATIVE_STRING )
-        // Here we don't use the path_to_tstring function to avoid allocating a new string object.
-        const auto& filePathString = filePath.native();
-#else
-        const auto filePathString = pathToTstring( filePath );
-#endif
-        filePath = tstringToPath( mRenameCallback( index, filePathString ) );
+        // The callback receives the archive item (with its original path) and returns the
+        // destination path on the filesystem; an empty result skips the item.
+        filePath = tstringToPath( mRenameCallback( item ) );
     }
 
-    const auto itemIsFolder = isItemFolder( index );
+    const auto itemIsFolder = item.isDir();
 
     if ( filePath.empty() || ( itemIsFolder && filePath == BIT7Z_NATIVE_STRING( "/" ) ) ) {
         return S_OK;

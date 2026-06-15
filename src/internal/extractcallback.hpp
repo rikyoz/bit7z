@@ -34,7 +34,7 @@ class BitInputArchive;
 constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 constexpr auto kEmptyFileWideAlias = L"[Content]";
 
-enum struct ExtractMode {
+enum struct ExtractMode : std::uint8_t {
     Extract = NAskMode::kExtract,
     Test    = NAskMode::kTest,
     Skip    = NAskMode::kSkip
@@ -90,19 +90,13 @@ class ExtractCallback : public Callback,
         auto extractMode() const noexcept -> ExtractMode;
 
         BIT7Z_NODISCARD
-        auto isItemFolder( std::uint32_t index ) const -> bool;
-
-        BIT7Z_NODISCARD
-        auto itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant;
-
-        BIT7Z_NODISCARD
         auto inputArchive() const -> const BitInputArchive&;
 
         virtual auto finishOperation( OperationResult operationResult ) -> HRESULT;
 
         virtual void releaseStream() = 0;
 
-        virtual auto getOutStream( UInt32 index, ISequentialOutStream** outStream ) -> HRESULT = 0;
+        virtual auto getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT = 0;
 
     private:
         const BitInputArchive& mInputArchive;

@@ -20,12 +20,16 @@ struct ISequentialInStream;
 
 namespace bit7z {
 
-/** @cond **/
+/**
+ * @brief Enumeration representing how an input item should deal with symbolic links.
+ */
 enum struct SymlinkPolicy : std::uint8_t {
-    Follow,
-    DoNotFollow
+    Follow,      ///< Follow symbolic links, storing the content of the pointed-to file.
+    DoNotFollow  ///< Do not follow symbolic links, storing the link itself.
 };
-/** @endcond **/
+
+/** @cond **/
+namespace detail {
 
 struct FilesystemInputItem final {
     SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow;
@@ -57,20 +61,23 @@ struct InputItemProperties final {
     InputItemType inputType;
 };
 
+} // namespace detail
+/** @endcond **/
+
 /**
  * A generic input item for compression operations.
  */
 class BitInputItem final {
     public:
-        explicit BitInputItem( const fs::path& itemPath, SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
+        explicit BitInputItem( const bit7zfs::path& itemPath, SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow );
 
         BitInputItem(
-            const fs::path& itemPath,
-            const fs::path& inArchivePath,
+            const bit7zfs::path& itemPath,
+            const bit7zfs::path& inArchivePath,
             SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow
         );
 
-        BitInputItem( const fs::path& searchPath, const fs::directory_entry& entry, SymlinkPolicy symlinkPolicy );
+        BitInputItem( const bit7zfs::path& searchPath, const bit7zfs::directory_entry& entry, SymlinkPolicy symlinkPolicy );
 
         BitInputItem( const buffer_t& buffer, const tstring& path );
 
@@ -123,18 +130,6 @@ class BitInputItem final {
         auto itemProperty( BitProperty property ) const -> BitPropVariant;
 
         /**
-         * @brief Provides the input stream for this item to be used during compression.
-         *
-         * @note For internal use; not meant to be used by the user.
-         *
-         * @param inStream output parameter set to the item's input stream.
-         *
-         * @return S_OK on success, or an error HRESULT if the stream could not be opened.
-         */
-        BIT7Z_NODISCARD
-        auto getStream( ISequentialInStream** inStream ) const -> HRESULT;
-
-        /**
          * @return true if the item contributes new data to the archive
          *         (i.e., it is not merely a renamed entry from an existing archive).
          */
@@ -163,17 +158,26 @@ class BitInputItem final {
         void setLastAccessTime( time_type lastAccessTime ) noexcept;
 
     private:
-        InputItemProperties mProperties;
-        // Note: we need to store paths as strings rather than fs::path as the public API is in C++14.
+        friend class BitOutputArchive;
+        friend class BitArchiveEditor;
+
+        // For internal use only: provides the input stream for this item to be used during compression.
+        // On Windows, storeOpenFiles requests shared read/write access, allowing the compression of files
+        // locked by other processes. Returns S_OK on success, or an error HRESULT otherwise.
+        BIT7Z_NODISCARD
+        auto getStream( ISequentialInStream** inStream, bool storeOpenFiles ) const -> HRESULT;
+
+        detail::InputItemProperties mProperties;
+        // Note: we need to store paths as strings rather than bit7zfs::path as the public API is in C++14.
         native_string mPath; // std::wstring on Windows, std::string elsewhere.
         sevenzip_string mInArchivePath; // std::wstring on every OS, used by 7-Zip.
 
         // Unfortunately, we cannot use std::variant as we need to support C++11/C++14 in the public API.
         union {
-            FilesystemInputItem mFilesystemItem;
-            BufferInputItem mBufferItem;
-            StdInputItem mStdItem;
-            RenamedInputItem mRenamedItem;
+            detail::FilesystemInputItem mFilesystemItem;
+            detail::BufferInputItem mBufferItem;
+            detail::StdInputItem mStdItem;
+            detail::RenamedInputItem mRenamedItem;
         };
 };
 

@@ -29,7 +29,7 @@ using time_type = std::chrono::time_point< std::chrono::system_clock >;
 /**
  * @brief The BitProperty enum represents the archive/item properties that 7-zip can read or write.
  */
-enum struct BitProperty : PROPID {
+enum struct BitProperty : PROPID { // NOLINT(*-enum-size)
     NoProperty = 0,         ///<
     MainSubfile,            ///<
     HandlerItemIndex,       ///<
@@ -133,7 +133,7 @@ auto to_string( BitProperty property ) -> std::string;
 /**
  * @brief The BitPropVariantType enum represents the possible types that a BitPropVariant can store.
  */
-enum struct BitPropVariantType : std::uint32_t {
+enum struct BitPropVariantType : std::uint8_t {
     Empty,      ///< Empty BitPropVariant type
     Bool,       ///< Boolean BitPropVariant type
     String,     ///< String BitPropVariant type
@@ -155,7 +155,7 @@ struct BitPropVariant final : PROPVARIANT {
         /**
          * @brief Constructs an empty BitPropVariant object.
          */
-        BitPropVariant();
+        BitPropVariant() noexcept;
 
         /**
          * @brief Copy constructs this BitPropVariant from another one.

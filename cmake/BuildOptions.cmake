@@ -22,14 +22,18 @@ if( BIT7Z_REGEX_MATCHING )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_REGEX_MATCHING )
 endif()
 
-option( BIT7Z_USE_STD_BYTE "Enable or disable using type safe byte type (like std::byte) for buffers" )
+option(
+    BIT7Z_USE_STD_BYTE "Enable or disable using type safe byte type (like std::byte) for buffers"
+)
 message( STATUS "Use std::byte: ${BIT7Z_USE_STD_BYTE}" )
 if( BIT7Z_USE_STD_BYTE )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_USE_STD_BYTE )
 endif()
 
-option( BIT7Z_USE_NATIVE_STRING "Enable or disable using the OS native string type
-                                 (e.g., std::wstring on Windows, std::string elsewhere)" )
+option(
+    BIT7Z_USE_NATIVE_STRING
+    "Enable or disable using the OS native string type (e.g., std::wstring on Windows, std::string elsewhere)"
+)
 message( STATUS "Use native string: ${BIT7Z_USE_NATIVE_STRING}" )
 if( BIT7Z_USE_NATIVE_STRING )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_USE_NATIVE_STRING )
@@ -133,8 +137,10 @@ else()
     endif()
 endif()
 
-option( BIT7Z_PATH_SANITIZATION "Enable or disable path sanitization when extracting archives \
-                                 containing files with invalid paths" )
+option(
+    BIT7Z_PATH_SANITIZATION
+    "Enable or disable path sanitization when extracting archives containing files with invalid paths"
+)
 message( STATUS "Path sanitization: ${BIT7Z_PATH_SANITIZATION}" )
 if( BIT7Z_PATH_SANITIZATION )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_PATH_SANITIZATION )

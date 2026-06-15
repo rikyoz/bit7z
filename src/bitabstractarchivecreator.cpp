@@ -55,9 +55,9 @@ auto isValidCompressionMethod( const BitInOutFormat& format, BitCompressionMetho
 }
 
 auto isValidDictionarySize( BitCompressionMethod method, std::uint32_t dictionarySize ) noexcept -> bool {
-    constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1ull << 20ull ); // less than 3840 MiB
-    constexpr auto kMaxPpmdDictionarySize = ( 1ull << 30ull ); // less than 1 GiB, i.e., 2^30 bytes
-    constexpr auto kMaxBzip2DictionarySize = 900 * ( 1ull << 10ull ); // less than 900 KiB
+    constexpr auto kMaxLzmaDictionarySize = 3840 * ( 1uLL << 20uLL ); // less than 3840 MiB
+    constexpr auto kMaxPpmdDictionarySize = ( 1uLL << 30uLL ); // less than 1 GiB, i.e., 2^30 bytes
+    constexpr auto kMaxBzip2DictionarySize = 900 * ( 1uLL << 10uLL ); // less than 900 KiB
 
     switch ( method ) {
         case BitCompressionMethod::Lzma:
@@ -144,7 +144,8 @@ BitAbstractArchiveCreator::BitAbstractArchiveCreator(
     mSolidMode( false ),
     mVolumeSize( 0 ),
     mThreadsCount( 0 ),
-    mStoreSymbolicLinks{ false } {
+    mStoreSymbolicLinks{ false },
+    mStoreOpenFiles{ false } {
     setRetainDirectories( false );
 }
 
@@ -211,8 +212,12 @@ auto BitAbstractArchiveCreator::storeLastAccessTime() const noexcept -> bool {
     return propertyIt != mExtraProperties.cend() && propertyIt->second.isBool() && propertyIt->second.getBool();
 }
 
+auto BitAbstractArchiveCreator::storeOpenFiles() const noexcept -> bool {
+    return mStoreOpenFiles;
+}
+
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
-    setPassword( password, mCryptHeaders );
+    setPassword( password, mCryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
 }
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
@@ -232,14 +237,18 @@ auto isAscii( const tstring& str ) -> bool {
 } // namespace
 #endif
 
-void BitAbstractArchiveCreator::setPassword( const tstring& password, bool cryptHeaders ) {
+void BitAbstractArchiveCreator::setPassword( const tstring& password, EncryptionScope scope ) {
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
     if ( mFormat == BitFormat::Zip && !isAscii( password ) ) {
         throw BitException( "Invalid password", make_error_code( BitError::InvalidZipPassword ) );
     }
 #endif
     BitAbstractArchiveHandler::setPassword( password );
-    mCryptHeaders = !password.empty() && cryptHeaders;
+    mCryptHeaders = !password.empty() && scope == EncryptionScope::DataAndHeaders;
+}
+
+void BitAbstractArchiveCreator::setPassword( const tstring& password, bool cryptHeaders ) {
+    setPassword( password, cryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
 }
 
 void BitAbstractArchiveCreator::setCompressionLevel( BitCompressionLevel level ) noexcept {
@@ -325,6 +334,10 @@ void BitAbstractArchiveCreator::setStoreCreationTime( bool storeCreationTime ) n
 
 void BitAbstractArchiveCreator::setStoreLastAccessTime( bool storeLastAccessTime ) noexcept {
     setFormatProperty( L"ta", storeLastAccessTime );
+}
+
+void BitAbstractArchiveCreator::setStoreOpenFiles( bool storeOpenFiles ) noexcept {
+    mStoreOpenFiles = storeOpenFiles;
 }
 
 namespace {

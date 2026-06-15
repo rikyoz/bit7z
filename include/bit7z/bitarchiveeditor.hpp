@@ -112,6 +112,14 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
         void updateItem( std::uint32_t index, const buffer_t& inBuffer );
 
         /**
+         * @brief Deleted overload preventing the update from a temporary buffer.
+         *
+         * The new data is only referenced and read later when applying changes,
+         * so the buffer must outlive the editor; a temporary would dangle.
+         */
+        void updateItem( std::uint32_t index, buffer_t&& inBuffer ) = delete;
+
+        /**
          * @brief Requests to update the content of the item at the specified index
          *        with the data from the given stream.
          *
@@ -137,6 +145,14 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param inBuffer  the buffer containing the new data for the item.
          */
         void updateItem( const tstring& itemPath, const buffer_t& inBuffer );
+
+        /**
+         * @brief Deleted overload preventing the update from a temporary buffer.
+         *
+         * The new data is only referenced and read later when applying changes,
+         * so the buffer must outlive the editor; a temporary would dangle.
+         */
+        void updateItem( const tstring& itemPath, buffer_t&& inBuffer ) = delete;
 
         /**
          * @brief Requests to update the content of the item at the specified path

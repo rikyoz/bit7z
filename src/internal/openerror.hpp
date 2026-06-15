@@ -36,7 +36,7 @@ enum struct OpenError : std::uint32_t { // NOLINT(*-enum-size)
 auto make_error_code( OpenError error ) noexcept -> std::error_code;
 
 BIT7Z_ALWAYS_INLINE
-auto make_open_error_code( std::uint32_t errorFlags ) -> std::error_code {
+auto make_open_error_code( std::uint32_t errorFlags ) noexcept -> std::error_code {
     // TODO: Handle multiple errors.
     // For now, we just take the first error flag set by 7-Zip and report only that.
     // To do this, we isolate the lowest set bit in the given error flags using bit manipulation.

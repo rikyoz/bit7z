@@ -135,18 +135,18 @@ void BitOutputArchive::addItems( const std::map< tstring, tstring >& inPaths ) {
     indexPathsMap( mNewItems, inPaths, options );
 }
 
-BitInputItem& BitOutputArchive::addFile( const tstring& inFile, const tstring& name ) {
+auto BitOutputArchive::addFile( const tstring& inFile, const tstring& name ) -> BitInputItem& {
     const auto policy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
     indexFile( mNewItems, inFile, mArchiveCreator.retainDirectories() ? inFile : name, policy );
     return mNewItems.back();
 }
 
-BitInputItem& BitOutputArchive::addFile( const buffer_t& inBuffer, const tstring& name ) {
+auto BitOutputArchive::addFile( const buffer_t& inBuffer, const tstring& name ) -> BitInputItem& {
     indexBuffer( mNewItems, inBuffer, name );
     return mNewItems.back();
 }
 
-BitInputItem& BitOutputArchive::addFile( std::istream& inStream, const tstring& name ) {
+auto BitOutputArchive::addFile( std::istream& inStream, const tstring& name ) -> BitInputItem& {
     indexStream( mNewItems, inStream, name );
     return mNewItems.back();
 }
@@ -389,7 +389,7 @@ auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStr
     const auto newItemIndex = static_cast< std::size_t >( index ) - static_cast< std::size_t >( mInputArchiveItemsCount );
     const auto& newItem = mNewItems[ newItemIndex ];
 
-    const HRESULT res = newItem.getStream( inStream );
+    const HRESULT res = newItem.getStream( inStream, mArchiveCreator.storeOpenFiles() );
     if ( FAILED( res ) ) {
         mFailedFiles.emplace_back( to_tstring( newItem.path() ), make_hresult_code( res ) );
     }

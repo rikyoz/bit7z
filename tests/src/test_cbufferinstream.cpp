@@ -74,12 +74,14 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
             }
 
             SECTION( "To an offset outside the valid range (Boundary Value Analysis)" ) {
-                REQUIRE( inStream.Seek( std::numeric_limits< Int64 >::max(), STREAM_SEEK_SET, &newPosition ) ==
-                         E_INVALIDARG );
+                REQUIRE(
+                    inStream.Seek( std::numeric_limits< Int64 >::max(), STREAM_SEEK_SET, &newPosition ) == E_INVALIDARG
+                );
                 REQUIRE( newPosition == 0 );
 
-                REQUIRE( inStream.Seek( std::numeric_limits< Int64 >::min(), STREAM_SEEK_SET, &newPosition ) ==
-                         HRESULT_WIN32_ERROR_NEGATIVE_SEEK );
+                REQUIRE(
+                    inStream.Seek( std::numeric_limits< Int64 >::min(), STREAM_SEEK_SET, &newPosition ) == HRESULT_WIN32_ERROR_NEGATIVE_SEEK
+                );
                 REQUIRE( newPosition == 0 );
             }
 
@@ -95,8 +97,9 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
         SECTION( "Seeking from the end of the stream (STREAM_SEEK_END)" ) {
             SECTION( "To the beginning of the stream (Boundary Value Analysis)" ) {
                 const Int64 offset = -static_cast< Int64 >( bufferSize );
-                REQUIRE( inStream.Seek( offset - 1, STREAM_SEEK_END, &newPosition ) ==
-                         HRESULT_WIN32_ERROR_NEGATIVE_SEEK );
+                REQUIRE(
+                    inStream.Seek( offset - 1, STREAM_SEEK_END, &newPosition ) == HRESULT_WIN32_ERROR_NEGATIVE_SEEK
+                );
                 REQUIRE( newPosition == 0 );
 
                 /* Note: The end of the stream is one element past the last one in the buffer,
@@ -126,12 +129,15 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
             }
 
             SECTION( "To an offset outside the valid range (Boundary Value Analysis)" ) {
-                REQUIRE( inStream.Seek( std::numeric_limits< Int64 >::max(), STREAM_SEEK_END, &newPosition ) ==
-                         E_INVALIDARG );
+                REQUIRE(
+                    inStream.Seek( std::numeric_limits< Int64 >::max(), STREAM_SEEK_END, &newPosition ) ==
+                    E_INVALIDARG
+                );
                 REQUIRE( newPosition == 0 );
 
-                REQUIRE( inStream.Seek( std::numeric_limits< Int64 >::min(), STREAM_SEEK_END, &newPosition ) ==
-                         HRESULT_WIN32_ERROR_NEGATIVE_SEEK );
+                REQUIRE(
+                    inStream.Seek( std::numeric_limits< Int64 >::min(), STREAM_SEEK_END, &newPosition ) == HRESULT_WIN32_ERROR_NEGATIVE_SEEK
+                );
                 REQUIRE( newPosition == 0 );
             }
 
@@ -173,8 +179,9 @@ TEST_CASE( "CBufferInStream: Seeking a buffer stream with no content", "[cbuffer
                     }
 
                     SECTION( "To a position before the beginning of the stream (Boundary Value Analysis)" ) {
-                        REQUIRE( inStream.Seek( -midOffset - 1, STREAM_SEEK_CUR, &newPosition ) ==
-                                 HRESULT_WIN32_ERROR_NEGATIVE_SEEK );
+                        REQUIRE(
+                            inStream.Seek( -midOffset - 1, STREAM_SEEK_CUR, &newPosition ) == HRESULT_WIN32_ERROR_NEGATIVE_SEEK
+                        );
                         REQUIRE( newPosition == midOffset ); // The position within the stream didn't change.
                     }
 
@@ -240,18 +247,20 @@ TEST_CASE( "CBufferInStream: Reading a single-value buffer stream", "[cbufferins
 }
 
 TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][reading]" ) {
-    const buffer_t buffer{ static_cast< byte_t >( 'H' ),
-                           static_cast< byte_t >( 'e' ),
-                           static_cast< byte_t >( 'l' ),
-                           static_cast< byte_t >( 'l' ),
-                           static_cast< byte_t >( 'o' ),
-                           static_cast< byte_t >( ' ' ),
-                           static_cast< byte_t >( 'W' ),
-                           static_cast< byte_t >( 'o' ),
-                           static_cast< byte_t >( 'r' ),
-                           static_cast< byte_t >( 'l' ),
-                           static_cast< byte_t >( 'd' ),
-                           static_cast< byte_t >( '!' ) }; // Hello World! //-V826
+    const buffer_t buffer{
+        static_cast< byte_t >( 'H' ),
+        static_cast< byte_t >( 'e' ),
+        static_cast< byte_t >( 'l' ),
+        static_cast< byte_t >( 'l' ),
+        static_cast< byte_t >( 'o' ),
+        static_cast< byte_t >( ' ' ),
+        static_cast< byte_t >( 'W' ),
+        static_cast< byte_t >( 'o' ),
+        static_cast< byte_t >( 'r' ),
+        static_cast< byte_t >( 'l' ),
+        static_cast< byte_t >( 'd' ),
+        static_cast< byte_t >( '!' )
+    }; // Hello World! //-V826
     CBufferInStream inStream{ buffer };
     UInt32 processedSize{ 0 };
 
@@ -348,7 +357,7 @@ TEST_CASE( "CBufferInStream: Reading a buffer stream", "[cbufferinstream][readin
     }
 
     SECTION( "Reading nothing from the stream" ) {
-        auto result  = static_cast< byte_t >( 'A' ); // A character not in the buffer
+        auto result = static_cast< byte_t >( 'A' ); // A character not in the buffer
         REQUIRE( inStream.Read( &result, 0, &processedSize ) == S_OK ); // Not an error,
         REQUIRE( processedSize == 0 ); // but we didn't read anything, as expected.
         REQUIRE( result == static_cast< byte_t >( 'A' ) ); // And hence, the result value was not changed.

@@ -13,6 +13,7 @@
 #include "internal/fixedbufferextractcallback.hpp"
 
 #include "bitabstractarchivehandler.hpp"
+#include "bitarchiveitem.hpp"
 #include "bitpropvariant.hpp"
 #include "bittypes.hpp"
 #include "internal/cfixedbufferoutstream.hpp"
@@ -34,14 +35,14 @@ void FixedBufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-auto FixedBufferExtractCallback::getOutStream( std::uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
-    if ( isItemFolder( index ) ) {
+auto FixedBufferExtractCallback::getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT {
+    if ( item.isDir() ) {
         return S_OK;
     }
 
     if ( mHandler.fileCallback() ) {
         // Get Name
-        const BitPropVariant prop = itemProperty( index, BitProperty::Path );
+        const BitPropVariant prop = item.itemProperty( BitProperty::Path );
         tstring fullPath;
 
         if ( prop.isEmpty() ) {

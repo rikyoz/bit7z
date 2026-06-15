@@ -221,12 +221,12 @@ const FilesystemItemInfo surrogatePairs{
     0x6EF9
 };
 
-auto single_file_content() -> const ArchiveContent& {
+auto singleFileContent() -> const ArchiveContent& {
     static const ArchiveContent instance{ 1, clouds.size, { { clouds, clouds.name, false } } };
     return instance;
 }
 
-auto multiple_files_content() -> const ArchiveContent& {
+auto multipleFilesContent() -> const ArchiveContent& {
     static const ArchiveContent instance{
         2,
         italy.size + loremIpsum.size,
@@ -238,7 +238,7 @@ auto multiple_files_content() -> const ArchiveContent& {
     return instance;
 }
 
-auto multiple_items_content() -> const ArchiveContent& {
+auto multipleItemsContent() -> const ArchiveContent& {
     static const ArchiveContent instance{
         8,
         615351,
@@ -261,7 +261,7 @@ auto multiple_items_content() -> const ArchiveContent& {
     return instance;
 }
 
-auto encrypted_content() -> const ArchiveContent& {
+auto encryptedContent() -> const ArchiveContent& {
     static const ArchiveContent instance{
         8,
         615351,
@@ -284,12 +284,12 @@ auto encrypted_content() -> const ArchiveContent& {
     return instance;
 }
 
-auto empty_content() -> const ArchiveContent& {
+auto emptyContent() -> const ArchiveContent& {
     static const ArchiveContent instance{ 0, 0, {} };
     return instance;
 }
 
-auto unicode_content() -> const ArchiveContent& {
+auto unicodeContent() -> const ArchiveContent& {
     static const ArchiveContent instance{
         4,
         italy.size + loremIpsum.size + clouds.size + homework.size,
@@ -304,7 +304,7 @@ auto unicode_content() -> const ArchiveContent& {
     return instance;
 }
 
-auto file_type_content() -> const ArchiveContent& {
+auto fileTypeContent() -> const ArchiveContent& {
     static const ArchiveContent instance{
         4,
         hidden.size + readOnly.size + regular.size + symlink.size,
@@ -319,7 +319,7 @@ auto file_type_content() -> const ArchiveContent& {
     return instance;
 }
 
-auto no_path_content() -> const ArchiveContent& {
+auto noPathContent() -> const ArchiveContent& {
     static const ArchiveContent instance{
         1,
         clouds.size,
@@ -328,7 +328,7 @@ auto no_path_content() -> const ArchiveContent& {
     return instance;
 }
 
-auto flat_items_content() -> const ArchiveContent& {
+auto flatItemsContent() -> const ArchiveContent& {
     static const ArchiveContent instance{
         8,
         615351,
@@ -347,12 +347,13 @@ auto flat_items_content() -> const ArchiveContent& {
 }
 
 #ifdef _WIN32
+namespace {
 BIT7Z_NODISCARD
-auto get_property_as_string( IPropertyStore* propertyStore, REFPROPERTYKEY key ) -> std::wstring {
+auto getPropertyAsString( IPropertyStore* propertyStore, REFPROPERTYKEY key ) -> std::wstring {
     // Note: we can't use BitPropVariant here, as it only supports BSTRs, while the comment property
     // is usually stored as a wide string (VT_LPWSTR).
     PROPVARIANT property;
-    HRESULT result = propertyStore->GetValue( key, &property );
+    const HRESULT result = propertyStore->GetValue( key, &property );
     if ( FAILED( result ) ) {
         return {}; // Note: using L"" breaks release builds with MinGW when precompiled headers are used.
     }
@@ -381,25 +382,27 @@ class CCoInitialize {
 
         auto operator=( CCoInitialize&& ) -> CCoInitialize& = delete;
 };
+} // namespace
 
 BIT7Z_NODISCARD
-auto get_file_comment( const fs::path& filePath ) -> std::wstring {
-    CCoInitialize init;
+auto getFileComment( const fs::path& filePath ) -> std::wstring {
+    const CCoInitialize init;
     CMyComPtr< IPropertyStore > propertyStore{};
     SHGetPropertyStoreFromParsingName( filePath.c_str(), nullptr, GPS_READWRITE, IID_PPV_ARGS( &propertyStore ) );
-    return propertyStore != nullptr ? get_property_as_string( propertyStore, PKEY_Comment ) : std::wstring{};
+    return propertyStore != nullptr ? getPropertyAsString( propertyStore, PKEY_Comment ) : std::wstring{};
 }
 #endif
 
-TestDirectory::TestDirectory( const fs::path& testDir ) : mOldCurrentDirectory{ current_dir() } {
-    set_current_dir( testDir );
+TestDirectory::TestDirectory( const fs::path& testDir ) : mOldCurrentDirectory{ currentDir() } {
+    setCurrentDir( testDir );
 }
 
 TestDirectory::~TestDirectory() {
-    set_current_dir( mOldCurrentDirectory );
+    setCurrentDir( mOldCurrentDirectory );
 }
 
-auto random_test_id() -> std::string {
+namespace {
+auto randomTestId() -> std::string {
     static constexpr auto hex_digits = "0123456789abcdef";
     static constexpr auto hex_count = 16;
 
@@ -413,7 +416,7 @@ auto random_test_id() -> std::string {
     return str;
 }
 
-auto create_temp_directory( const std::string& name ) -> fs::path {
+auto createTempDirectory( const std::string& name ) -> fs::path {
     const auto tempDir = fs::temp_directory_path() / name;
     if ( !fs::exists( tempDir ) ) { // Creating the temp directory since it doesn't exist.
         fs::create_directory( tempDir );
@@ -424,13 +427,15 @@ auto create_temp_directory( const std::string& name ) -> fs::path {
     }
     return tempDir;
 }
+} // namespace
 
 TempDirectory::TempDirectory( const std::string& dirName )
-    : mDirectory{ create_temp_directory( dirName + "_" + random_test_id() ) } {}
+    : mDirectory{ createTempDirectory( dirName + "_" + randomTestId() ) } {}
 
 TempDirectory::~TempDirectory() {
-    if ( fs::is_empty( mDirectory ) ) {
-        fs::remove( mDirectory );
+    std::error_code error;
+    if ( fs::is_empty( mDirectory, error ) ) {
+        fs::remove( mDirectory, error );
     }
 }
 

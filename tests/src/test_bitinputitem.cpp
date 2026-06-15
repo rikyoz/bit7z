@@ -13,7 +13,7 @@
 // Note: technically, BitInputItem belongs to the public API, but it accepts fs::path objects in its constructors,
 // so the library user should not (and is not expected to) directly use BitInputItem objects.
 // Hence, we can test this class only when both bit7z and the test app use the same filesystem library.
-#if !defined( BIT7Z_TESTS_PUBLIC_API_ONLY )
+#ifndef BIT7Z_TESTS_PUBLIC_API_ONLY
 
 #include <catch2/catch.hpp>
 
@@ -37,8 +37,10 @@ TEST_CASE( "BitInputItem filesystem constructor should throw on an invalid path"
     REQUIRE_THROWS_AS( BitInputItem( "nonexistent/file/path" ), BitException );
 }
 
-TEST_CASE( "BitInputItem filesystem constructor should correctly read the metadata of an existing file",
-           "[bitinputitem]" ) {
+TEST_CASE(
+    "BitInputItem filesystem constructor should correctly read the metadata of an existing file",
+    "[bitinputitem]"
+) {
     static const TestDirectory testDir{ test_filesystem_dir };
     const fs::path filePath = loremIpsum.name;
     const BitInputItem item{ filePath };
@@ -52,8 +54,10 @@ TEST_CASE( "BitInputItem filesystem constructor should correctly read the metada
     REQUIRE( item.hasNewData() );
 }
 
-TEST_CASE( "BitInputItem filesystem constructor should correctly read the metadata of an existing folder",
-           "[bitinputitem]" ) {
+TEST_CASE(
+    "BitInputItem filesystem constructor should correctly read the metadata of an existing folder",
+    "[bitinputitem]"
+) {
     static const TestDirectory testDir{ test_filesystem_dir };
     const fs::path folderPath = folder.name;
     const BitInputItem item{ folderPath };
@@ -69,8 +73,10 @@ TEST_CASE( "BitInputItem filesystem constructor should correctly read the metada
 
 #ifndef _WIN32
 // Note: on Windows, creating symbolic links require admin permissions, so we test this only on non-Windows systems.
-TEST_CASE( "BitInputItem filesystem constructor should correctly read the metadata of an existing symbolic link",
-           "[bitinputitem]" ) {
+TEST_CASE(
+    "BitInputItem filesystem constructor should correctly read the metadata of an existing symbolic link",
+    "[bitinputitem]"
+) {
     static const TempTestDirectory testDir{ "test_bitinputitem" };
 
     const fs::path targetPath = fs::path{ test_filesystem_dir } / loremIpsum.name;
@@ -101,8 +107,14 @@ TEST_CASE( "BitInputItem buffer constructor should set the correct metadata", "[
     const std::string data = "Hello, World!";
     buffer_t buffer;
     buffer.reserve( data.size() );
-    std::transform( data.cbegin(), data.cend(), std::back_inserter( buffer ),
-               [] ( char character ) -> byte_t { return static_cast< byte_t >( character ); });
+    std::transform(
+        data.cbegin(),
+        data.cend(),
+        std::back_inserter( buffer ),
+        [] ( char character ) -> byte_t {
+            return static_cast< byte_t >( character );
+        }
+    );
     const fs::path path = BIT7Z_NATIVE_STRING( "path/to/buffer.txt" );
 
     const BitInputItem item{ buffer, path.string< tchar >() };
@@ -132,11 +144,13 @@ TEST_CASE( "BitInputItem std::istream constructor should set the correct metadat
     REQUIRE( item.hasNewData() );
 }
 
-TEST_CASE( "BitInputItem rename constructor should correctly read the metadata of an item from an existing archive",
-           "[bitinputitem]" ) {
+TEST_CASE(
+    "BitInputItem rename constructor should correctly read the metadata of an item from an existing archive",
+    "[bitinputitem]"
+) {
     static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const BitArchiveReader reader{ test::sevenzip_lib(), BIT7Z_STRING( "multiple_items.7z" ), BitFormat::SevenZip };
+    const BitArchiveReader reader{ test::sevenzipLib(), BIT7Z_STRING( "multiple_items.7z" ), BitFormat::SevenZip };
     const auto originalItem = reader.find( loremIpsum.name );
 
     const fs::path newItemPath = BIT7Z_NATIVE_STRING( "New Name.pdf" );

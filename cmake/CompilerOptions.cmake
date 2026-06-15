@@ -4,11 +4,20 @@
 
 # compiler-specific options
 
+# Treating warnings as errors defaults to the value of BIT7Z_BUILD_TESTS: it is enabled for bit7z's
+# own development (building the tests is a good proxy for "this is a contributor's build") and CI, but
+# disabled for plain consumers and package managers (which may use newer or different compilers that
+# emit new warnings and would otherwise be broken by it). It can always be overridden explicitly.
+option( BIT7Z_WARNINGS_AS_ERRORS "Treat compiler warnings as errors (/WX or -Werror)" ${BIT7Z_BUILD_TESTS} )
+message( STATUS "Warnings as errors: ${BIT7Z_WARNINGS_AS_ERRORS}" )
+
 if( MSVC )
     target_compile_definitions( ${LIB_TARGET} PRIVATE _CRT_DECLARE_NONSTDC_NAMES=0 )
 
     # setting a pdb file name for debug builds (otherwise it is not generated!)
-    set_target_properties( ${LIB_TARGET} PROPERTIES COMPILE_PDB_NAME_DEBUG ${LIB_TARGET}${CMAKE_DEBUG_POSTFIX} )
+    set_target_properties(
+        ${LIB_TARGET} PROPERTIES COMPILE_PDB_NAME_DEBUG bit7z${ARCH_POSTFIX}${CMAKE_DEBUG_POSTFIX}
+    )
 
     # release builds should be optimized (e.g., for size)
     target_compile_options( ${LIB_TARGET} PRIVATE "$<$<OR:$<CONFIG:RELEASE>,$<CONFIG:MINSIZEREL>>:/Os>" )
@@ -29,13 +38,16 @@ if( MSVC )
     string( REGEX REPLACE "/GR" "/GR-" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" )
 
     # warning flags (as suggested in https://lefticus.gitbooks.io/cpp-best-practices/)
-    target_compile_options( ${LIB_TARGET} PRIVATE /W4 /w14640 /w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296
-                            /w14311 /w14545 /w14546 /w14547 /w14549 /w14555 /w14619 /w14640 /w14826 /w14905 /w14906
-                            /w14928 )
+    target_compile_options(
+        ${LIB_TARGET} PRIVATE
+        /W4 /w14640 /w14242 /w14254 /w14263 /w14265 /w14287 /we4289 /w14296 /w14311 /w14545 /w14546 /w14547 /w14549
+        /w14555 /w14619 /w14640 /w14826 /w14905 /w14906 /w14928
+    )
 
     # C++ standard conformance options of MSVC
-    target_compile_options( ${LIB_TARGET} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline
-                            /Zc:forScope /Zc:strictStrings )
+    target_compile_options(
+        ${LIB_TARGET} PRIVATE /fp:precise /Zc:wchar_t /Zc:rvalueCast /Zc:inline /Zc:forScope /Zc:strictStrings
+    )
 
     if( NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang" )
         target_compile_options( ${LIB_TARGET} PRIVATE /Zc:throwingNew /Zc:referenceBinding )
@@ -53,8 +65,10 @@ if( MSVC )
         target_compile_options( ${LIB_TARGET} PRIVATE /Zc:__cplusplus )
     endif()
     if( MSVC_VERSION GREATER_EQUAL 1910 ) # MSVC >= 15.0 (VS 2017)
-        # treating warnings as errors
-        target_compile_options( ${LIB_TARGET} PRIVATE /WX )
+        if( BIT7Z_WARNINGS_AS_ERRORS )
+            # treating warnings as errors
+            target_compile_options( ${LIB_TARGET} PRIVATE /WX )
+        endif()
     else() # MSVC < 15.0 (i.e., <= VS 2015)
         # ignoring C4127 warning
         target_compile_options( ${LIB_TARGET} PRIVATE /wd4127 )
@@ -64,11 +78,9 @@ if( MSVC )
     option( BIT7Z_STATIC_RUNTIME "Enable or disable using /MT MSVC flag" )
     message( STATUS "Static runtime: ${BIT7Z_STATIC_RUNTIME}" )
     if( BIT7Z_STATIC_RUNTIME )
-        set( CompilerFlags
-             CMAKE_CXX_FLAGS_DEBUG
-             CMAKE_CXX_FLAGS_RELEASE
-             CMAKE_C_FLAGS_DEBUG
-             CMAKE_C_FLAGS_RELEASE )
+        set(
+            CompilerFlags CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+        )
         foreach( CompilerFlag ${CompilerFlags} )
             string( REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}" )
             set( ${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "msvc compiler flags" FORCE )
@@ -76,7 +88,10 @@ if( MSVC )
         endforeach()
     endif()
 else()
-    target_compile_options( ${LIB_TARGET} PRIVATE -Wall -Wextra -Werror -Wconversion -Wsign-conversion )
+    target_compile_options( ${LIB_TARGET} PRIVATE -Wall -Wextra -Wconversion -Wsign-conversion )
+    if( BIT7Z_WARNINGS_AS_ERRORS )
+        target_compile_options( ${LIB_TARGET} PRIVATE -Werror )
+    endif()
 endif()
 
 # Extra warning flags for Clang
@@ -106,8 +121,10 @@ endif()
 
 # Extra warning flags for GCC
 if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
-    target_compile_options( ${LIB_TARGET} PRIVATE -Wshadow -Wcast-align -Wunused -Wtrampolines
-                            -Woverloaded-virtual -Wformat=2 -Wdouble-promotion -Wlogical-op )
+    target_compile_options(
+        ${LIB_TARGET} PRIVATE
+        -Wshadow -Wcast-align -Wunused -Wtrampolines -Woverloaded-virtual -Wformat=2 -Wdouble-promotion -Wlogical-op
+    )
     if( NOT MINGW AND BIT7Z_USE_LEGACY_IUNKNOWN )
         target_compile_options( ${LIB_TARGET} PRIVATE -Wnon-virtual-dtor )
     endif()
@@ -124,18 +141,19 @@ if( CMAKE_CXX_COMPILER_ID MATCHES "GNU" )
         endif()
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_LESS 5.0 )
-        target_compile_options( ${LIB_TARGET} PRIVATE
-                                -Wno-missing-field-initializers
-                                -Wno-shadow
-                                -Wno-unused-parameter )
+        target_compile_options(
+            ${LIB_TARGET} PRIVATE -Wno-missing-field-initializers -Wno-shadow -Wno-unused-parameter
+        )
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 6.0 )
-        target_compile_options( ${LIB_TARGET} PRIVATE
-                                # GCC 6.0+ complains on 7-zip macros using misleading indentation,
-                                # disabling the warning to make it compile.
-                                -Wno-misleading-indentation
-                                # Extra warning flags for GCC 6.0+
-                                -Wduplicated-cond -Wnull-dereference )
+        target_compile_options(
+            ${LIB_TARGET} PRIVATE
+            # GCC 6.0+ complains on 7-zip macros using misleading indentation,
+            # disabling the warning to make it compile.
+            -Wno-misleading-indentation
+            # Extra warning flags for GCC 6.0+
+            -Wduplicated-cond -Wnull-dereference
+        )
     endif()
     if( CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 7.0 )
         # Extra warning flags for GCC 7.0+

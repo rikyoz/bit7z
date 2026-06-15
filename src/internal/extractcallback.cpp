@@ -80,7 +80,11 @@ try {
     *outStream = nullptr;
     releaseStream();
 
-    const auto isEncrypted = itemProperty( index, BitProperty::Encrypted );
+    // The index comes from 7-Zip and is guaranteed valid, so we build the item once without
+    // re-validating it, and reuse it for the encrypted check, the filter callback, and getOutStream.
+    const auto item = mInputArchive.itemAtUnchecked( index );
+
+    const auto isEncrypted = item.itemProperty( BitProperty::Encrypted );
     if ( isEncrypted.isBool() ) {
         mIsLastItemEncrypted = isEncrypted.getBool();
     }
@@ -90,7 +94,7 @@ try {
     }
 
     if ( mFilterCallback ) {
-        const auto filterResult = mFilterCallback( mInputArchive.itemAt( index ) );
+        const auto filterResult = mFilterCallback( item );
         if ( filterResult == FilterResult::SkipItem ) {
             return S_OK;
         }
@@ -100,10 +104,10 @@ try {
         // if filterResult == FilterResult::ProcessItem, continue.
     }
 
-    return getOutStream( index, outStream );
-} catch ( const BitException& ex ) {
-    mErrorException = std::make_exception_ptr( ex );
-    return ex.hresultCode();
+    return getOutStream( item, outStream );
+} catch ( const BitException& exception ) {
+    mErrorException = std::make_exception_ptr( exception );
+    return exception.hresultCode();
 } catch ( const std::runtime_error& ) {
     mErrorException = std::make_exception_ptr(
         BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) )
@@ -163,14 +167,6 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     }
 
     return StringToBstr( pass.c_str(), password );
-}
-
-auto ExtractCallback::isItemFolder( std::uint32_t index ) const -> bool {
-    return mInputArchive.isItemFolder( index );
-}
-
-auto ExtractCallback::itemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant {
-    return mInputArchive.itemProperty( index, property );
 }
 
 auto ExtractCallback::inputArchive() const -> const BitInputArchive& {

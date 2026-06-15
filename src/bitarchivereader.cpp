@@ -84,7 +84,15 @@ BitArchiveReader::BitArchiveReader(
     const BitInputArchive& inArchive,
     const BitInFormat& format,
     const tstring& password
-) : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive } {}
+) : BitArchiveReader{ lib, inArchive, ArchiveStartOffset::FileStart, format, password } {}
+
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& inArchive,
+    ArchiveStartOffset archiveStart,
+    const BitInFormat& format,
+    const tstring& password
+) : BitArchiveReader{ lib, inArchive, inArchive.mainSubfileIndex(), archiveStart, format, password } {}
 
 BitArchiveReader::BitArchiveReader(
     const Bit7zLibrary& lib,
@@ -92,7 +100,17 @@ BitArchiveReader::BitArchiveReader(
     std::uint32_t subfileIndex,
     const BitInFormat& format,
     const tstring& password
-) : BitAbstractArchiveOpener{ lib, format, password }, BitInputArchive{ *this, inArchive, subfileIndex } {}
+) : BitArchiveReader{ lib, inArchive, subfileIndex, ArchiveStartOffset::FileStart, format, password } {}
+
+BitArchiveReader::BitArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& inArchive,
+    std::uint32_t subfileIndex,
+    ArchiveStartOffset archiveStart,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveOpener{ lib, format, password },
+    BitInputArchive{ *this, inArchive, subfileIndex, archiveStart } {}
 
 auto BitArchiveReader::archiveProperties() const -> std::map< BitProperty, BitPropVariant > {
     std::map< BitProperty, BitPropVariant > result;
@@ -150,7 +168,7 @@ auto BitArchiveReader::size() const -> std::uint64_t {
     return std::accumulate(
         cbegin(),
         cend(),
-        0ull,
+        0uLL,
         [] ( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
             return item.isDir() ? accumulator : accumulator + item.size();
         }
@@ -161,7 +179,7 @@ auto BitArchiveReader::packSize() const -> std::uint64_t {
     return std::accumulate(
         cbegin(),
         cend(),
-        0ull,
+        0uLL,
         [] ( std::uint64_t accumulator, const BitArchiveItem& item ) -> std::uint64_t {
             return item.isDir() ? accumulator : accumulator + item.packSize();
         }
@@ -187,7 +205,7 @@ auto BitArchiveReader::isEncrypted() const -> bool {
     return std::all_of(
         cbegin(),
         cend(),
-        [] ( const BitArchiveItem& item ) {
+        [] ( const BitArchiveItem& item ) -> bool {
             return item.isDir() || item.isEncrypted();
         }
     );

@@ -38,16 +38,21 @@ using bit7z::BitMemCompressor;
 using bit7z::BitStreamCompressor;
 using bit7z::BitInOutFormat;
 
+namespace {
 struct TestOutputFormat {
     const char* name;
     const BitInOutFormat& format; // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 };
+} // namespace
 
 using CreatorTypes = std::tuple< BitArchiveWriter, BitFileCompressor, BitMemCompressor, BitStreamCompressor >;
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setPassword(...) / password() / cryptHeaders()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setPassword(...) / password() / cryptHeaders()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE( compressor.password().empty() );
     REQUIRE( !compressor.cryptHeaders() );
 
@@ -79,10 +84,13 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setPassword(...) / password
 }
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator:"
-                         "setPassword(...) with a non-ASCII string should throw when using the ZIP format",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor{ test::sevenzip_lib(), BitFormat::Zip };
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator:"
+    "setPassword(...) with a non-ASCII string should throw when using the ZIP format",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor{ test::sevenzipLib(), BitFormat::Zip };
     REQUIRE( compressor.password().empty() );
     REQUIRE( !compressor.cryptHeaders() );
 
@@ -127,26 +135,33 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator:"
 }
 #endif
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: format() / compressionFormat()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: format() / compressionFormat()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
     const auto testFormat = GENERATE( as< TestOutputFormat >(),
-                                      TestOutputFormat{ "ZIP", BitFormat::Zip },
-                                      TestOutputFormat{ "BZIP2", BitFormat::BZip2 },
-                                      TestOutputFormat{ "7Z", BitFormat::SevenZip },
-                                      TestOutputFormat{ "XZ", BitFormat::Xz },
-                                      TestOutputFormat{ "WIM", BitFormat::Wim },
-                                      TestOutputFormat{ "TAR", BitFormat::Tar },
-                                      TestOutputFormat{ "GZIP", BitFormat::GZip } );
+        TestOutputFormat{ "ZIP", BitFormat::Zip },
+        TestOutputFormat{ "BZIP2", BitFormat::BZip2 },
+        TestOutputFormat{ "7Z", BitFormat::SevenZip },
+        TestOutputFormat{ "XZ", BitFormat::Xz },
+        TestOutputFormat{ "WIM", BitFormat::Wim },
+        TestOutputFormat{ "TAR", BitFormat::Tar },
+        TestOutputFormat{ "GZIP", BitFormat::GZip }
+    );
     DYNAMIC_SECTION( "Format: " << testFormat.name ) {
-        const TestType compressor{ test::sevenzip_lib(), testFormat.format };
+        const TestType compressor{ test::sevenzipLib(), testFormat.format };
         REQUIRE( compressor.compressionFormat() == testFormat.format );
         REQUIRE( compressor.format() == testFormat.format );
     }
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionLevel(...) / compressionLevel()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setCompressionLevel(...) / compressionLevel()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE( compressor.compressionLevel() == BitCompressionLevel::Normal );
     compressor.setCompressionLevel( BitCompressionLevel::None );
     REQUIRE( compressor.compressionLevel() == BitCompressionLevel::None );
@@ -162,10 +177,13 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionLevel(...) / 
     REQUIRE( compressor.compressionLevel() == BitCompressionLevel::Ultra );
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) / compressionMethod()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setCompressionMethod(...) / compressionMethod()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
     SECTION( "7Z Compression Methods" ) {
-        TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+        TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Lzma2 );
         compressor.setCompressionMethod( BitCompressionMethod::Copy );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Copy );
@@ -182,7 +200,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) /
     }
 
     SECTION( "ZIP Compression Methods" ) {
-        TestType compressor( test::sevenzip_lib(), BitFormat::Zip );
+        TestType compressor( test::sevenzipLib(), BitFormat::Zip );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Deflate );
         compressor.setCompressionMethod( BitCompressionMethod::Copy );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Copy );
@@ -200,7 +218,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) /
     }
 
     SECTION( "BZIP2 Compression Methods" ) {
-        TestType compressor( test::sevenzip_lib(), BitFormat::BZip2 );
+        TestType compressor( test::sevenzipLib(), BitFormat::BZip2 );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::BZip2 );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Copy ) );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Lzma ) );
@@ -213,7 +231,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) /
     }
 
     SECTION( "GZIP Compression Methods" ) {
-        TestType compressor( test::sevenzip_lib(), BitFormat::GZip );
+        TestType compressor( test::sevenzipLib(), BitFormat::GZip );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Deflate );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Copy ) );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Lzma ) );
@@ -226,7 +244,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) /
     }
 
     SECTION( "TAR Compression Methods" ) {
-        TestType compressor( test::sevenzip_lib(), BitFormat::Tar );
+        TestType compressor( test::sevenzipLib(), BitFormat::Tar );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Copy );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Lzma ) );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Lzma2 ) );
@@ -239,7 +257,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) /
     }
 
     SECTION( "WIM Compression Methods" ) {
-        TestType compressor( test::sevenzip_lib(), BitFormat::Wim );
+        TestType compressor( test::sevenzipLib(), BitFormat::Wim );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Copy );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Lzma ) );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Lzma2 ) );
@@ -252,7 +270,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) /
     }
 
     SECTION( "XZ Compression Methods" ) {
-        TestType compressor( test::sevenzip_lib(), BitFormat::Xz );
+        TestType compressor( test::sevenzipLib(), BitFormat::Xz );
         REQUIRE( compressor.compressionMethod() == BitCompressionMethod::Lzma2 );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Copy ) );
         REQUIRE_THROWS( compressor.setCompressionMethod( BitCompressionMethod::Lzma ) );
@@ -265,12 +283,15 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setCompressionMethod(...) /
     }
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setDictionarySize(...) / dictionarySize()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setDictionarySize(...) / dictionarySize()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
     SECTION( "SevenZip format + Lzma/Lzma2 compression methods" ) {
         constexpr auto kMaxLzmaDictionarySize = 1536 * ( 1LL << 20 ); // less than 1536 MiB
 
-        TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+        TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
         REQUIRE( compressor.dictionarySize() == 0 );
 
         auto testMethod = GENERATE( BitCompressionMethod::Lzma, BitCompressionMethod::Lzma2 );
@@ -291,7 +312,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setDictionarySize(...) / di
     SECTION( "Zip format + Ppmd compression methods" ) {
         constexpr std::uint32_t kMaxPpmdDictionarySize = ( 1ULL << 30 ); // less than 1 GiB, i.e., 2^30 bytes
 
-        TestType compressor( test::sevenzip_lib(), BitFormat::Zip );
+        TestType compressor( test::sevenzipLib(), BitFormat::Zip );
         REQUIRE( compressor.dictionarySize() == 0 );
         compressor.setCompressionMethod( BitCompressionMethod::Ppmd );
 
@@ -306,9 +327,11 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setDictionarySize(...) / di
         REQUIRE_THROWS( compressor.setDictionarySize( std::numeric_limits< std::uint32_t >::max() ) );
         REQUIRE( compressor.dictionarySize() == kMaxPpmdDictionarySize );
 
-        auto testMethod = GENERATE( BitCompressionMethod::Copy,
-                                    BitCompressionMethod::Deflate,
-                                    BitCompressionMethod::Deflate64 );
+        auto testMethod = GENERATE(
+            BitCompressionMethod::Copy,
+            BitCompressionMethod::Deflate,
+            BitCompressionMethod::Deflate64
+        );
         compressor.setCompressionMethod( testMethod );
         REQUIRE_NOTHROW( compressor.setDictionarySize( 1024 * 1024 ) );
         REQUIRE( compressor.dictionarySize() == 0 );
@@ -317,7 +340,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setDictionarySize(...) / di
     SECTION( "BZip2 format and compression methods" ) {
         constexpr auto kMaxBzip2DictionarySize = 900 * ( 1LL << 10 ); // less than 900 KiB
 
-        TestType compressor( test::sevenzip_lib(), BitFormat::BZip2 );
+        TestType compressor( test::sevenzipLib(), BitFormat::BZip2 );
         REQUIRE( compressor.dictionarySize() == 0 );
 
         std::uint32_t dictionarySize = 1024;
@@ -333,9 +356,12 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setDictionarySize(...) / di
     }
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setSolidMode(...) / solidMode()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setSolidMode(...) / solidMode()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE( !compressor.solidMode() );
 
     compressor.setSolidMode( true );
@@ -345,9 +371,12 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setSolidMode(...) / solidMo
     REQUIRE( !compressor.solidMode() );
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setStoreSymbolicLinks(...) / storeSymbolicLinks()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setStoreSymbolicLinks(...) / storeSymbolicLinks()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE_FALSE( compressor.storeSymbolicLinks() );
 
     compressor.setStoreSymbolicLinks( true );
@@ -359,17 +388,38 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setStoreSymbolicLinks(...) 
     REQUIRE_FALSE( compressor.solidMode() );
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setThreadCount(...) / threadCount()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setStoreOpenFiles(...) / storeOpenFiles()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
+    REQUIRE_FALSE( compressor.storeOpenFiles() );
+
+    compressor.setStoreOpenFiles( true );
+    REQUIRE( compressor.storeOpenFiles() );
+
+    compressor.setStoreOpenFiles( false );
+    REQUIRE_FALSE( compressor.storeOpenFiles() );
+}
+
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setThreadCount(...) / threadCount()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE( compressor.threadsCount() == 0u );
     compressor.setThreadsCount( 8u );
     REQUIRE( compressor.threadsCount() == 8u );
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setUpdateMode(...) / updateMode()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setUpdateMode(...) / updateMode()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE( compressor.updateMode() == UpdateMode::None );
 
     compressor.setUpdateMode( true );
@@ -386,26 +436,31 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setUpdateMode(...) / update
 
     compressor.setUpdateMode( UpdateMode::None );
     REQUIRE( compressor.updateMode() == UpdateMode::None );
-
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setVolumeSize(...) / volumeSize()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
-    TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setVolumeSize(...) / volumeSize()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
+    TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
     REQUIRE( compressor.volumeSize() == 0u );
     compressor.setVolumeSize( 1024u );
     REQUIRE( compressor.volumeSize() == 1024u );
 }
 
-TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setWordSize(...) / wordSize()",
-                         "[bitabstractarchivecreator]", CreatorTypes ) {
+TEMPLATE_LIST_TEST_CASE(
+    "BitAbstractArchiveCreator: setWordSize(...) / wordSize()",
+    "[bitabstractarchivecreator]",
+    CreatorTypes
+) {
     constexpr auto kMinPpmdWordSize = 2u;
 
     SECTION( "SevenZip format + Lzma/Lzma2 compression methods" ) {
         constexpr auto kMinLzmaWordSize = 5u;
         constexpr auto kMaxLzmaWordSize = 273u;
 
-        TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+        TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
         REQUIRE_THROWS( compressor.setWordSize( 4u ) );
         REQUIRE( compressor.wordSize() == 0 );
 
@@ -439,7 +494,7 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setWordSize(...) / wordSize
     SECTION( "SevenZip format + Ppmd compression method" ) {
         constexpr auto kMax7zPpmdWordSize = 32u;
 
-        TestType compressor( test::sevenzip_lib(), BitFormat::SevenZip );
+        TestType compressor( test::sevenzipLib(), BitFormat::SevenZip );
         compressor.setCompressionMethod( BitCompressionMethod::Ppmd );
 
         REQUIRE_THROWS( compressor.setWordSize( 1u ) );
@@ -464,10 +519,10 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setWordSize(...) / wordSize
         REQUIRE( compressor.wordSize() == 0 );
     }
 
-    SECTION( "Zip format + Ppmd compression method") {
+    SECTION( "Zip format + Ppmd compression method" ) {
         constexpr auto kMaxZipPpmdWordSize = 16u;
 
-        TestType compressor( test::sevenzip_lib(), BitFormat::Zip );
+        TestType compressor( test::sevenzipLib(), BitFormat::Zip );
         compressor.setCompressionMethod( BitCompressionMethod::Ppmd );
 
         REQUIRE_THROWS( compressor.setWordSize( 1u ) );
@@ -492,12 +547,12 @@ TEMPLATE_LIST_TEST_CASE( "BitAbstractArchiveCreator: setWordSize(...) / wordSize
         REQUIRE( compressor.wordSize() == 0 );
     }
 
-    SECTION( "Zip format + Deflate/Deflate64 compression method") {
+    SECTION( "Zip format + Deflate/Deflate64 compression method" ) {
         constexpr auto kMinDeflateWordSize = 3u;
         constexpr auto kMaxDeflateWordSize = 258u;
         constexpr auto kMaxDeflate64WordSize = kMaxDeflateWordSize - 1;
 
-        TestType compressor( test::sevenzip_lib(), BitFormat::Zip );
+        TestType compressor( test::sevenzipLib(), BitFormat::Zip );
         compressor.setCompressionMethod( BitCompressionMethod::Deflate );
 
         REQUIRE_THROWS( compressor.setWordSize( 2u ) );

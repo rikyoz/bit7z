@@ -14,18 +14,20 @@
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
 
+#include <cstdint>
+
 namespace bit7z {
 
 /**
  * @brief The FormatFeatures enum specifies the features supported by an archive file format.
  */
-enum struct FormatFeatures : unsigned {
-    MultipleFiles = 1u << 0,    ///< The format can compress/extract multiple files.
-    SolidArchive = 1u << 1,     ///< The format supports solid archives.
-    CompressionLevel = 1u << 2, ///< The format is able to use different compression levels.
-    Encryption = 1u << 3,       ///< The format supports archive encryption.
-    HeaderEncryption = 1u << 4, ///< The format can encrypt the file names.
-    MultipleMethods = 1u << 5   ///< The format can use different compression methods.
+enum struct FormatFeatures : std::uint8_t {
+    MultipleFiles    = 1u << 0u, ///< The format can compress/extract multiple files.
+    SolidArchive     = 1u << 1u, ///< The format supports solid archives.
+    CompressionLevel = 1u << 2u, ///< The format is able to use different compression levels.
+    Encryption       = 1u << 3u, ///< The format supports archive encryption.
+    HeaderEncryption = 1u << 4u, ///< The format can encrypt the file names.
+    MultipleMethods  = 1u << 5u  ///< The format can use different compression methods.
 };
 
 constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {
@@ -62,7 +64,7 @@ class BitInFormat {
          * @brief Constructs a BitInFormat object with the ID value used by the 7z SDK.
          * @param value  the value of the format in the 7z SDK.
          */
-        constexpr explicit BitInFormat( unsigned char value ) noexcept: mValue( value ) {}
+        constexpr explicit BitInFormat( unsigned char value ) noexcept : mValue( value ) {}
 
         /**
          * @return the value of the format in the 7z SDK.
@@ -101,11 +103,12 @@ class BitInOutFormat final : public BitInFormat {
          * @param defaultMethod the default method used for compressing the archive format.
          * @param features      the set of features supported by the archive format
          */
-        constexpr BitInOutFormat( unsigned char value,
-                                  const tchar* ext,
-                                  BitCompressionMethod defaultMethod,
-                                  FormatFeatures features ) noexcept
-            : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
+        constexpr BitInOutFormat(
+            unsigned char value,
+            const tchar* ext,
+            BitCompressionMethod defaultMethod,
+            FormatFeatures features
+        ) noexcept : BitInFormat( value ), mExtension( ext ), mDefaultMethod( defaultMethod ), mFeatures( features ) {}
 
         //non-copyable
         BitInOutFormat( const BitInOutFormat& other ) = delete;
@@ -231,13 +234,12 @@ extern const BitInOutFormat Tar;        ///< TAR Archive Format
 extern const BitInOutFormat GZip;       ///< GZIP Archive Format
 }  // namespace BitFormat
 
-
 #ifdef BIT7Z_AUTO_FORMAT
 #define BIT7Z_DEFAULT_FORMAT = BitFormat::Auto
 #else
 #define BIT7Z_DEFAULT_FORMAT
 #endif
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITFORMAT_HPP
