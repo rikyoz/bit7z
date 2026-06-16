@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,45 +10,41 @@
 #ifndef CMULTIVOLUMEOUTSTREAM_HPP
 #define CMULTIVOLUMEOUTSTREAM_HPP
 
-#include <vector>
-#include <string>
-#include <cstdint>
-
-#include "internal/com.hpp"
+#include "internal/cfileoutstream.hpp"
 #include "internal/guiddef.hpp"
-#include "internal/cvolumeoutstream.hpp"
+#include "internal/volumescache.hpp"
 
 #include <7zip/IStream.h>
 
-
-using std::vector;
-using std::wstring;
+#include <cstddef>
+#include <cstdint>
+#include <vector>
 
 namespace bit7z {
 
 class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
-        // Size of a single volume.
-        uint64_t mMaxVolumeSize;
+    // Size of a single volume.
+    std::uint64_t mMaxVolumeSize;
 
-        // Common name prefix of every volume.
-        fs::path mVolumePrefix;
+    // Common name prefix of every volume.
+    fs::path mVolumePrefix;
 
-        // The current volume stream on which we are working.
-        size_t mCurrentVolumeIndex;
+    // Offset from the beginning of the whole output archive.
+    std::uint64_t mAbsolutePosition;
 
-        // Offset from the beginning of the current volume stream (i.e., the one at mCurrentVolumeIndex).
-        uint64_t mCurrentVolumeOffset;
+    // Total size of the output archive (sum of the volumes' sizes).
+    std::uint64_t mTotalSize;
 
-        // Offset from the beginning of the whole output archive.
-        uint64_t mAbsoluteOffset;
+    // Many archive formats store their internal metadata at the beginning of the archive (7-Zip does the same).
+    // So we evict the newest opened volume, rather than the oldest one, in this case.
+    VolumesCache< CFileOutStream, EvictionPolicy::Newest > mVolumes;
 
-        // Total size of the output archive (sum of the volumes' sizes).
-        uint64_t mFullSize;
+    auto currentVolume() -> CachedVolume< CFileOutStream >&;
 
-        vector< CMyComPtr< CVolumeOutStream > > mVolumes;
+    void ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex );
 
     public:
-        CMultiVolumeOutStream( uint64_t volSize, fs::path archiveName );
+        CMultiVolumeOutStream( std::uint64_t volSize, fs::path archiveName );
 
         CMultiVolumeOutStream( const CMultiVolumeOutStream& ) = delete;
 
@@ -68,9 +64,9 @@ class CMultiVolumeOutStream final : public IOutStream, public CMyUnknownImp {
         BIT7Z_STDMETHOD( SetSize, UInt64 newSize );
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP1( IOutStream ) //-V2507 //-V2511 //-V835 //-V3504
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CMULTIVOLUMEOUTSTREAM_HPP

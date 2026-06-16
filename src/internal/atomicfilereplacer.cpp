@@ -13,6 +13,7 @@
 #include "internal/atomicfilereplacer.hpp"
 
 #include "bitexception.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
@@ -21,7 +22,6 @@
 
 namespace bit7z {
 
-#ifdef _WIN32
 namespace {
 /* Opens a CFileOutStream at "<target>.tmp", retrying with numeric postfixes
  * "<target>.tmp1", ".tmp2", ... on collision.
@@ -29,36 +29,32 @@ namespace {
 auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutStream > {
     constexpr auto kMaxTempPathRetries = std::numeric_limits< std::uint16_t >::max();
     fs::path tmpCandidatePath = targetPath;
-    tmpCandidatePath += L".tmp";
-    std::uint32_t i = 0u; // Note: wider than kMaxTempPathRetries so that we can detect when we pass the limit.
+    tmpCandidatePath += BIT7Z_NATIVE_STRING( ".tmp" );
+    std::uint32_t tempIndex = 0u; // Note: wider than kMaxTempPathRetries so that we can detect when we pass the limit.
     do {
         try {
             return make_com< CFileOutStream >( tmpCandidatePath );
-        } catch ( const BitException& ex ) {
-            if ( ex.code() != std::errc::file_exists ) {
+        } catch ( const BitException& exception ) {
+            if ( exception.code() != std::errc::file_exists ) {
                 throw;
             }
         }
-        if ( ++i > kMaxTempPathRetries ) {
+        if ( ++tempIndex > kMaxTempPathRetries ) {
             break;
         }
-        tmpCandidatePath.replace_extension( L".tmp" + std::to_wstring( i ) );
+        tmpCandidatePath.replace_extension( BIT7Z_NATIVE_STRING( ".tmp" ) + to_native_string( tempIndex ) );
     } while ( true );
-    throw BitException( "Could not allocate a unique temporary file name",
-                        std::make_error_code( std::errc::file_exists ),
-                        path_to_tstring( targetPath ) );
+    throw BitException(
+        "Could not allocate a unique temporary file name",
+        std::make_error_code( std::errc::file_exists ),
+        pathToTstring( targetPath )
+    );
 }
 } // namespace
 
 AtomicFileReplacer::AtomicFileReplacer( const fs::path& targetPath )
     : mTargetPath{ targetPath },
       mStream{ openUniqueTempStream( targetPath ) } {}
-#else
-AtomicFileReplacer::AtomicFileReplacer( const fs::path& targetPath )
-    : mTempDir{ targetPath },
-      mTargetPath{ targetPath },
-      mStream{ new CFileOutStream{ mTempDir.path() / "data" } } {}
-#endif
 
 auto AtomicFileReplacer::stream() const noexcept -> IOutStream* {
     return mStream;
@@ -78,16 +74,22 @@ void AtomicFileReplacer::commit() {
     /* MinGW seems to not follow the standard since filesystem::rename does not overwrite an already
      * existing destination file (as it should). So we explicitly remove it before! */
     if ( !fs::remove( mTargetPath, error ) ) {
-        throw BitException( "Failed to delete the old archive file",
-                            error, path_to_tstring( mTargetPath ) );
+        throw BitException(
+            "Failed to delete the old archive file",
+            error,
+            pathToTstring( mTargetPath )
+        );
     }
 #endif
 
     // Remove the old file and rename the temporary file (move file with overwriting).
     fs::rename( tempPath, mTargetPath, error );
     if ( error ) {
-        throw BitException( "Failed to overwrite the old archive file",
-                            error, path_to_tstring( mTargetPath ) );
+        throw BitException(
+            "Failed to overwrite the old archive file",
+            error,
+            pathToTstring( mTargetPath )
+        );
     }
 }
 

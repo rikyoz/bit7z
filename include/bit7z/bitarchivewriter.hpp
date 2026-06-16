@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,13 @@
 #ifndef BITARCHIVEWRITER_HPP
 #define BITARCHIVEWRITER_HPP
 
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivecreator.hpp"
+#include "bitformat.hpp"
 #include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
+
+#include <istream>
 
 namespace bit7z {
 
@@ -37,11 +43,13 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const tstring& inArchive,
-                          ArchiveStartOffset startOffset,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const tstring& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the given archive file path.
@@ -51,10 +59,12 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const tstring& inArchive,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const tstring& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive in the given buffer.
@@ -66,11 +76,27 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const buffer_t& inArchive,
-                          ArchiveStartOffset startOffset,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const buffer_t& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The input archive's bytes are read lazily while compressing (to copy retained items),
+         * so the buffer must outlive the BitArchiveWriter; a temporary would dangle.
+         */
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        ) = delete;
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive in the given buffer.
@@ -80,10 +106,25 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          const std::vector< byte_t >& inArchive,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            const buffer_t& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The input archive's bytes are read lazily while compressing (to copy retained items),
+         * so the buffer must outlive the BitArchiveWriter; a temporary would dangle.
+         */
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        ) = delete;
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive from the given standard input stream.
@@ -95,11 +136,13 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          std::istream& inArchive,
-                          ArchiveStartOffset startOffset,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            std::istream& inArchive,
+            ArchiveStartOffset startOffset,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveWriter object, reading the archive from the given standard input stream.
@@ -109,12 +152,14 @@ class BitArchiveWriter : public BitAbstractArchiveCreator, public BitOutputArchi
          * @param format        the input/output archive format.
          * @param password      (optional) the password needed to read the input archive.
          */
-        BitArchiveWriter( const Bit7zLibrary& lib,
-                          std::istream& inArchive,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveWriter(
+            const Bit7zLibrary& lib,
+            std::istream& inArchive,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITARCHIVEWRITER_HPP

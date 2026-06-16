@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -16,14 +16,20 @@
 #pragma warning(disable:4996)
 #endif
 
-#include <algorithm> //for std::copy_n
-
 #include "internal/cbufferinstream.hpp"
+
+#include "bittypes.hpp"
 #include "internal/bufferutil.hpp"
+#include "internal/cpp20.hpp"
+
+#include <algorithm> //for std::copy_n
+#include <cstddef>
+#include <cstdint>
+#include <iterator>
 
 namespace bit7z {
 
-CBufferInStream::CBufferInStream( const vector< byte_t >& inBuffer )
+CBufferInStream::CBufferInStream( const buffer_t& inBuffer )
     : mBuffer( inBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
@@ -39,7 +45,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     /* Note: thanks to CBufferInStream::Seek, we can safely assume mCurrentPosition to always be a valid iterator;
      * so "remaining" will always be > 0 (and casts to unsigned types are safe) */
     std::ptrdiff_t remaining = mBuffer.cend() - mCurrentPosition;
-    if ( cmp_greater( remaining, size ) ) {
+    if ( cpp20::cmp_greater( remaining, size ) ) {
         /* The remaining buffer still to read is bigger than the read size requested by the user,
          * so we need to read just a "size" number of bytes. */
         remaining = static_cast< std::ptrdiff_t >( size );
@@ -53,7 +59,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
     std::advance( mCurrentPosition, remaining );
 
     if ( processedSize != nullptr ) {
-        /* Note: even though on 64-bit systems "remaining" will be a 64-bit unsigned integer (size_t),
+        /* Note: even though on 64-bit systems "remaining" will be a 64-bit unsigned integer (std::size_t),
          * its value cannot be greater than "size", which is a 32-bit unsigned int; hence, this cast is safe. */
         *processedSize = static_cast< UInt32 >( remaining );
     }
@@ -62,7 +68,7 @@ STDMETHODIMP CBufferInStream::Read( void* data, UInt32 size, UInt32* processedSi
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t newIndex{};
+    std::uint64_t newIndex{};
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {

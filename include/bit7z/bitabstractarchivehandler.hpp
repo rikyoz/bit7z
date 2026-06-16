@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,60 +10,106 @@
 #ifndef BITABSTRACTARCHIVEHANDLER_HPP
 #define BITABSTRACTARCHIVEHANDLER_HPP
 
-#include <cstdint>
-#include <functional>
-
 #include "bit7zlibrary.hpp"
 #include "bitdefines.hpp"
+#include "bittypes.hpp"
+
+#include <cstdint>
+#include <functional>
 
 namespace bit7z {
 
 class BitInFormat;
+class BitArchiveItem;
 
 /**
- * @brief A std::function whose argument is the total size of the ongoing operation.
+ * @brief A function whose argument is the total size of the ongoing operation.
  */
-using TotalCallback = std::function< void( uint64_t ) >;
+using TotalCallback = std::function< void( std::uint64_t ) >;
 
 /**
- * @brief A std::function whose argument is the currently processed size of the ongoing operation and returns
+ * @brief A function whose argument is the currently processed size of the ongoing operation and returns
  *        true or false whether the operation must continue or not.
  */
-using ProgressCallback = std::function< bool( uint64_t ) >;
+using ProgressCallback = std::function< bool( std::uint64_t ) >;
 
 /**
- * @brief A std::function whose arguments are the current processed input size, and the current output size of the
+ * @brief A function whose arguments are the current processed input size, and the current output size of the
  *        ongoing operation.
  */
-using RatioCallback = std::function< void( uint64_t, uint64_t ) >;
+using RatioCallback = std::function< void( std::uint64_t, std::uint64_t ) >;
 
 /**
- * @brief A std::function whose argument is the path, in the archive, of the file currently being processed
+ * @brief A function whose argument is the path, in the archive, of the file currently being processed
  *        by the ongoing operation.
  */
-using FileCallback = std::function< void( tstring ) >;
+using FileCallback = std::function< void( const tstring& ) >;
 
 /**
- * @brief A std::function returning the password to be used to handle an archive.
+ * @brief A function returning the password to be used to handle an archive.
  */
 using PasswordCallback = std::function< tstring() >;
 
 /**
+ * @brief A function providing the raw extracted data and its size to the user.
+ */
+using RawDataCallback = std::function< bool( const byte_t*, std::size_t ) >;
+
+/**
+ * @brief A function returning a new name for the item currently being extracted.
+ *
+ * @note The callback receives the archive item being extracted and must return the path that
+ * the extracted item must have on the filesystem. Returning the item's own path leaves it
+ * unchanged; returning an empty string skips the item.
+ */
+using RenameCallback = std::function< tstring( const BitArchiveItem& ) >;
+
+/**
+ * @brief The (index, path) form of RenameCallback.
+ *
+ * @deprecated Since v4.1; it will be removed in v4.2. Use RenameCallback, which receives the
+ * BitArchiveItem being extracted (its index and path are available via the item).
+ */
+using LegacyRenameCallback = std::function< tstring( std::uint32_t, const tstring& ) >;
+
+/**
+ * @brief A function returning a reference to the buffer where to extract the item at the given index/path.
+ */
+using BufferCallback = std::function< buffer_t&( std::uint32_t, const tstring& ) >;
+
+/**
+ * @brief Enumeration representing the result of applying a filter callback on an archive item.
+ */
+enum struct FilterResult : std::uint8_t {
+    ProcessItem,    ///< Continue processing the item.
+    SkipItem,       ///< Skip the item (do not process it).
+    AbortOperation, ///< Abort the whole operation.
+    BIT7Z_DEPRECATED_ENUMERATOR( Process, ProcessItem, "Use FilterResult::ProcessItem" ),
+    BIT7Z_DEPRECATED_ENUMERATOR( Skip, SkipItem, "Use FilterResult::SkipItem" ),
+    BIT7Z_DEPRECATED_ENUMERATOR( Abort, AbortOperation, "Use FilterResult::AbortOperation" ),
+};
+
+/**
+ * @brief A function returning what to do with the given archive item.
+ */
+using FilterCallback = std::function< FilterResult( const BitArchiveItem& ) >;
+
+/**
  * @brief Enumeration representing how a handler should deal when an output file already exists.
  */
-enum struct OverwriteMode {
-    None = 0, ///< The handler will throw an exception if the output file or buffer already exists.
+enum struct OverwriteMode : std::uint8_t {
+    None = 0,  ///< The handler will throw an exception if the output file or buffer already exists.
     Overwrite, ///< The handler will overwrite the old file or buffer with the new one.
-    Skip, ///< The handler will skip writing to the output file or buffer.
-//TODO:    RenameOutput,
-//TODO:    RenameExisting
+    Skip,      ///< The handler will skip writing to the output file or buffer.
+    //TODO:    RenameOutput,
+    //TODO:    RenameExisting
 };
 
 /**
  * @brief Enumeration representing the policy according to which the archive handler should treat
  *        the items that match the pattern given by the user.
  */
-enum struct FilterPolicy {
+enum struct FilterPolicy : std::uint8_t {
     Include, ///< Extract/compress the items that match the pattern.
     Exclude  ///< Do not extract/compress the items that match the pattern.
 };
@@ -91,12 +137,12 @@ class BitAbstractArchiveHandler {
         /**
          * @return the format used by the handler for extracting or compressing.
          */
-        BIT7Z_NODISCARD virtual auto format() const -> const BitInFormat& = 0;
+        BIT7Z_NODISCARD virtual auto format() const noexcept -> const BitInFormat& = 0;
 
         /**
          * @return the password used to open, extract, or encrypt the archive.
          */
-        BIT7Z_NODISCARD auto password() const -> tstring;
+        BIT7Z_NODISCARD auto password() const -> const tstring&;
 
         /**
          * @return a boolean value indicating whether the directory structure must be preserved while extracting
@@ -112,32 +158,32 @@ class BitAbstractArchiveHandler {
         /**
          * @return the current total callback.
          */
-        BIT7Z_NODISCARD auto totalCallback() const -> TotalCallback;
+        BIT7Z_NODISCARD auto totalCallback() const -> const TotalCallback&;
 
         /**
          * @return the current progress callback.
          */
-        BIT7Z_NODISCARD auto progressCallback() const -> ProgressCallback;
+        BIT7Z_NODISCARD auto progressCallback() const -> const ProgressCallback&;
 
         /**
          * @return the current ratio callback.
          */
-        BIT7Z_NODISCARD auto ratioCallback() const -> RatioCallback;
+        BIT7Z_NODISCARD auto ratioCallback() const -> const RatioCallback&;
 
         /**
          * @return the current file callback.
          */
-        BIT7Z_NODISCARD auto fileCallback() const -> FileCallback;
+        BIT7Z_NODISCARD auto fileCallback() const -> const FileCallback&;
 
         /**
          * @return the current password callback.
          */
-        BIT7Z_NODISCARD auto passwordCallback() const -> PasswordCallback;
+        BIT7Z_NODISCARD auto passwordCallback() const -> const PasswordCallback&;
 
         /**
          * @return the current OverwriteMode.
          */
-        BIT7Z_NODISCARD auto overwriteMode() const -> OverwriteMode;
+        BIT7Z_NODISCARD auto overwriteMode() const noexcept -> OverwriteMode;
 
         /**
          * @brief Sets up a password to be used by the archive handler.
@@ -226,9 +272,11 @@ class BitAbstractArchiveHandler {
         void setOverwriteMode( OverwriteMode mode );
 
     protected:
-        explicit BitAbstractArchiveHandler( const Bit7zLibrary& lib,
-                                            tstring password = {},
-                                            OverwriteMode overwriteMode = OverwriteMode::None );
+        explicit BitAbstractArchiveHandler(
+            const Bit7zLibrary& lib,
+            tstring password = {},
+            OverwriteMode overwriteMode = OverwriteMode::None
+        );
 
     private:
         const Bit7zLibrary& mLibrary;
@@ -244,6 +292,6 @@ class BitAbstractArchiveHandler {
         PasswordCallback mPasswordCallback;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITABSTRACTARCHIVEHANDLER_HPP

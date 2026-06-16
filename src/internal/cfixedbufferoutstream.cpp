@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,20 +14,27 @@
 #define _SCL_SECURE_NO_WARNINGS
 #endif
 
-#include <algorithm> // for std::copy_n
+#include "internal/cfixedbufferoutstream.hpp"
 
 #include "biterror.hpp"
 #include "bitexception.hpp"
-#include "internal/cfixedbufferoutstream.hpp"
+#include "bittypes.hpp"
+#include "internal/cpp26.hpp"
 #include "internal/util.hpp"
+
+#include <algorithm> // for std::copy_n
+#include <cstdint>
+#include <cstddef>
 
 namespace bit7z {
 
 CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
     : mBuffer( buffer ), mBufferSize( size ), mCurrentPosition( 0 ) {
     if ( size == 0 ) {
-        throw BitException( "Could not initialize output buffer stream",
-                            make_error_code( BitError::InvalidOutputBufferSize ) );
+        throw BitException(
+            "Could not initialize output buffer stream",
+            make_error_code( BitError::InvalidOutputBufferSize )
+        );
     }
 }
 
@@ -38,7 +45,7 @@ STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t seekIndex{};
+    std::uint64_t seekIndex{};
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET: {
             break;
@@ -55,14 +62,14 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
             return STG_E_INVALIDFUNCTION;
     }
 
-    RINOK( seek_to_offset( seekIndex, offset ) )
+    RINOK( seekToOffset( seekIndex, offset ) ) //-V3504
 
     // Making sure seekIndex is a valid index within the buffer (i.e., it is less than mBufferSize).
     if ( seekIndex >= mBufferSize ) {
         return E_INVALIDARG;
     }
 
-    mCurrentPosition = clamp_cast< size_t >( seekIndex );
+    mCurrentPosition = cpp26::saturating_cast< std::size_t >( seekIndex );
 
     if ( newPosition != nullptr ) {
         *newPosition = seekIndex;
@@ -81,13 +88,11 @@ STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32
         return E_FAIL;
     }
 
-    auto writeSize = static_cast< size_t >( size );
-    size_t remainingSize = mBufferSize - mCurrentPosition; // The Seek method ensures mCurrentPosition < mBufferSize.
-    if ( writeSize > remainingSize ) {
-        /* Writing only to the remaining part of the output buffer!
-         * Note: since size is an uint32_t, and size >= mBufferSize - mCurrentPosition, the cast is safe. */
-        writeSize = remainingSize;
-    }
+    // The Seek method ensures mCurrentPosition < mBufferSize.
+    const std::size_t remainingSize = mBufferSize - mCurrentPosition;
+
+    // Writing only to the remaining part of the output buffer!
+    const auto writeSize = ( std::min )( static_cast< std::size_t >( size ), remainingSize );
 
     const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
     try {

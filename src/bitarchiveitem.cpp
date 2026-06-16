@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,19 +11,25 @@
  */
 
 #include "bitarchiveitem.hpp"
+
+#include "bitdefines.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/stringutil.hpp"
+#include "internal/windows.hpp"
 
 // For checking posix file attributes
 #include <sys/stat.h>
 
-using namespace bit7z;
-using namespace bit7z::filesystem;
+#include <cstdint>
 
-BitArchiveItem::BitArchiveItem( uint32_t itemIndex ) noexcept
+namespace bit7z {
+
+BitArchiveItem::BitArchiveItem( std::uint32_t itemIndex ) noexcept
     : mItemIndex( itemIndex ) {}
 
-auto BitArchiveItem::index() const noexcept -> uint32_t {
+auto BitArchiveItem::index() const noexcept -> std::uint32_t {
     return mItemIndex;
 }
 
@@ -32,10 +38,19 @@ auto BitArchiveItem::isDir() const -> bool {
     return !isDir.isEmpty() && isDir.getBool();
 }
 
+namespace {
 BIT7Z_NODISCARD
-inline auto filename( const fs::path& path ) -> tstring {
-    return path_to_tstring( path.filename() );
+BIT7Z_ALWAYS_INLINE
+auto filename( const fs::path& path ) -> tstring {
+    return pathToTstring( path.filename() );
 }
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto nativeFilename( const fs::path& path ) -> native_string {
+    return path.filename().native();
+}
+} // namespace
 
 auto BitArchiveItem::name() const -> tstring {
     BitPropVariant name = itemProperty( BitProperty::Name );
@@ -46,12 +61,21 @@ auto BitArchiveItem::name() const -> tstring {
     return name.getString();
 }
 
+auto BitArchiveItem::nativeName() const -> native_string {
+    BitPropVariant name = itemProperty( BitProperty::Name );
+    if ( name.isEmpty() ) {
+        name = itemProperty( BitProperty::Path );
+        return name.isEmpty() ? native_string{} : nativeFilename( name.getNativeString() );
+    }
+    return name.getNativeString();
+}
+
 auto BitArchiveItem::extension() const -> tstring {
     if ( isDir() ) {
         return tstring{};
     }
     const BitPropVariant extension = itemProperty( BitProperty::Extension );
-    return extension.isEmpty() ? fsutil::extension( name() ) : extension.getString();
+    return extension.isEmpty() ? filesystem::fsutil::extension( name() ) : extension.getString();
 }
 
 auto BitArchiveItem::path() const -> tstring {
@@ -72,12 +96,21 @@ auto BitArchiveItem::nativePath() const -> native_string {
     return path.getNativeString();
 }
 
-auto BitArchiveItem::size() const -> uint64_t {
+auto BitArchiveItem::rawPath() const -> sevenzip_string {
+    BitPropVariant path = itemProperty( BitProperty::Path );
+    if ( path.isEmpty() ) {
+        path = itemProperty( BitProperty::Name );
+        return path.isEmpty() ? sevenzip_string{} : path.getRawString();
+    }
+    return path.getRawString();
+}
+
+auto BitArchiveItem::size() const -> std::uint64_t {
     const BitPropVariant size = itemProperty( BitProperty::Size );
     return size.isEmpty() ? 0 : size.getUInt64();
 }
 
-auto BitArchiveItem::packSize() const -> uint64_t {
+auto BitArchiveItem::packSize() const -> std::uint64_t {
     const BitPropVariant packSize = itemProperty( BitProperty::PackSize );
     return packSize.isEmpty() ? 0 : packSize.getUInt64();
 }
@@ -102,20 +135,23 @@ auto BitArchiveItem::lastWriteTime() const -> time_type {
     return writeTime.isFileTime() ? writeTime.getTimePoint() : time_type::clock::now();
 }
 
-auto BitArchiveItem::attributes() const -> uint32_t {
+auto BitArchiveItem::attributes() const -> std::uint32_t {
     const BitPropVariant attrib = itemProperty( BitProperty::Attrib );
     return attrib.isUInt32() ? attrib.getUInt32() : 0;
 }
 
-auto BitArchiveItem::crc() const -> uint32_t {
+auto BitArchiveItem::crc() const -> std::uint32_t {
     const BitPropVariant crc = itemProperty( BitProperty::CRC );
     return crc.isUInt32() ? crc.getUInt32() : 0;
 }
 
-// On MSVC, these macros are not defined!
-#if !defined(S_ISLNK) && defined(S_IFMT)
+// On MSVC, these macros are not defined, so we define them here.
+#ifndef S_ISLNK
 #ifndef S_IFLNK
-constexpr auto S_IFLNK = 0xA000;
+static constexpr auto S_IFLNK = 0xA000u;
+#endif
+#ifndef S_IFMT
+static constexpr auto S_IFMT = 0xF000u;
 #endif
 #define S_ISLNK( m ) (((m) & S_IFMT) == S_IFLNK)
 #endif
@@ -128,8 +164,10 @@ auto BitArchiveItem::isSymLink() const -> bool {
 
     const auto itemAttributes = attributes();
     if ( ( itemAttributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        auto posixAttributes = itemAttributes >> 16U;
+        const auto posixAttributes = itemAttributes >> 16U;
         return S_ISLNK( posixAttributes );
     }
     return ( itemAttributes & FILE_ATTRIBUTE_REPARSE_POINT ) == FILE_ATTRIBUTE_REPARSE_POINT;
 }
+
+} // namespace bit7z

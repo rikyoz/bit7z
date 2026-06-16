@@ -15,8 +15,8 @@ else()
 endif()
 
 if( USE_STANDARD_FILESYSTEM )
-    include( CheckCXXSourceCompiles )
-    string( CONFIGURE [[
+    macro( check_filesystem_support flag )
+        string( CONFIGURE [[
         #include <cstdlib>
         #include <filesystem>
 
@@ -26,10 +26,38 @@ if( USE_STANDARD_FILESYSTEM )
             return EXIT_SUCCESS;
         }
     ]] code @ONLY )
-    check_cxx_source_compiles( "${code}" STANDARD_FILESYSTEM_COMPILES )
+        if( CMAKE_CROSSCOMPILING )
+            include( CheckCXXSourceCompiles )
+            check_cxx_source_compiles( "${code}" ${flag} )
+        else()
+            include( CheckCXXSourceRuns )
+            check_cxx_source_runs( "${code}" ${flag} )
+        endif()
+    endmacro()
+
+    check_filesystem_support( STANDARD_FILESYSTEM_LINKS )
+    if ( NOT STANDARD_FILESYSTEM_LINKS )
+        set( ORIGINAL_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} )
+        set( CMAKE_REQUIRED_LIBRARIES ${ORIGINAL_REQUIRED_LIBRARIES} -lstdc++fs )
+        check_filesystem_support( STANDARD_FILESYSTEM_NEEDS_LIBSTDC++FS )
+        if ( NOT STANDARD_FILESYSTEM_NEEDS_LIBSTDC++FS )
+            set( CMAKE_REQUIRED_LIBRARIES ${ORIGINAL_REQUIRED_LIBRARIES} -lc++fs )
+            check_filesystem_support( STANDARD_FILESYSTEM_NEEDS_LIBC++FS )
+            if ( NOT STANDARD_FILESYSTEM_NEEDS_LIBC++FS )
+                set( USE_STANDARD_FILESYSTEM OFF )
+                set( CMAKE_REQUIRED_LIBRARIES ${ORIGINAL_REQUIRED_LIBRARIES} )
+            else()
+                message( STATUS "Standard filesystem extra linker flags: -lc++fs" )
+            endif()
+        else()
+            message( STATUS "Standard filesystem extra linker flags: -lstdc++fs" )
+        endif()
+    else()
+        message( STATUS "Standard filesystem extra linker flags: None" )
+    endif()
 endif()
 
-if( NOT USE_STANDARD_FILESYSTEM OR NOT STANDARD_FILESYSTEM_COMPILES )
+if( NOT USE_STANDARD_FILESYSTEM )
     # if standard filesystem lib is not supported, revert to C++14 standard and use the ghc::filesystem library
     set( CMAKE_CXX_STANDARD 14 )
     message( STATUS "Standard filesystem: NO (using ghc::filesystem)" )

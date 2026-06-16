@@ -15,6 +15,7 @@ body:
       label: bit7z version
       multiple: true
       options:
+        - 4.1.x
         - 4.0.x
         - 3.2.x
         - 3.1.x
@@ -33,11 +34,13 @@ body:
         - BIT7Z_ANALYZE_CODE
         - BIT7Z_AUTO_FORMAT
         - BIT7Z_AUTO_PREFIX_LONG_PATHS
-        - BIT7Z_BUILD_TESTS
         - BIT7Z_BUILD_DOCS
+        - BIT7Z_BUILD_FOR_P7ZIP
+        - BIT7Z_BUILD_TESTS
         - BIT7Z_CUSTOM_7ZIP_PATH
         - BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK
         - BIT7Z_GENERATE_PIC
+        - BIT7Z_INSTALL
         - BIT7Z_LINK_LIBCPP
         - BIT7Z_PATH_SANITIZATION
         - BIT7Z_REGEX_MATCHING
@@ -47,9 +50,12 @@ body:
         - BIT7Z_TESTS_USE_SYSTEM_7ZIP
         - BIT7Z_USE_LEGACY_IUNKNOWN
         - BIT7Z_USE_NATIVE_STRING
+        - BIT7Z_USE_PCH
         - BIT7Z_USE_STD_BYTE
         - BIT7Z_USE_SYSTEM_CODEPAGE
+        - BIT7Z_USE_SYSTEM_DEPENDENCIES
         - BIT7Z_VS_LIBNAME_OUTDIR_STYLE
+        - BIT7Z_WARNINGS_AS_ERRORS
     validations:
       required: false
   - type: dropdown
@@ -58,7 +64,20 @@ body:
       label: 7-zip version
       multiple: true
       options:
+        - v26.01
+        - v26.00
+        - v25.01
+        - v25.00
+        - v24.09
+        - v24.08
+        - v24.07
+        - v24.06
+        - v24.05
+        - v24.04
+        - v24.03
+        - v24.01
         - v23.01
+        - v23.00
         - v22.01
         - v22.00
         - v21.07
@@ -102,7 +121,7 @@ body:
     attributes:
       label: Compiler versions
       description: What compiler versions are you using?
-      placeholder: ex. GCC 7, MSVC 2022, Clang 12, ...
+      placeholder: ex. GCC 13, MSVC 2026, Clang 22, ...
     validations:
       required: false
   - type: dropdown
@@ -134,7 +153,7 @@ body:
     attributes:
       label: Operating system versions
       description: Which operating system versions are you targeting?
-      placeholder: ex. Windows 11, Ubuntu 22.04, macOS Monterey, ...
+      placeholder: ex. Windows 11, Ubuntu 24.04, macOS Tahoe, ...
     validations:
       required: false
   - type: textarea

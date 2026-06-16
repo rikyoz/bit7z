@@ -3,20 +3,23 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/operationcategory.hpp"
 #include "internal/operationresult.hpp"
+
+#include "internal/operationcategory.hpp"
+
+#include <system_error>
 
 namespace bit7z {
 
-auto make_error_code( OperationResult error ) -> std::error_code {
-    return { static_cast< int >( error ), operation_category() };
+auto make_error_code( OperationResult error ) noexcept -> std::error_code {
+    return { static_cast< int >( error ), operationCategory() };
 }
 
 } // namespace bit7z

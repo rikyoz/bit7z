@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,26 +10,52 @@
 #ifndef ARCHIVEPROPERTIES_HPP
 #define ARCHIVEPROPERTIES_HPP
 
+#include "bitdefines.hpp"
+#include "bitpropvariant.hpp"
+#include "bitwindows.hpp"
+
+#include <cstddef>
 #include <map>
 #include <string>
+#include <type_traits>
 #include <vector>
-
-#include "bitpropvariant.hpp"
 
 namespace bit7z {
 
 class ArchiveProperties final {
-        std::vector< const wchar_t* > mNames{};
-        std::vector< BitPropVariant > mValues{};
+    public:
+        BIT7Z_NODISCARD
+        auto empty() const -> bool {
+            return mNames.empty();
+        }
+
+        BIT7Z_NODISCARD
+        auto names() const -> const wchar_t* const* {
+            return mNames.data();
+        }
+
+        BIT7Z_NODISCARD
+        auto values() const -> const PROPVARIANT* {
+            return mValues.data();
+        }
+
+        BIT7Z_NODISCARD
+        auto size() const -> std::size_t {
+            return mNames.size();
+        }
+
+    private:
+        std::vector< const wchar_t* > mNames;
+        std::vector< BitPropVariant > mValues;
 
         template< typename T, typename = typename std::enable_if< std::is_integral< T >::value >::type >
-        inline void setProperty( const wchar_t* name, T value ) {
+        void setProperty( const wchar_t* name, T value ) {
             mNames.emplace_back( name );
             mValues.emplace_back( value );
         }
 
         template< typename T, typename = typename std::enable_if< !std::is_integral< T >::value >::type >
-        inline void setProperty( const wchar_t* name, const T& value ) {
+        void setProperty( const wchar_t* name, const T& value ) {
             mNames.emplace_back( name );
             mValues.emplace_back( value );
         }
@@ -42,27 +68,6 @@ class ArchiveProperties final {
         }
 
         friend class BitAbstractArchiveCreator;
-
-    public:
-        BIT7Z_NODISCARD
-        inline auto empty() const -> bool {
-            return mNames.empty();
-        }
-
-        BIT7Z_NODISCARD
-        inline auto names() const -> const wchar_t* const* {
-            return mNames.data();
-        }
-
-        BIT7Z_NODISCARD
-        inline auto values() const -> const PROPVARIANT* {
-            return mValues.data();
-        }
-
-        BIT7Z_NODISCARD
-        inline auto size() const -> size_t {
-            return mNames.size();
-        }
 };
 
 } // namespace bit7z

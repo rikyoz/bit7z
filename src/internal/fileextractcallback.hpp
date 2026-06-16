@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,20 +10,30 @@
 #ifndef FILEEXTRACTCALLBACK_HPP
 #define FILEEXTRACTCALLBACK_HPP
 
-#include <string>
-
+#include "bitabstractarchivehandler.hpp"
+#include "bitdefines.hpp"
+#include "bittypes.hpp"
 #include "internal/cfileoutstream.hpp"
 #include "internal/extractcallback.hpp"
 #include "internal/fsutil.hpp"
 #include "internal/processeditem.hpp"
+#include "internal/operationresult.hpp"
+#include "internal/optional.hpp"
+
+#include <cstdint>
 
 namespace bit7z {
 
-using std::wstring;
+class BitInputArchive;
 
 class FileExtractCallback final : public ExtractCallback {
     public:
-        FileExtractCallback( const BitInputArchive& inputArchive, const tstring& directoryPath );
+        FileExtractCallback(
+            const BitInputArchive& inputArchive,
+            const tstring& directoryPath,
+            FilterCallback filterCallback = {},
+            RenameCallback renameCallback = {}
+        );
 
         FileExtractCallback( const FileExtractCallback& ) = delete;
 
@@ -35,13 +45,17 @@ class FileExtractCallback final : public ExtractCallback {
 
         ~FileExtractCallback() override = default;
 
+        BIT7Z_NODISCARD
+        auto extractionAttempted() const -> bool override;
+
     private:
-        fs::path mInFilePath;     // Input file path
         SafeOutPathBuilder mOutPathBuilder;
         fs::path mFilePathOnDisk; // Full path to the file on disk
         bool mRetainDirectories;
+        RenameCallback mRenameCallback;
+        bool mExtractionAttempted;
 
-        ProcessedItem mCurrentItem;
+        Optional< ProcessedItem > mCurrentItem;
 
         CMyComPtr< CFileOutStream > mFileOutStream;
 
@@ -49,12 +63,9 @@ class FileExtractCallback final : public ExtractCallback {
 
         void releaseStream() override;
 
-        BIT7Z_NODISCARD
-        auto getCurrentItemPath() const -> fs::path;
-
-        auto getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT override;
+        auto getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT override;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // FILEEXTRACTCALLBACK_HPP

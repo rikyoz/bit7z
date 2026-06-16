@@ -12,35 +12,23 @@
 
 #include "internal/cfileoutstream.hpp"
 #include "internal/com.hpp"
-#ifndef _WIN32
-#include "internal/securetempdir.hpp"
-#endif
 
 namespace bit7z {
 
 /**
- * @brief RAII wrapper that writes to a temporary file via an owned CFileOutStream
- *        and atomically replaces the target path with it on commit().
- *
+ * @brief RAII wrapper that writes to a temporary file and atomically replaces the target path with it on commit().
  * Used when updating an archive in place.
- *
- * - POSIX: the temp file lives in an owner-only directory created via mkdtemp,
- *   which is removed when this object is destroyed. The unpredictable name
- *   and restrictive permissions prevent an attacker with write access to the
- *   parent directory from winning the check-then-open race in CFileOutStream's
- *   symlink rejection. See SecureTempDir for the full rationale.
- * - Windows: the temp file is "<target>.tmp" next to the target. Symlink
- *   redirection is not specifically defended against here; CFileOutStream's
- *   constructor check (createAlways is false here) catches existing symlinks,
- *   and creating one requires SeCreateSymbolicLinkPrivilege anyway.
  */
 class AtomicFileReplacer final {
     public:
         explicit AtomicFileReplacer( const fs::path& targetPath );
 
         AtomicFileReplacer( const AtomicFileReplacer& ) = delete;
+
         AtomicFileReplacer( AtomicFileReplacer&& ) = delete;
+
         auto operator=( const AtomicFileReplacer& ) -> AtomicFileReplacer& = delete;
+
         auto operator=( AtomicFileReplacer&& ) -> AtomicFileReplacer& = delete;
 
         ~AtomicFileReplacer() = default;
@@ -59,9 +47,6 @@ class AtomicFileReplacer final {
         void commit();
 
     private:
-#ifndef _WIN32
-        SecureTempDir mTempDir;
-#endif
         fs::path mTargetPath;
         CMyComPtr< CFileOutStream > mStream;
 };

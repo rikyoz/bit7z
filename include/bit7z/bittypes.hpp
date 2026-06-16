@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,16 +10,18 @@
 #ifndef BITTYPES_HPP
 #define BITTYPES_HPP
 
-#include <string>
-#include <vector>
-
 // Must be included here since the user might have manually enabled a BIT7Z_* compilation option
 // by uncommenting the corresponding macro define in bitdefines.hpp.
-#include "bitdefines.hpp"
+#include "bitdefines.hpp" // For BIT7Z_* macros.
 
 #ifdef BIT7Z_REGEX_MATCHING
 #include <regex>
 #endif
+
+#include <cstddef>
+#include <string>
+#include <type_traits>
+#include <vector>
 
 namespace bit7z {
 
@@ -46,7 +48,7 @@ struct StringTraits;
 template<>
 struct StringTraits< char > {
     template< class T >
-    static inline auto convertToString( T value ) -> std::string {
+    static auto convertToString( T value ) -> std::string {
         return std::to_string( value );
     }
 };
@@ -54,11 +56,17 @@ struct StringTraits< char > {
 template<>
 struct StringTraits< wchar_t > {
     template< class T >
-    static inline auto convertToString( T value ) -> std::wstring {
+    static auto convertToString( T value ) -> std::wstring {
         return std::to_wstring( value );
     }
 };
 /** @endcond */
+
+/**
+ * The string type used internally by 7-Zip.
+ * @note 7-Zip always uses wide strings on all platforms.
+ */
+using sevenzip_string = std::wstring;
 
 /**
  * Native string type of the system.
@@ -72,6 +80,10 @@ using native_string = std::wstring;
 using native_string = std::string;
 #define BIT7Z_NATIVE_STRING( str ) str
 #endif
+
+/**
+ * @brief The character type of the system's native string type.
+ */
 using native_char = native_string::value_type;
 
 /**
@@ -99,32 +111,134 @@ using tstring = std::basic_string< tchar >;
 using tregex = std::basic_regex< tchar >;
 #endif
 
-template< typename T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T>::type >
-inline auto to_tstring( T arg ) -> std::basic_string< tchar > {
+/**
+ * @brief Converts an arithmetic value to a tstring.
+ *
+ * @param arg   the arithmetic value to be converted.
+ *
+ * @return the string representation of the given value.
+ */
+template< typename T, typename = typename std::enable_if< std::is_arithmetic< T >::value, T >::type >
+auto to_tstring( T arg ) -> std::basic_string< tchar > {
     return StringTraits< tchar >::convertToString( arg );
 }
 
+/**@{*/
 /**
- * Converts a native string to a tstring.
+ * @brief Converts a native string to a tstring.
  *
  * @note On Linux or on Windows when BIT7Z_USE_NATIVE_STRING is used,
  * both native_string and tstring are aliases of the same string type;
- * in this case, no conversion is performed, and a const reference to the original string is returned.
+ * in this case, no conversion is performed, and a const reference to the original string is returned,
+ * or the original string is moved to a new string object if it is a temporary object.
  *
  * @param str   The native string to be converted.
  *
  * @return the converted tstring.
  */
 #if defined( _WIN32 ) && !defined( BIT7Z_USE_NATIVE_STRING )
+BIT7Z_NODISCARD
 auto to_tstring( const native_string& str ) -> tstring;
-#else
-auto to_tstring( const native_string& str ) -> const tstring&;
-#endif
 
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( tstring&& str ) -> tstring {
+    return std::move( str );
+}
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( const tstring& str ) -> const tstring& {
+    return str;
+}
+#else
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( native_string&& str ) -> tstring {
+    return std::move( str );
+}
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_tstring( const native_string& str ) -> const tstring& {
+    return str;
+}
+#endif
+/**@}*/
+
+/**
+ * @brief Converts an arithmetic value to a native string.
+ *
+ * @param arg   the arithmetic value to be converted.
+ *
+ * @return the native string representation of the given value.
+ */
+template< typename T, typename = typename std::enable_if< std::is_arithmetic< T >::value, T >::type >
+auto to_native_string( T arg ) -> native_string {
+#ifdef _WIN32
+    return std::to_wstring( arg );
+#else
+    return std::to_string( arg );
+#endif
+}
+
+/**@{*/
+/**
+ * @brief Converts a string to a native string.
+ *
+ * @note When the argument is already a native_string, no conversion is performed, and a const
+ * reference to the original string is returned, or the original string is moved if it is a temporary.
+ *
+ * @param str   the string to be converted.
+ *
+ * @return the converted native string.
+ */
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_native_string( native_string&& str ) -> native_string {
+    return std::move( str );
+}
+
+BIT7Z_NODISCARD
+BIT7Z_ALWAYS_INLINE
+auto to_native_string( const native_string& str ) -> const native_string& {
+    return str;
+}
+
+#ifndef _WIN32
+BIT7Z_NODISCARD
+auto to_native_string( const sevenzip_string& str ) -> native_string;
+#elif !defined( BIT7Z_USE_NATIVE_STRING )
+BIT7Z_NODISCARD
+auto to_native_string( const tstring& str ) -> native_string;
+#endif
+/**@}*/
+
+/**
+ * @brief Alias for the underlying integer type of the given enumeration type.
+ */
+template< typename Enum >
+using underlying_type_t = typename std::underlying_type< Enum >::type;
+
+/**
+ * @brief Converts an enumerator to its underlying integer value.
+ *
+ * @param enum_value    the enumerator to be converted.
+ *
+ * @return the underlying integer value of the given enumerator.
+ */
+template< typename Enum >
+constexpr auto to_underlying( Enum enum_value ) noexcept -> underlying_type_t< Enum > {
+    return static_cast< underlying_type_t< Enum > >( enum_value );
+}
+
+/**
+ * @brief Type trait that is true if and only if From is explicitly (but not implicitly) convertible to To.
+ */
 template< typename From, typename To >
 using is_explicitly_convertible = std::integral_constant< bool, std::is_constructible< To, From >::value &&
                                                                 !std::is_convertible< From, To >::value >;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITTYPES_HPP

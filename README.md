@@ -40,10 +40,16 @@ It supports compression and extraction to and from the filesystem or the memory,
 + **Compression and extraction _to and from_ memory** and **C++ standard streams**.
 + Compression using **custom path aliases** for the items in the output archives.
 + **Selective extraction** of only specified files/folders **using wildcards** and **regular expressions**.
++ **Selective extraction of folders**, and **extraction of an archive's root folder content**.
++ **Renaming** the extracted items **via a callback**.
++ **Reading raw extracted data** through a callback.
++ **Reading and extracting nested and sub-archives** without writing the intermediate files.
 + Creation of **encrypted archives** (strong AES-256 encryption; only for 7z and ZIP formats).
 + **Archive header encryption** (only for 7z format).
 + Possibility to choose the **compression level** (if supported by the archive format), the **compression method** ([supported methods](https://github.com/rikyoz/bit7z/wiki/Advanced-Usage#compression-methods "Wiki page on bit7z's supported compression methods")), the **dictionary size**, and the **word size**.
 + **Automatic input archive format detection**.
++ Opening **self-extracting (SFX) archives** and executables with appended data.
++ **Deferred loading** of the 7-Zip shared library.
 + **Solid archives** (only for 7z).
 + **Multi-volume archives**.
 + **Operation callbacks** for obtaining real-time information about ongoing operations.
@@ -230,7 +236,6 @@ The newest bit7z v4 introduced some significant breaking changes to the library'
 + The old `BitArchiveInfo` class is now called `BitArchiveReader`, and it allows to extract single archives.
 + The `ProgressCallback` now must return a `bool` value indicating whether the current operation can continue (`true`) or not (`false`).
 + The `BitException` class now inherits from `std::system_error` rather than `std::runtime_error`.
-
   + The method `BitException::getErrorCode()` was renamed `BitException::hresultCode()`.
 + The project structure changed:
   + Public API headers moved from `include/` to the `include/bit7z/` folder, so `#include` directives now need to prepend `bit7z/` to the included header name (e.g., `#include <bit7z/bitfileextractor.hpp>`).
@@ -315,8 +320,8 @@ vcpkg install bit7z
 Then, you add bit7z as a dependency in your project's `CMakeLists.txt`:
 
 ```cmake
-find_package(unofficial-bit7z CONFIG REQUIRED)
-target_link_libraries(${YOUR_TARGET} PRIVATE unofficial::bit7z::bit7z64)
+find_package(bit7z CONFIG REQUIRED)
+target_link_libraries(${YOUR_TARGET} PRIVATE bit7z::bit7z)
 ```
 
 ### Building from source and manually linking
@@ -351,6 +356,7 @@ If you plan to use the `7z.so` from p7zip or 7-Zip v22.01 and earlier instead, y
 
 <details>
   <summary>Expand for more details</summary>
+
 _On Linux and macOS_, 7-Zip v23.01 introduced breaking changes to the IUnknown interface.
 As a result, if you build bit7z for such a version of 7-Zip (the default), it will not support using the shared libraries from previous versions of 7-Zip (or from p7zip).
 Conversely, bit7z made for earlier versions of 7-Zip or for p7zip is incompatible with the shared libraries from 7-Zip v23.01 and later.
@@ -404,7 +410,7 @@ However, if you need to handle non-ASCII/Unicode characters, as it is likely, yo
 
 </details>
 
-## SAST Tools
+## 🔍 SAST Tools
 
 [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
 

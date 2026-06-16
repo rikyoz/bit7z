@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -21,7 +21,6 @@
 #endif
 
 #include <array>
-#include <cstdint>
 #include <cstring> //for std::memcmp
 
 #include "internal/windows.hpp"
@@ -45,7 +44,9 @@ inline auto operator==( REFGUID guid1, REFGUID guid2 ) -> bool {
     return std::memcmp( &guid1, &guid2, sizeof( GUID ) ) == 0;
 }
 
-inline auto operator!=( REFGUID guid1, REFGUID guid2 ) -> bool { return !( guid1 == guid2 ); }
+inline auto operator!=( REFGUID guid1, REFGUID guid2 ) -> bool {
+    return !( guid1 == guid2 );
+}
 
 #ifndef STDMETHODCALLTYPE
 #define STDMETHODCALLTYPE
@@ -72,7 +73,7 @@ inline auto operator!=( REFGUID guid1, REFGUID guid2 ) -> bool { return !( guid1
 #endif
 
 struct IUnknown {
-    STDMETHOD ( QueryInterface )( REFIID iid, void** outObject ) PURE;
+    STDMETHOD( QueryInterface )( REFIID iid, void** outObject ) PURE;
 
     STDMETHOD_( ULONG, AddRef )() PURE;
 
@@ -90,7 +91,7 @@ namespace bit7z {
 /**
  * @return the GUID that identifies the file format in the 7z SDK.
  */
-inline auto format_guid( const BitInFormat& format ) -> GUID {
+inline auto formatGuid( const BitInFormat& format ) -> GUID {
     return { 0x23170F69, 0x40C1, 0x278A, { 0x10, 0x00, 0x00, 0x01, 0x10, format.value(), 0x00, 0x00 } }; // NOLINT
 }
 

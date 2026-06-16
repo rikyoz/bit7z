@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,7 +10,11 @@
 #ifndef BITGENERICITEM_HPP
 #define BITGENERICITEM_HPP
 
+#include "bitdefines.hpp"
 #include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+
+#include <cstdint>
 
 namespace bit7z {
 
@@ -22,32 +26,38 @@ class BitGenericItem {
         /**
          * @return true if and only if the item is a directory (i.e., it has the property BitProperty::IsDir).
          */
-        BIT7Z_NODISCARD virtual auto isDir() const -> bool = 0;
+        BIT7Z_NODISCARD
+        virtual auto isDir() const -> bool = 0;
 
         /**
          * @return true if and only if the item is a symbolic link.
          */
-        BIT7Z_NODISCARD virtual auto isSymLink() const -> bool = 0;
+        BIT7Z_NODISCARD
+        virtual auto isSymLink() const -> bool = 0;
 
         /**
          * @return the uncompressed size of the item.
          */
-        BIT7Z_NODISCARD virtual auto size() const -> uint64_t = 0;
+        BIT7Z_NODISCARD
+        virtual auto size() const -> std::uint64_t = 0;
 
         /**
          * @return the name of the item, if available or inferable from the path, or an empty string otherwise.
          */
-        BIT7Z_NODISCARD virtual auto name() const -> tstring = 0;
+        BIT7Z_NODISCARD
+        virtual auto name() const -> tstring = 0;
 
         /**
          * @return the path of the item.
          */
-        BIT7Z_NODISCARD virtual auto path() const -> tstring = 0;
+        BIT7Z_NODISCARD
+        virtual auto path() const -> tstring = 0;
 
         /**
          * @return the item attributes.
          */
-        BIT7Z_NODISCARD virtual auto attributes() const -> uint32_t = 0;
+        BIT7Z_NODISCARD
+        virtual auto attributes() const -> std::uint32_t = 0;
 
         /**
          * @brief Gets the specified item property.
@@ -56,11 +66,23 @@ class BitGenericItem {
          *
          * @return the value of the item property, if available, or an empty BitPropVariant.
          */
-        BIT7Z_NODISCARD virtual auto itemProperty( BitProperty property ) const -> BitPropVariant = 0;
+        BIT7Z_NODISCARD
+        virtual auto itemProperty( BitProperty property ) const -> BitPropVariant = 0;
 
         virtual ~BitGenericItem() = default;
+
+    protected:
+        BitGenericItem() = default;
+
+        BitGenericItem( const BitGenericItem& ) = default;
+
+        BitGenericItem( BitGenericItem&& ) noexcept = default;
+
+        auto operator=( const BitGenericItem& ) -> BitGenericItem& = default;
+
+        auto operator=( BitGenericItem&& ) noexcept -> BitGenericItem& = default;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITGENERICITEM_HPP

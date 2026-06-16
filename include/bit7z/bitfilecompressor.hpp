@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,19 +10,16 @@
 #ifndef BITFILECOMPRESSOR_HPP
 #define BITFILECOMPRESSOR_HPP
 
+#include "bit7zlibrary.hpp"
+#include "bitcompressor.hpp"
+#include "bitformat.hpp"
+#include "bittypes.hpp"
+
 #include <map>
 #include <ostream>
 #include <vector>
 
-#include "bitcompressor.hpp"
-
 namespace bit7z {
-
-using std::vector;
-using std::map;
-using std::ostream;
-
-using namespace filesystem;
 
 /**
  * @brief The BitFileCompressor class allows compressing files and directories.
@@ -63,6 +60,19 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          *
          * The items in the first argument must be the relative or absolute paths to files or
          * directories existing on the filesystem.
+         * Each pair in the vector must follow the following format:
+         *  {"path to file in the filesystem", "alias path in the archive"}.
+         *
+         * @param inPaths  a vector of <filesystem path, in-archive path> pairs.
+         * @param outFile  the path (relative or absolute) to the output archive file.
+         */
+        void compress( const std::vector< std::pair< tstring, tstring > >& inPaths, const tstring& outFile ) const;
+
+        /**
+         * @brief Compresses the given files or directories using the specified aliases.
+         *
+         * The items in the first argument must be the relative or absolute paths to files or
+         * directories existing on the filesystem.
          * Each pair in the map must follow the following format:
          *  {"path to file in the filesystem", "alias path in the archive"}.
          *
@@ -74,7 +84,7 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
         /**
          * @brief Compresses a group of files.
          *
-         * @note Any path to a directory or to a not-existing file will be ignored!
+         * @note Any path to a directory or to a not-existing file will be ignored.
          *
          * @param inFiles  the path (relative or absolute) to the input files.
          * @param outFile  the path (relative or absolute) to the output archive file.
@@ -86,13 +96,15 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          *
          * @param inDir        the path (relative or absolute) to the input directory.
          * @param outFile      the path (relative or absolute) to the output archive file.
-         * @param recursive    (optional) if true, it searches files inside the sub-folders of inDir.
+         * @param recursive    (optional) if true, it searches files inside the subfolders of inDir.
          * @param filter       (optional) the filter to use when searching files inside inDir.
          */
-        void compressFiles( const tstring& inDir,
-                            const tstring& outFile,
-                            bool recursive = true,
-                            const tstring& filter = BIT7Z_STRING( "*" ) ) const;
+        void compressFiles(
+            const tstring& inDir,
+            const tstring& outFile,
+            bool recursive = true,
+            const tstring& filter = BIT7Z_STRING( "*" )
+        ) const;
 
         /**
          * @brief Compresses an entire directory.
@@ -114,10 +126,12 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
          * @param recursive    (optional) if true, it searches the contents inside the sub-folders of inDir.
          * @param filter       (optional) the filter to use when searching the contents inside inDir.
          */
-        void compressDirectoryContents( const tstring& inDir,
-                                        const tstring& outFile,
-                                        bool recursive = true,
-                                        const tstring& filter = BIT7Z_STRING( "*" ) ) const;
+        void compressDirectoryContents(
+            const tstring& inDir,
+            const tstring& outFile,
+            bool recursive = true,
+            const tstring& filter = BIT7Z_STRING( "*" )
+        ) const;
 
         /* Compression from the file system to standard streams. */
 
@@ -146,5 +160,5 @@ class BitFileCompressor final : public BitCompressor< const tstring& > {
         void compress( const std::map< tstring, tstring >& inPaths, std::ostream& outStream ) const;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 #endif // BITFILECOMPRESSOR_HPP

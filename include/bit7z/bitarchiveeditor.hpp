@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,19 +10,31 @@
 #ifndef BITARCHIVEEDITOR_HPP
 #define BITARCHIVEEDITOR_HPP
 
-#include <unordered_map>
-
+#include "bit7zlibrary.hpp"
+#include "bitabstractarchivecreator.hpp"
 #include "bitarchivewriter.hpp"
+#include "bitdefines.hpp"
+#include "bitformat.hpp"
+#include "bititemsvector.hpp"
+#include "bitpropvariant.hpp"
+#include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
+
+#include <cstdint>
+#include <istream>
+#include <unordered_map>
 
 namespace bit7z {
 
-using std::vector;
+using EditedItems = std::unordered_map< std::uint32_t, BitItemsVector::value_type >;
 
-using EditedItems = std::unordered_map< uint32_t, BitItemsVector::value_type >;
-
+/**
+ * @brief Enumeration representing how the deletion of an item from an archive should be handled.
+ */
 enum struct DeletePolicy : std::uint8_t {
-    ItemOnly,
-    RecurseDirs
+    ItemOnly,    ///< Delete only the item itself; if it is a folder, its contents are kept.
+    RecurseDirs  ///< Delete the item; if it is a folder, its contents are recursively deleted too.
 };
 
 /**
@@ -42,10 +54,12 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param format   the input/output archive format.
          * @param password (optional) the password needed to read the input archive.
          */
-        BitArchiveEditor( const Bit7zLibrary& lib,
-                          const tstring& inFile,
-                          const BitInOutFormat& format,
-                          const tstring& password = {} );
+        BitArchiveEditor(
+            const Bit7zLibrary& lib,
+            const tstring& inFile,
+            const BitInOutFormat& format,
+            const tstring& password = {}
+        );
 
         BitArchiveEditor( const BitArchiveEditor& ) = delete;
 
@@ -72,7 +86,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index    the index of the item to be renamed.
          * @param newPath the new path (in the archive) desired for the item.
          */
-        void renameItem( uint32_t index, const tstring& newPath );
+        void renameItem( std::uint32_t index, const tstring& newPath );
 
         /**
          * @brief Requests to change the path of the item from oldPath to the newPath.
@@ -89,7 +103,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param inFile    the path to the file containing the new data for the item.
          */
-        void updateItem( uint32_t index, const tstring& inFile );
+        void updateItem( std::uint32_t index, const tstring& inFile );
 
         /**
          * @brief Requests to update the content of the item at the specified index
@@ -98,7 +112,15 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param inBuffer  the buffer containing the new data for the item.
          */
-        void updateItem( uint32_t index, const std::vector< byte_t >& inBuffer );
+        void updateItem( std::uint32_t index, const buffer_t& inBuffer );
+
+        /**
+         * @brief Deleted overload preventing the update from a temporary buffer.
+         *
+         * The new data is only referenced and read later when applying changes,
+         * so the buffer must outlive the editor; a temporary would dangle.
+         */
+        void updateItem( std::uint32_t index, buffer_t&& inBuffer ) = delete;
 
         /**
          * @brief Requests to update the content of the item at the specified index
@@ -107,7 +129,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param index     the index of the item to be updated.
          * @param inStream  the stream of new data for the item.
          */
-        void updateItem( uint32_t index, std::istream& inStream );
+        void updateItem( std::uint32_t index, std::istream& inStream );
 
         /**
          * @brief Requests to update the content of the item at the specified path
@@ -125,7 +147,15 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param itemPath  the path (in the archive) of the item to be updated.
          * @param inBuffer  the buffer containing the new data for the item.
          */
-        void updateItem( const tstring& itemPath, const std::vector< byte_t >& inBuffer );
+        void updateItem( const tstring& itemPath, const buffer_t& inBuffer );
+
+        /**
+         * @brief Deleted overload preventing the update from a temporary buffer.
+         *
+         * The new data is only referenced and read later when applying changes,
+         * so the buffer must outlive the editor; a temporary would dangle.
+         */
+        void updateItem( const tstring& itemPath, buffer_t&& inBuffer ) = delete;
 
         /**
          * @brief Requests to update the content of the item at the specified path
@@ -134,7 +164,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          * @param itemPath  the path (in the archive) of the item to be updated.
          * @param inStream  the stream of new data for the item.
          */
-        void updateItem( const tstring& itemPath, istream& inStream );
+        void updateItem( const tstring& itemPath, std::istream& inStream );
 
         /**
          * @brief Marks as deleted the item at the given index.
@@ -148,7 +178,7 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
          *
          * @throws BitException if the index is invalid.
          */
-        void deleteItem( uint32_t index, DeletePolicy policy = DeletePolicy::ItemOnly );
+        void deleteItem( std::uint32_t index, DeletePolicy policy = DeletePolicy::ItemOnly );
 
         /**
          * @brief Marks as deleted the archive's item(s) with the specified path.
@@ -180,21 +210,23 @@ class BIT7Z_MAYBE_UNUSED BitArchiveEditor final : public BitArchiveWriter {
     private:
         EditedItems mEditedItems;
 
-        auto findItem( const tstring& itemPath ) -> uint32_t;
+        auto findItem( const tstring& itemPath ) const -> std::uint32_t;
 
-        void checkIndex( uint32_t index );
+        void checkIndex( std::uint32_t index ) const;
 
         auto itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant override;
 
         auto itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT override;
 
-        auto hasNewData( uint32_t index ) const noexcept -> bool override;
+        auto hasNewData( std::uint32_t index ) const noexcept -> bool override;
 
-        auto hasNewProperties( uint32_t index ) const noexcept -> bool override;
+        auto hasNewProperties( std::uint32_t index ) const noexcept -> bool override;
 
-        void markItemAsDeleted( uint32_t index );
+        void markItemAsDeleted( std::uint32_t index );
+
+        void setEditedItem( std::uint32_t index, BitInputItem&& item );
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif //BITARCHIVEEDITOR_HPP

@@ -1,0 +1,62 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+
+/*
+ * bit7z - A C++ static library to interface with the 7-zip shared libraries.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
+#include "bitsharedlibrary.hpp"
+
+#include "bitexception.hpp"
+#include "bittypes.hpp"
+#include "internal/stringutil.hpp"
+
+#ifdef _WIN32
+#   define ERROR_CODE( errc ) bit7z::lastErrorCode()
+#else
+#   include <dlfcn.h>
+
+#   define LoadLibraryW( lib_name ) dlopen( (lib_name), RTLD_LAZY )
+#   define GetProcAddress dlsym
+#   define FreeLibrary dlclose
+
+#   define ERROR_CODE( errc ) std::make_error_code( errc )  //same behavior as boost::shared_library
+#endif
+
+namespace bit7z {
+
+namespace {
+BIT7Z_ALWAYS_INLINE
+auto loadLibrary( const tstring& libraryPath ) -> LibraryHandle {
+    auto* const handle = LoadLibraryW( NATIVE( libraryPath ).c_str() );
+    if ( handle == nullptr ) {
+        // Note: MSVC 2015 doesn't correctly get the last error
+        // when inlining the error variable in the BitException constructor call,
+        // so we need to store the error in a separate variable. ¯\_(ツ)_/¯
+        const auto error = ERROR_CODE( std::errc::bad_file_descriptor );
+        throw BitException( "Failed to load the library", error, libraryPath );
+    }
+    return handle;
+}
+} // namespace
+
+BitSharedLibrary::BitSharedLibrary( const tstring& libraryPath ) : mLibrary{ loadLibrary( libraryPath ) } {}
+
+BitSharedLibrary::~BitSharedLibrary() {
+    FreeLibrary( mLibrary );
+}
+
+auto BitSharedLibrary::getSymbol( const char* symbolName ) const -> LibrarySymbol {
+    auto* const symbol = GetProcAddress( mLibrary, symbolName );
+    if ( symbol == nullptr ) {
+        throw BitException( "Failed to get the function symbol", ERROR_CODE( std::errc::invalid_seek ) );
+    }
+    return symbol;
+}
+
+} // namespace bit7z

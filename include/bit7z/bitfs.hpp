@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,29 +15,31 @@
 
 /* Header for forward declaring fs namespace. */
 
-#include "bitdefines.hpp" /* For BIT7Z_USE_STANDARD_FILESYSTEM */
+#include "bitdefines.hpp" /* For BIT7Z_USE_STANDARD_FILESYSTEM. */
 
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
 #include <filesystem>
 #else
-/* Notes: we use this forward declaration to avoid including private headers (e.g. fs.hpp).
- *        Since some public API headers include bitgenericitem.hpp (e.g. "bitoutputarchive.hpp"),
+/* Notes: we use this forward declaration to avoid including private headers (e.g., fs.hpp).
+ *        Since some public API headers include bitgenericitem.hpp (e.g., "bitoutputarchive.hpp"),
  *        including private headers here would result in the "leaking" out of these latter in the public API.*/
 namespace ghc {
 namespace filesystem {
 class path;
+class directory_entry;
 } // namespace filesystem
 } // namespace ghc
 #endif
 
-namespace bit7z {
-namespace fs {
+/* Note: bit7zfs is a top-level namespace alias, deliberately NOT nested inside bit7z.
+ *       If it were a member of bit7z (e.g., bit7z::fs), a `using namespace bit7z;` directive
+ *       would introduce it into the user's scope, clashing with any `fs`/filesystem namespace
+ *       the user already has (e.g., `namespace fs = std::filesystem;`). As a sibling namespace,
+ *       it is never pulled in by `using namespace bit7z;`, so no such ambiguity can arise. */
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-using namespace std::filesystem;
+namespace bit7zfs = std::filesystem;
 #else
-using namespace ghc::filesystem;
+namespace bit7zfs = ghc::filesystem;
 #endif
-} // namespace fs
-} // namespace bit7z
 
 #endif //BITFS_HPP

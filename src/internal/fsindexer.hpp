@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,38 +10,34 @@
 #ifndef FSINDEXER_HPP
 #define FSINDEXER_HPP
 
-#include <string>
-#include <vector>
-#include <map>
-
-#include "bitabstractarchivehandler.hpp"
-#include "internal/fsitem.hpp"
+#include "bititemsvector.hpp"
+#include "bittypes.hpp"
+#include "internal/fsutil.hpp"
 
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace filesystem {
 
-using std::vector;
-using std::unique_ptr;
+void listDirectoryItems(
+    const fs::path& basePath,
+    const fs::path& inArchivePathStr,
+    const tstring& filter,
+    IndexingOptions options,
+    BitItemsVector& result
+);
 
-class FilesystemIndexer final {
-    public:
-        explicit FilesystemIndexer( FilesystemItem directory,
-                                    tstring filter = {},
-                                    FilterPolicy policy = FilterPolicy::Include,
-                                    SymlinkPolicy symlinkPolicy = SymlinkPolicy::Follow,
-                                    bool onlyFiles = false );
+BIT7Z_ALWAYS_INLINE
+void listDirectoryItems(
+    const fs::path& basePath,
+    const sevenzip_string& inArchivePathStr,
+    const tstring& filter,
+    IndexingOptions options,
+    BitItemsVector& result
+) {
+    const fs::path inArchivePath = sevenzipStringToPath( inArchivePathStr );
+    listDirectoryItems( basePath, inArchivePath, filter, options, result );
+}
 
-        void listDirectoryItems( std::vector< std::unique_ptr< GenericInputItem > >& result, bool recursive );
-
-    private:
-        FilesystemItem mDirItem;
-        tstring mFilter;
-        FilterPolicy mPolicy;
-        SymlinkPolicy mSymlinkPolicy;
-        bool mOnlyFiles;
-};
-
-}  // namespace filesystem
-}  // namespace bit7z
+} // namespace filesystem
+} // namespace bit7z
 
 #endif // FSINDEXER_HPP

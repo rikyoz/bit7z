@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,24 +11,18 @@
 #define CMULTIVOLUMEINSTREAM_HPP
 
 #include "internal/com.hpp"
-#include "internal/cvolumeinstream.hpp"
-#include "internal/macros.hpp"
+#include "internal/cfileinstream.hpp"
 #include "internal/guiddef.hpp"
+#include "internal/macros.hpp"
+#include "internal/volumescache.hpp"
 
 #include <7zip/IStream.h>
 
+#include <vector>
+
 namespace bit7z {
 
-class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
-        uint64_t mCurrentPosition;
-        uint64_t mTotalSize;
-
-        std::vector< CMyComPtr< CVolumeInStream > > mVolumes;
-
-        auto currentVolume() -> const CMyComPtr< CVolumeInStream >&;
-
-        void addVolume( const fs::path& volumePath );
-
+class CMultiVolumeInStream final : public IInStream, public CMyUnknownImp {
     public:
         explicit CMultiVolumeInStream( const fs::path& firstVolume );
 
@@ -40,7 +34,7 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
 
         auto operator=( CMultiVolumeInStream&& ) -> CMultiVolumeInStream& = delete;
 
-        MY_UNKNOWN_VIRTUAL_DESTRUCTOR( ~CMultiVolumeInStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CMultiVolumeInStream() ) = default;
 
         // IInStream
         BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
@@ -48,7 +42,19 @@ class CMultiVolumeInStream : public IInStream, public CMyUnknownImp {
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         // NOLINTNEXTLINE(modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
+
+    private:
+        std::uint64_t mAbsolutePosition;
+        std::uint64_t mTotalSize;
+        VolumesCache< CFileInStream, EvictionPolicy::Oldest > mVolumes;
+        std::size_t mLastOpenedVolume = kNoVolume;
+
+        auto currentVolume() -> CachedVolume< CFileInStream >&;
+
+        void ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex );
+
+        void addVolume( const fs::path& volumePath );
 };
 
 } // namespace bit7z

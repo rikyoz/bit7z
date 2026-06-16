@@ -3,46 +3,56 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/cfixedbufferoutstream.hpp"
 #include "internal/fixedbufferextractcallback.hpp"
+
+#include "bitabstractarchivehandler.hpp"
+#include "bitarchiveitem.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+#include "internal/cfixedbufferoutstream.hpp"
+#include "internal/extractcallback.hpp"
 #include "internal/util.hpp"
+
+#include <cstddef>
+#include <cstdint>
 
 namespace bit7z {
 
-FixedBufferExtractCallback::FixedBufferExtractCallback( const BitInputArchive& inputArchive,
-                                                        byte_t* buffer,
-                                                        size_t size )
-    : ExtractCallback( inputArchive ), mBuffer( buffer ), mSize( size ) {}
+FixedBufferExtractCallback::FixedBufferExtractCallback(
+    const BitInputArchive& inputArchive,
+    byte_t* buffer,
+    std::size_t size
+) : ExtractCallback( inputArchive ), mBuffer( buffer ), mSize( size ) {}
 
 void FixedBufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-auto FixedBufferExtractCallback::getOutStream( uint32_t index, ISequentialOutStream** outStream ) -> HRESULT {
-    if ( isItemFolder( index ) ) {
+auto FixedBufferExtractCallback::getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT {
+    if ( item.isDir() ) {
         return S_OK;
     }
 
-    // Get Name
-    const BitPropVariant prop = itemProperty( index, BitProperty::Path );
-    tstring fullPath;
-
-    if ( prop.isEmpty() ) {
-        fullPath = kEmptyFileAlias;
-    } else if ( prop.isString() ) {
-        fullPath = prop.getString();
-    } else {
-        return E_FAIL;
-    }
-
     if ( mHandler.fileCallback() ) {
+        // Get Name
+        const BitPropVariant prop = item.itemProperty( BitProperty::Path );
+        tstring fullPath;
+
+        if ( prop.isEmpty() ) {
+            fullPath = kEmptyFileAlias;
+        } else if ( prop.isString() ) {
+            fullPath = prop.getString();
+        } else {
+            return E_FAIL;
+        }
+
         mHandler.fileCallback()( fullPath );
     }
 

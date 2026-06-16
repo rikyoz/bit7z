@@ -3,27 +3,32 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <algorithm> //for std::copy_n
-
 #include "internal/cbufferoutstream.hpp"
+
+#include "bittypes.hpp"
 #include "internal/bufferutil.hpp"
+#include "internal/cpp26.hpp"
+
+#include <algorithm> //for std::copy_n
+#include <cstdint>
+#include <iterator>
 
 namespace bit7z {
 
-CBufferOutStream::CBufferOutStream( vector< byte_t >& outBuffer )
+CBufferOutStream::CBufferOutStream( buffer_t& outBuffer )
     : mBuffer( outBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
     try {
-        mBuffer.resize( static_cast< vector< byte_t >::size_type >( newSize ) );
+        mBuffer.resize( static_cast< buffer_t::size_type >( newSize ) );
         return S_OK;
     } catch ( ... ) {
         return E_OUTOFMEMORY;
@@ -32,7 +37,7 @@ STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    uint64_t newIndex{};
+    std::uint64_t newIndex{};
     const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
 
     if ( res != S_OK ) {
@@ -60,8 +65,8 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         return E_FAIL;
     }
 
-    auto oldPos = ( mCurrentPosition - mBuffer.begin() );
-    const size_t newPos = static_cast< size_t >( oldPos ) + static_cast< size_t >( size );
+    const auto oldPos = mCurrentPosition - mBuffer.begin();
+    const std::size_t newPos = static_cast< std::size_t >( oldPos ) + static_cast< std::size_t >( size );
     if ( newPos > mBuffer.size() ) {
         try {
             mBuffer.resize( newPos );
@@ -78,7 +83,7 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
         return E_OUTOFMEMORY;
     }
 
-    std::advance( mCurrentPosition, clamp_cast< std::ptrdiff_t >( size ) );
+    std::advance( mCurrentPosition, cpp26::saturating_cast< std::ptrdiff_t >( size ) );
 
     if ( processedSize != nullptr ) {
         *processedSize = size;

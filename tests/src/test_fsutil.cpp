@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,11 +12,11 @@
 
 #include <catch2/catch.hpp>
 
+#include "utils/exception.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/test.hpp"
 
 #include <bit7z/biterror.hpp>
-#include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
 #include <bit7z/bittypes.hpp>
 #include <internal/fsutil.hpp>
@@ -26,229 +26,229 @@
 #endif
 
 #include <array>
-#include <vector>
-#include <map>
 
-using std::vector;
-using std::map;
 using namespace bit7z;
 using namespace bit7z::filesystem::fsutil;
 
 //-V::2008 (Suppressing warnings for cyclomatic complexity in PVS-Studio)
 
 TEST_CASE( "fsutil: Wildcard matching without special characters", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "" ), BIT7Z_STRING( "?" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a" ), BIT7Z_STRING( "b" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "acb" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a42b" ), BIT7Z_STRING( "a42b42" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "****a****b****c****" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "*a*b*c*" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc*def" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc def" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abcdef" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abc def" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLah" ), BIT7Z_STRING( "bLah" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLaH" ), BIT7Z_STRING( "bLah" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem " ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem-ipsum" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem " ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( " lorem" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "" ), BIT7Z_STRING( "?" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a" ), BIT7Z_STRING( "b" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "acb" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a42b" ), BIT7Z_STRING( "a42b42" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "****a****b****c****" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc" ), BIT7Z_STRING( "*a*b*c*" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc*def" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abcdef" ), BIT7Z_STRING( "abc def" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abcdef" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc def" ), BIT7Z_STRING( "abc def" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLah" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLaH" ), BIT7Z_STRING( "bLah" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem " ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem " ), BIT7Z_STRING( "lorem" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lorem ipsum" ), BIT7Z_STRING( "lorem-ipsum" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem " ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( "lorem" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( " lorem" ), BIT7Z_STRING( " lorem" ) ) == true );
 }
 
 TEST_CASE( "fsutil: Wildcard matching with question mark special character", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "?" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "aa" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "??a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?a?b" ), BIT7Z_STRING( "caaab" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "z" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?Lah" ), BIT7Z_STRING( "bLaH" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?LaH" ), BIT7Z_STRING( "bLaH" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "?" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "aa" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "??a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?a?b" ), BIT7Z_STRING( "caaab" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "z" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?z" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?Lah" ), BIT7Z_STRING( "bLaH" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?LaH" ), BIT7Z_STRING( "bLaH" ) ) == true );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "az" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a?c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc?" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?" ), BIT7Z_STRING( "az" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a?c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc?" ), BIT7Z_STRING( "abc" ) ) == false );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bL?h" ), BIT7Z_STRING( "bLah" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLaaa" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bL?h" ), BIT7Z_STRING( "bLah" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLaaa" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "bLa?" ), BIT7Z_STRING( "bLah" ) ) == true );
 }
 
 TEST_CASE( "fsutil: Wildcard matching with star special character", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a*r" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*aar" ), BIT7Z_STRING( "a*ar" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "a*abab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aAazz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "acb" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acb" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acbd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acdb" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ac" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "bc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aaazz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "ab*d" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*abc*abc*abc" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc*abc*abc*abcd" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "abc**" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem-ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "lo*Ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxx*yzz*a" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xxxx*yzz*a" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*z*xyz" ), BIT7Z_STRING( "xyxyxyzyxyz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "XY*Z*XYz" ), BIT7Z_STRING( "XYXYXYZYXYz" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*" ), BIT7Z_STRING( "a*r" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "a*a*a*a*a*a*a*a*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*aar" ), BIT7Z_STRING( "a*ar" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "a*abab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aAazz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "acb" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acb" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acbd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "acdb" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "ac" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*b*" ), BIT7Z_STRING( "bc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "a*zz*" ), BIT7Z_STRING( "aaazz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "ab*d" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*abc*abc*abc" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc*abc*abc*abcd" ), BIT7Z_STRING( "abc*abcd*abc*abcd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "abc**" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "lorem-ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "lo*Ips*" ), BIT7Z_STRING( "loreM ipsum" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxx*yzz*a" ), BIT7Z_STRING( "xxxx*yyyyyyyzz*a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*aaaaa" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xxxx*yzz*a" ), BIT7Z_STRING( "xxxxyyyyyyyzza" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*z*xyz" ), BIT7Z_STRING( "xyxyxyzyxyz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "XY*Z*XYz" ), BIT7Z_STRING( "XYXYXYZYXYz" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "xy*xyz" ), BIT7Z_STRING( "xyxyxyxyz" ) ) == true );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*" ), BIT7Z_STRING( "*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**" ), BIT7Z_STRING( "" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "***a*b*c***" ), BIT7Z_STRING( "*abc*" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "********a********b********c********" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "********a********b********b********" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**a**b**c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**a**b**c**" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "**b**c" ), BIT7Z_STRING( "bc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "b" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a**b***c****" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaaaaaaa" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaa" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a*b*c*" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*aabbaa*a*" ), BIT7Z_STRING( "aaabbaabbaab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*abc*" ), BIT7Z_STRING( "aBc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*aBc*" ), BIT7Z_STRING( "aBc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "a" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ba" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "db" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ccd" ), BIT7Z_STRING( "abcccd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ipsum*ips*" ), BIT7Z_STRING( "lorem ipsum ipsu" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*orem*IPS*" ), BIT7Z_STRING( "lorem IPSUM" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*orem*IPS" ), BIT7Z_STRING( "lorem IPSUM" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*ORE*" ), BIT7Z_STRING( "lOREm" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*21" ), BIT7Z_STRING( "a42b42" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42b42" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*23" ), BIT7Z_STRING( "A42b42" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42B42" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*" ), BIT7Z_STRING( "*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**" ), BIT7Z_STRING( "" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "***a*b*c***" ), BIT7Z_STRING( "*abc*" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "********a********b********c********" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "********a********b********b********" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**a**b**c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**a**b**c**" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "**b**c" ), BIT7Z_STRING( "bc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*" ), BIT7Z_STRING( "b" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a**b***c****" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaaaaaaa" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*a*a*a*a*a*a*a*" ), BIT7Z_STRING( "aaaaaaa" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a*b*c*" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*aabbaa*a*" ), BIT7Z_STRING( "aaabbaabbaab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abac*" ), BIT7Z_STRING( "ababac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*abc*" ), BIT7Z_STRING( "aBc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*aBc*" ), BIT7Z_STRING( "aBc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "a" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "ba" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*" ), BIT7Z_STRING( "" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "bd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*b*c" ), BIT7Z_STRING( "db" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ccd" ), BIT7Z_STRING( "abcccd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ipsum*ips*" ), BIT7Z_STRING( "lorem ipsum ipsu" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ips*" ), BIT7Z_STRING( "lorem ipsum" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*orem*IPS*" ), BIT7Z_STRING( "lorem IPSUM" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*orem*IPS" ), BIT7Z_STRING( "lorem IPSUM" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*Abac*" ), BIT7Z_STRING( "abAbac" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*ORE*" ), BIT7Z_STRING( "lOREm" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*21" ), BIT7Z_STRING( "a42b42" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42b42" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*23" ), BIT7Z_STRING( "A42b42" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*42*42*" ), BIT7Z_STRING( "a42B42" ) ) == true );
 }
 
 TEST_CASE( "fsutil: Wildcard matching with both question mark and star", "[fsutil][wildcard_match]" ) {
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "a" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "*?*?*" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*a?b" ), BIT7Z_STRING( "caaab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "a" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "*?*?*" ), BIT7Z_STRING( "ab" ) ) == true );
 
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?*?" ), BIT7Z_STRING( "ab" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?*?" ), BIT7Z_STRING( "abc" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?*&?" ), BIT7Z_STRING( "abc" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?b*??" ), BIT7Z_STRING( "abcd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?a*??" ), BIT7Z_STRING( "abcd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?c?" ), BIT7Z_STRING( "abcd" ) ) == true );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
-    REQUIRE( wildcard_match( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?*?" ), BIT7Z_STRING( "ab" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?*?" ), BIT7Z_STRING( "abc" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?*&?" ), BIT7Z_STRING( "abc" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?b*??" ), BIT7Z_STRING( "abcd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?a*??" ), BIT7Z_STRING( "abcd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?c?" ), BIT7Z_STRING( "abcd" ) ) == true );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?**?d?" ), BIT7Z_STRING( "abcd" ) ) == false );
+    REQUIRE( wildcardMatch( BIT7Z_STRING( "?*b*?*d*?" ), BIT7Z_STRING( "abcde" ) ) == true );
 }
 
 #ifdef BIT7Z_TESTS_FILESYSTEM
 
+namespace {
 struct TestItem {
     fs::path path;
     fs::path inArchivePath;
 };
+} // namespace
 
 TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) {
     using namespace test::filesystem;
 
-    const fs::path oldCurrentDir = current_dir();
-    REQUIRE ( set_current_dir( test_filesystem_dir ) );
+    const fs::path oldCurrentDir = currentDir();
+    REQUIRE( setCurrentDir( test_filesystem_dir ) );
 
     // Note: since we are using the function fs::absolute(...), the content of this vector depends on the current
     //       directory, hence we must declare the vector inside the test case and not outside.
-    const std::array< TestItem, 36 > testItems{ {
-        { ".",                                                "" },
-        { "./",                                               "" },
-        { "..",                                               "" },
-        { "../",                                              "" },
-        { "italy.svg",                                        "italy.svg" },
-        { "folder",                                           "folder" },
-        { "folder/",                                          "folder/" },
-        { "folder/..",                                        "" },
-        { "folder/../",                                       "" },
-        { "folder/.",                                         "folder" },
-        { "folder/./",                                        "folder" },
-        { "folder/clouds.jpg",                                "folder/clouds.jpg" },
-        { "folder/subfolder2",                                "folder/subfolder2" },
-        { "folder/subfolder2/",                               "folder/subfolder2/" },
-        { "folder/subfolder2/..",                             "folder" },
-        { "folder/subfolder2/../",                            "folder" },
-        { "folder/subfolder2/.",                              "subfolder2" },
-        { "folder/subfolder2/./",                             "subfolder2" },
-        { "folder/subfolder2/homework.doc",                   "folder/subfolder2/homework.doc" },
-        { "./italy.svg",                                      "italy.svg" },
-        { "./folder",                                         "folder" },
-        { "./folder/",                                        "folder" },
-        { "./folder/clouds.jpg",                              "clouds.jpg" },
-        { "./folder/subfolder2",                              "subfolder2" },
-        { "./folder/subfolder2/homework.doc",                 "homework.doc" },
-        { "./../test_filesystem/",                            "test_filesystem" },
-        { "./../test_filesystem/folder/",                     "folder" },
-        { fs::absolute( "." ),                                "test_filesystem" },
-        { fs::absolute( "../" ),                              fs::path{ test_data_dir }.filename() },
-        { fs::absolute( "./italy.svg" ),                      "italy.svg" },
-        { fs::absolute( "./folder" ),                         "folder" },
-        { fs::absolute( "./folder/" ),                        "folder" },
-        { fs::absolute( "./folder/clouds.jpg" ),              "clouds.jpg" },
-        { fs::absolute( "./folder/subfolder2" ),              "subfolder2" },
-        { fs::absolute( "./folder/subfolder2/" ),             "subfolder2" },
-        { fs::absolute( "./folder/subfolder2/homework.doc" ), "homework.doc" }
-    } };
+    const std::array< TestItem, 36 > testItems{
+        {
+            { ".", "" },
+            { "./", "" },
+            { "..", "" },
+            { "../", "" },
+            { "italy.svg", "italy.svg" },
+            { "folder", "folder" },
+            { "folder/", "folder/" },
+            { "folder/..", "" },
+            { "folder/../", "" },
+            { "folder/.", "folder" },
+            { "folder/./", "folder" },
+            { "folder/clouds.jpg", "folder/clouds.jpg" },
+            { "folder/subfolder2", "folder/subfolder2" },
+            { "folder/subfolder2/", "folder/subfolder2/" },
+            { "folder/subfolder2/..", "folder" },
+            { "folder/subfolder2/../", "folder" },
+            { "folder/subfolder2/.", "subfolder2" },
+            { "folder/subfolder2/./", "subfolder2" },
+            { "folder/subfolder2/homework.doc", "folder/subfolder2/homework.doc" },
+            { "./italy.svg", "italy.svg" },
+            { "./folder", "folder" },
+            { "./folder/", "folder" },
+            { "./folder/clouds.jpg", "clouds.jpg" },
+            { "./folder/subfolder2", "subfolder2" },
+            { "./folder/subfolder2/homework.doc", "homework.doc" },
+            { "./../test_filesystem/", "test_filesystem" },
+            { "./../test_filesystem/folder/", "folder" },
+            { fs::absolute( "." ), "test_filesystem" },
+            { fs::absolute( "../" ), fs::path{ test_data_dir }.filename() },
+            { fs::absolute( "./italy.svg" ), "italy.svg" },
+            { fs::absolute( "./folder" ), "folder" },
+            { fs::absolute( "./folder/" ), "folder" },
+            { fs::absolute( "./folder/clouds.jpg" ), "clouds.jpg" },
+            { fs::absolute( "./folder/subfolder2" ), "subfolder2" },
+            { fs::absolute( "./folder/subfolder2/" ), "subfolder2" },
+            { fs::absolute( "./folder/subfolder2/homework.doc" ), "homework.doc" }
+        }
+    };
 
     for ( const auto& testItem : testItems ) {
         DYNAMIC_SECTION( "Path: " << testItem.path ) {
-            REQUIRE( in_archive_path( testItem.path ) == testItem.inArchivePath );
+            REQUIRE( inArchivePath( testItem.path ) == testItem.inArchivePath );
         }
     }
 
-    REQUIRE( set_current_dir( oldCurrentDir ) );
+    REQUIRE( setCurrentDir( oldCurrentDir ) );
 }
 
 #endif
@@ -256,22 +256,22 @@ TEST_CASE( "fsutil: In-archive path computation", "[fsutil][in_archive_path]" ) 
 #if defined( _WIN32 ) && defined( BIT7Z_AUTO_PREFIX_LONG_PATHS )
 TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
     SECTION( "Short paths should not be formatted" ) {
-        REQUIRE_FALSE( should_format_long_path( L"short_path\\file.txt" ) );
-        REQUIRE_FALSE( should_format_long_path( L"C:\\short_path\\file.txt" ) );
-        REQUIRE_FALSE( should_format_long_path( L"\\\\server\\share\\file.txt" ) );
+        REQUIRE_FALSE( shouldFormatLongPath( L"short_path\\file.txt" ) );
+        REQUIRE_FALSE( shouldFormatLongPath( L"C:\\short_path\\file.txt" ) );
+        REQUIRE_FALSE( shouldFormatLongPath( L"\\\\server\\share\\file.txt" ) );
     }
 
     constexpr auto kLongPathPrefix = LR"(\\?\)";
     constexpr auto kVeryLongPath = LR"(very\long\dummy\path\)"
-                                   LR"(ABCDEFGHIJKLMNOPQRSTUVWXYZ\abcdefghijklmnopqrstuvwxyz\0123456789\)"
-                                   LR"(Lorem ipsum dolor sit amet\consectetur adipiscing elit\)"
-                                   LR"(Mauris ac leo dui\Morbi non elit lacus\)"
-                                   LR"(Ut ullamcorper sapien eget commodo eleifend\Curabitur varius magna sit\)"
-                                   LR"(Hello_World.txt)";
+            LR"(ABCDEFGHIJKLMNOPQRSTUVWXYZ\abcdefghijklmnopqrstuvwxyz\0123456789\)"
+            LR"(Lorem ipsum dolor sit amet\consectetur adipiscing elit\)"
+            LR"(Mauris ac leo dui\Morbi non elit lacus\)"
+            LR"(Ut ullamcorper sapien eget commodo eleifend\Curabitur varius magna sit\)"
+            LR"(Hello_World.txt)";
 
     // Note: the paths passed to the long path formatting functions are absolute.
     SECTION( "Long relative paths should not be formatted" ) {
-        REQUIRE_FALSE( should_format_long_path( kVeryLongPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kVeryLongPath ) );
     }
 
     SECTION( "Long absolute paths should be formatted" ) {
@@ -280,36 +280,37 @@ TEST_CASE( "fsutil: Format long Windows paths", "[fsutil][format_long_path]" ) {
         // \\?\C:\<long path>
         const auto kPrefixedVeryLongPath = kLongPathPrefix + kVeryLongAbsolutePath;
 
-        REQUIRE_FALSE( should_format_long_path( kPrefixedVeryLongPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kPrefixedVeryLongPath ) );
 
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-        REQUIRE( should_format_long_path( kVeryLongAbsolutePath ) );
-        REQUIRE( format_long_path( kVeryLongAbsolutePath ).native() == kPrefixedVeryLongPath );
+        REQUIRE( shouldFormatLongPath( kVeryLongAbsolutePath ) );
+        REQUIRE( formatLongPath( kVeryLongAbsolutePath ).native() == kPrefixedVeryLongPath );
 #else
         // The GHC library already formats long paths!
-        REQUIRE_FALSE( should_format_long_path( kVeryLongAbsolutePath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kVeryLongAbsolutePath ) );
 #endif
     }
 
-    SECTION( "Long UNC paths should be formatted" ) {
+    SECTION( "Long UNC paths should be formatted" ){
         // \\server\share
         const auto kVeryLongUncPath = std::wstring{ L"\\\\" } + kVeryLongPath;
         // \\?\UNC\server\share
         const auto kPrefixedVeryLongUncPath = std::wstring{ kLongPathPrefix } + L"UNC\\" + kVeryLongPath;
 
-        REQUIRE_FALSE( should_format_long_path( kPrefixedVeryLongUncPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kPrefixedVeryLongUncPath ) );
 
 #ifdef BIT7Z_USE_STANDARD_FILESYSTEM
-        REQUIRE( should_format_long_path( kVeryLongUncPath ) );
-        REQUIRE( format_long_path( kVeryLongUncPath ).native() == kPrefixedVeryLongUncPath );
+        REQUIRE( shouldFormatLongPath( kVeryLongUncPath ) );
+        REQUIRE( formatLongPath( kVeryLongUncPath ).native() == kPrefixedVeryLongUncPath );
 #else
-        REQUIRE_FALSE( should_format_long_path( kVeryLongUncPath ) );
+        REQUIRE_FALSE( shouldFormatLongPath( kVeryLongUncPath ) );
 #endif
     }
 }
 #endif
 
 namespace {
+BIT7Z_ALWAYS_INLINE
 auto quoted( const fs::path& path ) -> std::string {
     return bit7z::test::quoted( path.c_str() );
 }
@@ -336,19 +337,19 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
     SECTION( "Control characters (ASCII 0-31) replacement" ) {
-        const auto controlChar = GENERATE( range( 1, 32 ) );  // Skip null
+        const auto controlChar = GENERATE( range( 1, 32 ) ); // Skip null
 
         std::wstring input = L"test";
         input += static_cast< wchar_t >( controlChar );
         input += L"file.txt";
 
         INFO( "Control char: " << controlChar );
-        const auto result = sanitize_path( input );
+        const auto result = sanitizePath( input );
         REQUIRE( result == L"test_file.txt" );
     }
 
@@ -365,12 +366,12 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
     SECTION( "COM and LPT reserved names and all their case variations" ) {
-        const auto *const reservedName = GENERATE( as< const wchar_t* >(), L"COM", L"LPT" );
+        const auto* const reservedName = GENERATE( as< const wchar_t* >(), L"COM", L"LPT" );
         const auto caseVariation = GENERATE_REF( test::casePermutations( reservedName ) );
         const auto digit = GENERATE( range( 0, 10 ) );
 
@@ -378,25 +379,26 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         const auto expected = L"_" + input;
 
         DYNAMIC_SECTION( quoted( input ) << " -> " << quoted( expected ) ) {
-            REQUIRE( sanitize_path( input ) == expected );
+            REQUIRE( sanitizePath( input ) == expected );
         }
     }
 
     SECTION( "Superscript digits in COM/LPT reserved names" ) {
-        const auto *const reservedName = GENERATE( as< const wchar_t* >(), L"COM", L"LPT" );
+        const auto* const reservedName = GENERATE( as< const wchar_t* >(), L"COM", L"LPT" );
         const auto caseVariation = GENERATE_REF( test::casePermutations( reservedName ) );
-        const auto *const superscriptDigit = GENERATE( as< const wchar_t* >(), L"¹", L"²", L"³" );
+        const auto* const superscriptDigit = GENERATE( as< const wchar_t* >(), L"¹", L"²", L"³" );
 
         const auto input = caseVariation + superscriptDigit;
         const auto expected = L"_" + input;
 
         DYNAMIC_SECTION( quoted( input ) << " -> " << quoted( expected ) ) {
-            REQUIRE( sanitize_path( input ) == expected );
+            REQUIRE( sanitizePath( input ) == expected );
         }
     }
 
     SECTION( "Other reserved names" ) {
-        const auto *const reservedName = GENERATE( as< const wchar_t* >(),
+        const auto* const reservedName = GENERATE(
+            as< const wchar_t* >(),
             L"CON",
             L"PRN",
             L"AUX",
@@ -409,14 +411,15 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         const auto expected = L"_" + caseVariation;
 
         DYNAMIC_SECTION( quoted( caseVariation ) << " -> " << quoted( expected ) ) {
-            REQUIRE( sanitize_path( caseVariation ) == expected );
-            REQUIRE( sanitize_path( L" " + caseVariation ) == L" " + expected );
-            REQUIRE( sanitize_path( L"      " + caseVariation ) == L"      " + expected );
+            REQUIRE( sanitizePath( caseVariation ) == expected );
+            REQUIRE( sanitizePath( L" " + caseVariation ) == L" " + expected );
+            REQUIRE( sanitizePath( L"      " + caseVariation ) == L"      " + expected );
         }
     }
 
     SECTION( "Names that look like reserved but aren't" ) {
-        const auto *const testPath = GENERATE( as< const wchar_t* >(),
+        const auto *const testPath = GENERATE(
+            as< const wchar_t* >(),
             L"COM0.txt",  // Has extension.
             L"LPT9.txt",
             L"COM42",     // Extra letter.
@@ -447,14 +450,17 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( "The path " << quoted( testPath ) << " should NOT be treated as reserved" ) {
-            REQUIRE( sanitize_path( testPath ) == testPath );
+            REQUIRE( sanitizePath( testPath ) == testPath );
         }
     }
 
-    const auto makeSpaces = []( int count ) -> std::wstring { return std::wstring( count, L' ' ); };
+    const auto makeSpaces = [] ( int count ) -> std::wstring {
+        return std::wstring( count, L' ' );
+    };
 
     SECTION( "Leading slashes are stripped, spaces are converted to underscores" ) {
-        const auto slashPattern = GENERATE( as< std::wstring >(),
+        const auto slashPattern = GENERATE(
+            as< std::wstring >(),
             L"/",
             L"\\",
             L"//",
@@ -474,16 +480,16 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         DYNAMIC_SECTION( "Basic slash pattern " << quoted( slashPattern ) ) {
             SECTION( "With no spaces" ) {
                 // Component with only slashes becomes "_" (prevents creating empty paths).
-                REQUIRE( sanitize_path( slashPattern ) == L"_" );
+                REQUIRE( sanitizePath( slashPattern ) == L"_" );
 
                 // Leading slashes are stripped.
-                REQUIRE( sanitize_path( slashPattern + L"abc" ) == L"abc" );
+                REQUIRE( sanitizePath( slashPattern + L"abc" ) == L"abc" );
 
                 // Trailing slashes create an empty component (e.g., "/abc" -> components: ["abc", ""] -> "abc\".
-                REQUIRE( sanitize_path( L"abc" + slashPattern ) == L"abc\\" );
+                REQUIRE( sanitizePath( L"abc" + slashPattern ) == L"abc\\" );
 
                 // Leading slashes are stripped, trailing ones create an empty component -> ["abc", ""] -> "abc\".
-                REQUIRE( sanitize_path( slashPattern + L"abc" + slashPattern ) == L"abc\\" );
+                REQUIRE( sanitizePath( slashPattern + L"abc" + slashPattern ) == L"abc\\" );
             }
 
             SECTION( "With spaces" ) {
@@ -493,28 +499,28 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
                 const auto spaces = makeSpaces( spaceCount );
 
                 // Leading spaces + slashes -> components: [spaces, ""] -> "_\".
-                REQUIRE( sanitize_path( spaces + slashPattern ) == L"_\\" );
+                REQUIRE( sanitizePath( spaces + slashPattern ) == L"_\\" );
 
                 // Two spaces-only components, both become "_".
-                REQUIRE( sanitize_path( spaces + slashPattern + spaces ) == L"_\\_" );
+                REQUIRE( sanitizePath( spaces + slashPattern + spaces ) == L"_\\_" );
 
                 // Leading spaces in filenames are preserved (Windows allows this).
-                REQUIRE( sanitize_path( spaces + L"abc" ) == spaces + L"abc" );
+                REQUIRE( sanitizePath( spaces + L"abc" ) == spaces + L"abc" );
 
                 // One spaces-only component -> "_", separator(s), filename with leading spaces (kept).
-                REQUIRE( sanitize_path( spaces + slashPattern + spaces + L"abc" ) == L"_\\" + spaces + L"abc" );
+                REQUIRE( sanitizePath( spaces + slashPattern + spaces + L"abc" ) == L"_\\" + spaces + L"abc" );
 
                 // Leading slash(es) stripped, filename with leading spaces preserved.
-                REQUIRE( sanitize_path( slashPattern + spaces + L"abc" ) == spaces + L"abc" );
+                REQUIRE( sanitizePath( slashPattern + spaces + L"abc" ) == spaces + L"abc" );
 
                 // Leading slash(es) stripped, space-only component becomes "_".
-                REQUIRE( sanitize_path( slashPattern + spaces ) == L"_" );
+                REQUIRE( sanitizePath( slashPattern + spaces ) == L"_" );
 
                 // Trailing spaces in component are preserved (OS will ignore them).
-                REQUIRE( sanitize_path( slashPattern + L"abc" + spaces ) == L"abc"  + spaces );
+                REQUIRE( sanitizePath( slashPattern + L"abc" + spaces ) == L"abc" + spaces );
 
                 // Trailing spaces-only component becomes "_".
-                REQUIRE( sanitize_path( slashPattern + L"abc" + slashPattern + spaces ) == L"abc\\_" );
+                REQUIRE( sanitizePath( slashPattern + L"abc" + slashPattern + spaces ) == L"abc\\_" );
 
                 if ( slashPattern.size() > 1 ) {
                     const auto midpoint = slashPattern.size() / 2;
@@ -525,22 +531,22 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
                     // All slashes and spaces combinations turn into "_\"
                     const auto spacedSlashes = left + spaces + right;
 
-                    REQUIRE( sanitize_path( spacedSlashes ) == L"_\\" );
-                    REQUIRE( sanitize_path( spacedSlashes + L"abc" ) == L"_\\abc" );
-                    REQUIRE( sanitize_path( spacedSlashes + L"abc" + spacedSlashes ) == L"_\\abc\\_\\" );
-                    REQUIRE( sanitize_path( spacedSlashes + spaces ) == L"_\\_" );
+                    REQUIRE( sanitizePath( spacedSlashes ) == L"_\\" );
+                    REQUIRE( sanitizePath( spacedSlashes + L"abc" ) == L"_\\abc" );
+                    REQUIRE( sanitizePath( spacedSlashes + L"abc" + spacedSlashes ) == L"_\\abc\\_\\" );
+                    REQUIRE( sanitizePath( spacedSlashes + spaces ) == L"_\\_" );
 
                     // Leading slashes (without spaces) are stripped.
-                    REQUIRE( sanitize_path( slashPattern + L"abc" + spacedSlashes ) == L"abc\\_\\" );
+                    REQUIRE( sanitizePath( slashPattern + L"abc" + spacedSlashes ) == L"abc\\_\\" );
 
                     // Spaces-only components turn into "_", combinations of slashes and spaces turn into "_\".
-                    REQUIRE( sanitize_path( spaces + spacedSlashes ) == L"_\\_\\" );
-                    REQUIRE( sanitize_path( spaces + spacedSlashes + L"abc" ) == L"_\\_\\abc" );
-                    REQUIRE( sanitize_path( spaces + spacedSlashes + spaces ) == L"_\\_\\_" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes ) == L"_\\_\\" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes + L"abc" ) == L"_\\_\\abc" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes + spaces ) == L"_\\_\\_" );
 
                     // Leading spaces preserved in filename component
-                    REQUIRE( sanitize_path( spaces + L"abc" + spacedSlashes ) == spaces + L"abc\\_\\" );
-                    REQUIRE( sanitize_path( spaces + spacedSlashes + spaces + L"abc" ) == L"_\\_\\" + spaces + L"abc" );
+                    REQUIRE( sanitizePath( spaces + L"abc" + spacedSlashes ) == spaces + L"abc\\_\\" );
+                    REQUIRE( sanitizePath( spaces + spacedSlashes + spaces + L"abc" ) == L"_\\_\\" + spaces + L"abc" );
                 }
             }
         }
@@ -581,7 +587,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
@@ -603,17 +609,18 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
 
         DYNAMIC_SECTION( quoted( test.path ) << " -> " << quoted( test.expectedPath ) ) {
             // Test forward slash version
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
 
             // Test backslash version
             std::wstring backslash{ test.path };
             std::replace( backslash.begin(), backslash.end(), L'/', L'\\' );
-            REQUIRE( sanitize_path( backslash ) == test.expectedPath );
+            REQUIRE( sanitizePath( backslash ) == test.expectedPath );
         }
     }
 
     SECTION( "Non-reserved unicode filenames" ) {
-        const auto *const testPath = GENERATE( as< const wchar_t* >(),
+        const auto* const testPath = GENERATE(
+            as< const wchar_t* >(),
             L"文件.txt",
             L"файл.txt",
             L"αβγ.txt",
@@ -622,13 +629,14 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( testPath ) ) {
-            REQUIRE( sanitize_path( testPath ) == testPath );
+            REQUIRE( sanitizePath( testPath ) == testPath );
         }
     }
 
     SECTION( "Edge cases" ) {
         // We do not sanitize trailing dots, as are already ignored by the C++ output file streams.
-        const auto *const testPath = GENERATE( as< const wchar_t* >(),
+        const auto* const testPath = GENERATE(
+            as< const wchar_t* >(),
             L"abc.",
             L"abc..",
             L"abc...",
@@ -642,7 +650,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( testPath ) ) {
-            REQUIRE( sanitize_path( testPath ) == testPath );
+            REQUIRE( sanitizePath( testPath ) == testPath );
         }
     }
 
@@ -655,7 +663,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 
@@ -668,7 +676,7 @@ TEST_CASE( "fsutil: Sanitizing Windows paths", "[fsutil][sanitize_path]" ) {
         );
 
         DYNAMIC_SECTION( quoted( test.path ) ) {
-            REQUIRE( sanitize_path( test.path ) == test.expectedPath );
+            REQUIRE( sanitizePath( test.path ) == test.expectedPath );
         }
     }
 }
@@ -684,7 +692,8 @@ auto normalizedBasePath( const tstring& basePath ) -> fs::path {
 TEST_CASE( "fsutil: Base path normalization", "[fsutil][SafeOutPathBuilder]" ) {
     SECTION( "Path separators normalization" ) {
 #ifdef _WIN32
-        const auto separators = GENERATE( as< tstring >(),
+        const auto separators = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "/" ),
             BIT7Z_STRING( "//" ),
             BIT7Z_STRING( "/////" ),
@@ -697,7 +706,8 @@ TEST_CASE( "fsutil: Base path normalization", "[fsutil][SafeOutPathBuilder]" ) {
             BIT7Z_STRING( "\\\\//" )
         );
 #else
-        const auto separators = GENERATE( as< tstring >(),
+        const auto separators = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "/" ),
             BIT7Z_STRING( "//" ),
             BIT7Z_STRING( "/////" )
@@ -711,12 +721,8 @@ TEST_CASE( "fsutil: Base path normalization", "[fsutil][SafeOutPathBuilder]" ) {
                 REQUIRE( normalizedBasePath( BIT7Z_STRING( "out/dir" ) + separators ) == expectedPath / "dir" / "" );
             }
 
-#ifdef _WIN32
-            SECTION( "Drive-relative paths" ) {
+            SECTION( "Drive-relative paths (Windows) / Absolute paths (POSIX)" ) {
                 // Paths starting with "/" are relative to current drive's root on Windows
-#else
-            SECTION( "Absolute paths" ) {
-#endif
                 const auto expectedPath = fs::absolute( "/out/" );
                 REQUIRE( normalizedBasePath( BIT7Z_STRING( "/out" ) + separators ) == expectedPath );
                 REQUIRE( normalizedBasePath( BIT7Z_STRING( "/out/dir" ) + separators ) == expectedPath / "dir" / "" );
@@ -781,7 +787,8 @@ TEST_CASE( "fsutil: Base path normalization", "[fsutil][SafeOutPathBuilder]" ) {
 }
 
 TEST_CASE( "fsutil: Basic path building tests", "[fsutil][SafeOutPathBuilder]" ) {
-    const auto testBasePath = GENERATE( as< tstring >(),
+    const auto testBasePath = GENERATE(
+        as< tstring >(),
         BIT7Z_STRING( "" ),
         BIT7Z_STRING( "." ),
         BIT7Z_STRING( "./" ),
@@ -799,7 +806,8 @@ TEST_CASE( "fsutil: Basic path building tests", "[fsutil][SafeOutPathBuilder]" )
         BIT7Z_STRING( "D:/out" )
     );
 
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         BIT7Z_NATIVE_STRING( "abc" ),
         BIT7Z_NATIVE_STRING( "abc/" ),
         BIT7Z_NATIVE_STRING( "folder/subfolder" ),
@@ -819,7 +827,8 @@ TEST_CASE( "fsutil: Basic path building tests", "[fsutil][SafeOutPathBuilder]" )
 #ifdef BIT7Z_PATH_SANITIZATION
 #   ifdef _WIN32
 TEST_CASE( "fsutil: Path building with invalid Windows item paths", "[fsutil][SafeOutPathBuilder]" ) {
-    const auto testBasePath = GENERATE( as< tstring >(),
+    const auto testBasePath = GENERATE(
+        as< tstring >(),
         BIT7Z_STRING( "" ),
         BIT7Z_STRING( "." ),
         BIT7Z_STRING( "/" ),
@@ -835,7 +844,8 @@ TEST_CASE( "fsutil: Path building with invalid Windows item paths", "[fsutil][Sa
         BIT7Z_STRING( "D:/out" )
     );
 
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         L"/",
         L"/abc",
         L"/abc/def",
@@ -855,12 +865,13 @@ TEST_CASE( "fsutil: Path building with invalid Windows item paths", "[fsutil][Sa
     DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
         const SafeOutPathBuilder builder{ testBasePath };
         INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
-        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitize_path( testItemPath ) );
+        REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitizePath( testItemPath ) );
     }
 }
 #   else
 TEST_CASE( "fsutil: Path building with absolute paths", "[fsutil][SafeOutPathBuilder]" ) {
-    const auto testBasePath = GENERATE( as< std::string >(),
+    const auto testBasePath = GENERATE(
+        as< std::string >(),
         "",
         ".",
         "/",
@@ -870,7 +881,8 @@ TEST_CASE( "fsutil: Path building with absolute paths", "[fsutil][SafeOutPathBui
         "out/dir"
     );
 
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         "/",
         "/abc",
         "/abc/def"
@@ -884,9 +896,9 @@ TEST_CASE( "fsutil: Path building with absolute paths", "[fsutil][SafeOutPathBui
 }
 #   endif
 
-
 TEST_CASE( "fsutil: Path building with paths with dot components", "[fsutil][SafeOutPathBuilder]" ) {
-    const auto testBasePath = GENERATE( as< tstring >(),
+    const auto testBasePath = GENERATE(
+        as< tstring >(),
         BIT7Z_STRING( "" ),
         BIT7Z_STRING( "." ),
         BIT7Z_STRING( "/" ),
@@ -903,7 +915,8 @@ TEST_CASE( "fsutil: Path building with paths with dot components", "[fsutil][Saf
     );
 
 #ifdef _WIN32
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         L".",
         L"/.",
         L"./",
@@ -911,7 +924,8 @@ TEST_CASE( "fsutil: Path building with paths with dot components", "[fsutil][Saf
         L"\\\\.\\"
     );
 #else
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         L".",
         L"/.",
         L"./",
@@ -919,7 +933,7 @@ TEST_CASE( "fsutil: Path building with paths with dot components", "[fsutil][Saf
     );
 #endif
 
-    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
+    DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ){
         const SafeOutPathBuilder builder{ testBasePath };
         INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
         REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / "" );
@@ -929,7 +943,8 @@ TEST_CASE( "fsutil: Path building with paths with dot components", "[fsutil][Saf
 }
 
 TEST_CASE( "fsutil: Path building with an empty path should return the base path", "[fsutil][SafeOutPathBuilder]" ) {
-    const auto testBasePath = GENERATE( as< tstring >(),
+    const auto testBasePath = GENERATE(
+        as< tstring >(),
         BIT7Z_STRING( "" ),
         BIT7Z_STRING( "." ),
         BIT7Z_STRING( "/" ),
@@ -953,7 +968,8 @@ TEST_CASE( "fsutil: Path building with an empty path should return the base path
 }
 #else
 TEST_CASE( "fsutil: Path building with absolute paths should fail", "[fsutil][SafeOutPathBuilder]" ) {
-    const auto testBasePath = GENERATE( as< tstring >(),
+    const auto testBasePath = GENERATE(
+        as< tstring >(),
         BIT7Z_STRING( "" ),
         BIT7Z_STRING( "." ),
         BIT7Z_STRING( "/" ),
@@ -971,7 +987,8 @@ TEST_CASE( "fsutil: Path building with absolute paths should fail", "[fsutil][Sa
     );
 
 #   ifdef _WIN32
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         L"C:\\", // Absolute paths.
         L"C:\\abc",
         L"C:\\abc\\def",
@@ -988,7 +1005,8 @@ TEST_CASE( "fsutil: Path building with absolute paths should fail", "[fsutil][Sa
         L"\\\\?\\UNC\\server\\share"
     );
 #   else
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         "/",
         "/abc",
         "/abc/def"
@@ -998,21 +1016,13 @@ TEST_CASE( "fsutil: Path building with absolute paths should fail", "[fsutil][Sa
     DYNAMIC_SECTION( quoted( testItemPath ) << " inside base path " << quoted( testBasePath ) ) {
         const SafeOutPathBuilder builder{ testBasePath };
         INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
-        REQUIRE_THROWS_MATCHES(
-            builder.buildPath( testItemPath ),
-            BitException,
-            Catch::Matchers::Predicate< BitException >(
-                []( const BitException& exception ) -> bool {
-                    return exception.code() == BitError::ItemHasAbsolutePath;
-                },
-                "Error code should be BitError::ItemHasAbsolutePath"
-            )
-        );
+        REQUIRE_THROWS_CODE( builder.buildPath( testItemPath ), BitError::ItemHasAbsolutePath );
     }
 }
 
 TEST_CASE( "fsutil: Path building with relative paths", "[fsutil][SafeOutPathBuilder]" ) {
-    const auto testBasePath = GENERATE( as< tstring >(),
+    const auto testBasePath = GENERATE(
+        as< tstring >(),
         BIT7Z_STRING( "" ),
         BIT7Z_STRING( "." ),
         BIT7Z_STRING( "/" ),
@@ -1030,7 +1040,8 @@ TEST_CASE( "fsutil: Path building with relative paths", "[fsutil][SafeOutPathBui
     );
 
 #   ifdef _WIN32
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         L"/",
         L"/abc",
         L"/abc/def",
@@ -1038,7 +1049,8 @@ TEST_CASE( "fsutil: Path building with relative paths", "[fsutil][SafeOutPathBui
         L"abc/def/"
     );
 #   else
-    const auto testItemPath = GENERATE( as< fs::path >(),
+    const auto testItemPath = GENERATE(
+        as< fs::path >(),
         "abc/",
         "abc/def/"
     );
@@ -1052,8 +1064,9 @@ TEST_CASE( "fsutil: Path building with relative paths", "[fsutil][SafeOutPathBui
 
 #   ifdef _WIN32
 TEST_CASE( "fsutil: Path building with Windows' drive-relative paths", "[fsutil][SafeOutPathBuilder]" ) {
-    SECTION ( "Simple drive-relative paths (same root as base path)" ) {
-        const auto testBasePath = GENERATE( as< tstring >(),
+    SECTION( "Simple drive-relative paths (same root as base path)" ) {
+        const auto testBasePath = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "" ),
             BIT7Z_STRING( "." ),
             BIT7Z_STRING( "/" ),
@@ -1069,7 +1082,8 @@ TEST_CASE( "fsutil: Path building with Windows' drive-relative paths", "[fsutil]
             BIT7Z_STRING( "D:/out" )
         );
 
-        const auto testItemPath = GENERATE( as< fs::path >(),
+        const auto testItemPath = GENERATE(
+            as< fs::path >(),
             L"C:",
             L"C:abc",
             L"C:abc/def/file.txt",
@@ -1109,8 +1123,10 @@ void writeSymlinkFile( const fs::path& filePath, const std::string& content ) {
 #endif
 } // namespace
 
-TEST_CASE( "fsutil: Path building with item paths containing redundant separators",
-           "[fsutil][SafeOutPathBuilder]" ) {
+TEST_CASE(
+    "fsutil: Path building with item paths containing redundant separators",
+    "[fsutil][SafeOutPathBuilder]"
+) {
     // buildPath and restoreSymlink share the same sanitize+lexically_normal pipeline,
     // so the symlink case is covered alongside buildPath rather than in a separate test case.
     SECTION( "Internal and trailing redundant separators" ) {
@@ -1119,7 +1135,8 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
         // string checks the tail without hardcoding the absolute base prefix that
         // sanitize_base_path produces, while still detecting a regression that drops
         // the lexically_normal() call.
-        const auto testItemPath = GENERATE( as< fs::path >(),
+        const auto testItemPath = GENERATE(
+            as< fs::path >(),
             BIT7Z_NATIVE_STRING( "foo//bar" ),
             BIT7Z_NATIVE_STRING( "foo///bar" ),
             BIT7Z_NATIVE_STRING( "foo///.////bar" ),
@@ -1165,7 +1182,8 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
         // the security property: buildPath / restoreSymlink either reject via
         // BitException, or strip the leading separators and join the remainder
         // under the base.
-        const auto testItemPath = GENERATE( as< fs::path >(),
+        const auto testItemPath = GENERATE(
+            as< fs::path >(),
             BIT7Z_NATIVE_STRING( "//foo" ),
             BIT7Z_NATIVE_STRING( "//foo/bar" ),
             BIT7Z_NATIVE_STRING( "///foo" ),
@@ -1183,7 +1201,7 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
 #if !defined( BIT7Z_PATH_SANITIZATION ) && !defined( _WIN32 )
             REQUIRE_THROWS_AS( builder.buildPath( testItemPath ), BitException );
 #else
-            const fs::path sanitizedTestPath = [&testItemPath]() {
+            const auto sanitizedTestPath = [ &testItemPath ]() -> fs::path {
                 const auto firstNonSeparator = testItemPath.native().find_first_not_of( BIT7Z_NATIVE_STRING( "/\\" ) );
                 return testItemPath.native().substr( firstNonSeparator );
             }();
@@ -1194,7 +1212,7 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
             } else
 #   endif
             {
-                INFO( "Expected path: " << quoted( expectedPath ) );
+                INFO( "Expected path: " << quoted( expectedPath ) )
                 REQUIRE( builder.buildPath( testItemPath ) == expectedPath );
             }
 #endif
@@ -1221,7 +1239,8 @@ TEST_CASE( "fsutil: Path building with item paths containing redundant separator
 
 TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][SafeOutPathBuilder]" ) {
     SECTION( "Basic ZipSlip attacks" ) {
-        const auto testBasePath = GENERATE( as< tstring >(),
+        const auto testBasePath = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "" ),
             BIT7Z_STRING( "." ),
             BIT7Z_STRING( ".." ),
@@ -1236,7 +1255,8 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
             BIT7Z_STRING( "C:/out/dir" )
         );
 
-        const auto slipPath = GENERATE( as< fs::path >(),
+        const auto slipPath = GENERATE(
+            as< fs::path >(),
             BIT7Z_NATIVE_STRING( "../evil.txt" ),
             BIT7Z_NATIVE_STRING( "../../evil.txt" ),
             BIT7Z_NATIVE_STRING( "../../../../etc/passwd" ),
@@ -1253,7 +1273,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         );
 
         const auto oldCurrentPath = fs::current_path();
-        fs::current_path( test::filesystem::user_dir() );
+        fs::current_path( test::filesystem::userDir() );
 
         DYNAMIC_SECTION(
             "Building output path for " << quoted( slipPath ) << " "
@@ -1261,16 +1281,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         ) {
             const SafeOutPathBuilder builder{ testBasePath };
             INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
-            REQUIRE_THROWS_MATCHES(
-                builder.buildPath( slipPath ),
-                BitException,
-                Catch::Matchers::Predicate< BitException >(
-                    []( const BitException& exception ) -> bool {
-                        return exception.code() == BitError::ItemPathOutsideOutputDirectory;
-                    },
-                    "Error code should be BitError::ItemPathOutsideOutputDirectory"
-                )
-            );
+            REQUIRE_THROWS_CODE( builder.buildPath( slipPath ), BitError::ItemPathOutsideOutputDirectory );
         }
 
         fs::current_path( oldCurrentPath );
@@ -1278,7 +1289,8 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 
 #if defined( _WIN32 ) && !defined( BIT7Z_PATH_SANITIZATION )
     SECTION( "Basic ZipSlip attacks with drive-relative path" ) {
-        const auto testBasePath = GENERATE( as< tstring >(),
+        const auto testBasePath = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "" ),
             BIT7Z_STRING( "." ),
             BIT7Z_STRING( ".." ),
@@ -1294,14 +1306,15 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         );
 
         const auto oldCurrentPath = fs::current_path();
-        fs::current_path( test::filesystem::user_dir() );
+        fs::current_path( test::filesystem::userDir() );
 
         const SafeOutPathBuilder builder{ testBasePath };
         INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
 
-        const auto slipPath = GENERATE_REF( as< fs::path >(),
+        const auto slipPath = GENERATE_REF(
+            as< fs::path >(),
             // <base path drive letter>:..
-            std::wstring{ builder.basePath().native()[0] } + BIT7Z_NATIVE_STRING( ":.." ),
+            std::wstring{ builder.basePath().native().front() } + BIT7Z_NATIVE_STRING( ":.." ),
             // Path with uncommon root drive letter different from the base path drive letter.
             L"A:.."
         );
@@ -1319,7 +1332,8 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
 
     SECTION( "Near zip attacks" ) {
 #ifdef _WIN32
-        const auto testBasePath = GENERATE( as< tstring >(),
+        const auto testBasePath = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "/" ),
             BIT7Z_STRING( "\\" ),
             BIT7Z_STRING( "C:/" ),
@@ -1329,7 +1343,8 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
         const tstring testBasePath = "/";
 #endif
 
-        const auto nearSlipPath = GENERATE( as< fs::path >(),
+        const auto nearSlipPath = GENERATE(
+            as< fs::path >(),
             BIT7Z_NATIVE_STRING( "out/dir/../../../../../../notEvil.txt" ),
             BIT7Z_NATIVE_STRING( "out/dir/../../notEvil.txt" ),
             BIT7Z_NATIVE_STRING( "out/../../notEvil.txt" ),
@@ -1354,22 +1369,26 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
     SECTION( "Edge cases (substring)" ) {
         // https://www.sonarsource.com/blog/openrefine-zip-slip/
 #ifdef _WIN32
-        const auto testBasePath = GENERATE( as< tstring >(),
+        const auto testBasePath = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "C:/Users/john" ),
             BIT7Z_STRING( "C:/Users/john/" )
         );
 
-        const auto testItemPath = GENERATE( as< fs::path >(),
+        const auto testItemPath = GENERATE(
+            as< fs::path >(),
             L"C:/Users/johnny",
             L"C:/Users/johnny/.ssh/id_rsa"
         );
 #else
-        const auto testBasePath = GENERATE( as< tstring >(),
+        const auto testBasePath = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "/home/john" ),
             BIT7Z_STRING( "/home/john/" )
         );
 
-        const auto testItemPath = GENERATE( as< fs::path >(),
+        const auto testItemPath = GENERATE(
+            as< fs::path >(),
             "/home/johnny",
             "/home/johnny/.ssh/id_rsa"
         );
@@ -1383,7 +1402,7 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
             const SafeOutPathBuilder builder{ testBasePath };
             INFO( "Sanitized base path: " << quoted( builder.basePath() ) )
 #ifdef _WIN32
-            REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitize_path( testItemPath ) );
+            REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / sanitizePath( testItemPath ) );
 #else
             REQUIRE( builder.buildPath( testItemPath ) == builder.basePath() / testItemPath.relative_path() );
 #endif
@@ -1392,7 +1411,8 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
     }
 
     SECTION( "Edge cases (inside)" ) {
-        const auto testBasePath = GENERATE( as< tstring >(),
+        const auto testBasePath = GENERATE(
+            as< tstring >(),
             BIT7Z_STRING( "" ),
             BIT7Z_STRING( "." ),
             BIT7Z_STRING( "/" ),
@@ -1408,7 +1428,8 @@ TEST_CASE( "fsutil: Check if extracted path is outside base path", "[fsutil][Saf
             BIT7Z_STRING( "D:/out" )
         );
 
-        const auto testItemPath = GENERATE( as< fs::path >(),
+        const auto testItemPath = GENERATE(
+            as< fs::path >(),
             BIT7Z_NATIVE_STRING( "subdir/../legal.txt" ),
             BIT7Z_NATIVE_STRING( "a/b/c/../notEvil.txt" ),
             BIT7Z_NATIVE_STRING( "a/b/c/../../notEvil.txt" ),

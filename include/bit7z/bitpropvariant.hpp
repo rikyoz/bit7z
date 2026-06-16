@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,12 +10,14 @@
 #ifndef BITPROPVARIANT_HPP
 #define BITPROPVARIANT_HPP
 
-#include <chrono>
-#include <cstdint>
-
 #include "bitdefines.hpp"
 #include "bittypes.hpp"
 #include "bitwindows.hpp"
+
+#include <chrono>
+#include <cstdint>
+#include <string>
+#include <type_traits>
 
 namespace bit7z {
 
@@ -27,7 +29,7 @@ using time_type = std::chrono::time_point< std::chrono::system_clock >;
 /**
  * @brief The BitProperty enum represents the archive/item properties that 7-zip can read or write.
  */
-enum struct BitProperty : PROPID {
+enum struct BitProperty : PROPID { // NOLINT(*-enum-size)
     NoProperty = 0,         ///<
     MainSubfile,            ///<
     HandlerItemIndex,       ///<
@@ -127,9 +129,18 @@ enum struct BitProperty : PROPID {
 };
 
 /**
+ * @brief Returns the name of the given archive/item property.
+ *
+ * @param property  the property whose name will be returned.
+ *
+ * @return the name of the given property.
+ */
+auto to_string( BitProperty property ) -> std::string;
+
+/**
  * @brief The BitPropVariantType enum represents the possible types that a BitPropVariant can store.
  */
-enum struct BitPropVariantType : uint32_t {
+enum struct BitPropVariantType : std::uint8_t {
     Empty,      ///< Empty BitPropVariant type
     Bool,       ///< Boolean BitPropVariant type
     String,     ///< String BitPropVariant type
@@ -147,11 +158,11 @@ enum struct BitPropVariantType : uint32_t {
 /**
  * @brief The BitPropVariant struct is a light extension to the WinAPI PROPVARIANT struct providing useful getters.
  */
-struct BitPropVariant final : public PROPVARIANT {
+struct BitPropVariant final : PROPVARIANT {
         /**
          * @brief Constructs an empty BitPropVariant object.
          */
-        BitPropVariant();
+        BitPropVariant() noexcept;
 
         /**
          * @brief Copy constructs this BitPropVariant from another one.
@@ -179,70 +190,70 @@ struct BitPropVariant final : public PROPVARIANT {
          *
          * @param value the null-terminated C wide string value of the BitPropVariant
          */
-        explicit BitPropVariant( const wchar_t* value );
+        explicit BitPropVariant( const sevenzip_string::value_type* value );
 
         /**
-         * @brief Constructs a string BitPropVariant from a wstring
+         * @brief Constructs a string BitPropVariant from a sevenzip_string
          *
-         * @param value the wstring value of the BitPropVariant
+         * @param value the sevenzip_string value of the BitPropVariant
          */
-        explicit BitPropVariant( const std::wstring& value );
+        explicit BitPropVariant( const sevenzip_string& value );
 
         /**
          * @brief Constructs an 8-bit unsigned integer BitPropVariant
          *
-         * @param value the uint8_t value of the BitPropVariant
+         * @param value the std::uint8_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint8_t value ) noexcept;
+        explicit BitPropVariant( std::uint8_t value ) noexcept;
 
         /**
          * @brief Constructs a 16-bit unsigned integer BitPropVariant
          *
-         * @param value the uint16_t value of the BitPropVariant
+         * @param value the std::uint16_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint16_t value ) noexcept;
+        explicit BitPropVariant( std::uint16_t value ) noexcept;
 
         /**
          * @brief Constructs a 32-bit unsigned integer BitPropVariant
          *
-         * @param value the uint32_t value of the BitPropVariant
+         * @param value the std::uint32_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint32_t value ) noexcept;
+        explicit BitPropVariant( std::uint32_t value ) noexcept;
 
         /**
          * @brief Constructs a 64-bit unsigned integer BitPropVariant
          *
-         * @param value the uint64_t value of the BitPropVariant
+         * @param value the std::uint64_t value of the BitPropVariant
          */
-        explicit BitPropVariant( uint64_t value ) noexcept;
+        explicit BitPropVariant( std::uint64_t value ) noexcept;
 
         /**
          * @brief Constructs an 8-bit integer BitPropVariant
          *
-         * @param value the int8_t value of the BitPropVariant
+         * @param value the std::int8_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int8_t value ) noexcept;
+        explicit BitPropVariant( std::int8_t value ) noexcept;
 
         /**
          * @brief Constructs a 16-bit integer BitPropVariant
          *
-         * @param value the int16_t value of the BitPropVariant
+         * @param value the std::int16_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int16_t value ) noexcept;
+        explicit BitPropVariant( std::int16_t value ) noexcept;
 
         /**
          * @brief Constructs a 32-bit integer BitPropVariant
          *
-         * @param value the int32_t value of the BitPropVariant
+         * @param value the std::int32_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int32_t value ) noexcept;
+        explicit BitPropVariant( std::int32_t value ) noexcept;
 
         /**
          * @brief Constructs a 64-bit integer BitPropVariant
          *
-         * @param value the int64_t value of the BitPropVariant
+         * @param value the std::int64_t value of the BitPropVariant
          */
-        explicit BitPropVariant( int64_t value ) noexcept;
+        explicit BitPropVariant( std::int64_t value ) noexcept;
 
         /**
          * @brief Constructs a FILETIME BitPropVariant
@@ -254,7 +265,7 @@ struct BitPropVariant final : public PROPVARIANT {
         /**
          * @brief BitPropVariant destructor.
          *
-         * @note This is not virtual to maintain the same memory layout of the base struct!
+         * @note This is not virtual to maintain the same memory layout of the base struct.
          */
         ~BitPropVariant();
 
@@ -279,7 +290,7 @@ struct BitPropVariant final : public PROPVARIANT {
         /**
          * @brief Assignment operator
          *
-         * @note this will work only for T types for which a BitPropVariant constructor is defined!
+         * @note this will work only for T types for which a BitPropVariant constructor is defined.
          *
          * @param value the value to be assigned to the object
          *
@@ -310,52 +321,58 @@ struct BitPropVariant final : public PROPVARIANT {
         BIT7Z_NODISCARD auto getNativeString() const -> native_string;
 
         /**
+         * @return the raw string value of this variant
+         * (it throws an exception if the variant is not a string).
+         */
+        BIT7Z_NODISCARD auto getRawString() const -> sevenzip_string;
+
+        /**
          * @return the 8-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt8() const -> uint8_t;
+        BIT7Z_NODISCARD auto getUInt8() const -> std::uint8_t;
 
         /**
          * @return the 16-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8 or 16-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt16() const -> uint16_t;
+        BIT7Z_NODISCARD auto getUInt16() const -> std::uint16_t;
 
         /**
          * @return the 32-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8, 16 or 32-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt32() const -> uint32_t;
+        BIT7Z_NODISCARD auto getUInt32() const -> std::uint32_t;
 
         /**
          * @return the 64-bit unsigned integer value of this variant
          * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit unsigned integer).
          */
-        BIT7Z_NODISCARD auto getUInt64() const -> uint64_t;
+        BIT7Z_NODISCARD auto getUInt64() const -> std::uint64_t;
 
         /**
          * @return the 8-bit integer value of this variant
          * (it throws an exception if the variant is not an 8-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt8() const -> int8_t;
+        BIT7Z_NODISCARD auto getInt8() const -> std::int8_t;
 
         /**
          * @return the 16-bit integer value of this variant
          * (it throws an exception if the variant is not an 8 or 16-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt16() const -> int16_t;
+        BIT7Z_NODISCARD auto getInt16() const -> std::int16_t;
 
         /**
          * @return the 32-bit integer value of this variant
          * (it throws an exception if the variant is not an 8, 16 or 32-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt32() const -> int32_t;
+        BIT7Z_NODISCARD auto getInt32() const -> std::int32_t;
 
         /**
          * @return the 64-bit integer value of this variant
          * (it throws an exception if the variant is not an 8, 16, 32 or 64-bit integer).
          */
-        BIT7Z_NODISCARD auto getInt64() const -> int64_t;
+        BIT7Z_NODISCARD auto getInt64() const -> std::int64_t;
 
         /**
          * @return the FILETIME value of this variant
@@ -446,16 +463,28 @@ struct BitPropVariant final : public PROPVARIANT {
 
     private:
         void internalClear() noexcept;
-
-        friend auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
-
-        friend auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
 };
 
+/**
+ * @brief Checks whether two BitPropVariant objects have the same type and value.
+ *
+ * @param lhs  the first variant to be compared.
+ * @param rhs  the second variant to be compared.
+ *
+ * @return true if and only if the two variants have the same type and value.
+ */
 auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
 
+/**
+ * @brief Checks whether two BitPropVariant objects differ in type or value.
+ *
+ * @param lhs  the first variant to be compared.
+ * @param rhs  the second variant to be compared.
+ *
+ * @return true if and only if the two variants differ in type or value.
+ */
 auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITPROPVARIANT_HPP

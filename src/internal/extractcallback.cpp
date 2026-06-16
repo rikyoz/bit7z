@@ -3,27 +3,39 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <exception>
-
-#include "bitexception.hpp"
 #include "internal/extractcallback.hpp"
+
+#include "bitabstractarchivehandler.hpp"
+#include "bitexception.hpp"
+#include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "internal/callback.hpp"
 #include "internal/operationcategory.hpp"
+#include "internal/operationresult.hpp"
 #include "internal/stringutil.hpp"
+
+#include <7zip/Archive/IArchive.h>
+
+#include <cstdint>
+#include <exception>
+#include <stdexcept>
+#include <string>
 
 namespace bit7z {
 
-ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive )
+ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive, FilterCallback filterCallback )
     : Callback( inputArchive.handler() ),
       mInputArchive( inputArchive ),
       mExtractMode( ExtractMode::Extract ),
-      mIsLastItemEncrypted{ false } {}
+      mIsLastItemEncrypted{ false },
+      mFilterCallback{ std::move( filterCallback ) } {}
 
 auto ExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
     releaseStream();
@@ -68,7 +80,11 @@ try {
     *outStream = nullptr;
     releaseStream();
 
-    auto isEncrypted = itemProperty( index, BitProperty::Encrypted );
+    // The index comes from 7-Zip and is guaranteed valid, so we build the item once without
+    // re-validating it, and reuse it for the encrypted check, the filter callback, and getOutStream.
+    const auto item = mInputArchive.itemAtUnchecked( index );
+
+    const auto isEncrypted = item.itemProperty( BitProperty::Encrypted );
     if ( isEncrypted.isBool() ) {
         mIsLastItemEncrypted = isEncrypted.getBool();
     }
@@ -77,17 +93,30 @@ try {
         return S_OK;
     }
 
-    return getOutStream( index, outStream );
-} catch ( const BitException& ex ) {
-    mErrorException = std::make_exception_ptr( ex );
-    return ex.hresultCode();
+    if ( mFilterCallback ) {
+        const auto filterResult = mFilterCallback( item );
+        if ( filterResult == FilterResult::SkipItem ) {
+            return S_OK;
+        }
+        if ( filterResult == FilterResult::AbortOperation ) {
+            return E_ABORT;
+        }
+        // if filterResult == FilterResult::ProcessItem, continue.
+    }
+
+    return getOutStream( item, outStream );
+} catch ( const BitException& exception ) {
+    mErrorException = std::make_exception_ptr( exception );
+    return exception.hresultCode();
 } catch ( const std::runtime_error& ) {
     mErrorException = std::make_exception_ptr(
-        BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) ) );
+        BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) )
+    );
     return E_ABORT;
 }
 
-auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> OperationResult {
+namespace {
+auto mapOperationResult( Int32 operationResult, bool isLastItemEncrypted ) -> OperationResult {
     if ( isLastItemEncrypted ) {
         if ( operationResult == NOperationResult::kCRCError ) {
             return OperationResult::CRCErrorEncrypted;
@@ -100,6 +129,7 @@ auto map_operation_result( Int32 operationResult, bool isLastItemEncrypted ) -> 
 
     return static_cast< OperationResult >( operationResult );
 }
+} // namespace
 
 constexpr auto kTestFailed = "Failed to test the archive";
 constexpr auto kExtractFailed = "Failed to extract the archive";
@@ -108,10 +138,10 @@ COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetOperationResult( Int32 operationResult ) noexcept {
     using namespace NArchive::NExtract;
 
-    auto result = map_operation_result( operationResult, mIsLastItemEncrypted );
+    const auto result = mapOperationResult( operationResult, mIsLastItemEncrypted );
     if ( result != OperationResult::Success ) {
         const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
-        auto error = make_error_code( result );
+        const auto error = make_error_code( result );
         mErrorException = std::make_exception_ptr( BitException( msg, error ) );
     }
 
@@ -128,7 +158,7 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
 
         if ( pass.empty() ) {
             const auto* msg = mExtractMode == ExtractMode::Test ? kTestFailed : kExtractFailed;
-            auto error = make_error_code( OperationResult::EmptyPassword );
+            const auto error = make_error_code( OperationResult::EmptyPassword );
             mErrorException = std::make_exception_ptr( BitException( msg, error ) );
             return E_FAIL;
         }
@@ -137,6 +167,22 @@ STDMETHODIMP ExtractCallback::CryptoGetTextPassword( BSTR* password ) noexcept {
     }
 
     return StringToBstr( pass.c_str(), password );
+}
+
+auto ExtractCallback::inputArchive() const -> const BitInputArchive& {
+    return mInputArchive;
+}
+
+auto ExtractCallback::errorException() const -> const std::exception_ptr& {
+    return mErrorException;
+}
+
+auto ExtractCallback::extractionAttempted() const -> bool {
+    return true;
+}
+
+auto ExtractCallback::extractMode() const noexcept -> ExtractMode {
+    return mExtractMode;
 }
 
 } // namespace bit7z

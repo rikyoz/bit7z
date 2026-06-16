@@ -1,0 +1,113 @@
+name: Test on Ubuntu 22.04
+on:
+  pull_request:
+  push:
+    paths:
+    - '.github/actions/**'
+    - '.github/workflows/test_ubuntu22.yml'
+    - 'cmake/**'
+    - 'include/**'
+    - 'src/**'
+    - 'tests/**'
+    - 'CMakeLists.txt'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_linux:
+    runs-on: ${{ matrix.os }}
+    if: |
+      !contains(github.event.head_commit.message, '[test-windows]')
+      && !contains(github.event.head_commit.message, '[test-macos]')
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [ubuntu-22.04, ubuntu-22.04-arm]
+        arch: [x64, arm64]
+        c_compiler: [gcc-9, gcc-12, clang-13, clang-15]
+        bit7z_7zip_version: [16.02, 22.01]
+        bit7z_auto_format: [OFF, ON]
+        bit7z_build_for_p7zip: [OFF, ON]
+        bit7z_detect_from_extension: [OFF, ON]
+        bit7z_link_libcpp: [OFF, ON]
+        bit7z_path_sanitization: [OFF, ON]
+        bit7z_regex_matching: [OFF, ON]
+        include:
+          - c_compiler: gcc-9
+            cpp_compiler: g++-9
+            enable_sanitizers: OFF
+          - c_compiler: gcc-12
+            cpp_compiler: g++-12
+            enable_sanitizers: ON
+          - c_compiler: clang-13
+            cpp_compiler: clang++-13
+            enable_sanitizers: OFF
+          - c_compiler: clang-15
+            cpp_compiler: clang++-15
+            enable_sanitizers: ON
+        exclude:
+          - os: ubuntu-22.04
+            arch: arm64
+          - os: ubuntu-22.04-arm
+            arch: x64
+          - c_compiler: gcc-9
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-12
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-12
+            bit7z_7zip_version: 16.02
+          - c_compiler: clang-15
+            bit7z_7zip_version: 16.02
+          - bit7z_7zip_version: 16.02
+            bit7z_build_for_p7zip: OFF
+          - bit7z_7zip_version: 22.01
+            bit7z_build_for_p7zip: ON
+          - bit7z_auto_format: OFF
+            bit7z_detect_from_extension: ON
+
+    name: |
+      Ubuntu (${{ matrix.arch }}), ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_path_sanitization == 'ON') && ', PATH_SANITIZATION' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}${{ (matrix.bit7z_build_for_p7zip == 'ON') && ', BUILD_FOR_P7ZIP' || '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    # Custom version of https://github.com/mjp41/workaround8649/blob/main/action.yml for ubuntu-22.04-arm
+    - name: Update toolchains
+      shell: bash
+      if: ${{ matrix.os == 'ubuntu-22.04-arm' && (matrix.c_compiler == 'clang-13' || (matrix.c_compiler == 'clang-14' && matrix.bit7z_link_libcpp == 'OFF')) }}
+      run: sudo rm -f /etc/apt/sources.list.d/ubuntu-toolchain-r-ubuntu-test-jammy.list && sudo apt-get update && sudo apt-get install -y --allow-downgrades libc6=2.35-* libc6-dev=2.35-* libstdc++6=12.3.0-* libgcc-s1=12.3.0-*
+
+    - name: Fix missing g++-9
+      shell: bash
+      if: ${{ contains(matrix.c_compiler, 'gcc-9') }}
+      run: sudo apt-get update && sudo apt-get install gcc-9 g++-9 -y
+
+    - name: Fix missing clang-13
+      shell: bash
+      if: ${{ matrix.arch == 'arm64' && contains(matrix.c_compiler, 'clang-13') }}
+      run: sudo apt-get install clang-13 -y
+
+    - name: Fix missing libc++ and libc++abi packages for clang-13 compiler
+      shell: bash
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-13') }}
+      run: sudo apt-get purge libc++-14-dev libc++abi-14-dev -y && sudo apt-get install libc++-13-dev libc++abi-13-dev -y
+      
+    - name: Fix missing libc++ and libc++abi packages for clang-15 compiler
+      shell: bash
+      if: ${{ matrix.bit7z_link_libcpp == 'ON' && contains(matrix.c_compiler, 'clang-15') }}
+      run: sudo apt-get purge libc++-14-dev libc++abi-14-dev -y && sudo apt-get install libc++-15-dev libc++abi-15-dev -y
+
+    - name: Building and testing bit7z
+      uses: ./.github/actions/ci_action
+      with:
+        arch: ${{ matrix.arch }}
+        c_compiler: ${{ matrix.c_compiler }}
+        cpp_compiler: ${{ matrix.cpp_compiler }}
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
+        enable_sanitizers: ${{ matrix.enable_sanitizers }}
+        build_flags: |-
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_BUILD_FOR_P7ZIP=${{ matrix.bit7z_build_for_p7zip }} -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

@@ -3,18 +3,23 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include <iterator>
-
 #include "internal/cstdoutstream.hpp"
+
 #include "internal/streamutil.hpp"
-#include "internal/util.hpp"
+#include "internal/cpp26.hpp"
+
+#include <algorithm>
+#include <cstdint>
+#include <ios>
+#include <iterator>
+#include <ostream>
 
 namespace bit7z {
 
@@ -32,10 +37,10 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 
     const auto oldPos = mOutputStream.tellp();
 
-    mOutputStream.write( static_cast< const char* >( data ), clamp_cast< std::streamsize >( size ) ); //-V2571
+    mOutputStream.write( static_cast< const char* >( data ), cpp26::saturating_cast< std::streamsize >( size ) ); //-V2571
 
     if ( processedSize != nullptr ) {
-        *processedSize = static_cast< uint32_t >( mOutputStream.tellp() - oldPos );
+        *processedSize = static_cast< std::uint32_t >( mOutputStream.tellp() - oldPos );
     }
 
     return mOutputStream.bad() ? HRESULT_FROM_WIN32( ERROR_WRITE_FAULT ) : S_OK;
@@ -44,7 +49,7 @@ STDMETHODIMP CStdOutStream::Write( const void* data, UInt32 size, UInt32* proces
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
-    RINOK( to_seekdir( seekOrigin, way ) )
+    RINOK( toSeekdir( seekOrigin, way ) ) //-V3504
 
     mOutputStream.seekp( static_cast< std::ostream::off_type >( offset ), way );
 
@@ -53,7 +58,7 @@ STDMETHODIMP CStdOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPo
     }
 
     if ( newPosition != nullptr ) {
-        *newPosition = static_cast< uint64_t >( mOutputStream.tellp() );
+        *newPosition = static_cast< std::uint64_t >( mOutputStream.tellp() );
     }
 
     return S_OK;
@@ -66,13 +71,13 @@ STDMETHODIMP CStdOutStream::SetSize( UInt64 newSize ) noexcept {
     }
 
     const auto oldPos = mOutputStream.tellp();
-    mOutputStream.seekp( 0, ostream::end );
+    mOutputStream.seekp( 0, std::ostream::end );
 
     if ( !mOutputStream ) {
         return E_FAIL;
     }
 
-    const auto currentPos = static_cast< uint64_t >( mOutputStream.tellp() );
+    const auto currentPos = static_cast< std::uint64_t >( mOutputStream.tellp() );
     if ( newSize < currentPos ) {
         return E_FAIL;
     }

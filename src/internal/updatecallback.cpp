@@ -3,15 +3,22 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "internal/cfileoutstream.hpp"
 #include "internal/updatecallback.hpp"
+
+#include "bitexception.hpp"
+#include "bitoutputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
+#include "internal/callback.hpp"
+#include "internal/cfileoutstream.hpp"
 #include "internal/stringutil.hpp"
 #include "internal/util.hpp"
 
@@ -72,13 +79,13 @@ STDMETHODIMP UpdateCallback::GetProperty( UInt32 index, PROPID propId, PROPVARIA
     *value = prop;
     prop.bstrVal = nullptr;
     return S_OK;
-} catch( const BitException& ex ) {
-    return ex.hresultCode();
+} catch ( const BitException& exception ) {
+    return exception.hresultCode();
 }
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP UpdateCallback::GetStream( UInt32 index, ISequentialInStream** inStream ) noexcept {
-    RINOK( finalize() )
+    RINOK( finalize() ) //-V3504
 
     if ( mHandler.fileCallback() ) {
         const BitPropVariant filePath = mOutputArchive.outputItemProperty( index, BitProperty::Path );
@@ -103,22 +110,24 @@ STDMETHODIMP UpdateCallback::GetVolumeStream( UInt32 index, ISequentialOutStream
         res.insert( res.begin(), 3 - res.length(), BIT7Z_STRING( '0' ) );
     }
 
-    const tstring fileName = BIT7Z_STRING( '.' ) + res;// + mVolExt;
+    const tstring fileName = BIT7Z_STRING( '.' ) + res; // + mVolExt;
 
     try {
         auto stream = bit7z::make_com< CFileOutStream >( fileName );
         *volumeStream = stream.Detach();
-    } catch ( const BitException& ex ) {
-        return ex.nativeCode();
+    } catch ( const BitException& exception ) {
+        return exception.nativeCode();
     }
     return S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP UpdateCallback::GetUpdateItemInfo( UInt32 index,
-                                                Int32* newData,
-                                                Int32* newProperties,
-                                                UInt32* indexInArchive ) noexcept {
+STDMETHODIMP UpdateCallback::GetUpdateItemInfo(
+    UInt32 index,
+    Int32* newData,
+    Int32* newProperties,
+    UInt32* indexInArchive
+) noexcept {
     if ( newData != nullptr ) {
         *newData = static_cast< Int32 >( mOutputArchive.hasNewData( index ) ); //1 = true, 0 = false;
     }

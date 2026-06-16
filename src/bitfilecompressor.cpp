@@ -3,21 +3,29 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitfilecompressor.hpp"
+
+#include "bit7zlibrary.hpp"
+#include "bitcompressor.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
-#include "bitfilecompressor.hpp"
+#include "bitformat.hpp"
 #include "bitoutputarchive.hpp"
+#include "bittypes.hpp"
 #include "internal/fs.hpp"
 
-using namespace std;
-using namespace bit7z;
+#include <ostream>
+#include <map>
+#include <vector>
+
+namespace bit7z {
 
 BitFileCompressor::BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFormat& format )
     : BitCompressor( lib, format ) {}
@@ -25,6 +33,18 @@ BitFileCompressor::BitFileCompressor( const Bit7zLibrary& lib, const BitInOutFor
 /* from filesystem to filesystem */
 
 void BitFileCompressor::compress( const std::vector< tstring >& inPaths, const tstring& outFile ) const {
+    if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+        throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
+    }
+    BitOutputArchive outputArchive{ *this, outFile };
+    outputArchive.addItems( inPaths );
+    outputArchive.compressTo( outFile );
+}
+
+void BitFileCompressor::compress(
+    const std::vector< std::pair< tstring, tstring > >& inPaths,
+    const tstring& outFile
+) const {
     if ( inPaths.size() > 1 && !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
@@ -51,8 +71,12 @@ void BitFileCompressor::compressFiles( const std::vector< tstring >& inFiles, co
     outputArchive.compressTo( outFile );
 }
 
-void BitFileCompressor::compressFiles( const tstring& inDir, const tstring& outFile,
-                                       bool recursive, const tstring& filter ) const {
+void BitFileCompressor::compressFiles(
+    const tstring& inDir,
+    const tstring& outFile,
+    bool recursive,
+    const tstring& filter
+) const {
     if ( !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
@@ -70,10 +94,12 @@ void BitFileCompressor::compressDirectory( const tstring& inDir, const tstring& 
     outputArchive.compressTo( outFile );
 }
 
-void BitFileCompressor::compressDirectoryContents( const tstring& inDir,
-                                                   const tstring& outFile,
-                                                   bool recursive,
-                                                   const tstring& filter ) const {
+void BitFileCompressor::compressDirectoryContents(
+    const tstring& inDir,
+    const tstring& outFile,
+    bool recursive,
+    const tstring& filter
+) const {
     if ( !compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         throw BitException( "Cannot compress multiple files", make_error_code( BitError::UnsupportedOperation ) );
     }
@@ -101,3 +127,5 @@ void BitFileCompressor::compress( const std::map< tstring, tstring >& inPaths, s
     outputArchive.addItems( inPaths );
     outputArchive.compressTo( outStream );
 }
+
+} // namespace bit7z

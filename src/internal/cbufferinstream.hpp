@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,11 +19,9 @@
 
 namespace bit7z {
 
-using std::vector;
-
 class CBufferInStream final : public IInStream, public CMyUnknownImp {
     public:
-        explicit CBufferInStream( const vector< byte_t >& inBuffer );
+        explicit CBufferInStream( const buffer_t& inBuffer );
 
         CBufferInStream( const CBufferInStream& ) = delete;
 
@@ -41,13 +39,13 @@ class CBufferInStream final : public IInStream, public CMyUnknownImp {
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP1( IInStream )  //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
 
     private:
         const buffer_t& mBuffer;
         buffer_t::const_iterator mCurrentPosition;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // CBUFFERINSTREAM_HPP

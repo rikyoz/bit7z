@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,10 +10,21 @@
 #ifndef BITARCHIVEREADER_HPP
 #define BITARCHIVEREADER_HPP
 
+#include "bit7zlibrary.hpp"
 #include "bitabstractarchiveopener.hpp"
 #include "bitarchiveiteminfo.hpp"
+#include "bitdefines.hpp"
 #include "bitexception.hpp"
+#include "bitformat.hpp"
 #include "bitinputarchive.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+
+#include <cstdint>
+#include <istream>
+#include <map>
+#include <system_error>
+#include <vector>
 
 struct IInArchive;
 struct IOutArchive;
@@ -41,11 +52,13 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @param format        the format of the input archive.
          * @param password      (optional) the password needed for opening the input archive.
          */
-        BitArchiveReader( const Bit7zLibrary& lib,
-                          const tstring& inArchive,
-                          ArchiveStartOffset archiveStart,
-                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                          const tstring& password = {} );
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const tstring& inArchive,
+            ArchiveStartOffset archiveStart,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveReader object, opening the input file archive.
@@ -60,10 +73,12 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @param format        the format of the input archive.
          * @param password      (optional) the password needed for opening the input archive.
          */
-        BitArchiveReader( const Bit7zLibrary& lib,
-                          const tstring& inArchive,
-                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                          const tstring& password = {} );
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const tstring& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveReader object, opening the archive in the input buffer.
@@ -80,11 +95,27 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @param format        the format of the input archive.
          * @param password      (optional) the password needed for opening the input archive.
          */
-        BitArchiveReader( const Bit7zLibrary& lib,
-                          const buffer_t& inArchive,
-                          ArchiveStartOffset archiveStart,
-                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                          const tstring& password = {} );
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const buffer_t& inArchive,
+            ArchiveStartOffset archiveStart,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The reader keeps the archive open and reads the buffer on later extraction,
+         * so the buffer must outlive the BitArchiveReader; a temporary would dangle.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            ArchiveStartOffset archiveStart,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        ) = delete;
 
         /**
          * @brief Constructs a BitArchiveReader object, opening the archive in the input buffer.
@@ -99,10 +130,25 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @param format        the format of the input archive.
          * @param password      (optional) the password needed for opening the input archive.
          */
-        BitArchiveReader( const Bit7zLibrary& lib,
-                          const std::vector< byte_t >& inArchive,
-                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                          const tstring& password = {} );
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const buffer_t& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Deleted overload preventing the use of a temporary input buffer.
+         *
+         * The reader keeps the archive open and reads the buffer on later extraction,
+         * so the buffer must outlive the BitArchiveReader; a temporary would dangle.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            buffer_t&& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        ) = delete;
 
         /**
          * @brief Constructs a BitArchiveReader object, opening the archive from the standard input stream.
@@ -119,11 +165,13 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @param format        the format of the input archive.
          * @param password      (optional) the password needed for opening the input archive.
          */
-        BitArchiveReader( const Bit7zLibrary& lib,
-                          std::istream& inArchive,
-                          ArchiveStartOffset archiveStart,
-                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                          const tstring& password = {} );
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            std::istream& inArchive,
+            ArchiveStartOffset archiveStart,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
 
         /**
          * @brief Constructs a BitArchiveReader object, opening the archive from the standard input stream.
@@ -138,10 +186,94 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          * @param format        the format of the input archive.
          * @param password      (optional) the password needed for opening the input archive.
          */
-        BitArchiveReader( const Bit7zLibrary& lib,
-                          std::istream& inArchive,
-                          const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
-                          const tstring& password = {} );
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            std::istream& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Constructs a BitArchiveReader object, opening the main subfile of the given archive.
+         *
+         * @note The constructor will throw an exception if the format of the input archive doesn't have a main subfile.
+         *
+         * @param lib       the 7z library used.
+         * @param inArchive the input archive containing a main subfile.
+         * @param format    the format of the main subfile.
+         * @param password  (optional) the password needed for opening the main subfile.
+         *
+         * @throws BitException if the format of the input archive doesn't have a main subfile.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const BitInputArchive& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Constructs a BitArchiveReader object, opening the main subfile of the given archive.
+         *
+         * @note The constructor will throw an exception if the format of the input archive doesn't have a main subfile.
+         *
+         * @param lib           the 7z library used.
+         * @param inArchive     the input archive containing a main subfile.
+         * @param archiveStart  whether to search for the archive's start throughout the entire subfile stream
+         *                      or only at the beginning.
+         * @param format        the format of the main subfile.
+         * @param password      (optional) the password needed for opening the main subfile.
+         *
+         * @throws BitException if the format of the input archive doesn't have a main subfile.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const BitInputArchive& inArchive,
+            ArchiveStartOffset archiveStart,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Constructs a BitArchiveReader object, opening the subfile at the specified index of the given archive.
+         *
+         * @param lib           the 7z library used.
+         * @param inArchive     the input archive containing the desired subfile.
+         * @param subfileIndex  the index of the subfile within the input archive.
+         * @param format        the format of the subfile.
+         * @param password      (optional) the password needed for opening the subfile.
+         *
+         * @throws BitException if the format of the input archive doesn't support subfile streams.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const BitInputArchive& inArchive,
+            std::uint32_t subfileIndex,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
+
+        /**
+         * @brief Constructs a BitArchiveReader object, opening the subfile at the specified index of the given archive.
+         *
+         * @param lib           the 7z library used.
+         * @param inArchive     the input archive containing the desired subfile.
+         * @param subfileIndex  the index of the subfile within the input archive.
+         * @param archiveStart  whether to search for the archive's start throughout the entire subfile stream
+         *                      or only at the beginning.
+         * @param format        the format of the subfile.
+         * @param password      (optional) the password needed for opening the subfile.
+         *
+         * @throws BitException if the format of the input archive doesn't support subfile streams.
+         */
+        BitArchiveReader(
+            const Bit7zLibrary& lib,
+            const BitInputArchive& inArchive,
+            std::uint32_t subfileIndex,
+            ArchiveStartOffset archiveStart,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT,
+            const tstring& password = {}
+        );
 
         BitArchiveReader( const BitArchiveReader& ) = delete;
 
@@ -161,32 +293,41 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @return a map of all the available (i.e., non-empty) archive properties and their respective values.
          */
-        BIT7Z_NODISCARD auto archiveProperties() const -> map< BitProperty, BitPropVariant >;
+        BIT7Z_NODISCARD auto archiveProperties() const -> std::map< BitProperty, BitPropVariant >;
 
         /**
          * @return a vector of all the archive items as BitArchiveItem objects.
          */
-        BIT7Z_NODISCARD auto items() const -> vector< BitArchiveItemInfo >;
+        BIT7Z_NODISCARD auto items() const -> std::vector< BitArchiveItemInfo >;
+
+        /**
+         * Gets the items whose paths match the given wildcard pattern.
+         *
+         * @param pattern a wildcard pattern.
+         *
+         * @return the items whose paths match the given wildcard pattern.
+         */
+        BIT7Z_NODISCARD auto itemsMatching( const tstring& pattern ) const -> std::vector< BitArchiveItemInfo >;
 
         /**
          * @return the number of folders contained in the archive.
          */
-        BIT7Z_NODISCARD auto foldersCount() const -> uint32_t;
+        BIT7Z_NODISCARD auto foldersCount() const -> std::uint32_t;
 
         /**
          * @return the number of files contained in the archive.
          */
-        BIT7Z_NODISCARD auto filesCount() const -> uint32_t;
+        BIT7Z_NODISCARD auto filesCount() const -> std::uint32_t;
 
         /**
          * @return the total uncompressed size of the archive content.
          */
-        BIT7Z_NODISCARD auto size() const -> uint64_t;
+        BIT7Z_NODISCARD auto size() const -> std::uint64_t;
 
         /**
          * @return the total compressed size of the archive content.
          */
-        BIT7Z_NODISCARD auto packSize() const -> uint64_t;
+        BIT7Z_NODISCARD auto packSize() const -> std::uint64_t;
 
         /**
          * @return true if and only if the archive has at least one encrypted item.
@@ -201,7 +342,7 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
         /**
          * @return the number of volumes composing the archive.
          */
-        BIT7Z_NODISCARD auto volumesCount() const -> uint32_t;
+        BIT7Z_NODISCARD auto volumesCount() const -> std::uint32_t;
 
         /**
          * @return true if and only if the archive is composed by multiple volumes.
@@ -226,14 +367,16 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          */
         template< typename T >
         BIT7Z_NODISCARD
-        static auto isHeaderEncrypted( const Bit7zLibrary& lib,
-                                       T&& inArchive,
-                                       const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) -> bool {
+        static auto isHeaderEncrypted(
+            const Bit7zLibrary& lib,
+            T&& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT
+        ) noexcept -> bool {
             try {
                 const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
                 return false;
-            } catch ( const BitException& ex ) {
-                return isOpenEncryptedError( ex.code() );
+            } catch ( const BitException& exception ) {
+                return isOpenEncryptedError( exception.code() );
             }
         }
 
@@ -255,23 +398,25 @@ class BitArchiveReader final : public BitAbstractArchiveOpener, public BitInputA
          */
         template< typename T >
         BIT7Z_NODISCARD
-        static auto isEncrypted( const Bit7zLibrary& lib,
-                                 T&& inArchive,
-                                 const BitInFormat& format BIT7Z_DEFAULT_FORMAT ) -> bool {
+        static auto isEncrypted(
+            const Bit7zLibrary& lib,
+            T&& inArchive,
+            const BitInFormat& format BIT7Z_DEFAULT_FORMAT
+        ) noexcept -> bool {
             try {
                 const BitArchiveReader reader{ lib, std::forward< T >( inArchive ), format };
                 return reader.isEncrypted();
-            } catch ( const BitException& ex ) {
-                return isOpenEncryptedError( ex.code() );
+            } catch ( const BitException& exception ) {
+                return isOpenEncryptedError( exception.code() );
             }
         }
 
     private:
-        static auto isOpenEncryptedError( std::error_code error ) -> bool;
+        static auto isOpenEncryptedError( std::error_code error ) noexcept -> bool;
 };
 
-BIT7Z_DEPRECATED_TYPEDEF( BitArchiveInfo, BitArchiveReader, "Since v4.0; please use BitArchiveReader." );
+BIT7Z_DEPRECATED_TYPEDEF( BitArchiveInfo, BitArchiveReader, "Since v4.0. Please use BitArchiveReader." );
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITARCHIVEREADER_HPP

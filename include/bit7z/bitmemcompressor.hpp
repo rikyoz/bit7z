@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,6 +11,8 @@
 #define BITMEMCOMPRESSOR_HPP
 
 #include "bitcompressor.hpp"
+#include "bitdefines.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
 
@@ -21,7 +23,7 @@ namespace bit7z {
  * It let decide various properties of the produced archive, such as the password
  * protection and the compression level desired.
  */
-using BitMemCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< const std::vector< byte_t >& >;
+using BitMemCompressor BIT7Z_MAYBE_UNUSED = BitCompressor< const buffer_t& >;
 
 } // namespace bit7z
 #endif // BITMEMCOMPRESSOR_HPP

@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,11 +10,10 @@
 #ifndef BIT7ZLIBRARY_HPP
 #define BIT7ZLIBRARY_HPP
 
-#include <string>
-
+#include "bitdefines.hpp"
 #include "bitformat.hpp"
+#include "bitsharedlibrary.hpp"
 #include "bittypes.hpp"
-#include "bitwindows.hpp"
 
 //! @cond IGNORE_BLOCK_IN_DOXYGEN
 struct IInArchive;
@@ -75,16 +74,22 @@ class Bit7zLibrary final {
         /**
          * @brief Destructs the Bit7zLibrary object, freeing the loaded shared library.
          */
-        ~Bit7zLibrary();
+        ~Bit7zLibrary() = default;
 
         /**
          * @brief Set the 7-zip shared library to use large memory pages.
          */
+        BIT7Z_DEPRECATED_MSG( "Since v4.1. Please use the useLargePages() method." )
         void setLargePageMode();
 
+        /**
+         * @brief Set the 7-zip shared library to use large memory pages.
+         */
+        void useLargePages() const;
+
     private:
-        HMODULE mLibrary;
-        FARPROC mCreateObjectFunc;
+        BitSharedLibrary mLibrary;
+        LibrarySymbol mCreateObjectFunc;
 
         BIT7Z_NODISCARD
         auto initInArchive( const BitInFormat& format ) const -> CMyComPtr< IInArchive >;
@@ -96,6 +101,6 @@ class Bit7zLibrary final {
         friend class BitOutputArchive;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BIT7ZLIBRARY_HPP

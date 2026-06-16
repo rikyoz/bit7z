@@ -1,0 +1,56 @@
+name: 'Build and test bit7z'
+description: 'Build and test bit7z'
+inputs:
+  arch:
+    description: 'Architecture'
+    required: false
+    default: x64
+  build_dir:
+    description: 'Build directory'
+    required: true
+  build_type:
+    description: 'Build Type'
+    required: true
+  shell:
+    description: 'The shell to be used for executing the steps'
+    required: false
+    default: bash
+  run_tests:
+    description: 'Run the tests'
+    required: false
+    default: ON
+
+runs:
+  using: "composite"
+  steps:
+    - name: Fix kernel mmap rnd bits
+      shell: bash
+      if: ${{ runner.os == 'Linux' && inputs.build_type == 'Debug' }}
+      # Asan in llvm 14 provided in ubuntu 22.04 is incompatible with
+      # high-entropy ASLR in much newer kernels that GitHub runners are
+      # using leading to random crashes: https://reviews.llvm.org/D148280
+      run: sudo sysctl vm.mmap_rnd_bits=28
+
+    - name: Build bit7z
+      shell: ${{ inputs.shell }}
+      run: cmake --build '${{ inputs.build_dir }}' --config ${{ inputs.build_type }} --parallel
+
+    - name: Test bit7z (Ubuntu and macOS)
+      if: ${{ runner.os != 'Windows' && inputs.run_tests == 'ON' }}
+      shell: ${{ inputs.shell }}
+      working-directory: ${{ github.workspace }}
+      # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
+      env:
+        ASAN_OPTIONS: alloc_dealloc_mismatch=0
+      run: |
+        ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests && ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests-public && [ -f ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests-public-cpp20 ] && ${{ github.workspace }}/bin/${{ inputs.arch }}/${{ inputs.build_type }}/bit7z-tests-public-cpp20
+
+    - name: Test bit7z (Windows)
+      if: ${{ runner.os == 'Windows' && inputs.run_tests == 'ON' }}
+      shell: cmd
+      working-directory: ${{ github.workspace }}
+      # Disabling alloc_dealloc_mismatch for address sanitizer until https://github.com/llvm/llvm-project/issues/52771 is fixed
+      env:
+        ASAN_OPTIONS: alloc_dealloc_mismatch=0
+      run: |
+        ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests.exe && ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public.exe && (if exist ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public-cpp20.exe ${{ github.workspace }}\bin\${{ inputs.arch }}\${{ inputs.build_type }}\bit7z-tests-public-cpp20.exe)

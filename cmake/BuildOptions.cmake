@@ -22,14 +22,18 @@ if( BIT7Z_REGEX_MATCHING )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_REGEX_MATCHING )
 endif()
 
-option( BIT7Z_USE_STD_BYTE "Enable or disable using type safe byte type (like std::byte) for buffers" )
+option(
+    BIT7Z_USE_STD_BYTE "Enable or disable using type safe byte type (like std::byte) for buffers"
+)
 message( STATUS "Use std::byte: ${BIT7Z_USE_STD_BYTE}" )
 if( BIT7Z_USE_STD_BYTE )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_USE_STD_BYTE )
 endif()
 
-option( BIT7Z_USE_NATIVE_STRING "Enable or disable using the OS native string type
-                                 (e.g., std::wstring on Windows, std::string elsewhere)" )
+option(
+    BIT7Z_USE_NATIVE_STRING
+    "Enable or disable using the OS native string type (e.g., std::wstring on Windows, std::string elsewhere)"
+)
 message( STATUS "Use native string: ${BIT7Z_USE_NATIVE_STRING}" )
 if( BIT7Z_USE_NATIVE_STRING )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_USE_NATIVE_STRING )
@@ -44,7 +48,7 @@ endif()
 option( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK "Disable checking if password is ASCII when compressing using Zip format" )
 message( STATUS "Disable Zip ASCII password check: ${BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK}" )
 if( BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
-    target_compile_definitions( ${LIB_TARGET} PRIVATE BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
+    target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK )
 endif()
 
 option( BIT7Z_DISABLE_USE_STD_FILESYSTEM "Disable using the standard filesystem library (always use ghc::filesystem)" )
@@ -52,6 +56,9 @@ message( STATUS "Disable using std::filesystem: ${BIT7Z_DISABLE_USE_STD_FILESYST
 if( BIT7Z_DISABLE_USE_STD_FILESYSTEM )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_DISABLE_USE_STD_FILESYSTEM )
 endif()
+
+option( BIT7Z_USE_PCH "Use precompiled headers to build bit7z" )
+message( STATUS "Use precompiled headers: ${BIT7Z_USE_PCH}" )
 
 set( BIT7Z_CUSTOM_7ZIP_PATH "" CACHE STRING "A custom path to the 7-zip source code" )
 if( NOT BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
@@ -66,11 +73,28 @@ if( NOT BIT7Z_CUSTOM_7ZIP_PATH STREQUAL "" )
         if ( "${7ZIP_README}" MATCHES "^7-Zip ([0-9.]+)" )
             set( BIT7Z_7ZIP_VERSION "${CMAKE_MATCH_1}" )
             message( STATUS "Detected 7-zip version: ${BIT7Z_7ZIP_VERSION}" )
+
+            if ( BIT7Z_7ZIP_VERSION VERSION_LESS_EQUAL 16.02 AND UNIX )
+                message( STATUS "Detected p7zip's source code!" )
+                set( BIT7Z_BUILD_FOR_P7ZIP ON )
+            endif()
         endif()
     endif()
 else()
-    set( BIT7Z_7ZIP_VERSION "23.01" CACHE STRING "The version of 7-zip to be used by bit7z" )
+    if ( UNIX )
+        option( BIT7Z_BUILD_FOR_P7ZIP "Enable or disable building bit7z for p7zip rather than 7-zip" )
+        message( STATUS "Build bit7z for p7zip: ${BIT7Z_BUILD_FOR_P7ZIP}" )
+    endif()
+    if ( BIT7Z_BUILD_FOR_P7ZIP )
+        set( BIT7Z_7ZIP_VERSION 16.02 ) # Latest version of p7zip
+    else()
+        set( BIT7Z_7ZIP_VERSION "26.01" CACHE STRING "The version of 7-zip to be used by bit7z" )
+    endif()
     message( STATUS "7-zip version: ${BIT7Z_7ZIP_VERSION}" )
+endif()
+
+if( BIT7Z_BUILD_FOR_P7ZIP )
+    target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_BUILD_FOR_P7ZIP )
 endif()
 
 option( BIT7Z_BUILD_TESTS "Enable or disable building the testing executable" )
@@ -113,8 +137,10 @@ else()
     endif()
 endif()
 
-option( BIT7Z_PATH_SANITIZATION "Enable or disable path sanitization when extracting archives \
-                                 containing files with invalid paths" )
+option(
+    BIT7Z_PATH_SANITIZATION
+    "Enable or disable path sanitization when extracting archives containing files with invalid paths"
+)
 message( STATUS "Path sanitization: ${BIT7Z_PATH_SANITIZATION}" )
 if( BIT7Z_PATH_SANITIZATION )
     target_compile_definitions( ${LIB_TARGET} PUBLIC BIT7Z_PATH_SANITIZATION )

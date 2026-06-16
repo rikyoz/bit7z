@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,16 +10,18 @@
 #ifndef BITERROR_HPP
 #define BITERROR_HPP
 
-#include <system_error>
-
 #include "bitdefines.hpp"
+
+#include <cstdint>
+#include <system_error>
+#include <type_traits>
 
 namespace bit7z {
 
 /**
  * @brief The BitError enum struct values represent bit7z specific errors.
  */
-enum struct BitError {
+enum struct BitError : std::uint8_t {
     Fail = 1,
     FilterNotSpecified,
     FormatFeatureNotSupported,
@@ -33,6 +35,7 @@ enum struct BitError {
     ItemIsAFolder,
     ItemMarkedAsDeleted,
     NoMatchingItems,
+    NoMatchingFile,
     NoMatchingSignature,
     NonEmptyOutputBuffer,
     NullOutputBuffer,
@@ -47,14 +50,21 @@ enum struct BitError {
     InvalidItemPath
 };
 
-auto make_error_code( BitError error ) -> std::error_code;
+/**
+ * @brief Creates a std::error_code from the given BitError value.
+ *
+ * @param error  the BitError value to be converted.
+ *
+ * @return the std::error_code corresponding to the given BitError value.
+ */
+auto make_error_code( BitError error ) noexcept -> std::error_code;
 
 /**
  * @brief The BitFailureSource enum struct values represent bit7z error conditions.
  * They can be used for performing queries on bit7z's `error_code`s, for the purpose
  * of grouping, classification, or error translation.
  */
-enum struct BitFailureSource {
+enum struct BitFailureSource : std::uint8_t {
     CRCError,
     DataAfterEnd,
     DataError,
@@ -70,16 +80,23 @@ enum struct BitFailureSource {
     WrongPassword
 };
 
-auto make_error_condition( BitFailureSource failureSource ) -> std::error_condition;
+/**
+ * @brief Creates a std::error_condition from the given BitFailureSource value.
+ *
+ * @param failureSource  the BitFailureSource value to be converted.
+ *
+ * @return the std::error_condition corresponding to the given BitFailureSource value.
+ */
+auto make_error_condition( BitFailureSource failureSource ) noexcept -> std::error_condition;
 
-}  // namespace bit7z
+} // namespace bit7z
 
 namespace std {
 template<>
-struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : public true_type {};
+struct BIT7Z_MAYBE_UNUSED is_error_code_enum< bit7z::BitError > : std::true_type {};
 
-template <>
-struct BIT7Z_MAYBE_UNUSED is_error_condition_enum< bit7z::BitFailureSource > : public true_type {};
+template<>
+struct BIT7Z_MAYBE_UNUSED is_error_condition_enum< bit7z::BitFailureSource > : std::true_type {};
 } // namespace std
 
 #endif //BITERROR_HPP

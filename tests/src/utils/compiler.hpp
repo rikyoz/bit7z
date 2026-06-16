@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -23,9 +23,9 @@ namespace test {
 namespace compiler {
 
 // Compiler name and version
-#if defined( __clang__ )
+#ifdef __clang__
 constexpr auto name = "clang++";
-constexpr auto version = VER_STRING(__clang_major__, __clang_minor__, __clang_patchlevel__);
+constexpr auto version = VER_STRING( __clang_major__, __clang_minor__, __clang_patchlevel__ );
 #elif defined( __GNUC__ )
 #   if !( defined( __MINGW32__ ) || defined( __MINGW64__ ) )
 constexpr auto name = "g++";
@@ -45,7 +45,7 @@ constexpr auto version = "N/A";
 
 #ifdef _LIBCPP_VERSION
 constexpr auto standard_library = "libc++";
-const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
+const auto standard_library_version = [] ( std::ostream& out ) -> std::ostream& {
     constexpr auto libcpp_major = _LIBCPP_VERSION / 1000;
     constexpr auto libcpp_minor = ( _LIBCPP_VERSION % 1000 ) / 100;
     return out << libcpp_major << "." << libcpp_minor;
@@ -63,7 +63,7 @@ constexpr auto standard_library_version = __GNUC__;
 #   endif
 #elif defined( _MSC_VER )
 constexpr auto standard_library = "Microsoft STL";
-static const auto standard_library_version = [](std::ostream& out) -> std::ostream& {
+static const auto standard_library_version = [] ( std::ostream& out ) -> std::ostream& {
 #   if _MSC_VER >= 1900
     constexpr auto msvc_major = ( _MSC_VER / 100 ) - 5;
 #   else
@@ -92,6 +92,10 @@ constexpr auto c_runtime = "Unknown";
 constexpr auto target_arch = "x64";
 #elif defined( _WIN32 ) || defined( __i386__ )
 constexpr auto target_arch = "x86";
+#elif defined( __aarch64__ )
+constexpr auto target_arch = "arm64";
+#elif defined( __arm__ )
+constexpr auto target_arch = "arm";
 #else
 constexpr auto target_arch = "Unsupported Architecture";
 #endif

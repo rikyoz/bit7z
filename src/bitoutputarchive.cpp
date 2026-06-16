@@ -3,39 +3,61 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
+#include "bitoutputarchive.hpp"
+
+#include "bitabstractarchivecreator.hpp"
+#include "bitabstractarchivehandler.hpp"
 #include "biterror.hpp"
 #include "bitexception.hpp"
-#include "bitoutputarchive.hpp"
+#include "bitformat.hpp"
+#include "bitinputarchive.hpp"
+#include "bititemsvector.hpp"
+#include "bitpropvariant.hpp"
+#include "bittypes.hpp"
+#include "bitwindows.hpp"
 #include "internal/archiveproperties.hpp"
 #include "internal/atomicfilereplacer.hpp"
 #include "internal/cbufferoutstream.hpp"
+#include "internal/cfileoutstream.hpp"
 #include "internal/cmultivolumeoutstream.hpp"
-#include "internal/genericinputitem.hpp"
-#include "internal/stringutil.hpp"
+#include "internal/cstdoutstream.hpp"
+#include "internal/fsutil.hpp"
 #include "internal/updatecallback.hpp"
 #include "internal/util.hpp"
+
+#include <cstddef>
+#include <cstdint>
+#include <istream>
+#include <map>
+#include <memory>
+#include <ostream>
+#include <utility>
+#include <system_error>
+#include <vector>
 
 namespace bit7z {
 
 BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator )
     : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {}
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                                    const tstring& inFile,
-                                    ArchiveStartOffset startOffset )
-    : BitOutputArchive( creator, tstring_to_path( inFile ), startOffset ) {}
+BitOutputArchive::BitOutputArchive(
+    const BitAbstractArchiveCreator& creator,
+    const tstring& inFile,
+    ArchiveStartOffset startOffset
+) : BitOutputArchive( creator, tstringToPath( inFile ), startOffset ) {}
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                                    const fs::path& inArc,
-                                    ArchiveStartOffset archiveStart )
-    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+BitOutputArchive::BitOutputArchive(
+    const BitAbstractArchiveCreator& creator,
+    const fs::path& inArc,
+    ArchiveStartOffset archiveStart
+) : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
         return;
     }
@@ -50,65 +72,83 @@ BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
     }
 
     if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
-        throw BitException( "Cannot update the existing archive",
-                            make_error_code( BitError::WrongUpdateMode ) );
+        throw BitException(
+            "Cannot update the existing archive",
+            make_error_code( BitError::WrongUpdateMode )
+        );
     }
 
+    // TODO: Add support for updating single-file bz2, gz, and xz archives when updated archive still contains one file.
     if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
         //Update mode is set, but the format does not support adding more files.
-        throw BitException( "Cannot update the existing archive",
-                            make_error_code( BitError::FormatFeatureNotSupported ) );
+        throw BitException(
+            "Cannot update the existing archive",
+            make_error_code( BitError::FormatFeatureNotSupported )
+        );
     }
 
     mInputArchive = std::make_unique< BitInputArchive >( creator, inArc, archiveStart );
     mInputArchiveItemsCount = mInputArchive->itemsCount();
 }
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                                    const buffer_t& inBuffer,
-                                    ArchiveStartOffset startOffset )
-    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+BitOutputArchive::BitOutputArchive(
+    const BitAbstractArchiveCreator& creator,
+    const buffer_t& inBuffer,
+    ArchiveStartOffset startOffset
+) : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( !inBuffer.empty() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, inBuffer, startOffset );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
     }
 }
 
-BitOutputArchive::BitOutputArchive( const BitAbstractArchiveCreator& creator,
-                                    std::istream& inStream,
-                                    ArchiveStartOffset startOffset )
-    : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+BitOutputArchive::BitOutputArchive(
+    const BitAbstractArchiveCreator& creator,
+    std::istream& inStream,
+    ArchiveStartOffset startOffset
+) : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
     if ( inStream.good() ) {
         mInputArchive = std::make_unique< BitInputArchive >( creator, inStream, startOffset );
         mInputArchiveItemsCount = mInputArchive->itemsCount();
     }
 }
 
+BitOutputArchive::~BitOutputArchive() = default;
+
 void BitOutputArchive::addItems( const std::vector< tstring >& inPaths ) {
     IndexingOptions options{};
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
-    options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexPaths( inPaths, options );
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexPaths( mNewItems, inPaths, options );
+}
+
+void BitOutputArchive::addItems( const std::vector< std::pair< tstring, tstring > >& inPaths ) {
+    IndexingOptions options{};
+    options.retainFolderStructure = mArchiveCreator.retainDirectories();
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexPaths( mNewItems, inPaths, options );
 }
 
 void BitOutputArchive::addItems( const std::map< tstring, tstring >& inPaths ) {
     IndexingOptions options{};
-    options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexPathsMap( inPaths, options );
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexPathsMap( mNewItems, inPaths, options );
 }
 
-void BitOutputArchive::addFile( const tstring& inFile, const tstring& name ) {
-    mNewItemsVector.indexFile( inFile,
-                               mArchiveCreator.retainDirectories() ? inFile : name,
-                               !mArchiveCreator.storeSymbolicLinks() );
+auto BitOutputArchive::addFile( const tstring& inFile, const tstring& name ) -> BitInputItem& {
+    const auto policy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexFile( mNewItems, inFile, mArchiveCreator.retainDirectories() ? inFile : name, policy );
+    return mNewItems.back();
 }
 
-void BitOutputArchive::addFile( const std::vector< byte_t >& inBuffer, const tstring& name ) {
-    mNewItemsVector.indexBuffer( inBuffer, name );
+auto BitOutputArchive::addFile( const buffer_t& inBuffer, const tstring& name ) -> BitInputItem& {
+    indexBuffer( mNewItems, inBuffer, name );
+    return mNewItems.back();
 }
 
-void BitOutputArchive::addFile( std::istream& inStream, const tstring& name ) {
-    mNewItemsVector.indexStream( inStream, name );
+auto BitOutputArchive::addFile( std::istream& inStream, const tstring& name ) -> BitInputItem& {
+    indexStream( mNewItems, inStream, name );
+    return mNewItems.back();
 }
 
 void BitOutputArchive::addFiles( const std::vector< tstring >& inFiles ) {
@@ -116,8 +156,8 @@ void BitOutputArchive::addFiles( const std::vector< tstring >& inFiles ) {
     options.recursive = false;
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.onlyFiles = true;
-    options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexPaths( inFiles, options );
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexPaths( mNewItems, inFiles, options );
 }
 
 void BitOutputArchive::addFiles( const tstring& inDir, const tstring& filter, bool recursive ) {
@@ -126,35 +166,38 @@ void BitOutputArchive::addFiles( const tstring& inDir, const tstring& filter, bo
 
 void BitOutputArchive::addFiles( const tstring& inDir, const tstring& filter, FilterPolicy policy, bool recursive ) {
     IndexingOptions options{};
+    options.filterPolicy = policy;
     options.recursive = recursive;
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
     options.onlyFiles = true;
-    options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexDirectory( tstring_to_path( inDir ), filter, policy, options );
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexDirectory( mNewItems, inDir, filter, options );
 }
 
 void BitOutputArchive::addDirectory( const tstring& inDir ) {
     IndexingOptions options{};
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
-    options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    mNewItemsVector.indexDirectory( tstring_to_path( inDir ), BIT7Z_STRING( "" ), FilterPolicy::Include, options );
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexDirectory( mNewItems, inDir, {}, options );
 }
 
 void BitOutputArchive::addDirectoryContents( const tstring& inDir, const tstring& filter, bool recursive ) {
     addDirectoryContents( inDir, filter, FilterPolicy::Include, recursive );
 }
 
-void BitOutputArchive::addDirectoryContents( const tstring& inDir,
-                                             const tstring& filter,
-                                             FilterPolicy policy,
-                                             bool recursive ) {
+void BitOutputArchive::addDirectoryContents(
+    const tstring& inDir,
+    const tstring& filter,
+    FilterPolicy policy,
+    bool recursive
+) {
     IndexingOptions options{};
+    options.filterPolicy = policy;
     options.recursive = recursive;
     options.onlyFiles = !recursive;
     options.retainFolderStructure = mArchiveCreator.retainDirectories();
-    options.followSymlinks = !mArchiveCreator.storeSymbolicLinks();
-    std::error_code error;
-    mNewItemsVector.indexDirectory( fs::absolute( tstring_to_path( inDir ), error ), filter, policy, options );
+    options.symlinkPolicy = !mArchiveCreator.storeSymbolicLinks() ? SymlinkPolicy::Follow : SymlinkPolicy::DoNotFollow;
+    indexDirectoryContent( mNewItems, inDir, filter, options );
 }
 
 auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
@@ -162,7 +205,10 @@ auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
     if ( mInputArchive == nullptr ) {
         newArc = mArchiveCreator.library().initOutArchive( mArchiveCreator.compressionFormat() );
     } else {
-        (void)mInputArchive->initUpdatableArchive( &newArc ); // TODO: Handle errors
+        const auto res = mInputArchive->initUpdatableArchive( &newArc );
+        if ( res != S_OK ) {
+            throw BitException{ "Could not make the input archive object updatable", make_hresult_code( res ) };
+        }
     }
     setArchiveProperties( newArc );
     return newArc;
@@ -172,15 +218,18 @@ auto BitOutputArchive::initOutFileStream( const fs::path& outArchive ) const -> 
     if ( mArchiveCreator.volumeSize() > 0 ) {
         return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), outArchive );
     }
+
     return bit7z::make_com< CFileOutStream, IOutStream >( outArchive );
 }
 
-void BitOutputArchive::compressOut( IOutArchive* outArc,
-                                    IOutStream* outStream,
-                                    UpdateCallback* updateCallback ) {
+void BitOutputArchive::compressOut(
+    IOutArchive* outArc,
+    IOutStream* outStream,
+    UpdateCallback* updateCallback
+) {
     if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Update ) {
-        for ( const auto& newItem : mNewItemsVector ) {
-            auto newItemPath = path_to_tstring( newItem->inArchivePath() );
+        for ( const auto& newItem : mNewItems ) {
+            auto newItemPath = pathToTstring( newItem.inArchivePath() );
             auto updatedItem = mInputArchive->find( newItemPath );
             if ( updatedItem != mInputArchive->cend() ) {
                 setDeletedIndex( updatedItem->index() );
@@ -201,23 +250,28 @@ void BitOutputArchive::compressOut( IOutArchive* outArc,
 }
 
 void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* updateCallback ) {
-    // Note: if mInputArchive != nullptr, newArc will actually point to the same IInArchive object used by the old_arc
-    // (see initUpdatableArchive function of BitInputArchive)!
-    const bool updatingArchive = mInputArchive != nullptr && tstring_to_path( mInputArchive->archivePath() ) == outFile;
+    // Note: if mInputArchive is not nullptr, newArc will actually point to the same IInArchive object
+    // used by the old_arc (see initUpdatableArchive function of BitInputArchive).
+    const bool updatingArchive = mInputArchive != nullptr && tstringToPath( mInputArchive->archivePath() ) == outFile;
     const CMyComPtr< IOutArchive > newArc = initOutArchive();
 
     if ( updatingArchive ) {
         if ( mArchiveCreator.volumeSize() > 0 ) {
-            throw BitException( "Cannot update a multi-volume archive in place",
-                                make_error_code( BitError::UnsupportedOperation ) );
+            throw BitException(
+                "Cannot update a multi-volume archive in place",
+                make_error_code( BitError::UnsupportedOperation )
+            );
         }
         AtomicFileReplacer replacer{ outFile };
         compressOut( newArc, replacer.stream(), updateCallback );
 
         const auto closeResult = mInputArchive->close();
         if ( closeResult != S_OK ) {
-            throw BitException( "Failed to close the archive", make_hresult_code( closeResult ),
-                                mInputArchive->archivePath() );
+            throw BitException(
+                "Failed to close the archive",
+                make_hresult_code( closeResult ),
+                mInputArchive->archivePath()
+            );
         }
         replacer.commit();
     } else {
@@ -227,12 +281,13 @@ void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* 
 }
 
 void BitOutputArchive::compressTo( const tstring& outFile ) {
-    using namespace bit7z::filesystem;
-    const fs::path outPath = tstring_to_path( outFile );
+    const fs::path outPath = tstringToPath( outFile );
     if ( !outPath.has_filename() ) {
-        throw BitException( "Invalid output archive path",
-                            make_error_code( BitError::InvalidArchivePath ),
-                            outFile );
+        throw BitException(
+            "Invalid output archive path",
+            make_error_code( BitError::InvalidArchivePath ),
+            outFile
+        );
     }
 
     std::error_code error;
@@ -248,11 +303,11 @@ void BitOutputArchive::compressTo( const tstring& outFile ) {
         // called by the initOutFileStream function.
     }
 
-    auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
+    const auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
     compressToFile( outPath, updateCallback );
 }
 
-void BitOutputArchive::compressTo( std::vector< byte_t >& outBuffer ) {
+void BitOutputArchive::compressTo( buffer_t& outBuffer ) {
     if ( !outBuffer.empty() ) {
         const OverwriteMode overwriteMode = mArchiveCreator.overwriteMode();
         if ( overwriteMode == OverwriteMode::Skip ) {
@@ -265,16 +320,16 @@ void BitOutputArchive::compressTo( std::vector< byte_t >& outBuffer ) {
         }
     }
 
-    const CMyComPtr< IOutArchive > newArc = initOutArchive();
-    auto outMemStream = bit7z::make_com< CBufferOutStream, IOutStream >( outBuffer );
-    auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
+    const auto newArc = initOutArchive();
+    const auto outMemStream = bit7z::make_com< CBufferOutStream, IOutStream >( outBuffer );
+    const auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( newArc, outMemStream, updateCallback );
 }
 
 void BitOutputArchive::compressTo( std::ostream& outStream ) {
-    const CMyComPtr< IOutArchive > newArc = initOutArchive();
-    auto outStdStream = bit7z::make_com< CStdOutStream, IOutStream >( outStream );
-    auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
+    const auto newArc = initOutArchive();
+    const auto outStdStream = bit7z::make_com< CStdOutStream, IOutStream >( outStream );
+    const auto updateCallback = bit7z::make_com< UpdateCallback >( *this );
     compressOut( newArc, outStdStream, updateCallback );
 }
 
@@ -290,9 +345,11 @@ void BitOutputArchive::setArchiveProperties( IOutArchive* outArchive ) const {
     if ( res != S_OK ) {
         throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
     }
-    res = setProperties->SetProperties( properties.names(),
-                                        properties.values(),
-                                        static_cast< uint32_t >( properties.size() ) );
+    res = setProperties->SetProperties(
+        properties.names(),
+        properties.values(),
+        static_cast< std::uint32_t >( properties.size() )
+    );
     if ( res != S_OK ) {
         throw BitException( "Cannot set properties of the archive", make_hresult_code( res ) );
     }
@@ -303,8 +360,8 @@ void BitOutputArchive::updateInputIndices() {
         return;
     }
 
-    uint32_t offset = 0;
-    for ( uint32_t newIndex = 0; newIndex < itemsCount(); ++newIndex ) {
+    std::uint32_t offset = 0;
+    for ( std::uint32_t newIndex = 0; newIndex < itemsCount(); ++newIndex ) {
         for ( auto it = mDeletedItems.find( newIndex + offset );
               it != mDeletedItems.end() && *it == newIndex + offset;
               ++it ) {
@@ -314,48 +371,43 @@ void BitOutputArchive::updateInputIndices() {
     }
 }
 
-auto BitOutputArchive::itemsCount() const -> uint32_t {
-    auto result = static_cast< uint32_t >( mNewItemsVector.size() );
+auto BitOutputArchive::itemsCount() const -> std::uint32_t {
+    auto result = static_cast< std::uint32_t >( mNewItems.size() );
     if ( mInputArchive != nullptr ) {
-        result += mInputArchive->itemsCount() - static_cast< uint32_t >( mDeletedItems.size() );
+        result += mInputArchive->itemsCount() - static_cast< std::uint32_t >( mDeletedItems.size() );
     }
     return result;
 }
 
 auto BitOutputArchive::itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant {
-    const auto newItemIndex = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
-    const GenericInputItem& newItem = mNewItemsVector[ newItemIndex ];
+    const auto newItemIndex = static_cast< std::size_t >( index ) - static_cast< std::size_t >( mInputArchiveItemsCount );
+    const auto& newItem = mNewItems[ newItemIndex ];
     return newItem.itemProperty( property );
 }
 
 auto BitOutputArchive::itemStream( InputIndex index, ISequentialInStream** inStream ) const -> HRESULT {
-    const auto newItemIndex = static_cast< size_t >( index ) - static_cast< size_t >( mInputArchiveItemsCount );
-    const GenericInputItem& newItem = mNewItemsVector[ newItemIndex ];
+    const auto newItemIndex = static_cast< std::size_t >( index ) - static_cast< std::size_t >( mInputArchiveItemsCount );
+    const auto& newItem = mNewItems[ newItemIndex ];
 
-    const HRESULT res = newItem.getStream( inStream );
+    const HRESULT res = newItem.getStream( inStream, mArchiveCreator.storeOpenFiles() );
     if ( FAILED( res ) ) {
-        auto path = tstring_to_path( newItem.path() );
-        std::error_code error;
-        if ( fs::exists( path, error ) ) {
-            error = std::make_error_code( std::errc::file_exists );
-        }
-        mFailedFiles.emplace_back( path_to_tstring( path ), error );
+        mFailedFiles.emplace_back( to_tstring( newItem.path() ), make_hresult_code( res ) );
     }
     return res;
 }
 
-auto BitOutputArchive::hasNewData( uint32_t index ) const noexcept -> bool {
-    const auto originalIndex = static_cast< uint32_t >( itemInputIndex( index ) );
+auto BitOutputArchive::hasNewData( std::uint32_t index ) const noexcept -> bool {
+    const auto originalIndex = static_cast< std::uint32_t >( itemInputIndex( index ) );
     return originalIndex >= mInputArchiveItemsCount;
 }
 
-auto BitOutputArchive::hasNewProperties( uint32_t index ) const noexcept -> bool {
+auto BitOutputArchive::hasNewProperties( std::uint32_t index ) const noexcept -> bool {
     /* Note: in BitOutputArchive, you can only add new items or overwrite (delete + add) existing ones.
-     * So if we have new data, we also have new properties! This is not true for BitArchiveEditor! */
+     * So if we have new data, we also have new properties; this is not true for BitArchiveEditor. */
     return hasNewData( index );
 }
 
-auto BitOutputArchive::itemInputIndex( uint32_t newIndex ) const noexcept -> InputIndex {
+auto BitOutputArchive::itemInputIndex( std::uint32_t newIndex ) const noexcept -> InputIndex {
     const auto index = static_cast< decltype( mInputIndices )::size_type >( newIndex );
     if ( index < mInputIndices.size() ) {
         return mInputIndices[ index ];
@@ -364,19 +416,19 @@ auto BitOutputArchive::itemInputIndex( uint32_t newIndex ) const noexcept -> Inp
     return static_cast< InputIndex >( newIndex );
 }
 
-auto BitOutputArchive::outputItemProperty( uint32_t index, BitProperty property ) const -> BitPropVariant {
+auto BitOutputArchive::outputItemProperty( std::uint32_t index, BitProperty property ) const -> BitPropVariant {
     const auto mappedIndex = itemInputIndex( index );
     return itemProperty( mappedIndex, property );
 }
 
-auto BitOutputArchive::outputItemStream( uint32_t index, ISequentialInStream** inStream ) const -> HRESULT {
+auto BitOutputArchive::outputItemStream( std::uint32_t index, ISequentialInStream** inStream ) const -> HRESULT {
     const auto mappedIndex = itemInputIndex( index );
     return itemStream( mappedIndex, inStream );
 }
 
-auto BitOutputArchive::indexInArchive( uint32_t index ) const noexcept -> uint32_t {
-    const auto originalIndex = static_cast< uint32_t >( itemInputIndex( index ) );
-    return originalIndex < mInputArchiveItemsCount ? originalIndex : static_cast< uint32_t >( -1 );
+auto BitOutputArchive::indexInArchive( std::uint32_t index ) const noexcept -> std::uint32_t {
+    const auto originalIndex = static_cast< std::uint32_t >( itemInputIndex( index ) );
+    return originalIndex < mInputArchiveItemsCount ? originalIndex : static_cast< std::uint32_t >( -1 );
 }
 
 auto BitOutputArchive::handler() const noexcept -> const BitAbstractArchiveHandler& {

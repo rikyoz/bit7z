@@ -3,41 +3,46 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "bitexception.hpp"
 #include "internal/cfileinstream.hpp"
-#include "internal/stringutil.hpp"
 
 namespace bit7z {
 
-CFileInStream::CFileInStream( const fs::path& filePath ) : CStdInStream( mFileStream ) {
-    /* Disabling std::ifstream's buffering, as unbuffered IO gives better performance
-     * with the block sizes read/written by 7-Zip.
-     * Note: we need to do this before and after opening the file (https://stackoverflow.com/a/59161297/3497024). */
-    mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
-    openFile( filePath );
-// Unbuffered streams are slow for Visual Studio 2015
-#if !defined(_MSC_VER) || _MSC_VER != 1900
-    mFileStream.rdbuf()->pubsetbuf( nullptr, 0 );
-#endif
+CFileInStream::CFileInStream( const native_string& filePath, bool storeOpenFiles )
+    : mFile{ filePath, storeOpenFiles } {}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CFileInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
+    if ( processedSize != nullptr ) {
+        *processedSize = 0;
+    }
+
+    if ( size == 0 ) {
+        return S_OK;
+    }
+
+    std::uint32_t totalBytesRead = 0;
+    const auto result = mFile.read( data, size, totalBytesRead );
+    if ( processedSize != nullptr ) {
+        *processedSize = totalBytesRead;
+    }
+    return result;
 }
 
-void CFileInStream::openFile( const fs::path& filePath ) {
-    mFileStream.open( filePath, std::ios::in | std::ios::binary ); // flawfinder: ignore
-    if ( mFileStream.fail() ) {
-#if defined( __MINGW32__ ) || defined( __MINGW64__ )
-        std::error_code error{ errno, std::generic_category() };
-#else
-        const auto error = last_error_code();
-#endif
-        throw BitException( "Failed to open the archive file", error, path_to_tstring( filePath ) );
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CFileInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    std::uint64_t finalPosition = 0;
+    const auto result = mFile.seek( static_cast< SeekOrigin >( seekOrigin ), offset, finalPosition );
+    if ( newPosition != nullptr ) {
+        *newPosition = finalPosition;
     }
+    return result;
 }
 
 } // namespace bit7z

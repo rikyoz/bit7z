@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,16 +19,28 @@
 //#define BIT7Z_USE_STD_BYTE
 //#define BIT7Z_USE_NATIVE_STRING
 
-#if ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201703L ) || ( defined( __cplusplus ) && __cplusplus >= 201703L )
+#if defined( _MSVC_LANG ) && !defined( __clang__ )
+#   define BIT7Z_CPP_VERSION _MSVC_LANG
+#elif defined( __cplusplus )
+#   define BIT7Z_CPP_VERSION __cplusplus
+#else
+#   define BIT7Z_CPP_VERSION 201103L
+#endif
+
+#if BIT7Z_CPP_VERSION >= 202302L
+#   define BIT7Z_CPP_STANDARD 23
+#elif BIT7Z_CPP_VERSION >= 202002L
+#   define BIT7Z_CPP_STANDARD 20
+#elif BIT7Z_CPP_VERSION >= 201703L
 #   define BIT7Z_CPP_STANDARD 17
-#elif ( defined( _MSVC_LANG ) && _MSVC_LANG >= 201402L ) || ( defined( __cplusplus ) && __cplusplus >= 201402L )
+#elif BIT7Z_CPP_VERSION >= 201402L
 #   define BIT7Z_CPP_STANDARD 14
 #else
 #   define BIT7Z_CPP_STANDARD 11
 #endif
 
 #ifndef BIT7Z_DISABLE_USE_STD_FILESYSTEM
-#   if defined( __cpp_lib_filesystem )
+#   ifdef __cpp_lib_filesystem
 #       define BIT7Z_USE_STANDARD_FILESYSTEM
 #   elif BIT7Z_CPP_STANDARD >= 17 && defined( __has_include )
 #       if __has_include( <filesystem> )
@@ -38,7 +50,7 @@
 #endif
 
 /* Macro defines for [[nodiscard]] and [[maybe_unused]] attributes. */
-#if defined( __has_cpp_attribute )
+#ifdef __has_cpp_attribute
 #   if __has_cpp_attribute( nodiscard )
 #       define BIT7Z_NODISCARD [[nodiscard]]
 #   endif
@@ -116,6 +128,21 @@
 #       define BIT7Z_DEPRECATED_TYPEDEF( alias_name, alias_value, msg ) \
                 using alias_name BIT7Z_MAYBE_UNUSED BIT7Z_DEPRECATED_MSG( msg ) = alias_value
 #   endif
+#endif
+
+#ifdef __GNUC__
+#   define BIT7Z_ALWAYS_INLINE [[gnu::always_inline]] inline
+#elif defined( _WIN32 )
+#   define BIT7Z_ALWAYS_INLINE __forceinline
+#else
+#   define BIT7Z_ALWAYS_INLINE inline
+#endif
+
+// Note: MSVC 2015 doesn't fully support C++14's constexpr
+#if BIT7Z_CPP_STANDARD >= 14 && !( defined( _MSC_VER ) && _MSC_VER <= 1900 )
+#   define BIT7Z_CPP14_CONSTEXPR constexpr
+#else
+#   define BIT7Z_CPP14_CONSTEXPR /*constexpr*/
 #endif
 
 #endif //BITDEFINES_HPP

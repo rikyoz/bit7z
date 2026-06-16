@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,11 +10,14 @@
 #ifndef FAILURESOURCECATEGORY_HPP
 #define FAILURESOURCECATEGORY_HPP
 
+#include "bitdefines.hpp"
+
+#include <string>
 #include <system_error>
 
 namespace bit7z {
 
-struct FailureSourceCategory : public std::error_category {
+struct FailureSourceCategory : std::error_category {
     BIT7Z_NODISCARD
     auto name() const noexcept -> const char* override;
 
@@ -28,7 +31,7 @@ struct FailureSourceCategory : public std::error_category {
     auto equivalent( const std::error_code& code, int condition ) const noexcept -> bool override;
 };
 
-auto source_category() noexcept -> const std::error_category&;
+auto sourceCategory() noexcept -> const std::error_category&;
 
 } // namespace bit7z
 

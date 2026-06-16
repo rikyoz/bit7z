@@ -3,31 +3,36 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
+
 #include <catch2/catch.hpp>
 
 #include "utils/archive.hpp"
+#include "utils/crc.hpp"
 #include "utils/filesystem.hpp"
 #include "utils/format.hpp"
 #include "utils/shared_lib.hpp"
+#include "utils/sourcelocation.hpp"
 
+#include <bit7z/bitarchiveiteminfo.hpp>
 #include <bit7z/bitarchivereader.hpp>
-#include <bit7z/bitexception.hpp>
 #include <bit7z/bitformat.hpp>
+#include <bit7z/bittypes.hpp>
 #include <internal/windows.hpp>
-
-// Needed by MSVC for defining the S_XXXX macros.
-#ifndef _CRT_INTERNAL_NONSTDC_NAMES // NOLINT(*-reserved-identifier, *-dcl37-c)
-#define _CRT_INTERNAL_NONSTDC_NAMES 1
-#endif
 
 // For checking posix file attributes.
 #include <sys/stat.h>
+
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <sstream>
+#include <type_traits>
 
 // MSVC doesn't define these macros!
 #if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)
@@ -47,251 +52,176 @@ using namespace bit7z;
 using namespace bit7z::test;
 using namespace bit7z::test::filesystem;
 
-// Compile-time checks for BitArchiveItemInfo
-static_assert( std::is_copy_constructible< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not copy-constructible!" );
-static_assert( std::is_copy_assignable< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not copy-assignable!" );
-static_assert( std::is_move_constructible< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not move-constructible!" );
-static_assert( std::is_move_assignable< BitArchiveItemInfo >::value,
-               "BitArchiveItemInfo is not move-assignable!" );
-
-#define REQUIRE_ARCHIVE_TESTS( info )                                              \
-    do {                                                                           \
-        REQUIRE_NOTHROW( (info).test() );                                          \
-        for ( uint32_t index = 0; index < (info).itemsCount(); ++index ) {         \
-            REQUIRE_NOTHROW( (info).testItem( index ) );                           \
-        }                                                                          \
-        REQUIRE_THROWS_AS( (info).testItem( (info).itemsCount() ), BitException ); \
-    } while( false )
-
-#define REQUIRE_ARCHIVE_ITEM( format, item, expectedItem )                                               \
-    do {                                                                                                 \
-        INFO( "Failed while checking file " << Catch::StringMaker< tstring >::convert( (item).name() ) ) \
-        REQUIRE( (item).isDir() == (expectedItem).fileInfo.isDir );                                      \
-                                                                                                         \
-        if ( !(item).isDir() ) {                                                                         \
-            REQUIRE( (item).isEncrypted() == (expectedItem).isEncrypted );                               \
-        }                                                                                                \
-                                                                                                         \
-        if ( format_has_path_metadata( format ) ) {                                                      \
-            REQUIRE( (item).extension() == (expectedItem).fileInfo.ext );                                \
-            REQUIRE( (item).name() == (expectedItem).fileInfo.name );                                    \
-            REQUIRE( (item).path() == (expectedItem).inArchivePath );                                    \
-        }                                                                                                \
-                                                                                                         \
-        if ( format_has_size_metadata( format ) ) {                                                      \
-            /* Note: some archive formats (e.g. BZip2) do not provide the size metadata! */              \
-            REQUIRE( (item).size() == (expectedItem).fileInfo.size );                                    \
-        }                                                                                                \
-                                                                                                         \
-        if ( ( format_has_crc( format ) && !(item).itemProperty( BitProperty::CRC ).isEmpty() ) &&       \
-             ( ( (format) != BitFormat::Rar5 ) || !(item).isEncrypted() ) ) {                            \
-            /* For some reason, encrypted Rar5 archives messes up the values of CRCs*/                   \
-            REQUIRE( (item).crc() == (expectedItem).fileInfo.crc32 );                                    \
-        }                                                                                                \
-    } while( false )
-
-#define REQUIRE_ARCHIVE_CONTENT( info, input )                                                        \
-    do {                                                                                              \
-        REQUIRE_FALSE( (info).archiveProperties().empty() );                                          \
-                                                                                                      \
-        const auto& archive_content = (input).content();                                              \
-        REQUIRE( (info).itemsCount() == archive_content.items.size() );                               \
-        REQUIRE( (info).filesCount() == archive_content.fileCount );                                  \
-        REQUIRE( (info).foldersCount() == archive_content.items.size() - archive_content.fileCount ); \
-                                                                                                      \
-        const auto& format = (info).format();                                                         \
-        if ( format_has_size_metadata( format ) ) {                                                   \
-            REQUIRE( (info).size() == archive_content.size );                                         \
-            REQUIRE( (info).packSize() == (input).packedSize() );                                     \
-        }                                                                                             \
-                                                                                                      \
-        REQUIRE_FALSE( (info).isMultiVolume() );                                                      \
-        REQUIRE( (info).volumesCount() == 1 );                                                        \
-                                                                                                      \
-        std::vector< BitArchiveItemInfo > items;                                                      \
-        REQUIRE_NOTHROW( items = (info).items() );                                                    \
-        REQUIRE( items.size() == (info).itemsCount() );                                               \
-                                                                                                      \
-        const bool archive_stores_paths = format_has_path_metadata( format );                         \
-        const bool from_filesystem = !(info).archivePath().empty();                                   \
-        size_t found_items = 0;                                                                       \
-        for ( const auto& archivedItem : archive_content.items ) {                                    \
-            for ( const auto& item : items ) {                                                        \
-                if ( archive_stores_paths || (from_filesystem) ) {                                    \
-                    if ( item.name() != archivedItem.fileInfo.name ) {                                \
-                        continue;                                                                     \
-                    }                                                                                 \
-                    REQUIRE( (info).find( item.path() ) != (info).cend() );                           \
-                    REQUIRE( (info).contains( item.path() ) );                                        \
-                }                                                                                     \
-                REQUIRE( (info).isItemEncrypted( item.index() ) == archivedItem.isEncrypted );        \
-                REQUIRE( (info).isItemFolder( item.index() ) == archivedItem.fileInfo.isDir );        \
-                REQUIRE_ARCHIVE_ITEM( format, item, archivedItem );                                   \
-                found_items++;                                                                        \
-                break;                                                                                \
-            }                                                                                         \
-        }                                                                                             \
-        REQUIRE( items.size() == found_items );                                                       \
-    } while ( false )
-
-struct SingleFileArchive : public TestInputArchive {
+namespace {
+struct SingleFileArchive : TestInputArchive {
     SingleFileArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
-        : TestInputArchive{ std::move( extension ), format, packedSize, single_file_content() } {}
+        : TestInputArchive{ std::move( extension ), format, packedSize, singleFileContent() } {}
 };
+} // namespace
 
-using stream_t = fs::ifstream;
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading archives containing only a single file",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
 
-// Note: we cannot use value semantic and return the archive due to old GCC versions not supporting movable fstreams.
-void getInputArchive( const fs::path& path, tstring& archive ) {
-    archive = to_tstring( path.native() );
-}
-
-void getInputArchive( const fs::path& path, buffer_t& archive ) {
-    archive = load_file( path );
-}
-
-void getInputArchive( const fs::path& path, stream_t& archive ) {
-    archive.open( path, std::ios::binary );
-}
-
-template< typename T >
-using is_filesystem_archive = std::is_same< bit7z::tstring, typename std::decay< T >::type >;
-
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing only a single file",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto testArchive = GENERATE( as< SingleFileArchive >(),
-                                       SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
-                                       SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
-                                       SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
-                                       SingleFileArchive{ "iso", BitFormat::Iso, clouds.size },
-                                       SingleFileArchive{ "lzh", BitFormat::Lzh, 476668 },
-                                       SingleFileArchive{ "lzma", BitFormat::Lzma, 0 },
-                                       SingleFileArchive{ "rar4.rar", BitFormat::Rar, 477457 },
-                                       SingleFileArchive{ "rar5.rar", BitFormat::Rar5, 477870 },
-                                       SingleFileArchive{ "tar", BitFormat::Tar, 479232 },
-                                       SingleFileArchive{ "wim", BitFormat::Wim, clouds.size },
-                                       SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
-                                       SingleFileArchive{ "zip", BitFormat::Zip, 476375 } );
+    const auto testArchive = GENERATE(
+        as< SingleFileArchive >(),
+        SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
+        SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
+        SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
+        SingleFileArchive{ "iso", BitFormat::Iso, clouds.size },
+        SingleFileArchive{ "lzh", BitFormat::Lzh, 476668 },
+        SingleFileArchive{ "lzma", BitFormat::Lzma, 0 },
+        SingleFileArchive{ "rar4.rar", BitFormat::Rar, 477457 },
+        SingleFileArchive{ "rar5.rar", BitFormat::Rar5, 477870 },
+        SingleFileArchive{ "tar", BitFormat::Tar, 479232 },
+        SingleFileArchive{ "wim", BitFormat::Wim, clouds.size },
+        SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
+        SingleFileArchive{ "zip", BitFormat::Zip, 476375 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const auto arcFileName = fs::path{ clouds.name }.concat( "." + testArchive.extension() );
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
-        if( is_filesystem_archive< TestType >::value ) {
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
+        if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 }
 
-struct MultipleFilesArchive : public TestInputArchive {
+namespace {
+struct MultipleFilesArchive : TestInputArchive {
     MultipleFilesArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
-        : TestInputArchive{ std::move( extension ), format, packedSize, multiple_files_content() } {}
+        : TestInputArchive{ std::move( extension ), format, packedSize, multipleFilesContent() } {}
 };
+} // namespace
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple files",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading archives containing multiple files",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_files" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto testArchive = GENERATE( as< MultipleFilesArchive >(),
-                                        MultipleFilesArchive{ "7z", BitFormat::SevenZip, 22074 },
-                                        MultipleFilesArchive{ "iso", BitFormat::Iso, italy.size + lorem_ipsum.size },
-                                        MultipleFilesArchive{ "rar", BitFormat::Rar5, 23040 },
-                                        MultipleFilesArchive{ "tar", BitFormat::Tar, 38912 },
-                                        MultipleFilesArchive{ "wim", BitFormat::Wim, italy.size + lorem_ipsum.size },
-                                        MultipleFilesArchive{ "zip", BitFormat::Zip, 23222 } );
+    const auto testArchive = GENERATE(
+        as< MultipleFilesArchive >(),
+        MultipleFilesArchive{ "7z", BitFormat::SevenZip, 22074 },
+        MultipleFilesArchive{ "iso", BitFormat::Iso, italy.size + loremIpsum.size },
+        MultipleFilesArchive{ "rar", BitFormat::Rar5, 23040 },
+        MultipleFilesArchive{ "tar", BitFormat::Tar, 38912 },
+        MultipleFilesArchive{ "wim", BitFormat::Wim, italy.size + loremIpsum.size },
+        MultipleFilesArchive{ "zip", BitFormat::Zip, 23222 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_files." + testArchive.extension();
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
-        if( is_filesystem_archive< TestType >::value ) {
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
+        if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 }
 
-struct MultipleItemsArchive : public TestInputArchive {
+namespace {
+struct MultipleItemsArchive : TestInputArchive {
     MultipleItemsArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
-        : TestInputArchive{ std::move( extension ), format, packedSize, multiple_items_content() } {}
+        : TestInputArchive{ std::move( extension ), format, packedSize, multipleItemsContent() } {}
 };
+} // namespace
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing multiple items (files and folders)",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading archives containing multiple items (files and folders)",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto testArchive = GENERATE( as< MultipleItemsArchive >(),
-                                        MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                        MultipleItemsArchive{ "iso", BitFormat::Iso, 615351 },
-                                        MultipleItemsArchive{ "rar4.rar", BitFormat::Rar, 565329 },
-                                        MultipleItemsArchive{ "rar5.rar", BitFormat::Rar5, 565756 },
-                                        MultipleItemsArchive{ "tar", BitFormat::Tar, 617472 },
-                                        MultipleItemsArchive{ "wim", BitFormat::Wim, 615351 },
-                                        MultipleItemsArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< MultipleItemsArchive >(),
+        MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
+        MultipleItemsArchive{ "iso", BitFormat::Iso, 615351 },
+        MultipleItemsArchive{ "rar4.rar", BitFormat::Rar, 565329 },
+        MultipleItemsArchive{ "rar5.rar", BitFormat::Rar5, 565756 },
+        MultipleItemsArchive{ "tar", BitFormat::Tar, 617472 },
+        MultipleItemsArchive{ "wim", BitFormat::Wim, 615351 },
+        MultipleItemsArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension();
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
-        if( is_filesystem_archive< TestType >::value ) {
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
+        if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.hasEncryptedItems() );
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 }
 
-struct EncryptedArchive : public TestInputArchive {
+namespace {
+struct EncryptedArchive : TestInputArchive {
     EncryptedArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
-        : TestInputArchive{ std::move( extension ), format, packedSize, encrypted_content() } {}
+        : TestInputArchive{ std::move( extension ), format, packedSize, encryptedContent() } {}
 };
+} // namespace
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted items",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading archives containing encrypted items",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "encrypted" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto* const password = BIT7Z_STRING( "helloworld" );
-
-    const auto testArchive = GENERATE( as< EncryptedArchive >(),
-                                        EncryptedArchive{ "7z", BitFormat::SevenZip, 563568 },
-                                        EncryptedArchive{ "rar4.rar", BitFormat::Rar, 565424 },
-                                        EncryptedArchive{ "rar5.rar", BitFormat::Rar5, 565824 },
-                                        EncryptedArchive{ "aes256.zip", BitFormat::Zip, 564016 },
-                                        EncryptedArchive{ "zipcrypto.zip", BitFormat::Zip, 563888 } );
+    const auto testArchive = GENERATE(
+        as< EncryptedArchive >(),
+        EncryptedArchive{ "7z", BitFormat::SevenZip, 563568 },
+        EncryptedArchive{ "rar4.rar", BitFormat::Rar, 565424 },
+        EncryptedArchive{ "rar5.rar", BitFormat::Rar5, 565824 },
+        EncryptedArchive{ "aes256.zip", BitFormat::Zip, 564016 },
+        EncryptedArchive{ "zipcrypto.zip", BitFormat::Zip, 563888 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "encrypted." + testArchive.extension();
@@ -299,45 +229,60 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives containing encrypted ite
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
 
-        SECTION( "BitArchiveReader::isHeaderEncrypted must return false" ){
-            REQUIRE_FALSE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
+        SECTION( "BitArchiveReader::isHeaderEncrypted must return false" ) {
+            REQUIRE_FALSE(
+                BitArchiveReader::isHeaderEncrypted( test::sevenzipLib(),
+                    inputArchive,
+                    testArchive.format() )
+            );
         }
 
-        SECTION( "BitArchiveReader::isEncrypted must return true" ){
-            REQUIRE( BitArchiveReader::isEncrypted( lib, inputArchive, testArchive.format() ) );
+        SECTION( "BitArchiveReader::isEncrypted must return true" ) {
+            REQUIRE( BitArchiveReader::isEncrypted( test::sevenzipLib(), inputArchive, testArchive.format() ) );
         }
 
         SECTION( "Opening the archive with no password should allow reading the archive, but tests() should throw" ) {
-            BitArchiveReader info( lib, inputArchive, testArchive.format() );
+            const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
             REQUIRE_THROWS( info.test() );
+
+            std::map< tstring, buffer_t > dummyMap;
+            REQUIRE_THROWS( info.extractTo( dummyMap ) );
+            for ( const auto& entry : dummyMap ) {
+                // TODO: Check if extractTo should not write or clear the map when the extraction fails
+                REQUIRE( entry.second.empty() );
+            }
         }
 
         SECTION( "Opening the archive with the correct password should pass all the checks" ) {
-            const BitArchiveReader info( lib, inputArchive, testArchive.format(), password );
+            constexpr auto password = BIT7Z_STRING( "helloworld" );
+            const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-            REQUIRE_ARCHIVE_TESTS( info );
         }
     }
 }
 
 /* Pull request #36 */
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading header-encrypted archives",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "header_encrypted" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto* const password = BIT7Z_STRING( "helloworld" );
-
-    const auto testArchive = GENERATE( as< EncryptedArchive >(),
-                                        EncryptedArchive{ "7z", BitFormat::SevenZip, 563776 },
-                                        EncryptedArchive{ "rar4.rar", BitFormat::Rar, 565408 },
-                                        EncryptedArchive{ "rar5.rar", BitFormat::Rar5, 565824 } );
+    const auto testArchive = GENERATE(
+        as< EncryptedArchive >(),
+        EncryptedArchive{ "7z", BitFormat::SevenZip, 563776 },
+        EncryptedArchive{ "rar4.rar", BitFormat::Rar, 565408 },
+        EncryptedArchive{ "rar5.rar", BitFormat::Rar5, 565824 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "header_encrypted." + testArchive.extension();
@@ -345,49 +290,38 @@ TEMPLATE_TEST_CASE( "BitArchiveReader: Reading header-encrypted archives",
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
 
-        SECTION( "BitArchiveReader::isHeaderEncrypted must return true" ){
-            REQUIRE( BitArchiveReader::isHeaderEncrypted( lib, inputArchive, testArchive.format() ) );
+        SECTION( "BitArchiveReader::isHeaderEncrypted must return true" ) {
+            REQUIRE( BitArchiveReader::isHeaderEncrypted( test::sevenzipLib(), inputArchive, testArchive.format() ) );
         }
 
-        SECTION( "BitArchiveReader::isEncrypted must return true" ){
-            REQUIRE( BitArchiveReader::isEncrypted( lib, inputArchive, testArchive.format() ) );
+        SECTION( "BitArchiveReader::isEncrypted must return true" ) {
+            REQUIRE( BitArchiveReader::isEncrypted( test::sevenzipLib(), inputArchive, testArchive.format() ) );
         }
 
-
-        SECTION( "Opening the archive with no password should throw an exception" ) {
-            REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, testArchive.format() ) );
-        }
-
-
-        SECTION( "Opening the archive with a wrong password should throw an exception" ) {
-            REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, testArchive.format(),
-                                              BIT7Z_STRING( "wrong_password" ) ) );
-        }
-
-        SECTION( "Opening the archive with the correct password should pass the tests" ) {
-            const BitArchiveReader info( lib, inputArchive, testArchive.format(), password );
+        SECTION( "Opening the archive with the correct password should allow reading the archive metadata" ) {
+            constexpr auto password = BIT7Z_STRING( "helloworld" );
+            const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format(), password );
             REQUIRE( info.hasEncryptedItems() );
             REQUIRE( info.isEncrypted() );
             REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-            REQUIRE_ARCHIVE_TESTS( info );
         }
     }
 }
 
 TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "split" };
 
     SECTION( "Split archive (non-RAR)" ) {
-        const auto testArchive = GENERATE( as< SingleFileArchive >(),
-                                            SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
-                                            SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
-                                            SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
-                                            SingleFileArchive{ "tar", BitFormat::Tar, 479232 },
-                                            SingleFileArchive{ "wim", BitFormat::Wim, 478883 },
-                                            SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
-                                            SingleFileArchive{ "zip", BitFormat::Zip, 476398 } );
+        const auto testArchive = GENERATE(
+            as< SingleFileArchive >(),
+            SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
+            SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
+            SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
+            SingleFileArchive{ "tar", BitFormat::Tar, 479232 },
+            SingleFileArchive{ "wim", BitFormat::Wim, 478883 },
+            SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
+            SingleFileArchive{ "zip", BitFormat::Zip, 476398 }
+        );
 
         DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
             const fs::path arcFileName = "clouds.jpg." + testArchive.extension() + ".001";
@@ -395,585 +329,508 @@ TEST_CASE( "BitArchiveReader: Reading metadata of multi-volume archives", "[bita
             INFO( "Archive file: " << arcFileName )
 
             SECTION( "Opening as a split archive" ) {
-                const BitArchiveReader info( lib, arcFileName.string< tchar >(), BitFormat::Split );
+                const BitArchiveReader info( test::sevenzipLib(), arcFileName.string< tchar >(), BitFormat::Split );
                 REQUIRE( info.isMultiVolume() );
                 REQUIRE( info.volumesCount() == 3 );
                 REQUIRE( info.itemsCount() == 1 );
-                REQUIRE( info.items()[ 0 ].name() == arcFileName.stem().string< tchar >() );
-                REQUIRE_ARCHIVE_TESTS( info );
+                REQUIRE( info.itemAt( 0 ).name() == arcFileName.stem().string< tchar >() );
             }
 
             SECTION( "Opening as a whole archive" ) {
-                const BitArchiveReader info( lib, arcFileName.string< tchar >(), testArchive.format() );
+                const BitArchiveReader info(
+                    test::sevenzipLib(),
+                    arcFileName.string< tchar >(),
+                    testArchive.format()
+                );
                 REQUIRE( info.isMultiVolume() );
                 REQUIRE( info.volumesCount() == 3 );
-                REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.items()[ 0 ], testArchive.content().items[ 0 ] );
-                REQUIRE_ARCHIVE_TESTS( info );
+                REQUIRE_ARCHIVE_ITEM( testArchive.format(), info.itemAt( 0 ), testArchive.content().items[ 0 ] );
             }
         }
     }
 
     SECTION( "Multi-volume RAR5" ) {
         const fs::path arcFileName = "clouds.jpg.part1.rar";
-        const BitArchiveReader info( lib, arcFileName.string< tchar >(), BitFormat::Rar5 );
+        const BitArchiveReader info( test::sevenzipLib(), arcFileName.string< tchar >(), BitFormat::Rar5 );
         REQUIRE( info.isMultiVolume() );
         REQUIRE( info.volumesCount() == 3 );
         REQUIRE( info.itemsCount() == 1 );
 
-        const ArchivedItem expectedItem{ clouds, clouds.name };
-        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.items()[ 0 ], expectedItem );
-
-        REQUIRE_ARCHIVE_TESTS( info );
+        const ExpectedItem expectedItem{ clouds, clouds.name };
+        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar5, info.itemAt( 0 ), expectedItem );
     }
 
     SECTION( "Multi-volume RAR4" ) {
         const fs::path arcFileName = "clouds.jpg.rar";
-        const BitArchiveReader info( lib, arcFileName.string< tchar >(), BitFormat::Rar );
+        const BitArchiveReader info( test::sevenzipLib(), arcFileName.string< tchar >(), BitFormat::Rar );
         REQUIRE( info.isMultiVolume() );
         REQUIRE( info.volumesCount() == 3 );
         REQUIRE( info.itemsCount() == 1 );
 
-        const ArchivedItem expectedItem{ clouds, clouds.name };
-        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.items()[ 0 ], expectedItem );
-
-        REQUIRE_ARCHIVE_TESTS( info );
+        const ExpectedItem expectedItem{ clouds, clouds.name };
+        REQUIRE_ARCHIVE_ITEM( BitFormat::Rar, info.itemAt( 0 ), expectedItem );
     }
 }
 
-struct EmptyArchive : public TestInputArchive {
+namespace {
+struct EmptyArchive : TestInputArchive {
     EmptyArchive( std::string extension, const BitInFormat& format, std::size_t packedSize )
-        : TestInputArchive{ std::move( extension ), format, packedSize, empty_content() } {}
+        : TestInputArchive{ std::move( extension ), format, packedSize, emptyContent() } {}
 };
+} // namespace
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an empty archive",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading an empty archive",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "empty" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto testArchive = GENERATE( as< EmptyArchive >(),
-                                       EmptyArchive{ "7z", BitFormat::SevenZip, 0 },
-    // EmptyArchive{ "tar", BitFormat::Tar, 0 }, // TODO: Check why it fails opening
-                                       EmptyArchive{ "wim", BitFormat::Wim, 0 },
-                                       EmptyArchive{ "zip", BitFormat::Zip, 0 } );
+    const auto testArchive = GENERATE(
+        as< EmptyArchive >(),
+        EmptyArchive{ "7z", BitFormat::SevenZip, 0 },
+        // EmptyArchive{ "tar", BitFormat::Tar, 0 }, // TODO: Check why it fails opening
+        EmptyArchive{ "wim", BitFormat::Wim, 0 },
+        EmptyArchive{ "zip", BitFormat::Zip, 0 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "empty." + testArchive.extension();
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
-        if( is_filesystem_archive< TestType >::value ) {
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
+        if ( is_filesystem_archive< TestType >::value ) {
+            REQUIRE( info.archiveHasPath() );
             REQUIRE( info.archivePath() == arcFileName );
         } else {
+            REQUIRE_FALSE( info.archiveHasPath() );
             REQUIRE( info.archivePath().empty() ); // No archive path for buffer/streamed archives
         }
         REQUIRE_FALSE( info.isEncrypted() );
         REQUIRE_ARCHIVE_CONTENT( info, testArchive );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 }
 
 TEST_CASE( "BitArchiveReader: Solid archive detection", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "solid" };
 
     SECTION( "Solid 7z" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
+        const BitArchiveReader info( test::sevenzipLib(), BIT7Z_STRING( "solid.7z" ), BitFormat::SevenZip );
         REQUIRE( info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 
     SECTION( "Solid RAR" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
+        const BitArchiveReader info( test::sevenzipLib(), BIT7Z_STRING( "solid.rar" ), BitFormat::Rar5 );
         REQUIRE( info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 
     SECTION( "Non solid 7z" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
+        const BitArchiveReader info( test::sevenzipLib(), BIT7Z_STRING( "non_solid.7z" ), BitFormat::SevenZip );
         REQUIRE( !info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 
     SECTION( "Non-solid RAR" ) {
-        const BitArchiveReader info( lib, BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
+        const BitArchiveReader info( test::sevenzipLib(), BIT7Z_STRING( "non_solid.rar" ), BitFormat::Rar5 );
         REQUIRE( !info.isSolid() );
-        REQUIRE_ARCHIVE_TESTS( info );
     }
 }
 
-/**
- * Tests opening an archive file using the RAR format
- * (or throws a BitException if it is not a RAR archive at all).
- */
-auto test_open_rar_archive( const Bit7zLibrary& lib, const tstring& inFile ) -> const BitInFormat& {
-    try {
-        const BitArchiveReader info( lib, inFile, BitFormat::Rar );
-        //if BitArchiveReader constructor did not throw an exception, the archive is RAR (< 5.0)!
-        return BitFormat::Rar;
-    } catch ( const BitException& ) {
-        /* the archive is not a RAR, and if it is not even a RAR5,
-           the following line will throw an exception (which we do not catch)! */
-        const BitArchiveReader info( lib, inFile, BitFormat::Rar5 );
-        return BitFormat::Rar5;
-    }
-}
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Checking consistency between items() and iterators",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-TEST_CASE( "BitArchiveReader: Opening RAR archives using the correct RAR format version", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    SECTION( "Valid RAR archives" ) {
-        REQUIRE( test_open_rar_archive( lib, BIT7Z_STRING( "valid.rar4.rar" ) ) == BitFormat::Rar );
-        REQUIRE( test_open_rar_archive( lib, BIT7Z_STRING( "valid.rar5.rar" ) ) == BitFormat::Rar5 );
-    }
-
-    SECTION( "Non-RAR archive" ) {
-        REQUIRE_THROWS( test_open_rar_archive( lib, BIT7Z_STRING( "valid.zip" ) ) );
-    }
-}
-
-#define REQUIRE_ITEM_EQUAL( first, second ) \
-    do {                                              \
-        REQUIRE( (first).index() == (second).index() ); \
-        REQUIRE( (first).name() == (second).name() ); \
-        REQUIRE( (first).path() == (second).path() ); \
-        REQUIRE( (first).isDir() == (second).isDir() ); \
-        REQUIRE( (first).crc() == (second).crc() ); \
-        REQUIRE( (first).extension() == (second).extension() ); \
-        REQUIRE( (first).isEncrypted() == (second).isEncrypted() ); \
-        REQUIRE( (first).size() == (second).size() ); \
-        REQUIRE( (first).packSize() == (second).packSize() ); \
-        REQUIRE( (first).attributes() == (second).attributes() ); \
-    } while ( false )
-
-TEMPLATE_TEST_CASE( "BitArchiveReader: Checking consistency between items() and iterators",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto testArchive = GENERATE( as< MultipleItemsArchive >(),
-                                        MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
-                                        MultipleItemsArchive{ "iso", BitFormat::Iso, 615351 },
-                                        MultipleItemsArchive{ "rar4.rar", BitFormat::Rar, 565329 },
-                                        MultipleItemsArchive{ "rar5.rar", BitFormat::Rar5, 565756 },
-                                        MultipleItemsArchive{ "tar", BitFormat::Tar, 617472 },
-                                        MultipleItemsArchive{ "wim", BitFormat::Wim, 615351 },
-                                        MultipleItemsArchive{ "zip", BitFormat::Zip, 564097 } );
+    const auto testArchive = GENERATE(
+        as< MultipleItemsArchive >(),
+        MultipleItemsArchive{ "7z", BitFormat::SevenZip, 563797 },
+        MultipleItemsArchive{ "iso", BitFormat::Iso, 615351 },
+        MultipleItemsArchive{ "rar4.rar", BitFormat::Rar, 565329 },
+        MultipleItemsArchive{ "rar5.rar", BitFormat::Rar5, 565756 },
+        MultipleItemsArchive{ "tar", BitFormat::Tar, 617472 },
+        MultipleItemsArchive{ "wim", BitFormat::Wim, 615351 },
+        MultipleItemsArchive{ "zip", BitFormat::Zip, 564097 }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
         const fs::path arcFileName = "multiple_items." + testArchive.extension();
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format() );
 
         const auto archiveItems = info.items();
+        REQUIRE( archiveItems.size() == info.itemsCount() );
 
         REQUIRE( info.begin() == info.cbegin() );
         REQUIRE( info.end() == info.cend() );
 
+        const auto begin = info.begin()++;
+        REQUIRE( begin == info.begin() );
+
         for ( const auto& iteratedItem : info ) {
             const auto& archivedItem = archiveItems[ iteratedItem.index() ];
-            REQUIRE_ITEM_EQUAL( archivedItem, iteratedItem );
-        }
-    }
-}
+            REQUIRE( archivedItem.index() == iteratedItem.index() );
+            REQUIRE( archivedItem.name() == iteratedItem.name() );
+            REQUIRE( archivedItem.nativeName() == iteratedItem.nativeName() );
+            REQUIRE( archivedItem.path() == iteratedItem.path() );
+            REQUIRE( archivedItem.nativePath() == iteratedItem.nativePath() );
+            REQUIRE( archivedItem.rawPath() == iteratedItem.rawPath() );
+            REQUIRE( archivedItem.isDir() == iteratedItem.isDir() );
+            REQUIRE( archivedItem.isSymLink() == iteratedItem.isSymLink() );
+            REQUIRE( archivedItem.crc() == iteratedItem.crc() );
+            REQUIRE( archivedItem.extension() == iteratedItem.extension() );
+            REQUIRE( archivedItem.isEncrypted() == iteratedItem.isEncrypted() );
+            REQUIRE( archivedItem.size() == iteratedItem.size() );
+            REQUIRE( archivedItem.packSize() == iteratedItem.packSize() );
+            REQUIRE( archivedItem.attributes() == iteratedItem.attributes() );
+            // Note: the typed creationTime()/lastAccessTime()/lastWriteTime() accessors are intentionally not
+            // compared here: when an item has no stored timestamp, they fall back to clock::now(), so two
+            // independent calls would differ. The stored timestamps are covered by the itemProperty() loop below
+            // (BitProperty::CTime/ATime/MTime).
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading invalid archives",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "testing" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto testArchive = GENERATE( as< SingleFileArchive >(),
-                                        SingleFileArchive{ "7z", BitFormat::SevenZip, 478025 },
-                                        SingleFileArchive{ "bz2", BitFormat::BZip2, 0 },
-                                        SingleFileArchive{ "gz", BitFormat::GZip, 476404 },
-                                        SingleFileArchive{ "rar", BitFormat::Rar5, 477870 },
-                                        //SingleFileArchive{"tar", BitFormat::Tar, 479232},
-                                        SingleFileArchive{ "wim", BitFormat::Wim, clouds.size },
-                                        SingleFileArchive{ "xz", BitFormat::Xz, 478080 },
-                                        SingleFileArchive{ "zip", BitFormat::Zip, 476375 } );
-
-    DYNAMIC_SECTION( "Archive format: " << testArchive.extension() ) {
-        const fs::path arcFileName = "ko_test." + testArchive.extension();
-
-        TestType inputArchive{};
-        getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testArchive.format() );
-        REQUIRE_THROWS( info.test() );
-    }
-}
-
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading archives using the wrong format should throw",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
-
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto correctFormat = GENERATE( as< TestInputFormat >(),
-                                         TestInputFormat{ "7z", BitFormat::SevenZip },
-                                         TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                         TestInputFormat{ "gz", BitFormat::GZip },
-                                         TestInputFormat{ "iso", BitFormat::Iso },
-                                         TestInputFormat{ "lzh", BitFormat::Lzh },
-                                         TestInputFormat{ "lzma", BitFormat::Lzma },
-                                         TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                         TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                         TestInputFormat{ "tar", BitFormat::Tar },
-                                         TestInputFormat{ "wim", BitFormat::Wim },
-                                         TestInputFormat{ "xz", BitFormat::Xz },
-                                         TestInputFormat{ "zip", BitFormat::Zip } );
-
-    const auto wrongFormat = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
-
-    DYNAMIC_SECTION( "Archive format: " << correctFormat.extension ) {
-        const auto arcFileName = fs::path{ clouds.name }.concat( "." + correctFormat.extension );
-
-        if ( correctFormat.extension != wrongFormat.extension ) {
-            DYNAMIC_SECTION( "Wrong format: " << wrongFormat.extension ) {
-                TestType inputArchive{};
-                getInputArchive( arcFileName, inputArchive );
-                REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, wrongFormat.format ) );
+            // The generic itemProperty() accessor is cached in a map by BitArchiveItemInfo, but it is
+            // queried live from the archive by BitArchiveItemOffset; check that they agree for every property.
+            using property_t = std::underlying_type< BitProperty >::type;
+            for (
+                auto prop = static_cast< property_t >( BitProperty::NoProperty );
+                prop <= static_cast< property_t >( BitProperty::CopyLink );
+                ++prop
+            ) {
+                const auto property = static_cast< BitProperty >( prop );
+                REQUIRE( archivedItem.itemProperty( property ) == iteratedItem.itemProperty( property ) );
             }
+
+            REQUIRE( info.itemAt( archivedItem.index() ) == iteratedItem );
         }
+
+        REQUIRE_THROWS( info.itemAt( info.itemsCount() ) );
+        REQUIRE_THROWS( info.itemAt( info.itemsCount() + 1 ) );
     }
 }
 
+namespace {
+void require_item_type(
+    const BitArchiveReader& info,
+    const tstring& itemName,
+    const std::u16string& utf16Name,
+    fs::file_type fileType,
+    std::uint32_t winAttributes,
+    SourceLocation location
+) {
 #ifndef FILE_ATTRIBUTE_WINDOWS_MASK
-constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFF;
+    constexpr auto FILE_ATTRIBUTE_WINDOWS_MASK = 0x07FFFu;
 #endif
 
-#define REQUIRE_ITEM_DIRECTORY( info, item_name )                                                     \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE( iterator->isDir() );                                                                 \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == FILE_ATTRIBUTE_DIRECTORY );    \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( S_ISDIR( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISREG( posix_attributes ) );                                                  \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+    INFO( "Failed checking required item " << Catch::StringMaker< tstring >::convert( itemName ) )
+    INFO( "  from " << location.file_name() << ":" << location.line() )
+    auto iterator = info.find( itemName );
+    REQUIRE( iterator != info.cend() );
+    REQUIRE( iterator->name() == itemName );
+    REQUIRE( iterator->path() == itemName );
 
-#define REQUIRE_ITEM_REGULAR( info, item_name )                                                       \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+    const sevenzip_string utf16Path{ utf16Name.cbegin(), utf16Name.cend() };
 
-#define REQUIRE_ITEM_SYMLINK( info, item_name )                                                       \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE( iterator->isSymLink() );                                                        \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( !S_ISREG( posix_attributes ) );                                                  \
-            REQUIRE( S_ISLNK( posix_attributes ) );                                                   \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+    // Note: the architectures supported by bit7z are all little endian.
+    // For some reason, 7-Zip uses UTF-16 for wide strings also on Unix systems (which usually use UTF-32).
+    const auto raw = iterator->rawPath();
+    REQUIRE( raw == utf16Path ); // UTF-16LE
 
-#define REQUIRE_ITEM_HIDDEN( info, item_name )                                                        \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == FILE_ATTRIBUTE_HIDDEN );          \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+    const auto native = iterator->nativePath();
+#ifdef _WIN32
+    REQUIRE( native == utf16Path ); // UTF-16LE
+#else
+    REQUIRE( native == itemName ); // UTF-8
+#endif
 
-#define REQUIRE_ITEM_READONLY( info, item_name )                                                      \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        REQUIRE_FALSE( iterator->isSymLink() );                                                  \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == FILE_ATTRIBUTE_READONLY );      \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
+    const bool expectedDir = ( fileType == fs::file_type::directory );
+    const bool expectedSymlink = ( fileType == fs::file_type::symlink );
+    REQUIRE( iterator->isDir() == expectedDir );
+    REQUIRE( iterator->isSymLink() == expectedSymlink );
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading file type inside archives",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
+    auto item_attributes = iterator->attributes();
+    if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {
+        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == ( expectedDir ? FILE_ATTRIBUTE_DIRECTORY : 0 ) );
+        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == ( winAttributes & FILE_ATTRIBUTE_HIDDEN ) );
+        REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == ( winAttributes & FILE_ATTRIBUTE_READONLY ) );
+    }
+    if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
+        auto posix_attributes = item_attributes >> 16U;
+        REQUIRE( S_ISDIR( posix_attributes ) == expectedDir );
+        REQUIRE( S_ISREG( posix_attributes ) == ( !expectedDir && !expectedSymlink ) );
+        REQUIRE( S_ISLNK( posix_attributes ) == expectedSymlink );
+    }
+}
+} // namespace
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+#define REQUIRE_ITEM_TYPE( info, item_name, file_type ) \
+    require_item_type( (info), BIT7Z_STRING( item_name ), u##item_name, (file_type), 0, BIT7Z_CURRENT_LOCATION )
 
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+#define REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, item_name, file_type, win_attributes ) \
+    require_item_type( (info), BIT7Z_STRING( item_name ), u##item_name, (file_type), (win_attributes), BIT7Z_CURRENT_LOCATION )
+
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Correctly reading file type inside archives",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "file_type" };
+
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "file_type." + testFormat.extension;
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testFormat.format );
-        REQUIRE_ITEM_DIRECTORY( info, "dir" );
-        REQUIRE_ITEM_REGULAR( info, "regular" );
-        REQUIRE_ITEM_SYMLINK( info, "symlink" );
-        REQUIRE_ITEM_HIDDEN( info, "hidden" );
-        REQUIRE_ITEM_READONLY( info, "read_only" );
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testFormat.format );
+        REQUIRE_ITEM_TYPE( info, "dir", fs::file_type::directory );
+        REQUIRE_ITEM_TYPE( info, "regular", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "symlink", fs::file_type::symlink );
+        REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, "hidden", fs::file_type::regular, FILE_ATTRIBUTE_HIDDEN );
+        REQUIRE_ITEM_TYPE_WITH_ATTRIBUTES( info, "read_only", fs::file_type::regular, FILE_ATTRIBUTE_READONLY );
     }
 }
 
 #ifndef BIT7Z_USE_SYSTEM_CODEPAGE
-#define REQUIRE_ITEM_UNICODE( info, item_name )                                                       \
-    do {                                                                                              \
-        auto iterator = (info).find( BIT7Z_STRING( item_name ) );                                     \
-        REQUIRE( iterator != (info).cend() );                                                         \
-        REQUIRE_FALSE( iterator->isDir() );                                                           \
-        auto item_attributes = iterator->attributes();                                                \
-        if ( ( item_attributes & FILE_ATTRIBUTE_WINDOWS_MASK ) != 0 ) {                               \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_DIRECTORY ) == 0 );                           \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_HIDDEN ) == 0 );                              \
-            REQUIRE( ( item_attributes & FILE_ATTRIBUTE_READONLY ) == 0 );                            \
-        }                                                                                             \
-        if ( ( item_attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) { \
-            auto posix_attributes = item_attributes >> 16U;                                           \
-            REQUIRE( !S_ISDIR( posix_attributes ) );                                                  \
-            REQUIRE( S_ISREG( posix_attributes ) );                                                   \
-            REQUIRE( !S_ISLNK( posix_attributes ) );                                                  \
-        }                                                                                             \
-        REQUIRE( iterator->name() == BIT7Z_STRING( item_name ) );                                     \
-    } while ( false )
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Correctly reading archive items with Unicode names",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Correctly reading archive items with Unicode names",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    const auto testFormat = GENERATE( as< TestInputFormat >(),
-                                      TestInputFormat{ "7z", BitFormat::SevenZip },
-                                      TestInputFormat{ "rar", BitFormat::Rar5 },
-                                      TestInputFormat{ "tar", BitFormat::Tar },
-                                      TestInputFormat{ "wim", BitFormat::Wim },
-                                      TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
         const fs::path arcFileName = "unicode." + testFormat.extension;
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const BitArchiveReader info( lib, inputArchive, testFormat.format );
-        REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
-        REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
-        REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
-        REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testFormat.format );
+        REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "𤭢.txt", fs::file_type::regular );
     }
 }
 
-TEMPLATE_TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name",
-                    "[bitarchivereader]", tstring, buffer_t, stream_t ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading an archive with a Unicode file name",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
+    const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "αρχείο.7z" ) };
 
     TestType inputArchive{};
-        getInputArchive( arcFileName, inputArchive );
-    const BitArchiveReader info( lib, inputArchive, BitFormat::SevenZip );
-    REQUIRE_ITEM_UNICODE( info, "¡Porque sí!.doc" );
-    REQUIRE_ITEM_UNICODE( info, "σύννεφα.jpg" );
-    REQUIRE_ITEM_UNICODE( info, "юнікод.svg" );
-    REQUIRE_ITEM_UNICODE( info, "ユニコード.pdf" );
+    getInputArchive( arcFileName, inputArchive );
+    const BitArchiveReader info( test::sevenzipLib(), inputArchive, BitFormat::SevenZip );
+    REQUIRE_ITEM_TYPE( info, "¡Porque sí!.doc", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "σύννεφα.jpg", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "юнікод.svg", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "ユニコード.pdf", fs::file_type::regular );
+    REQUIRE_ITEM_TYPE( info, "𤭢.txt", fs::file_type::regular );
 }
 
 TEST_CASE( "BitArchiveReader: Reading an archive with a Unicode file name (bzip2)", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+    const fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
+    const BitArchiveReader info( test::sevenzipLib(), to_tstring( arcFileName ), BitFormat::BZip2 );
+    REQUIRE_ITEM_TYPE( info, "クラウド.jpg", fs::file_type::regular );
+}
 
-    fs::path arcFileName{ BIT7Z_NATIVE_STRING( "クラウド.jpg.bz2" ) };
-    const BitArchiveReader info( lib, to_tstring( arcFileName.native() ), BitFormat::BZip2 );
-    REQUIRE_ITEM_UNICODE( info, "クラウド.jpg" );
+// NOLINTNEXTLINE(*-err58-cpp)
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Reading an archive with a symbolic link pointing to an item with a Unicode name",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
+
+    const auto testFormat = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
+
+    DYNAMIC_SECTION( "Archive format: " << testFormat.extension ) {
+        const fs::path arcFileName = "symlink." + testFormat.extension;
+
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testFormat.format );
+        REQUIRE_ITEM_TYPE( info, "𤭢.svg", fs::file_type::regular );
+        REQUIRE_ITEM_TYPE( info, "italy.svg", fs::file_type::symlink );
+
+        const auto unicodeSymlink = info.find( BIT7Z_STRING( "italy.svg" ) );
+
+        buffer_t buffer;
+        info.extractTo( buffer, unicodeSymlink->index() );
+        REQUIRE( std::memcmp( buffer.data(), "\xF0\xA4\xAD\xA2.svg", buffer.size() ) == 0 );
+    }
 }
 #endif
 
 #ifdef BIT7Z_AUTO_FORMAT
 
 TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]" ) {
-    static const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" / "valid" };
 
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    auto test = GENERATE( TestInputFormat{ "7z", BitFormat::SevenZip },
-                          TestInputFormat{ "ar", BitFormat::Deb },
-                          TestInputFormat{ "arj", BitFormat::Arj },
-                          TestInputFormat{ "bz2", BitFormat::BZip2 },
-                          TestInputFormat{ "bzip2", BitFormat::BZip2 },
-                          TestInputFormat{ "cab", BitFormat::Cab },
-                          TestInputFormat{ "chi", BitFormat::Chm },
-                          TestInputFormat{ "chm", BitFormat::Chm },
-                          TestInputFormat{ "cpio", BitFormat::Cpio },
-                          TestInputFormat{ "cramfs", BitFormat::CramFS },
-                          TestInputFormat{ "deb", BitFormat::Deb },
-                          TestInputFormat{ "deflate.swfc", BitFormat::Swfc },
-                          TestInputFormat{ "doc", BitFormat::Compound },
-                          TestInputFormat{ "docx", BitFormat::Zip },
-                          TestInputFormat{ "dylib", BitFormat::Macho },
-                          TestInputFormat{ "elf", BitFormat::Elf },
-                          TestInputFormat{ "exe", BitFormat::Pe }, // We don't consider SFX executables!
-                          TestInputFormat{ "ext2", BitFormat::Ext },
-                          TestInputFormat{ "ext3", BitFormat::Ext },
-                          TestInputFormat{ "ext4", BitFormat::Ext },
-                          TestInputFormat{ "ext4.img", BitFormat::Ext },
-                          TestInputFormat{ "fat", BitFormat::Fat },
-                          TestInputFormat{ "fat12.img", BitFormat::Fat },
-                          TestInputFormat{ "fat16.img", BitFormat::Fat },
-                          TestInputFormat{ "flv", BitFormat::Flv },
-                          TestInputFormat{ "gpt", BitFormat::GPT },
-                          TestInputFormat{ "gz", BitFormat::GZip },
-                          TestInputFormat{ "gzip", BitFormat::GZip },
-                          TestInputFormat{ "hfs", BitFormat::Hfs },
-                          TestInputFormat{ "iso", BitFormat::Iso },
-                          TestInputFormat{ "iso.img", BitFormat::Iso },
-                          TestInputFormat{ "lha", BitFormat::Lzh },
-                          TestInputFormat{ "lzh", BitFormat::Lzh },
-                          TestInputFormat{ "lzma", BitFormat::Lzma },
-                          TestInputFormat{ "lzma86", BitFormat::Lzma86 },
-                          TestInputFormat{ "lzma.swfc", BitFormat::Swfc },
-                          TestInputFormat{ "macho", BitFormat::Macho },
-                          TestInputFormat{ "mslz", BitFormat::Mslz },
-                          TestInputFormat{ "nsis", BitFormat::Nsis },
-                          TestInputFormat{ "ntfs", BitFormat::Ntfs },
-                          TestInputFormat{ "ntfs.img", BitFormat::Ntfs },
-                          TestInputFormat{ "odp", BitFormat::Zip },
-                          TestInputFormat{ "ods", BitFormat::Zip },
-                          TestInputFormat{ "odt", BitFormat::Zip },
-                          TestInputFormat{ "ova", BitFormat::Tar },
-                          TestInputFormat{ "part1.rar", BitFormat::Rar5 },
-                          TestInputFormat{ "part2.rar", BitFormat::Rar5 },
-                          TestInputFormat{ "part3.rar", BitFormat::Rar5 },
-                          TestInputFormat{ "pkg", BitFormat::Xar },
-                          TestInputFormat{ "pmd", BitFormat::Ppmd },
-                          TestInputFormat{ "ppmd", BitFormat::Ppmd },
-                          TestInputFormat{ "ppt", BitFormat::Compound },
-                          TestInputFormat{ "pptx", BitFormat::Zip },
-                          TestInputFormat{ "qcow", BitFormat::QCow },
-                          TestInputFormat{ "qcow2", BitFormat::QCow },
-                          TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                          TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                          TestInputFormat{ "rpm", BitFormat::Rpm },
-                          TestInputFormat{ "sqsh", BitFormat::SquashFS },
-                          TestInputFormat{ "squashfs", BitFormat::SquashFS },
-                          TestInputFormat{ "swf", BitFormat::Swf },
-                          TestInputFormat{ "swm", BitFormat::Wim },
-                          TestInputFormat{ "tar", BitFormat::Tar },
-                          TestInputFormat{ "taz", BitFormat::Z },
-                          TestInputFormat{ "tbz", BitFormat::BZip2 },
-                          TestInputFormat{ "tbz2", BitFormat::BZip2 },
-                          TestInputFormat{ "tgz", BitFormat::GZip },
-                          TestInputFormat{ "txz", BitFormat::Xz },
-                          TestInputFormat{ "vdi", BitFormat::VDI },
-                          TestInputFormat{ "vhd", BitFormat::Vhd },
-                          TestInputFormat{ "vmdk", BitFormat::VMDK },
-                          TestInputFormat{ "wim", BitFormat::Wim },
-                          TestInputFormat{ "xar", BitFormat::Xar },
-                          TestInputFormat{ "xls", BitFormat::Compound },
-                          TestInputFormat{ "xlsx", BitFormat::Zip },
-                          TestInputFormat{ "xz", BitFormat::Xz },
-                          TestInputFormat{ "z", BitFormat::Z },
-                          TestInputFormat{ "zip", BitFormat::Zip },
-                          TestInputFormat{ "zipx", BitFormat::Zip } );
+    auto test = GENERATE(
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "ar", BitFormat::Deb },
+        TestInputFormat{ "arj", BitFormat::Arj },
+        TestInputFormat{ "bz2", BitFormat::BZip2 },
+        TestInputFormat{ "bzip2", BitFormat::BZip2 },
+        TestInputFormat{ "cab", BitFormat::Cab },
+        TestInputFormat{ "chi", BitFormat::Chm },
+        TestInputFormat{ "chm", BitFormat::Chm },
+        TestInputFormat{ "cpio", BitFormat::Cpio },
+        TestInputFormat{ "cramfs", BitFormat::CramFS },
+        TestInputFormat{ "deb", BitFormat::Deb },
+        TestInputFormat{ "deflate.swfc", BitFormat::Swfc },
+        TestInputFormat{ "doc", BitFormat::Compound },
+        TestInputFormat{ "docx", BitFormat::Zip },
+        TestInputFormat{ "dylib", BitFormat::Macho },
+        TestInputFormat{ "elf", BitFormat::Elf },
+        TestInputFormat{ "exe", BitFormat::Pe }, // We don't consider SFX executables!
+        TestInputFormat{ "ext2", BitFormat::Ext },
+        TestInputFormat{ "ext3", BitFormat::Ext },
+        TestInputFormat{ "ext4", BitFormat::Ext },
+        TestInputFormat{ "ext4.img", BitFormat::Ext },
+        TestInputFormat{ "fat", BitFormat::Fat },
+        TestInputFormat{ "fat12.img", BitFormat::Fat },
+        TestInputFormat{ "fat16.img", BitFormat::Fat },
+        TestInputFormat{ "flv", BitFormat::Flv },
+        TestInputFormat{ "gpt", BitFormat::GPT },
+        TestInputFormat{ "gz", BitFormat::GZip },
+        TestInputFormat{ "gzip", BitFormat::GZip },
+        TestInputFormat{ "hfs", BitFormat::Hfs },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "iso.img", BitFormat::Iso },
+        TestInputFormat{ "lha", BitFormat::Lzh },
+        TestInputFormat{ "lzh", BitFormat::Lzh },
+        TestInputFormat{ "lzma", BitFormat::Lzma },
+        TestInputFormat{ "lzma86", BitFormat::Lzma86 },
+        TestInputFormat{ "lzma.swfc", BitFormat::Swfc },
+        TestInputFormat{ "macho", BitFormat::Macho },
+        TestInputFormat{ "mslz", BitFormat::Mslz },
+        TestInputFormat{ "nsis", BitFormat::Nsis },
+        TestInputFormat{ "ntfs", BitFormat::Ntfs },
+        TestInputFormat{ "ntfs.img", BitFormat::Ntfs },
+        TestInputFormat{ "odp", BitFormat::Zip },
+        TestInputFormat{ "ods", BitFormat::Zip },
+        TestInputFormat{ "odt", BitFormat::Zip },
+        TestInputFormat{ "ova", BitFormat::Tar },
+        TestInputFormat{ "part1.rar", BitFormat::Rar5 },
+        TestInputFormat{ "part2.rar", BitFormat::Rar5 },
+        TestInputFormat{ "part3.rar", BitFormat::Rar5 },
+        TestInputFormat{ "pkg", BitFormat::Xar },
+        TestInputFormat{ "pmd", BitFormat::Ppmd },
+        TestInputFormat{ "ppmd", BitFormat::Ppmd },
+        TestInputFormat{ "ppt", BitFormat::Compound },
+        TestInputFormat{ "pptx", BitFormat::Zip },
+        TestInputFormat{ "qcow", BitFormat::QCow },
+        TestInputFormat{ "qcow2", BitFormat::QCow },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "rpm", BitFormat::Rpm },
+        TestInputFormat{ "sqsh", BitFormat::SquashFS },
+        TestInputFormat{ "squashfs", BitFormat::SquashFS },
+        TestInputFormat{ "swf", BitFormat::Swf },
+        TestInputFormat{ "swm", BitFormat::Wim },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "taz", BitFormat::Z },
+        TestInputFormat{ "tbz", BitFormat::BZip2 },
+        TestInputFormat{ "tbz2", BitFormat::BZip2 },
+        TestInputFormat{ "tgz", BitFormat::GZip },
+        TestInputFormat{ "txz", BitFormat::Xz },
+        TestInputFormat{ "vdi", BitFormat::VDI },
+        TestInputFormat{ "vhd", BitFormat::Vhd },
+        TestInputFormat{ "vmdk", BitFormat::VMDK },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "xar", BitFormat::Xar },
+        TestInputFormat{ "xls", BitFormat::Compound },
+        TestInputFormat{ "xlsx", BitFormat::Zip },
+        TestInputFormat{ "xz", BitFormat::Xz },
+        TestInputFormat{ "z", BitFormat::Z },
+        TestInputFormat{ "zip", BitFormat::Zip },
+        TestInputFormat{ "zipx", BitFormat::Zip }
+    );
 
     DYNAMIC_SECTION( "Test extension: " << test.extension ) {
         SECTION( "Filesystem archive (extension + signature)" ) {
             const fs::path file = "valid." + test.extension;
-            const BitArchiveReader reader{ lib, file.string< bit7z::tchar >() };
+            const BitArchiveReader reader{ test::sevenzipLib(), file.string< bit7z::tchar >() };
             REQUIRE( reader.detectedFormat() == test.format );
 
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+            if ( test.format != BitFormat::Rar && test.format != BitFormat::Rar5 &&
+                 test.format != BitFormat::Mslz && test.extension != "part2.rar" && test.extension != "part3.rar" ) {
+#else
             if ( test.format != BitFormat::Mslz && test.extension != "part2.rar" && test.extension != "part3.rar" ) {
+#endif
                 REQUIRE_NOTHROW( reader.test() );
+                // NOTE: Testing extraction of all these formats takes too much time and CTest timeouts
             }
         }
 
         SECTION( "Archive stream (signature) from a file" ) {
             REQUIRE_OPEN_IFSTREAM( fileStream, "valid." + test.extension );
 
-            const BitArchiveReader reader{ lib, fileStream };
+            const BitArchiveReader reader{ test::sevenzipLib(), fileStream };
             REQUIRE( reader.detectedFormat() == test.format );
 
             // TODO: Verify why testing of Mslz and multi-volume RAR archives fails
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+            if ( test.format != BitFormat::Rar && test.format != BitFormat::Rar5 &&
+                 test.format != BitFormat::Mslz && test.extension.find( "part" ) != 0 ) {
+
+#else
             if ( test.format != BitFormat::Mslz && test.extension.find( "part" ) != 0 ) {
+#endif
                 REQUIRE_NOTHROW( reader.test() );
+                // NOTE: Testing extraction of all these formats takes too much time and CTest timeouts
             }
         }
     }
@@ -981,213 +838,150 @@ TEST_CASE( "BitArchiveReader: Format detection of archives", "[bitarchivereader]
 
 #endif
 
-
-// NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading the archive from the start of the input file",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "single_file" };
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Renaming the files being extracted using a RenameCallback",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
 #ifdef BIT7Z_BUILD_FOR_P7ZIP
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-    const auto testArchive = GENERATE( as< TestInputFormat >(),
-                                       TestInputFormat{ "7z", BitFormat::SevenZip },
-                                       TestInputFormat{ "bz2", BitFormat::BZip2 },
-                                       TestInputFormat{ "gz", BitFormat::GZip },
-                                       TestInputFormat{ "iso", BitFormat::Iso },
-                                       TestInputFormat{ "lzh", BitFormat::Lzh },
-                                       TestInputFormat{ "lzma", BitFormat::Lzma },
-                                       TestInputFormat{ "rar4.rar", BitFormat::Rar },
-                                       TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
-                                       TestInputFormat{ "tar", BitFormat::Tar },
-                                       TestInputFormat{ "wim", BitFormat::Wim },
-                                       TestInputFormat{ "xz", BitFormat::Xz },
-                                       TestInputFormat{ "zip", BitFormat::Zip } );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
 
     DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
-        const fs::path arcFileName = fs::path{ clouds.name }.concat( "." + testArchive.extension );
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
         TestType inputArchive{};
         getInputArchive( arcFileName, inputArchive );
-        const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-        REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, testArchive.format ) );
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format );
+
+        const TempTestDirectory testOutDir{ "test_bitarchivereader" };
+        info.extractTo(
+            testOutDir,
+            [] ( const BitArchiveItem& item ) -> tstring {
+                const auto originalName = item.name();
+                if ( originalName == italy.name ) {
+                    return BIT7Z_STRING( "flag.svg" ); // Rename.
+                }
+                if ( originalName == loremIpsum.name ) {
+                    return BIT7Z_STRING( "document.pdf" ); // Rename.
+                }
+                if ( originalName == noext.name ) {
+                    return item.path(); // Keep the original path.
+                }
+                return {}; // Skipping extraction of all other files.
+            }
+        );
+        REQUIRE_FALSE( fs::exists( italy.name ) );
+        REQUIRE_FALSE( fs::exists( loremIpsum.name ) );
+        REQUIRE_FALSE( fs::exists( dotFolder.name ) );
+        REQUIRE_FALSE( fs::exists( emptyFolder.name ) );
+        REQUIRE_FALSE( fs::exists( folder.name ) );
+
+        auto iterator = fs::directory_iterator{ testOutDir.path() };
+        const int fileCount = std::count_if(
+            fs::begin( iterator ),
+            fs::end( iterator ),
+            [] ( const fs::directory_entry& entry ) -> bool {
+                return entry.is_regular_file();
+            }
+        );
+        REQUIRE( fileCount == 3 );
+        REQUIRE( fs::exists( "flag.svg" ) );
+        REQUIRE( fs::exists( "document.pdf" ) );
+        REQUIRE( fs::exists( "noext" ) );
+
+        auto buffer = loadFile( "flag.svg" );
+        REQUIRE( crc32( buffer ) == italy.crc32 );
+
+        buffer = loadFile( "document.pdf" );
+        REQUIRE( crc32( buffer ) == loremIpsum.crc32 );
+
+        buffer = loadFile( "noext" );
+        REQUIRE( crc32( buffer ) == noext.crc32 );
+
+        REQUIRE( fs::remove( "flag.svg" ) );
+        REQUIRE( fs::remove( "document.pdf" ) );
+        REQUIRE( fs::remove( "noext" ) );
     }
 }
 
-// NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Scanning a file for the archive start",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+TEMPLATE_TEST_CASE(
+    "BitArchiveReader: Getting the items that match a given wildcard pattern",
+    "[bitarchivereader]",
+    tstring,
+    buffer_t,
+    stream_t
+) {
+    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "multiple_items" };
 
-    const fs::path arcFileName = "multiple_nested2.tar";
-
-    TestType inputArchive{};
-    getInputArchive( arcFileName, inputArchive );
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-#ifdef BIT7Z_AUTO_FORMAT
-    SECTION( "Detecting the format from the file extension (extension is correct)" ) {
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
-        REQUIRE_NOTHROW( reader.detectedFormat() == BitFormat::Tar );
-    }
-#endif
-
-    SECTION( "Opening the archive with the Zip format succeeds, "
-             "as 7-Zip will scan the input Tar archive and find the nested Zip archive" ) {
-        REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip ) );
-    }
-
-    SECTION( "Opening the archive with the 7z format succeeds, "
-             "as 7-Zip will scan the input Tar archive and find the nested 7z archive" ) {
-        REQUIRE_NOTHROW( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::SevenZip ) );
-    }
-
-    SECTION( "The BZip2 format doesn't support scanning the input file for the archive start,"
-             "so the opening must fail even though the Tar archive contains a BZip2 file") {
-        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::BZip2 ) );
-    }
-}
-
-// NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Checking only the file start for the archive start",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
-
-    const fs::path arcFileName = "multiple_nested2.tar";
-
-    TestType inputArchive{};
-    getInputArchive( arcFileName, inputArchive );
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-#ifdef BIT7Z_AUTO_FORMAT
-    SECTION( "Detecting the format from the file extension (extension is correct)" ) {
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
-        REQUIRE_NOTHROW( reader.detectedFormat() == BitFormat::Tar );
-    }
-#endif
-
-    SECTION( "Opening the Tar file as a Zip archive fails, as 7-Zip will check the format only at the file start" ) {
-        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::Zip ) );
-    }
-
-    SECTION( "Opening the Tar file as a 7z archive fails, as 7-Zip will check the format only at the file start" ) {
-        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::SevenZip ) );
-    }
-
-    SECTION( "Opening the Tar file as a BZip2 archive fails, as 7-Zip will check the format only at the file start" ) {
-        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::BZip2 ) );
-    }
-}
-
-// NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested archive with wrong extension",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    const TestDirectory testDir{ fs::path{ test_archives_dir } / "detection" };
-
-    const fs::path arcFileName = "nested_wrong_extension.zip"; // 7z file with zip extension
-
-    TestType inputArchive{};
-    getInputArchive( arcFileName, inputArchive );
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-
-    SECTION( "Checking archive start at input file start" ){
-#ifdef BIT7Z_AUTO_FORMAT
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
-        REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
-        REQUIRE_NOTHROW( reader.test() );
+#ifdef BIT7Z_BUILD_FOR_P7ZIP
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #else
-        REQUIRE_THROWS( BitArchiveReader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::Zip ) );
+    const auto testArchive = GENERATE(
+        as< TestInputFormat >(),
+        TestInputFormat{ "7z", BitFormat::SevenZip },
+        TestInputFormat{ "iso", BitFormat::Iso },
+        TestInputFormat{ "rar4.rar", BitFormat::Rar },
+        TestInputFormat{ "rar5.rar", BitFormat::Rar5 },
+        TestInputFormat{ "tar", BitFormat::Tar },
+        TestInputFormat{ "wim", BitFormat::Wim },
+        TestInputFormat{ "zip", BitFormat::Zip }
+    );
 #endif
-    }
 
-    SECTION( "Checking archive start by scanning through the input file" ){
-#ifdef BIT7Z_AUTO_FORMAT
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
-#ifdef BIT7Z_DETECT_FROM_EXTENSION
-        if ( reader.archivePath().empty() ) {
-            REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
-            REQUIRE_NOTHROW( reader.test() );
-        } else {
-            REQUIRE( reader.detectedFormat() == BitFormat::Zip );
-            REQUIRE_THROWS( reader.test() );
-        }
-#else
-        REQUIRE( reader.detectedFormat() == BitFormat::SevenZip );
-        REQUIRE_NOTHROW( reader.test() );
-#endif
-#else
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip );
-        REQUIRE_THROWS( reader.test() );
-#endif
-    }
-}
+    DYNAMIC_SECTION( "Archive format: " << testArchive.extension ) {
+        const fs::path arcFileName = "multiple_items." + testArchive.extension;
 
-// NOLINTNEXTLINE(*-err58-cpp)
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading a nested zip archive",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    const TestDirectory testDir{ fs::path{ test_archives_dir } / "extraction" / "nested" };
+        TestType inputArchive{};
+        getInputArchive( arcFileName, inputArchive );
+        const BitArchiveReader info( test::sevenzipLib(), inputArchive, testArchive.format );
 
-    const fs::path arcFileName = "nested_zip.zip";
+        auto result = info.itemsMatching( BIT7Z_STRING( "italy.svg" ) );
+        REQUIRE( result.size() == 1 );
+        REQUIRE( result[0].path() == BIT7Z_STRING( "italy.svg" ) );
 
-    TestType inputArchive{};
-    getInputArchive( arcFileName, inputArchive );
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
+        result = info.itemsMatching( BIT7Z_STRING( "clouds.jpg" ) );
+        REQUIRE( result.empty() );
 
-    SECTION( "Checking archive start at input file start" ){
-#ifdef BIT7Z_AUTO_FORMAT
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart );
-        REQUIRE( reader.detectedFormat() == BitFormat::Zip );
-#else
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::FileStart, BitFormat::Zip );
-#endif
-        REQUIRE_NOTHROW( reader.test() );
-        REQUIRE( reader.contains( italy.name ) );
-    }
-
-    SECTION( "Checking archive start by scanning through the input file" ){
-#ifdef BIT7Z_AUTO_FORMAT
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None );
-        REQUIRE( reader.detectedFormat() == BitFormat::Zip );
-#else
-        const BitArchiveReader reader( lib, inputArchive, ArchiveStartOffset::None, BitFormat::Zip );
-#endif
-        REQUIRE_NOTHROW( reader.test() );
-        REQUIRE( reader.contains( italy.name ) );
-    }
-}
-
+        result = info.itemsMatching( BIT7Z_STRING( "*clouds.jpg" ) );
+        REQUIRE( result.size() == 1 );
 #ifdef _WIN32
-TEMPLATE_TEST_CASE( "BitInputArchive: Reading a zip archive using a different encoding",
-                    "[bitinputarchive]", tstring, buffer_t, stream_t ) {
-    const TestDirectory testDir{ fs::path{ test_archives_dir } / "metadata" / "unicode" };
-
-    const fs::path arcFileName = "codepage.zip";
-
-    TestType inputArchive{};
-    getInputArchive( arcFileName, inputArchive );
-    const Bit7zLibrary lib{ test::sevenzip_lib_path() };
-    const BitArchiveReader reader{ lib, inputArchive, BitFormat::Zip };
-    REQUIRE( reader.itemsCount() == 1 );
-
-    constexpr auto expectedItemName = BIT7Z_NATIVE_STRING( "ユニコード.pdf" );
-
-    // The archive uses the Shift-JS encoding (Codepage 932) for the file names.
-    // If we do not set the codepage to be used, 7-Zip will report a wrongly-encoded string for the name.
-    REQUIRE_FALSE( reader.itemAt( 0 ).nativePath() == expectedItemName );
-
-    // Setting the correct codepage will make 7-Zip correctly encode the string.
-    reader.useFormatProperty( L"cp", 932u );
-    REQUIRE( reader.itemAt( 0 ).nativePath() == expectedItemName );
-}
+        REQUIRE( result[0].path() == BIT7Z_STRING( "folder\\clouds.jpg" ) );
+#else
+        REQUIRE( result[0].path() == BIT7Z_STRING("folder/clouds.jpg") );
 #endif
+
+        result = info.itemsMatching( BIT7Z_STRING( "*.pdf" ) );
+        REQUIRE( result.size() == 2 );
+        // TODO: Check the items returned in the last result vector.
+    }
+}

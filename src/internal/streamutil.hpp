@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,13 +10,14 @@
 #ifndef STREAMUTIL_HPP
 #define STREAMUTIL_HPP
 
-#include <ios>
-
 #include "internal/windows.hpp"
+
+#include <cstdint>
+#include <ios>
 
 namespace bit7z {
 
-inline auto to_seekdir( uint32_t seekOrigin, std::ios_base::seekdir& way ) -> HRESULT {
+inline auto toSeekdir( std::uint32_t seekOrigin, std::ios_base::seekdir& way ) -> HRESULT {
     switch ( seekOrigin ) {
         case STREAM_SEEK_SET:
             way = std::ios_base::beg;

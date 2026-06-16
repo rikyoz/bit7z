@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,6 +11,11 @@
 #define BITARCHIVEITEMOFFSET_HPP
 
 #include "bitarchiveitem.hpp"
+#include "bitdefines.hpp"
+#include "bitpropvariant.hpp"
+
+#include <cstdint>
+#include <functional>
 
 namespace bit7z {
 
@@ -38,16 +43,25 @@ class BitArchiveItemOffset final : public BitArchiveItem {
          */
         BIT7Z_NODISCARD auto itemProperty( BitProperty property ) const -> BitPropVariant override;
 
-    private:
-        /* Note: a pointer, instead of a reference, allows this class, and hence BitInputArchive::ConstIterator,
-         * to be CopyConstructible so that stl algorithms can be used with ConstIterator! */
-        const BitInputArchive* mArc;
+        /**
+         * @brief Checks whether the item has the specified property or not.
+         *
+         * @param property the property to be checked.
+         *
+         * @return true if the item has the property, false otherwise.
+         */
+        BIT7Z_NODISCARD auto hasProperty( BitProperty property ) const -> bool;
 
-        BitArchiveItemOffset( uint32_t itemIndex, const BitInputArchive& inputArchive ) noexcept;
+    private:
+        /* Note: we use a std::reference_wrapper to make this class, and hence BitInputArchive::ConstIterator,
+         * to be CopyConstructible so that stl algorithms can be used with ConstIterator. */
+        std::reference_wrapper< const BitInputArchive > mArc;
+
+        BitArchiveItemOffset( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) noexcept;
 
         friend class BitInputArchive;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // BITARCHIVEITEMOFFSET_HPP

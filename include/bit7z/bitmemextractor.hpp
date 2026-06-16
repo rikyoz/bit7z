@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,14 +10,16 @@
 #ifndef BITMEMEXTRACTOR_HPP
 #define BITMEMEXTRACTOR_HPP
 
+#include "bitdefines.hpp"
 #include "bitextractor.hpp"
+#include "bittypes.hpp"
 
 namespace bit7z {
 
 /**
  * @brief The BitMemExtractor alias allows extracting the content of in-memory archives.
  */
-using BitMemExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const std::vector< byte_t >& >;
+using BitMemExtractor BIT7Z_MAYBE_UNUSED = BitExtractor< const buffer_t& >;
 
 } // namespace bit7z
 

@@ -1,0 +1,131 @@
+name: 'Run bit7z tests'
+description: 'Build and test bit7z'
+inputs:
+  arch:
+    description: 'Architecture'
+    required: false
+    default: x64
+  c_compiler:
+    description: 'C Compiler'
+    required: true
+  cpp_compiler:
+    description: 'C++ Compiler'
+    required: true
+  build_flags:
+    description: 'Build flags'
+    required: true
+  sevenzip_version:
+    description: 'Version of 7-Zip to use for the tests'
+    required: true
+  shell:
+    description: 'The shell to be used for executing the steps'
+    required: false
+    default: bash
+  path:
+    description: 'The paths to append to the PATH environment variable'
+    required: false
+  enable_sanitizers:
+    description: 'Enable sanitizer for testing bit7z'
+    required: false
+    default: ON
+  cpm_cache:
+    description: 'Path to the CPM.cmake cache'
+    required: false
+    default: ${{ github.workspace }}/third_party
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set reusable strings
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
+        echo "flags-sha=$( echo -n '${{ inputs.sevenzip_version }} ${{ inputs.build_flags }}' | sha256sum | head -c 7 )" >> "$GITHUB_OUTPUT"
+        echo "commit-sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+    - name: Add paths to PATH
+      shell: bash
+      if: inputs.path != ''
+      run: |
+        echo "${{ inputs.path }}" >> "$GITHUB_PATH"
+
+    - name: Cache Dependencies
+      uses: actions/cache@v5
+      id: cache-dependencies
+      with:
+        path: ${{ inputs.cpm_cache }}
+        key: ${{ runner.os }}-7z${{ inputs.sevenzip_version }}-third-party
+
+    - name: Configure CMake
+      shell: ${{ inputs.shell }}
+      run: >
+        cmake -B '${{ steps.strings.outputs.build-output-dir }}'
+        -G 'Ninja Multi-Config'
+        -DCMAKE_CXX_COMPILER=${{ inputs.cpp_compiler }}
+        -DCMAKE_C_COMPILER=${{ inputs.c_compiler }}
+        -DCMAKE_BUILD_TYPE=${{ inputs.build_type }}
+        -DBIT7Z_BUILD_TESTS=ON
+        -DBIT7Z_WARNINGS_AS_ERRORS=ON
+        -DBIT7Z_USE_PCH=ON
+        -DBIT7Z_ENABLE_SANITIZERS=${{ inputs.enable_sanitizers }}
+        -DBIT7Z_7ZIP_VERSION="${{ inputs.sevenzip_version }}"
+        -DCPM_SOURCE_CACHE="${{ inputs.cpm_cache }}"
+        ${{ inputs.build_flags }}
+        -S '${{ github.workspace }}'
+
+    - name: Cache 7z.so
+      uses: actions/cache@v5
+      id: cache-7z-so
+      if: ${{ runner.os != 'Windows' && inputs.sevenzip_version != 16.02 }}
+      with:
+        path: ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
+        key: ${{ runner.os }}-7z${{ inputs.sevenzip_version }}-${{ inputs.arch }}-7z.so
+
+    - name: Build 7z.so for tests (Ubuntu)
+      shell: bash
+      if: ${{ steps.cache-7z-so.outputs.cache-hit != 'true' && runner.os == 'Linux' && inputs.sevenzip_version != 16.02 }}
+      run: |
+        git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
+        git -C ${{ github.workspace }}/../7-zip fetch --tags
+        git -C ${{ github.workspace }}/../7-zip checkout v${{ inputs.sevenzip_version }}
+        cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
+        make -j -f ../../cmpl_gcc.mak
+        cp b/g/7z.so ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
+
+    - name: Build 7z.so for tests (macOS)
+      shell: bash
+      if: ${{ steps.cache-7z-so.outputs.cache-hit != 'true' && runner.os == 'macOS' }}
+      run: |
+        git clone --depth 1 https://github.com/rikyoz/7-Zip ${{ github.workspace }}/../7-zip
+        git -C ${{ github.workspace }}/../7-zip fetch --tags
+        git -C ${{ github.workspace }}/../7-zip checkout v${{ inputs.sevenzip_version }}
+        sed -i '' 's/-Wno-poison-system-directories/-Wno-poison-system-directories -Wno-declaration-after-statement\r/' ${{ github.workspace }}/../7-zip/CPP/7zip/warn_clang_mac.mak
+        cat ${{ github.workspace }}/../7-zip/CPP/7zip/warn_clang_mac.mak
+        cd ${{ github.workspace }}/../7-zip/CPP/7zip/Bundles/Format7zF/
+        make -j -f ../../cmpl_mac_${{ inputs.arch }}.mak
+        cp b/m_${{ inputs.arch }}/7z.so ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so
+
+    - name: Link 7z.so into bin output folder (Ubuntu, macOS)
+      shell: bash
+      if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+      run: |
+        ln -s ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so ${{ github.workspace }}/bin/${{ inputs.arch }}/Debug/7z.so
+        ln -s ${{ github.workspace }}/bin/${{ inputs.arch }}/7z.so ${{ github.workspace }}/bin/${{ inputs.arch }}/Release/7z.so
+
+    - name: Build and test bit7z (Debug)
+      uses: ./.github/actions/build_test_action
+      with:
+        arch: ${{ inputs.arch }}
+        build_dir: ${{ steps.strings.outputs.build-output-dir }}
+        build_type: Debug
+        shell: ${{ inputs.shell }}
+        run_tests: ${{ inputs.enable_sanitizers }}
+
+    - name: Build and test bit7z (Release)
+      uses: ./.github/actions/build_test_action
+      with:
+        arch: ${{ inputs.arch }}
+        build_dir: ${{ steps.strings.outputs.build-output-dir }}
+        build_type: Release
+        shell: ${{ inputs.shell }}

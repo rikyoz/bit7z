@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,13 +11,6 @@
 #define BITWINDOWS_HPP
 
 #ifdef _WIN32
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
 #include <windows.h>
 #include <propidl.h>
 #else
@@ -29,23 +22,23 @@
  * the two different declarations would conflict, making the compilation fail.
  *
  * To avoid all these issues, we define the required Win32 API structs, constants, and type aliases,
- * with the same definitions in the MyWindows.h header.
+ * with the same definitions as in the MyWindows.h header.
  * We will use only this header and avoid including "MyWindows.h" or similar headers (e.g., StdAfx.h). */
 #include <cerrno>
 #include <cstdint>
 #include <cstddef>
 
-// Avoiding accidentally including p7zip's MyWindows.h, so that its inclusion is not needed in client code!
+// Avoiding accidentally including p7zip's MyWindows.h, so that its inclusion is not needed in client code.
 #ifndef __MYWINDOWS_H
 #define __MYWINDOWS_H // NOLINT
 #endif
 
-// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code!
+// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code.
 #ifndef __MY_WINDOWS_H
 #define __MY_WINDOWS_H // NOLINT
 #endif
 
-// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code!
+// Avoiding accidentally including 7-zip's MyWindows.h, so that its inclusion is not needed in client code.
 #ifndef ZIP7_INC_MY_WINDOWS_H // 7-zip 23.01+
 #define ZIP7_INC_MY_WINDOWS_H
 #endif
@@ -57,8 +50,6 @@ using std::size_t;
 namespace bit7z {
 
 // Win32 type aliases
-using FARPROC = void*;
-using HMODULE = void*;
 using HRESULT = int;
 using OLECHAR = wchar_t;
 using BSTR = OLECHAR*;
@@ -104,6 +95,9 @@ constexpr auto ERROR_WRITE_FAULT = EIO;
 // Win32 error codes (defined by p7zip with the same values as in Windows API).
 constexpr auto ERROR_NO_MORE_FILES = 0x100018;
 constexpr auto ERROR_DIRECTORY = 267;
+
+// Win32 error code not produced by p7zip/7-Zip, but used by bit7z to map "no matching item" errors.
+constexpr auto ERROR_NOT_FOUND = 1168;
 #endif
 
 #ifndef CP_UTF8
@@ -118,11 +112,11 @@ struct FILETIME {
 };
 
 struct LARGE_INTEGER {
-    int64_t QuadPart;
+    std::int64_t QuadPart;
 };
 
 struct ULARGE_INTEGER {
-    uint64_t QuadPart;
+    std::uint64_t QuadPart;
 };
 
 struct PROPVARIANT {
@@ -130,6 +124,7 @@ struct PROPVARIANT {
     WORD wReserved1;
     WORD wReserved2;
     WORD wReserved3;
+
     union {
 #if defined( __arm__ ) || defined( __aarch64__ )
         signed char cVal;
@@ -152,7 +147,7 @@ struct PROPVARIANT {
     };
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif
 

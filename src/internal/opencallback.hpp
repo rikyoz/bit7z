@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2022 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -10,18 +10,21 @@
 #ifndef OPENCALLBACK_HPP
 #define OPENCALLBACK_HPP
 
-#include "bitabstractarchivehandler.hpp"
+#include "bitdefines.hpp"
+#include "bittypes.hpp"
 #include "internal/callback.hpp"
 #include "internal/com.hpp"
-#include "internal/fsitem.hpp"
+#include "internal/fs.hpp"
 #include "internal/macros.hpp"
 
 #include <7zip/Archive/IArchive.h>
 #include <7zip/IPassword.h>
 
+#include <string>
+
 namespace bit7z {
 
-using filesystem::FilesystemItem;
+class BitAbstractArchiveHandler;
 
 class OpenCallback final : public IArchiveOpenCallback,
                            public IArchiveOpenVolumeCallback,
@@ -42,7 +45,7 @@ class OpenCallback final : public IArchiveOpenCallback,
         ~OpenCallback() override = default;
 
         BIT7Z_NODISCARD
-        auto passwordWasAsked() const -> bool;
+        auto passwordWasAsked() const noexcept -> bool;
 
         // IArchiveOpenCallback
         BIT7Z_STDMETHOD( SetTotal, const UInt64* files, const UInt64* bytes );
@@ -50,7 +53,7 @@ class OpenCallback final : public IArchiveOpenCallback,
         BIT7Z_STDMETHOD( SetCompleted, const UInt64* files, const UInt64* bytes );
 
         // IArchiveOpenVolumeCallback
-        BIT7Z_STDMETHOD( GetProperty, PROPID propID, PROPVARIANT* value );
+        BIT7Z_STDMETHOD( GetProperty, PROPID property, PROPVARIANT* value );
 
         BIT7Z_STDMETHOD( GetStream, const wchar_t* name, IInStream** inStream );
 
@@ -61,7 +64,7 @@ class OpenCallback final : public IArchiveOpenCallback,
         BIT7Z_STDMETHOD( CryptoGetTextPassword, BSTR* password );
 
         // NOLINTNEXTLINE(modernize-use-noexcept, modernize-use-trailing-return-type, readability-identifier-length)
-        MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835
+        MY_UNKNOWN_IMP3( IArchiveOpenVolumeCallback, IArchiveOpenSetSubArchiveName, ICryptoGetTextPassword ) //-V2507 //-V2511 //-V835 //-V3504
 
     private:
         bool mSubArchiveMode;
@@ -70,6 +73,6 @@ class OpenCallback final : public IArchiveOpenCallback,
         bool mPasswordWasAsked;
 };
 
-}  // namespace bit7z
+} // namespace bit7z
 
 #endif // OPENCALLBACK_HPP

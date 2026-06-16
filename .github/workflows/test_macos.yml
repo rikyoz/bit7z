@@ -1,0 +1,108 @@
+name: Test on macOS
+on:
+  pull_request:
+  push:
+    paths:
+    - '.github/actions/**'
+    - '.github/workflows/test_macos.yml'
+    - 'cmake/**'
+    - 'include/**'
+    - 'src/**'
+    - 'tests/**'
+    - 'CMakeLists.txt'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_macos:
+    runs-on: ${{ matrix.os }}
+    if: |
+      !contains(github.event.head_commit.message, '[test-windows]') 
+      && !contains(github.event.head_commit.message, '[test-linux]')
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        os: [macos-14, macos-15, macos-26]
+        c_compiler: [gcc-12, gcc-15, clang]
+        bit7z_7zip_version: [23.01, '26.01']
+        bit7z_auto_format: [OFF, ON]
+        bit7z_detect_from_extension: [OFF, ON]
+        bit7z_link_libcpp: [OFF, ON]
+        bit7z_path_sanitization: [OFF, ON]
+        bit7z_regex_matching: [OFF, ON]
+        include:
+          - os: macos-14
+            os_version: 14
+          - os: macos-15
+            os_version: 15
+          - os: macos-26
+            os_version: 26
+          - c_compiler: gcc-12
+            cpp_compiler: g++-12
+            enable_sanitizers: OFF
+          - c_compiler: gcc-15
+            cpp_compiler: g++-15
+            enable_sanitizers: OFF
+          - c_compiler: clang
+            cpp_compiler: clang++
+            enable_sanitizers: ON
+        exclude:
+          - c_compiler: gcc-12
+            bit7z_link_libcpp: ON
+          - c_compiler: gcc-15
+            bit7z_link_libcpp: ON
+          - os: macos-15
+            c_compiler: gcc-12
+          - os: macos-26
+            c_compiler: gcc-12
+          - os: macos-15
+            bit7z_7zip_version: 23.01
+          - os: macos-26
+            bit7z_7zip_version: 23.01
+          - bit7z_auto_format: OFF
+            bit7z_detect_from_extension: ON
+
+    name: |
+      macOS ${{ matrix.os_version }}, ${{ matrix.c_compiler }}, 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_path_sanitization == 'ON') && ', PATH_SANITIZATION' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ (matrix.bit7z_link_libcpp == 'ON') && ', LINK_LIBCPP' || '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Install XCode
+      if: ${{ contains(matrix.os, 'macos-15') || contains(matrix.os, 'macos-26') }}
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+
+    - name: Install XCode
+      if: ${{ contains(matrix.os, 'macos-14') }}
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.3'
+
+    - name: Reinstall GCC 12 on macOS 14
+      if: ${{ contains(matrix.os, 'macos-14') && contains(matrix.c_compiler, 'gcc-12') }}
+      shell: bash
+      run:
+        brew reinstall gcc@12
+
+    - name: Reinstall GCC 15 on macOS 26
+      if: ${{ contains(matrix.os, 'macos-26') && contains(matrix.c_compiler, 'gcc-15') }}
+      shell: bash
+      run:
+        brew reinstall gcc@15
+
+    - name: Building and testing bit7z
+      uses: ./.github/actions/ci_action
+      with:
+        arch: arm64
+        c_compiler: ${{ matrix.c_compiler }}
+        cpp_compiler: ${{ matrix.cpp_compiler }}
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
+        enable_sanitizers: ${{ matrix.enable_sanitizers }}
+        build_flags: |-
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=OFF -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_LINK_LIBCPP=${{ matrix.bit7z_link_libcpp }}

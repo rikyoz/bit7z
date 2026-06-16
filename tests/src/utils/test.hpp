@@ -1,6 +1,6 @@
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2025 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -19,20 +19,24 @@
 namespace bit7z { // NOLINT(modernize-concat-nested-namespaces)
 namespace test {
 
-inline auto quoted( const std::string& str ) -> std::string {
+BIT7Z_ALWAYS_INLINE
+auto quoted( const std::string& str ) -> std::string {
     return "\"" + str + "\"";
 }
 
-inline auto quoted( const char* str ) -> std::string {
+BIT7Z_ALWAYS_INLINE
+auto quoted( const char* str ) -> std::string {
     return "\"" + std::string{ str } + "\"";
 }
 
 #ifdef _WIN32
-inline auto quoted( const std::wstring& str ) -> std::string {
+BIT7Z_ALWAYS_INLINE
+auto quoted( const std::wstring& str ) -> std::string {
     return Catch::StringMaker< std::wstring >::convert( str );
 }
 
-inline auto quoted( const wchar_t* str ) -> std::string {
+BIT7Z_ALWAYS_INLINE
+auto quoted( const wchar_t* str ) -> std::string {
     return Catch::StringMaker< const wchar_t* >::convert( str );
 }
 #endif
@@ -53,9 +57,9 @@ class CasePermutationGenerator : public Catch::Generators::IGenerator< StringTyp
             }
 
             if ( mask & ( 1ULL << i ) ) {
-                out[i] = std::toupper( str[i], classicLocale );
+                out[ i ] = std::toupper( str[ i ], classicLocale );
             } else {
-                out[i] = std::tolower( str[i], classicLocale );
+                out[ i ] = std::tolower( str[ i ], classicLocale );
             }
         }
         return out;

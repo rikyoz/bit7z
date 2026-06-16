@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -11,12 +11,17 @@
  */
 
 #include "internal/cstdinstream.hpp"
+
+#include "internal/cpp26.hpp"
 #include "internal/streamutil.hpp"
-#include "internal/util.hpp"
+
+#include <cstdint>
+#include <istream>
+#include <ios>
 
 namespace bit7z {
 
-CStdInStream::CStdInStream( istream& inputStream ) : mInputStream( inputStream ) {}
+CStdInStream::CStdInStream( std::istream& inputStream ) : mInputStream( inputStream ) {}
 
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
@@ -30,10 +35,11 @@ STDMETHODIMP CStdInStream::Read( void* data, UInt32 size, UInt32* processedSize 
         return S_OK;
     }
 
-    mInputStream.read( static_cast< char* >( data ), clamp_cast< std::streamsize >( size ) ); // flawfinder: ignore //-V2571
+    mInputStream.read( static_cast< char* >( data ), cpp26::saturating_cast< std::streamsize >( size ) );
+    // flawfinder: ignore //-V2571
 
     if ( processedSize != nullptr ) {
-        *processedSize = static_cast< uint32_t >( mInputStream.gcount() );
+        *processedSize = static_cast< std::uint32_t >( mInputStream.gcount() );
     }
 
     return mInputStream.bad() ? HRESULT_FROM_WIN32( ERROR_READ_FAULT ) : S_OK;
@@ -44,7 +50,7 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
     mInputStream.clear();
 
     std::ios_base::seekdir way; // NOLINT(cppcoreguidelines-init-variables)
-    RINOK( to_seekdir( seekOrigin, way ) )
+    RINOK( toSeekdir( seekOrigin, way ) ) //-V3504
 
     mInputStream.seekg( static_cast< std::istream::off_type >( offset ), way );
 
@@ -53,7 +59,7 @@ STDMETHODIMP CStdInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPos
     }
 
     if ( newPosition != nullptr ) {
-        *newPosition = static_cast< uint64_t >( mInputStream.tellg() );
+        *newPosition = static_cast< std::uint64_t >( mInputStream.tellg() );
     }
 
     return S_OK;

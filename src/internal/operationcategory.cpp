@@ -3,15 +3,19 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-#include "extractcallback.hpp"
 #include "internal/operationcategory.hpp"
+
+#include "internal/operationresult.hpp"
+
+#include <system_error>
+#include <string>
 
 namespace bit7z {
 
@@ -22,7 +26,7 @@ auto OperationCategory::name() const noexcept -> const char* {
 auto OperationCategory::message( int errorValue ) const -> std::string {
     switch ( static_cast< OperationResult >( errorValue ) ) {
         case OperationResult::CRCError:
-            return "CRC failed";
+            return "CRC failed.";
         case OperationResult::CRCErrorEncrypted:
             return "CRC error in encrypted file (wrong password?).";
         case OperationResult::DataAfterEnd:
@@ -48,7 +52,7 @@ auto OperationCategory::message( int errorValue ) const -> std::string {
         case OperationResult::UnsupportedMethod:
             return "Unsupported method.";
         default:
-            return "Unknown error.";
+            return "Unknown operation error (code " + std::to_string( errorValue ) + ").";
     }
 }
 
@@ -75,7 +79,7 @@ auto OperationCategory::default_error_condition( int errorValue ) const noexcept
     }
 }
 
-auto operation_category() noexcept -> const std::error_category& {
+auto operationCategory() noexcept -> const std::error_category& {
     static const OperationCategory instance{};
     return instance;
 }

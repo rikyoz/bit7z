@@ -3,7 +3,7 @@
 
 /*
  * bit7z - A C++ static library to interface with the 7-zip shared libraries.
- * Copyright (c) 2014-2023 Riccardo Ostani - All Rights Reserved.
+ * Copyright (c) Riccardo Ostani - All Rights Reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,22 +12,40 @@
 
 #include "bitarchiveiteminfo.hpp"
 
-using bit7z::BitArchiveItemInfo;
-using bit7z::BitProperty;
-using bit7z::BitPropVariant;
-using std::map;
+#include "bitarchiveitem.hpp"
+#include "bitarchiveitemoffset.hpp"
+#include "bitpropvariant.hpp"
 
-BitArchiveItemInfo::BitArchiveItemInfo( uint32_t itemIndex ) : BitArchiveItem( itemIndex ) {}
+#include <7zip/PropID.h>
+
+#include <cstdint>
+#include <map>
+
+namespace bit7z {
+
+BitArchiveItemInfo::BitArchiveItemInfo( const BitArchiveItemOffset& item )
+    : BitArchiveItem( item.index() ) {
+    for ( std::uint32_t j = kpidNoProperty; j <= kpidCopyLink; ++j ) {
+        // We cast property twice (here and in itemProperty), to make the code is easier to read.
+        const auto property = static_cast< BitProperty >( j );
+        const auto propertyValue = item.itemProperty( property );
+        if ( !propertyValue.isEmpty() ) {
+            setProperty( property, propertyValue );
+        }
+    }
+}
 
 auto BitArchiveItemInfo::itemProperty( BitProperty property ) const -> BitPropVariant {
     const auto propIt = mItemProperties.find( property );
-    return ( propIt != mItemProperties.end() ? ( *propIt ).second : BitPropVariant() );
+    return ( propIt != mItemProperties.end() ? propIt->second : BitPropVariant() );
 }
 
-auto BitArchiveItemInfo::itemProperties() const -> map< BitProperty, BitPropVariant > {
+auto BitArchiveItemInfo::itemProperties() const -> const std::map<BitProperty, BitPropVariant>& {
     return mItemProperties;
 }
 
 void BitArchiveItemInfo::setProperty( BitProperty property, const BitPropVariant& value ) {
     mItemProperties[ property ] = value;
 }
+
+} // namespace bit7z

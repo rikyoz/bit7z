@@ -1,0 +1,100 @@
+name: Test on Windows 2025
+on:
+  pull_request:
+  push:
+    paths:
+    - '.github/actions/**'
+    - '.github/workflows/test_windows25.yml'
+    - 'cmake/**'
+    - 'include/**'
+    - 'src/**'
+    - 'tests/**'
+    - 'CMakeLists.txt'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_win_llvm:
+    runs-on: windows-2025
+    if: |
+      !contains(github.event.head_commit.message, '[test-macos]')
+      && !contains(github.event.head_commit.message, '[test-linux]')
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        bit7z_7zip_version: ['26.01']
+        bit7z_auto_format: [OFF, ON]
+        bit7z_auto_prefix_long_paths: [OFF, ON]
+        bit7z_detect_from_extension: [OFF, ON]
+        bit7z_path_sanitization: [OFF, ON]
+        bit7z_regex_matching: [OFF, ON]
+        bit7z_use_native_string: [OFF, ON]
+        bit7z_use_system_codepage: [OFF, ON]
+        exclude:
+          - bit7z_auto_format: OFF
+            bit7z_detect_from_extension: ON
+
+    name: |
+      Windows (LLVM/MinGW), 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_use_native_string == 'ON' && ', USE_NATIVE_STRING' || '' }}${{ matrix.bit7z_auto_prefix_long_paths == 'ON' && ', AUTO_PREFIX_LONG_PATHS' || '' }}${{ matrix.bit7z_use_system_codepage == 'ON' && ', USE_SYSTEM_CODEPAGE' || '' }}${{ matrix.bit7z_path_sanitization == 'ON' && ', PATH_SANITIZATION' || '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Install LLVM/MinGW (CLANG64)
+      shell: cmd
+      run: C:\msys64\usr\bin\pacman.exe -Sy --noconfirm mingw-w64-clang-x86_64-clang
+
+    - name: Building and testing bit7z
+      uses: ./.github/actions/ci_action
+      with:
+        c_compiler: clang
+        cpp_compiler: clang++
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
+        shell: bash
+        path: C:\msys64\clang64\bin
+        enable_sanitizers: OFF
+        build_flags: |-
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=ON -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }} -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }} -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }} -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
+
+  build_win:
+    runs-on: windows-2025
+    if: |
+      !contains(github.event.head_commit.message, '[test-macos]')
+      && !contains(github.event.head_commit.message, '[test-linux]')
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        bit7z_7zip_version: [24.09, '26.01']
+        bit7z_auto_format: [OFF, ON]
+        bit7z_auto_prefix_long_paths: [OFF, ON]
+        bit7z_detect_from_extension: [OFF, ON]
+        bit7z_path_sanitization: [OFF, ON]
+        bit7z_regex_matching: [OFF, ON]
+        bit7z_use_native_string: [OFF, ON]
+        bit7z_use_system_codepage: [OFF, ON]
+        exclude:
+          - bit7z_auto_format: OFF
+            bit7z_detect_from_extension: ON
+
+    name: |
+      Windows (GCC/MinGW), 7-Zip ${{ matrix.bit7z_7zip_version }}${{ (matrix.bit7z_auto_format == 'ON') && ', AUTO_FORMAT' || '' }}${{ (matrix.bit7z_detect_from_extension == 'ON') && ', DETECT_FROM_EXT' || '' }}${{ (matrix.bit7z_regex_matching == 'ON') && ', REGEX_MATCHING' || '' }}${{ matrix.bit7z_use_native_string == 'ON' && ', USE_NATIVE_STRING' || '' }}${{ matrix.bit7z_auto_prefix_long_paths == 'ON' && ', AUTO_PREFIX_LONG_PATHS' || '' }}${{ matrix.bit7z_use_system_codepage == 'ON' && ', USE_SYSTEM_CODEPAGE' || '' }}${{ matrix.bit7z_path_sanitization == 'ON' && ', PATH_SANITIZATION' || '' }}
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Building and testing bit7z
+      uses: ./.github/actions/ci_action
+      with:
+        c_compiler: gcc
+        cpp_compiler: g++
+        sevenzip_version: ${{ matrix.bit7z_7zip_version }}
+        shell: bash
+        path: C:\msys64\usr\bin
+        build_flags: |-
+            -DBIT7Z_TESTS_USE_SYSTEM_7ZIP=ON -DBIT7Z_AUTO_FORMAT=${{ matrix.bit7z_auto_format }} -DBIT7Z_DETECT_FROM_EXTENSION=${{ matrix.bit7z_detect_from_extension }} -DBIT7Z_REGEX_MATCHING=${{ matrix.bit7z_regex_matching }} -DBIT7Z_USE_NATIVE_STRING=${{ matrix.bit7z_use_native_string }} -DBIT7Z_AUTO_PREFIX_LONG_PATHS=${{ matrix.bit7z_auto_prefix_long_paths }} -DBIT7Z_USE_SYSTEM_CODEPAGE=${{ matrix.bit7z_use_system_codepage }} -DBIT7Z_PATH_SANITIZATION=${{ matrix.bit7z_path_sanitization }} -DBIT7Z_VS_LIBNAME_OUTDIR_STYLE=ON
