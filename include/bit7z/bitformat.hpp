@@ -30,12 +30,31 @@ enum struct FormatFeatures : std::uint8_t {
     MultipleMethods  = 1u << 5u  ///< The format can use different compression methods.
 };
 
+/**
+ * @brief Computes the bitwise OR of two FormatFeatures values.
+ *
+ * @param lhs  the first set of features.
+ * @param rhs  the second set of features.
+ *
+ * @return the FormatFeatures value containing the features of both operands.
+ */
 constexpr auto operator|( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeatures {
     return static_cast< FormatFeatures >( to_underlying( lhs ) | to_underlying( rhs ) );
 }
 
+/**
+ * @brief The underlying integer type of the FormatFeatures enumeration.
+ */
 using FormatFeaturesType = underlying_type_t< FormatFeatures >;
 
+/**
+ * @brief Computes the bitwise AND of two FormatFeatures values.
+ *
+ * @param lhs  the first set of features.
+ * @param rhs  the second set of features.
+ *
+ * @return the underlying integer value of the features common to both operands.
+ */
 constexpr auto operator&( FormatFeatures lhs, FormatFeatures rhs ) noexcept -> FormatFeaturesType {
     return to_underlying( lhs ) & to_underlying( rhs );
 }

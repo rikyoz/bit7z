@@ -29,9 +29,12 @@ namespace bit7z {
 
 using EditedItems = std::unordered_map< std::uint32_t, BitItemsVector::value_type >;
 
+/**
+ * @brief Enumeration representing how the deletion of an item from an archive should be handled.
+ */
 enum struct DeletePolicy : std::uint8_t {
-    ItemOnly,
-    RecurseDirs
+    ItemOnly,    ///< Delete only the item itself; if it is a folder, its contents are kept.
+    RecurseDirs  ///< Delete the item; if it is a folder, its contents are recursively deleted too.
 };
 
 /**

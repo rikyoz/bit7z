@@ -128,6 +128,13 @@ enum struct BitProperty : PROPID { // NOLINT(*-enum-size)
     CopyLink                ///<
 };
 
+/**
+ * @brief Returns the name of the given archive/item property.
+ *
+ * @param property  the property whose name will be returned.
+ *
+ * @return the name of the given property.
+ */
 auto to_string( BitProperty property ) -> std::string;
 
 /**
@@ -458,8 +465,24 @@ struct BitPropVariant final : PROPVARIANT {
         void internalClear() noexcept;
 };
 
+/**
+ * @brief Checks whether two BitPropVariant objects have the same type and value.
+ *
+ * @param lhs  the first variant to be compared.
+ * @param rhs  the second variant to be compared.
+ *
+ * @return true if and only if the two variants have the same type and value.
+ */
 auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
 
+/**
+ * @brief Checks whether two BitPropVariant objects differ in type or value.
+ *
+ * @param lhs  the first variant to be compared.
+ * @param rhs  the second variant to be compared.
+ *
+ * @return true if and only if the two variants differ in type or value.
+ */
 auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool;
 
 } // namespace bit7z

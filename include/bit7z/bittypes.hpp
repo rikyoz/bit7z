@@ -64,7 +64,7 @@ struct StringTraits< wchar_t > {
 
 /**
  * The string type used internally by 7-Zip.
- * @Note 7-Zip always uses wide strings on all platforms.
+ * @note 7-Zip always uses wide strings on all platforms.
  */
 using sevenzip_string = std::wstring;
 
@@ -80,6 +80,10 @@ using native_string = std::wstring;
 using native_string = std::string;
 #define BIT7Z_NATIVE_STRING( str ) str
 #endif
+
+/**
+ * @brief The character type of the system's native string type.
+ */
 using native_char = native_string::value_type;
 
 /**
@@ -107,13 +111,21 @@ using tstring = std::basic_string< tchar >;
 using tregex = std::basic_regex< tchar >;
 #endif
 
+/**
+ * @brief Converts an arithmetic value to a tstring.
+ *
+ * @param arg   the arithmetic value to be converted.
+ *
+ * @return the string representation of the given value.
+ */
 template< typename T, typename = typename std::enable_if< std::is_arithmetic< T >::value, T >::type >
 auto to_tstring( T arg ) -> std::basic_string< tchar > {
     return StringTraits< tchar >::convertToString( arg );
 }
 
+/**@{*/
 /**
- * Converts a native string to a tstring.
+ * @brief Converts a native string to a tstring.
  *
  * @note On Linux or on Windows when BIT7Z_USE_NATIVE_STRING is used,
  * both native_string and tstring are aliases of the same string type;
@@ -152,7 +164,15 @@ auto to_tstring( const native_string& str ) -> const tstring& {
     return str;
 }
 #endif
+/**@}*/
 
+/**
+ * @brief Converts an arithmetic value to a native string.
+ *
+ * @param arg   the arithmetic value to be converted.
+ *
+ * @return the native string representation of the given value.
+ */
 template< typename T, typename = typename std::enable_if< std::is_arithmetic< T >::value, T >::type >
 auto to_native_string( T arg ) -> native_string {
 #ifdef _WIN32
@@ -162,6 +182,17 @@ auto to_native_string( T arg ) -> native_string {
 #endif
 }
 
+/**@{*/
+/**
+ * @brief Converts a string to a native string.
+ *
+ * @note When the argument is already a native_string, no conversion is performed, and a const
+ * reference to the original string is returned, or the original string is moved if it is a temporary.
+ *
+ * @param str   the string to be converted.
+ *
+ * @return the converted native string.
+ */
 BIT7Z_NODISCARD
 BIT7Z_ALWAYS_INLINE
 auto to_native_string( native_string&& str ) -> native_string {
@@ -181,15 +212,29 @@ auto to_native_string( const sevenzip_string& str ) -> native_string;
 BIT7Z_NODISCARD
 auto to_native_string( const tstring& str ) -> native_string;
 #endif
+/**@}*/
 
+/**
+ * @brief Alias for the underlying integer type of the given enumeration type.
+ */
 template< typename Enum >
 using underlying_type_t = typename std::underlying_type< Enum >::type;
 
+/**
+ * @brief Converts an enumerator to its underlying integer value.
+ *
+ * @param enum_value    the enumerator to be converted.
+ *
+ * @return the underlying integer value of the given enumerator.
+ */
 template< typename Enum >
 constexpr auto to_underlying( Enum enum_value ) noexcept -> underlying_type_t< Enum > {
     return static_cast< underlying_type_t< Enum > >( enum_value );
 }
 
+/**
+ * @brief Type trait that is true if and only if From is explicitly (but not implicitly) convertible to To.
+ */
 template< typename From, typename To >
 using is_explicitly_convertible = std::integral_constant< bool, std::is_constructible< To, From >::value &&
                                                                 !std::is_convertible< From, To >::value >;

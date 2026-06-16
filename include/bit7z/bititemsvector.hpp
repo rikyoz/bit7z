@@ -30,6 +30,9 @@ struct IndexingOptions {
 };
 /** @endcond **/
 
+/**
+ * @brief A vector of items to be compressed into an archive.
+ */
 using BitItemsVector = std::vector< BitInputItem >;
 
 /**
