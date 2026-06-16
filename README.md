@@ -320,8 +320,8 @@ vcpkg install bit7z
 Then, you add bit7z as a dependency in your project's `CMakeLists.txt`:
 
 ```cmake
-find_package(unofficial-bit7z CONFIG REQUIRED)
-target_link_libraries(${YOUR_TARGET} PRIVATE unofficial::bit7z::bit7z64)
+find_package(bit7z CONFIG REQUIRED)
+target_link_libraries(${YOUR_TARGET} PRIVATE bit7z::bit7z)
 ```
 
 ### Building from source and manually linking
