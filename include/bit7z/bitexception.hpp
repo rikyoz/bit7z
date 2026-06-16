@@ -32,8 +32,20 @@ using FailedFile = std::pair< tstring, std::error_code >;
  */
 using FailedFiles = std::vector< FailedFile >;
 
+/**
+ * @brief Creates a std::error_code from the given HRESULT value.
+ *
+ * @param res  the HRESULT value to be converted.
+ *
+ * @return the std::error_code corresponding to the given HRESULT value.
+ */
 auto make_hresult_code( HRESULT res ) noexcept -> std::error_code;
 
+/**
+ * @brief Returns a std::error_code corresponding to the last system error that occurred.
+ *
+ * @return the std::error_code corresponding to the last system error.
+ */
 auto lastErrorCode() noexcept -> std::error_code;
 
 /**

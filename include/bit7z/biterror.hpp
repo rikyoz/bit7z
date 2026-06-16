@@ -50,6 +50,13 @@ enum struct BitError : std::uint8_t {
     InvalidItemPath
 };
 
+/**
+ * @brief Creates a std::error_code from the given BitError value.
+ *
+ * @param error  the BitError value to be converted.
+ *
+ * @return the std::error_code corresponding to the given BitError value.
+ */
 auto make_error_code( BitError error ) noexcept -> std::error_code;
 
 /**
@@ -73,6 +80,13 @@ enum struct BitFailureSource : std::uint8_t {
     WrongPassword
 };
 
+/**
+ * @brief Creates a std::error_condition from the given BitFailureSource value.
+ *
+ * @param failureSource  the BitFailureSource value to be converted.
+ *
+ * @return the std::error_condition corresponding to the given BitFailureSource value.
+ */
 auto make_error_condition( BitFailureSource failureSource ) noexcept -> std::error_condition;
 
 } // namespace bit7z
