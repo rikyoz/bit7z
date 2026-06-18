@@ -22,32 +22,32 @@ namespace bit7z {
  * @brief The BitError enum struct values represent bit7z specific errors.
  */
 enum struct BitError : std::uint8_t {
-    Fail = 1,
-    FilterNotSpecified,
-    FormatFeatureNotSupported,
-    IndicesNotSpecified,
-    InvalidArchivePath,
-    InvalidOutputBufferSize,
-    InvalidCompressionMethod,
-    InvalidDictionarySize,
-    InvalidIndex,
-    InvalidWordSize,
-    ItemIsAFolder,
-    ItemMarkedAsDeleted,
-    NoMatchingItems,
-    NoMatchingFile,
-    NoMatchingSignature,
-    NonEmptyOutputBuffer,
-    NullOutputBuffer,
-    RequestedWrongVariantType,
-    UnsupportedOperation,
-    UnsupportedVariantType,
-    WrongUpdateMode,
-    InvalidZipPassword,
-    InvalidDirectoryPath,
-    ItemPathOutsideOutputDirectory,
-    ItemHasAbsolutePath,
-    InvalidItemPath
+    Fail = 1,                        ///< Unspecified error.
+    FilterNotSpecified,              ///< No item filter was specified.
+    FormatFeatureNotSupported,       ///< The requested feature is not supported by the archive format.
+    IndicesNotSpecified,             ///< No item indices were specified.
+    InvalidArchivePath,              ///< Invalid archive path.
+    InvalidOutputBufferSize,         ///< Invalid output buffer size.
+    InvalidCompressionMethod,        ///< Invalid compression method for the chosen archive format.
+    InvalidDictionarySize,           ///< Invalid dictionary size for the chosen compression method.
+    InvalidIndex,                    ///< Invalid item index.
+    InvalidWordSize,                 ///< Invalid word size for the chosen compression method.
+    ItemIsAFolder,                   ///< The item is a folder, but a file was expected.
+    ItemMarkedAsDeleted,             ///< The item is marked as deleted.
+    NoMatchingItems,                 ///< No matching item was found in the archive.
+    NoMatchingFile,                  ///< No matching file was found in the archive.
+    NoMatchingSignature,             ///< No known archive signature was found.
+    NonEmptyOutputBuffer,            ///< The given output buffer is not empty.
+    NullOutputBuffer,                ///< The given output buffer is null.
+    RequestedWrongVariantType,       ///< The wrong variant type was requested.
+    UnsupportedOperation,            ///< Unsupported operation.
+    UnsupportedVariantType,          ///< Unsupported variant type.
+    WrongUpdateMode,                 ///< Wrong update mode.
+    InvalidZipPassword,              ///< The Zip format only supports printable ASCII characters in passwords.
+    InvalidDirectoryPath,            ///< Invalid directory path.
+    ItemPathOutsideOutputDirectory,  ///< The extracted item path would be outside the output directory.
+    ItemHasAbsolutePath,             ///< The item has an absolute path.
+    InvalidItemPath                  ///< The item has an invalid path.
 };
 
 /**
@@ -65,19 +65,19 @@ auto make_error_code( BitError error ) noexcept -> std::error_code;
  * of grouping, classification, or error translation.
  */
 enum struct BitFailureSource : std::uint8_t {
-    CRCError,
-    DataAfterEnd,
-    DataError,
-    InvalidArchive,
-    InvalidArgument,
-    FormatDetectionError,
-    HeadersError,
-    NoSuchItem,
-    OperationNotSupported,
-    OperationNotPermitted,
-    UnavailableData,
-    UnexpectedEnd,
-    WrongPassword
+    CRCError,               ///< A CRC check failed.
+    DataAfterEnd,           ///< Some data was found after the end of the payload data.
+    DataError,              ///< A data error was encountered.
+    InvalidArchive,         ///< The input is not a valid archive.
+    InvalidArgument,        ///< An invalid argument was provided.
+    FormatDetectionError,   ///< The archive format could not be detected.
+    HeadersError,           ///< An error was encountered while reading the archive headers.
+    NoSuchItem,             ///< The requested item does not exist.
+    OperationNotSupported,  ///< The requested operation is not supported.
+    OperationNotPermitted,  ///< The requested operation is not permitted.
+    UnavailableData,        ///< The requested data is unavailable.
+    UnexpectedEnd,          ///< An unexpected end of data was reached.
+    WrongPassword           ///< A wrong password was provided.
 };
 
 /**

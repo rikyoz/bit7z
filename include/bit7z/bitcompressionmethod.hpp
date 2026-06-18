@@ -18,13 +18,13 @@ namespace bit7z {
  * @brief The BitCompressionMethod enum represents the compression methods used by 7z when creating archives.
  */
 enum struct BitCompressionMethod : std::uint8_t {
-    Copy,
-    Deflate,
-    Deflate64,
-    BZip2,
-    Lzma,
-    Lzma2,
-    Ppmd
+    Copy,       ///< No compression (the data is stored as-is).
+    Deflate,    ///< The Deflate compression method.
+    Deflate64,  ///< The Deflate64 compression method.
+    BZip2,      ///< The BZip2 compression method.
+    Lzma,       ///< The LZMA compression method.
+    Lzma2,      ///< The LZMA2 compression method.
+    Ppmd        ///< The PPMd compression method.
 };
 
 } // namespace bit7z
