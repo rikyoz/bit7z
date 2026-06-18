@@ -78,6 +78,8 @@ class Bit7zLibrary final {
 
         /**
          * @brief Set the 7-zip shared library to use large memory pages.
+         *
+         * @deprecated Since v4.1. Please use the useLargePages() method.
          */
         BIT7Z_DEPRECATED_MSG( "Since v4.1. Please use the useLargePages() method." )
         void setLargePageMode();
