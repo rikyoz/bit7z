@@ -30,102 +30,102 @@ using time_type = std::chrono::time_point< std::chrono::system_clock >;
  * @brief The BitProperty enum represents the archive/item properties that 7-zip can read or write.
  */
 enum struct BitProperty : PROPID { // NOLINT(*-enum-size)
-    NoProperty = 0,         ///<
-    MainSubfile,            ///<
-    HandlerItemIndex,       ///<
-    Path,                   ///<
-    Name,                   ///<
-    Extension,              ///<
-    IsDir,                  ///<
-    Size,                   ///<
-    PackSize,               ///<
-    Attrib,                 ///<
-    CTime,                  ///<
-    ATime,                  ///<
-    MTime,                  ///<
-    Solid,                  ///<
-    Commented,              ///<
-    Encrypted,              ///<
-    SplitBefore,            ///<
-    SplitAfter,             ///<
-    DictionarySize,         ///<
-    CRC,                    ///<
-    Type,                   ///<
-    IsAnti,                 ///<
-    Method,                 ///<
-    HostOS,                 ///<
-    FileSystem,             ///<
-    User,                   ///<
-    Group,                  ///<
-    Block,                  ///<
-    Comment,                ///<
-    Position,               ///<
-    Prefix,                 ///<
-    NumSubDirs,             ///<
-    NumSubFiles,            ///<
-    UnpackVer,              ///<
-    Volume,                 ///<
-    IsVolume,               ///<
-    Offset,                 ///<
-    Links,                  ///<
-    NumBlocks,              ///<
-    NumVolumes,             ///<
-    TimeType,               ///<
-    Bit64,                  ///<
-    BigEndian,              ///<
-    Cpu,                    ///<
-    PhySize,                ///<
-    HeadersSize,            ///<
-    Checksum,               ///<
-    Characts,               ///<
-    Va,                     ///<
-    Id,                     ///<
-    ShortName,              ///<
-    CreatorApp,             ///<
-    SectorSize,             ///<
-    PosixAttrib,            ///<
-    SymLink,                ///<
-    Error,                  ///<
-    TotalSize,              ///<
-    FreeSpace,              ///<
-    ClusterSize,            ///<
-    VolumeName,             ///<
-    LocalName,              ///<
-    Provider,               ///<
-    NtSecure,               ///<
-    IsAltStream,            ///<
-    IsAux,                  ///<
-    IsDeleted,              ///<
-    IsTree,                 ///<
-    Sha1,                   ///<
-    Sha256,                 ///<
-    ErrorType,              ///<
-    NumErrors,              ///<
-    ErrorFlags,             ///<
-    WarningFlags,           ///<
-    Warning,                ///<
-    NumStreams,             ///<
-    NumAltStreams,          ///<
-    AltStreamsSize,         ///<
-    VirtualSize,            ///<
-    UnpackSize,             ///<
-    TotalPhySize,           ///<
-    VolumeIndex,            ///<
-    SubType,                ///<
-    ShortComment,           ///<
-    CodePage,               ///<
-    IsNotArcType,           ///<
-    PhySizeCantBeDetected,  ///<
-    ZerosTailIsAllowed,     ///<
-    TailSize,               ///<
-    EmbeddedStubSize,       ///<
-    NtReparse,              ///<
-    HardLink,               ///<
-    INode,                  ///<
-    StreamId,               ///<
-    ReadOnly,               ///<
-    OutName,                ///<
-    CopyLink                ///<
+    NoProperty = 0,         ///< No property (placeholder for an invalid or unset property).
+    MainSubfile,            ///< The index of the main subfile of the archive.
+    HandlerItemIndex,       ///< The internal item index used by the archive handler.
+    Path,                   ///< The path of the item.
+    Name,                   ///< The name of the item.
+    Extension,              ///< The file extension of the item.
+    IsDir,                  ///< Whether the item is a directory.
+    Size,                   ///< The uncompressed size of the item.
+    PackSize,               ///< The compressed size of the item.
+    Attrib,                 ///< The attributes of the item.
+    CTime,                  ///< The creation time of the item.
+    ATime,                  ///< The last access time of the item.
+    MTime,                  ///< The last write time of the item.
+    Solid,                  ///< Whether the item uses solid compression.
+    Commented,              ///< Whether the item has a comment.
+    Encrypted,              ///< Whether the item is encrypted.
+    SplitBefore,            ///< Whether the item is continued from a previous volume.
+    SplitAfter,             ///< Whether the item is continued in the next volume.
+    DictionarySize,         ///< The dictionary size used to compress the item.
+    CRC,                    ///< The CRC checksum of the item.
+    Type,                   ///< The type of the item.
+    IsAnti,                 ///< Whether the item is an anti-item (a deletion marker).
+    Method,                 ///< The compression method used for the item.
+    HostOS,                 ///< The host OS on which the item was created.
+    FileSystem,             ///< The file system on which the item was stored.
+    User,                   ///< The user owning the item.
+    Group,                  ///< The group owning the item.
+    Block,                  ///< The index of the block containing the item.
+    Comment,                ///< The comment associated with the item.
+    Position,               ///< The position of the item.
+    Prefix,                 ///< The path prefix of the item.
+    NumSubDirs,             ///< The number of subdirectories contained in the item.
+    NumSubFiles,            ///< The number of subfiles contained in the item.
+    UnpackVer,              ///< The format version required to extract the item.
+    Volume,                 ///< The volume the item belongs to.
+    IsVolume,               ///< Whether the archive is a multi-volume archive.
+    Offset,                 ///< The offset of the item.
+    Links,                  ///< The number of hard links to the item.
+    NumBlocks,              ///< The number of blocks in the archive.
+    NumVolumes,             ///< The number of volumes composing the archive.
+    TimeType,               ///< The type (precision) of the item timestamps.
+    Bit64,                  ///< Whether the archive uses 64-bit values.
+    BigEndian,              ///< Whether the values are stored in big-endian byte order.
+    Cpu,                    ///< The target CPU architecture.
+    PhySize,                ///< The physical size of the archive.
+    HeadersSize,            ///< The size of the archive headers.
+    Checksum,               ///< The checksum of the item.
+    Characts,               ///< The characteristics of the item.
+    Va,                     ///< The virtual address of the item.
+    Id,                     ///< The identifier of the item.
+    ShortName,              ///< The short (DOS 8.3) name of the item.
+    CreatorApp,             ///< The application that created the archive.
+    SectorSize,             ///< The sector size of the volume.
+    PosixAttrib,            ///< The POSIX attributes of the item.
+    SymLink,                ///< The symbolic link target of the item.
+    Error,                  ///< An error associated with the item.
+    TotalSize,              ///< The total size of the volume.
+    FreeSpace,              ///< The free space available on the volume.
+    ClusterSize,            ///< The cluster size of the volume.
+    VolumeName,             ///< The label of the volume.
+    LocalName,              ///< The local name of the item.
+    Provider,               ///< The provider of the item.
+    NtSecure,               ///< The NT security descriptor of the item.
+    IsAltStream,            ///< Whether the item is an alternate data stream.
+    IsAux,                  ///< Whether the item is an auxiliary item.
+    IsDeleted,              ///< Whether the item is marked as deleted.
+    IsTree,                 ///< Whether the archive items are organized as a tree.
+    Sha1,                   ///< The SHA-1 hash of the item.
+    Sha256,                 ///< The SHA-256 hash of the item.
+    ErrorType,              ///< The type of error detected while opening the archive.
+    NumErrors,              ///< The number of errors detected in the archive.
+    ErrorFlags,             ///< The flags describing the errors detected while opening the archive.
+    WarningFlags,           ///< The flags describing the warnings detected while opening the archive.
+    Warning,                ///< A warning associated with the archive.
+    NumStreams,             ///< The number of streams in the archive.
+    NumAltStreams,          ///< The number of alternate data streams of the item.
+    AltStreamsSize,         ///< The total size of the alternate data streams of the item.
+    VirtualSize,            ///< The virtual size of the item.
+    UnpackSize,             ///< The uncompressed size of the archive.
+    TotalPhySize,           ///< The total physical size of the multi-volume archive.
+    VolumeIndex,            ///< The index of the volume containing the item.
+    SubType,                ///< The subtype of the archive.
+    ShortComment,           ///< A short comment describing the archive.
+    CodePage,               ///< The code page used to encode the item.
+    IsNotArcType,           ///< Whether the file is not of the detected archive type.
+    PhySizeCantBeDetected,  ///< Whether the physical size of the archive cannot be detected.
+    ZerosTailIsAllowed,     ///< Whether a tail of zero bytes is allowed after the archive data.
+    TailSize,               ///< The size of the data following the archive (tail).
+    EmbeddedStubSize,       ///< The size of the executable stub embedded before the archive data.
+    NtReparse,              ///< The NT reparse point data of the item.
+    HardLink,               ///< The hard link target of the item.
+    INode,                  ///< The inode number of the item.
+    StreamId,               ///< The identifier of the data stream of the item.
+    ReadOnly,               ///< Whether the item is read-only.
+    OutName,                ///< The suggested output name for the item.
+    CopyLink                ///< The copy link of the item.
 };
 
 /**

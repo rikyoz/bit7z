@@ -33,7 +33,7 @@ if( DOXYGEN_FOUND )
     )
     FetchContent_Declare(
             doxygen-cppreference
-            URL https://upload.cppreference.com/mwiki/images/f/f8/cppreference-doxygen-web.tag.xml
+            URL https://upload.cppreference.com/images/f/f8/cppreference-doxygen-web.tag.xml
             DOWNLOAD_NO_EXTRACT ON
             DOWNLOAD_DIR ${CPPREFERENCE_PATH}
     )
