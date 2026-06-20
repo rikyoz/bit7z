@@ -13,8 +13,6 @@
 #include "bitabstractarchivehandler.hpp"
 #include "internal/extractcallback.hpp"
 
-#include <cstdint>
-
 namespace bit7z {
 
 class BitInputArchive;

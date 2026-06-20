@@ -15,7 +15,6 @@
 #include "bitabstractarchivehandler.hpp"
 #include "bittypes.hpp"
 #include "internal/fsutil.hpp"
-#include "internal/stringutil.hpp"
 
 #include <vector>
 #include <system_error>

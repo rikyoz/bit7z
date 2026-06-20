@@ -22,8 +22,6 @@
 #include "internal/fsutil.hpp"
 #include "internal/util.hpp"
 
-#include <cstdint>
-
 namespace bit7z {
 
 BufferExtractCallback::BufferExtractCallback(

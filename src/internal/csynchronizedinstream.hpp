@@ -18,8 +18,6 @@
 
 #include <7zip/IStream.h>
 
-#include <mutex>
-#include <queue>
 #include <thread>
 
 namespace bit7z {

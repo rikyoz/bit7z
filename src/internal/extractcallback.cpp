@@ -17,7 +17,6 @@
 #include "bitinputarchive.hpp"
 #include "bitpropvariant.hpp"
 #include "internal/callback.hpp"
-#include "internal/operationcategory.hpp"
 #include "internal/operationresult.hpp"
 #include "internal/stringutil.hpp"
 

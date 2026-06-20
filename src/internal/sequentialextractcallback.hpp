@@ -13,8 +13,6 @@
 #include "internal/extractcallback.hpp"
 #include "internal/bufferqueue.hpp"
 
-#include <cstdint>
-
 namespace bit7z {
 
 class BitInputArchive;

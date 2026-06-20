@@ -17,8 +17,6 @@
 #include "internal/csynchronizedinstream.hpp"
 #include <internal/util.hpp>
 
-#include <7zip/Archive/IArchive.h>
-
 #ifdef _WIN32
 #include <windows.h>
 #elif defined( __APPLE__ ) || defined( BSD ) || \

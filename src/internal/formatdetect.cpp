@@ -28,7 +28,6 @@
 #include <7zip/IStream.h>
 
 #include <algorithm>
-#include <cstdlib>
 #include <cstdint>
 #include <ios>
 

@@ -11,7 +11,7 @@
 #define CMULTIVOLUMEOUTSTREAM_HPP
 
 #include "internal/cfileoutstream.hpp"
-#include "internal/guiddef.hpp"
+#include "internal/guids.hpp"
 #include "internal/volumescache.hpp"
 
 #include <7zip/IStream.h>

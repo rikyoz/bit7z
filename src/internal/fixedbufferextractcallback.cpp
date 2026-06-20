@@ -20,9 +20,6 @@
 #include "internal/extractcallback.hpp"
 #include "internal/util.hpp"
 
-#include <cstddef>
-#include <cstdint>
-
 namespace bit7z {
 
 FixedBufferExtractCallback::FixedBufferExtractCallback(

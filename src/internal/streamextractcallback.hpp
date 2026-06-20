@@ -12,7 +12,6 @@
 
 #include "internal/extractcallback.hpp"
 
-#include <cstdint>
 #include <ostream>
 
 namespace bit7z {

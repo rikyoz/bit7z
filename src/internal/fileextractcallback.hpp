@@ -20,8 +20,6 @@
 #include "internal/operationresult.hpp"
 #include "internal/optional.hpp"
 
-#include <cstdint>
-
 namespace bit7z {
 
 class BitInputArchive;

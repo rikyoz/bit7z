@@ -19,7 +19,6 @@
 #include "internal/util.hpp"
 
 #include <cstdint>
-#include <ostream>
 #include <utility>
 
 using namespace NWindows;
