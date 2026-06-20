@@ -31,7 +31,7 @@ auto openUniqueTempStream( const fs::path& targetPath ) -> CMyComPtr< CFileOutSt
     fs::path tmpCandidatePath = targetPath;
     tmpCandidatePath += BIT7Z_NATIVE_STRING( ".tmp" );
     std::uint32_t tempIndex = 0u; // Note: wider than kMaxTempPathRetries so that we can detect when we pass the limit.
-    do {
+    do { // NOLINT(*-avoid-do-while)
         try {
             return make_com< CFileOutStream >( tmpCandidatePath );
         } catch ( const BitException& exception ) {

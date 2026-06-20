@@ -18,7 +18,7 @@
 
 namespace bit7z {
 
-#if !defined( _WIN32 )
+#ifndef _WIN32
 namespace {
 
 // UTF-16 Constants

@@ -31,7 +31,7 @@ class CVolumeOutStream final : public CFileOutStream {
         void setCurrentSize( std::uint64_t currentSize );
 
         // IOutStream
-        BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
+        BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
 
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 

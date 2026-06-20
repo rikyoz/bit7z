@@ -376,7 +376,6 @@ auto findFormatBySignature( std::uint64_t signature ) noexcept -> const BitInFor
             return nullptr;
     }
 }
-} // namespace
 
 struct OffsetSignature { // NOLINT(*-member-init)
     std::uint64_t signature;
@@ -384,6 +383,7 @@ struct OffsetSignature { // NOLINT(*-member-init)
     std::uint32_t size;
     std::reference_wrapper< const BitInFormat > format;
 };
+} // namespace
 
 #ifdef _WIN32
 #define bswap64 _byteswap_uint64

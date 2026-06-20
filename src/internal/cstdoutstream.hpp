@@ -35,7 +35,7 @@ class CStdOutStream final : public IOutStream, public CMyUnknownImp {
         MY_UNKNOWN_DESTRUCTOR( ~CStdOutStream() ) = default;
 
         // IOutStream
-        BIT7Z_STDMETHOD( Write, void const* data, UInt32 size, UInt32* processedSize );
+        BIT7Z_STDMETHOD( Write, const void* data, UInt32 size, UInt32* processedSize );
 
         BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 

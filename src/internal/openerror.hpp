@@ -20,17 +20,17 @@ namespace bit7z {
 
 // Values match 7-Zip's kpv_ErrorFlags_* constants from PropID.h.
 enum struct OpenError : std::uint32_t { // NOLINT(*-enum-size)
-    IsNotArc              = 1u << 0,
-    HeadersError          = 1u << 1,
-    EncryptedHeadersError = 1u << 2,
-    UnavailableStart      = 1u << 3,
-    UnconfirmedStart      = 1u << 4,
-    UnexpectedEnd         = 1u << 5,
-    DataAfterEnd          = 1u << 6,
-    UnsupportedMethod     = 1u << 7,
-    UnsupportedFeature    = 1u << 8,
-    DataError             = 1u << 9,
-    CRCError              = 1u << 10
+    IsNotArc              = 1u << 0u,
+    HeadersError          = 1u << 1u,
+    EncryptedHeadersError = 1u << 2u,
+    UnavailableStart      = 1u << 3u,
+    UnconfirmedStart      = 1u << 4u,
+    UnexpectedEnd         = 1u << 5u,
+    DataAfterEnd          = 1u << 6u,
+    UnsupportedMethod     = 1u << 7u,
+    UnsupportedFeature    = 1u << 8u,
+    DataError             = 1u << 9u,
+    CRCError              = 1u << 10u
 };
 
 auto make_error_code( OpenError error ) noexcept -> std::error_code;
