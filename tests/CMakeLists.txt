@@ -68,6 +68,12 @@ target_include_directories(
 
 if( BIT7Z_TESTS_FILESYSTEM )
     if( NOT BIT7Z_TESTS_DATA_DIR )
+        if( BIT7Z_USE_SYSTEM_DEPENDENCIES )
+            message( FATAL_ERROR
+                "BIT7Z_USE_SYSTEM_DEPENDENCIES is enabled, so the test data cannot be fetched via CPM. "
+                "Set BIT7Z_TESTS_DATA_DIR to a local checkout of rikyoz/bit7z-test-data, "
+                "or disable BIT7Z_TESTS_FILESYSTEM." )
+        endif()
         CPMAddPackage(
             NAME bit7z_test_data
             GITHUB_REPOSITORY "rikyoz/bit7z-test-data"
@@ -179,14 +185,20 @@ if ( APPLE AND ${CMAKE_SYSTEM_PROCESSOR} STREQUAL "arm64" )
 endif()
 
 # Catch2
-CPMAddPackage(
-    NAME Catch2
-    GIT_TAG 27d8db1770dd5cd3688656095f242474431584a1
-    OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
-    GITHUB_REPOSITORY "rikyoz/Catch2"
-    GIT_PROGRESS ON
-)
-list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/contrib" )
+if( BIT7Z_USE_SYSTEM_DEPENDENCIES )
+    # The system package ships its own CMake integration and appends it to CMAKE_MODULE_PATH, so
+    # include( Catch ) below resolves without the source-tree contrib directory.
+    find_package( Catch2 CONFIG REQUIRED )
+else()
+    CPMAddPackage(
+        NAME Catch2
+        GIT_TAG 27d8db1770dd5cd3688656095f242474431584a1
+        OPTIONS "CATCH_CONFIG_CONSOLE_WIDTH 512" "CATCH_CONFIG_ENABLE_ALL_STRINGMAKERS ON"
+        GITHUB_REPOSITORY "rikyoz/Catch2"
+        GIT_PROGRESS ON
+    )
+    list( APPEND CMAKE_MODULE_PATH "${Catch2_SOURCE_DIR}/contrib" )
+endif()
 
 include( CTest )
 include( Catch )
