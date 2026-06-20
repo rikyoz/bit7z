@@ -27,6 +27,8 @@ auto FailureSourceCategory::name() const noexcept -> const char* {
 }
 
 auto FailureSourceCategory::message( int errorValue ) const -> std::string {
+    using namespace NArchive::NExtract;
+
     switch ( static_cast< BitFailureSource >( errorValue ) ) {
         case BitFailureSource::CRCError:
             return operationCategory().message( NOperationResult::kCRCError );

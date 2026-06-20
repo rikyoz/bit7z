@@ -25,8 +25,6 @@
 #include <cstdint>
 #include <exception>
 
-using namespace NArchive::NExtract;
-
 namespace bit7z {
 
 class BitInputArchive;
@@ -35,9 +33,9 @@ constexpr auto kEmptyFileAlias = BIT7Z_STRING( "[Content]" );
 constexpr auto kEmptyFileWideAlias = L"[Content]";
 
 enum struct ExtractMode : std::uint8_t {
-    Extract = NAskMode::kExtract,
-    Test    = NAskMode::kTest,
-    Skip    = NAskMode::kSkip
+    Extract = NArchive::NExtract::NAskMode::kExtract,
+    Test    = NArchive::NExtract::NAskMode::kTest,
+    Skip    = NArchive::NExtract::NAskMode::kSkip
 };
 
 class ExtractCallback : public Callback,

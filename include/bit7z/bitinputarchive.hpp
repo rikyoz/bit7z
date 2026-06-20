@@ -40,6 +40,8 @@ class BufferQueue;
 class ExtractCallback;
 class OpenCallback;
 
+enum struct ExtractMode : std::uint8_t;
+
 /**
  * @brief Offset from where the archive starts within the input file.
  */
@@ -690,7 +692,7 @@ class BitInputArchive {
 
         void extractSequentially( BufferQueue& queue, std::uint32_t index ) const;
 
-        void extractArchive( ExtractCallback* callback, std::int32_t mode, BitIndicesView indices = {} ) const;
+        void extractArchive( ExtractCallback* callback, ExtractMode mode, BitIndicesView indices = {} ) const;
 
         BIT7Z_NODISCARD
         auto isInvalidIndex( std::uint32_t index ) const -> bool;

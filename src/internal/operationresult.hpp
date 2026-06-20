@@ -19,25 +19,23 @@
 #include <system_error>
 #include <type_traits>
 
-using namespace NArchive::NExtract;
-
 namespace bit7z {
 
 enum struct OperationResult : std::uint8_t {
-    Success            = NOperationResult::kOK,
-    UnsupportedMethod  = NOperationResult::kUnsupportedMethod,
-    DataError          = NOperationResult::kDataError,
-    CRCError           = NOperationResult::kCRCError,
-    Unavailable        = NOperationResult::kUnavailable,
-    UnexpectedEnd      = NOperationResult::kUnexpectedEnd,
-    DataAfterEnd       = NOperationResult::kDataAfterEnd,
-    IsNotArc           = NOperationResult::kIsNotArc,
-    HeadersError       = NOperationResult::kHeadersError,
-    WrongPassword      = NOperationResult::kWrongPassword,
-    DataErrorEncrypted = 2 * NOperationResult::kWrongPassword,
-    CRCErrorEncrypted  = ( 2 * NOperationResult::kWrongPassword ) + 1,
-    OpenErrorEncrypted = ( 2 * NOperationResult::kWrongPassword ) + 2,
-    EmptyPassword      = ( 2 * NOperationResult::kWrongPassword ) + 3,
+    Success            = NArchive::NExtract::NOperationResult::kOK,
+    UnsupportedMethod  = NArchive::NExtract::NOperationResult::kUnsupportedMethod,
+    DataError          = NArchive::NExtract::NOperationResult::kDataError,
+    CRCError           = NArchive::NExtract::NOperationResult::kCRCError,
+    Unavailable        = NArchive::NExtract::NOperationResult::kUnavailable,
+    UnexpectedEnd      = NArchive::NExtract::NOperationResult::kUnexpectedEnd,
+    DataAfterEnd       = NArchive::NExtract::NOperationResult::kDataAfterEnd,
+    IsNotArc           = NArchive::NExtract::NOperationResult::kIsNotArc,
+    HeadersError       = NArchive::NExtract::NOperationResult::kHeadersError,
+    WrongPassword      = NArchive::NExtract::NOperationResult::kWrongPassword,
+    DataErrorEncrypted = 2 * NArchive::NExtract::NOperationResult::kWrongPassword,
+    CRCErrorEncrypted  = ( 2 * NArchive::NExtract::NOperationResult::kWrongPassword ) + 1,
+    OpenErrorEncrypted = ( 2 * NArchive::NExtract::NOperationResult::kWrongPassword ) + 2,
+    EmptyPassword      = ( 2 * NArchive::NExtract::NOperationResult::kWrongPassword ) + 3,
 };
 
 auto make_error_code( OperationResult error ) noexcept -> std::error_code;

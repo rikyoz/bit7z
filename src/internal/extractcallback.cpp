@@ -116,6 +116,8 @@ try {
 
 namespace {
 auto mapOperationResult( Int32 operationResult, bool isLastItemEncrypted ) -> OperationResult {
+    using namespace NArchive::NExtract;
+
     if ( isLastItemEncrypted ) {
         if ( operationResult == NOperationResult::kCRCError ) {
             return OperationResult::CRCErrorEncrypted;
