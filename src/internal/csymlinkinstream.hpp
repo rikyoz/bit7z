@@ -17,25 +17,26 @@
 
 namespace bit7z {
 
-struct CSymlinkInStream final : IInStream, CMyUnknownImp {
-    explicit CSymlinkInStream( const fs::path& symlinkPath );
+class CSymlinkInStream final : public IInStream, CMyUnknownImp {
+    public:
+        explicit CSymlinkInStream( const fs::path& symlinkPath );
 
-    CSymlinkInStream( const CSymlinkInStream& ) = delete;
+        CSymlinkInStream( const CSymlinkInStream& ) = delete;
 
-    CSymlinkInStream( CSymlinkInStream&& ) = delete;
+        CSymlinkInStream( CSymlinkInStream&& ) = delete;
 
-    auto operator=( const CSymlinkInStream& ) -> CSymlinkInStream& = delete;
+        auto operator=( const CSymlinkInStream& ) -> CSymlinkInStream& = delete;
 
-    auto operator=( CSymlinkInStream&& ) -> CSymlinkInStream& = delete;
+        auto operator=( CSymlinkInStream&& ) -> CSymlinkInStream& = delete;
 
-    MY_UNKNOWN_DESTRUCTOR( ~CSymlinkInStream() ) = default;
+        MY_UNKNOWN_DESTRUCTOR( ~CSymlinkInStream() ) = default;
 
-    // IInStream
-    BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
+        // IInStream
+        BIT7Z_STDMETHOD( Read, void* data, UInt32 size, UInt32* processedSize );
 
-    BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
+        BIT7Z_STDMETHOD( Seek, Int64 offset, UInt32 seekOrigin, UInt64* newPosition );
 
-    MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
+        MY_UNKNOWN_IMP1( IInStream ) //-V2507 //-V2511 //-V835 //-V3504
 
     private:
         std::istringstream mStream;

@@ -11,7 +11,6 @@
 #define BUFFEREXTRACTCALLBACK_HPP
 
 #include "bitabstractarchivehandler.hpp"
-#include "bittypes.hpp"
 #include "internal/extractcallback.hpp"
 
 namespace bit7z {

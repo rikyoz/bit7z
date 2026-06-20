@@ -40,7 +40,10 @@ void BufferExtractCallback::releaseStream() {
     mOutMemStream.Release();
 }
 
-auto BufferExtractCallback::getOutStream( const BitArchiveItem& item, ISequentialOutStream** outStream ) -> HRESULT try {
+auto BufferExtractCallback::getOutStream(
+    const BitArchiveItem& item,
+    ISequentialOutStream** outStream
+) -> HRESULT try {
     if ( item.isDir() ) {
         return S_OK;
     }

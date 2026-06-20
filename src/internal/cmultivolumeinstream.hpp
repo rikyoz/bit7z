@@ -12,7 +12,7 @@
 
 #include "internal/com.hpp"
 #include "internal/cfileinstream.hpp"
-#include "internal/guiddef.hpp"
+#include "internal/guids.hpp"
 #include "internal/macros.hpp"
 #include "internal/volumescache.hpp"
 
