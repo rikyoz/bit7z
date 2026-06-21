@@ -398,7 +398,7 @@ class BitAbstractArchiveCreator : public BitAbstractArchiveHandler {
         std::uint32_t mThreadsCount;
         bool mStoreSymbolicLinks;
         bool mStoreOpenFiles;
-        std::map< std::wstring, BitPropVariant, std::less<> > mExtraProperties;
+        std::map< std::wstring, BitPropVariant > mExtraProperties;
 };
 
 } // namespace bit7z
