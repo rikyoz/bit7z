@@ -44,7 +44,7 @@ auto fileSize(
         return fs::read_symlink( filePath, error ).u8string().size();
     }
 #ifdef _WIN32
-    return ( static_cast< std::uint64_t >( data.nFileSizeHigh ) << 32 ) | data.nFileSizeLow;
+    return ( static_cast< std::uint64_t >( data.nFileSizeHigh ) << 32u ) | data.nFileSizeLow;
 #else
     return static_cast< std::uint64_t >( data.st_size );
 #endif
