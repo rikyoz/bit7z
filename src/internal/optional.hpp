@@ -34,7 +34,7 @@ constexpr struct empty_init_t {} empty_init{};
 constexpr struct in_place_t {} in_place{};
 
 template< typename T, bool = std::is_trivially_destructible< T >::value >
-union OptionalStorage { // NOLINT(*-special-member-functions)
+union OptionalStorage { // NOLINT(*-special-member-functions) //-V2514
     byte_t mEmptyByte;
     T mValue;
 
@@ -48,7 +48,7 @@ union OptionalStorage { // NOLINT(*-special-member-functions)
 };
 
 template< typename T >
-union OptionalStorage< T, false > { // NOLINT(*-special-member-functions)
+union OptionalStorage< T, false > { // NOLINT(*-special-member-functions) //-V2514
     byte_t mEmptyByte;
     T mValue;
 

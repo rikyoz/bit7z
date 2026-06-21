@@ -443,6 +443,8 @@ auto BitInputArchive::rootFolder() const -> tstring {
             rootFolder = std::move( currentRoot );
         } else if ( rootFolder != currentRoot ) {
             return {};
+        } else {
+            // Do nothing.
         }
 
         ++currentItem;
@@ -542,7 +544,7 @@ void BitInputArchive::extractMatchingRegexTo(
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
 
-    const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+    const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize ); //-V2006
     extractMatchingTo( outDir, regexFilter, policy );
 }
 
@@ -776,7 +778,7 @@ void BitInputArchive::extractMatchingRegexTo( buffer_t& outBuffer, const tstring
         throw BitException( "Cannot extract items", make_error_code( BitError::FilterNotSpecified ) );
     }
 
-    const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize );
+    const tregex regexFilter( regex, tregex::ECMAScript | tregex::optimize ); //-V2006
     extractMatchingTo( outBuffer, regexFilter, policy );
 }
 

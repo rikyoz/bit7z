@@ -85,7 +85,7 @@ void BitArchiveEditor::updateItem( std::uint32_t index, const buffer_t& inBuffer
     setEditedItem( index, BitInputItem{ inBuffer, itemName.getString() } ); //-V108
 }
 
-void BitArchiveEditor::updateItem( std::uint32_t index, std::istream& inStream ) {
+void BitArchiveEditor::updateItem( std::uint32_t index, std::istream& inStream ) { //-V2009
     checkIndex( index );
     const auto itemName = inputArchive()->itemProperty( index, BitProperty::Path );
     setEditedItem( index, BitInputItem{ inStream, itemName.getString() } ); //-V108
@@ -99,7 +99,7 @@ void BitArchiveEditor::updateItem( const tstring& itemPath, const buffer_t& inBu
     setEditedItem( findItem( itemPath ), BitInputItem{ inBuffer, itemPath } ); //-V108
 }
 
-void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStream ) {
+void BitArchiveEditor::updateItem( const tstring& itemPath, std::istream& inStream ) { //-V2009
     setEditedItem( findItem( itemPath ), BitInputItem{ inStream, itemPath } ); //-V108
 }
 

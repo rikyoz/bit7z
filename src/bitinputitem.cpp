@@ -292,6 +292,8 @@ auto BitInputItem::getStream( ISequentialInStream** inStream, bool storeOpenFile
     } else if ( mProperties.inputType == InputItemType::StdStream ) {
         // NOLINTNEXTLINE(*-pro-type-union-access)
         inStreamLoc = bit7z::make_com< CStdInStream, ISequentialInStream >( mStdItem );
+    } else {
+        // Nothing to do for InputItemType::RenamedItem.
     }
     *inStream = inStreamLoc.Detach();
     return S_OK;

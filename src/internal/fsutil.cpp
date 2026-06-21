@@ -169,11 +169,11 @@ auto fsutil::setFileAttributes(
 #ifdef _WIN32
     ( void )pathBuilder; // Unused on Windows.
     if ( ( attributes & FILE_ATTRIBUTE_UNIX_EXTENSION ) == FILE_ATTRIBUTE_UNIX_EXTENSION ) {
-        constexpr auto kUnixWritePermissionsMask = 0222u;
+        constexpr auto kUnixWritePermissionsMask = 0x92u; // 0222 octal, the write bits for owner/group/other -w--w--w-.
         // Most likely, this is a Tar archive, which doesn't store Windows attributes, but only Unix permissions.
         // 7-Zip returns them as (unixPermissions << 16) | FILE_ATTRIBUTE_UNIX_EXTENSION
         const auto unixPermissions = static_cast< std::uint32_t >( attributes >> 16u );
-        if ( ( unixPermissions & kUnixWritePermissionsMask ) == 0u ) { // No write permissions
+        if ( ( unixPermissions & kUnixWritePermissionsMask ) == 0u ) { // No write permissions.
             attributes = FILE_ATTRIBUTE_READONLY;
         }
     }
