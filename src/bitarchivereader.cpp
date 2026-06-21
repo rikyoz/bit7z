@@ -211,19 +211,6 @@ auto BitArchiveReader::isEncrypted() const -> bool {
     );
 }
 
-auto BitArchiveReader::isMultiVolume() const -> bool {
-    if ( extractionFormat() == BitFormat::Split || ends_with( archivePath(), BIT7Z_STRING( ".001" ) ) ) {
-        return true;
-    }
-    const BitPropVariant isMultiVolume = archiveProperty( BitProperty::IsVolume );
-    return isMultiVolume.isBool() && isMultiVolume.getBool();
-}
-
-auto BitArchiveReader::isSolid() const -> bool {
-    const BitPropVariant isSolid = archiveProperty( BitProperty::Solid );
-    return isSolid.isBool() && isSolid.getBool();
-}
-
 auto BitArchiveReader::volumesCount() const -> std::uint32_t {
     if ( extractionFormat() != BitFormat::Split && ends_with( archivePath(), BIT7Z_STRING( ".001" ) ) ) {
         constexpr size_t kVolumeDigits = 3u;
@@ -242,6 +229,19 @@ auto BitArchiveReader::volumesCount() const -> std::uint32_t {
 
     const BitPropVariant volumesCount = archiveProperty( BitProperty::NumVolumes );
     return volumesCount.isEmpty() ? 1 : volumesCount.getUInt32();
+}
+
+auto BitArchiveReader::isMultiVolume() const -> bool {
+    if ( extractionFormat() == BitFormat::Split || ends_with( archivePath(), BIT7Z_STRING( ".001" ) ) ) {
+        return true;
+    }
+    const BitPropVariant isMultiVolume = archiveProperty( BitProperty::IsVolume );
+    return isMultiVolume.isBool() && isMultiVolume.getBool();
+}
+
+auto BitArchiveReader::isSolid() const -> bool {
+    const BitPropVariant isSolid = archiveProperty( BitProperty::Solid );
+    return isSolid.isBool() && isSolid.getBool();
 }
 
 auto BitArchiveReader::isOpenEncryptedError( std::error_code error ) noexcept -> bool {

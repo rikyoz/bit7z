@@ -26,9 +26,6 @@
 
 namespace bit7z {
 
-BitArchiveItem::BitArchiveItem( std::uint32_t itemIndex ) noexcept
-    : mItemIndex( itemIndex ) {}
-
 auto BitArchiveItem::index() const noexcept -> std::uint32_t {
     return mItemIndex;
 }
@@ -37,6 +34,9 @@ auto BitArchiveItem::isDir() const -> bool {
     const BitPropVariant isDir = itemProperty( BitProperty::IsDir );
     return !isDir.isEmpty() && isDir.getBool();
 }
+
+BitArchiveItem::BitArchiveItem( std::uint32_t itemIndex ) noexcept
+    : mItemIndex( itemIndex ) {}
 
 namespace {
 BIT7Z_NODISCARD

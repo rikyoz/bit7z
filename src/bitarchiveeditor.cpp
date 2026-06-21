@@ -163,6 +163,16 @@ auto isInsidePath( const fs::path& itemPath, bool isDir, const fs::path& base ) 
 }
 } // namespace
 
+void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
+    if ( mode == UpdateMode::None ) {
+        throw BitException(
+            "Cannot set update mode to UpdateMode::None",
+            std::make_error_code( std::errc::invalid_argument )
+        );
+    }
+    BitAbstractArchiveCreator::setUpdateMode( mode );
+}
+
 void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy ) {
     // The path to be deleted must be relative to the root of the archive.
     if ( itemPath.empty() || isPathSeparator( itemPath.front() ) ) {
@@ -198,25 +208,6 @@ void BitArchiveEditor::deleteItem( const tstring& itemPath, DeletePolicy policy 
             itemPath
         );
     }
-}
-
-void BitArchiveEditor::markItemAsDeleted( std::uint32_t index ) {
-    mEditedItems.erase( index );
-    setDeletedIndex( index );
-}
-
-void BitArchiveEditor::setEditedItem( std::uint32_t index, BitInputItem&& item ) {
-    mEditedItems.emplace( std::make_pair( index, std::move( item ) ) );
-}
-
-void BitArchiveEditor::setUpdateMode( UpdateMode mode ) {
-    if ( mode == UpdateMode::None ) {
-        throw BitException(
-            "Cannot set update mode to UpdateMode::None",
-            std::make_error_code( std::errc::invalid_argument )
-        );
-    }
-    BitAbstractArchiveCreator::setUpdateMode( mode );
 }
 
 void BitArchiveEditor::applyChanges() {
@@ -311,6 +302,15 @@ auto BitArchiveEditor::hasNewProperties( std::uint32_t index ) const noexcept ->
     const auto mappedIndex = static_cast< std::uint32_t >( itemInputIndex( index ) );
     const bool isEditedItem = mEditedItems.find( mappedIndex ) != mEditedItems.end();
     return mappedIndex >= inputArchiveItemsCount() || isEditedItem;
+}
+
+void BitArchiveEditor::markItemAsDeleted( std::uint32_t index ) {
+    mEditedItems.erase( index );
+    setDeletedIndex( index );
+}
+
+void BitArchiveEditor::setEditedItem( std::uint32_t index, BitInputItem&& item ) {
+    mEditedItems.emplace( std::make_pair( index, std::move( item ) ) );
 }
 
 } // namespace bit7z

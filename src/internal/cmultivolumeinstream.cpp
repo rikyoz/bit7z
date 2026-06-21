@@ -70,22 +70,6 @@ auto CMultiVolumeInStream::currentVolume() -> CachedVolume< CFileInStream >& {
 
 // NOLINTEND(*-pro-bounds-avoid-unchecked-container-access)
 
-void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex ) {
-#ifdef _WIN32
-    if ( cachedVolume.stream == nullptr ) {
-        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
-    }
-#else
-    if ( cachedVolume.stream == nullptr ) {
-        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
-        mVolumes.trackReopen( cachedVolume, volumeIndex );
-    } else {
-        mVolumes.promote( cachedVolume, volumeIndex );
-    }
-#endif
-    mLastOpenedVolume = volumeIndex;
-}
-
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept try {
     if ( processedSize != nullptr ) {
@@ -155,6 +139,22 @@ STDMETHODIMP CMultiVolumeInStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64
         *newPosition = mAbsolutePosition;
     }
     return S_OK;
+}
+
+void CMultiVolumeInStream::ensureVolumeOpen( CachedVolume< CFileInStream >& cachedVolume, std::size_t volumeIndex ) {
+#ifdef _WIN32
+    if ( cachedVolume.stream == nullptr ) {
+        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
+    }
+#else
+    if ( cachedVolume.stream == nullptr ) {
+        cachedVolume.stream = make_com< CFileInStream >( cachedVolume.volumePath.native() );
+        mVolumes.trackReopen( cachedVolume, volumeIndex );
+    } else {
+        mVolumes.promote( cachedVolume, volumeIndex );
+    }
+#endif
+    mLastOpenedVolume = volumeIndex;
 }
 
 void CMultiVolumeInStream::addVolume( const fs::path& volumePath ) {

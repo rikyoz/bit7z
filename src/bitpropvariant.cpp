@@ -533,17 +533,15 @@ void BitPropVariant::internalClear() noexcept {
     uhVal.QuadPart = 0;
 }
 
+namespace {
 /* Needed for comparing FILETIME objects in BitPropVariant */
-inline auto operator==( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
+ auto operator==( FILETIME ft1, FILETIME ft2 ) noexcept -> bool {
 #ifdef _WIN32
     return CompareFileTime( &ft1, &ft2 ) == 0;
 #else
     return ( ft1.dwHighDateTime == ft2.dwHighDateTime ) && ( ft1.dwLowDateTime == ft2.dwLowDateTime );
 #endif
 }
-
-auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
-    return !( lhs == rhs );
 }
 
 auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
@@ -582,6 +580,10 @@ auto operator==( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept
         default:
             return false;
     }
+}
+
+auto operator!=( const BitPropVariant& lhs, const BitPropVariant& rhs ) noexcept -> bool {
+    return !( lhs == rhs ); // NOLINT(*-redundant-parentheses)
 }
 
 #define ENUM_TO_STRING( enum_value ) \

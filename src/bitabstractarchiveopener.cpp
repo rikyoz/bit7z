@@ -19,12 +19,6 @@
 
 namespace bit7z {
 
-BitAbstractArchiveOpener::BitAbstractArchiveOpener(
-    const Bit7zLibrary& lib,
-    const BitInFormat& format,
-    const tstring& password
-) : BitAbstractArchiveHandler{ lib, password, OverwriteMode::Overwrite }, mFormat{ format } {}
-
 auto BitAbstractArchiveOpener::format() const noexcept -> const BitInFormat& {
     return mFormat;
 }
@@ -32,5 +26,11 @@ auto BitAbstractArchiveOpener::format() const noexcept -> const BitInFormat& {
 auto BitAbstractArchiveOpener::extractionFormat() const noexcept -> const BitInFormat& {
     return mFormat;
 }
+
+BitAbstractArchiveOpener::BitAbstractArchiveOpener(
+    const Bit7zLibrary& lib,
+    const BitInFormat& format,
+    const tstring& password
+) : BitAbstractArchiveHandler{ lib, password, OverwriteMode::Overwrite }, mFormat{ format } {}
 
 } // namespace bit7z

@@ -20,15 +20,20 @@ namespace bit7z {
 CVolumeOutStream::CVolumeOutStream( const fs::path& volumeName )
     : CFileOutStream( volumeName ), mCurrentOffset{ 0 }, mCurrentSize{ 0 }, mVolumePath{ volumeName } {}
 
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP CVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    UInt64 pos{};
-    RINOK( CFileOutStream::Seek( offset, seekOrigin, &pos ) ) //-V3504
-    mCurrentOffset = pos;
-    if ( newPosition != nullptr ) {
-        *newPosition = pos;
-    }
-    return S_OK;
+auto CVolumeOutStream::currentOffset() const -> std::uint64_t {
+    return mCurrentOffset;
+}
+
+auto CVolumeOutStream::currentSize() const -> std::uint64_t {
+    return mCurrentSize;
+}
+
+auto CVolumeOutStream::volumePath() const -> const fs::path& {
+    return mVolumePath;
+}
+
+void CVolumeOutStream::setCurrentSize( std::uint64_t currentSize ) {
+    mCurrentSize = currentSize;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -51,8 +56,15 @@ STDMETHODIMP CVolumeOutStream::Write( const void* data, UInt32 size, UInt32* pro
     return S_OK;
 }
 
-auto CVolumeOutStream::currentOffset() const -> std::uint64_t {
-    return mCurrentOffset;
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    UInt64 pos{};
+    RINOK( CFileOutStream::Seek( offset, seekOrigin, &pos ) ) //-V3504
+    mCurrentOffset = pos;
+    if ( newPosition != nullptr ) {
+        *newPosition = pos;
+    }
+    return S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -60,18 +72,6 @@ STDMETHODIMP CVolumeOutStream::SetSize( UInt64 newSize ) noexcept {
     RINOK( CFileOutStream::SetSize( newSize ) ) //-V3504
     mCurrentSize = newSize;
     return S_OK;
-}
-
-auto CVolumeOutStream::currentSize() const -> std::uint64_t {
-    return mCurrentSize;
-}
-
-void CVolumeOutStream::setCurrentSize( std::uint64_t currentSize ) {
-    mCurrentSize = currentSize;
-}
-
-auto CVolumeOutStream::volumePath() const -> const fs::path& {
-    return mVolumePath;
 }
 
 } // namespace bit7z

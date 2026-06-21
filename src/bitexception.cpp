@@ -60,10 +60,6 @@ BitException::BitException( const char* const message, std::error_code code, con
 BitException::BitException( const std::string& message, std::error_code code )
     : std::system_error( code, message ) {}
 
-auto BitException::failedFiles() const noexcept -> const FailedFiles& {
-    return mFailedFiles;
-}
-
 auto BitException::nativeCode() const noexcept -> BitException::native_code_type {
 #ifdef _WIN32 // On Windows, the native code must be a HRESULT value.
     return hresultCode();
@@ -139,6 +135,10 @@ auto BitException::hresultCode() const noexcept -> HRESULT {
     }
 #endif
     return E_FAIL;
+}
+
+auto BitException::failedFiles() const noexcept -> const FailedFiles& {
+    return mFailedFiles;
 }
 
 namespace {

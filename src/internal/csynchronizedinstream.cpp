@@ -34,6 +34,12 @@ CSynchronizedInStream::CSynchronizedInStream(
     mCurrentReadPosition = mReadBuffer.begin();
 }
 
+CSynchronizedInStream::~CSynchronizedInStream() {
+    if ( mExtractorThread.joinable() ) {
+        mExtractorThread.join();
+    }
+}
+
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CSynchronizedInStream::Read( void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
@@ -68,12 +74,6 @@ STDMETHODIMP CSynchronizedInStream::Read( void* data, UInt32 size, UInt32* proce
     }
 
     return S_OK;
-}
-
-CSynchronizedInStream::~CSynchronizedInStream() {
-    if ( mExtractorThread.joinable() ) {
-        mExtractorThread.join();
-    }
 }
 
 void CSynchronizedInStream::extractParentArchive() try {

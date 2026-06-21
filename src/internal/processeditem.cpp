@@ -52,6 +52,18 @@ auto ProcessedItem::accessTime() const -> FILETIME {
 }
 #endif
 
+auto ProcessedItem::areAttributesDefined() const -> bool {
+    return mAreAttributesDefined;
+}
+
+auto ProcessedItem::hasTimeAttributes() const noexcept -> bool {
+#ifdef _WIN32
+    return mAccessTime.isFileTime() || mCreationTime.isFileTime() || mModifiedTime.isFileTime();
+#else
+    return mModifiedTime.isFileTime();
+#endif
+}
+
 void ProcessedItem::loadFilePath( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) {
     const BitPropVariant prop = inputArchive.itemProperty( itemIndex, BitProperty::Path );
 
@@ -110,18 +122,6 @@ void ProcessedItem::loadTimeMetadata( const BitInputArchive& inputArchive, std::
 #ifdef _WIN32
     mCreationTime = inputArchive.itemProperty( itemIndex, BitProperty::CTime );
     mAccessTime = inputArchive.itemProperty( itemIndex, BitProperty::ATime );
-#endif
-}
-
-auto ProcessedItem::areAttributesDefined() const -> bool {
-    return mAreAttributesDefined;
-}
-
-auto ProcessedItem::hasTimeAttributes() const noexcept -> bool {
-#ifdef _WIN32
-    return mAccessTime.isFileTime() || mCreationTime.isFileTime() || mModifiedTime.isFileTime();
-#else
-    return mModifiedTime.isFileTime();
 #endif
 }
 

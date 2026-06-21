@@ -26,36 +26,6 @@ CBufferOutStream::CBufferOutStream( buffer_t& outBuffer )
     : mBuffer( outBuffer ), mCurrentPosition{ mBuffer.begin() } {}
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
-    try {
-        mBuffer.resize( static_cast< buffer_t::size_type >( newSize ) );
-        return S_OK;
-    } catch ( ... ) {
-        return E_OUTOFMEMORY;
-    }
-}
-
-COM_DECLSPEC_NOTHROW
-STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
-    std::uint64_t newIndex{};
-    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
-
-    if ( res != S_OK ) {
-        // We failed to seek (e.g., the new index would not be in the range [0, mBuffer.size]).
-        return res;
-    }
-
-    // Note: newIndex can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
-    mCurrentPosition = mBuffer.begin() + static_cast< index_t >( newIndex );
-
-    if ( newPosition != nullptr ) {
-        *newPosition = newIndex;
-    }
-
-    return S_OK;
-}
-
-COM_DECLSPEC_NOTHROW
 STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
     if ( processedSize != nullptr ) {
         *processedSize = 0;
@@ -90,6 +60,36 @@ STDMETHODIMP CBufferOutStream::Write( const void* data, UInt32 size, UInt32* pro
     }
 
     return S_OK;
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt64* newPosition ) noexcept {
+    std::uint64_t newIndex{};
+    const HRESULT res = seek( mBuffer, mCurrentPosition, offset, seekOrigin, newIndex );
+
+    if ( res != S_OK ) {
+        // We failed to seek (e.g., the new index would not be in the range [0, mBuffer.size]).
+        return res;
+    }
+
+    // Note: newIndex can be equal to mBuffer.size(); in this case, mCurrentPosition == mBuffer.cend()
+    mCurrentPosition = mBuffer.begin() + static_cast< index_t >( newIndex );
+
+    if ( newPosition != nullptr ) {
+        *newPosition = newIndex;
+    }
+
+    return S_OK;
+}
+
+COM_DECLSPEC_NOTHROW
+STDMETHODIMP CBufferOutStream::SetSize( UInt64 newSize ) noexcept {
+    try {
+        mBuffer.resize( static_cast< buffer_t::size_type >( newSize ) );
+        return S_OK;
+    } catch ( ... ) {
+        return E_OUTOFMEMORY;
+    }
 }
 
 } // namespace bit7z

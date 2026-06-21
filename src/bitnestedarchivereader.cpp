@@ -90,13 +90,6 @@ auto validateFormat( const BitInFormat& format ) -> const BitInFormat& {
 BitNestedArchiveReader::BitNestedArchiveReader(
     const Bit7zLibrary& lib,
     const BitInputArchive& parentArchive,
-    const BitInFormat& format,
-    const tstring& password
-) : BitNestedArchiveReader{ lib, parentArchive, 0, format, password } {}
-
-BitNestedArchiveReader::BitNestedArchiveReader(
-    const Bit7zLibrary& lib,
-    const BitInputArchive& parentArchive,
     std::uint32_t index,
     const BitInFormat& format,
     const tstring& password
@@ -108,6 +101,13 @@ BitNestedArchiveReader::BitNestedArchiveReader(
     mCachedItemsCount{ 0 },
     mLastReadItem{ std::numeric_limits< decltype( mLastReadItem ) >::max() },
     mOpenCount{ 0 } {}
+
+BitNestedArchiveReader::BitNestedArchiveReader(
+    const Bit7zLibrary& lib,
+    const BitInputArchive& parentArchive,
+    const BitInFormat& format,
+    const tstring& password
+) : BitNestedArchiveReader{ lib, parentArchive, 0, format, password } {}
 
 auto BitNestedArchiveReader::maxMemoryUsage() const noexcept -> std::uint64_t {
     return mMaxMemoryUsage;
@@ -129,23 +129,6 @@ auto BitNestedArchiveReader::itemProperty( std::uint32_t index, BitProperty prop
     const auto result = mNestedArchive.itemProperty( index, property );
     mLastReadItem = index;
     return result;
-}
-
-auto BitNestedArchiveReader::calculateItemsCount() const -> std::uint32_t {
-    if ( needReopen() ) {
-        openSequentially();
-    }
-
-    for ( std::uint32_t index = 0; index < std::numeric_limits< std::uint32_t >::max(); ++index ) {
-        /* All archive formats provide BitProperty::IsDir for _valid_ items,
-         * so if the item at the index doesn't have this property,
-         * it means the archive doesn't have an item at the given index. */
-        if ( !mNestedArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
-            mLastReadItem = index;
-            return index;
-        }
-    }
-    return 0;
 }
 
 auto BitNestedArchiveReader::itemsCount() const -> std::uint32_t {
@@ -216,6 +199,15 @@ void BitNestedArchiveReader::test() const {
     mLastReadItem = std::numeric_limits< decltype( mLastReadItem ) >::max();
 }
 
+auto BitNestedArchiveReader::openCount() const -> std::size_t {
+    return mOpenCount;
+}
+
+void BitNestedArchiveReader::setMaxMemoryUsage( std::uint64_t value ) noexcept {
+    // TODO: Throw an exception if the value is below the minimum?
+    mMaxMemoryUsage = std::max( value, kMinMaxMemoryUsage );
+}
+
 void BitNestedArchiveReader::openSequentially() const {
     const auto stream = bit7z::make_com< CSynchronizedInStream, ISequentialInStream >(
         mMaxMemoryUsage,
@@ -231,13 +223,21 @@ auto BitNestedArchiveReader::needReopen( std::uint32_t index ) const -> bool {
     return index < mLastReadItem;
 }
 
-auto BitNestedArchiveReader::openCount() const -> std::size_t {
-    return mOpenCount;
-}
+auto BitNestedArchiveReader::calculateItemsCount() const -> std::uint32_t {
+    if ( needReopen() ) {
+        openSequentially();
+    }
 
-void BitNestedArchiveReader::setMaxMemoryUsage( std::uint64_t value ) noexcept {
-    // TODO: Throw an exception if the value is below the minimum?
-    mMaxMemoryUsage = std::max( value, kMinMaxMemoryUsage );
+    for ( std::uint32_t index = 0; index < std::numeric_limits< std::uint32_t >::max(); ++index ) {
+        /* All archive formats provide BitProperty::IsDir for _valid_ items,
+         * so if the item at the index doesn't have this property,
+         * it means the archive doesn't have an item at the given index. */
+        if ( !mNestedArchive.itemHasProperty( index, BitProperty::IsDir ) ) {
+            mLastReadItem = index;
+            return index;
+        }
+    }
+    return 0;
 }
 
 } // namespace bit7z

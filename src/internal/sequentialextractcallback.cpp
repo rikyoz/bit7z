@@ -27,6 +27,11 @@ SequentialExtractCallback::SequentialExtractCallback( const BitInputArchive& inp
     : ExtractCallback( inputArchive ),
       mBufferQueue{ queue } {}
 
+auto SequentialExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
+    mSeqOutStream.Release();
+    return ExtractCallback::finishOperation( operationResult );
+}
+
 void SequentialExtractCallback::releaseStream() {
     mSeqOutStream.Release();
 }
@@ -56,11 +61,6 @@ auto SequentialExtractCallback::getOutStream( const BitArchiveItem& item, ISeque
     mSeqOutStream = outStreamLoc;
     *outStream = outStreamLoc.Detach();
     return S_OK;
-}
-
-auto SequentialExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
-    mSeqOutStream.Release();
-    return ExtractCallback::finishOperation( operationResult );
 }
 
 } // namespace bit7z

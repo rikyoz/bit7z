@@ -43,10 +43,6 @@ auto FileExtractCallback::extractionAttempted() const -> bool {
     return mExtractionAttempted;
 }
 
-void FileExtractCallback::releaseStream() {
-    mFileOutStream.Release();
-}
-
 auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
     const HRESULT result = operationResult != OperationResult::Success ? E_FAIL : S_OK;
     if ( mFileOutStream == nullptr ) {
@@ -80,6 +76,10 @@ auto FileExtractCallback::finishOperation( OperationResult operationResult ) -> 
         filesystem::fsutil::setFileAttributes( mOutPathBuilder, mFilePathOnDisk, mCurrentItem->attributes() );
     }
     return result;
+}
+
+void FileExtractCallback::releaseStream() {
+    mFileOutStream.Release();
 }
 
 constexpr auto kCannotDeleteOutput = "Cannot delete output file";

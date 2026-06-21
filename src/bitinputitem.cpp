@@ -257,6 +257,22 @@ auto BitInputItem::itemProperty( BitProperty property ) const -> BitPropVariant 
     return prop;
 }
 
+auto BitInputItem::hasNewData() const noexcept -> bool {
+    return mProperties.inputType != InputItemType::RenamedItem;
+}
+
+void BitInputItem::setCreationTime( time_type creationTime ) noexcept {
+    mProperties.creationTime = toFILETIME( creationTime );
+}
+
+void BitInputItem::setLastWriteTime( time_type lastWriteTime ) noexcept {
+    mProperties.lastWriteTime = toFILETIME( lastWriteTime );
+}
+
+void BitInputItem::setLastAccessTime( time_type lastAccessTime ) noexcept {
+    mProperties.lastAccessTime = toFILETIME( lastAccessTime );
+}
+
 auto BitInputItem::getStream( ISequentialInStream** inStream, bool storeOpenFiles ) const -> HRESULT try {
     if ( isDir() ) {
         return S_OK;
@@ -281,22 +297,6 @@ auto BitInputItem::getStream( ISequentialInStream** inStream, bool storeOpenFile
     return S_OK;
 } catch ( const BitException& exception ) {
     return exception.hresultCode();
-}
-
-auto BitInputItem::hasNewData() const noexcept -> bool {
-    return mProperties.inputType != InputItemType::RenamedItem;
-}
-
-void BitInputItem::setCreationTime( time_type creationTime ) noexcept {
-    mProperties.creationTime = toFILETIME( creationTime );
-}
-
-void BitInputItem::setLastWriteTime( time_type lastWriteTime ) noexcept {
-    mProperties.lastWriteTime = toFILETIME( lastWriteTime );
-}
-
-void BitInputItem::setLastAccessTime( time_type lastAccessTime ) noexcept {
-    mProperties.lastAccessTime = toFILETIME( lastAccessTime );
 }
 
 } // namespace bit7z

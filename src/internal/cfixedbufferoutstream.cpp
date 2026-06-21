@@ -37,8 +37,38 @@ CFixedBufferOutStream::CFixedBufferOutStream( byte_t* buffer, std::size_t size )
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
-    return newSize != mBufferSize ? E_INVALIDARG : S_OK;
+STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
+    if ( processedSize != nullptr ) {
+        *processedSize = 0;
+    }
+
+    if ( data == nullptr || size == 0 ) {
+        return E_FAIL;
+    }
+
+    // The Seek method ensures mCurrentPosition < mBufferSize.
+    const std::size_t remainingSize = mBufferSize - mCurrentPosition;
+
+    // Writing only to the remaining part of the output buffer!
+    const auto writeSize = ( std::min )( static_cast< std::size_t >( size ), remainingSize );
+
+    const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
+    try {
+        // TODO: Use std::span, gsl::span, or a custom span class (e.g., BufferView).
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+        std::copy_n( byteData, writeSize, &mBuffer[ mCurrentPosition ] ); //-V2563
+    } catch ( ... ) {
+        return E_OUTOFMEMORY;
+    }
+
+    mCurrentPosition += writeSize;
+
+    if ( processedSize != nullptr ) {
+        // Note: writeSize is not greater than size, which is UInt32, so the cast is safe.
+        *processedSize = static_cast< UInt32 >( writeSize );
+    }
+
+    return S_OK;
 }
 
 COM_DECLSPEC_NOTHROW
@@ -77,38 +107,8 @@ STDMETHODIMP CFixedBufferOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
 }
 
 COM_DECLSPEC_NOTHROW
-STDMETHODIMP CFixedBufferOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept {
-    if ( processedSize != nullptr ) {
-        *processedSize = 0;
-    }
-
-    if ( data == nullptr || size == 0 ) {
-        return E_FAIL;
-    }
-
-    // The Seek method ensures mCurrentPosition < mBufferSize.
-    const std::size_t remainingSize = mBufferSize - mCurrentPosition;
-
-    // Writing only to the remaining part of the output buffer!
-    const auto writeSize = ( std::min )( static_cast< std::size_t >( size ), remainingSize );
-
-    const auto* byteData = static_cast< const byte_t* >( data ); //-V2571
-    try {
-        // TODO: Use std::span, gsl::span, or a custom span class (e.g., BufferView).
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
-        std::copy_n( byteData, writeSize, &mBuffer[ mCurrentPosition ] ); //-V2563
-    } catch ( ... ) {
-        return E_OUTOFMEMORY;
-    }
-
-    mCurrentPosition += writeSize;
-
-    if ( processedSize != nullptr ) {
-        // Note: writeSize is not greater than size, which is UInt32, so the cast is safe.
-        *processedSize = static_cast< UInt32 >( writeSize );
-    }
-
-    return S_OK;
+STDMETHODIMP CFixedBufferOutStream::SetSize( UInt64 newSize ) noexcept {
+    return newSize != mBufferSize ? E_INVALIDARG : S_OK;
 }
 
 } // namespace bit7z

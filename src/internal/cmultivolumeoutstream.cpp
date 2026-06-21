@@ -31,62 +31,6 @@ CMultiVolumeOutStream::CMultiVolumeOutStream( std::uint64_t volSize, fs::path ar
       mAbsolutePosition( 0 ),
       mTotalSize( 0 ) {}
 
-auto CMultiVolumeOutStream::currentVolume() -> CachedVolume< CFileOutStream >& {
-    const auto volumeIndex = static_cast< std::size_t >( mAbsolutePosition / mMaxVolumeSize );
-
-    for ( auto newVolumeIndex = mVolumes.size(); newVolumeIndex <= volumeIndex; ++newVolumeIndex ) {
-        /* The current volume stream still doesn't exist, so we need to create it. */
-        tstring name = to_tstring( static_cast< std::uint64_t >( newVolumeIndex ) + 1 );
-        if ( name.length() < 3 ) {
-            name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
-        }
-
-        fs::path volumePath = mVolumePrefix;
-        volumePath += BIT7Z_STRING( "." ) + name;
-        CachedVolume< CFileOutStream > volume{
-            volumePath,
-            0u,
-            newVolumeIndex * mMaxVolumeSize,
-            0u,
-            {}
-        };
-        mVolumes.emplace_back( std::move( volume ) );
-    }
-
-    auto& cachedVolume = mVolumes[ volumeIndex ];
-
-#ifndef _WIN32
-    if ( volumeIndex == mVolumes.newest() ) {
-        return cachedVolume; // Already the newest open volume, no need to ensure it is opened.
-    }
-#endif
-
-    ensureVolumeOpen( cachedVolume, volumeIndex );
-    return cachedVolume;
-}
-
-void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex ) {
-#ifdef _WIN32
-    ( void )volumeIndex;
-    if ( cachedVolume.stream == nullptr ) {
-        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), FileFlag::CreateNew );
-    }
-#else
-    if ( cachedVolume.stream == nullptr ) {
-        // The volume was evicted from the LRU list, so we need to reopen it.
-        // Opening the volume before evicting the oldest one so that
-        // we can handle an open failure without evicting the oldest one.
-        // First-open vs reopen heuristic: the LRU promotes a just-opened volume to MRU,
-        // so it cannot be evicted before the first Write makes volumeSize > 0.
-        const auto fileFlag = cachedVolume.volumeSize > 0 ? FileFlag::Existing : FileFlag::CreateNew;
-        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), fileFlag );
-        mVolumes.trackReopen( cachedVolume, volumeIndex );
-    } else {
-        mVolumes.promote( cachedVolume, volumeIndex );
-    }
-#endif
-}
-
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP CMultiVolumeOutStream::Write( const void* data, UInt32 size, UInt32* processedSize ) noexcept try {
     if ( processedSize != nullptr ) {
@@ -151,6 +95,62 @@ STDMETHODIMP CMultiVolumeOutStream::Seek( Int64 offset, UInt32 seekOrigin, UInt6
         *newPosition = mAbsolutePosition;
     }
     return S_OK;
+}
+
+auto CMultiVolumeOutStream::currentVolume() -> CachedVolume< CFileOutStream >& {
+    const auto volumeIndex = static_cast< std::size_t >( mAbsolutePosition / mMaxVolumeSize );
+
+    for ( auto newVolumeIndex = mVolumes.size(); newVolumeIndex <= volumeIndex; ++newVolumeIndex ) {
+        /* The current volume stream still doesn't exist, so we need to create it. */
+        tstring name = to_tstring( static_cast< std::uint64_t >( newVolumeIndex ) + 1 );
+        if ( name.length() < 3 ) {
+            name.insert( 0, 3 - name.length(), BIT7Z_STRING( '0' ) );
+        }
+
+        fs::path volumePath = mVolumePrefix;
+        volumePath += BIT7Z_STRING( "." ) + name;
+        CachedVolume< CFileOutStream > volume{
+            volumePath,
+            0u,
+            newVolumeIndex * mMaxVolumeSize,
+            0u,
+            {}
+        };
+        mVolumes.emplace_back( std::move( volume ) );
+    }
+
+    auto& cachedVolume = mVolumes[ volumeIndex ];
+
+#ifndef _WIN32
+    if ( volumeIndex == mVolumes.newest() ) {
+        return cachedVolume; // Already the newest open volume, no need to ensure it is opened.
+    }
+#endif
+
+    ensureVolumeOpen( cachedVolume, volumeIndex );
+    return cachedVolume;
+}
+
+void CMultiVolumeOutStream::ensureVolumeOpen( CachedVolume< CFileOutStream >& cachedVolume, std::size_t volumeIndex ) {
+#ifdef _WIN32
+    ( void )volumeIndex;
+    if ( cachedVolume.stream == nullptr ) {
+        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), FileFlag::CreateNew );
+    }
+#else
+    if ( cachedVolume.stream == nullptr ) {
+        // The volume was evicted from the LRU list, so we need to reopen it.
+        // Opening the volume before evicting the oldest one so that
+        // we can handle an open failure without evicting the oldest one.
+        // First-open vs reopen heuristic: the LRU promotes a just-opened volume to MRU,
+        // so it cannot be evicted before the first Write makes volumeSize > 0.
+        const auto fileFlag = cachedVolume.volumeSize > 0 ? FileFlag::Existing : FileFlag::CreateNew;
+        cachedVolume.stream = make_com< CFileOutStream >( cachedVolume.volumePath.native(), fileFlag );
+        mVolumes.trackReopen( cachedVolume, volumeIndex );
+    } else {
+        mVolumes.promote( cachedVolume, volumeIndex );
+    }
+#endif
 }
 
 namespace {

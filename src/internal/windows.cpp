@@ -31,7 +31,7 @@ auto SysAllocString( const OLECHAR* str ) -> BSTR {
         UINT result = 0;
         // NOLINTNEXTLINE(cppcoreguidelines-pro-bounds-pointer-arithmetic)
         for ( ; result < FILENAME_MAX && str[ result ] != L'\0'; ++result ) {
-            // continue;
+            // Empty body.
         }
         return result;
     }();
@@ -91,8 +91,10 @@ auto AllocStringBuffer( LPCSTR str, std::uint32_t byteLength ) -> BSTR {
 auto SysAllocStringLen( const OLECHAR* str, UINT length ) -> BSTR {
     const auto byteLength = length * sizeof( OLECHAR );
 
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    return AllocStringBuffer( reinterpret_cast< LPCSTR >( str ), cpp26::saturating_cast< std::uint32_t >( byteLength ) );
+    return AllocStringBuffer(
+        reinterpret_cast< LPCSTR >( str ), // NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+        cpp26::saturating_cast< std::uint32_t >( byteLength )
+    );
 }
 
 auto SysAllocStringByteLen( LPCSTR str, UINT length ) -> BSTR {
@@ -109,7 +111,7 @@ void SysFreeString( BSTR bstr ) { // NOLINT(readability-non-const-parameter)
     auto* bstrBuffer = reinterpret_cast< byte_t* >( bstr ) - sizeof( bstr_prefix_t );
 
     // NOLINTNEXTLINE(cppcoreguidelines-owning-memory, *-no-malloc)
-    std::free( static_cast< void* >( bstrBuffer ) );
+    std::free( static_cast< void* >( bstrBuffer ) ); // NOSONAR
 }
 
 auto SysStringByteLen( BSTR bstr ) -> UINT { // NOLINT(readability-non-const-parameter)

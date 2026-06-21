@@ -128,27 +128,6 @@ auto methodName( BitCompressionMethod method ) noexcept -> const wchar_t* {
 }
 } // namespace
 
-BitAbstractArchiveCreator::BitAbstractArchiveCreator(
-    const Bit7zLibrary& lib,
-    const BitInOutFormat& format,
-    tstring password,
-    UpdateMode updateMode
-) : BitAbstractArchiveHandler( lib, std::move( password ) ),
-    mFormat( format ),
-    mUpdateMode( updateMode ),
-    mCompressionLevel( BitCompressionLevel::Normal ),
-    mCompressionMethod( format.defaultMethod() ),
-    mDictionarySize( 0 ),
-    mWordSize( 0 ),
-    mCryptHeaders( false ),
-    mSolidMode( false ),
-    mVolumeSize( 0 ),
-    mThreadsCount( 0 ),
-    mStoreSymbolicLinks{ false },
-    mStoreOpenFiles{ false } {
-    setRetainDirectories( false );
-}
-
 auto BitAbstractArchiveCreator::format() const noexcept -> const BitInFormat& {
     return mFormat;
 }
@@ -218,6 +197,27 @@ auto BitAbstractArchiveCreator::storeOpenFiles() const noexcept -> bool {
 
 void BitAbstractArchiveCreator::setPassword( const tstring& password ) {
     setPassword( password, mCryptHeaders ? EncryptionScope::DataAndHeaders : EncryptionScope::DataOnly );
+}
+
+BitAbstractArchiveCreator::BitAbstractArchiveCreator(
+    const Bit7zLibrary& lib,
+    const BitInOutFormat& format,
+    tstring password,
+    UpdateMode updateMode
+) : BitAbstractArchiveHandler( lib, std::move( password ) ),
+    mFormat( format ),
+    mUpdateMode( updateMode ),
+    mCompressionLevel( BitCompressionLevel::Normal ),
+    mCompressionMethod( format.defaultMethod() ),
+    mDictionarySize( 0 ),
+    mWordSize( 0 ),
+    mCryptHeaders( false ),
+    mSolidMode( false ),
+    mVolumeSize( 0 ),
+    mThreadsCount( 0 ),
+    mStoreSymbolicLinks{ false },
+    mStoreOpenFiles{ false } {
+    setRetainDirectories( false );
 }
 
 #ifndef BIT7Z_DISABLE_ZIP_ASCII_PWD_CHECK

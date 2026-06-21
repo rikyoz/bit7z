@@ -55,44 +55,6 @@ BitOutputArchive::BitOutputArchive(
 
 BitOutputArchive::BitOutputArchive(
     const BitAbstractArchiveCreator& creator,
-    const fs::path& inArc,
-    ArchiveStartOffset archiveStart
-) : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
-    if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
-        return;
-    }
-
-    if ( inArc.empty() ) { // No input file specified, so we are creating a totally new archive.
-        return;
-    }
-
-    std::error_code error;
-    if ( !fs::exists( inArc, error ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
-        return;
-    }
-
-    if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
-        throw BitException(
-            "Cannot update the existing archive",
-            make_error_code( BitError::WrongUpdateMode )
-        );
-    }
-
-    // TODO: Add support for updating single-file bz2, gz, and xz archives when updated archive still contains one file.
-    if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
-        //Update mode is set, but the format does not support adding more files.
-        throw BitException(
-            "Cannot update the existing archive",
-            make_error_code( BitError::FormatFeatureNotSupported )
-        );
-    }
-
-    mInputArchive = std::make_unique< BitInputArchive >( creator, inArc, archiveStart );
-    mInputArchiveItemsCount = mInputArchive->itemsCount();
-}
-
-BitOutputArchive::BitOutputArchive(
-    const BitAbstractArchiveCreator& creator,
     const buffer_t& inBuffer,
     ArchiveStartOffset startOffset
 ) : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
@@ -112,8 +74,6 @@ BitOutputArchive::BitOutputArchive(
         mInputArchiveItemsCount = mInputArchive->itemsCount();
     }
 }
-
-BitOutputArchive::~BitOutputArchive() = default;
 
 void BitOutputArchive::addItems( const std::vector< tstring >& inPaths ) {
     IndexingOptions options{};
@@ -200,86 +160,6 @@ void BitOutputArchive::addDirectoryContents(
     indexDirectoryContent( mNewItems, inDir, filter, options );
 }
 
-auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
-    CMyComPtr< IOutArchive > newArc;
-    if ( mInputArchive == nullptr ) {
-        newArc = mArchiveCreator.library().initOutArchive( mArchiveCreator.compressionFormat() );
-    } else {
-        const auto res = mInputArchive->initUpdatableArchive( &newArc );
-        if ( res != S_OK ) {
-            throw BitException{ "Could not make the input archive object updatable", make_hresult_code( res ) };
-        }
-    }
-    setArchiveProperties( newArc );
-    return newArc;
-}
-
-auto BitOutputArchive::initOutFileStream( const fs::path& outArchive ) const -> CMyComPtr< IOutStream > {
-    if ( mArchiveCreator.volumeSize() > 0 ) {
-        return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), outArchive );
-    }
-
-    return bit7z::make_com< CFileOutStream, IOutStream >( outArchive );
-}
-
-void BitOutputArchive::compressOut(
-    IOutArchive* outArc,
-    IOutStream* outStream,
-    UpdateCallback* updateCallback
-) {
-    if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Update ) {
-        for ( const auto& newItem : mNewItems ) {
-            auto newItemPath = pathToTstring( newItem.inArchivePath() );
-            auto updatedItem = mInputArchive->find( newItemPath );
-            if ( updatedItem != mInputArchive->cend() ) {
-                setDeletedIndex( updatedItem->index() );
-            }
-        }
-    }
-    updateInputIndices();
-
-    const HRESULT result = outArc->UpdateItems( outStream, itemsCount(), updateCallback );
-
-    if ( result == E_NOTIMPL ) {
-        throw BitException( "Unsupported operation", bit7z::make_hresult_code( result ) );
-    }
-
-    if ( result != S_OK ) {
-        throw BitException( "Error while compressing files", make_hresult_code( result ), std::move( mFailedFiles ) );
-    }
-}
-
-void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* updateCallback ) {
-    // Note: if mInputArchive is not nullptr, newArc will actually point to the same IInArchive object
-    // used by the old_arc (see initUpdatableArchive function of BitInputArchive).
-    const bool updatingArchive = mInputArchive != nullptr && tstringToPath( mInputArchive->archivePath() ) == outFile;
-    const CMyComPtr< IOutArchive > newArc = initOutArchive();
-
-    if ( updatingArchive ) {
-        if ( mArchiveCreator.volumeSize() > 0 ) {
-            throw BitException(
-                "Cannot update a multi-volume archive in place",
-                make_error_code( BitError::UnsupportedOperation )
-            );
-        }
-        AtomicFileReplacer replacer{ outFile };
-        compressOut( newArc, replacer.stream(), updateCallback );
-
-        const auto closeResult = mInputArchive->close();
-        if ( closeResult != S_OK ) {
-            throw BitException(
-                "Failed to close the archive",
-                make_hresult_code( closeResult ),
-                mInputArchive->archivePath()
-            );
-        }
-        replacer.commit();
-    } else {
-        const CMyComPtr< IOutStream > outStream = initOutFileStream( outFile );
-        compressOut( newArc, outStream, updateCallback );
-    }
-}
-
 void BitOutputArchive::compressTo( const tstring& outFile ) {
     const fs::path outPath = tstringToPath( outFile );
     if ( !outPath.has_filename() ) {
@@ -333,44 +213,6 @@ void BitOutputArchive::compressTo( std::ostream& outStream ) {
     compressOut( newArc, outStdStream, updateCallback );
 }
 
-void BitOutputArchive::setArchiveProperties( IOutArchive* outArchive ) const {
-    const ArchiveProperties properties = mArchiveCreator.archiveProperties();
-    if ( properties.empty() ) {
-        return;
-    }
-
-    CMyComPtr< ISetProperties > setProperties;
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-    HRESULT res = outArchive->QueryInterface( bit7z::IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) );
-    if ( res != S_OK ) {
-        throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
-    }
-    res = setProperties->SetProperties(
-        properties.names(),
-        properties.values(),
-        static_cast< std::uint32_t >( properties.size() )
-    );
-    if ( res != S_OK ) {
-        throw BitException( "Cannot set properties of the archive", make_hresult_code( res ) );
-    }
-}
-
-void BitOutputArchive::updateInputIndices() {
-    if ( mDeletedItems.empty() ) {
-        return;
-    }
-
-    std::uint32_t offset = 0;
-    for ( std::uint32_t newIndex = 0; newIndex < itemsCount(); ++newIndex ) {
-        for ( auto it = mDeletedItems.find( newIndex + offset );
-              it != mDeletedItems.end() && *it == newIndex + offset;
-              ++it ) {
-            ++offset;
-        }
-        mInputIndices.push_back( static_cast< InputIndex >( newIndex + offset ) );
-    }
-}
-
 auto BitOutputArchive::itemsCount() const -> std::uint32_t {
     auto result = static_cast< std::uint32_t >( mNewItems.size() );
     if ( mInputArchive != nullptr ) {
@@ -378,6 +220,16 @@ auto BitOutputArchive::itemsCount() const -> std::uint32_t {
     }
     return result;
 }
+
+auto BitOutputArchive::handler() const noexcept -> const BitAbstractArchiveHandler& {
+    return mArchiveCreator;
+}
+
+auto BitOutputArchive::creator() const noexcept -> const BitAbstractArchiveCreator& {
+    return mArchiveCreator;
+}
+
+BitOutputArchive::~BitOutputArchive() = default;
 
 auto BitOutputArchive::itemProperty( InputIndex index, BitProperty property ) const -> BitPropVariant {
     const auto newItemIndex = static_cast< std::size_t >( index ) - static_cast< std::size_t >( mInputArchiveItemsCount );
@@ -431,12 +283,160 @@ auto BitOutputArchive::indexInArchive( std::uint32_t index ) const noexcept -> s
     return originalIndex < mInputArchiveItemsCount ? originalIndex : static_cast< std::uint32_t >( -1 );
 }
 
-auto BitOutputArchive::handler() const noexcept -> const BitAbstractArchiveHandler& {
-    return mArchiveCreator;
+auto BitOutputArchive::initOutArchive() const -> CMyComPtr< IOutArchive > {
+    CMyComPtr< IOutArchive > newArc;
+    if ( mInputArchive == nullptr ) {
+        newArc = mArchiveCreator.library().initOutArchive( mArchiveCreator.compressionFormat() );
+    } else {
+        const auto res = mInputArchive->initUpdatableArchive( &newArc );
+        if ( res != S_OK ) {
+            throw BitException{ "Could not make the input archive object updatable", make_hresult_code( res ) };
+        }
+    }
+    setArchiveProperties( newArc );
+    return newArc;
 }
 
-auto BitOutputArchive::creator() const noexcept -> const BitAbstractArchiveCreator& {
-    return mArchiveCreator;
+auto BitOutputArchive::initOutFileStream( const fs::path& outArchive ) const -> CMyComPtr< IOutStream > {
+    if ( mArchiveCreator.volumeSize() > 0 ) {
+        return bit7z::make_com< CMultiVolumeOutStream, IOutStream >( mArchiveCreator.volumeSize(), outArchive );
+    }
+
+    return bit7z::make_com< CFileOutStream, IOutStream >( outArchive );
+}
+
+BitOutputArchive::BitOutputArchive(
+    const BitAbstractArchiveCreator& creator,
+    const fs::path& inArc,
+    ArchiveStartOffset archiveStart
+) : mArchiveCreator{ creator }, mInputArchiveItemsCount{ 0 } {
+    if ( mArchiveCreator.overwriteMode() != OverwriteMode::None ) {
+        return;
+    }
+
+    if ( inArc.empty() ) { // No input file specified, so we are creating a totally new archive.
+        return;
+    }
+
+    std::error_code error;
+    if ( !fs::exists( inArc, error ) ) { // An input file was specified, but it doesn't exist, so we ignore it.
+        return;
+    }
+
+    if ( mArchiveCreator.updateMode() == UpdateMode::None ) {
+        throw BitException(
+            "Cannot update the existing archive",
+            make_error_code( BitError::WrongUpdateMode )
+        );
+    }
+
+    // TODO: Add support for updating single-file bz2, gz, and xz archives when updated archive still contains one file.
+    if ( !mArchiveCreator.compressionFormat().hasFeature( FormatFeatures::MultipleFiles ) ) {
+        //Update mode is set, but the format does not support adding more files.
+        throw BitException(
+            "Cannot update the existing archive",
+            make_error_code( BitError::FormatFeatureNotSupported )
+        );
+    }
+
+    mInputArchive = std::make_unique< BitInputArchive >( creator, inArc, archiveStart );
+    mInputArchiveItemsCount = mInputArchive->itemsCount();
+}
+
+void BitOutputArchive::compressToFile( const fs::path& outFile, UpdateCallback* updateCallback ) {
+    // Note: if mInputArchive is not nullptr, newArc will actually point to the same IInArchive object
+    // used by the old_arc (see initUpdatableArchive function of BitInputArchive).
+    const bool updatingArchive = mInputArchive != nullptr && tstringToPath( mInputArchive->archivePath() ) == outFile;
+    const CMyComPtr< IOutArchive > newArc = initOutArchive();
+
+    if ( updatingArchive ) {
+        if ( mArchiveCreator.volumeSize() > 0 ) {
+            throw BitException(
+                "Cannot update a multi-volume archive in place",
+                make_error_code( BitError::UnsupportedOperation )
+            );
+        }
+        AtomicFileReplacer replacer{ outFile };
+        compressOut( newArc, replacer.stream(), updateCallback );
+
+        const auto closeResult = mInputArchive->close();
+        if ( closeResult != S_OK ) {
+            throw BitException(
+                "Failed to close the archive",
+                make_hresult_code( closeResult ),
+                mInputArchive->archivePath()
+            );
+        }
+        replacer.commit();
+    } else {
+        const CMyComPtr< IOutStream > outStream = initOutFileStream( outFile );
+        compressOut( newArc, outStream, updateCallback );
+    }
+}
+
+void BitOutputArchive::compressOut(
+    IOutArchive* outArc,
+    IOutStream* outStream,
+    UpdateCallback* updateCallback
+) {
+    if ( mInputArchive != nullptr && mArchiveCreator.updateMode() == UpdateMode::Update ) {
+        for ( const auto& newItem : mNewItems ) {
+            auto newItemPath = pathToTstring( newItem.inArchivePath() );
+            auto updatedItem = mInputArchive->find( newItemPath );
+            if ( updatedItem != mInputArchive->cend() ) {
+                setDeletedIndex( updatedItem->index() );
+            }
+        }
+    }
+    updateInputIndices();
+
+    const HRESULT result = outArc->UpdateItems( outStream, itemsCount(), updateCallback );
+
+    if ( result == E_NOTIMPL ) {
+        throw BitException( "Unsupported operation", bit7z::make_hresult_code( result ) );
+    }
+
+    if ( result != S_OK ) {
+        throw BitException( "Error while compressing files", make_hresult_code( result ), std::move( mFailedFiles ) );
+    }
+}
+
+void BitOutputArchive::setArchiveProperties( IOutArchive* outArchive ) const {
+    const ArchiveProperties properties = mArchiveCreator.archiveProperties();
+    if ( properties.empty() ) {
+        return;
+    }
+
+    CMyComPtr< ISetProperties > setProperties;
+    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+    HRESULT res = outArchive->QueryInterface( bit7z::IID_ISetProperties, reinterpret_cast< void** >( &setProperties ) );
+    if ( res != S_OK ) {
+        throw BitException( "ISetProperties unsupported", make_hresult_code( res ) );
+    }
+    res = setProperties->SetProperties(
+        properties.names(),
+        properties.values(),
+        static_cast< std::uint32_t >( properties.size() )
+    );
+    if ( res != S_OK ) {
+        throw BitException( "Cannot set properties of the archive", make_hresult_code( res ) );
+    }
+}
+
+void BitOutputArchive::updateInputIndices() {
+    if ( mDeletedItems.empty() ) {
+        return;
+    }
+
+    std::uint32_t offset = 0;
+    for ( std::uint32_t newIndex = 0; newIndex < itemsCount(); ++newIndex ) {
+        for ( auto it = mDeletedItems.find( newIndex + offset );
+              it != mDeletedItems.end() && *it == newIndex + offset;
+              ++it ) {
+            ++offset;
+        }
+        mInputIndices.push_back( static_cast< InputIndex >( newIndex + offset ) );
+    }
 }
 
 } // namespace bit7z

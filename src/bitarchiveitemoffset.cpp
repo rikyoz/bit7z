@@ -20,9 +20,6 @@
 
 namespace bit7z {
 
-BitArchiveItemOffset::BitArchiveItemOffset( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) noexcept
-    : BitArchiveItem( itemIndex ), mArc{ std::cref( inputArchive ) } {}
-
 auto BitArchiveItemOffset::operator++() noexcept -> BitArchiveItemOffset& {
     ++mItemIndex;
     return *this;
@@ -49,5 +46,8 @@ auto BitArchiveItemOffset::itemProperty( BitProperty property ) const -> BitProp
 auto BitArchiveItemOffset::hasProperty( BitProperty property ) const -> bool {
     return mArc.get().itemHasProperty( mItemIndex, property );
 }
+
+BitArchiveItemOffset::BitArchiveItemOffset( const BitInputArchive& inputArchive, std::uint32_t itemIndex ) noexcept
+    : BitArchiveItem( itemIndex ), mArc{ std::cref( inputArchive ) } {}
 
 } // namespace bit7z

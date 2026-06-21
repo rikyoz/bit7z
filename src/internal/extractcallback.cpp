@@ -29,18 +29,6 @@
 
 namespace bit7z {
 
-ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive, FilterCallback filterCallback )
-    : Callback( inputArchive.handler() ),
-      mInputArchive( inputArchive ),
-      mExtractMode( ExtractMode::Extract ),
-      mIsLastItemEncrypted{ false },
-      mFilterCallback{ std::move( filterCallback ) } {}
-
-auto ExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
-    releaseStream();
-    return operationResult != OperationResult::Success ? E_FAIL : S_OK;
-}
-
 COM_DECLSPEC_NOTHROW
 STDMETHODIMP ExtractCallback::SetTotal( UInt64 size ) noexcept {
     if ( mHandler.totalCallback() ) {
@@ -112,6 +100,18 @@ try {
         BitException( "Failed to get the stream", make_hresult_code( E_ABORT ) )
     );
     return E_ABORT;
+}
+
+ExtractCallback::ExtractCallback( const BitInputArchive& inputArchive, FilterCallback filterCallback )
+    : Callback( inputArchive.handler() ),
+      mInputArchive( inputArchive ),
+      mExtractMode( ExtractMode::Extract ),
+      mIsLastItemEncrypted{ false },
+      mFilterCallback{ std::move( filterCallback ) } {}
+
+auto ExtractCallback::finishOperation( OperationResult operationResult ) -> HRESULT {
+    releaseStream();
+    return operationResult != OperationResult::Success ? E_FAIL : S_OK;
 }
 
 namespace {

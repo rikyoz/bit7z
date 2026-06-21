@@ -21,42 +21,14 @@ namespace BitFormat {
 #ifdef BIT7Z_AUTO_FORMAT
 const BitInFormat Auto( 0x00 );
 #endif
-const BitInOutFormat Zip(
-    0x01,
-    BIT7Z_STRING( ".zip" ),
-    BitCompressionMethod::Deflate,
-    FormatFeatures::MultipleFiles | FormatFeatures::CompressionLevel |
-    FormatFeatures::Encryption | FormatFeatures::MultipleMethods
-);
-const BitInOutFormat BZip2(
-    0x02,
-    BIT7Z_STRING( ".bz2" ),
-    BitCompressionMethod::BZip2,
-    FormatFeatures::CompressionLevel
-);
 const BitInFormat Rar( 0x03 );
 const BitInFormat Arj( 0x04 ); //-V112
 const BitInFormat Z( 0x05 ); // NOLINT(*-identifier-length)
 const BitInFormat Lzh( 0x06 );
-const BitInOutFormat SevenZip(
-    0x07,
-    BIT7Z_STRING( ".7z" ),
-    BitCompressionMethod::Lzma2,
-    FormatFeatures::MultipleFiles | FormatFeatures::SolidArchive |
-    FormatFeatures::CompressionLevel | FormatFeatures::Encryption |
-    FormatFeatures::HeaderEncryption | FormatFeatures::MultipleMethods
-);
 const BitInFormat Cab( 0x08 );
 const BitInFormat Nsis( 0x09 );
 const BitInFormat Lzma( 0x0A );
 const BitInFormat Lzma86( 0x0B );
-const BitInOutFormat Xz(
-    0x0C,
-    BIT7Z_STRING( ".xz" ),
-    // NOLINT(*-identifier-length)
-    BitCompressionMethod::Lzma2,
-    FormatFeatures::CompressionLevel
-);
 const BitInFormat Ppmd( 0x0D );
 const BitInFormat Zstd( 0x0E );
 const BitInFormat LVM( 0xBF );
@@ -97,18 +69,46 @@ const BitInFormat Mub( 0xE2 );
 const BitInFormat Hfs( 0xE3 );
 const BitInFormat Dmg( 0xE4 );
 const BitInFormat Compound( 0xE5 );
-const BitInOutFormat Wim(
-    0xE6,
-    BIT7Z_STRING( ".wim" ),
-    BitCompressionMethod::Copy,
-    FormatFeatures::MultipleFiles
-);
 const BitInFormat Iso( 0xE7 );
 const BitInFormat Chm( 0xE9 );
 const BitInFormat Split( 0xEA );
 const BitInFormat Rpm( 0xEB );
 const BitInFormat Deb( 0xEC );
 const BitInFormat Cpio( 0xED );
+const BitInOutFormat Zip(
+    0x01,
+    BIT7Z_STRING( ".zip" ),
+    BitCompressionMethod::Deflate,
+    FormatFeatures::MultipleFiles | FormatFeatures::CompressionLevel |
+    FormatFeatures::Encryption | FormatFeatures::MultipleMethods
+);
+const BitInOutFormat BZip2(
+    0x02,
+    BIT7Z_STRING( ".bz2" ),
+    BitCompressionMethod::BZip2,
+    FormatFeatures::CompressionLevel
+);
+const BitInOutFormat SevenZip(
+    0x07,
+    BIT7Z_STRING( ".7z" ),
+    BitCompressionMethod::Lzma2,
+    FormatFeatures::MultipleFiles | FormatFeatures::SolidArchive |
+    FormatFeatures::CompressionLevel | FormatFeatures::Encryption |
+    FormatFeatures::HeaderEncryption | FormatFeatures::MultipleMethods
+);
+const BitInOutFormat Xz(
+    0x0C,
+    BIT7Z_STRING( ".xz" ),
+    // NOLINT(*-identifier-length)
+    BitCompressionMethod::Lzma2,
+    FormatFeatures::CompressionLevel
+);
+const BitInOutFormat Wim(
+    0xE6,
+    BIT7Z_STRING( ".wim" ),
+    BitCompressionMethod::Copy,
+    FormatFeatures::MultipleFiles
+);
 const BitInOutFormat Tar(
     0xEE,
     BIT7Z_STRING( ".tar" ),
@@ -132,7 +132,7 @@ auto BitInFormat::operator==( const BitInFormat& other ) const noexcept -> bool 
 }
 
 auto BitInFormat::operator!=( const BitInFormat& other ) const noexcept -> bool {
-    return !( *this == other );
+    return !( *this == other ); // NOLINT(*-redundant-parentheses)
 }
 
 auto BitInOutFormat::extension() const noexcept -> const tchar* {
@@ -144,7 +144,7 @@ auto BitInOutFormat::features() const noexcept -> FormatFeatures {
 }
 
 auto BitInOutFormat::hasFeature( FormatFeatures feature ) const noexcept -> bool {
-    return ( mFeatures & feature ) != 0;
+    return ( mFeatures & feature ) != 0; // NOLINT(*-redundant-parentheses)
 }
 
 auto BitInOutFormat::defaultMethod() const noexcept -> BitCompressionMethod {
