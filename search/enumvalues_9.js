@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['overwrite_0',['Overwrite',['../namespacebit7z.html#af6f79ca652f5cd37cb76957fb76b1630ada364eb37e143f6b2b5559aa03f5913a',1,'bit7z::Overwrite'],['../namespacebit7z.html#a5bfa8cb875cc02ca663d25269f9d8803ada364eb37e143f6b2b5559aa03f5913a',1,'bit7z::Overwrite']]]
+  ['keepname_0',['KeepName',['../namespacebit7z.html#af4949b77cd4999279b489647ef177fdba3e08264051704976393c6e29a3b75d07',1,'bit7z']]],
+  ['keeppath_1',['KeepPath',['../namespacebit7z.html#af4949b77cd4999279b489647ef177fdbad43348bc605e8eefb753c51048e4cb1c',1,'bit7z']]]
 ];

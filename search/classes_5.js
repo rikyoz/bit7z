@@ -14,11 +14,16 @@ var searchData=
   ['front_5finsert_5fiterator_11',['front_insert_iterator',['http://en.cppreference.com/w/cpp/iterator/front_insert_iterator.html',1,'std']]],
   ['fstream_12',['fstream',['http://en.cppreference.com/w/cpp/io/basic_fstream.html',1,'std']]],
   ['function_13',['function',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
-  ['function_3c_20bool_28uint64_5ft_29_20_3e_14',['function&lt; bool(uint64_t) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
-  ['function_3c_20tstring_28_29_20_3e_15',['function&lt; tstring() &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
-  ['function_3c_20void_28tstring_29_20_3e_16',['function&lt; void(tstring) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
-  ['function_3c_20void_28uint64_5ft_29_20_3e_17',['function&lt; void(uint64_t) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
-  ['function_3c_20void_28uint64_5ft_2c_20uint64_5ft_29_20_3e_18',['function&lt; void(uint64_t, uint64_t) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
-  ['future_19',['future',['http://en.cppreference.com/w/cpp/thread/future.html',1,'std']]],
-  ['future_5ferror_20',['future_error',['http://en.cppreference.com/w/cpp/thread/future_error.html',1,'std']]]
+  ['function_3c_20bool_28const_20byte_5ft_20_2a_2c_20std_3a_3asize_5ft_29_20_3e_14',['function&lt; bool(const byte_t *, std::size_t) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20bool_28std_3a_3auint64_5ft_29_20_3e_15',['function&lt; bool(std::uint64_t) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20buffer_5ft_20_26_28std_3a_3auint32_5ft_2c_20const_20tstring_20_26_29_20_3e_16',['function&lt; buffer_t &amp;(std::uint32_t, const tstring &amp;) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20filterresult_28const_20bitarchiveitem_20_26_29_20_3e_17',['function&lt; FilterResult(const BitArchiveItem &amp;) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20tstring_28_29_20_3e_18',['function&lt; tstring() &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20tstring_28const_20bitarchiveitem_20_26_29_20_3e_19',['function&lt; tstring(const BitArchiveItem &amp;) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20tstring_28std_3a_3auint32_5ft_2c_20const_20tstring_20_26_29_20_3e_20',['function&lt; tstring(std::uint32_t, const tstring &amp;) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20void_28const_20tstring_20_26_29_20_3e_21',['function&lt; void(const tstring &amp;) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20void_28std_3a_3auint64_5ft_29_20_3e_22',['function&lt; void(std::uint64_t) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['function_3c_20void_28std_3a_3auint64_5ft_2c_20std_3a_3auint64_5ft_29_20_3e_23',['function&lt; void(std::uint64_t, std::uint64_t) &gt;',['http://en.cppreference.com/w/cpp/utility/functional/function.html',1,'std']]],
+  ['future_24',['future',['http://en.cppreference.com/w/cpp/thread/future.html',1,'std']]],
+  ['future_5ferror_25',['future_error',['http://en.cppreference.com/w/cpp/thread/future_error.html',1,'std']]]
 ];

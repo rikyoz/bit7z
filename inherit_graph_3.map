@@ -1,5 +1,9 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classbit7z_1_1_bit_in_format.html" title="The BitInFormat class specifies an extractable archive format." alt="" coords="5,5,94,32"/>
-<area shape="rect" id="Node000001" href="$classbit7z_1_1_bit_in_out_format.html" title="The BitInOutFormat class specifies a format available for creating new archives and extract old ones." alt="" coords="142,5,251,32"/>
-<area shape="poly" id="edge15_Node000000_Node000001" title=" " alt="" coords="108,16,141,16,141,21,108,21"/>
+<area shape="rect" id="Node000000" href="$classbit7z_1_1_bit_generic_item.html" title="The BitGenericItem interface class represents a generic item (either inside or outside an archive)." alt="" coords="5,31,114,57"/>
+<area shape="rect" id="Node000001" href="$classbit7z_1_1_bit_archive_item.html" title="The BitArchiveItem class represents a generic item inside an archive." alt="" coords="162,31,269,57"/>
+<area shape="poly" id="edge16_Node000000_Node000001" title=" " alt="" coords="129,41,164,43,159,45,129,47"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_archive_item_info.html" title="The BitArchiveItemInfo class represents an archived item and that stores all its properties for later..." alt="" coords="324,5,453,32"/>
+<area shape="poly" id="edge17_Node000001_Node000002" title=" " alt="" coords="284,31,326,28,321,29,285,37"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_archive_item_offset.html" title="The BitArchiveItemOffset class represents an archived item but doesn&#39;t store its properties." alt="" coords="317,56,459,83"/>
+<area shape="poly" id="edge18_Node000001_Node000003" title=" " alt="" coords="285,51,319,59,314,59,284,57"/>
 </map>

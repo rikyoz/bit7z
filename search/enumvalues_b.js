@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['uint16_0',['UInt16',['../namespacebit7z.html#a7717b7db807102fa525c9881ddff34f9a8bd950a9d7779b83f5c30046c9aaf1cf',1,'bit7z']]],
-  ['uint32_1',['UInt32',['../namespacebit7z.html#a7717b7db807102fa525c9881ddff34f9ae7956ed7be1c5025a27ed3cb42a396bd',1,'bit7z']]],
-  ['uint64_2',['UInt64',['../namespacebit7z.html#a7717b7db807102fa525c9881ddff34f9aaf71234725f0470ccf993e263a8b820a',1,'bit7z']]],
-  ['uint8_3',['UInt8',['../namespacebit7z.html#a7717b7db807102fa525c9881ddff34f9ab31df9c476d20e85ff898121efe11b5a',1,'bit7z']]],
-  ['ultra_4',['Ultra',['../namespacebit7z.html#a53f7393e325b3fb643fe44117e5ada34a7057376a419b3334cc7b8b7a9f064abb',1,'bit7z']]],
-  ['update_5',['Update',['../namespacebit7z.html#af6f79ca652f5cd37cb76957fb76b1630a06933067aafd48425d67bcb01bba5cb6',1,'bit7z']]]
+  ['mainsubfile_0',['MainSubfile',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a2e499c5f56622633e047763343c8875f',1,'bit7z']]],
+  ['max_1',['Max',['../namespacebit7z.html#a6a35d91f9f7f9ae7cd596ccff3d2e6f5a6a061313d22e51e0f25b7cd4dc065233',1,'bit7z']]],
+  ['method_2',['Method',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a4c3880bb027f159e801041b1021e88e8',1,'bit7z']]],
+  ['mtime_3',['MTime',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a181e9d22323bea05b4a22184b3bfb531',1,'bit7z']]],
+  ['multiplefiles_4',['MultipleFiles',['../namespacebit7z.html#a384cdd8c1e6598cb38d964a0bf2f657ba4f274c13d8c555a64ce169abba2c6083',1,'bit7z']]],
+  ['multiplemethods_5',['MultipleMethods',['../namespacebit7z.html#a384cdd8c1e6598cb38d964a0bf2f657ba6e9afb08be78ae2a9f3d2a2157cd459f',1,'bit7z']]]
 ];

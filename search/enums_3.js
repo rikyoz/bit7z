@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['overwritemode_0',['OverwriteMode',['../namespacebit7z.html#a5bfa8cb875cc02ca663d25269f9d8803',1,'bit7z']]]
+  ['encryptionscope_0',['EncryptionScope',['../namespacebit7z.html#a6eae6990129704e5c0db2811456512bd',1,'bit7z']]]
 ];

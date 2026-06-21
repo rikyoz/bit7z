@@ -1,9 +1,33 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classbit7z_1_1_bit_generic_item.html" title="The BitGenericItem interface class represents a generic item (either inside or outside an archive)." alt="" coords="5,31,113,57"/>
-<area shape="rect" id="Node000001" href="$classbit7z_1_1_bit_archive_item.html" title="The BitArchiveItem class represents a generic item inside an archive." alt="" coords="161,31,265,57"/>
-<area shape="poly" id="edge12_Node000000_Node000001" title=" " alt="" coords="128,41,160,41,160,47,128,47"/>
-<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_archive_item_info.html" title="The BitArchiveItemInfo class represents an archived item and that stores all its properties for later..." alt="" coords="320,5,444,32"/>
-<area shape="poly" id="edge13_Node000001_Node000002" title=" " alt="" coords="279,31,319,25,320,31,280,37"/>
-<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_archive_item_offset.html" title="The BitArchiveItemOffset class represents an archived item but doesn&#39;t store its properties." alt="" coords="313,56,451,83"/>
-<area shape="poly" id="edge14_Node000001_Node000003" title=" " alt="" coords="280,51,313,56,312,62,280,57"/>
+<area shape="rect" id="Node000000" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,241,181,268"/>
+<area shape="rect" id="Node000001" href="$classbit7z_1_1_bit_abstract_archive_creator.html" title="Abstract class representing a generic archive creator." alt="" coords="229,139,402,165"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="126,231,173,202,228,175,262,164,258,168,230,180,176,207,129,234"/>
+<area shape="rect" id="Node000009" href="$classbit7z_1_1_bit_abstract_archive_opener.html" title="The BitAbstractArchiveOpener abstract class represents a generic archive opener." alt="" coords="229,344,402,371"/>
+<area shape="poly" id="edge8_Node000000_Node000009" title=" " alt="" coords="138,272,286,342,282,345,137,278"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="456,5,609,48"/>
+<area shape="poly" id="edge2_Node000001_Node000002" title=" " alt="" coords="344,127,392,92,449,58,475,47,471,50,451,62,395,97,348,131"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_compressor.html" title=" " alt="" coords="456,72,609,115"/>
+<area shape="poly" id="edge3_Node000001_Node000003" title=" " alt="" coords="381,132,458,113,454,115,384,136"/>
+<area shape="rect" id="Node000005" href="$classbit7z_1_1_bit_archive_writer.html" title="The BitArchiveWriter class allows creating new archives or updating old ones with new items." alt="" coords="475,189,590,216"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="390,167,477,188,472,190,391,172"/>
+<area shape="rect" id="Node000008" href="$classbit7z_1_1_bit_compressor.html" title="The BitCompressor template class allows compressing files into archives." alt="" coords="452,139,613,165"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="416,149,454,151,449,153,418,155"/>
+<area shape="rect" id="Node000004" href="$classbit7z_1_1_bit_file_compressor.html" title="The BitFileCompressor class allows compressing files and directories." alt="" coords="663,80,793,107"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="624,91,665,93,660,94,625,96"/>
+<area shape="rect" id="Node000006" href="$classbit7z_1_1_bit_archive_editor.html" title="The BitArchiveEditor class allows creating new file archives or updating old ones." alt="" coords="670,189,786,216"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="605,200,673,202,668,203,606,205"/>
+<area shape="rect" id="Node000010" href="$classbit7z_1_1_bit_extractor.html" title=" " alt="" coords="466,240,600,283"/>
+<area shape="poly" id="edge9_Node000009_Node000010" title=" " alt="" coords="358,335,449,292,479,282,474,284,451,297,360,339"/>
+<area shape="rect" id="Node000011" href="$classbit7z_1_1_bit_extractor.html" title=" " alt="" coords="466,307,600,349"/>
+<area shape="poly" id="edge10_Node000009_Node000011" title=" " alt="" coords="416,341,468,336,463,338,418,346"/>
+<area shape="rect" id="Node000012" href="$classbit7z_1_1_bit_archive_reader.html" title="The BitArchiveReader class allows reading metadata of archives, as well as extracting them." alt="" coords="471,475,594,501"/>
+<area shape="poly" id="edge11_Node000009_Node000012" title=" " alt="" coords="343,379,391,421,451,460,479,474,474,474,449,465,388,425,341,384"/>
+<area shape="rect" id="Node000014" href="$classbit7z_1_1_bit_extractor.html" title="The BitExtractor template class allows extracting the content of archives from supported input types." alt="" coords="461,373,604,400"/>
+<area shape="poly" id="edge12_Node000009_Node000014" title=" " alt="" coords="417,368,463,377,458,377,417,374"/>
+<area shape="rect" id="Node000015" href="$classbit7z_1_1_bit_nested_archive_reader.html" title="The BitNestedArchiveReader class allows reading and extracting nested archives (e...." alt="" coords="450,424,615,451"/>
+<area shape="poly" id="edge13_Node000009_Node000015" title=" " alt="" coords="362,374,451,409,487,424,482,423,449,415,362,380"/>
+<area shape="rect" id="Node000013" href="$classbit7z_1_1_bit_input_archive.html" title="The BitInputArchive class, given a handler object, allows reading/extracting the content of archives." alt="" coords="260,475,370,501"/>
+<area shape="poly" id="edge14_Node000013_Node000012" title=" " alt="" coords="386,485,473,488,468,488,386,491"/>
+<area shape="rect" id="Node000007" href="$classbit7z_1_1_bit_output_archive.html" title="The BitOutputArchive class, given a creator object, allows creating new archives." alt="" coords="255,189,376,216"/>
+<area shape="poly" id="edge15_Node000007_Node000005" title=" " alt="" coords="390,200,477,202,472,204,392,205"/>
 </map>

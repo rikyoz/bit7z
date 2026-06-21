@@ -1,7 +1,13 @@
 <map id="BitExtractor&lt; Input &gt;" name="BitExtractor&lt; Input &gt;">
-<area shape="rect" id="Node000001" title="The BitExtractor template class allows extracting the content of archives from supported input types." alt="" coords="20,155,163,181"/>
-<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_abstract_archive_opener.html" title="The BitAbstractArchiveOpener abstract class represents a generic archive opener." alt="" coords="6,80,177,107"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,122,94,154,89,154,89,122"/>
-<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,5,178,32"/>
-<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="94,47,94,80,89,80,89,47"/>
+<area shape="rect" id="Node000001" title="The BitExtractor template class allows extracting the content of archives from supported input types." alt="" coords="452,80,595,107"/>
+<area shape="rect" id="Node000004" href="$classbit7z_1_1_bit_extractor.html" title=" " alt="" coords="767,5,901,48"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="579,72,618,61,769,36,764,37,620,67,580,77"/>
+<area shape="rect" id="Node000005" href="$classbit7z_1_1_bit_extractor.html" title=" " alt="" coords="767,72,901,115"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="610,91,769,93,764,94,610,96"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="770,139,898,181"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="580,109,620,120,772,151,767,151,618,125,579,114"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit_abstract_archive_opener.html" title="The BitAbstractArchiveOpener abstract class represents a generic archive opener." alt="" coords="230,80,402,107"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="418,91,454,93,449,94,418,96"/>
+<area shape="rect" id="Node000003" href="$classbit7z_1_1_bit_abstract_archive_handler.html" title="Abstract class representing a generic archive handler." alt="" coords="5,80,181,107"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="196,91,232,93,227,94,196,96"/>
 </map>

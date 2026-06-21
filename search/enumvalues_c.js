@@ -1,0 +1,22 @@
+var searchData=
+[
+  ['name_0',['Name',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a49ee3087348e8d44e1feda1917443987',1,'bit7z']]],
+  ['nomatchingfile_1',['NoMatchingFile',['../namespacebit7z.html#ab9951a080498ec9f950593e95d63f86fa4e8cabb8fb45d6e80068f8a239ea09ac',1,'bit7z']]],
+  ['nomatchingitems_2',['NoMatchingItems',['../namespacebit7z.html#ab9951a080498ec9f950593e95d63f86fad2909fc62d7872e994cdbf30b3504be2',1,'bit7z']]],
+  ['nomatchingsignature_3',['NoMatchingSignature',['../namespacebit7z.html#ab9951a080498ec9f950593e95d63f86fa9486ef7edd8a331d6dbcde7e9265a3d6',1,'bit7z']]],
+  ['none_4',['None',['../namespacebit7z.html#a4357d5b406d3bbe9ba20ec40b92071f3a6adf97f83acf6453d4a6a4b1070f3754',1,'bit7z::None'],['../namespacebit7z.html#add23e49f74b41fc0833a7d3fdcaaefeaa6adf97f83acf6453d4a6a4b1070f3754',1,'bit7z::None'],['../namespacebit7z.html#a6a35d91f9f7f9ae7cd596ccff3d2e6f5a6adf97f83acf6453d4a6a4b1070f3754',1,'bit7z::None'],['../namespacebit7z.html#a2f07fa63ed2d5f80388125b4a5ff8ec6a6adf97f83acf6453d4a6a4b1070f3754',1,'bit7z::None']]],
+  ['nonemptyoutputbuffer_5',['NonEmptyOutputBuffer',['../namespacebit7z.html#ab9951a080498ec9f950593e95d63f86fa1e4b27f87eb4abdb8cfc1af8fa070f10',1,'bit7z']]],
+  ['noproperty_6',['NoProperty',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381af2cc1ab691026d44ce2e7cc8db7e2f64',1,'bit7z']]],
+  ['normal_7',['Normal',['../namespacebit7z.html#a6a35d91f9f7f9ae7cd596ccff3d2e6f5a960b44c579bc2f6818d2daaf9e4c16f0',1,'bit7z']]],
+  ['nosuchitem_8',['NoSuchItem',['../namespacebit7z.html#ac42127ae6e575e493b922465f0f6c094ae9a16e31cdedfaa8ff9d4a19cdcc2768',1,'bit7z']]],
+  ['ntreparse_9',['NtReparse',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a46d22e3031b42e524d7a87784797e115',1,'bit7z']]],
+  ['ntsecure_10',['NtSecure',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a36f419938deb5ce720d50009f98c5313',1,'bit7z']]],
+  ['nulloutputbuffer_11',['NullOutputBuffer',['../namespacebit7z.html#ab9951a080498ec9f950593e95d63f86fa608ab59294dd6ea3f828eced495cb72e',1,'bit7z']]],
+  ['numaltstreams_12',['NumAltStreams',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381aef316f937afba0875cd033cabaec48e3',1,'bit7z']]],
+  ['numblocks_13',['NumBlocks',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a37a354f54afeb6ef54b1dae06a82931f',1,'bit7z']]],
+  ['numerrors_14',['NumErrors',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a6c1a42b36d82562b6d7855d9c5c4fd18',1,'bit7z']]],
+  ['numstreams_15',['NumStreams',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381aa41f3e088c8368f0a685ac0cb9b8a2a3',1,'bit7z']]],
+  ['numsubdirs_16',['NumSubDirs',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a4515b4a5c5fb4d9c00963e6a08ab1c2b',1,'bit7z']]],
+  ['numsubfiles_17',['NumSubFiles',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381afdab4a73c2511ea082bbb278850ea49e',1,'bit7z']]],
+  ['numvolumes_18',['NumVolumes',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a6d02c7aafa7752bcd86bb329230b360c',1,'bit7z']]]
+];

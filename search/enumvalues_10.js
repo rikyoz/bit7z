@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['sectorsize_0',['SectorSize',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381aefbc7947f8c4a49cb1f9767a0b7e2ae7',1,'bit7z']]],
+  ['sha1_1',['Sha1',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a89305d971a8d86cf8aeee61cc1a85d4b',1,'bit7z']]],
+  ['sha256_2',['Sha256',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a15c0db5566b4b1794251c08e46022245',1,'bit7z']]],
+  ['shortcomment_3',['ShortComment',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381afc1840f84088aba46bbbecf6cff39db5',1,'bit7z']]],
+  ['shortname_4',['ShortName',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381ad26b007baa81cc3cd38d8d6c93e6df42',1,'bit7z']]],
+  ['size_5',['Size',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a6f6cb72d544962fa333e2e34ce64f719',1,'bit7z']]],
+  ['skip_6',['Skip',['../namespacebit7z.html#add23e49f74b41fc0833a7d3fdcaaefeaa72ef2b9b6965d078e3c7f95487a82d1c',1,'bit7z']]],
+  ['skipitem_7',['SkipItem',['../namespacebit7z.html#a118fa4aeec7e5c1d0bad427fa2a9adc6a702c791c3a38b68b4afd52c00a4b5b71',1,'bit7z']]],
+  ['solid_8',['Solid',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381ae41480b6bbfbf7407974a88d3d34f4fa',1,'bit7z']]],
+  ['solidarchive_9',['SolidArchive',['../namespacebit7z.html#a384cdd8c1e6598cb38d964a0bf2f657bad8701576ae9980a7269176e8ba4c32ef',1,'bit7z']]],
+  ['splitafter_10',['SplitAfter',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a67625050eaf1da3acaf1715e48418f06',1,'bit7z']]],
+  ['splitbefore_11',['SplitBefore',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a479166a4369e77ddd8814ce9b2461aef',1,'bit7z']]],
+  ['streamid_12',['StreamId',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a8543e9826da6877ac973278d2d7de508',1,'bit7z']]],
+  ['string_13',['String',['../namespacebit7z.html#a59379043b4fc219c41e1fe297bddeb88a27118326006d3829667a400ad23d5d98',1,'bit7z']]],
+  ['strip_14',['Strip',['../namespacebit7z.html#af4949b77cd4999279b489647ef177fdba031b9e77f5c85a66723c832a06ba2735',1,'bit7z']]],
+  ['subtype_15',['SubType',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381abdb0597610f8fc970133c2fb336990e1',1,'bit7z']]],
+  ['symlink_16',['SymLink',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a63fb4ccd08ca8010357d515a5998bfa0',1,'bit7z']]]
+];

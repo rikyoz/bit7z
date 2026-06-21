@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['skip_0',['Skip',['../namespacebit7z.html#a5bfa8cb875cc02ca663d25269f9d8803a72ef2b9b6965d078e3c7f95487a82d1c',1,'bit7z']]],
-  ['solidarchive_1',['SolidArchive',['../namespacebit7z.html#a6ddcf111368e5bbdc096a5074e3fdc75ad8701576ae9980a7269176e8ba4c32ef',1,'bit7z']]],
-  ['string_2',['String',['../namespacebit7z.html#a7717b7db807102fa525c9881ddff34f9a27118326006d3829667a400ad23d5d98',1,'bit7z']]]
+  ['links_0',['Links',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381abd908db5ccb07777ced8023dffc802f4',1,'bit7z']]],
+  ['localname_1',['LocalName',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381ab3382206ec9a0ae504de395acebe2d91',1,'bit7z']]],
+  ['lzma_2',['Lzma',['../namespacebit7z.html#afe5fdcfae0b7e3f27700c1441139fc54ac9a9ac9323ce739b8e0ac753c2687597',1,'bit7z']]],
+  ['lzma2_3',['Lzma2',['../namespacebit7z.html#afe5fdcfae0b7e3f27700c1441139fc54ace6b3e4f2eabb2a308ae1c66f4994f6c',1,'bit7z']]]
 ];

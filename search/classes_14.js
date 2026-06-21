@@ -29,7 +29,7 @@ var searchData=
   ['unique_5fptr_26',['unique_ptr',['http://en.cppreference.com/w/cpp/memory/unique_ptr.html',1,'std']]],
   ['unique_5fptr_3c_20bit7z_3a_3abitinputarchive_20_3e_27',['unique_ptr&lt; bit7z::BitInputArchive &gt;',['http://en.cppreference.com/w/cpp/memory/unique_ptr.html',1,'std']]],
   ['unordered_5fmap_28',['unordered_map',['http://en.cppreference.com/w/cpp/container/unordered_map.html',1,'std']]],
-  ['unordered_5fmap_3c_20uint32_5ft_2c_20bititemsvector_3a_3avalue_5ftype_20_3e_29',['unordered_map&lt; uint32_t, BitItemsVector::value_type &gt;',['http://en.cppreference.com/w/cpp/container/unordered_map.html',1,'std']]],
+  ['unordered_5fmap_3c_20std_3a_3auint32_5ft_2c_20bititemsvector_3a_3avalue_5ftype_20_3e_29',['unordered_map&lt; std::uint32_t, BitItemsVector::value_type &gt;',['http://en.cppreference.com/w/cpp/container/unordered_map.html',1,'std']]],
   ['unordered_5fmultimap_30',['unordered_multimap',['http://en.cppreference.com/w/cpp/container/unordered_multimap.html',1,'std']]],
   ['unordered_5fmultiset_31',['unordered_multiset',['http://en.cppreference.com/w/cpp/container/unordered_multiset.html',1,'std']]],
   ['unordered_5fset_32',['unordered_set',['http://en.cppreference.com/w/cpp/container/unordered_set.html',1,'std']]],

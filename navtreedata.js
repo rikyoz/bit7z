@@ -36,9 +36,9 @@ var NAVTREE =
     [ "💾 Download", "index.html#autotoc_md8", null ],
     [ "🧰 Requirements", "index.html#autotoc_md9", null ],
     [ "🔗 Installation", "index.html#autotoc_md10", [
-      [ "Using CMake's add_subdirectory", "index.html#autotoc_md11", null ],
-      [ "Using CPM.cmake", "index.html#autotoc_md12", null ],
-      [ "Using vcpkg", "index.html#autotoc_md13", null ],
+      [ "Using CMake's <span class=\"tt\">add_subdirectory</span>", "index.html#autotoc_md11", null ],
+      [ "Using <a href=\"https://github.com/cpm-cmake/CPM.cmake\">CPM.cmake</a>", "index.html#autotoc_md12", null ],
+      [ "Using <a href=\"https://vcpkg.io/en/\">vcpkg</a>", "index.html#autotoc_md13", null ],
       [ "Building from source and manually linking", "index.html#autotoc_md14", null ]
     ] ],
     [ "🛠️ Configuration", "index.html#autotoc_md15", [
@@ -47,8 +47,9 @@ var NAVTREE =
       ] ],
       [ "🗺️ String Encoding", "index.html#autotoc_md18", null ]
     ] ],
-    [ "☕️ Donate", "index.html#autotoc_md19", null ],
-    [ "📜 License", "index.html#autotoc_md20", null ],
+    [ "🔍 SAST Tools", "index.html#autotoc_md19", null ],
+    [ "☕️ Donate", "index.html#autotoc_md20", null ],
+    [ "📜 License", "index.html#autotoc_md21", null ],
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -77,13 +78,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"classbit7z_1_1_bit_archive_editor.html#a3956707a15a52fbba33aced82b6806a9",
-"classbit7z_1_1_bit_archive_reader.html#a35939de5caa790077ebfb08b564b32aa",
-"classbit7z_1_1_bit_compressor.html#a05789042749c557135e710ceb43932c3",
-"classbit7z_1_1_bit_file_compressor.html#aa39f14731f3541e80fe14c9b955ba1b1",
-"functions_func_d.html",
-"structbit7z_1_1_bit_prop_variant.html#ab9d23e444f421229d739409a21e42500"
+"classbit7z_1_1_bit_abstract_archive_opener.html#aa89d3205629df77b016d27479396e4f5",
+"classbit7z_1_1_bit_archive_item_info.html#a916baa35d8bfb21a0df785780e0a0b07",
+"classbit7z_1_1_bit_archive_writer.html#a063b12f68ac56ab90cc47ab04a0822aa",
+"classbit7z_1_1_bit_compressor.html#ad8bfadaa4cee333b2eee84b26e2975a8",
+"classbit7z_1_1_bit_file_compressor.html#ae82052bbedb3a5e2fc153ab201d3b790",
+"classbit7z_1_1_bit_nested_archive_reader.html#a822a6c6b07f73b8180f40ac3a9b7b474",
+"namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a937527d66cc6793103658c00b7afc73f",
+"structbit7z_1_1_bit_prop_variant.html#a1f0ee1583940c820f1ad66a27129c1e1"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
+const SYNCONMSG = 'click to disable panel synchronization';
+const SYNCOFFMSG = 'click to enable panel synchronization';
+const LISTOFALLMEMBERS = 'List of all members';

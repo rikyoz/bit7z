@@ -1,0 +1,5 @@
+<map id="Bit7zLibraryLoader" name="Bit7zLibraryLoader">
+<area shape="rect" id="Node000001" title="The Bit7zLibraryLoader class provides deferred and optional loading of the 7&#45;zip shared library." alt="" coords="5,104,135,131"/>
+<area shape="rect" id="Node000002" href="$classbit7z_1_1_bit7z_library.html" title="The Bit7zLibrary class allows accessing the basic functionalities provided by the 7z DLLs." alt="" coords="25,5,115,32"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,46,73,104,67,103,68,49"/>
+</map>

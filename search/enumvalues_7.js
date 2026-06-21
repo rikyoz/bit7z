@@ -1,6 +1,9 @@
 var searchData=
 [
-  ['max_0',['Max',['../namespacebit7z.html#a53f7393e325b3fb643fe44117e5ada34a6a061313d22e51e0f25b7cd4dc065233',1,'bit7z']]],
-  ['multiplefiles_1',['MultipleFiles',['../namespacebit7z.html#a6ddcf111368e5bbdc096a5074e3fdc75a4f274c13d8c555a64ce169abba2c6083',1,'bit7z']]],
-  ['multiplemethods_2',['MultipleMethods',['../namespacebit7z.html#a6ddcf111368e5bbdc096a5074e3fdc75a6e9afb08be78ae2a9f3d2a2157cd459f',1,'bit7z']]]
+  ['handleritemindex_0',['HandlerItemIndex',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381afbfaf6f621e206d07df74cb127dc7fdd',1,'bit7z']]],
+  ['hardlink_1',['HardLink',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a8d4550517a0bf45aa10dcc5348ad7ae6',1,'bit7z']]],
+  ['headerencryption_2',['HeaderEncryption',['../namespacebit7z.html#a384cdd8c1e6598cb38d964a0bf2f657ba239e292c7f2fa97fe7357ef4f3ef0c01',1,'bit7z']]],
+  ['headerserror_3',['HeadersError',['../namespacebit7z.html#ac42127ae6e575e493b922465f0f6c094a05e1beb0a5f10c9575a7678ac5c9546b',1,'bit7z']]],
+  ['headerssize_4',['HeadersSize',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a8f117251009d9d794ffb924a8d0402f2',1,'bit7z']]],
+  ['hostos_5',['HostOS',['../namespacebit7z.html#a3a82879fa40c10f1106055b199c8c381a9d90853006cf07e56db2e8557dd45a8b',1,'bit7z']]]
 ];
